@@ -1,0 +1,27 @@
+{
+  "extends": "airbnb",
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "rules": {
+    "valid-jsdoc": ["error",
+    {
+      "requireReturn": false,
+      "requireReturnDescription": false,
+      "preferType": {
+        "String": "string",
+        "Number": "number",
+        "Boolean": "boolean",
+        "Function": "function",
+        "object": "Object",
+        "date": "Date",
+        "error": "Error"
+      },
+      "prefer": {
+        "return": "returns"
+      }
+    }],
+    "no-underscore-dangle": "off",
+    "strict": ["error", "safe"]
+  }
+}
