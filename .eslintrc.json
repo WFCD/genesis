@@ -21,7 +21,6 @@
         "return": "returns"
       }
     }],
-    "no-underscore-dangle": "off",
     "strict": ["error", "safe"]
   }
 }

@@ -8,10 +8,8 @@
       "log_date_format"  : "YYYY-MM-DD HH:mm Z",
       "env": {
       	"TOKEN": "<discord bot token>",
-        "RAVEN_KEY": "<raven logging key>",
-        "RAVEN_SECRET": "<raven logging secret>",
+        "RAVEN_URL": "<raven logging URL>",
         "PREFIX": "++",
-        "PORT": "8080",
         "MONGODB_URL": "<mongo db to store settings, etc, in>",
         "MD_LINE_END":"\n",
         "MD_BLOCK_END": "\n```",
@@ -30,7 +28,9 @@
         "DISCORD_BOTS_WEB_USER": "Not used yet",//not used yet
         "DISCORD_BOTS_WEB_TOKEN": "Not used yet",
         "OWNER":"<owner id for checking permissions",
-        "LOG_LEVEL": "ERROR"
+        "SHARDS": 1,
+        "LOCAL_SHARDS": 1,
+        "SHARD_OFFSET": 0
       }
     }
   ]

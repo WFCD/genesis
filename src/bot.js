@@ -3,69 +3,73 @@
 const CommandHandler = require('./CommandHandler.js');
 const Discord = require('discord.js');
 const md = require('node-md-config');
+const defaultLogger = require('./logger.js');
 
 /**
- * Set the log level value based on passed string
- * @param {string} level Log level string to set level with
- * @returns {number} value of the log level to be set
+ * A collection of strings that are used by the parser to produce markdown-formatted text
+ * @typedef {Object.<string>} MarkdownSettings
+ * @property {string} lineEnd      - Line return character
+ * @property {string} blockEnd     - Block end string
+ * @property {string} doubleReturn - Double line return string
+ * @property {string} linkBegin    - Link begin string
+ * @property {string} linkMid      - Link middle string
+ * @property {string} linkEnd      - Link end string
+ * @property {string} bold         - String for denoting bold text
+ * @property {string} italic       - String for denoting italicized text
+ * @property {string} underline    - String for denoting underlined text
+ * @property {string} strike       - String for denoting striked-through text
+ * @property {string} codeLine     - String for denoting in-line code
+ * @property {string} codeBlock    - String for denoting multi-line code blocks
  */
-function setLogLevel(level) {
-  let val = 0;
-  switch (level) {
-    case 'debug':
-      val = 5;
-      break;
-    case 'info':
-      val = 4;
-      break;
-    case 'warning':
-      val = 3;
-      break;
-    case 'error':
-      val = 2;
-      break;
-    case 'fatal':
-      val = 1;
-      break;
-    default:
-      break;
-  }
-  return val;
-}
 
 /**
  * Class describing Genesis bot
  */
 class Genesis {
   /**
-   * @param {Raven.Client} ravenClient the Raven Client for logging
+   * @param  {string}           discordToken         The token used to authenticate with Discord
+   * @param  {Raven.Client}     ravenClient          The client used to report errors to Sentry
+   * @param  {Object}           [options]            Bot options
+   * @param  {number}           [options.shardID]    The shard ID of this instance
+   * @param  {number}           [options.shardCount] The total number of shards
+   * @param  {string}           [options.prefix]     Prefix for calling the bot
+   * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
+   * @param  {Logger}           [options.logger]     The logger object
    */
-  constructor(ravenClient) {
+  constructor(discordToken, ravenClient, { shardID = 0, shardCount = 1, prefix = '/', mdConfig = md,
+    logger = defaultLogger, owner = null } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
      * @private
      */
-    this.client = new Discord.Client(
-      {
-        autoReconnect: true,
-        fetch_all_members: true,
-        api_request_method: 'burst',
-        ws: {
-          compress: true,
-          large_threshold: 1000,
-        },
-      });
+    this.client = new Discord.Client({
+      fetch_all_members: true,
+      api_request_method: 'burst',
+      ws: {
+        compress: true,
+        large_threshold: 1000,
+      },
+      shard_id: shardID,
+      shard_count: shardCount,
+    });
 
     /**
      * Discord login token for is bot
      * @type {string}
      * @private
      */
-    this.token = process.env.TOKEN;
+    this.token = discordToken;
 
     /**
-     * Raven Client for logging
+     * The logger object
+     * @type {Logger}
+     * @private
+     */
+    this.logger = logger;
+
+    /**
+     * Raven Client for reporting errors to Sentry
      * @type {Raven.Client}
      * @private
      */
@@ -76,35 +80,14 @@ class Genesis {
      * @type {string}
      * @private
      */
-    this.prefix = process.env.PREFIX || '/';
-
-    /**
-     * Log level for limiting what level of logging to send to Sentry.io
-     * @type {string}
-     * @private
-     */
-    this.logLevel = setLogLevel(process.env.LOG_LEVEL.toLowerCase() || 'fatal');
+    this.prefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
     /**
      * The markdown settings
      * @type {MarkdownSettings}
      * @private
      */
-    this.md = md;
-
-    /**
-     * The escaped prefix, for use with command regex.
-     * @type {string}
-     */
-    this.escapedPrefix = this.prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-
-    this.client.on('ready', () => this.onReady());
-    this.client.on('guildCreate', guild => this.onGuildCreate(guild));
-    this.client.on('message', message => this.onMessage(message));
-
-    if (typeof this.token === 'undefined') {
-      this.logFatalError('No Token');
-    }
+    this.md = mdConfig;
 
     /**
      * Whether or not the bot is ready to execute.
@@ -113,109 +96,46 @@ class Genesis {
      */
     this.readyToExecute = false;
 
-    this.consoleIfLowLog = process.env.CONTINUE_TO_CONSOLE || false;
-
     /**
      * Command handler for this Bot
      * @type {CommandHandler}
      * @private
      */
     this.commandHandler = new CommandHandler(this);
+
+    /**
+     * The bot's owner
+     * @type {string}
+     */
+    this.owner = owner;
+
+    this.client.on('ready', () => this.onReady());
+    this.client.on('guildCreate', guild => this.onGuildCreate(guild));
+    this.client.on('message', message => this.onMessage(message));
   }
 
   /**
-   * Log a fatal error message
-   * @param {string} message message to log
-   */
-  logFatalError(message) {
-    if (this && this.logLevel && this.logLevel > 0) {
-      this.ravenClient.captureMessage(`Fatal Error | ${message}`, {
-        level: 'fatal',
-      });
-    } else if (this && this.consoleIfLowLog) {
-      // eslint-disable-next-line no-console
-      console.error(message);
-    }
-  }
-
-  /**
-   * Log an error message
-   * @param {string} error message to log
-   */
-  errorHandle(error) {
-    if (this && this.logLevel && this.logLevel > 1) {
-      this.ravenClient.captureException(error);
-    } else if (this && this.consoleIfLowLog) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    }
-  }
-
-  /**
-   * Log a warning message
-   * @param {string} message message to log
-   */
-  warn(message) {
-    if (this && this.logLevel && this.logLevel > 2) {
-      this.ravenClient.captureMessage(`Warn        | ${message}`, {
-        level: 'warning',
-      });
-    } else if (this && this.consoleIfLowLog) {
-      // eslint-disable-next-line no-console
-      console.warn(`Warn        | ${message}`);
-    }
-  }
-
-  /**
-   * Log an informational message
-   * @param {string} message message to log
-   */
-  logInfo(message) {
-    if (this && this.logLevel && this.logLevel > 3) {
-      this.ravenClient.captureMessage(`Info        | ${message}`, {
-        level: 'info',
-      });
-    } else if (this && this.consoleIfLowLog) {
-      // eslint-disable-next-line no-console
-      console.log(`Info        | ${message}`);
-    }
-  }
-
-  /**
-   * Log a debug message
-   * @param {string} message message to log
-   */
-  debug(message) {
-    if (this && this.logLevel && this.logLevel > 4) {
-      this.ravenClient.captureMessage(`Debug       | ${message}`, {
-        level: 'debug',
-      });
-    } else if (this && this.consoleIfLowLog) {
-      // eslint-disable-next-line no-console
-      console.log(`Debug       | ${message}`);
-    }
-  }
-
-  /**
-   * Perform actions for starting the bot
+   * Logs in the bot to Discord
    */
   start() {
     this.client.login(this.token)
-      .then(this.debug)
-      .catch(this.errorHandle);
+      .then((t) => {
+        this.logger.debug(`Logged in with token ${t}`);
+      })
+      .catch((e) => {
+        this.logger.fatal(e);
+        process.exit(1);
+      });
   }
 
   /**
    * Perform actions when the bot is ready
    */
   onReady() {
-    setTimeout(() => {
-      this.debug(`${this.client.user.username} ready!`);
-      this.debug(`Log Level: ${this.logLevel}`);
-      this.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
-      this.client.user.setStatus('online', `${this.prefix}help for help`);
-      this.readyToExecute = true;
-    }, 100);
+    this.logger.debug(`${this.client.user.username} ready!`);
+    this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
+    this.client.user.setStatus('online', `${this.prefix}help for help`);
+    this.readyToExecute = true;
   }
 
   /**
@@ -236,7 +156,7 @@ class Genesis {
     if (!guild.available) {
       return;
     }
-    this.debug(`${guild} joined or created.`);
+    this.logger.info(`Joined guild ${guild}`);
     guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
                                      `\`${this.prefix}help\` for help**`);
   }
