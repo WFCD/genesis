@@ -3,22 +3,47 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Describes a CommandHandler for a bot.
+ */
 class CommandHandler {
+  /**
+   * Constructs CommandHandler
+   * @param {Object} bot Bot to get parameters from for prefix and readiness
+   */
   constructor(bot) {
-    this.helpMessages = [];
-    this.ids = [];
-    this.commandsReady = false;
-    this.bot = bot;
-    this.owner = process.env.OWNER;
     /**
-     * The escaped prefix, for use with command regex.
-     * @type {RegExp}
+     * Whether or not the commands for this handler are ready to be called.
+     * @type {boolean}
+     * @private
      */
-    this.helpRegexp = new RegExp(`^${this.bot.escapedPrefix}help`, 'i');
+    this.commandsReady = false;
+    /**
+     * The bot that this CommandHandler operates for
+     * @type {Genesis}
+     * @private
+     */
+    this.bot = bot;
+
+    /**
+     * The id of the owner of the bot for permissions
+     * @type {string}
+     * @private
+     */
+    this.owner = process.env.OWNER;
+
+    /**
+     * Array of command objects that can be called
+     * @type {Array<Command>}
+     * @private
+     */
     this.commands = [];
     this.readyCommands();
   }
 
+  /**
+   * Prepare the commands from the `commands` directory.
+   */
   readyCommands() {
     this.commandsReady = false;
     this.commands.length = 0;
@@ -35,6 +60,11 @@ class CommandHandler {
     this.commandsReady = true;
   }
 
+  /**
+   * Handle the command contained in the message contents, if any.
+   *
+   * @param {Message} message Message whose command should be checked and handled
+   */
   handleCommand(message) {
     if (this.commandsReady) {
       this.bot.debug(`Handling \`${message.content}\``);
@@ -49,6 +79,12 @@ class CommandHandler {
     }
   }
 
+  /**
+   * Check if the current command being called is able to be performed for the user calling it.
+   * @param   {Command} command  command to process to see if it can be called
+   * @param   {string} authorId caller of the message, the author.
+   * @returns {boolean} Whether or not the ucrrent command can be called by the author
+   */
   checkCanAct(command, authorId) {
     let canAct = false;
     if (this.owner === authorId) {
