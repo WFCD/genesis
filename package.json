@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://gitlab.imjake.me/tobiah/genesis.git"
+    "url": "http://github.com/aliasfalse/genesis.git"
   },
   "bugs": {
-    "url": "http://gitlab.imjake.me/tobiah/genesis/issues"
+    "url": "http://github.com/aliasfalse/genesis/issues"
   },
-  "homepage": "http://gitlab.imjake.me/tobiah/genesis#readme",
+  "homepage": "http://github.com/aliasfalse/genesis#readme",
   "keywords": [
     "warframe",
     "genesis",

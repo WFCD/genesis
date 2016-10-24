@@ -3,6 +3,13 @@
 # Project Genesis
 A [Discord.js](http://hydrabolt.github.io/discord.js) bot for tracking Warframe alerts, invasions and more.
 
+# Contribute
+
+[![Stories in Ready](https://badge.waffle.io/aliasfalse/genesis.png?label=ready&title=Ready)](http://waffle.io/aliasfalse/genesis)
+
+Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
+
+
 ## Get Help on Discord
 
 [![Contact me on Discord](https://img.shields.io/badge/discord-Tobiah%238452-7289DA.svg)](https://discord.gg/bZgq6Pt "Contact me on Discord: Tobiah#8452")
@@ -18,7 +25,7 @@ A [Discord.js](http://hydrabolt.github.io/discord.js) bot for tracking Warframe 
 1. Clone this repo
 
     ```
-    git clone git@gitlab.imjake.me:tobiah/genesis.git
+    git clone git@github.aliasfalse/genesis.git
     ```
 2. Install mongodb server or obtain an available mongodb server
 
