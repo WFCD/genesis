@@ -76,11 +76,18 @@ class Genesis {
     this.ravenClient = ravenClient;
 
     /**
-     * Prefix for calling the bot
+     * Prefix for calling the bot, for use with matching strings.
      * @type {string}
      * @private
      */
-    this.prefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    this.escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
+    /**
+     * Prefix for calling the bot, for use with messages.
+     * @type {string}
+     * @private
+     */
+    this.prefix = prefix;
 
     /**
      * The markdown settings
@@ -109,6 +116,12 @@ class Genesis {
      */
     this.owner = owner;
 
+    /**
+     * The status message to use for the bot
+     * @type {string}
+     */
+    this.statusMessage = `${prefix}help for help`;
+
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
@@ -134,7 +147,7 @@ class Genesis {
   onReady() {
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
-    this.client.user.setStatus('online', `${this.prefix}help for help`);
+    this.client.user.setStatus('online', this.statusMessage);
     this.readyToExecute = true;
   }
 

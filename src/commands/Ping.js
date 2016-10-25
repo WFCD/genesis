@@ -21,7 +21,7 @@ class Ping extends Command {
     return this.commandId;
   }
 
-  get command() {
+  get call() {
     return this.commandRegex;
   }
 

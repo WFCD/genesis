@@ -17,7 +17,7 @@ class Reload extends Command {
     return this.commandId;
   }
 
-  get command() {
+  get call() {
     return this.commandRegex;
   }
 
@@ -29,7 +29,7 @@ class Reload extends Command {
     if (message.author.id === this.owner) {
       const commandsBefore = this.bot.commandHandler.commands.length;
       let commandsAfter = commandsBefore;
-      this.bot.commandHandler.readyCommands();
+      this.bot.commandHandler.commands = this.bot.commandHandler.loadCommands();
       commandsAfter = this.bot.commandHandler.commands.length;
       message.reply(`${this.zSWC}${this.md.codeMulti}Commands reloaded!${this.md.blockEnd}` +
                     `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsBefore}` +

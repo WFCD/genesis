@@ -47,10 +47,10 @@ class Command {
   }
 
   /**
-   * Get the "command", which is the command regex for calling the command
+   * Get the call, which is the command regex for calling the command
    * @type {RegExp}
    */
-  get command() {
+  get call() {
     return this.commandRegex;
   }
 

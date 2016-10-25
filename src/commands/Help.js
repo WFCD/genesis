@@ -6,6 +6,11 @@ const Command = require('../Command.js');
  * Describes the Help command
  */
 class Help extends Command {
+
+  /**
+   * Constructs a Help command
+   * @param {Object} bot Bot to pull settings from
+   */
   constructor(bot) {
     super(bot);
     this.commandId = 'genesis.help';
@@ -27,7 +32,7 @@ class Help extends Command {
     return this.commandId;
   }
 
-  get command() {
+  get call() {
     return this.commandRegex;
   }
 

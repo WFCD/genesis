@@ -3,7 +3,8 @@
 const Command = require('../Command.js');
 
 function damageReduction(currentArmor) {
-  const damageRes = (parseFloat(currentArmor) / (parseFloat(currentArmor) + 300) * 100).toFixed(2);
+  const damageRes = ((parseFloat(currentArmor) / (parseFloat(currentArmor) + 300))
+                     * 100).toFixed(2);
   return `${damageRes}% damage reduction`;
 }
 
@@ -19,7 +20,7 @@ function armorStrip(armor) {
 class Armor extends Command {
   constructor(bot) {
     super(bot);
-    this.commandId = 'genesis.shields';
+    this.commandId = 'genesis.armor';
     // eslint-disable-next-line no-useless-escape
     this.commandRegex = new RegExp(`^${bot.escapedPrefix}armor(?:\s+([\d+\.?\d*\s]+))?`, 'i');
     this.commandHelp = `${bot.prefix}armor           | Display instructions for calculating armor${bot.md.lineEnd}` +
@@ -32,7 +33,7 @@ class Armor extends Command {
     return this.commandId;
   }
 
-  get command() {
+  get call() {
     return this.commandRegex;
   }
 
@@ -41,7 +42,7 @@ class Armor extends Command {
   }
 
   run(message) {
-    const pattern3Params = new RegExp(/(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/);
+    const pattern3Params = new RegExp(/(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?/);
     const params3 = message.content.match(pattern3Params);
     let armorString;
     if (params3 && params3.length > 3) {

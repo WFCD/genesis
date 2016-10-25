@@ -71,6 +71,7 @@ if (cluster.isMaster) {
     shardCount: totalShards,
     prefix: process.env.PREFIX,
     logger,
+    owner: process.env.OWNER,
   });
   shard.start();
 }

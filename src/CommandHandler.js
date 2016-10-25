@@ -37,9 +37,15 @@ class CommandHandler {
     this.bot.logger.debug(`Loading commands: ${files}`);
 
     const commands = files.map((f) => {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      const Cmd = require(`${commandDir}/${f}`);
-      const command = new Cmd(this.bot);
+      let command;
+      try {
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        const Cmd = require(`${commandDir}/${f}`);
+        command = new Cmd(this.bot);
+      } catch (err) {
+        this.bot.logger.error(err);
+        return null;
+      }
       this.bot.logger.debug(`Adding ${command.id}`);
       return command;
     });
@@ -55,7 +61,7 @@ class CommandHandler {
   handleCommand(message) {
     this.bot.logger.debug(`Handling \`${message.content}\``);
     this.commands.forEach((command) => {
-      if (command.test(message.content)) {
+      if (command.call.test(message.content)) {
         if (this.checkCanAct(command, message.author)) {
           this.bot.logger.debug(`Matched ${command.id}`);
           command.run(message);
