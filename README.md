@@ -12,7 +12,7 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 
 ## Get Help on Discord
 
-[![Contact me on Discord](https://img.shields.io/badge/discord-Tobiah%238452-7289DA.svg)](https://discord.gg/bZgq6Pt "Contact me on Discord: Tobiah#84520ycgfahdR8gTzWgM
+[![Contact me on Discord](https://img.shields.io/badge/discord-Tobiah%238452-7289DA.svg)](https://discord.gg/0ycgfahdR8gTzWgM "Contact me on Discord: Tobiah#8452")
 
 [![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=shield)](https://discord.gg/0onjYYKuUBHiR3LK "Try Genesis on Discord!")
 
