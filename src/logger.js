@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * A collection of strings that are used by the parser to produce markdown-formatted text
+ * A collection of methods for logging
  * @typedef {Object.<function>} Logger
  * @property {function} debug   - Logs a debug message
  * @property {function} info    - Logs an info message
@@ -10,6 +10,14 @@
  * @property {function} fatal   - Logs a fatal message. The program should terminate after such
                                   an error
  */
+class Logger {
+  /**
+   * @param {Raven} ravenClient client for logging errors and fatal errors
+   */
+  constructor(ravenClient) {
+    this.ravenClient = ravenClient;
+  }
+}
 
 const levels = [
   'DEBUG',
@@ -20,8 +28,19 @@ const levels = [
 ];
 
 levels.forEach((level) => {
-  module.exports[level.toLowerCase()] = (message) => {
+  // eslint-disable-next-line func-names
+  Logger.prototype[level.toLowerCase()] = function (message) {
     // eslint-disable-next-line no-console
     console.log(`[${level}] ${message}`);
+    if (level === 'fatal') {
+      this.ravenClient.captureMessage(message, {
+        level: 'fatal',
+      });
+    }
+    if (level === 'error') {
+      this.ravenClient.captureException(message);
+    }
   };
 });
+
+module.exports = Logger;

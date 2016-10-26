@@ -2,6 +2,7 @@
 
 const Command = require('../Command.js');
 const Wikia = require('node-wikia');
+const md = require('node-md-config');
 
 const warframe = new Wikia('warframe');
 
@@ -9,29 +10,22 @@ const warframe = new Wikia('warframe');
  * Describes the Mod command
  */
 class Mod extends Command {
-  constructor(bot) {
-    super(bot);
+  /**
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   */
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.mod';
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}mod(.+)`, 'i');
-    this.commandHelp = `${bot.prefix}mod             | Search the Warframe Wiki for a mod's image`;
-    this.bot = bot;
-    this.md = bot.md;
-  }
-
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
+    this.commandRegex = new RegExp(`^${regexPrefix}mod(.+)`, 'i');
+    this.commandHelp = `${prefix}mod             | Search the Warframe Wiki for a mod's image`;
   }
 
   run(message) {
-    message.channel.startTyping();
     const query = this.commandRegex.exec(message.cleanContent.match(this.commandRegex)[0])[1];
     if (!query) {
       message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
@@ -79,7 +73,6 @@ class Mod extends Command {
         message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
       });
     }
-    message.channel.stopTyping();
   }
 }
 

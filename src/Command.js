@@ -1,14 +1,22 @@
 'use strict';
 
+const md = require('node-md-config');
+
 /**
  * Describes a callable command
  */
 class Command {
   /**
    * Constructs a callable command
-   * @param {Object} bot Bot to call command on
+   * @param  {Logger}           logger                   The logger object
+   * @param  {string}           [options.prefix]         Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix]    Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]       The markdown settings
+   * @param  {CommandHandler}   [options.commandHandler] Command handler for
+   *                                                     handling commands for a bot
    */
-  constructor(bot) {
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
     /**
      * Command Identifier
      * @type {string}
@@ -18,17 +26,26 @@ class Command {
      * Command regex for calling the command
      * @type {RegExp}
      */
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}id$`, 'ig');
+    this.commandRegex = new RegExp(`^${regexPrefix}id$`, 'ig');
     /**
      * Help command for documenting the function or purpose of a command.
      * @type {string}
      */
-    this.commandHelp = 'Prototype command';
+    this.commandHelp = `${prefix} id | Prototype command`;
+
     /**
-     * The bot to operate the command against
-     * @type {Genesis}
+     * The logger object
+     * @type {Logger}
+     * @private
      */
-    this.bot = bot;
+    this.logger = logger;
+
+    /**
+     * The markdown settings
+     * @type {MarkdownSettings}
+     * @private
+     */
+    this.md = mdConfig;
 
     /**
      * Zero space whitespace character to prepend to any messages sent
@@ -36,6 +53,12 @@ class Command {
      * @type {string}
      */
     this.zSWC = '\u200B';
+
+    /**
+     * The command handler for processing commands
+     * @type {CommandHandler}
+     */
+    this.commandHandler = commandHandler;
   }
 
   /**
@@ -70,10 +93,10 @@ class Command {
   run(message) {
     message.reply('This is a basic Command')
       .then((msg) => {
-        this.bot.debug(`Sent ${msg}`);
+        this.logger.debug(`Sent ${msg}`);
       })
       .catch((error) => {
-        this.bot.error(`Error: ${error}`);
+        this.logger.error(`Error: ${error}`);
       });
   }
 }

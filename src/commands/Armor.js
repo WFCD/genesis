@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const md = require('node-md-config');
 
 function damageReduction(currentArmor) {
   const damageRes = ((parseFloat(currentArmor) / (parseFloat(currentArmor) + 300))
@@ -18,27 +19,23 @@ function armorStrip(armor) {
  * Describes the Armor command
  */
 class Armor extends Command {
-  constructor(bot) {
-    super(bot);
+  /**
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   */
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.armor';
     // eslint-disable-next-line no-useless-escape
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}armor(?:\s+([\d+\.?\d*\s]+))?`, 'i');
-    this.commandHelp = `${bot.prefix}armor           | Display instructions for calculating armor${bot.md.lineEnd}` +
-                       `${bot.prefix}armor           | Display current damage resistance and amount of corrosive procs required to strip it. Params: <current armor>${bot.md.lineEnd}` +
-                       `${bot.prefix}armor           | Display the current armor, damage resistance, and necessary corrosive procs to strip armor. Params: <base armor> <base level> <current level>`;
-    this.md = bot.md;
-  }
-
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
+    this.commandRegex = new RegExp(`^${regexPrefix}armor(?:\s+([\d+\.?\d*\s]+))?`, 'i');
+    this.commandHelp = `${prefix}armor           | Display instructions for calculating armor${md.lineEnd}` +
+                       `${prefix}armor           | Display current damage resistance and amount of corrosive procs required to strip it. Params: <current armor>${md.lineEnd}` +
+                       `${prefix}armor           | Display the current armor, damage resistance, and necessary corrosive procs to strip armor. Params: <base armor> <base level> <current level>`;
+    this.md = mdConfig;
   }
 
   run(message) {
@@ -50,14 +47,14 @@ class Armor extends Command {
       const baseLevel = params3[2];
       const currentLevel = params3[3];
       if (typeof baseLevel === 'undefined') {
-        this.bot.debug('Entered 1-param armor');
+        this.logger.debug('Entered 1-param armor');
         armorString = `${this.md.codeMulti}${damageReduction(armor)}${this.md.lineEnd} ${armorStrip(armor)} ${this.md.blockEnd}`;
       } else {
-        this.bot.debug('Entered 3-param armor');
+        this.logger.debug('Entered 3-param armor');
         armorString = this.armorFull(armor, baseLevel, currentLevel);
       }
     } else {
-      this.bot.debug('Entered 0-param armor');
+      this.logger.debug('Entered 0-param armor');
       const armorInstruct3 = 'armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.';
       const armorInstruct1 = 'armor (Current Armor) Calculate damage resistance.';
       armorString = `${this.md.codeMulti}Possible uses include:${this.md.lineEnd}${armorInstruct3}${this.md.lineEnd}${armorInstruct1}${this.md.blockEnd}`;

@@ -1,36 +1,30 @@
 'use strict';
 
 const ping = require('ping').promise;
+const md = require('node-md-config');
 
 const Command = require('../Command.js');
-
 
 /**
  * Describes the Wiki command
  */
 class Ping extends Command {
-  constructor(bot) {
-    super(bot);
+  /**
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   */
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.ping';
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}ping$`, 'ig');
-    this.commandHelp = `${bot.prefix}ping            | Ping Genesis to test connectivity`;
-    this.md = bot.md;
-  }
-
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
+    this.commandRegex = new RegExp(`^${regexPrefix}ping$`, 'ig');
+    this.commandHelp = `${prefix}ping            | Ping Genesis to test connectivity`;
   }
 
   run(message) {
-    message.channel.startTyping();
     const hosts = ['content.warframe.com', 'forums.warframe.com', 'wf.christx.tw', 'store.warframe.com'];
     const results = [];
 
@@ -52,10 +46,9 @@ class Ping extends Command {
             message.delete(10000);
           }
         })
-        .catch(this.bot.errorHandle);
+        .catch(this.logger.error);
     })
-    .catch(this.bot.errorHandle);
-    message.channel.stopTyping();
+    .catch(this.logger.error);
   }
 }
 

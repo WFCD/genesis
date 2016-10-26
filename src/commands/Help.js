@@ -1,23 +1,26 @@
 'use strict';
 
 const Command = require('../Command.js');
+const md = require('node-md-config');
 
 /**
  * Describes the Help command
  */
 class Help extends Command {
-
   /**
-   * Constructs a Help command
-   * @param {Object} bot Bot to pull settings from
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
    */
-  constructor(bot) {
-    super(bot);
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.help';
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}help(.*)`, 'ig');
-    this.commandHelp = `${bot.prefix}help            | Display this message`;
-    this.md = bot.md;
-    this.bot = bot;
+    this.commandRegex = new RegExp(`^${regexPrefix}help(.*)`, 'ig');
+    this.commandHelp = `${prefix}help            | Display this message`;
+    this.commandHandler = commandHandler;
     this.helpOut = '';
 
     /**
@@ -28,18 +31,6 @@ class Help extends Command {
     this.helpReplyMsg = process.env.HELP_REPLY || ' check your direct messages for help.';
   }
 
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
-  }
-
   /**
    * Send help message
    * @param {Message} message Message to reply to
@@ -47,7 +38,7 @@ class Help extends Command {
   run(message) {
     if (this.helpOut === '') {
       this.helpOut += `${this.zSWC}${this.md.codeMulti}`;
-      this.bot.commandHandler.commands.forEach((command) => {
+      this.commandHandler.commands.forEach((command) => {
         this.helpOut += `${command.help}${this.md.lineEnd}`;
       });
       this.helpOut += this.md.blockEnd;
@@ -59,7 +50,7 @@ class Help extends Command {
           msg.delete(10000);
         }
       })
-      .catch(this.errorHandle);
+      .catch(this.logger.error);
     }
 
     message.author.sendMessage(this.helpOut)
@@ -71,7 +62,7 @@ class Help extends Command {
           message.delete(100000);
         }
       })
-      .catch(this.errorHandle);
+      .catch(this.logger.error);
   }
 }
 

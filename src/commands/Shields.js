@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const md = require('node-md-config');
 
 function shieldCalc(baseShields, baseLevel, currentLevel) {
   return (parseFloat(baseShields) +
@@ -13,26 +14,21 @@ function shieldCalc(baseShields, baseLevel, currentLevel) {
  * Describes the Shield command
  */
 class Shields extends Command {
-  constructor(bot) {
-    super(bot);
+  /**
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   */
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.shields';
     // eslint-disable-next-line no-useless-escape
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}shield(?: +([\d+\.?\d* ]+))?`, 'i');
-    this.commandHelp = `${bot.prefix}shields         | Display instructions for calculating shields${bot.md.lineEnd}` +
-                       `${bot.prefix}shields <params>| Display the current shields. Parameters: <base shields> <base level> <current level>`;
-    this.md = bot.md;
-  }
-
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
+    this.commandRegex = new RegExp(`^${regexPrefix}shield(?: +([\d+\.?\d* ]+))?`, 'i');
+    this.commandHelp = `${prefix}shields         | Display instructions for calculating shields${md.lineEnd}` +
+                       `${prefix}shields <params>| Display the current shields. Parameters: <base shields> <base level> <current level>`;
   }
 
   run(message) {

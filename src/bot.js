@@ -3,7 +3,6 @@
 const CommandHandler = require('./CommandHandler.js');
 const Discord = require('discord.js');
 const md = require('node-md-config');
-const defaultLogger = require('./logger.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -28,16 +27,15 @@ const defaultLogger = require('./logger.js');
 class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
-   * @param  {Raven.Client}     ravenClient          The client used to report errors to Sentry
+   * @param  {Logger}           logger               The logger object
    * @param  {Object}           [options]            Bot options
    * @param  {number}           [options.shardID]    The shard ID of this instance
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
-   * @param  {Logger}           [options.logger]     The logger object
    */
-  constructor(discordToken, ravenClient, { shardID = 0, shardCount = 1, prefix = '/', mdConfig = md,
-    logger = defaultLogger, owner = null } = {}) {
+  constructor(discordToken, logger, { shardID = 0, shardCount = 1, prefix = process.env.PREFIX,
+                                     mdConfig = md, owner = null } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -67,13 +65,6 @@ class Genesis {
      * @private
      */
     this.logger = logger;
-
-    /**
-     * Raven Client for reporting errors to Sentry
-     * @type {Raven.Client}
-     * @private
-     */
-    this.ravenClient = ravenClient;
 
     /**
      * Prefix for calling the bot, for use with matching strings.
@@ -108,7 +99,7 @@ class Genesis {
      * @type {CommandHandler}
      * @private
      */
-    this.commandHandler = new CommandHandler(this);
+    this.commandHandler = new CommandHandler(this.logger, this);
 
     /**
      * The bot's owner

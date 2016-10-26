@@ -20,10 +20,12 @@ const Genesis = require('./src/bot.js');
 const client = new Raven.Client(process.env.RAVEN_URL);
 
 /**
- * Logging functions
+ * Logging functions class
  * @type {Object}
  */
-const logger = require('./src/logger.js');
+const Logger = require('./src/Logger.js');
+
+const logger = new Logger(client);
 
 /**
  * Class that manages the cluster's workers
@@ -48,7 +50,7 @@ if (cluster.isMaster) {
   clusterManager.start();
 } else {
   const totalShards = process.env.SHARDS || 1;
-  const shard = new Genesis(process.env.TOKEN, client, {
+  const shard = new Genesis(process.env.TOKEN, logger, {
     shardID: process.env.shard_id,
     shardCount: totalShards,
     prefix: process.env.PREFIX,

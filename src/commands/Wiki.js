@@ -2,6 +2,7 @@
 
 const Command = require('../Command.js');
 const Wikia = require('node-wikia');
+const md = require('node-md-config');
 
 const warframe = new Wikia('warframe');
 
@@ -9,24 +10,19 @@ const warframe = new Wikia('warframe');
  * Describes the Wiki command
  */
 class Wiki extends Command {
-  constructor(bot) {
-    super(bot);
+  /**
+   * Constructs a callable command
+   * @param  {Logger}           logger                The logger object
+   * @param  {string}           [options.prefix]      Prefix for calling the bot
+   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
+   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   */
+  // eslint-disable-next-line no-useless-escape
+  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
+    super(logger, { mdConfig, regexPrefix, prefix });
     this.commandId = 'genesis.wiki';
-    this.commandRegex = new RegExp(`^${bot.escapedPrefix}wiki(.+)`, 'ig');
-    this.commandHelp = `${bot.prefix}wiki <query>    | Search the Warframe Wiki for information`;
-    this.md = bot.md;
-  }
-
-  get id() {
-    return this.commandId;
-  }
-
-  get call() {
-    return this.commandRegex;
-  }
-
-  get help() {
-    return this.commandHelp;
+    this.commandRegex = new RegExp(`^${regexPrefix}wiki(.+)`, 'ig');
+    this.commandHelp = `${prefix}wiki <query>    | Search the Warframe Wiki for information`;
   }
 
   run(message) {

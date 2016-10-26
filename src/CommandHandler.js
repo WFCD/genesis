@@ -9,14 +9,17 @@ const path = require('path');
 class CommandHandler {
   /**
    * Constructs CommandHandler
-   * @param {Object} bot Bot to get parameters from for prefix and readiness
+   * @param {Logger}  logger Simple logging class for logging errors and debugging
+   * @param {Genesis} bot    Bot to derive prefix for commands from
    */
-  constructor(bot) {
+  constructor(logger, bot) {
     /**
-     * The bot that this CommandHandler operates for
-     * @type {Genesis}
+     * Simple logging class for logging errors and debugging
+     * @type {Logger}
      * @private
      */
+    this.logger = logger;
+
     this.bot = bot;
 
     /**
@@ -34,19 +37,23 @@ class CommandHandler {
   loadCommands() {
     const commandDir = path.join(__dirname, 'commands');
     const files = fs.readdirSync(commandDir);
-    this.bot.logger.debug(`Loading commands: ${files}`);
+    this.logger.debug(`Loading commands: ${files}`);
 
     const commands = files.map((f) => {
       let command;
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Cmd = require(`${commandDir}/${f}`);
-        command = new Cmd(this.bot);
+        command = new Cmd(this.logger, {
+          prefix: this.bot.prefix,
+          regexPrefix: this.bot.escapedPrefix,
+          commandHandler: this
+        });
       } catch (err) {
-        this.bot.logger.error(err);
+        this.logger.error(err);
         return null;
       }
-      this.bot.logger.debug(`Adding ${command.id}`);
+      this.logger.debug(`Adding ${command.id}`);
       return command;
     });
 
@@ -59,11 +66,11 @@ class CommandHandler {
    * @param {Message} message Message whose command should be checked and handled
    */
   handleCommand(message) {
-    this.bot.logger.debug(`Handling \`${message.content}\``);
+    this.logger.debug(`Handling \`${message.content}\``);
     this.commands.forEach((command) => {
       if (command.call.test(message.content)) {
         if (this.checkCanAct(command, message.author)) {
-          this.bot.logger.debug(`Matched ${command.id}`);
+          this.logger.debug(`Matched ${command.id}`);
           command.run(message);
         }
       }
