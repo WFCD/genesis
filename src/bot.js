@@ -42,14 +42,14 @@ class Genesis {
      * @private
      */
     this.client = new Discord.Client({
-      fetch_all_members: true,
-      api_request_method: 'burst',
+      fetchAllMembers: true,
+      apiRequestMethod: 'burst',
       ws: {
         compress: true,
         large_threshold: 1000,
       },
-      shard_id: shardID,
-      shard_count: shardCount,
+      shardId: shardID,
+      shardCount: shardCount,
     });
 
     /**
@@ -138,7 +138,7 @@ class Genesis {
   onReady() {
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
-    this.client.user.setStatus('online', this.statusMessage);
+    this.client.user.setGame(this.statusMessage);
     this.readyToExecute = true;
   }
 
