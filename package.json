@@ -26,7 +26,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "discord.js": "^9.3.0",
+    "discord.js": "^10.0.1",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
