@@ -29,12 +29,12 @@ class Genesis {
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
    * @param  {Object}           [options]            Bot options
-   * @param  {number}           [options.shardID]    The shard ID of this instance
+   * @param  {number}           [options.shardId]    The shard ID of this instance
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    */
-  constructor(discordToken, logger, { shardID = 0, shardCount = 1, prefix = process.env.PREFIX,
+  constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
                                      mdConfig = md, owner = null } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -48,8 +48,8 @@ class Genesis {
         compress: true,
         large_threshold: 1000,
       },
-      shardId: shardID,
-      shardCount: shardCount,
+      shardId,
+      shardCount,
     });
 
     /**

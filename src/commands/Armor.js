@@ -39,7 +39,7 @@ class Armor extends Command {
   }
 
   run(message) {
-    const pattern3Params = new RegExp(/(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?/);
+    const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?/;
     const params3 = message.content.match(pattern3Params);
     let armorString;
     if (params3 && params3.length > 3) {

@@ -39,7 +39,7 @@ class CommandHandler {
     const files = fs.readdirSync(commandDir);
     this.logger.debug(`Loading commands: ${files}`);
 
-    const commands = files.map((f) => {
+    return files.map((f) => {
       let command;
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
@@ -47,7 +47,7 @@ class CommandHandler {
         command = new Cmd(this.logger, {
           prefix: this.bot.prefix,
           regexPrefix: this.bot.escapedPrefix,
-          commandHandler: this
+          commandHandler: this,
         });
       } catch (err) {
         this.logger.error(err);
@@ -56,8 +56,6 @@ class CommandHandler {
       this.logger.debug(`Adding ${command.id}`);
       return command;
     });
-
-    return commands;
   }
 
   /**
