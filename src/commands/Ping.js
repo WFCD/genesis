@@ -19,9 +19,28 @@ class Ping extends Command {
   // eslint-disable-next-line no-useless-escape
   constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
     super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.ping';
+    this.commandId = 'core.ping';
     this.commandRegex = new RegExp(`^${regexPrefix}ping$`, 'ig');
     this.commandHelp = `${prefix}ping            | Ping Genesis to test connectivity`;
+
+    /**
+     * Whether or not this command is able to be blacklisted.
+     * @type {boolean}
+     */
+    this.blacklistable = false;
+
+    /**
+     * Specifies whether or not this command requires authorization
+     *    from a user with manage_permissions
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+    /**
+     * Specifies whther or not this command requires the caller to be the bot owner.
+     * @type {Boolean}
+     */
+    this.ownerOnly = false;
   }
 
   run(message) {

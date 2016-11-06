@@ -27,11 +27,14 @@
   ],
   "dependencies": {
     "discord.js": "^10.0.1",
+    "mongodb": "^2.2.11",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
     "raven": "^0.12.1",
-    "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data"
+    "request-promise": "^4.1.1",
+    "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data",
+    "warframe-worldstate-parser": "github:aliasfalse/warframe-worldstate-parser"
   },
   "devDependencies": {
     "chai": "^3.5.0",

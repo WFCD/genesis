@@ -3,6 +3,7 @@
 const CommandHandler = require('./CommandHandler.js');
 const Discord = require('discord.js');
 const md = require('node-md-config');
+const Tracker = require('./Tracker.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -35,7 +36,7 @@ class Genesis {
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    */
   constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
-                                     mdConfig = md, owner = null } = {}) {
+                                     mdConfig = md, owner = process.env.OWNER } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -116,6 +117,8 @@ class Genesis {
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
+    this.tracker = new Tracker(this.logger, this.client);
+    setTimeout(() => this.tracker.updateAll(this.client.guilds.length), 360000);
   }
 
   /**

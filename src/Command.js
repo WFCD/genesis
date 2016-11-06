@@ -59,6 +59,25 @@ class Command {
      * @type {CommandHandler}
      */
     this.commandHandler = commandHandler;
+
+    /**
+     * Whether or not this command is able to be blacklisted.
+     * @type {boolean}
+     */
+    this.blacklistable = true;
+
+    /**
+     * Specifies whether or not this command requires authorization
+     *    from a user with manage_permissions
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+    /**
+     * Specifies whther or not this command requires the caller to be the bot owner.
+     * @type {Boolean}
+     */
+    this.ownerOnly = false;
   }
 
   /**
@@ -90,7 +109,8 @@ class Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  run(message, { settings = null } = {}) {
+    this.logger.debug(settings);
     message.reply('This is a basic Command')
       .then((msg) => {
         this.logger.debug(`Sent ${msg}`);

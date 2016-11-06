@@ -51,7 +51,7 @@ if (cluster.isMaster) {
 } else {
   const totalShards = process.env.SHARDS || 1;
   const shard = new Genesis(process.env.TOKEN, logger, {
-    shardID: process.env.shard_id,
+    shardID: process.env.SHARD_ID || 0,
     shardCount: totalShards,
     prefix: process.env.PREFIX,
     logger,
