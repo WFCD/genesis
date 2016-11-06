@@ -87,7 +87,7 @@ class Command {
 
   /**
    * Run the command
-   * @param {message} message Message with a command to handle, reply to,
+   * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
   run(message) {

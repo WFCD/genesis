@@ -32,7 +32,7 @@ class Shields extends Command {
   }
 
   run(message) {
-    const pattern3Params = new RegExp(/(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/);
+    const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/;
     const params = message.content.match(pattern3Params);
     let shieldString;
     if (params.length > 3) {
