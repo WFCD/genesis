@@ -1,0 +1,4 @@
+files:
+  - 
+    source: /src/resources/strings.json
+    translation: /src/resources/%two_letters_code%/strings.json
