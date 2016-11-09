@@ -2,6 +2,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const Settings = require('./settings/Settings.js');
+const StringManager = require('./settings/StringManager.js');
+
+const mongoURL = process.env.MONGODB_URL;
 
 /**
  * Describes a CommandHandler for a bot.
@@ -28,6 +32,25 @@ class CommandHandler {
      * @private
      */
     this.commands = this.loadCommands();
+
+    /**
+     * The settings for this bot
+     * @type {Settings}
+     * @private
+     */
+    this.settings = new Settings(mongoURL, this.logger, this);
+
+    /**
+     * Manages strings, allowing for internationalization
+     * @type {StringManager}
+     */
+    this.stringManager = new StringManager(this.settings);
+
+    /**
+     * Designates the owner of the bot, allows usages of bot-only commands
+     * @type {number}
+     */
+    this.owner = bot.owner;
   }
 
   /**
@@ -37,7 +60,7 @@ class CommandHandler {
   loadCommands() {
     const commandDir = path.join(__dirname, 'commands');
     const files = fs.readdirSync(commandDir);
-    this.logger.debug(`Loading commands: ${files}`);
+    this.logger.debug(`Loading commands: ${files.join(', ')}`);
 
     return files.map((f) => {
       let command;
@@ -65,12 +88,31 @@ class CommandHandler {
    */
   handleCommand(message) {
     this.logger.debug(`Handling \`${message.content}\``);
+
     this.commands.forEach((command) => {
       if (command.call.test(message.content)) {
-        if (this.checkCanAct(command, message.author)) {
-          this.logger.debug(`Matched ${command.id}`);
-          command.run(message);
-        }
+        this.logger.debug(`Matched: ${command.id}`);
+        this.checkCanAct(command, message)
+          .then((canAct) => {
+            this.logger.debug(`Can act: ${canAct}`);
+            if (canAct === true) {
+              command.run(message, {
+                settings: new Settings(mongoURL, this.logger, this),
+                commandHandler: this,
+                stringManager: this.stringManager,
+              });
+            } else {
+              this.settings.getRespond(message.channel.id)
+                .then((canRespond) => {
+                  if (canRespond) {
+                    this.stringManager.getString('cannot_reply', message, { command: command.id })
+                      .then(str => message.reply(str));
+                  }
+                })
+                .catch(this.logger.error);
+            }
+          })
+          .catch(this.logger.error);
       }
     });
   }
@@ -78,15 +120,55 @@ class CommandHandler {
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
-   * @param   {string} authorId caller of the message, the author.
-   * @returns {boolean} Whether or not the ucrrent command can be called by the author
+   * @param   {string} message message to derive data from.
+   * @returns {Promise<boolean>} Whether or not the ucrrent command can be called by the author
    */
-  checkCanAct(command, authorId) {
-    if (this.owner === authorId) {
-      return true;
-    }
-    // TODO: Do blacklist checking
-    return true;
+  checkCanAct(command, message) {
+    return new Promise((resolve, reject) => {
+      this.settings.getBlacklistedCommands(message.channel.id)
+          .then((blacklist) => {
+            if (command.ownerOnly) {
+              if (message.author.id === this.owner) {
+                resolve(true);
+              } else {
+                this.logger.debug(`Author: ${message.author.id}\nOwner: ${this.owner}`);
+                resolve(false);
+              }
+            } else if (blacklist.indexOf(command.id) === -1) {
+              resolve(true);
+            } else if (message.channel.permissionsFor(message.author)
+                .hasPermission('MANAGE_ROLES_OR_PERMISSIONS')
+                && command.requiresAuth) {
+              resolve(true);
+            } else {
+              this.settings.getOverride(message.channel.id)
+                .then((override) => {
+                  if (override && (message.channel.permissionsFor(message.author).hasPermission('MANAGE_ROLES_OR_PERMISSIONS') || message.author.id === this.owner)) {
+                    resolve(true);
+                  } else {
+                    resolve(false);
+                  }
+                })
+                .catch(err => reject(err));
+            }
+          })
+          .catch(err => reject(err));
+    });
+  }
+
+  /**
+   * Get list of blacklistable command ids
+   * @returns {Array<string>} Array of blacklistable command ids
+   */
+  getBlacklistableCommands() {
+    return this.commands.filter((command) => {
+      if (command.blacklistable) {
+        return true;
+      }
+      return false;
+    }).map(command =>
+       command.id
+    );
   }
 }
 

@@ -29,13 +29,32 @@ class Armor extends Command {
   // eslint-disable-next-line no-useless-escape
   constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
     super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.armor';
+    this.commandId = 'misc.armor';
     // eslint-disable-next-line no-useless-escape
     this.commandRegex = new RegExp(`^${regexPrefix}armor(?:\s+([\d+\.?\d*\s]+))?`, 'i');
     this.commandHelp = `${prefix}armor           | Display instructions for calculating armor${md.lineEnd}` +
                        `${prefix}armor           | Display current damage resistance and amount of corrosive procs required to strip it. Params: <current armor>${md.lineEnd}` +
                        `${prefix}armor           | Display the current armor, damage resistance, and necessary corrosive procs to strip armor. Params: <base armor> <base level> <current level>`;
     this.md = mdConfig;
+
+    /**
+     * Whether or not this command is able to be blacklisted.
+     * @type {boolean}
+     */
+    this.blacklistable = true;
+
+    /**
+     * Specifies whether or not this command requires authorization
+     *    from a user with manage_permissions
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+    /**
+     * Specifies whther or not this command requires the caller to be the bot owner.
+     * @type {Boolean}
+     */
+    this.ownerOnly = false;
   }
 
   run(message) {

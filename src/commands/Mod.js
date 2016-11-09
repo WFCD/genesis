@@ -59,17 +59,17 @@ class Mod extends Command {
              }
            })
            .catch((error) => {
-             this.bot.errorHandle(error);
+             this.logger.error(error);
              message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
            });
         })
         .catch((error) => {
-          this.bot.errorHandle(error);
+          this.logger.error(error);
           message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
         });
       })
       .catch((error) => {
-        this.bot.errorHandle(error);
+        this.logger.error(error);
         message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
       });
     }

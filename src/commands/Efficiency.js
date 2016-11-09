@@ -6,7 +6,7 @@ const md = require('node-md-config');
 /**
  * Describes the Armor command
  */
-class Armor extends Command {
+class Efficiency extends Command {
   /**
    * Constructs a callable command
    * @param  {Logger}           logger                The logger object
@@ -17,11 +17,11 @@ class Armor extends Command {
   // eslint-disable-next-line no-useless-escape
   constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
     super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'misc.damage';
+    this.commandId = 'misc.efficiency';
     // eslint-disable-next-line no-useless-escape
-    this.commandRegex = new RegExp(`^${regexPrefix}damage$`, 'i');
-    this.commandHelp = `${prefix}damage          | Display Damage 2.0 chart`;
-    this.damageChart = 'http://morningstar.ninja/chart/Damage_2.0_Resistance_Flowchart.png';
+    this.commandRegex = new RegExp(`^${regexPrefix}efficiency ?chart`, 'i');
+    this.commandHelp = `${prefix}efficiency      | Duration/Efficiency Balance Chart`;
+    this.efficiencyChart = 'http://morningstar.ninja/chart/efficiency.png';
 
     /**
      * Whether or not this command is able to be blacklisted.
@@ -43,11 +43,10 @@ class Armor extends Command {
     this.ownerOnly = false;
   }
 
-  run(message, { stringManager = null } = {}) {
-    stringManager.getString('damage_reply', message, { command: this.commandId })
-    .then(damageReply => message.channel.sendFile(this.damageChart, 'Damage.png', damageReply))
-    .catch(this.logger.error);
+  run(message) {
+    message.channel.sendFile(this.efficiencyChart, 'Efficiency.png',
+                             `Operator ${message.author.toString()}, the Duration Efficiency Balance chart, as requested.`);
   }
 }
 
-module.exports = Armor;
+module.exports = Efficiency;
