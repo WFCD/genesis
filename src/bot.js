@@ -34,7 +34,7 @@ class Genesis {
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    */
-  constructor(discordToken, logger, { shardID = 0, shardCount = 1, prefix = process.env.PREFIX,
+  constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
                                      mdConfig = md, owner = null } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -48,8 +48,8 @@ class Genesis {
         compress: true,
         large_threshold: 1000,
       },
-      shardId: shardID,
-      shardCount: shardCount,
+      shardId,
+      shardCount,
     });
 
     /**
@@ -112,6 +112,10 @@ class Genesis {
      * @type {string}
      */
     this.statusMessage = `${prefix}help for help`;
+
+    this.shardId = shardId;
+
+    this.shardCount = shardCount;
 
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));

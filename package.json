@@ -26,11 +26,14 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
+    "bluebird": "^3.4.6",
     "discord.js": "^10.0.1",
+    "mysql2": "^1.1.1",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
     "raven": "^0.12.1",
+    "sql-template-strings": "^2.2.2",
     "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data"
   },
   "devDependencies": {
