@@ -113,6 +113,10 @@ class Genesis {
      */
     this.statusMessage = `${prefix}help for help`;
 
+    this.shardId = shardId;
+
+    this.shardCount = shardCount;
+
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
