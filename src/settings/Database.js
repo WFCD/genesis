@@ -79,6 +79,16 @@ class Database {
   }
 
   /**
+   * Deletes a channel from the database
+   * @param {Channel} channel The channel to delete
+   * @returns {Promise}
+   */
+  deleteChannel(channel) {
+    const query = SQL`DELETE FROM channels WHERE id = ${channel.id};`;
+    return this.db.execute(query);
+  }
+
+  /**
    * Sets the language for a channel
    * @param {Channel} channel The Discord channel for which to set the language
    * @param {string} language The new language for this channel
@@ -250,6 +260,98 @@ class Database {
       .append(items ? SQL```AND notifications.item IN (${items}) ``` : '')
       .append('GROUP BY notifications.channel_id;');
     return this.db.query(query);
+  }
+
+  /**
+   * Returns the items that the channel is tracking
+   * @param {Channel} channel A Discord channel
+   * @returns {Promise.<Array.<string>>}
+   */
+  getTrackedItems(channel) {
+    const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
+    return this.db.execute(query)
+      .then(res => res.map(r => r.item));
+  }
+
+  /**
+   * Returns the event types that the channel is tracking
+   * @param {Channel} channel A Discord channel
+   * @returns {Promise.<Array.<string>>}
+   */
+  getTrackedEventTypes(channel) {
+    const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
+    return this.db.execute(query)
+      .then(res => res.map(r => r.type));
+  }
+
+  /**
+   * Enables or disables a command for an individual member in a channel
+   * @param {GuildChannel} channel - A discord guild channel
+   * @param {GuildMember} member - A discord guild member
+   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {boolean} allowed - Whether this member should be allowed to use this command
+   * @returns {Promise}
+   */
+  setChannelPermissionForMember(channel, member, commandId, allowed) {
+    const query = SQL`INSERT INTO channel_permissions VALUES
+      (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
+      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+    return this.db.execute(query);
+  }
+
+  /**
+   * Enables or disables a command for a role in a channel
+   * @param {GuildChannel} channel - A discord guild channel
+   * @param {Role} role - A discord role
+   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {boolean} allowed - Whether this member should be allowed to use this command
+   * @returns {Promise}
+   */
+  setChannelPermissionForRole(channel, role, commandId, allowed) {
+    const query = SQL`INSERT INTO channel_permissions VALUES
+      (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
+      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+    return this.db.execute(query);
+  }
+
+  /**
+   * Enables or disables a command for an individual member in a guild
+   * @param {Guild} guild - A discord guild
+   * @param {GuildMember} member - A discord guild member
+   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {boolean} allowed - Whether this member should be allowed to use this command
+   * @returns {Promise}
+   */
+  setGuildPermissionForMember(guild, member, commandId, allowed) {
+    const query = SQL`INSERT INTO guild_permissions VALUES
+      (${guild.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
+      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+    return this.db.execute(query);
+  }
+
+  /**
+   * Enables or disables a command for a role in a channel
+   * @param {Guild} guild - A discord guild
+   * @param {Role} role - A discord role
+   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {boolean} allowed - Whether this member should be allowed to use this command
+   * @returns {Promise}
+   */
+  setGuildPermissionForRole(guild, role, commandId, allowed) {
+    const query = SQL`INSERT INTO guild_permissions VALUES
+      (${guild.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
+      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+    return this.db.execute(query);
+  }
+
+  /**
+   * Stops tracking all event types in a channel (disables all notifications)
+   * @param {Channel} channel A Discord channel
+   * @returns {Promise}
+   */
+  stopTracking(channel) {
+    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
+    return this.db.execute(query);
   }
 }
 
