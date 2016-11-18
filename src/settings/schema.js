@@ -22,24 +22,22 @@ module.exports = [
     PRIMARY KEY (channel_id, item),
     FOREIGN KEY (channel_id) REFERENCES channels(id)
   );`,
-  `CREATE TABLE IF NOT EXISTS permissions (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    command_id VARCHAR(50) NOT NULL,
-    allowed BOOLEAN NOT NULL,
-    user_or_role BIGINT UNSIGNED NOT NULL
-  );`,
   `CREATE TABLE IF NOT EXISTS channel_permissions (
     channel_id BIGINT UNSIGNED NOT NULL,
-    permission_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (channel_id, permission_id),
-    FOREIGN KEY (channel_id) REFERENCES channels(id),
-    FOREIGN KEY (permission_id) REFERENCES permissions(id)
+    target_id BIGINT UNSIGNED NOT NULL,
+    is_user BOOLEAN NOT NULL,
+    command_id VARCHAR(50) NOT NULL,
+    allowed BOOLEAN NOT NULL,
+    PRIMARY KEY (channel_id, target_id, command_id),
+    FOREIGN KEY (channel_id) REFERENCES channels(id)
   );`,
   `CREATE TABLE IF NOT EXISTS guild_permissions (
     guild_id BIGINT UNSIGNED NOT NULL,
-    permission_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (guild_id, permission_id),
-    FOREIGN KEY (permission_id) REFERENCES permissions(id)
+    target_id BIGINT UNSIGNED NOT NULL,
+    is_user BOOLEAN NOT NULL,
+    command_id VARCHAR(50) NOT NULL,
+    allowed BOOLEAN NOT NULL,
+    PRIMARY KEY (guild_id, target_id, command_id)
   );`,
   `CREATE TABLE IF NOT EXISTS pings (
     guild_id BIGINT UNSIGNED NOT NULL,
