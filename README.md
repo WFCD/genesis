@@ -1,7 +1,7 @@
-![Genesis Avatar](src/resources/cephalon-discord-dark.png)
+# Project Genesis <img src="src/resources/cephalon-discord-dark.png" height="25" width="25" alt="Genesis Avatar"/>
 
-# Project Genesis
-A [Discord.js](http://hydrabolt.github.io/discord.js) bot for tracking Warframe alerts, invasions and more.
+[![Supported by Warframe Community Developers](https://github.com/Warframe-Community-Developers/banner/blob/master/banner.png)](https://github.com/Warframe-Community-Developers "Supported by Warframe Community Developers")
+### A [Discord.js](http://hydrabolt.github.io/discord.js) bot for tracking Warframe alerts, invasions and more. 
 
 # Contribute
 
