@@ -6,7 +6,8 @@ module.exports = [
     guild_id BIGINT UNSIGNED,
     language VARCHAR(5) NOT NULL DEFAULT 'en-US',
     platform VARCHAR(3) NOT NULL DEFAULT 'PC',
-    webhook TEXT
+    webhook TEXT,
+    respond_to_settings BOOLEAN NOT NULL DEFAULT TRUE
   );`,
   `CREATE TABLE IF NOT EXISTS type_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,

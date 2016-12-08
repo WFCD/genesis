@@ -39,11 +39,11 @@ class Shields extends Command {
       const shields = params[1];
       const baseLevel = params[2];
       const currentLevel = params[3];
-      this.bot.debug('Entered 3-param shield');
+      this.logger.debug('Entered 3-param shield');
       const calc = shieldCalc(shields, baseLevel, currentLevel);
       shieldString = this.shieldString(calc, currentLevel);
     } else {
-      this.bot.debug('Entered 0-param shield');
+      this.logger.debug('Entered 0-param shield');
       const shieldInstruct3 = 'shields (Base Shelds) (Base Level) (Current Level) calculate shields and stats.';
       shieldString = `${this.md.codeMulti}Possible uses include:${this.md.lineEnd}${shieldInstruct3}${this.md.blockEnd}`;
     }

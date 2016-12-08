@@ -33,6 +33,7 @@
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
     "raven": "^0.12.1",
+    "request-promise": "^4.1.1",
     "sql-template-strings": "^2.2.2",
     "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data"
   },

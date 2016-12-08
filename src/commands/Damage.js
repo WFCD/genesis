@@ -6,7 +6,7 @@ const md = require('node-md-config');
 /**
  * Describes the Armor command
  */
-class Armor extends Command {
+class Damage extends Command {
   /**
    * Constructs a callable command
    * @param  {Logger}           logger                The logger object
@@ -17,17 +17,37 @@ class Armor extends Command {
   // eslint-disable-next-line no-useless-escape
   constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
     super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.damage';
+    this.commandId = 'misc.damage';
     // eslint-disable-next-line no-useless-escape
     this.commandRegex = new RegExp(`^${regexPrefix}damage$`, 'i');
     this.commandHelp = `${prefix}damage          | Display Damage 2.0 chart`;
-    this.damageChart = 'http://morningstar.ninja/chart/Damage_2.0_Resistance_Flowchart.png';
+    this.damageChart = '../resources/Damage_2.0_Resistance_Flowchart.png';
+
+    /**
+     * Whether or not this command is able to be blacklisted.
+     * @type {boolean}
+     */
+    this.blacklistable = true;
+
+    /**
+     * Specifies whether or not this command requires authorization
+     *    from a user with manage_permissions
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+    /**
+     * Specifies whther or not this command requires the caller to be the bot owner.
+     * @type {Boolean}
+     */
+    this.ownerOnly = false;
   }
 
-  run(message) {
-    message.channel.sendFile(this.damageChart, 'Damage.png',
-                             `Operator ${message.author.toString()}, the damage flowchart, at your request.`);
+  run(message, { stringManager = null } = {}) {
+    stringManager.getString('damage_reply', message, { command: this.commandId })
+    .then(damageReply => message.channel.sendFile(this.damageChart, 'Damage.png', damageReply))
+    .catch(this.logger.error);
   }
 }
 
-module.exports = Armor;
+module.exports = Damage;

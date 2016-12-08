@@ -111,6 +111,17 @@ class Database {
   }
 
   /**
+   * Sets whether or not to respond in a channel to settings changes
+   * @param {Channel} channel The Discord channel for which to set the response setting
+   * @param {boolean} respond Whether or not to respond to settings changes
+   * @returns {Promise}
+   */
+  setChannelResponseToSettings(channel, respond) {
+    const query = SQL`UPDATE channels SET respond_to_settings = ${respond} WHERE id = ${channel.id};`;
+    return this.db.execute(query);
+  }
+
+  /**
    * Returns the language for a channel
    * @param {Channel} channel The channel
    * @returns {Promise.<string>}
@@ -127,7 +138,7 @@ class Database {
   }
 
   /**
-   * Returns the language for a channel
+   * Returns the platform for a channel
    * @param {Channel} channel The channel
    * @returns {Promise.<string>}
    */
@@ -139,6 +150,22 @@ class Database {
           throw new Error(`The channel with ID ${channel.id} was not found in the database`);
         }
         return res.rows[0].platform;
+      });
+  }
+
+  /**
+   * Returns the respond_to_settings setting for a channel
+   * @param {Channel} channel The channel
+   * @returns {Promise.<boolean>}
+   */
+  getChannelRespondToSettings(channel) {
+    const query = SQL`SELECT platform FROM channels WHERE id = ${channel.id};`;
+    return this.db.execute(query)
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`The channel with ID ${channel.id} was not found in the database`);
+        }
+        return res.rows[0].respond_to_settings;
       });
   }
 
@@ -251,7 +278,7 @@ class Database {
       .append('INNER JOIN channels ON type_notifications.channel_id = channels.id')
       .append('LEFT JOIN pings ON channels.guild_id = pings.guild_id AND ( ')
       .append(items ? '(item_notifications.item = pings.item_or_type AND item_notifications.ping = TRUE) OR ' : '')
-      .append(SQL```(type_notifications.type = pings.item_or_type AND type_notifications.ping = TRUE) 
+      .append(SQL```(type_notifications.type = pings.item_or_type AND type_notifications.ping = TRUE)
       )
       WHERE
         type_notifications.type = ${type} AND
@@ -346,12 +373,177 @@ class Database {
 
   /**
    * Stops tracking all event types in a channel (disables all notifications)
-   * @param {Channel} channel A Discord channel
+   * @param {Channel} channel - A Discord channel
    * @returns {Promise}
    */
   stopTracking(channel) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.db.execute(query);
+  }
+
+  /**
+   * Gets whether or not a user is allowed to use a particular command in a channel
+   * @param {Channel} channel - A Discord channel
+   * @param {string} memberId - String representing a user identifier
+   * @param {string} commandId - String representing a command identifier
+   * @returns {Promise}
+   */
+  getChannelPermissionForMember(channel, memberId, commandId) {
+    const query = SQL`SELECT allowed FROM channel_permissions
+    WHERE channel_id = ${channel.id} AND command_id = ${commandId}
+    AND is_user = true AND target_id = ${memberId}`;
+    return this.db.execute(query)
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`The channel permissions for the channel ${channel.id}
+             for member ${memberId} was not found in the database`);
+        }
+        return res.rows[0].allowed;
+      });
+  }
+
+  /**
+   * Gets whether or not a role is allowed to use a particular command in a channel
+   * @param {Channel} channel A Discord channel
+   * @param {string} role String representing a user identifier
+   * @param {string} commandId String representing a command identifier
+   * @returns {Promise}
+   */
+  getChannelPermissionForRole(channel, role, commandId) {
+    const query = SQL`SELECT allowed FROM channel_permissions
+    WHERE channel_id = ${channel.id} AND command_id = ${commandId}
+    AND is_user = false AND target_id = ${role.id}`;
+    return this.db.execute(query)
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`The channel permissions for the channel ${channel.id}
+             for role ${role.id} was not found in the database`);
+        }
+        return res.rows[0].allowed;
+      });
+  }
+
+  /**
+   * Gets whether or not a role in the user's
+   * roles allows the user to use a particular command in a channel
+   * @param {Channel} channel - A Discord channel
+   * @param {User} user - A Discord user
+   * @param {string} commandId - A command id for designating
+   *                           a command to check permisions for
+   * @returns {Promise}
+   */
+  getChannelPermissionForUserRoles(channel, user, commandId) {
+    const userRoles = channel.guild.member(user).roles;
+    const userRoleIds = userRoles.keyArray();
+    const query = SQL`SELECT target_id, is_user, allowed
+        FROM channel_permissions
+        WHERE channel_permissions.channel_id = ${channel.id}
+          AND channel_permissions.target_id IN (${userRoleIds})
+          AND command_id = ${commandId}
+        UNION SELECT guild_permissions.target_id AS target_id,
+             guild_permissions.is_user AS is_user,
+             guild_permissions.allowed AS allowed
+        FROM guild_permissions
+        INNER JOIN channels USING (guild_id)
+        LEFT JOIN channel_permissions ON
+          channel_permissions.channel_id = channels.id
+          AND guild_permissions.command_id = channel_permissions.command_id
+          AND guild_permissions.target_id = channel_permissions.target_id
+        WHERE channel_permissions.target_id IS NULL
+          AND channels.id = ${channel.id}
+          AND guild_permissions.target_id IN (${userRoleIds});`;
+    return this.db.execute(query)
+    .then((res) => {
+      if (res.rows.length === 0) {
+        throw new Error(`The channel permissions for the channel ${channel.id}
+           for roles: ${userRoles.array().map(role => role.name).join(', ')} were not found in the database`);
+      }
+
+      return res.rows[0].allowed;
+    });
+  }
+
+  /**
+   * Gets whether or not a user is allowed to use a particular command in a guild
+   * @param {Guild} guild - A Discord guild
+   * @param {string} memberId - String representing a user identifier
+   * @param {string} commandId - String representing a command identifier
+   * @returns {Promise}
+   */
+  getGuildPermissionForMember(guild, memberId, commandId) {
+    const query = SQL`SELECT allowed FROM guild_permissions
+    WHERE channel_id = ${guild.id} AND command_id = ${commandId}
+    AND is_user = true AND target_id = ${memberId}`;
+    return this.db.execute(query)
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`The guild permissions for the guild ${guild.id}
+             for member ${memberId} was not found in the database`);
+        }
+        return res.rows[0].allowed;
+      });
+  }
+
+  /**
+   * Gets whether or not a role is allowed to use a particular command in a guild
+   * @param {Guild} guild - A Discord guild
+   * @param {string} role String representing a user identifier
+   * @param {string} commandId String representing a command identifier
+   * @returns {Promise}
+   */
+  getGuildPermissionForRole(guild, role, commandId) {
+    const query = SQL`SELECT allowed FROM guild_permissions
+    WHERE channel_id = ${guild.id} AND command_id = ${commandId}
+    AND is_user = false AND target_id = ${role.id}`;
+    return this.db.execute(query)
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`The guild permissions for the guild ${guild.id}
+             for member ${role.id} was not found in the database`);
+        }
+        return res.rows[0].allowed;
+      });
+  }
+
+  removeGuild(guild) {
+    const channelIds = guild.channels.keyArray();
+    const permissionResults = [];
+    const notificationsResults = [];
+    channelIds.forEach((channelId) => {
+      permissionResults.push(this.removeChannelPermissions(channelId));
+      notificationsResults.push(this.removeItemNotifications(channelId));
+    });
+    permissionResults.push(this.removeGuildPermissions(guild.id));
+    notificationsResults.push(this.removePings(guild.id));
+    permissionResults.forEach(result => result.then(removalSucceeded => this.logger.debug(`Result of removal: ${removalSucceeded ? 'success' : 'failure'}`)));
+    notificationsResults.forEach(result => result.then(removalSucceeded => this.logger.debug(`Result of removal: ${removalSucceeded ? 'success' : 'failure'}`)));
+    const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id})`;
+    return this.db.execute(query)
+    .then(res => res);
+  }
+
+  removeGuildPermissions(guildId) {
+    const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guildId}`;
+    return this.db.execute(query)
+      .then(res => res);
+  }
+
+  removeChannelPermissions(channelId) {
+    const query = SQL`DELETE FROM channel_permisions WHERE channel_id = ${channelId}`;
+    return this.db.execute(query)
+    .then(res => res);
+  }
+
+  removeItemNotifications(channelId) {
+    const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
+    return this.db.execute(query)
+    .then(res => res);
+  }
+
+  removePings(guildId) {
+    const query = SQL`DELETE FROM pings WHERE guild_id = ${guildId}`;
+    return this.db.execute(query)
+    .then(res => res);
   }
 }
 

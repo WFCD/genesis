@@ -23,6 +23,7 @@ class Wiki extends Command {
     this.commandId = 'genesis.wiki';
     this.commandRegex = new RegExp(`^${regexPrefix}wiki(.+)`, 'ig');
     this.commandHelp = `${prefix}wiki <query>    | Search the Warframe Wiki for information`;
+    this.logger = logger;
   }
 
   run(message) {
@@ -31,7 +32,7 @@ class Wiki extends Command {
       message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
     } else {
       // default case
-      this.bot.debug(`Searched for query: ${query}`);
+      this.logger.debug(`Searched for query: ${query}`);
 
       warframe.getSearchList({
         query,
