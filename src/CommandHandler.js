@@ -45,11 +45,22 @@ class CommandHandler {
     this.owner = bot.owner;
 
     /**
+     * Connection options for the database
+     * @type {Object} DbConnectionOptions
+     */
+    const dbOptions = {};
+    dbOptions.host = process.env.MYSQL_HOST || 'localhost';
+    dbOptions.port = process.env.MYSQL_PORT || 0;
+    dbOptions.user = process.env.MYSQL_USER || 'root';
+    dbOptions.password = process.env.MYSQL_PASSWORD || 'password';
+    dbOptions.database = process.env.MYSQL_DB || 'warframe';
+
+    /**
      * The settings for this bot
      * @type {Database}
      * @private
      */
-    this.settings = new Settings(null, this.bot);
+    this.settings = new Settings(dbOptions, this.bot);
 
     /**
      * Manages strings, allowing for internationalization

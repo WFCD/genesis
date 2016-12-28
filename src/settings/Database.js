@@ -28,7 +28,7 @@ class Database {
       supportBigNumbers: true,
       bigNumberStrings: true,
       Promise,
-      ...dbOptions,
+      dbOptions,
     });
     this.bot = bot;
   }

@@ -10,7 +10,6 @@
       	"TOKEN": "<discord bot token>",
         "RAVEN_URL": "<raven logging URL>",
         "PREFIX": "++",
-        "MONGODB_URL": "<mongo db to store settings, etc, in>",
         "MD_LINE_END":"\n",
         "MD_BLOCK_END": "\n```",
         "MD_DOUBLE_RET": "　\r\n　　　\r\n",
@@ -30,7 +29,12 @@
         "OWNER":"<owner id for checking permissions",
         "SHARDS": 1,
         "LOCAL_SHARDS": 1,
-        "SHARD_OFFSET": 0
+        "SHARD_OFFSET": 0,
+        "MYSQL_HOST":"",
+        "MYSQL_PORT": 0,
+        "MYSQL_USER": "",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_DB": ""
       }
     }
   ]
