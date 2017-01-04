@@ -17,11 +17,30 @@ class Help extends Command {
   // eslint-disable-next-line no-useless-escape
   constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
     super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.help';
+    this.commandId = 'core.help';
     this.commandRegex = new RegExp(`^${regexPrefix}help(.*)`, 'ig');
     this.commandHelp = `${prefix}help            | Display this message`;
     this.commandHandler = commandHandler;
     this.helpOut = '';
+
+    /**
+     * Whether or not this command is able to be blacklisted.
+     * @type {boolean}
+     */
+    this.blacklistable = false;
+
+    /**
+     * Specifies whether or not this command requires authorization
+     *    from a user with manage_permissions
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+    /**
+     * Specifies whther or not this command requires the caller to be the bot owner.
+     * @type {Boolean}
+     */
+    this.ownerOnly = false;
 
     /**
      * Help reply messsage for alerting a user to check their direct messages.

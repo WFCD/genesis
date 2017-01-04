@@ -3,6 +3,7 @@
 const CommandHandler = require('./CommandHandler.js');
 const Discord = require('discord.js');
 const md = require('node-md-config');
+const Settings = require('./settings/Database.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -113,9 +114,24 @@ class Genesis {
      */
     this.statusMessage = `${prefix}help for help`;
 
+    /**
+     * Shard id of this shard of the bot
+     * @type {number}
+     */
+    this.shardId = shardId;
+
+    /**
+     * The total amount of shards
+     * @type {number}
+     */
+    this.shardCount = shardCount;
+
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
+    this.client.on('guildDelete', guild => this.onGuildExit(guild));
+    // kill on disconnect so a new instance can be spawned
+    this.client.on('disconnect', () => process.exit(0));
   }
 
   /**
@@ -163,6 +179,19 @@ class Genesis {
     this.logger.info(`Joined guild ${guild}`);
     guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
                                      `\`${this.prefix}help\` for help**`);
+  }
+
+  /**
+   * Handle deleting or leaving a guild
+   * @param {Guild} guild handle guild creation
+   */
+  onGuildExit(guild) {
+    const settings = new Settings(null, this);
+    settings.deleteGuild(guild.id)
+      .then((deleted) => {
+        this.logger.log(`Deletion ${deleted ? 'successful' : 'unsuccessful'} : ${guild.name} (${guild.id})`);
+      })
+      .catch(this.logger.error);
   }
 }
 
