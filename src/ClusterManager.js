@@ -7,6 +7,7 @@ class ClusterManager {
     this.logger = logger;
     this.localShards = localShards;
     this.shardOffset = shardOffset;
+    this.exit = false;
 
     cluster.on('online', (worker) => {
       this.onOnlineWorker(worker);
@@ -18,6 +19,7 @@ class ClusterManager {
 
     // Kill all workers on exit
     process.on('SIGINT', () => {
+      this.exit = true;
       Object.keys(cluster.workers).forEach(k => cluster.workers[k].kill('SIGINT'));
     });
   }
@@ -37,7 +39,7 @@ class ClusterManager {
 
   createNewWorker(shardID) {
     this.logger.info(`[Master] Starting worker for shard ${shardID}`);
-    const workerID = this.cluster.fork({ shard_id: shardID });
+    const workerID = this.cluster.fork({ shard_id: shardID }).id;
     this.workerIDToShardID[workerID] = shardID;
   }
 
@@ -46,6 +48,7 @@ class ClusterManager {
   }
 
   onDeadWorker(deadWorker, reason) {
+    if (this.exit) return;
     this.logger.error(`[Master] Worker ${deadWorker.id} died (${reason})`);
     if (!(deadWorker.id in this.workerIDToShardID)) {
       this.logger.error(`[Master] Couldn't find the shard associated with worker ${deadWorker.id}.`);
