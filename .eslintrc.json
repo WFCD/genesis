@@ -21,6 +21,7 @@
         "return": "returns"
       }
     }],
-    "strict": ["error", "safe"]
+    "strict": ["error", "safe"],
+    "linebreak-style": "off"
   }
 }
