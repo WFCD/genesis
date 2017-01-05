@@ -17,10 +17,15 @@ class Shields extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'misc.shields', 'shields', '');
+    super(bot, 'misc.shields', 'shields', 'shields');
     this.regex = new RegExp(`^${this.bot.escapedPrefix}shield(?: +([\\d+\\.?\\d* ]+))?`, 'i');
-    this.help = `${this.bot.prefix}shields         | Display instructions for calculating shields${this.md.lineEnd}` +
-      `${this.bot.prefix}shields <params>| Display the current shields. Parameters: <base shields> <base level> <current level>`;
+
+    this.usages = [
+      {
+        description: 'Display an enemy\'s current shields.',
+        parameters: ['base shields', 'base level', 'current level'],
+      },
+    ];
   }
 
   /**

@@ -42,15 +42,23 @@ class Armor extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'misc.armor', 'armor', '');
+    super(bot, 'misc.armor', 'armor', 'armor');
 
     this.regex = new RegExp(`^${this.bot.escapedPrefix}armor(?:\\s+([\\d+\\.?\\d*\\s]+))?`, 'i');
 
-    this.help = `${this.bot.prefix}armor           | Display instructions for calculating armor${this.md.lineEnd}` +
-                `${this.bot.prefix}armor           | Display current damage resistance and amount of corrosive procs ` +
-                `required to strip it. Params: <current armor>${this.md.lineEnd}` +
-                `${this.bot.prefix}armor           | Display the current armor, damage resistance, and necessary ` +
-                'corrosive procs to strip armor. Params: <base armor> <base level> <current level>';
+    this.usages = [
+      { description: 'Display instructions for calculating armor', parameters: [] },
+      {
+        description: 'Display current damage resistance and amount of corrosive procs ' +
+          'required to strip it.',
+        parameters: ['current armor'],
+      },
+      {
+        description: 'Display the current armor, damage resistance, and necessary ' +
+          'corrosive procs to strip armor.',
+        parameters: ['base armor', 'base level', 'current level'],
+      },
+    ];
   }
 
   /**

@@ -28,8 +28,11 @@ class Ping extends Command {
     hosts.forEach((host) => {
       ping.probe(host)
         .then((result) => {
-          results.push(`${result.alive ? ':white_check_mark:' : ':x:'} ${result.host}, pinged in ` +
-            `${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`);
+          results.push({
+            name: host,
+            value: `${result.alive ? ':white_check_mark:' : ':x:'} ` +
+              `${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`,
+          });
         });
     });
 
@@ -37,7 +40,16 @@ class Ping extends Command {
     message.reply('Testing Ping')
       .then((msg) => {
         const afterSend = Date.now();
-        return msg.edit(`PONG in \`${afterSend - now}ms\`${this.md.lineEnd}${results.join(this.md.lineEnd)}`);
+        return msg.edit({
+          embed: {
+            title: 'PONG',
+            type: 'rich',
+            fields: [
+              { name: 'Response time', value: `${afterSend - now}ms` },
+              ...results,
+            ],
+          },
+        });
       })
       .then((editedMessage) => {
         editedMessage.delete(100000);

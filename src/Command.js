@@ -28,6 +28,7 @@ class Command {
      * @type {string}
      */
     this.id = id;
+    this.call = call;
     /**
      * Command regex for calling the command
      * @type {RegExp}
@@ -37,7 +38,9 @@ class Command {
      * Help command for documenting the function or purpose of a command.
      * @type {string}
      */
-    this.help = `${bot.prefix}${call}\t\t| ${description}`;
+    this.usages = [
+      { description, parameters: [] },
+    ];
 
     /**
      * The logger object
