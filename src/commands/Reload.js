@@ -22,13 +22,13 @@ class Reload extends Command {
    */
   run(message) {
     this.logger.debug('Reloading modules');
-    const commandsBefore = this.commandHandler.commands.length;
+    const commandsBefore = this.commandHandler.commands.map(c => c.id);
     this.commandHandler.loadCommands();
-    const commandsAfter = this.commandHandler.commands.length;
+    const commandsAfter = this.commandHandler.commands.map(c => c.id);
 
     message.reply(`${this.zSWC}${this.md.codeMulti}Commands reloaded!${this.md.blockEnd}` +
-      `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsBefore}` +
-      `${this.md.lineEnd}+${commandsAfter}\`\`\``);
+      `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsBefore.sort().join(' ')}` +
+      `${this.md.lineEnd}+${commandsAfter.sort().join(' ')}\`\`\``);
     if (message.deletable) {
       message.delete(5000);
     }
