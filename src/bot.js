@@ -175,11 +175,13 @@ class Genesis {
    * @param {Guild} guild handle guild creation
    */
   onGuildDelete(guild) {
-    this.settings.deleteGuild(guild.id)
+    /* this.settings.deleteGuild(guild.id)
       .then((deleted) => {
-        this.logger.log(`Deletion ${deleted ? 'successful' : 'unsuccessful'} : ${guild.name} (${guild.id})`);
+        this.logger.log(`Deletion ${deleted ? 'successful' : 'unsuccessful'}` +
+          `: ${guild.name} (${guild.id})`);
       })
       .catch(this.logger.error);
+     */
   }
 }
 
