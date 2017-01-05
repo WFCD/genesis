@@ -67,6 +67,7 @@ class CommandHandler {
       if (command.regex.test(message.content)) {
         if (this.checkCanAct(command, message.author)) {
           this.logger.debug(`Matched ${command.id}`);
+          message.react('\u2705').catch(this.logger.error);
           command.run(message);
         }
       }
