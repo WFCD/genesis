@@ -1,33 +1,29 @@
 'use strict';
 
 const Command = require('../Command.js');
-const md = require('node-md-config');
 
 /**
- * Describes the Armor command
+ * Displays the Damage 2.0 charts
  */
-class Armor extends Command {
+class Damage extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot  The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.damage';
-    // eslint-disable-next-line no-useless-escape
-    this.commandRegex = new RegExp(`^${regexPrefix}damage$`, 'i');
-    this.commandHelp = `${prefix}damage          | Display Damage 2.0 chart`;
+  constructor(bot) {
+    super(bot, 'misc.damage', 'damage', 'Display Damage 2.0 chart');
     this.damageChart = 'http://morningstar.ninja/chart/Damage_2.0_Resistance_Flowchart.png';
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
     message.channel.sendFile(this.damageChart, 'Damage.png',
                              `Operator ${message.author.toString()}, the damage flowchart, at your request.`);
   }
 }
 
-module.exports = Armor;
+module.exports = Damage;

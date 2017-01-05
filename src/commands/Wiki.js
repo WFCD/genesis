@@ -2,36 +2,34 @@
 
 const Command = require('../Command.js');
 const Wikia = require('node-wikia');
-const md = require('node-md-config');
 
 const warframe = new Wikia('warframe');
 
 /**
- * Describes the Wiki command
+ * Returns search results from the Warframe wiki
  */
 class Wiki extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot  The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.wiki';
-    this.commandRegex = new RegExp(`^${regexPrefix}wiki(.+)`, 'ig');
-    this.commandHelp = `${prefix}wiki <query>    | Search the Warframe Wiki for information`;
+  constructor(bot) {
+    super(bot, 'misc.wiki', 'wiki', 'Search the Warframe Wiki for information');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}wiki(.+)`, 'ig');
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
-    const query = this.commandRegex.exec(message.cleanContent.match(this.commandRegex)[0])[1];
+    const query = this.regex.exec(message.cleanContent.match(this.regex)[0])[1];
     if (!query) {
       message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
     } else {
       // default case
-      this.bot.debug(`Searched for query: ${query}`);
+      this.logger.debug(`Searched for query: ${query}`);
 
       warframe.getSearchList({
         query,
@@ -41,7 +39,7 @@ class Wiki extends Command {
         let result;
         const item = json.items[0];
         if (item) {
-          result = `${this.md.linkBegin}${item.title}${this.md.linkMid}${item.url}${this.md.linkEnd}`;
+          result = `${item.title}: ${item.url}`;
         } else {
           result = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
         }

@@ -1,29 +1,26 @@
 'use strict';
 
 const ping = require('ping').promise;
-const md = require('node-md-config');
 
 const Command = require('../Command.js');
 
 /**
- * Describes the Wiki command
+ * Displays the response time for the bot and checks Warframe's servers to see if they are up
  */
 class Ping extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.ping';
-    this.commandRegex = new RegExp(`^${regexPrefix}ping$`, 'ig');
-    this.commandHelp = `${prefix}ping            | Ping Genesis to test connectivity`;
+  constructor(bot) {
+    super(bot, 'core.ping', 'ping', 'Ping Genesis to test connectivity');
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
     const hosts = ['content.warframe.com', 'forums.warframe.com', 'wf.christx.tw', 'store.warframe.com'];
     const results = [];
@@ -31,24 +28,24 @@ class Ping extends Command {
     hosts.forEach((host) => {
       ping.probe(host)
         .then((result) => {
-          results.push(`${result.alive ? ':white_check_mark:' : ':x:'} ${result.host}, pinged in ${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`);
+          results.push(`${result.alive ? ':white_check_mark:' : ':x:'} ${result.host}, pinged in ` +
+            `${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`);
         });
     });
 
     const now = Date.now();
     message.reply('Testing Ping')
-    .then((msg) => {
-      const afterSend = Date.now();
-      msg.edit(`PONG in \`${afterSend - now}ms\`${this.md.lineEnd}${results.join(this.md.lineEnd)}`)
-        .then((editedMessage) => {
-          editedMessage.delete(100000);
-          if (message.deletable) {
-            message.delete(10000);
-          }
-        })
-        .catch(this.logger.error);
-    })
-    .catch(this.logger.error);
+      .then((msg) => {
+        const afterSend = Date.now();
+        return msg.edit(`PONG in \`${afterSend - now}ms\`${this.md.lineEnd}${results.join(this.md.lineEnd)}`);
+      })
+      .then((editedMessage) => {
+        editedMessage.delete(100000);
+        if (message.deletable) {
+          message.delete(10000);
+        }
+      })
+      .catch(this.logger.error);
   }
 }
 

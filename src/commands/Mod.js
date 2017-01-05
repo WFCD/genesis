@@ -2,31 +2,29 @@
 
 const Command = require('../Command.js');
 const Wikia = require('node-wikia');
-const md = require('node-md-config');
 
 const warframe = new Wikia('warframe');
 
 /**
- * Describes the Mod command
+ * Displays mods from the wiki
  */
 class Mod extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot  The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.mod';
-    this.commandRegex = new RegExp(`^${regexPrefix}mod(.+)`, 'i');
-    this.commandHelp = `${prefix}mod             | Search the Warframe Wiki for a mod's image`;
+  constructor(bot) {
+    super(bot, 'misc.mod', 'mod', 'Search the Warframe Wiki for a mod\'s image');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}mod(.+)`, 'i');
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
-    const query = this.commandRegex.exec(message.cleanContent.match(this.commandRegex)[0])[1];
+    const query = this.regex.exec(message.cleanContent.match(this.regex)[0])[1];
     if (!query) {
       message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
     } else {
