@@ -1,50 +1,47 @@
 'use strict';
 
 const Command = require('../Command.js');
-const md = require('node-md-config');
 
 function shieldCalc(baseShields, baseLevel, currentLevel) {
   return (parseFloat(baseShields) +
-          (Math.pow(parseFloat(currentLevel) - parseFloat(baseLevel), 2)
-           * 0.0075 * parseFloat(baseShields)))
-          .toFixed(2);
+    (((parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2)
+    * 0.0075 * parseFloat(baseShields))).toFixed(2);
 }
 
 /**
- * Describes the Shield command
+ * Performs shield calculations
  */
 class Shields extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot  The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/' } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.shields';
-    // eslint-disable-next-line no-useless-escape
-    this.commandRegex = new RegExp(`^${regexPrefix}shield(?: +([\d+\.?\d* ]+))?`, 'i');
-    this.commandHelp = `${prefix}shields         | Display instructions for calculating shields${md.lineEnd}` +
-                       `${prefix}shields <params>| Display the current shields. Parameters: <base shields> <base level> <current level>`;
+  constructor(bot) {
+    super(bot, 'misc.shields', 'shields', '');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}shield(?: +([\\d+\\.?\\d* ]+))?`, 'i');
+    this.help = `${this.bot.prefix}shields         | Display instructions for calculating shields${this.md.lineEnd}` +
+      `${this.bot.prefix}shields <params>| Display the current shields. Parameters: <base shields> <base level> <current level>`;
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
     const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/;
     const params = message.content.match(pattern3Params);
     let shieldString;
-    if (params.length > 3) {
+    if (params && params.length > 3) {
       const shields = params[1];
       const baseLevel = params[2];
       const currentLevel = params[3];
-      this.bot.debug('Entered 3-param shield');
+      this.logger.debug('Entered 3-param shield');
       const calc = shieldCalc(shields, baseLevel, currentLevel);
       shieldString = this.shieldString(calc, currentLevel);
     } else {
-      this.bot.debug('Entered 0-param shield');
-      const shieldInstruct3 = 'shields (Base Shelds) (Base Level) (Current Level) calculate shields and stats.';
+      this.logger.debug('Entered 0-param shield');
+      const shieldInstruct3 = `${this.bot.prefix}shields (Base Shelds) (Base Level) (Current Level) calculate shields and stats.`;
       shieldString = `${this.md.codeMulti}Possible uses include:${this.md.lineEnd}${shieldInstruct3}${this.md.blockEnd}`;
     }
 

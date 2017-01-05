@@ -3,49 +3,61 @@
 const md = require('node-md-config');
 
 /**
+ * Options for a command
+ * @typedef  {Object} CommandOptions
+ * @property {string} prefix                     - Prefix for the command
+ * @property {string} regexPrefix                - Escaped prefix for use in regular expressions
+ * @property {CommandHandler} commandHandler     - The bot's command handler
+ * @property {MarkdownSettings} markdownSettings - Markdown settings
+ */
+
+/**
  * Describes a callable command
  */
 class Command {
   /**
-   * Constructs a callable command
-   * @param  {Logger}           logger                   The logger object
-   * @param  {string}           [options.prefix]         Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix]    Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]       The markdown settings
-   * @param  {CommandHandler}   [options.commandHandler] Command handler for
-   *                                                     handling commands for a bot
+   * Base class for bot commands
+   * @param {Genesis} bot  The bot object
+   * @param {string}  id   The command's unique id
+   * @param {string}  call The string that invokes this command
+   * @param {string}  description A description for this command
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
+  constructor(bot, id, call, description) {
     /**
      * Command Identifier
      * @type {string}
      */
-    this.commandId = 'genesis.command';
+    this.id = id;
     /**
      * Command regex for calling the command
      * @type {RegExp}
      */
-    this.commandRegex = new RegExp(`^${regexPrefix}id$`, 'ig');
+    this.regex = new RegExp(`^${bot.escapedPrefix}${call}$`, 'i');
     /**
      * Help command for documenting the function or purpose of a command.
      * @type {string}
      */
-    this.commandHelp = `${prefix} id | Prototype command`;
+    this.help = `${bot.prefix}${call}\t\t| ${description}`;
 
     /**
      * The logger object
      * @type {Logger}
      * @private
      */
-    this.logger = logger;
+    this.logger = bot.logger;
+
+    /**
+     * The bot object
+     * @type {Genesis}
+     */
+    this.bot = bot;
 
     /**
      * The markdown settings
      * @type {MarkdownSettings}
      * @private
      */
-    this.md = mdConfig;
+    this.md = bot.md;
 
     /**
      * Zero space whitespace character to prepend to any messages sent
@@ -58,31 +70,13 @@ class Command {
      * The command handler for processing commands
      * @type {CommandHandler}
      */
-    this.commandHandler = commandHandler;
-  }
+    this.commandHandler = bot.commandHandler;
 
-  /**
-   * Get the identifier for the command
-   * @type {string}
-   */
-  get id() {
-    return this.commandId;
-  }
-
-  /**
-   * Get the call, which is the command regex for calling the command
-   * @type {RegExp}
-   */
-  get call() {
-    return this.commandRegex;
-  }
-
-  /**
-   * Get the help message for the command, which details usage for the command
-   * @type {string}
-   */
-  get help() {
-    return this.commandHelp;
+    /**
+     * True if the command may only be executed by the owner of the bot
+     * @type {boolean}
+     */
+    this.ownerOnly = false;
   }
 
   /**

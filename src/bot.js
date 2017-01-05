@@ -99,7 +99,7 @@ class Genesis {
      * @type {CommandHandler}
      * @private
      */
-    this.commandHandler = new CommandHandler(this.logger, this);
+    this.commandHandler = new CommandHandler(this);
 
     /**
      * The bot's owner
@@ -113,9 +113,14 @@ class Genesis {
      */
     this.statusMessage = `${prefix}help for help`;
 
+    this.commandHandler.loadCommands();
+
     this.client.on('ready', () => this.onReady());
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
+    this.client.on('guildDelete', guild => this.onGuildDelete(guild));
+    // kill on disconnect so a new instance can be spawned
+    this.client.on('disconnect', () => process.exit(0));
   }
 
   /**
@@ -163,6 +168,18 @@ class Genesis {
     this.logger.info(`Joined guild ${guild}`);
     guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
                                      `\`${this.prefix}help\` for help**`);
+  }
+
+  /**
+   * Handle deleting or leaving a guild
+   * @param {Guild} guild handle guild creation
+   */
+  onGuildDelete(guild) {
+    this.settings.deleteGuild(guild.id)
+      .then((deleted) => {
+        this.logger.log(`Deletion ${deleted ? 'successful' : 'unsuccessful'} : ${guild.name} (${guild.id})`);
+      })
+      .catch(this.logger.error);
   }
 }
 

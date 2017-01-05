@@ -1,34 +1,36 @@
 'use strict';
 
 const Command = require('../Command.js');
-const md = require('node-md-config');
 
+/**
+ * Reloads the script containing the commands
+ */
 class Reload extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.reload';
-    this.commandRegex = new RegExp(`^${regexPrefix}reload$`, 'ig');
-    this.commandHelp = `${prefix}reload          | Reloads bot commands [Owner only]`;
-    this.commandHandler = commandHandler;
-    this.owner = process.env.OWNER;
+  constructor(bot) {
+    super(bot, 'core.reload', 'reload', 'Reload bot modules [Owner only]');
+    this.ownerOnly = true;
   }
 
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   */
   run(message) {
-    if (message.author.id === this.owner) {
-      const commandsBefore = this.commandHandler.commands.length;
-      this.commandHandler.commands = this.commandHandler.loadCommands();
-      const commandsAfter = this.commandHandler.commands.length;
-      message.reply(`${this.zSWC}${this.md.codeMulti}Commands reloaded!${this.md.blockEnd}` +
-                    `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsBefore}` +
-                    `${this.md.lineEnd}+${commandsAfter}\`\`\``);
+    this.logger.debug('Reloading modules');
+    const commandsBefore = this.commandHandler.commands.length;
+    this.commandHandler.loadCommands();
+    const commandsAfter = this.commandHandler.commands.length;
+
+    message.reply(`${this.zSWC}${this.md.codeMulti}Commands reloaded!${this.md.blockEnd}` +
+      `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsBefore}` +
+      `${this.md.lineEnd}+${commandsAfter}\`\`\``);
+    if (message.deletable) {
+      message.delete(5000);
     }
   }
 }

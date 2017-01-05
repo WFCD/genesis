@@ -1,7 +1,6 @@
 'use strict';
 
 const Command = require('../Command.js');
-const md = require('node-md-config');
 
 /**
  * Describes the Help command
@@ -9,18 +8,11 @@ const md = require('node-md-config');
 class Help extends Command {
   /**
    * Constructs a callable command
-   * @param  {Logger}           logger                The logger object
-   * @param  {string}           [options.prefix]      Prefix for calling the bot
-   * @param  {string}           [options.regexPrefix] Escaped prefix for regex for the command
-   * @param  {MarkdownSettings} [options.mdConfig]    The markdown settings
+   * @param {Genesis} bot  The bot object
    */
-  // eslint-disable-next-line no-useless-escape
-  constructor(logger, { mdConfig = md, regexPrefix = '\/', prefix = '/', commandHandler = null } = {}) {
-    super(logger, { mdConfig, regexPrefix, prefix });
-    this.commandId = 'genesis.help';
-    this.commandRegex = new RegExp(`^${regexPrefix}help(.*)`, 'ig');
-    this.commandHelp = `${prefix}help            | Display this message`;
-    this.commandHandler = commandHandler;
+  constructor(bot) {
+    super(bot, 'core.help', 'help', 'Display this message');
+
     this.helpOut = '';
 
     /**
