@@ -15,7 +15,7 @@ class Wiki extends Command {
    */
   constructor(bot) {
     super(bot, 'misc.wiki', 'wiki', 'Search the Warframe Wiki for information');
-    this.regex = new RegExp(`^${this.bot.escapedPrefix}wiki(.+)`, 'ig');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}wiki\\s*([\\w\\s-]+)?`, 'i');
   }
 
   /**
@@ -24,30 +24,42 @@ class Wiki extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const query = this.regex.exec(message.cleanContent.match(this.regex)[0])[1];
+    const query = message.cleanContent.match(this.regex)[1];
     if (!query) {
       message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
     } else {
-      // default case
       this.logger.debug(`Searched for query: ${query}`);
 
       warframe.getSearchList({
         query,
         limit: 1,
+      }).then((articles) => {
+        return warframe.getArticleDetails({
+          ids: articles.items.map(i => i.id),
+        });
+      }).then((details) => {
+        const item = Object.values(details.items)[0];
+        return message.channel.sendEmbed({
+          title: item.title,
+          type: 'rich',
+          url: details.basepath + item.url,
+          image: {
+            url: item.thumbnail.replace(/\/revision\/.*/, ''),
+            width: item.original_dimensions.width,
+            height: item.original_dimensions.height,
+          },
+          description: item.abstract,
+        });
       })
-      .then((json) => {
-        let result;
-        const item = json.items[0];
-        if (item) {
-          result = `${item.title}: ${item.url}`;
+      .catch((err) => {
+        if (err.exception && err.exception.code === 404) {
+          message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`)
+            .then(msg => msg.delete(100000))
+            .catch(this.logger.error);
         } else {
-          result = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
+          this.logger.error(err);
         }
-        message.reply(result)
-          .then(msg => msg.delete(100000))
-          .catch(this.bot.errorHandle);
-      })
-      .catch(this.bot.errorHandle);
+      });
     }
   }
 }
