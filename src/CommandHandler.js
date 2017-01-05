@@ -3,6 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const decache = require('decache');
+
 /**
  * Describes a CommandHandler for a bot.
  */
@@ -29,20 +31,28 @@ class CommandHandler {
   loadCommands() {
     const commandDir = path.join(__dirname, 'commands');
     const files = fs.readdirSync(commandDir);
+
+    if (this.commands.length !== 0) {
+      this.logger.debug('Decaching commands');
+      files.forEach((f) => {
+        decache(`${commandDir}/${f}`);
+      });
+    }
+
     this.logger.debug(`Loading commands: ${files}`);
 
     this.commands = files.map((f) => {
-      let command;
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Cmd = require(`${commandDir}/${f}`);
-        command = new Cmd(this.bot);
+        const command = new Cmd(this.bot);
+
+        this.logger.debug(`Adding ${command.id}`);
+        return command;
       } catch (err) {
         this.logger.error(err);
         return null;
       }
-      this.logger.debug(`Adding ${command.id}`);
-      return command;
     })
       .filter(c => c !== null);
   }

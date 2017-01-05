@@ -26,6 +26,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
+    "decache": "^4.1.0",
     "discord.js": "^11.0.0",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
