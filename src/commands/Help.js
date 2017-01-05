@@ -13,7 +13,7 @@ class Help extends Command {
   constructor(bot) {
     super(bot, 'core.help', 'help', 'Display this message');
 
-    this.helpOut = '';
+    this.helpEmbed = null;
 
     /**
      * Help reply messsage for alerting a user to check their direct messages.
@@ -28,33 +28,40 @@ class Help extends Command {
    * @param {Message} message Message to reply to
    */
   run(message) {
-    if (this.helpOut === '') {
-      this.helpOut += `${this.zSWC}${this.md.codeMulti}`;
-      this.commandHandler.commands.forEach((command) => {
-        this.helpOut += `${command.help}${this.md.lineEnd}`;
-      });
-      this.helpOut += this.md.blockEnd;
+    if (!this.helpEmbed) {
+      this.makeHelpEmbed();
     }
     if (message.channel.type !== 'dm') {
       message.reply(this.helpReplyMsg)
-      .then((msg) => {
-        if (msg.deletable) {
-          msg.delete(10000);
-        }
-      })
-      .catch(this.logger.error);
+        .then((reply) => {
+          if (reply.deletable) {
+            reply.delete(10000);
+          }
+        }).catch(this.logger.error);
     }
 
-    message.author.sendMessage(this.helpOut)
-      .then((msg) => {
-        if (msg.deletable) {
-          msg.delete(100000);
-        }
-        if (message.deletable) {
-          message.delete(100000);
-        }
-      })
-      .catch(this.logger.error);
+    message.author.sendEmbed(this.helpEmbed).then(() => {
+      if (message.deletable) {
+        message.delete(2000);
+      }
+    }).catch(this.logger.error);
+  }
+
+  makeHelpEmbed() {
+    this.helpEmbed = {
+      type: 'rich',
+      thumbnail: {
+        url: 'https://github.com/aliasfalse/genesis/raw/master/src/resources/cephalontransparent.png',
+      },
+    };
+
+    const commands = this.commandHandler.commands.map(c => c.usages.map(u => ({
+      name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+      value: u.description,
+      inline: false,
+    })));
+
+    this.helpEmbed.fields = [].concat.apply([], commands);
   }
 }
 
