@@ -6,9 +6,9 @@ const Command = require('../Command.js');
 const extraSpace = '　　';
 
 /**
- * Looks up items from Nexus-stats.com
+ * Looks up locations of items
  */
-class PriceCheck extends Command {
+class Whereis extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -64,11 +64,10 @@ class PriceCheck extends Command {
             text: 'Data evaluated by warframe-location-query, Warframe Community Developers',
           },
         };
-        console.log(results);
         message.channel.sendMessage('', { embed });
       })
       .catch(this.logger.error);
   }
 }
 
-module.exports = PriceCheck;
+module.exports = Whereis;
