@@ -34,6 +34,8 @@
     "ping": "^0.2.1",
     "raven": "^1.1.1",
     "uws": "^0.12.0",
+    "warframe-location-query": "github:aliasfalse/warframe-location-query",
+    "warframe-nexus-query": "github:aliasfalse/warframe-nexus-query",
     "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data"
   },
   "devDependencies": {
