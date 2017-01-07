@@ -28,6 +28,7 @@
   "dependencies": {
     "decache": "^4.1.0",
     "discord.js": "^11.0.0",
+    "moment": "^2.17.1",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
