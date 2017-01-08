@@ -14,12 +14,12 @@ class Whereis extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'misc.pricecheck', 'pricecheck', 'pricecheck');
+    super(bot, 'misc.whereis', 'whereis', 'whereis');
     this.regex = new RegExp(`^${this.bot.escapedPrefix}where(?:\\s?is)?(?:\\s+([\\w+\\s]+))?`, 'i');
 
     this.usages = [
       {
-        description: 'Display an items worth from nexus-stats.com',
+        description: 'Display where an item drops',
         parameters: ['item'],
       },
     ];
