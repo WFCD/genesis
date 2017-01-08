@@ -40,7 +40,7 @@ class Alerts extends Command {
           fields: [
             {
               name: '_ _',
-              value: alerts.map(a => `\`\`\`haskell\n${a.toString()}\`\`\``).join(''),
+              value: alerts.map(a => a.toString()).join(''),
             },
           ],
           footer: {

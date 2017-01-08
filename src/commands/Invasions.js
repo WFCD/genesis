@@ -40,7 +40,7 @@ class Invasions extends Command {
           fields: [
             {
               name: '_ _',
-              value: invasions.map(i => `\`\`\`haskell\n${i.toString()}\`\`\``).join(''),
+              value: invasions.map(i => i.toString()).join(''),
             },
           ],
           footer: {
