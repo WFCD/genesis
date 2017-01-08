@@ -3,6 +3,8 @@
 const CommandHandler = require('./CommandHandler.js');
 const Discord = require('discord.js');
 const md = require('node-md-config');
+const WorldStateCache = require('./WorldStateCache.js');
+const Database = require('./settings/Database.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -43,7 +45,6 @@ class Genesis {
      */
     this.client = new Discord.Client({
       fetchAllMembers: true,
-      apiRequestMethod: 'burst',
       ws: {
         compress: true,
         large_threshold: 1000,
@@ -113,28 +114,70 @@ class Genesis {
      */
     this.statusMessage = `${prefix}help for help`;
 
+    /**
+     * Persistent storage for settings
+     * @type {Database}
+     */
+    this.settings = new Database({
+      host: process.env.MYSQL_HOST || 'localhost',
+      port: process.env.MYSQL_PORT || 3306,
+      user: process.env.MYSQL_USER || 'genesis',
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DB || 'genesis',
+    }, this);
+
+    /**
+     * Objects holding worldState data, one for each platform
+     * @type {Object.<WorldStateCache>}
+     */
+    this.worldStates = {};
+
+    /**
+     * The platforms that Warframe exists for
+     * @type {Array.<string>}
+     */
+    this.platforms = ['pc', 'ps4', 'xb1'];
+
+    const worldStateTimeout = 60000 || process.env.WORLDSTATE_TIMEOUT;
+
+    this.platforms.forEach((platform) => {
+      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout);
+    });
+
     this.commandHandler.loadCommands();
 
+    this.setupHandlers();
+  }
+
+  setupHandlers() {
     this.client.on('ready', () => this.onReady());
-    this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('message', message => this.onMessage(message));
+
+    this.client.on('guildCreate', guild => this.onGuildCreate(guild));
     this.client.on('guildDelete', guild => this.onGuildDelete(guild));
+    this.client.on('channelCreate', channel => this.onChannelCreate(channel));
+    this.client.on('channelDelete', channel => this.onChannelDelete(channel));
+
     // kill on disconnect so a new instance can be spawned
-    this.client.on('disconnect', () => process.exit(0));
+    this.client.on('disconnect', () => process.exit(4));
+
+    this.client.on('error', error => this.logger.error(error));
+    this.client.on('warn', warning => this.logger.warning(warning));
   }
 
   /**
-   * Logs in the bot to Discord
+   * Creates the database schema and logs in the bot to Discord
    */
   start() {
-    this.client.login(this.token)
-      .then((t) => {
-        this.logger.debug(`Logged in with token ${t}`);
-      })
-      .catch((e) => {
-        this.logger.fatal(e);
-        process.exit(1);
-      });
+    this.settings.createSchema().then(() => {
+      this.logger.debug('Schema created');
+      return this.client.login(this.token);
+    }).then((t) => {
+      this.logger.debug(`Logged in with token ${t}`);
+    }).catch((e) => {
+      this.logger.fatal(e);
+      process.exit(1);
+    });
   }
 
   /**
@@ -159,29 +202,65 @@ class Genesis {
 
   /**
    * Handle guild creation
-   * @param {Guild} guild handle guild creation
+   * @param {Guild} guild The guild that was created
    */
   onGuildCreate(guild) {
     if (!guild.available) {
       return;
     }
-    this.logger.info(`Joined guild ${guild}`);
-    guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
-                                     `\`${this.prefix}help\` for help**`);
+    this.settings.addGuild(guild).then(() => {
+      this.logger.info(`Joined guild ${guild} (${guild.id}`);
+      guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
+        `\`${this.prefix}help\` for help**`);
+    }).catch(this.logger.error);
   }
 
   /**
    * Handle deleting or leaving a guild
-   * @param {Guild} guild handle guild creation
+   * @param {Guild} guild The guild that was deleted/left
    */
   onGuildDelete(guild) {
-    /* this.settings.deleteGuild(guild.id)
-      .then((deleted) => {
-        this.logger.log(`Deletion ${deleted ? 'successful' : 'unsuccessful'}` +
-          `: ${guild.name} (${guild.id})`);
+    if (!guild.available) {
+      return;
+    }
+    this.settings.deleteGuild(guild)
+      .then(() => {
+        this.logger.info(`Guild deleted : ${guild.name} (${guild.id})`);
       })
       .catch(this.logger.error);
-     */
+  }
+
+  /**
+   * Handle channel creation
+   * @param {Channel} channel The channel that was created
+   */
+  onChannelCreate(channel) {
+    if (channel.type === 'voice') {
+      return;
+    }
+    if (channel.type === 'text') {
+      this.settings.addGuildTextChannel(channel).then(() => {
+        this.logger.info(`Text channel ${channel.name} (${channel.id}) created in guild ` +
+          `${channel.guild.name} (${channel.guild.id})`);
+      }).catch(this.logger.error);
+    } else {
+      this.settings.addDMChannel(channel).then(() => {
+        this.logger.info(`DM channel with id ${channel.id} created`);
+      }).catch(this.logger.error);
+    }
+  }
+
+  /**
+   * Handle channel deletion
+   * @param {Channel} channel The channel that was deleted
+   */
+  onChannelDelete(channel) {
+    if (channel.type === 'voice') {
+      return;
+    }
+    this.settings.deleteChannel(channel).then(() => {
+      this.logger.info(`Channel with id ${channel.id} deleted`);
+    }).catch(this.logger.error);
   }
 }
 

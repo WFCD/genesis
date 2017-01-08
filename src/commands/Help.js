@@ -61,7 +61,7 @@ class Help extends Command {
       inline: false,
     })));
 
-    this.helpEmbed.fields = [].concat.apply([], commands);
+    this.helpEmbed.fields = [].concat(...commands);
   }
 }
 
