@@ -33,11 +33,9 @@ class Wiki extends Command {
       warframe.getSearchList({
         query,
         limit: 1,
-      }).then((articles) => {
-        return warframe.getArticleDetails({
-          ids: articles.items.map(i => i.id),
-        });
-      }).then((details) => {
+      }).then(articles => warframe.getArticleDetails({
+        ids: articles.items.map(i => i.id),
+      })).then((details) => {
         const item = Object.values(details.items)[0];
         return message.channel.sendEmbed({
           title: item.title,

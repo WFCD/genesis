@@ -18,13 +18,15 @@ class WorldStateCache {
     this.lastUpdated = null;
     this.updating = null;
 
-    this.updateInterval = setInterval(() => this.update(), this.timeout);
     this.update();
   }
 
   getData() {
     if (this.updating) {
       return this.updating;
+    }
+    if (Date.now() - this.lastUpdated > this.timeout) {
+      return this.update();
     }
     return Promise.resolve(this.currentData);
   }
@@ -39,6 +41,7 @@ class WorldStateCache {
       this.updating = null;
       throw err;
     });
+    return this.updating;
   }
 
   httpGet() {
