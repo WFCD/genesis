@@ -26,17 +26,20 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
+    "bluebird": "^3.4.7",
     "decache": "^4.1.0",
     "discord.js": "^11.0.0",
     "moment": "^2.17.1",
+    "mysql2": "^1.1.2",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
     "raven": "^1.1.1",
+    "sql-template-strings": "^2.2.2",
     "uws": "^0.12.0",
     "warframe-location-query": "github:aliasfalse/warframe-location-query",
     "warframe-nexus-query": "github:aliasfalse/warframe-nexus-query",
-    "warframe-worldstate-data": "aliasfalse/warframe-worldstate-data"
+    "warframe-worldstate-parser": "aliasfalse/warframe-worldstate-parser"
   },
   "devDependencies": {
     "chai": "^3.5.0",
