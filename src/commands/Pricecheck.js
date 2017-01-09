@@ -3,7 +3,6 @@
 const Nexus = require('warframe-nexus-query');
 const Command = require('../Command.js');
 
-
 /**
  * Looks up items from Nexus-stats.com
  */
@@ -32,53 +31,58 @@ class PriceCheck extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const item = message.content.match(this.regex)[1];
-    this.nexusQuerier.priceCheckQueryAttachment(item)
-      .then((result) => {
-        if (typeof result[0] === 'string') {
-          const embed = {
-            color: 0xff0000,
-            author: {
-              name: this.bot.client.user.username,
-              icon_url: this.bot.client.user.avatarURL,
-            },
-            title: 'Warframe - Pricecheck',
-            url: 'http://nexus-stats.com',
-            description: `Pricecheck for: ${item}`,
-            thumbnail: {
-              url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
-            },
-            fields: [
-              {
-                name: '_ _',
-                value: result[0],
-                inline: true,
+    try {
+      const item = message.content.match(this.regex)[1];
+
+      this.nexusQuerier.priceCheckQueryAttachment(item)
+        .then((result) => {
+          if (typeof result[0] === 'string') {
+            const embed = {
+              color: 0xff0000,
+              author: {
+                name: this.bot.client.user.username,
+                icon_url: this.bot.client.user.avatarURL,
               },
-            ],
-            footer: {
-              icon_url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
-              text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
-            },
-          };
-          message.channel.sendMessage('', { embed }).catch(this.logger.error);
-        } else {
-          const attachment = result[0];
-          const embed = {
-            type: attachment.type,
-            author: {
-              name: this.bot.client.user.username,
-              icon_url: this.bot.client.user.avatarURL,
-            },
-            title: attachment.title,
-            url: attachment.url,
-            fields: attachment.fields,
-            thumbnail: attachment.thumbnail,
-            footer: attachment.footer,
-          };
-          message.channel.sendMessage('', { embed }).catch(this.logger.error);
-        }
-      })
-      .catch(this.bot.logger.error);
+              title: 'Warframe - Pricecheck',
+              url: 'http://nexus-stats.com',
+              description: `Pricecheck for: ${item}`,
+              thumbnail: {
+                url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
+              },
+              fields: [
+                {
+                  name: '_ _',
+                  value: result[0],
+                  inline: true,
+                },
+              ],
+              footer: {
+                icon_url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
+                text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
+              },
+            };
+            message.channel.sendMessage('', { embed }).catch(this.logger.error);
+          } else {
+            const attachment = result[0];
+            const embed = {
+              type: attachment.type,
+              author: {
+                name: typeof this.bot.client.user.username === 'undefined' ? 'author' : this.bot.client.user.username,
+                icon_url: this.bot.client.user.avatarURL,
+              },
+              title: attachment.title,
+              url: attachment.url,
+              fields: attachment.fields,
+              thumbnail: attachment.thumbnail,
+              footer: attachment.footer,
+            };
+            message.channel.sendMessage('', { embed }).catch(this.logger.error);
+          }
+        })
+        .catch(this.bot.logger.error);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }
 

@@ -1,7 +1,5 @@
 'use strict';
 
-const md = require('node-md-config');
-
 /**
  * Options for a command
  * @typedef  {Object} CommandOptions
