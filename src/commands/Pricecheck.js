@@ -39,10 +39,6 @@ class PriceCheck extends Command {
           if (typeof result[0] === 'string') {
             const embed = {
               color: 0xff0000,
-              author: {
-                name: this.bot.client.user.username,
-                icon_url: this.bot.client.user.avatarURL,
-              },
               title: 'Warframe - Pricecheck',
               url: 'http://nexus-stats.com',
               description: `Pricecheck for: ${item}`,
@@ -65,11 +61,8 @@ class PriceCheck extends Command {
           } else {
             const attachment = result[0];
             const embed = {
+              description: `Location query for ${item}`,
               type: attachment.type,
-              author: {
-                name: typeof this.bot.client.user.username === 'undefined' ? 'author' : this.bot.client.user.username,
-                icon_url: this.bot.client.user.avatarURL,
-              },
               title: attachment.title,
               url: attachment.url,
               fields: attachment.fields,
