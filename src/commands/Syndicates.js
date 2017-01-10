@@ -51,7 +51,7 @@ class Syndicates extends Command {
           url: 'https://warframe.com',
           description: `Current Missions for Syndicate: ${type}`,
           thumbnail: {
-            url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/conclave.png',
+            url: 'https://github.com/aliasfalse/genesis/raw/master/src/resources/syndicate.png',
           },
           fields: [],
           footer: {
