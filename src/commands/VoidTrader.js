@@ -11,7 +11,7 @@ class VoidTrader extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'ondemand.voidtrader', 'trader', 'Display the currentstatus of the void trader');
+    super(bot, 'ondemand.baro', 'baro', 'Display the currentstatus of the void trader');
   }
 
   /**
