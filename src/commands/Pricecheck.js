@@ -61,6 +61,7 @@ class PriceCheck extends Command {
             const attachment = result[0];
             embed = {
               description: `Price query for ${item}`,
+              color: parseInt(attachment.color, 16),
               type: attachment.type,
               title: attachment.title,
               url: attachment.url,
