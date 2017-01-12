@@ -27,11 +27,14 @@ class Platform extends Command {
         ],
       });
     } else {
-      this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase()).then(() =>
-        message.react('\u2705')
-      ).then(() => {
+      this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase()).then(() => {
+        message.react('\u2705');
+      }).then(() => {
         message.reply('Settings updated');
       }).catch(this.logger.error);
+    }
+    if (message.deletable) {
+      message.delete(5000).catch(this.logger.error);
     }
   }
 }

@@ -18,7 +18,7 @@ class Logger {
     this.ravenClient = ravenClient;
   }
 }
-
+const logLevel = process.env.LOG_LEVEL || 'ERROR';
 const levels = [
   'DEBUG',
   'INFO',
@@ -30,8 +30,11 @@ const levels = [
 levels.forEach((level) => {
   // eslint-disable-next-line func-names
   Logger.prototype[level.toLowerCase()] = function (message) {
-    // eslint-disable-next-line no-console
-    console.log(`[${level}] ${message}`);
+    if (levels.indexOf(level) >= levels.indexOf(logLevel)) {
+      // eslint-disable-next-line no-console
+      console.log(`[${level}] ${message}`);
+    }
+
     if (level === 'fatal') {
       this.ravenClient.captureMessage(message, {
         level: 'fatal',

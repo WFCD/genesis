@@ -49,26 +49,35 @@ class Mod extends Command {
              list.items.forEach((item) => {
                if (item.id === id) {
                  sent = true;
-                 message.channel.sendFile(thumbUrl, 'Mod.png', message.author.toString());
+                 message.channel.sendFile(thumbUrl, 'Mod.png', message.author.toString()).then(() => {
+                   if (message.deletable) {
+                     return message.delete(2000);
+                   }
+                   return Promise.resolve();
+                 }).catch(this.logger.error);
                }
              });
              if (!sent) {
-               message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
+               message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`)
+               .then(() => {
+                 if (message.deletable) {
+                   return message.delete(2000);
+                 }
+                 return Promise.resolve();
+               }).catch(this.logger.error);
              }
-           })
-           .catch((error) => {
-             this.bot.errorHandle(error);
-             message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
            });
-        })
-        .catch((error) => {
-          this.bot.errorHandle(error);
-          message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
         });
       })
       .catch((error) => {
         this.bot.errorHandle(error);
-        message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`);
+        message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`)
+        .then(() => {
+          if (message.deletable) {
+            return message.delete(2000);
+          }
+          return Promise.resolve();
+        }).catch(this.logger.error);
       });
     }
   }

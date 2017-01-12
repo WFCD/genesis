@@ -31,13 +31,13 @@ class PriceCheck extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    try {
-      const item = message.content.match(this.regex)[1];
+    const item = message.content.match(this.regex)[1];
 
-      this.nexusQuerier.priceCheckQueryAttachment(item)
+    this.nexusQuerier.priceCheckQueryAttachment(item)
         .then((result) => {
+          let embed = {};
           if (typeof result[0] === 'string') {
-            const embed = {
+            embed = {
               color: 0xff0000,
               title: 'Warframe - Pricecheck',
               url: 'http://nexus-stats.com',
@@ -57,10 +57,9 @@ class PriceCheck extends Command {
                 text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
               },
             };
-            message.channel.sendMessage('', { embed }).catch(this.logger.error);
           } else {
             const attachment = result[0];
-            const embed = {
+            embed = {
               description: `Location query for ${item}`,
               type: attachment.type,
               title: attachment.title,
@@ -69,13 +68,16 @@ class PriceCheck extends Command {
               thumbnail: attachment.thumbnail,
               footer: attachment.footer,
             };
-            message.channel.sendMessage('', { embed }).catch(this.logger.error);
           }
+          return message.channel.sendEmbed(embed);
         })
-        .catch(this.bot.logger.error);
-    } catch (e) {
-      this.logger.error(e);
-    }
+        .then(() => {
+          if (message.deletable) {
+            return message.delete(2000);
+          }
+          return Promise.resolve();
+        })
+        .catch(this.logger.error);
   }
 }
 

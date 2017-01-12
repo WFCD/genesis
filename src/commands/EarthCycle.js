@@ -75,7 +75,13 @@ class EarthCycle extends Command {
       },
     };
 
-    message.channel.sendMessage('', { embed });
+    message.channel.sendEmbed(embed)
+    .then(() => {
+      if (message.deletable) {
+        return message.delete(2000);
+      }
+      return Promise.resolve();
+    }).catch(this.logger.error);
   }
 }
 
