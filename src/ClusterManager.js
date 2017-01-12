@@ -14,6 +14,7 @@ class ClusterManager {
     });
 
     cluster.on('exit', (deadWorker, code, signal) => {
+      this.logger.debug(`code ${code}, signal: ${signal}`);
       this.onDeadWorker(deadWorker, code || signal);
     });
 

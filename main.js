@@ -33,10 +33,7 @@ const logger = new Logger(client);
  */
 const ClusterManager = require('./src/ClusterManager.js');
 
-client.patchGlobal(client, (error) => {
-  logger.fatal(`Uncaught exception: ${error.message}`);
-  process.exit(1);
-});
+client.install();
 
 client.on('error', (error) => {
   logger.error(`Could not report the following error to Sentry: ${error.message}`);
@@ -49,9 +46,9 @@ if (cluster.isMaster) {
   const clusterManager = new ClusterManager(cluster, logger, localShards, shardOffset);
   clusterManager.start();
 } else {
-  const totalShards = process.env.SHARDS || 1;
+  const totalShards = parseInt(process.env.SHARDS) || 1;
   const shard = new Genesis(process.env.TOKEN, logger, {
-    shardID: process.env.shard_id,
+    shardId: parseInt(process.env.shard_id),
     shardCount: totalShards,
     prefix: process.env.PREFIX,
     logger,

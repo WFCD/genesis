@@ -51,13 +51,9 @@ class Whereis extends Command {
         }
         const embed = {
           color,
-          author: {
-            name: this.bot.client.user.username,
-            icon_url: this.bot.client.user.avatarURL,
-          },
           title: 'Warframe Where Is?',
           url: 'https://warframe.com',
-          description: '\n\n',
+          description: `Location query for ${item}`,
           fields,
           footer: {
             icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
