@@ -60,7 +60,7 @@ class PriceCheck extends Command {
           } else {
             const attachment = result[0];
             embed = {
-              description: `Location query for ${item}`,
+              description: `Price query for ${item}`,
               type: attachment.type,
               title: attachment.title,
               url: attachment.url,
