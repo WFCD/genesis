@@ -60,7 +60,7 @@ class Whereis extends Command {
             text: 'Data evaluated by warframe-location-query, Warframe Community Developers',
           },
         };
-        message.channel.sendMessage('', { embed });
+        message.channel.sendEmbed(embed);
       })
       .catch(this.logger.error);
   }

@@ -69,18 +69,49 @@ class Armor extends Command {
   run(message) {
     const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?/;
     const params3 = message.content.match(pattern3Params);
+    let armorString = '';
     if (params3 && params3.length > 3) {
       const armor = params3[1];
       const baseLevel = params3[2];
       const currentLevel = params3[3];
       if (typeof baseLevel === 'undefined') {
         this.logger.debug('Entered 1-param armor');
-        message.reply(this.armorSimple(parseInt(armor, 10)));
+        armorString = this.armorSimple(parseInt(armor, 10));
       } else {
         this.logger.debug('Entered 3-param armor');
-        message.reply(this.armorFull(parseFloat(armor), parseFloat(baseLevel),
-          parseFloat(currentLevel)));
+        armorString = this.armorFull(parseFloat(armor), parseFloat(baseLevel),
+          parseFloat(currentLevel));
       }
+
+      const embed = {
+        color: 0xffa500,
+        author: {
+          name: this.bot.client.user.clientID,
+          icon_url: this.bot.client.user.avatarURL,
+        },
+        title: 'Warframe - Armor',
+        url: 'https://warframe.com',
+        thumbnail: {
+          url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/grineer.png',
+        },
+        fields: [
+          {
+            name: 'Armor Calculation:',
+            value: armorString,
+          },
+        ],
+        footer: {
+          icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+          text: 'Data evaluated by Warframe Community Developers',
+        },
+      };
+      message.channel.sendEmbed(embed)
+        .then(() => {
+          if (message.deletable) {
+            return message.delete(2000);
+          }
+          return Promise.resolve();
+        }).catch(this.logger.error);
     } else {
       this.logger.debug('Entered 0-param armor');
       this.sendUsage(message);
@@ -92,13 +123,37 @@ class Armor extends Command {
    * @param {Message} message The message to reply to
    */
   sendUsage(message) {
-    message.reply(this.md.codeMulti +
-      [
-        'Possible uses include:',
-        `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.`,
-        `${this.bot.prefix}armor (Current Armor) Calculate damage resistance.`,
-      ].join(this.md.lineEnd) +
-      this.md.blockEnd);
+    const embed = {
+      color: 0xff0000,
+      author: {
+        name: this.bot.client.user.clientID,
+        icon_url: this.bot.client.user.avatarURL,
+      },
+      title: 'Warframe - Shields',
+      url: 'https://warframe.com',
+      thumbnail: {
+        url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/grineer.png',
+      },
+      fields: [
+        {
+          name: 'Possible uses include:',
+          value: `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.${this.md.lineEnd}` +
+          `${this.bot.prefix}armor (Current Armor) Calculate damage resistance.`,
+        },
+      ],
+      footer: {
+        icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+        text: 'Data evaluated by Warframe Community Developers',
+      },
+    };
+
+    message.reply('', { embed })
+    .then(() => {
+      if (message.deletable) {
+        return message.delete(2000);
+      }
+      return Promise.resolve();
+    }).catch(this.logger.error);
   }
 
   /**
@@ -110,13 +165,11 @@ class Armor extends Command {
    */
   armorFull(baseArmor, baseLevel, currentLevel) {
     const armor = armorAtLevel(baseArmor, baseLevel, currentLevel);
-    return this.md.codeMulti +
-      [
-        `At level ${Math.round(currentLevel)} your enemy would have ${armor.toFixed(2)} Armor`,
-        `${(damageReduction(armor) * 100).toFixed((2))}% damage reduction`,
-        `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
-      ].join(this.md.lineEnd) +
-      this.md.blockEnd;
+    return [
+      `At level ${Math.round(currentLevel)} your enemy would have ${armor.toFixed(2)} Armor`,
+      `${(damageReduction(armor) * 100).toFixed((2))}% damage reduction`,
+      `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
+    ].join(this.md.lineEnd);
   }
 
   /**
