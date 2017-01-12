@@ -216,7 +216,7 @@ class Genesis {
       return;
     }
     this.settings.addGuild(guild).then(() => {
-      this.logger.info(`Joined guild ${guild} (${guild.id}`);
+      this.logger.debug(`Joined guild ${guild} (${guild.id}`);
       guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
         `\`${this.prefix}help\` for help**`);
     }).catch(this.logger.error);
@@ -232,7 +232,7 @@ class Genesis {
     }
     this.settings.deleteGuild(guild)
       .then(() => {
-        this.logger.info(`Guild deleted : ${guild.name} (${guild.id})`);
+        this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
       })
       .catch(this.logger.error);
   }
@@ -247,12 +247,12 @@ class Genesis {
     }
     if (channel.type === 'text') {
       this.settings.addGuildTextChannel(channel).then(() => {
-        this.logger.info(`Text channel ${channel.name} (${channel.id}) created in guild ` +
+        this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild ` +
           `${channel.guild.name} (${channel.guild.id})`);
       }).catch(this.logger.error);
     } else {
       this.settings.addDMChannel(channel).then(() => {
-        this.logger.info(`DM channel with id ${channel.id} created`);
+        this.logger.debug(`DM channel with id ${channel.id} created`);
       }).catch(this.logger.error);
     }
   }
@@ -266,7 +266,7 @@ class Genesis {
       return;
     }
     this.settings.deleteChannel(channel).then(() => {
-      this.logger.info(`Channel with id ${channel.id} deleted`);
+      this.logger.debug(`Channel with id ${channel.id} deleted`);
     }).catch(this.logger.error);
   }
 }
