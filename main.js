@@ -40,8 +40,8 @@ client.on('error', (error) => {
 });
 
 if (cluster.isMaster) {
-  const localShards = process.env.LOCAL_SHARDS || 1;
-  const shardOffset = process.env.SHARD_OFFSET || 0;
+  const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
+  const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
 
   const clusterManager = new ClusterManager(cluster, logger, localShards, shardOffset);
   clusterManager.start();
