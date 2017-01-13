@@ -23,8 +23,19 @@ class Invasions extends Command {
     this.bot.settings.getChannelPlatform(message.channel)
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
-        const invasions = ws.invasions.filter(i => Math.abs(i.count) < i.requiredRuns);
+        const invasions = ws.invasions.filter(i => !i.completed);
         const color = invasions.length > 2 ? 0x00ff00 : 0xff0000;
+        const fields = invasions.map((i) => {
+          let rewards = i.defenderReward.toString();
+          if (!i.vsInfestation) {
+            rewards = `${i.attackerReward} vs ${rewards}`;
+          }
+
+          return {
+            name: `${rewards} - ${Math.round(i.completion * 100) / 100}%`,
+            value: `${i.desc} on ${i.node} - ETA ${i.getETAString()}`,
+          };
+        });
         const embed = {
           color,
           author: {
@@ -37,12 +48,7 @@ class Invasions extends Command {
           thumbnail: {
             url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/invasion.png',
           },
-          fields: [
-            {
-              name: '_ _',
-              value: invasions.map(i => i.toString()).join(''),
-            },
-          ],
+          fields,
           footer: {
             icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
             text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
