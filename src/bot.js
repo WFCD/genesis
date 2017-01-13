@@ -52,7 +52,7 @@ class Genesis {
       shardId,
       shardCount,
     });
-    
+
     this.shardId = shardId;
     this.shardCount = shardCount;
 
@@ -115,7 +115,7 @@ class Genesis {
      * The status message to use for the bot
      * @type {string}
      */
-    this.statusMessage = `${prefix}help for help (${this.shardId+1}/${this.shardCount})`;
+    this.statusMessage = `${prefix}help for help (${this.shardId + 1}/${this.shardCount})`;
 
     /**
      * Persistent storage for settings
@@ -164,7 +164,7 @@ class Genesis {
     // kill on disconnect so a new instance can be spawned
     this.client.on('disconnect', (event) => {
       this.logger.debug(`Disconnected with close event: ${event.code}`);
-      process.exit(4)
+      process.exit(4);
     });
 
     this.client.on('error', error => this.logger.error(error));
@@ -177,7 +177,7 @@ class Genesis {
   start() {
     this.settings.createSchema().then(() => {
       this.logger.debug('Schema created');
-      return this.client.login(this.token)
+      return this.client.login(this.token);
     }).then((t) => {
       this.logger.debug(`Logged in with token ${t}`);
     }).catch((e) => {
