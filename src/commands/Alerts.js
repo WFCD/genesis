@@ -25,6 +25,11 @@ class Alerts extends Command {
       .then((ws) => {
         const alerts = ws.alerts.filter(a => !a.getExpired());
         const color = alerts.length > 2 ? 0x00ff00 : 0xff0000;
+        const fields = alerts.map(a => ({
+          name: `${a.getReward()} - ${a.getETAString()} left`,
+          value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n` +
+            `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`,
+        }));
         const embed = {
           color,
           author: {
@@ -37,12 +42,7 @@ class Alerts extends Command {
           thumbnail: {
             url: 'http://i.imgur.com/KQ7f9l7.png',
           },
-          fields: [
-            {
-              name: '_ _',
-              value: alerts.map(a => a.toString()).join(''),
-            },
-          ],
+          fields,
           footer: {
             icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
             text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
