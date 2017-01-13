@@ -30,7 +30,7 @@ class Ping extends Command {
         .then((result) => {
           results.push({
             name: host,
-            value: `${result.alive ? ':white_check_mark:' : ':x:'} ` +
+            value: `${result.alive ? '\u2705' : ':x:'} ` +
               `${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`,
           });
         });
@@ -45,7 +45,9 @@ class Ping extends Command {
             title: 'PONG',
             type: 'rich',
             fields: [
-              { name: 'Response time', value: `${afterSend - now}ms` },
+              { name: `Response time (shard ${this.bot.shardId + 1} of ${this.bot.shardCount})`,
+                value: `${afterSend - now}ms`,
+              },
               ...results,
             ],
           },
