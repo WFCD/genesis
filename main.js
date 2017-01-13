@@ -46,9 +46,9 @@ if (cluster.isMaster) {
   const clusterManager = new ClusterManager(cluster, logger, localShards, shardOffset);
   clusterManager.start();
 } else {
-  const totalShards = parseInt(process.env.SHARDS) || 1;
+  const totalShards = parseInt(process.env.SHARDS, 10) || 1;
   const shard = new Genesis(process.env.TOKEN, logger, {
-    shardId: parseInt(process.env.shard_id),
+    shardId: parseInt(process.env.shard_id, 10),
     shardCount: totalShards,
     prefix: process.env.PREFIX,
     logger,
