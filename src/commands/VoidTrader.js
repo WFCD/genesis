@@ -45,7 +45,7 @@ class VoidTrader extends Command {
           });
         }
 
-        embed.fields.push({ name: `Time until ${voidTrader.isActive() ? 'departure' : 'arrival'}`, value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` });
+        embed.fields.push({ name: `Time until ${voidTrader.isActive() ? 'departs from' : 'arrival at'} ${voidTrader.location}`, value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` });
 
         return message.channel.sendEmbed(embed);
       }).then(() => {
