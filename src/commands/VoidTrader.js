@@ -41,7 +41,7 @@ class VoidTrader extends Command {
         };
         if (voidTrader.isActive()) {
           voidTrader.inventory.forEach((invItem) => {
-            embed.fields.push({ name: invItem.name, value: `${invItem.ducats} ducats + ${invItem.credits}cr` });
+            embed.fields.push({ name: invItem.item, value: `${invItem.ducats} ducats + ${invItem.credits}cr` });
           });
         }
 
