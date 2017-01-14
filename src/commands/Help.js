@@ -55,11 +55,13 @@ class Help extends Command {
       },
     };
 
-    const commands = this.commandHandler.commands.map(c => c.usages.map(u => ({
-      name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
-      value: u.description,
-      inline: false,
-    })));
+    const commands = this.commandHandler.commands.filter(c => !c.ownerOnly)
+      .map(c => c.usages.map(u => ({
+        name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+        value: u.description,
+        inline: false,
+      }
+    )));
 
     this.helpEmbed.fields = [].concat(...commands);
   }
