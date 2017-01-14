@@ -44,10 +44,13 @@ class CommandHandler {
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Cmd = require(`${commandDir}/${f}`);
-        const command = new Cmd(this.bot);
+        if (Object.prototype.toString.call(Cmd) === '[object Function]') {
+          const command = new Cmd(this.bot);
 
-        this.logger.debug(`Adding ${command.id}`);
-        return command;
+          this.logger.debug(`Adding ${command.id}`);
+          return command;
+        }
+        return null;
       } catch (err) {
         this.logger.error(err);
         return null;
