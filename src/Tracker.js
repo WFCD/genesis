@@ -23,20 +23,18 @@ class Tracker {
     this.shardId = shardId;
     this.shardCount = shardCount;
     if (carbonToken) {
-      setInterval(() => this.updateCarbonitex(this.client.guilds.length), updateInterval);
+      setInterval(() => this.updateCarbonitex(this.client.guilds.size), updateInterval);
     }
     if (botsDiscordPwToken && botsDiscordPwUser) {
-      setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.length), updateInterval);
+      setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), updateInterval);
     }
   }
 
   /**
    * Updates carbonitex.net if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on
-   * @returns {boolean} Whether or not the update completed successfully
    */
   updateCarbonitex(guildsLen) {
-    let completed = false;
     if (carbonToken) {
       this.logger.debug('Updating Carbonitex');
       this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
@@ -51,20 +49,16 @@ class Tracker {
       request(requestBody)
         .then((parsedBody) => {
           this.logger.debug(parsedBody);
-          completed = true;
         })
         .catch(error => this.logger.error(error));
     }
-    return completed;
   }
 
   /**
    * Updates bots.discord.pw if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on
-   * @returns {boolean} Whether or not the update completed successfully
    */
   updateDiscordBotsWeb(guildsLen) {
-    let completed = false;
     if (botsDiscordPwToken && botsDiscordPwUser) {
       this.logger.debug('Updating discord bots');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
@@ -73,6 +67,7 @@ class Tracker {
         url: `https://bots.discord.pw/api/bots/${botsDiscordPwUser}/stats`,
         headers: {
           Authorization: botsDiscordPwToken,
+          'Content-Type': 'application/json',
         },
         body: {
           shard_id: parseInt(this.shardId, 10),
@@ -84,11 +79,9 @@ class Tracker {
       request(requestBody)
       .then((parsedBody) => {
         this.logger.debug(parsedBody);
-        completed = true;
       })
-      .catch(error => this.logger.error(error));
+      .catch(this.logger.error);
     }
-    return completed;
   }
 
   /**

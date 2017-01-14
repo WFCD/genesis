@@ -44,10 +44,13 @@ class CommandHandler {
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Cmd = require(`${commandDir}/${f}`);
-        const command = new Cmd(this.bot);
+        if (Object.prototype.toString.call(Cmd) === '[object Function]') {
+          const command = new Cmd(this.bot);
 
-        this.logger.debug(`Adding ${command.id}`);
-        return command;
+          this.logger.debug(`Adding ${command.id}`);
+          return command;
+        }
+        return null;
       } catch (err) {
         this.logger.error(err);
         return null;
@@ -61,14 +64,17 @@ class CommandHandler {
    * @param {Message} message Message whose command should be checked and handled
    */
   handleCommand(message) {
-    this.logger.debug(`Handling \`${message.content}\``);
+    const content = message.cleanContent;
+    if (!content.startsWith(this.bot.prefix)) {
+      return;
+    }
+
+    this.logger.debug(`Handling \`${content}\``);
     this.commands.forEach((command) => {
-      if (command.regex.test(message.content)) {
-        if (this.checkCanAct(command, message.author)) {
-          this.logger.debug(`Matched ${command.id}`);
-          message.react('\u2705').catch(this.logger.error);
-          command.run(message);
-        }
+      if (command.regex.test(content) && this.checkCanAct(command, message.author)) {
+        this.logger.debug(`Matched ${command.id}`);
+        message.react('\u2705').catch(this.logger.error);
+        command.run(message);
       }
     });
   }
