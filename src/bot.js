@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const md = require('node-md-config');
 const WorldStateCache = require('./WorldStateCache.js');
 const Database = require('./settings/Database.js');
+const Tracker = require('./Tracker.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -146,6 +147,8 @@ class Genesis {
     this.platforms.forEach((platform) => {
       this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout);
     });
+
+    this.tracker = new Tracker(this.logger, this.client, { shardId, shardCount });
 
     this.commandHandler.loadCommands();
 
