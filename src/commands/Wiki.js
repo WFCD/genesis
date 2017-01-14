@@ -16,6 +16,12 @@ class Wiki extends Command {
   constructor(bot) {
     super(bot, 'misc.wiki', 'wiki', 'Search the Warframe Wiki for information');
     this.regex = new RegExp(`^${this.bot.escapedPrefix}wiki\\s*([\\w\\s-]+)?`, 'i');
+    this.usages = [
+      {
+        description: 'Search the Warframe wiki for a specific topic',
+        parameters: ['topic'],
+      },
+    ];
   }
 
   /**
