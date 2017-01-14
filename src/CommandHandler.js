@@ -61,14 +61,17 @@ class CommandHandler {
    * @param {Message} message Message whose command should be checked and handled
    */
   handleCommand(message) {
-    this.logger.debug(`Handling \`${message.content}\``);
+    const content = message.cleanContent;
+    if (!content.startsWith(this.bot.prefix)) {
+      return;
+    }
+
+    this.logger.debug(`Handling \`${content}\``);
     this.commands.forEach((command) => {
-      if (command.regex.test(message.content)) {
-        if (this.checkCanAct(command, message.author)) {
-          this.logger.debug(`Matched ${command.id}`);
-          message.react('\u2705').catch(this.logger.error);
-          command.run(message);
-        }
+      if (command.regex.test(content) && this.checkCanAct(command, message.author)) {
+        this.logger.debug(`Matched ${command.id}`);
+        message.react('\u2705').catch(this.logger.error);
+        command.run(message);
       }
     });
   }
