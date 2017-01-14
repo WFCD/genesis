@@ -5,7 +5,7 @@ const request = require('request-promise');
 const carbonToken = process.env.DISCORD_CARBON_TOKEN;
 const botsDiscordPwToken = process.env.DISCORD_BOTS_WEB_TOKEN;
 const botsDiscordPwUser = process.env.DISCORD_BOTS_WEB_USER;
-const updateInterval = process.env.TRACKERS_UPDATE_INTERVAL || 260000;
+const updateInterval = process.env.TRACKERS_UPDATE_INTERVAL || 2600000;
 
 /**
  * Describes a tracking service for updating remote sites
@@ -75,9 +75,9 @@ class Tracker {
           Authorization: botsDiscordPwToken,
         },
         body: {
-          server_count: guildsLen,
-          shard_id: this.shardId,
-          shard_count: this.shardCount,
+          shard_id: parseInt(this.shardId, 10),
+          shard_count: parseInt(this.shardCount, 10),
+          server_count: parseInt(guildsLen, 10),
         },
         json: true,
       };
