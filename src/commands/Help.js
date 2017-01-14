@@ -40,11 +40,18 @@ class Help extends Command {
         }).catch(this.logger.error);
     }
 
-    message.author.sendEmbed(this.helpEmbed).then(() => {
-      if (message.deletable) {
-        message.delete(2000);
-      }
-    }).catch(this.logger.error);
+    const promises = [
+      message.author.sendEmbed(this.helpEmbed).then(() => {
+        if (message.deletable) {
+          message.delete(2000);
+        }
+      }),
+    ];
+
+    if (message.author.id === this.bot.owner) {
+      promises.push(message.author.sendEmbed(this.makeOwnerOnlyEmbed()));
+    }
+    Promise.all(promises).catch(this.logger.error);
   }
 
   makeHelpEmbed() {
@@ -64,6 +71,22 @@ class Help extends Command {
     )));
 
     this.helpEmbed.fields = [].concat(...commands);
+  }
+
+  makeOwnerOnlyEmbed() {
+    const ownerCommands = this.commandHandler.commands.filter(c => c.ownerOnly)
+      .map(c => c.usages.map(u => ({
+        name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+        value: u.description,
+        inline: false,
+      })));
+    const embed = {
+      title: 'Owner only',
+      fields: [].concat(...ownerCommands),
+      color: 0xff0000,
+    };
+
+    return embed;
   }
 }
 
