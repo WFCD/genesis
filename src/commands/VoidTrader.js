@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const VoidTraderEmbed = require('../embeds/VoidTraderEmbed.js');
 
 /**
  * Displays the currently active Invasions
@@ -24,30 +25,7 @@ class VoidTrader extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const voidTrader = ws.voidTrader;
-        const color = voidTrader.isActive() ? 0x00ff00 : 0xff0000;
-        const embed = {
-          color,
-          title: 'Worldstate - VoidTrader',
-          url: 'https://warframe.com',
-          description: 'Current Void Trader Status:',
-          thumbnail: {
-            url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/voidtrader.png',
-          },
-          fields: [],
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        };
-        if (voidTrader.isActive()) {
-          voidTrader.inventory.forEach((invItem) => {
-            embed.fields.push({ name: invItem.item, value: `${invItem.ducats} ducats + ${invItem.credits}cr` });
-          });
-        }
-
-        embed.fields.push({ name: `Time until ${voidTrader.isActive() ? 'departs from' : 'arrival at'} ${voidTrader.location}`, value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` });
-
-        return message.channel.sendEmbed(embed);
+        return message.channel.sendEmbed(new VoidTraderEmbed(this.bot, voidTrader));
       }).then(() => {
         if (message.deletable) {
           return message.delete(2000);
