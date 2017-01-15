@@ -16,11 +16,12 @@ class ConclaveChallengeEmbed extends BaseEmbed {
   constructor(bot, challenges, category) {
     super(bot);
 
-    const categoryInValues = values.indexOf(category) !== -1;
+    const categoryInValues = values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
     if (categoryInValues) {
       this.fields = challenges.filter(
-        c => (c.category === category || category === 'all') && !c.isRootChallenge()).map(c => ({
+        c => (c.category === category.toLowerCase() || category.toLowerCase() === 'all') &&
+        !c.isRootChallenge()).map(c => ({
           name: c.mode,
           value: `${c.description} expires in ${c.getEndString()}`,
         }));
@@ -31,7 +32,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
       }];
     }
     this.title = 'Worldstate - Conclave Challenges';
-    this.description = `Current Challenges for category: ${!category ? 'none' : category}`;
+    this.description = `Current Challenges for category: ${category || 'none'}`;
     this.thumbnail = {
       url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/conclave.png',
     };
