@@ -3,7 +3,7 @@
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
- * Generates alert embeds
+ * Generates void trader embeds
  */
 class VoidTraderEmbed extends BaseEmbed {
   /**
