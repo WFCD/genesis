@@ -12,6 +12,7 @@ class Alerts extends Command {
    */
   constructor(bot) {
     super(bot, 'ondemand.alerts', 'alerts', 'Display the currently active alerts');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}alerts$`, 'i');
   }
 
   /**
