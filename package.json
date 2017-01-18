@@ -22,7 +22,7 @@
   ],
   "author": "aliasfalse",
   "contributors": [
-    "aliasfalse <matej@voboril.org> (https://github.com/aliasfalse)",
+    "aliasfalse <tobiah@protonmail.com> (https://github.com/aliasfalse)",
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
@@ -38,9 +38,9 @@
     "request-promise": "^4.1.1",
     "sql-template-strings": "^2.2.2",
     "uws": "^0.12.0",
-    "warframe-location-query": "github:aliasfalse/warframe-location-query",
-    "warframe-nexus-query": "github:aliasfalse/warframe-nexus-query",
-    "warframe-worldstate-parser": "aliasfalse/warframe-worldstate-parser"
+    "warframe-location-query": "^0.0.3",
+    "warframe-nexus-query": "^0.0.3",
+    "warframe-worldstate-parser": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
