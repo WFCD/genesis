@@ -12,7 +12,7 @@ class BaseEmbed {
 
     this.footer = {
       icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-      text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
+      text: 'Data evaluated by warframe-worldstate-parser, Warframe Community Developers',
     };
   }
 }

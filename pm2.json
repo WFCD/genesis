@@ -35,7 +35,8 @@
         "MYSQL_USER":"root",
         "MYSQL_PASSWORD":"password",
         "MYSQL_DB":"genesis",
-        "LOG_LEVEL": "ERROR"
+        "LOG_LEVEL": "ERROR",
+        "WORLDSTATE_TIMEOUT": 60000
       }
     }
   ]
