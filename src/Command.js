@@ -31,7 +31,7 @@ class Command {
      * Command regex for calling the command
      * @type {RegExp}
      */
-    this.regex = new RegExp(`^${bot.escapedPrefix}${call}`, 'i');
+    this.regex = new RegExp(`^${bot.escapedPrefix}${call}$`, 'i');
     /**
      * Help command for documenting the function or purpose of a command.
      * @type {string}

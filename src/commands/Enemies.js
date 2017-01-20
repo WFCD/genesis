@@ -1,10 +1,10 @@
 'use strict';
 
 const Command = require('../Command.js');
-const AlertEmbed = require('../embeds/AlertEmbed.js');
+const EnemyEmbed = require('../embeds/EnemyEmbed.js');
 
 /**
- * Displays the currently active alerts
+ * Displays the currently persistent enemies
  */
 class Alerts extends Command {
   /**
@@ -12,7 +12,7 @@ class Alerts extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'ondemand.alerts', 'alerts', 'Display the currently active alerts');
+    super(bot, 'ondemand.enemies', 'enemies', 'Display any currently active acolyte-style enemies.');
   }
 
   /**
@@ -24,8 +24,8 @@ class Alerts extends Command {
     this.bot.settings.getChannelPlatform(message.channel)
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
-        const alerts = ws.alerts.filter(a => !a.getExpired());
-        return message.channel.sendEmbed(new AlertEmbed(this.bot, alerts));
+        const persistentEnemies = ws.persistentEnemies.filter(e => e.isDiscovered);
+        return message.channel.sendEmbed(new EnemyEmbed(this.bot, persistentEnemies));
       }).then(() => {
         if (message.deletable) {
           return message.delete(2000);
