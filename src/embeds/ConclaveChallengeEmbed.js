@@ -14,7 +14,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
    * @param {string} category - The category of the challenges in the embed
    */
   constructor(bot, challenges, category) {
-    super(bot);
+    super();
 
     const categoryInValues = values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;

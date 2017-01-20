@@ -11,7 +11,7 @@ class VoidTraderEmbed extends BaseEmbed {
    * @param {VoidTrader} voidTrader - The current state of the Void Trader
    */
   constructor(bot, voidTrader) {
-    super(bot);
+    super();
 
     this.color = voidTrader.isActive() ? 0x00ff00 : 0xff0000;
 

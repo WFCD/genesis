@@ -11,7 +11,7 @@ class AlertEmbed extends BaseEmbed {
    * @param {Array.<Alert>} alerts - The alerts to be included in the embed
    */
   constructor(bot, alerts) {
-    super(bot);
+    super();
 
     this.thumbnail = {
       url: 'http://i.imgur.com/KQ7f9l7.png',

@@ -13,7 +13,7 @@ class NewsEmbed extends BaseEmbed {
    *                        or prime access. Not provided for news.
    */
   constructor(bot, news, type) {
-    super(bot);
+    super();
 
     news.sort((a, b) => {
       const date1 = a.endDate ? a.endDate : a.date;

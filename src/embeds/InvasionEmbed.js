@@ -11,7 +11,7 @@ class InvasionEmbed extends BaseEmbed {
    * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
    */
   constructor(bot, invasions) {
-    super(bot);
+    super();
 
     this.color = invasions.length > 2 ? 0x00ff00 : 0xff0000;
     if (invasions.length > 1) {

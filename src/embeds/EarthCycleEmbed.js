@@ -11,7 +11,7 @@ class EarthCycleEmbed extends BaseEmbed {
    * @param {Object} state - The current state of the cycle
    */
   constructor(bot, state) {
-    super(bot);
+    super();
 
     this.color = state.dayTime ? 0x00ff00 : 0x000066;
     this.title = 'Worldstate - Earth Cycle';

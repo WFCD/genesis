@@ -11,7 +11,7 @@ class SimarisEmbed extends BaseEmbed {
    * @param {Simaris} simaris - The sanctuary state data to be included in the embed
    */
   constructor(bot, simaris) {
-    super(bot);
+    super();
 
     this.thumbnail = {
       url: 'https://github.com/aliasfalse/genesis/raw/master/src/resources/simaris.png',

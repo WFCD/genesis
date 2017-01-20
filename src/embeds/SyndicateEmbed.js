@@ -14,7 +14,7 @@ class SyndicateEmbed extends BaseEmbed {
    * @param {string} syndicate - The syndicate to display the missions for
    */
   constructor(bot, missions, syndicate) {
-    super(bot);
+    super();
 
     const foundSyndicate = values.find(v => syndicate &&
       v.toLowerCase() === syndicate.toLowerCase());

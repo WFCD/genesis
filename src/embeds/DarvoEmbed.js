@@ -11,7 +11,7 @@ class DarvoEmbed extends BaseEmbed {
    * @param {DailyDeal} deal - The deal to be included in the embed
    */
   constructor(bot, deal) {
-    super(bot);
+    super();
 
     this.color = 0x0000ff;
     this.title = 'Worldstate - Darvo';

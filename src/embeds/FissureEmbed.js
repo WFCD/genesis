@@ -11,7 +11,7 @@ class FissureEmbed extends BaseEmbed {
    * @param {Array.<Fissure>} fissures - The fissures to be included in the embed
    */
   constructor(bot, fissures) {
-    super(bot);
+    super();
 
     fissures.sort((a, b) => a.tierNum - b.tierNum);
 
