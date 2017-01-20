@@ -6,7 +6,7 @@ const EnemyEmbed = require('../embeds/EnemyEmbed.js');
 /**
  * Displays the currently persistent enemies
  */
-class Alerts extends Command {
+class Enemies extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -36,4 +36,4 @@ class Alerts extends Command {
   }
 }
 
-module.exports = Alerts;
+module.exports = Enemies;
