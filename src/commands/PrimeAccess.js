@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const PrimeAccessEmbed = require('../embeds/NewsEmbed.js');
 
 /**
  * Displays the currently active warframe prime access news
@@ -12,6 +13,7 @@ class PrimeAccess extends Command {
    */
   constructor(bot) {
     super(bot, 'ondemand.primeaccess', 'primeaccess', 'Display the currently active prime access news');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}prime\\s?access$`, 'i');
   }
 
   /**
@@ -24,24 +26,7 @@ class PrimeAccess extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const news = ws.news.filter(n => n.isPrimeAccess());
-        const color = news.length > 0 ? 0x00ff00 : 0xff0000;
-        const value = news.map(n => n.toString()).join('\n');
-        const fields = [{ name: 'Current prime access:', value: value.length > 0 ? value : 'No Prime Access Currently' }];
-        const embed = {
-          color,
-          author: {
-            name: this.bot.client.user.clientID,
-            icon_url: this.bot.client.user.avatarURL,
-          },
-          title: 'Worldstate - Prime Access',
-          url: 'https://warframe.com',
-          fields,
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        };
-        return message.channel.sendEmbed(embed);
+        return message.channel.sendEmbed(new PrimeAccessEmbed(this.bot, news, 'primeaccess'));
       }).then(() => {
         if (message.deletable) {
           return message.delete(2000);

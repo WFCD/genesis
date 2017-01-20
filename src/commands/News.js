@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const NewsEmbed = require('../embeds/NewsEmbed.js');
 
 /**
  * Displays the currently active warframe news
@@ -24,24 +25,7 @@ class News extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const news = ws.news;
-        const color = news.length > 2 ? 0x00ff00 : 0xff0000;
-        const fields = [{ name: 'Current news:', value: news.join('\n') }];
-        const embed = {
-          color,
-          author: {
-            name: this.bot.client.user.clientID,
-            icon_url: this.bot.client.user.avatarURL,
-          },
-          title: 'Worldstate - News',
-          url: 'https://warframe.com',
-          fields,
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        };
-
-        return message.channel.sendEmbed(embed);
+        return message.channel.sendEmbed(new NewsEmbed(this.bot, news));
       }).then(() => {
         if (message.deletable) {
           return message.delete(2000);

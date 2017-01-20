@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const AlertEmbed = require('../embeds/AlertEmbed.js');
 
 /**
  * Displays the currently active alerts
@@ -25,32 +26,7 @@ class Alerts extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const alerts = ws.alerts.filter(a => !a.getExpired());
-        const color = alerts.length > 2 ? 0x00ff00 : 0xff0000;
-        const fields = alerts.map(a => ({
-          name: `${a.getReward()} - ${a.getETAString()} left`,
-          value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n` +
-            `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`,
-        }));
-        const embed = {
-          color,
-          author: {
-            name: this.bot.client.user.clientID,
-            icon_url: this.bot.client.user.avatarURL,
-          },
-          title: 'Worldstate - Alerts',
-          url: 'https://warframe.com',
-          description: 'Currently in-progress alerts:',
-          thumbnail: {
-            url: 'http://i.imgur.com/KQ7f9l7.png',
-          },
-          fields,
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        };
-
-        return message.channel.sendEmbed(embed);
+        return message.channel.sendEmbed(new AlertEmbed(this.bot, alerts));
       }).then(() => {
         if (message.deletable) {
           return message.delete(2000);

@@ -1,8 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
-
-const values = ['all', 'day', 'week'];// ['all', 'arbiters', 'veil', 'suda', 'meridian', 'loka', 'perrin'];
+const ConclaveChallengeEmbed = require('../embeds/ConclaveChallengeEmbed.js');
 
 /**
  * Displays the currently active Invasions
@@ -35,32 +34,7 @@ class ConclaveChallenges extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const conclaveChallenges = ws.conclaveChallenges;
-        const categoryInValues = values.indexOf(category) !== -1;
-        const color = categoryInValues ? 0x00ff00 : 0xff0000;
-        const embed = {
-          color,
-          title: 'Worldstate - Conclave Challenges',
-          url: 'https://warframe.com',
-          description: `Current Challenges for category: ${typeof category === 'undefined' ? 'none' : category}`,
-          thumbnail: {
-            url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/conclave.png',
-          },
-          fields: [],
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        };
-        if (categoryInValues) {
-          conclaveChallenges.forEach((challenge) => {
-            if ((challenge.category === category || category === 'all') && !challenge.isRootChallenge()) {
-              embed.fields.push({ name: challenge.mode, value: `${challenge.description} expires in ${challenge.getEndString()}` });
-            }
-          });
-        } else {
-          embed.fields.push({ name: 'No such conclave category', value: `Valid values: ${values.join(', ')}` });
-        }
-
+        const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category);
         return message.channel.sendEmbed(embed);
       }).then(() => {
         if (message.deletable) {

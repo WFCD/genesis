@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../Command.js');
+const DarvoEmbed = require('../embeds/DarvoEmbed.js');
 
 /**
  * Displays today's Darvo deal
@@ -24,29 +25,7 @@ class Darvo extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const deal = ws.dailyDeals[0];
-        return message.channel.sendEmbed({
-          color: 0x0000ff,
-          author: {
-            name: this.bot.client.user.clientID,
-            icon_url: this.bot.client.user.avatarURL,
-          },
-          title: 'Worldstate - Darvo',
-          url: 'https://warframe.com',
-          description: 'Today\'s Darvo deal',
-          thumbnail: {
-            url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/darvo.png',
-          },
-          fields: [
-            {
-              name: `${deal.item}, ${deal.salePrice}p - ${deal.total - deal.sold}/${deal.total} left`,
-              value: `Original price: ${deal.originalPrice}p, expires in ${deal.getEtaString()}`,
-            },
-          ],
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-wordstate-parser, Warframe Community Developers',
-          },
-        });
+        return message.channel.sendEmbed(new DarvoEmbed(this.bot, deal));
       })
       .catch(this.logger.error);
   }
