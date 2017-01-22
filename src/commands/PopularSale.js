@@ -28,6 +28,12 @@ class PopularSale extends Command {
         const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
         return message.channel.sendEmbed(new SalesEmbed(this.bot, sales));
       })
+      .then(() => {
+        if (message.deletable) {
+          return message.delete(2000);
+        }
+        return new Promise();
+      })
       .catch(this.logger.error);
   }
 }
