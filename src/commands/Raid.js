@@ -14,7 +14,7 @@ class Raid extends Command {
    */
   constructor(bot) {
     super(bot, 'misc.raid', 'raid', 'Get the raid record for a desired user, or for the calling user');
-    this.regex = new RegExp(`^${this.bot.escapedPrefix}${this.call}\\s*(.+)?`, 'i');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}(?:${this.call}s?|trials?)\\s*(.+)?`, 'i');
     this.usages = [
       {
         description: 'Search for a users\'s raid stats',
@@ -35,20 +35,23 @@ class Raid extends Command {
     }
     this.logger.debug(`Searched for query: ${query}`);
 
-    const url = `https://api.trials.wf/api/player/pc/${query}/completed`;
-    const raidCache = new Cache(url, 999999);
+    this.bot.settings.getChannelPlatform(message.channel)
+      .then((platform) => {
+        const url = `https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`;
+        const raidCache = new Cache(url, 999999);
 
-    raidCache.getDataJson().then((data) => {
-      const embed = new RaidEmbed(this.bot, data, message, query);
-      return message.channel.sendEmbed(embed);
-    })
-    .then(() => {
-      if (message.deletable) {
-        return message.delete(2000);
-      }
-      return Promise.resolve();
-    })
-    .catch(this.logger.error);
+        raidCache.getDataJson().then((data) => {
+          const embed = new RaidEmbed(this.bot, data, query);
+          return message.channel.sendEmbed(embed);
+        });
+      })
+      .then(() => {
+        if (message.deletable) {
+          return message.delete(2000);
+        }
+        return Promise.resolve();
+      })
+      .catch(this.logger.error);
   }
 }
 
