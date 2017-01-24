@@ -13,7 +13,7 @@ class FeaturedDeal extends Command {
    */
   constructor(bot) {
     super(bot, 'ondemand.featureddeal', 'featureddeal', 'Displays current featured deals');
-    this.regex = new RegExp(`^${this.bot.escapedPrefix}featured\\sdeals?$`, 'i');
+    this.regex = new RegExp(`^${this.bot.escapedPrefix}featured\\s?deals?$`, 'i');
   }
 
   /**
