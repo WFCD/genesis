@@ -16,7 +16,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
   constructor(bot, challenges, category) {
     super();
 
-    const categoryInValues = values.indexOf(category.toLowerCase()) !== -1;
+    const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
     if (categoryInValues) {
       this.fields = challenges.filter(
