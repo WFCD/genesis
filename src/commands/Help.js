@@ -64,7 +64,7 @@ class Help extends Command {
 
     const commands = this.commandHandler.commands.filter(c => !c.ownerOnly)
       .map(c => c.usages.map(u => ({
-        name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+        name: `${this.bot.prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
         value: u.description,
         inline: false,
       }
