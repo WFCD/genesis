@@ -38,40 +38,51 @@ class BugReport extends Command {
    */
   run(message) {
     const bugReport = message.cleanContent.match(this.regex)[1];
-    const params = bugReport.split('|');
 
     if (this.bot.owner) {
-      const embed = {
-        author: {
-          icon_url: message.author.avatarURL,
-          name: `${message.author.username}#${message.author.discriminator}`,
-        },
-        title: 'Bug Report',
-        fields: [],
-      };
-
-      if (params.length < 2) {
-        embed.fields = [{ name: '_ _', value: bugReport }];
-      } else {
-        embed.fields[0] = {
-          name: params[0].trim(),
-          value: params[1].trim(),
+      if(bugReport) {
+        const params = bugReport.split('|');
+        const embed = {
+          author: {
+            icon_url: message.author.avatarURL,
+            name: `${message.author.username}#${message.author.discriminator}`,
+          },
+          title: `Bug Report | ${message.author}`,
+          fields: [],
         };
-        if (params.length > 2) {
-          embed.image = {
-            url: params[2].trim(),
-          };
-        } else if (message.attachments.array().length > 0) {
-          embed.image = {
-            url: message.attachments.array()[0].url,
-          };
-        }
-      }
 
-      this.bot.client.users.get(this.bot.owner)
-        .sendEmbed(embed)
-        .then(() => message.reply('Bug report sent.'))
-        .catch(this.logger.error);
+        if (params.length < 2) {
+          embed.fields = [{ name: '_ _', value: bugReport }];
+        } else {
+          embed.fields[0] = {
+            name: params[0].trim(),
+            value: params[1].trim(),
+          };
+          if (params.length > 2) {
+            embed.image = {
+              url: params[2].trim(),
+            };
+          } else if (message.attachments.array().length > 0) {
+            embed.image = {
+              url: message.attachments.array()[0].url,
+            };
+          }
+        }
+
+        this.bot.client.users.get(this.bot.owner)
+          .sendEmbed(embed)
+          .then(() => message.reply('Bug report sent.'))
+          .catch(this.logger.error);
+      } else {
+        message.channel.sendEmbed({
+          author: {
+            icon_url: message.author.avatarURL,
+            name: `${message.author.username}#${message.author.discriminator}`,
+          },
+          title: `Bug Report | ${message.author}`,
+          fields: [{name: '_ _', value:'Need to provide a bug report, see `/help` for syntax.'}],
+        }).catch(this.logger.error)
+      }
     }
   }
 }
