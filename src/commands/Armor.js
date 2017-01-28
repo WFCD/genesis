@@ -129,7 +129,7 @@ class Armor extends Command {
         name: this.bot.client.user.clientID,
         icon_url: this.bot.client.user.avatarURL,
       },
-      title: 'Warframe - Shields',
+      title: 'Warframe - Armor',
       url: 'https://warframe.com',
       thumbnail: {
         url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/grineer.png',
