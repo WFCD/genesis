@@ -17,7 +17,9 @@ const Genesis = require('./src/bot.js');
 /**
  * Raven client instance for logging errors and debugging events
  */
-const client = new Raven.Client(process.env.RAVEN_URL);
+const client = Raven.config(process.env.RAVEN_URL, {
+  autoBreadcrumbs: true,
+});
 
 /**
  * Logging functions class
