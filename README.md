@@ -1,7 +1,7 @@
 # Project Genesis <img src="src/resources/cephalontransparent.png" height="25" width="25" alt="Genesis Avatar"/>
 
 [![Supported by Warframe Community Developers](https://raw.githubusercontent.com/Warframe-Community-Developers/banner/master/banner.png)](https://github.com/Warframe-Community-Developers "Supported by Warframe Community Developers")
-### A [Discord.js](http://hydrabolt.github.io/discord.js) bot for tracking Warframe alerts, invasions and more. 
+### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more. 
 
 # Contribute
 
@@ -14,8 +14,9 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 
 [![Contact me on Discord](https://img.shields.io/badge/discord-Tobiah%238452-7289DA.svg)](https://discord.gg/0ycgfahdR8gTzWgM "Contact me on Discord: Tobiah#8452")
 
-[![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=shield)](https://discord.gg/0onjYYKuUBHiR3LK "Try Genesis on Discord!")
+[![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/dte853p "Try Genesis on Discord!")
 
+[![Get Genesis on Discord](src/resources/ceph-gen-banner.png)](https://bot.discord.io/genesis "Add Cephalon Genesis to your Server!")
 
 
 ## Installation
@@ -23,42 +24,53 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 1. Clone this repo
 
     ```
-    git clone git@github.aliasfalse/genesis.git
+    git clone git@github.warframe-community-developers/genesis.git
     ```
-2. Install mongodb server or obtain an available mongodb server
+1. Install mysql server and configure a database to store settings and data
 
-3. Run `npm install`
+1. Run `npm i`
 
-4. Run your bot and see below for available config / commands
+1. Start bot with [pm2](http://pm2.keymetrics.io/) using a copy of the provided `pm2.json` file.
+
+1. See below for available config / commands
 
 ## Configuration
 
-Genesis requires a MongoDB server. It uses the **MONGODB_URL** environment variable for determining where to connect to
+Genesis requires a MySQL server. It uses the **MYSQL_*** environment variables for determining where to connect to
 
 Environment Variable | Description | Example | Default
 --- | --- | --- | ---
-MONGODB_URL | connection url for mongodb | `mongodb://<host>:<port>/<database>` | N\A
-LOCATION_MAX_CACHED_TIME | Maximum amount of time to cache location data | 600000 | 30000
+TOKEN | Discord connection token | `mfa.234089sdfasdf20dfada,f.asd` | N\A
+LOCATION_MAX_CACHED_TIME | Maximum amount of time to cache location data | 600000 | 60000
+NEXUSSTATS_MAX_CACHED_TIME | Maximum amount of time to cache nexus stats data | 600000 | 60000
+LOG_LEVEL | Logging level of the bot, including info, debug, error, fatal | `DEBUG` | `ERROR`
+MYSQL_DB | MySQL database name, used for connecting to data provider and storage | `genesis` | `genesis`
+MYSQL_PASSWORD | MySQL database connection password | `password` | N\A
+MYSQL_USER | MySQL database connection user | `genesis` | `genesis`
+MYSQL_PORT | MySQL database connection port | 3306 | 3306
+MYSQL_HOST | Hostname for conneting to MySQL | `localhost` | `localhost`
+SHARD_OFFSET | Offset of the first shard id for the local shards, default 0 | 2 | 0
+LOCAL_SHARDS | Number of shards locally | 2 | 1
+SHARDS | Total number of shards | 1 | 1
+OWNER | ID of the person owning/running the bot, used for checking permissions
+DISCORD_BOTS_WEB_TOKEN | Token used to update bots.discord.pw bot statistics | `as;dofiahsdf` | N\A
+DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server count | 6456514654966321321 | N\A
+DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
+PREFIX | Default prefix to use for the instance | `\` | `\`
+RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***' | N\A
 
 ## Commands
 
 Command | Listener ID | Description
 --- | --- | ---
-`genesis start` |  | Adds user to DB and starts tracking
-`genesis settings` |  | Returns settings
+`genesis settings` |  | Returns settings in a direct message
 `genesis alerts` |  | Displays active alerts
 `genesis baro` |  | Displays current Baro Ki'Teer status/inventory
 `genesis darvo` |  | Displays current Darvo Daily Deal
-`genesis end` |  | Hide custom keyboard (telegram only)
 `genesis invasions` |  | Displays current Invasions
 `genesis news` |   | Displays news
 `genesis platform <platform>` |  | Changes the platform
-`genesis platform` |  | Displays menu
-`genesis settings` |  | Display settings menu
-`genesis stop` |  | Turn off notifications
-`genesis track <reward or event>` |  | Start tracking reward or event
-`genesis track` |  | Tracking menu
-`genesis untrack <reward or event>` |  | Stop tracking reward or event
+`genesis platform` |  | Displays usage
 `genesis simaris` |  | Get Synthesis target tracking
 `genesis update` |  | Display current update
 `genesis primeaccess` |  | Display current Prime Access news
@@ -77,32 +89,10 @@ Command | Listener ID | Description
 ## Sample Interaction
 
 ```
-user1>> /start
-
-genesis>> Tracking started
-
-user1>> /settings
-
-genesis>> 
-Your platform is PC
-Alerts are OFF
-Invasions are OFF
-News are OFF
-
-Tracked rewards:
-Alternative helmets
-ClanTech resources
-Nightmare Mods
-Auras
-Resources
-Nitain Extract
-Void Keys
-Weapon skins
-Weapons
-Other rewards
-
-user1>> /end
-
-genesis>> Done
-
+... to come later, want to finish more of the functionality
 ```
+
+
+## Throughput
+
+[![Throughput Graph](https://graphs.waffle.io/aliasfalse/genesis/throughput.svg)](https://waffle.io/aliasfalse/genesis/metrics/throughput)

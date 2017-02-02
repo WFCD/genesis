@@ -39,11 +39,11 @@ Use the provided `.eslintrc.json` to lint your files, include any ignores in you
 
 * [Permissions calculator](https://discordapi.com/permissions.html)
 
-* warframe-worldsate-parser [Docs](https://aliasfalse.github.io/warframe-worldstate-parser/index.html)
+* warframe-worldsate-parser [Docs](https://warframe-community-developers.github.io/warframe-worldstate-parser)
 
-* warframe-nexus-query [Docs](https://aliasfalse.github.io/warframe-nexus-query)
+* warframe-nexus-query [Docs](https://warframe-community-developers.github.io/warframe-nexus-query)
 
-* warframe-location-query [Docs](https://aliasfalse.github.io/warframe-location-query)
+* warframe-location-query [Docs](https://warframe-community-developers.github.io/warframe-location-query)
 
 * Contact Tobiah on Discord [Cephalon Genesis guild](https://discord.gg/0onjYYKuUBHiR3LK)
 
