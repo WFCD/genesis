@@ -25,7 +25,7 @@ class VoidTraderEmbed extends BaseEmbed {
     }
     this.fields.push({
       name: `Time until ${voidTrader.isActive() ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
-      value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}`,
+      value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` || 'Data Pending',
     });
     this.title = 'Worldstate - Void Trader';
     this.description = 'Current Void Trader status';
