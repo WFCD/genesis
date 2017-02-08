@@ -17,18 +17,24 @@ function timeToSeconds(time) {
 }
 
 /**
+ * Checks number value and returns 0 if number is NaN
+ * @param {?} value Value to check
+ * @returns {number|?} Either the passed value or 0
+ */
+function safeNumber(value) {
+    return isNaN(value) ? 0 : value;
+}
+
+/**
  * Format time from number to string
  * @param  {number} n time as a number
  * @returns {string}   time as a string
  */
 function formatTime(n) {
-  const hours = Math.floor(n / 60 / 60);
-  const minutes = Math.floor((n - (hours * 60 * 60)) / 60);
-  const seconds = Math.round(n - (hours * 60 * 60) - (minutes * 60));
-  let h = '';
-  if (hours > 0) {
-    h = `${(hours < 10) ? `0${hours}` : hours}:`;
-  }
+  const hours = safeNumber(Math.floor(n / 60 / 60));
+  const minutes = safeNumber(Math.floor((n - (hours * 60 * 60)) / 60));
+  const seconds = safeNumber(Math.round(n - (hours * 60 * 60) - (minutes * 60)));
+  const h = hours > 0 ? `${(hours < 10) ? `0${hours}` : hours}:` : '';
   return `${h + ((minutes < 10) ? `0${minutes}` : minutes)}:${(seconds < 10) ? `0${seconds}` : seconds}`;
 }
 
