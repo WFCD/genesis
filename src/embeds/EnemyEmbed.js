@@ -29,9 +29,9 @@ class EnemyEmbed extends BaseEmbed {
       this.title = e.agentType;
       this.description = 'Enemy Discovered!';
       this.color = 0xaf5b4b;
-      this.fields = [{ name: '_ _', value: `**Discovered At:** ${this.lastDiscoveredAt}` },
-      { name: '_ _', value: `**Health Remaining:** ${this.healthPercent}%` },
-      { name: '_ _', value: `**Discovered At:** ${this.lastDiscoveredAt}` }];
+      this.fields = [{ name: '_ _', value: `**Discovered At:** ${e.lastDiscoveredAt}` },
+      { name: '_ _', value: `**Health Remaining:** ${e.healthPercent}%` },
+      { name: '_ _', value: `**Discovered At:** ${e.lastDiscoveredAt}` }];
     } else {
       this.color = 0xaf5b4b;
       this.fields = [{ name: 'There are currently no enemies to combat', value: '_ _' }];
