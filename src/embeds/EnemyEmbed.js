@@ -30,7 +30,7 @@ class EnemyEmbed extends BaseEmbed {
       this.description = 'Enemy Discovered!';
       this.color = 0xaf5b4b;
       this.fields = [{ name: '_ _', value: `**Discovered At:** ${e.lastDiscoveredAt}` },
-      { name: '_ _', value: `**Health Remaining:** ${e.healthPercent}%` },
+      { name: '_ _', value: `**Health Remaining:** ${100*Number(e.healthPercent)}%` },
       { name: '_ _', value: `**Discovered At:** ${e.lastDiscoveredAt}` }];
     } else {
       this.color = 0xaf5b4b;
