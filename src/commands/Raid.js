@@ -37,7 +37,7 @@ class Raid extends Command {
 
     this.bot.settings.getChannelPlatform(message.channel)
       .then((platform) => {
-        const url = `https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`;
+        const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
         const raidCache = new Cache(url, 999999);
 
         raidCache.getDataJson().then((data) => {

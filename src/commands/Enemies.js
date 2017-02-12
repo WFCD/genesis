@@ -12,7 +12,7 @@ class Enemies extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'ondemand.enemies', 'enemies', 'Display any currently active acolyte-style enemies.');
+    super(bot, 'ondemand.acolytes', 'acolyte', 'Display any currently active acolyte-style enemies.');
   }
 
   /**
@@ -24,7 +24,7 @@ class Enemies extends Command {
     this.bot.settings.getChannelPlatform(message.channel)
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
-        const persistentEnemies = ws.persistentEnemies.filter(e => e.isDiscovered);
+        const persistentEnemies = ws.persistentEnemies;
         return message.channel.sendEmbed(new EnemyEmbed(this.bot, persistentEnemies));
       }).then(() => {
         if (message.deletable) {

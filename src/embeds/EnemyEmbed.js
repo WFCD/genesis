@@ -22,14 +22,14 @@ class EnemyEmbed extends BaseEmbed {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
       this.fields = enemies.map(e => ({
         name: e.agentType,
-        value: `Last discovered at ${e.lastDiscoveredAt}.\nIt has ${e.healthPercent}% health remaining and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
+        value: `Last discovered at ${e.lastDiscoveredAt}.\nIt has ${(100*Number(e.healthPercent)).toFixed(2)}% health remaining and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
       }));
     } else if (enemies.length === 1) {
       const e = enemies[0];
       this.title = e.agentType;
-      this.description = 'Enemy Discovered!';
+      this.description = `Enemy ${e.discovered ? 'Discovered' : 'Hiding'}!`;
       this.color = 0xaf5b4b;
-      this.fields = [{ name: '_ _', value: `**Discovered At:** ${e.lastDiscoveredAt}` },
+      this.fields = [{ name: '_ _', value: `**${e.discovered? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
       { name: '_ _', value: `**Health Remaining:** ${(100*Number(e.healthPercent)).toFixed(2)}%` },
       { name: '_ _', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!`}];
     } else {
