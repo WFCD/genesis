@@ -32,6 +32,7 @@ class Raid extends Command {
     let query = message.cleanContent.match(this.regex)[1];
     if (!query || typeof query === 'undefined') {
       query = message.member ? message.member.displayName : message.author.username;
+      query = query.replace('*', '');
     }
     this.logger.debug(`Searched for query: ${query}`);
 
