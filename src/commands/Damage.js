@@ -12,7 +12,7 @@ class Damage extends Command {
    */
   constructor(bot) {
     super(bot, 'misc.damage', 'damage', 'Display Damage 2.0 chart');
-    this.damageChart = 'http://morningstar.ninja/chart/Damage_2.0_Resistance_Flowchart.png';
+    this.damageChart = 'http://i.imgur.com/EOzr440.png';
   }
 
   /**
