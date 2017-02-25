@@ -32,14 +32,34 @@ class Database {
     Object.assign(opts, dbOptions);
     this.db = mysql.createPool(opts);
     this.bot = bot;
+
+    this.defaults = {
+      prefix: '/',
+      respond_to_settings: true,
+      platform: 'pc',
+      language: 'en-us',
+    };
   }
 
   /**
    * Creates the required tables in the database
-   * @returns {Promise}
+   * @returns {Array.<Promise>}
    */
   createSchema() {
-    return Promise.mapSeries(schema, q => this.db.query(q));
+    const promises = Promise.mapSeries(schema, q => this.db.query(q));
+    return promises;
+  }
+
+ /**
+  * Initialize data for guilds in channels for existing guilds
+  * @param {Client} client for pulling guild information
+  */
+  ensureData(client) {
+    const promises = [];
+    client.guilds.array().forEach((guild) => {
+      promises.push(this.addGuild(guild).then(this.bot.logger.debug));
+    });
+    promises.forEach(this.bot.logger.error);
   }
 
   /**
@@ -64,7 +84,6 @@ class Database {
    */
   deleteGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id};`;
-
     return this.db.query(query);
   }
 
@@ -105,8 +124,7 @@ class Database {
    * @returns {Promise}
    */
   setChannelLanguage(channel, language) {
-    const query = SQL`UPDATE channels SET language = ${language} WHERE id = ${channel.id};`;
-    return this.db.query(query);
+    return this.setChannelSetting(channel, 'language', language);
   }
 
   /**
@@ -116,8 +134,7 @@ class Database {
    * @returns {Promise}
    */
   setChannelPlatform(channel, platform) {
-    const query = SQL`UPDATE channels SET platform = ${platform} WHERE id = ${channel.id};`;
-    return this.db.query(query);
+    return this.setChannelSetting(channel, 'platform', platform.toLowerCase());
   }
 
   /**
@@ -127,8 +144,46 @@ class Database {
    * @returns {Promise}
    */
   setChannelResponseToSettings(channel, respond) {
-    const query = SQL`UPDATE channels SET respond_to_settings = ${respond} WHERE id = ${channel.id};`;
-    return this.db.query(query);
+    return this.setChannelSetting(channel, 'respond_to_settings', respond);
+  }
+
+  /**
+   * Sets the custom prefix for this guild
+   * @param {Guild} guild The Discord guild for which to set the response setting
+   * @param {string} prefix The prefix for this guild
+   * @returns {Promise}
+   */
+  setGuildPrefix(guild, prefix) {
+    return this.setGuildSetting(guild, 'prefix', prefix);
+  }
+
+  /**
+   * Resets the custom prefix for this guild to the bot's globally configured prefix
+   * @param {Guild} guild The Discord guild for which to set the response setting
+   * @returns {Promise}
+   */
+  resetGuildPrefix(guild) {
+    return this.setGuildSetting(guild, 'prefix', this.bot.prefix);
+  }
+
+  /**
+   * Sets the custom prefix for this channel
+   * @param {Channel} channel The Discord channel for which to set the response setting
+   * @param {string} prefix The prefix for this channel
+   * @returns {Promise}
+   */
+  setChannelPrefix(channel, prefix) {
+    return this.setChannelSetting(channel, 'prefix', prefix);
+  }
+
+  /**
+   * Resets the custom prefix for this guild to the bot's globally configured prefix
+   * @param {Channel} channel The Discord guild for which to set the response setting
+   * @param {string} prefix The prefix for this channel
+   * @returns {Promise}
+   */
+  resetChannelPrefix(channel) {
+    return this.setChannelSetting(channel, 'prefix', this.bot.prefix);
   }
 
   /**
@@ -137,17 +192,7 @@ class Database {
    * @returns {Promise.<string>}
    */
   getChannelLanguage(channel) {
-    const query = SQL`SELECT language FROM channels WHERE id = ${channel.id};`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0].length === 0) {
-          if (channel.type === 'text') {
-            return this.addGuildTextChannel(channel).then(() => 'en-US');
-          }
-          return this.addDMChannel(channel).then(() => 'en-US');
-        }
-        return res[0][0].language;
-      });
+    return this.getChannelSetting(channel, 'language');
   }
 
   /**
@@ -156,17 +201,7 @@ class Database {
    * @returns {Promise.<string>}
    */
   getChannelPlatform(channel) {
-    const query = SQL`SELECT platform FROM channels WHERE id = ${channel.id};`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0].length === 0) {
-          if (channel.type === 'text') {
-            return this.addGuildTextChannel(channel).then(() => 'pc');
-          }
-          return this.addDMChannel(channel).then(() => 'pc');
-        }
-        return res[0][0].platform;
-      });
+    return this.getChannelSetting(channel, 'platform');
   }
 
   /**
@@ -174,15 +209,62 @@ class Database {
    * @param {Channel} channel The channel
    * @returns {Promise.<boolean>}
    */
-  getChannelRespondToSettings(channel) {
-    const query = SQL`SELECT platform FROM channels WHERE id = ${channel.id};`;
+  getChannelResponseToSettings(channel) {
+    return this.getChannelSetting(channel, 'respond_to_settings');
+  }
+
+  /**
+   * Returns the prefix setting for a guild
+   * @param {Channel} channel The guild
+   * @returns {Promis.<string>} the previs setting for the guild
+   */
+  getChannelPrefix(channel) {
+    return this.getChannelSetting(channel, 'prefix');
+  }
+
+  /**
+   * Get a setting for a particular channel
+   * @param {Channel} channel channel to get the setting for
+   * @param {string} setting name of the setting to get
+   * @returns {Promise} setting
+   */
+  getChannelSetting(channel, setting) {
+    const query = SQL`SELECT val FROM settings WHERE channel_id=${channel.id} and setting=${setting};`;
     return this.db.query(query)
-      .then((res) => {
-        if (res.rows.length === 0) {
-          throw new Error(`The channel with ID ${channel.id} was not found in the database`);
+    .then((res) => {
+      if (res[0].length === 0) {
+        if (channel.type === 'text') {
+          return this.addGuildTextChannel(channel).then(() => this.defaults[`${setting}`]);
         }
-        return res.rows[0].respond_to_settings;
-      });
+        return this.addDMChannel(channel).then(() => this.defaults[`${setting}`]);
+      }
+      return res[0][0].val;
+    });
+  }
+
+  /**
+   * Get a setting for a particular channel
+   * @param {Channel} channel channel to get the setting for
+   * @param {string} setting name of the setting to set
+   * @param {string|boolean} value value of the setting to be set
+   * @returns {Promise} setting
+   */
+  setChannelSetting(channel, setting, value) {
+    const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
+    return this.db.query(query);
+  }
+
+  /**
+   * Resets the custom prefix for this guild to the bot's globally configured prefix
+   * @param {Guild} guild The Discord guild for which to set the response setting
+   * @param {string} setting Name of the setting to set
+   * @param {string|boolean} val value of the setting to be set
+   * @returns {Promise}
+   */
+  setGuildSetting(guild, setting, val) {
+    const value = guild.channels.array().map(channel => `(${channel.id}, ${setting}, ${val})`).join(',');
+    const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUES ${value} ON DUPLICATE KEY UPDATE val=${val};`;
+    return this.db.query(query);
   }
 
   /**
@@ -313,7 +395,7 @@ class Database {
   getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
     return this.db.query(query)
-      .then(res => res.map(r => r.item));
+      .then(res => res[0].map(r => r.item));
   }
 
   /**
@@ -324,7 +406,7 @@ class Database {
   getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.db.query(query)
-      .then(res => res.map(r => r.type));
+    .then(res => res[0].map(r => r.type));
   }
 
   /**
@@ -431,11 +513,10 @@ class Database {
     AND is_user = false AND target_id = ${role.id}`;
     return this.db.query(query)
       .then((res) => {
-        if (res.rows.length === 0) {
-          throw new Error(`The channel permissions for the channel ${channel.id}
-             for role ${role.id} was not found in the database`);
+        if (res[0].length === 0) {
+          return true;
         }
-        return res.rows[0].allowed;
+        return res.rows[0].allowed === 1;
       });
   }
 
@@ -470,12 +551,10 @@ class Database {
           AND guild_permissions.target_id IN (${userRoleIds});`;
     return this.db.query(query)
     .then((res) => {
-      if (res.rows.length === 0) {
-        throw new Error(`The channel permissions for the channel ${channel.id}
-           for roles: ${userRoles.array().map(role => role.name).join(', ')} were not found in the database`);
+      if (res[0].length === 0) {
+        return true;
       }
-
-      return res.rows[0].allowed;
+      return res[0][0].allowed;
     });
   }
 
