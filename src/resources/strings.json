@@ -1,6 +1,21 @@
 {
-  "languages" : {
-    "english": {
+  "languages": {
+    "en-US": {
+      "damage_reply": "Operator $author, the damage flowchart, at your request.",
+      "override_enabled": "Operator, the override is now enabled.",
+      "override_disabled": "Operator, the override is now disabled.",
+      "override_toggle_error": "An error occurred toggling `override`.",
+      "command_not_blacklistable": "`$command` is not able to be blacklisted.",
+      "cannot_reply": "Cannot respond to command, `$command`.",
+      "command_added_blacklist": "`$command` added to the blacklist.",
+      "all_command_added_blacklist": "All commands added to the blacklist",
+      "command_removed_blacklist": "`$command` removed from the blacklist.",
+      "all_command_removed_blacklist": "All commands removed from the blacklist",
+      "response_enabled": "Operator, responding to settings changes is now enabled.",
+      "response_disabled": "Operator, responding to settings changes is now disabled.",
+      "response_toggle_error": "An error occurred toggling `response`.",
+      "language_set": "Lanuage set to `$language`.",
+      "language_not_set": "Language not set to `$language`. Provided language was either invalid or already set."
     }
   }
 }

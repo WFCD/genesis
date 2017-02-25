@@ -7,7 +7,8 @@ module.exports = [
     language VARCHAR(5) NOT NULL DEFAULT 'en-US',
     platform VARCHAR(3) NOT NULL DEFAULT 'pc',
     webhook TEXT,
-    respond_to_settings BOOLEAN NOT NULL DEFAULT TRUE
+    respond_to_settings BOOLEAN NOT NULL DEFAULT TRUE,
+    prefix VARCHAR(3) NOT NULL DEFAULT '/'
   );`,
   `CREATE TABLE IF NOT EXISTS type_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
@@ -45,5 +46,12 @@ module.exports = [
     item_or_type VARCHAR(20) NOT NULL,
     text TEXT NOT NULL,
     PRIMARY KEY (guild_id, item_or_type)
+  );`,
+  `CREATE TABLE IF NOT EXISTS settings (
+    channel_id BIGINT UNSIGNED NOT NULL,
+    setting VARCHAR(20) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    PRIMARY KEY (channel_id, setting),
+    FOREIGN KEY (channel_id) REFERENCES channels(id)
   );`,
 ];

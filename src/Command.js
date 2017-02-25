@@ -31,7 +31,7 @@ class Command {
      * Command regex for calling the command
      * @type {RegExp}
      */
-    this.regex = new RegExp(`^${bot.escapedPrefix}${call}s?$`, 'i');
+    this.regex = new RegExp(`^${call}s?$`, 'i');
     /**
      * Help command for documenting the function or purpose of a command.
      * @type {string}
@@ -78,6 +78,30 @@ class Command {
      * @type {boolean}
      */
     this.ownerOnly = false;
+
+    /**
+     * True if this command is allowed to be disabled.
+     * @type {Boolean}
+     */
+    this.blacklistable = true;
+
+    /**
+     * True if this command requires authorization to be executed
+     * @type {Boolean}
+     */
+    this.requiresAuth = false;
+
+   /**
+    * True if this command is allowed in direct messages
+    * @type {Boolean}
+    */
+    this.allowDM = true;
+
+    /**
+     * Message manager for sending and managing messages
+     * @type {MessageManager}
+     */
+    this.messageManager = bot.messageManager;
   }
 
   /**
