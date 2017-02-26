@@ -114,7 +114,7 @@ class Enable extends Command {
    * @returns {Role|User} target or user to enable commands for
    */
   getTarget(targetParam, roleMentions, userMentions, message) {
-    let target = '';
+    let target;
     if (roleMentions.length > 0) {
       target = roleMentions[0];
       target.type = 'Role';
@@ -133,6 +133,8 @@ class Enable extends Command {
       } else if (userTarget) {
         target = userTarget;
         target.type = 'User';
+      } else {
+        target = '';
       }
     }
     return target;

@@ -114,7 +114,7 @@ class Disable extends Command {
    * @returns {Role|User} target or user to disable commands for
    */
   getTarget(targetParam, roleMentions, userMentions, message) {
-    let target = '';
+    let target;
     if (roleMentions.array().length > 0) {
       target = roleMentions.array()[0];
       target.type = 'Role';
@@ -133,6 +133,8 @@ class Disable extends Command {
       } else if (userTarget) {
         target = userTarget;
         target.type = 'User';
+      } else {
+        target = '';
       }
     }
     return target;
