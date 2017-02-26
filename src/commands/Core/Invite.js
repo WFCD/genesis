@@ -11,7 +11,7 @@ class Invite extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.invite', 'invite', 'Ping Genesis to test connectivity');
+    super(bot, 'core.invite', 'invite', 'Send Invitation Link to Authorize Bot to Join a Server');
   }
 
   /**
