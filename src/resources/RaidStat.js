@@ -22,7 +22,7 @@ function timeToSeconds(time) {
  * @returns {number|?} Either the passed value or 0
  */
 function safeNumber(value) {
-    return isNaN(value) ? 0 : value;
+  return isNaN(value) ? 0 : value;
 }
 
 /**
