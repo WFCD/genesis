@@ -38,7 +38,7 @@ class NewsEmbed extends BaseEmbed {
       }
     } else {
       name = 'Current news:';
-      value = value = value.length > 0 ? value : 'No News Currently';
+      value = value.length > 0 ? value : 'No News Currently';
       title = 'Worldstate - News';
     }
 
