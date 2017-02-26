@@ -43,11 +43,10 @@ class Database {
 
   /**
    * Creates the required tables in the database
-   * @returns {Array.<Promise>}
+   * @returns {Promise}
    */
   createSchema() {
-    const promises = Promise.mapSeries(schema, q => this.db.query(q));
-    return promises;
+    return Promise.mapSeries(schema, q => this.db.query(q));
   }
 
  /**
@@ -57,9 +56,16 @@ class Database {
   ensureData(client) {
     const promises = [];
     client.guilds.array().forEach((guild) => {
-      promises.push(this.addGuild(guild).then(this.bot.logger.debug));
+      promises.push(this.addGuild(guild));
     });
-    promises.forEach(this.bot.logger.error);
+    Promise.all(promises.map(x => x.reflect()))
+      .then((results) => {
+        results.forEach((result) => {
+          if (!result.isFulfilled()) {
+            this.bot.logger.error(result.reason());
+          }
+        });
+      });
   }
 
   /**
@@ -201,7 +207,7 @@ class Database {
    * @returns {Promise.<string>}
    */
   getChannelPlatform(channel) {
-    return this.getChannelSetting(channel, 'platform');
+    return this.getChannelSetting(channel, 'platform').then(prefix => unescape(prefix));
   }
 
   /**
@@ -262,9 +268,11 @@ class Database {
    * @returns {Promise}
    */
   setGuildSetting(guild, setting, val) {
-    const value = guild.channels.array().map(channel => `(${channel.id}, ${setting}, ${val})`).join(',');
-    const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUES ${value} ON DUPLICATE KEY UPDATE val=${val};`;
-    return this.db.query(query);
+    const promises = [];
+    guild.channels.array().forEach((channel) => {
+      promises.push(this.setChannelSetting(channel, setting, val));
+    });
+    return null;
   }
 
   /**
@@ -274,7 +282,7 @@ class Database {
    * @returns {Promise}
    */
   trackItem(channel, item) {
-    const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id}, ${item});`;
+    const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id},${item});`;
     return this.db.query(query);
   }
 
@@ -296,7 +304,7 @@ class Database {
    * @returns {Promise}
    */
   trackEventType(channel, type) {
-    const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id}, ${type});`;
+    const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id},${type});`;
     return this.db.query(query);
   }
 

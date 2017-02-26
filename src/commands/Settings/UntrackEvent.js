@@ -49,24 +49,8 @@ class UntrackItem extends Command {
     const promises = [];
     itemsToTrack.forEach(item => promises.push(this.bot.settings
       .untrackEventType(message.channel, item)));
-
     promises.forEach(promise => promise.catch(this.logger.error));
-    message.react('\u2705');
-    this.bot.settings.getChannelResponseToSettings(message.channel)
-      .then((respondToSettings) => {
-        let retPromise = null;
-        if (respondToSettings) {
-          retPromise = message.reply('Settings updated').then((settingsMsg) => {
-            if (settingsMsg.deletable) {
-              settingsMsg.delete(50000).catch(this.logger.error);
-            }
-          });
-        }
-        return retPromise;
-      }).catch(this.logger.error);
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
-    }
+    this.messageManager.notifySettingsChange(message, true, true);
   }
 
   sendInstructionEmbed(message) {

@@ -25,21 +25,9 @@ class GetCommandIds extends Command {
       !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly));
     const embed = new CommandIdEmbed(this.bot, commands);
     if (message.channel.type !== 'dm') {
-      message.reply('Check your direct messages for more information.')
-        .then((reply) => {
-          if (reply.deletable) {
-            reply.delete(10000);
-          }
-        }).catch(this.logger.error);
+      this.messageManager.reply(message, 'Check your direct messages for more information.', true, true);
     }
-    const promises = [
-      message.author.sendEmbed(embed).then(() => {
-        if (message.deletable) {
-          message.delete(2000);
-        }
-      }),
-    ];
-    Promise.all(promises).catch(this.logger.error);
+    this.messageManager.sendDirectEmbedToAuthor(message, embed, false);
   }
 }
 

@@ -45,29 +45,13 @@ class EnablePingEvent extends Command {
     const promises = [];
     itemsToPing.forEach(item => promises.push(this.bot.settings
       .setEventTypePing(message.channel, item, false)));
-
     promises.forEach(promise => promise.catch(this.logger.error));
-    message.react('\u2705');
-    this.bot.settings.getChannelResponseToSettings(message.channel)
-      .then((respondToSettings) => {
-        let retPromise = null;
-        if (respondToSettings) {
-          retPromise = message.reply('Settings updated').then((settingsMsg) => {
-            if (settingsMsg.deletable) {
-              settingsMsg.delete(50000).catch(this.logger.error);
-            }
-          });
-        }
-        return retPromise;
-      }).catch(this.logger.error);
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
-    }
+    this.messageManager.notifySettingsChange(message, true, true);
   }
 
   sendInstructionEmbed(message) {
     this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => message.channel.sendEmbed({
+      .then(prefix => this.messageManager.embed(message, {
         title: 'Usage',
         type: 'rich',
         color: 0x0000ff,
@@ -81,8 +65,7 @@ class EnablePingEvent extends Command {
             value: `\n${eventTypes.join('\n')}`,
           },
         ],
-      }))
-      .catch(this.logger.error);
+      }, true, false));
   }
 }
 

@@ -169,7 +169,7 @@ class MessaageManager {
     message.react('\u2705');
     this.settings.getChannelResponseToSettings(message.channel)
       .then((respondToSettings) => {
-        if (respondToSettings) {
+        if (respondToSettings === '1') {
           promises.push(message.reply('Settings updated')
             .then((msg) => {
               if (deleteResponse && msg.deletable) {

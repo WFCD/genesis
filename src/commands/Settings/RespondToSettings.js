@@ -8,11 +8,11 @@ class RespondToSettings extends Command {
     this.usages = [
       { description: 'Change if this channel has settings changes resonded in it', parameters: ['response enabled'] },
     ];
-    this.regex = new RegExp('^respond?\\s?settings\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(.+)?$', 'i');
   }
 
   run(message) {
-    const enable = message.strippedContent.match(this.regex)[1];
+    let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
       const embed = {
         title: 'Usage',
@@ -27,13 +27,14 @@ class RespondToSettings extends Command {
       };
       this.messageManager.embed(message, embed, true, true);
     } else {
+      enable = enable.trim();
       let enableResponse = false;
-      if (enable === 'enable' || enable === 'enable' || enable === '1' || enable === 'true') {
+      if (enable === 'enable' || enable === 'enable' || enable === '1' || enable === 'true' || enable === 1) {
         enableResponse = true;
       }
       this.bot.settings.setChannelResponseToSettings(message.channel, enableResponse)
-      .then(() => this.messageManager.notifySettingsChange(message, true, true))
-      .catch(this.logger.error);
+        .then(() => this.messageManager.notifySettingsChange(message, true, true))
+        .catch(this.logger.error);
     }
   }
 }

@@ -26,9 +26,9 @@ class Platform extends Command {
         ],
       });
     } else {
-      this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase()).then(() => {
-        this.messageManager.notifySettingsChange(message, true, true);
-      }).catch(this.logger.error);
+      this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase())
+      .then(() => this.messageManager.notifySettingsChange(message, true, true))
+      .catch(this.logger.error);
     }
     if (message.deletable) {
       message.delete(5000).catch(this.logger.error);
