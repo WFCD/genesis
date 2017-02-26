@@ -36,12 +36,7 @@ class MessaageManager {
         message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       promises.push(message.channel.sendMessage(`${this.zSWC}${content}`).then((msg) => {
-        if (deleteOriginal && message.deletable) {
-          promises.push(message.delete(10000));
-        }
-        if (deleteResponse && msg.deletable) {
-          promises.push(msg.delete(10000));
-        }
+        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
 
@@ -61,12 +56,7 @@ class MessaageManager {
         message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       return message.channel.sendMessage(`${this.zSWC}${content}`).then((msg) => {
-        if (deleteOriginal && message.deletable) {
-          message.delete(10000).catch(this.logger.error);
-        }
-        if (deleteResponse && msg.deletable) {
-          msg.delete(10000).catch(this.logger.error);
-        }
+        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       });
     }
     return null;
@@ -85,15 +75,9 @@ class MessaageManager {
         message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       promises.push(message.reply(`${this.zSWC}${content}`).then((msg) => {
-        if (deleteOriginal && message.deletable) {
-          promises.push(message.delete(10000));
-        }
-        if (deleteResponse && msg.deletable) {
-          promises.push(msg.delete(10000));
-        }
+        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
-
     promises.forEach(promise => promise.catch(this.logger.error));
   }
 
@@ -110,12 +94,7 @@ class MessaageManager {
       message.channel.permissionsFor(this.client.user.id).hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
       promises.push(message.channel.sendEmbed(embed).then((msg) => {
-        if (deleteOriginal && message && message.deletable) {
-          promises.push(message.delete(10000));
-        }
-        if (deleteResponse && msg && msg.deletable) {
-          promises.push(msg.delete(10000));
-        }
+        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
     promises.forEach(promise => promise.catch(this.logger.error));
@@ -130,9 +109,7 @@ class MessaageManager {
   sendDirectMessageToAuthor(message, content, deleteResponse) {
     const promises = [];
     promises.push(message.author.sendMessage(content).then((msg) => {
-      if (deleteResponse && msg.deletable) {
-        promises.push(msg.delete(10000));
-      }
+      this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
 
     promises.forEach(promise => promise.catch(this.logger.error));
@@ -147,9 +124,7 @@ class MessaageManager {
   sendDirectEmbedToAuthor(message, embed, deleteResponse) {
     const promises = [];
     promises.push(message.author.sendEmbed(embed).then((msg) => {
-      if (deleteResponse && msg && msg.deletable) {
-        promises.push(msg.delete(10000));
-      }
+      this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
     promises.forEach(promise => promise.catch(this.logger.error));
   }
@@ -182,6 +157,24 @@ class MessaageManager {
         }
       })
       .catch(this.logger.error);
+    promises.forEach(promise => promise.catch(this.logger.error));
+  }
+
+  deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
+    const promises = [];
+    this.settings.getChannelDeleteAfterResponse(call.channel)
+      .then((deleteAfterRespond) => {
+        if (deleteAfterRespond === '1') {
+          if (deleteCall && call.deletable) {
+            promises.push(call.delete(10000));
+          }
+          if (deleteResponse && response.deletable) {
+            promises.push(response.delete(10000));
+          }
+        }
+      })
+      .catch(this.logger.error);
+    promises.forEach(promise => promise.catch(this.logger.error));
   }
 }
 

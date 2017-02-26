@@ -22,6 +22,10 @@ class Settings extends Command {
       })
       .then((respond) => {
         settings.push({ name: 'Respond to Settings', value: respond === '1' ? 'yes' : 'no' });
+        return this.bot.settings.getChannelDeleteAfterResponse(message.channel);
+      })
+      .then((deleteAfterRespond) => {
+        settings.push({ name: 'Delete Message After Responding', value: deleteAfterRespond === '1' ? 'yes' : 'no' });
         return this.bot.settings.getChannelPrefix(message.channel);
       })
       .then((prefix) => {

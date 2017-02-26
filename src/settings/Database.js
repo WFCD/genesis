@@ -38,6 +38,7 @@ class Database {
       respond_to_settings: true,
       platform: 'pc',
       language: 'en-us',
+      delete_after_respond: true,
     };
   }
 
@@ -154,6 +155,17 @@ class Database {
   }
 
   /**
+   * Sets whether or not to delete messages and responses after responding
+   * @param {Channel} channel The Discord channel for which to set the response setting
+   * @param {boolean} deleteAfterRespond Whether or not to delete messages
+   *                                     and responses after responding
+   * @returns {Promise}
+   */
+  setChannelDeleteAfterResponse(channel, deleteAfterRespond) {
+    return this.setChannelSetting(channel, 'delete_after_respond', deleteAfterRespond);
+  }
+
+  /**
    * Sets the custom prefix for this guild
    * @param {Guild} guild The Discord guild for which to set the response setting
    * @param {string} prefix The prefix for this guild
@@ -217,6 +229,15 @@ class Database {
    */
   getChannelResponseToSettings(channel) {
     return this.getChannelSetting(channel, 'respond_to_settings');
+  }
+
+  /**
+   * Returns the delete_after_respond setting for a channel
+   * @param {Channel} channel The channel
+   * @returns {Promise.<boolean>}
+   */
+  getChannelDeleteAfterResponse(channel) {
+    return this.getChannelSetting(channel, 'delete_after_respond');
   }
 
   /**

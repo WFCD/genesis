@@ -4,11 +4,11 @@ const Command = require('../../Command.js');
 
 class RespondToSettings extends Command {
   constructor(bot) {
-    super(bot, 'settings.respondSettings', 'respond yo settings', 'Set whether or not to respond to settings');
+    super(bot, 'settings.deleteafterrespond', 'delete after respond', 'Set whether or not to allow the bot to delete commands and/or responses after responding.');
     this.usages = [
-      { description: 'Change if this channel has settings changes resonded in it', parameters: ['response enabled'] },
+      { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(.+)?$', 'i');
   }
 
   run(message) {
