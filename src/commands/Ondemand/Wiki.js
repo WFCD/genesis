@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
+const WikiEmbed = require('../../embeds/WikiEmbed.js');
 const Wikia = require('node-wikia');
 
 const warframe = new Wikia('warframe');
@@ -22,6 +23,7 @@ class Wiki extends Command {
         parameters: ['topic'],
       },
     ];
+    this.noResult = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
   }
 
   /**
@@ -32,34 +34,20 @@ class Wiki extends Command {
   run(message) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
-      message.reply(`${this.md.codeMulti}Please specify a search term${this.md.blockEnd}`);
+      this.MessageManager.reply(message, this.noResult, true, true);
     } else {
       this.logger.debug(`Searched for query: ${query}`);
-
       warframe.getSearchList({
         query,
         limit: 1,
       }).then(articles => warframe.getArticleDetails({
         ids: articles.items.map(i => i.id),
       })).then((details) => {
-        const item = Object.values(details.items)[0];
-        return message.channel.sendEmbed({
-          title: item.title,
-          type: 'rich',
-          url: details.basepath + item.url,
-          image: {
-            url: item.thumbnail.replace(/\/revision\/.*/, ''),
-            width: item.original_dimensions.width,
-            height: item.original_dimensions.height,
-          },
-          description: item.abstract,
-        });
+        this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
       })
       .catch((err) => {
         if (err.exception && err.exception.code === 404) {
-          message.reply(`${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`)
-            .then(msg => msg.delete(100000))
-            .catch(this.logger.error);
+          this.MessageManager.reply(message, this.noResult, true, true);
         } else {
           this.logger.error(err);
         }

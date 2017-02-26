@@ -30,7 +30,7 @@ class Avatar extends Command {
   run(message) {
     const url = message.strippedContent.match(this.regex)[1];
     this.bot.client.user.setAvatar(url)
-    .then(() => message.reply('New avatar set!'))
+    .then(() => this.messageManager.reply(message, 'New avatar set!', true, true))
     .catch(this.logger.error);
   }
 }

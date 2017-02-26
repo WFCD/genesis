@@ -45,7 +45,7 @@ class Disable extends Command {
       this.bot.settings.getChannelResponseToSettings(message.channel)
         .then((respondToSettings) => {
           if (respondToSettings) {
-            promises.push(message.channel.sendEmbed(infoEmbed));
+            this.messageManager.sendEmbed(message, infoEmbed, true, false);
           }
         });
       commands.forEach((command) => {
@@ -60,15 +60,8 @@ class Disable extends Command {
         });
       });
       promises.forEach((promise) => {
-        promise.then((msg) => {
-          if (msg.deletable) {
-            msg.delete(50000).catch(this.logger.error);
-          }
-        }).catch(this.logger.error);
+        promise.catch(this.logger.error);
       });
-    }
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
     }
   }
 

@@ -27,19 +27,8 @@ class Language extends Command {
       });
     } else {
       this.bot.settings.setChannelLanguage(message.channel, language.toLowerCase()).then(() => {
-        message.react('\u2705');
-        this.bot.settings.getChannelResponseToSettings(message.channel)
-          .then((respondToSettings) => {
-            let retPromise = null;
-            if (respondToSettings) {
-              retPromise = message.reply('Settings updated');
-            }
-            return retPromise;
-          });
+        this.messageManager.notifySettingsChange(message, true, true);
       }).catch(this.logger.error);
-    }
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
     }
   }
 }

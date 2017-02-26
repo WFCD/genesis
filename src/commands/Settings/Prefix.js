@@ -24,60 +24,42 @@ class Prefix extends Command {
   run(message) {
     const prefix = message.strippedContent.match(this.regex)[1];
     if (!prefix) {
-      message.channel.sendEmbed({
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <prefix>`,
-            value: 'Set the channel\'s custom prefix',
-          },
-        ],
+      this.settings.getChannelPrefix(message.channel)
+      .then((configuredPrefix) => {
+        this.messageManager.embed(message, {
+          title: 'Usage',
+          type: 'rich',
+          color: 0x0000ff,
+          fields: [
+            {
+              name: `${configuredPrefix}${this.call} <prefix>`,
+              value: 'Set the channel\'s custom prefix',
+            },
+          ],
+        }, true, false);
       });
     } else if (prefix === 'reset') {
       let promise = null;
       if (message.channel.type === 'text') {
-        promise = this.bot.settings.resetGuildPrefix(message.channel.guild);
+        this.bot.settings.resetGuildPrefix(message.channel.guild);
       } else {
         promise = this.bot.settings.resetChannelPrefix(message.channel);
       }
       promise.then(() => {
-        message.react('\u2705');
-        this.bot.settings.getChannelResponseToSettings(message.channel)
-            .then((respondToSettings) => {
-              let retPromise = null;
-              if (respondToSettings) {
-                retPromise = message.reply('Settings updated');
-              }
-              return retPromise;
-            });
+        this.messageManager.notifySettingsChange(message, true, true);
       }).catch(this.logger.error);
     } else {
       let promise = null;
       if (message.channel.type === 'text') {
-        promise = this.bot.settings.setGuildPrefix(message.channel.guild, prefix);
+        this.bot.settings.setGuildPrefix(message.channel.guild, prefix);
       } else {
         promise = this.bot.settings.setChannelPrefix(message.channel, prefix);
       }
-      promise.then(() => {
-        message.react('\u2705');
-        this.bot.settings.getChannelResponseToSettings(message.channel)
-            .then((respondToSettings) => {
-              let retPromise = null;
-              if (respondToSettings) {
-                retPromise = message.reply('Settings updated').then((settingsMsg) => {
-                  if (settingsMsg.deletable) {
-                    settingsMsg.delete(50000).catch(this.logger.error);
-                  }
-                });
-              }
-              return retPromise;
-            });
-      }).catch(this.logger.error);
-    }
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
+      if (promise) {
+        promise.then(() => {
+          this.messageManager.notifySettingsChange(message, true, true);
+        }).catch(this.logger.error);
+      }
     }
   }
 }

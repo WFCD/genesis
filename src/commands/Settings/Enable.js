@@ -19,7 +19,7 @@ class Enable extends Command {
   run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
-      message.channel.sendEmbed(new EnableUsageEmbed(this.bot));
+      this.messageManager.embed(message, new EnableUsageEmbed(this.bot), true, false);
     } else {
       params.splice(0, 1);
       const commands = this.getCommandsToEnable(params[0]);
@@ -44,7 +44,7 @@ class Enable extends Command {
       this.bot.settings.getChannelResponseToSettings(message.channel)
         .then((respondToSettings) => {
           if (respondToSettings) {
-            promises.push(message.channel.sendEmbed(infoEmbed));
+            this.messageManager.embed(message, infoEmbed, true, false);
           }
         });
       commands.forEach((command) => {

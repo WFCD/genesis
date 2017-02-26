@@ -31,7 +31,7 @@ class LeaveServer extends Command {
     const serverid = message.strippedContent.match(this.regex)[1];
     if (this.bot.client.guilds.has(serverid)) {
       this.bot.client.guilds.get(serverid).leave()
-        .then(guild => message.reply(`Left ${guild.name}`))
+        .then(guild => this.messageManager.reply(message, `Left ${guild.name}`, true, true))
         .catch(this.logger.error);
     } else {
       message.reply('No such guild cached');
