@@ -23,6 +23,10 @@ class ServerInfo extends Command {
    */
   run(message) {
     const guild = message.guild;
+    if (!message.guild) {
+        this.messageManager.reply(message, 'Operator, this is a DM, you can\'t do that!', false, false);
+        return;
+    }
     const embed = {
       title: guild.name,
       description: `**Region:** ${guild.region}`,
