@@ -50,7 +50,7 @@ module.exports = [
   `CREATE TABLE IF NOT EXISTS settings (
     channel_id BIGINT UNSIGNED NOT NULL,
     setting VARCHAR(20) NOT NULL,
-    value VARCHAR(255) NOT NULL,
+    val VARCHAR(255) NOT NULL,
     PRIMARY KEY (channel_id, setting),
     FOREIGN KEY (channel_id) REFERENCES channels(id)
   );`,
