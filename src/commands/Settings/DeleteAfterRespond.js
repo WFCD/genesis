@@ -32,7 +32,7 @@ class RespondToSettings extends Command {
       if (enable === 'enable' || enable === 'enable' || enable === '1' || enable === 'true' || enable === 1) {
         enableResponse = true;
       }
-      this.bot.settings.setChannelResponseToSettings(message.channel, enableResponse)
+      this.bot.settings.setChannelDeleteAfterResponse(message.channel, enableResponse)
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
     }
