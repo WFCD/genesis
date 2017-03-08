@@ -33,7 +33,12 @@ class Help extends Command {
       this.messageManager.reply(message, this.helpReplyMsg, true, false);
     }
     this.sendCoreEmbed(message);
-    this.sendSettingsEmbed(message);
+    if(message.channel.type === 'dm' ||
+       message.channel
+        .permissionsFor(message.author)
+        .hasPermission('MANAGE_ROLES_OR_PERMISSIONS') {
+       this.sendSettingsEmbed(message);
+    }
     this.sendWarframeEmbed(message);
     this.sendHelpEmbed(message);
     if (message.author.id === this.bot.owner) {
