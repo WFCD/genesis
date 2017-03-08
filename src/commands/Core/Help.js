@@ -36,7 +36,7 @@ class Help extends Command {
     if(message.channel.type === 'dm' ||
        message.channel
         .permissionsFor(message.author)
-        .hasPermission('MANAGE_ROLES_OR_PERMISSIONS') {
+        .hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) {
        this.sendSettingsEmbed(message);
     }
     this.sendWarframeEmbed(message);
