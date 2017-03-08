@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../Command.js');
+const Command = require('../../Command.js');
 const verificationLevels = ['None', 'Low\nMust have a verified email on their Discord Account', 'Medium\nMust also be registered on Discord for longer than 5 minutes', '(╯°□°）╯︵ ┻━┻\nMust also be a member of this server for longer than 10 minutes.'];
 const verificationColors = [0x747f8d, 0x43b581, 0xfaa61a, 0xf04747];
 
