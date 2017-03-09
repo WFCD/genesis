@@ -12,7 +12,7 @@ class Progression extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.progress', 'progress', 'Display Warframe Progression Chart');
-    this.progressionChart = 'http://i.imgur.com/0uutM7a.png';
+    this.progressionChart = 'http://chart.warframestat.us';
   }
 
   /**
