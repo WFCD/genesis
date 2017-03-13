@@ -24,8 +24,17 @@ class UserInfo extends Command {
     const params = message.strippedContent.match(this.regex);
     let user;
     let member;
-    if (params[1] || (message.mentions.users && message.mentions.users.array()[0])) {
-        user = message.mentions.users.array()[0] || this.bot.client.users.get(params[1].trim());
+    let mention;
+    if(message.mentions.users) {
+      if(message.mentions.users.array().length > 1 && message.mentions.users.array()[0].id === this.bot.client.id) {
+        mention = message.mentions.users.array()[1];
+      } else {
+        mention = message.mentions.users.array()[0];
+      }
+    }
+
+    if (params[1] || mention) {
+        user = mention || this.bot.client.users.get(params[1].trim());
     } else {
         user = message.author;
     }
@@ -36,6 +45,13 @@ class UserInfo extends Command {
         this.messageManager.reply(message, 'can\'t find that user. Please specify another.', false, false);
         return;
     }
+
+    const guildsWithUser = this.bot.client.guilds.array().filter(guild => guild.members.get(user.id));
+
+    const guilds = guildsWithUser.length > 25 ?
+        guildsWithUser.splice(0,24) :
+        guildsWithUser;
+    const guildString = guilds.filter(guild => guild.members.get(user.id)).map(guild => guild.name).join('; ');
     const embed = {
       author: {
         name: `${user.username}#${user.discriminator} | ${user.id}`,
@@ -46,13 +62,18 @@ class UserInfo extends Command {
       },
       fields: [
         {
+            name: 'Profile',
+            value: user.toString(),
+            inline: true,
+        },
+        {
             name: 'Registered for Discord',
             value: user.createdAt.toLocaleString(),
             inline: true,
         },
         {
             name: 'Shared Servers (on this shard)',
-            value: this.bot.client.guilds.filter(guild => guild.members.get(user.id)).map(guild => guild.name).join('; '),
+            value: guildString,
             inline: true,
         }
       ],
