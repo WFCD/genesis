@@ -39,6 +39,7 @@ class Help extends Command {
         .hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) {
        this.sendSettingsEmbed(message);
     }
+    this.sendWorldStateEmbed(message);
     this.sendWarframeEmbed(message);
     this.sendHelpEmbed(message);
     if (message.author.id === this.bot.owner) {
@@ -87,15 +88,27 @@ class Help extends Command {
     }).catch(this.logger.error);
   }
 
-  sendWarframeEmbed(message) {
+  sendWorldStateEmbed(message) {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe/ig.test(c.id))
+      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.worldstate/ig.test(c.id))
         .map(c => c.usages.map(u => ({
           name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
           value: u.description,
           inline: false,
         })));
-      this.sendEmbedForCommands(message, commands, 'Warframe Commands', 0x4068BD);
+      this.sendEmbedForCommands(message, commands, 'Warframe Commands - Worldstate', 0x4068BD);
+    }).catch(this.logger.error);
+  }
+
+  sendWarframeEmbed(message) {
+    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
+      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.(?!worldstate)/ig.test(c.id))
+        .map(c => c.usages.map(u => ({
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          value: u.description,
+          inline: false,
+        })));
+      this.sendEmbedForCommands(message, commands, 'Warframe Commands - Utility', 0x4068BD);
     }).catch(this.logger.error);
   }
 
