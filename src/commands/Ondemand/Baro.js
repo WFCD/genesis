@@ -6,7 +6,7 @@ const VoidTraderEmbed = require('../../embeds/VoidTraderEmbed.js');
 /**
  * Displays the currently active Invasions
  */
-class VoidTrader extends Command {
+class Baro extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -31,4 +31,4 @@ class VoidTrader extends Command {
   }
 }
 
-module.exports = VoidTrader;
+module.exports = Baro;
