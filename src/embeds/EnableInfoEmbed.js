@@ -19,7 +19,7 @@ class EnableInfoEmbed extends BaseEmbed {
     this.fields = [
       {
         name: 'Command Ids',
-        value: params[0].join('; '),
+        value: params[0].join('; ') || 'No commands',
         inline: true,
       },
     ];
