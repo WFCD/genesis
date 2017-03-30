@@ -73,7 +73,9 @@ class CommandHandler {
    */
   handleCommand(message) {
     let content = message.cleanContent;
-    const botping = `@${this.bot.client.user.username}`;
+    const botping = `@${message.guild ?
+          message.guild.members.get(this.bot.client.user.id).displayName :
+          this.bot.client.user.username}`;
     this.bot.settings.getChannelPrefix(message.channel)
       .then((prefix) => {
         if (!content.startsWith(prefix) && !content.startsWith(botping)) {
