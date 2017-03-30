@@ -18,8 +18,10 @@ class CommandIdEmbed extends BaseEmbed {
       icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
       text: 'Data provided by Warframe Community Developers',
     };
-    this.fields = commandIds.map(command =>
-      ({ name: command.call, value: command.id, inline: false }));
+    this.fields = [{ 
+      name: '_ _', 
+      value: commandIds.map(command => (`**${command.call}**: ${command.id}`)).join('; '),
+    }];
   }
 }
 
