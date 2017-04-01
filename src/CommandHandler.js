@@ -114,7 +114,9 @@ class CommandHandler {
    */
   checkCanAct(command, message) {
     return new Promise((resolve) => {
-      if (message.channel.type === 'text') {
+      if (command.ownerOnly && message.author.id !== this.bot.owner) {
+        resolve(false);
+      } else if (message.channel.type === 'text') {
         if (command.requiresAuth && message.channel.permissionsFor(message.author).hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) {
           this.bot.settings
           .getChannelPermissionForMember(message.channel, message.author.id, command.id)

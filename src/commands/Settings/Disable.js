@@ -45,7 +45,7 @@ class Disable extends Command {
       this.bot.settings.getChannelResponseToSettings(message.channel)
         .then((respondToSettings) => {
           if (respondToSettings) {
-            this.messageManager.sendEmbed(message, infoEmbed, true, false);
+            this.messageManager.embed(message, infoEmbed, true, false);
           }
         });
       commands.forEach((command) => {

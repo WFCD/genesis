@@ -43,7 +43,7 @@ class Whereis extends Command {
         let slicedResults = [];
         let sliced = false;
         if (results.length > 4) {
-          slicedResults = results.slice(0, 2);
+          slicedResults = results.slice(0, 4);
           sliced = true;
         } else {
           slicedResults = results;
