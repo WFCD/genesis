@@ -130,7 +130,7 @@ class MessaageManager {
   }
 
   sendDirectEmbedToOwner(embed) {
-    this.client.get(this.owner).sendEmbed(embed).catch(this.logger.error);
+    this.client.users.get(this.owner).sendEmbed(embed).catch(this.logger.error);
   }
 
   /**
