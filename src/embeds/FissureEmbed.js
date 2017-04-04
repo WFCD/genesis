@@ -26,7 +26,7 @@ class FissureEmbed extends BaseEmbed {
       };
     }
 
-    this.color = fissures.length > 2 ? 0x00ff00 : 0xff0000;
+    this.color = 0x4aa1b2;
     this.title = 'Worldstate - Void Fissures';
     this.description = 'Current Void Fissures';
     this.thumbnail = {
