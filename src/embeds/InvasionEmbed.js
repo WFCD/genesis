@@ -13,7 +13,7 @@ class InvasionEmbed extends BaseEmbed {
   constructor(bot, invasions) {
     super();
 
-    this.color = invasions.length > 2 ? 0x00ff00 : 0xff0000;
+    this.color = 0x3498db;
     if (invasions.length > 1) {
       this.fields = invasions.map((i) => {
         let rewards = i.defenderReward.toString();
