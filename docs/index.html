@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <title>Genesis - Help</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel='stylesheet' href='//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
+  </head>
+  <body>
+    <h1>Welcome to Genesis' Help Page</h1>
+    <h3><a href="https://bots.discord.pw/bots/123591822579597315">Invite Link on bots.discord.pw</a></h3>
+    <div class="wrapper">
+      <div>
+        Hello Operator. I exist to assist you with finding and tracking information for your journey in Warframe.
+        <br>
+        To get started using my tracking features, ask me to start with <code>/start</code>.
+        <br>
+        In order to see my configuration options, ask me to <code>/track</code>.
+        <br>
+        If you'd like to see all of my options, ask for <code>/help</code>.
+        <br>
+        All other commands are available in <code>/help</code>.
+        <div style="text-align: center;">
+          <a href="https://discord.me/cephalon-sanctuary" target="_blank" role="button" class="btn btn-primary btn-sm">Join Cephalon Genesis' server!</a>
+        </div>
+        <hr>
+        <strong>
+          <h3>How to Use</h3>
+        </strong>
+        Genesis' alias is either <code>/</code> or <code>@genesis</code>
+        <br>
+        In the room that you want to track alerts, call <code>/start</code>.
+        <br>
+        If you also want to have a seperate news room, <code>/untrack news</code> in your alerts room. Then <code>/start</code> in your news room, <code>/untrack all</code> and <code>/track news</code>
+        <br>
+        There are many different tracking options available, and they are all available from <code>/track</code>
+        <br>
+        Switch platforms using the <code>/platform &lt;Platform&gt;</code>. Valid platforms are <code>PC</code>, <code>PS4</code>, and <code>X1</code>.
+        <br />
+        <hr>
+        <strong>
+          <h3>Features</h3>
+        </strong>
+        Track Warframe data, get notifications about alerts, sorties, etc.
+        <br />
+        <hr>
+        <strong>
+          <h3>Commands</h3>
+        </strong>
+
+        <table id="ondemand" class="commands">
+          <th colspan="2"><h4>On-Demand Commands</h4></th>
+            <tr><td>alerts</td>
+            <td>Display the currently active alerts</td></tr>
+            <tr><td>baro</td>
+            <td>Display the current status of the Void Trader</td></tr>
+            <tr><td>conclave &lt;conclave category&gt;</td>
+            <td>Display conclave challenges for a challenge type.</td></tr>
+            <tr><td>darvo</td>
+            <td>Displays today's Darvo deal</td></tr>
+            <tr><td>acolyte</td>
+            <td>Display any currently active acolyte-style enemies.</td></tr>
+            <tr><td>featureddeal</td>
+            <td>Displays current featured deals</td></tr>
+            <tr><td>fissures</td>
+            <td>Get the current list of Void Fissure Missions</td></tr>
+            <tr><td>invasion</td>
+            <td>Display the currently active Invasions</td></tr>
+            <tr><td>news</td>
+            <td>Display the currently active news</td></tr>
+            <tr><td>populardeals</td>
+            <td>Displays current featured deals</td></tr>
+            <tr><td>primeaccess</td>
+            <td>Display the currently active prime access news</td></tr>
+            <tr><td>simaris</td>
+            <td>Display current Sanctuary status.</td></tr>
+            <tr><td>sortie</td>
+            <td>Display the currently active sorties</td></tr>
+            <tr><td>syndicate &lt;syndicate&gt;</td>
+            <td>Display syndicate nodes for a syndicate.</td></tr>
+            <tr><td>updates</td>
+            <td>Display the currently active update news</td></tr>
+        </table>
+
+        <table id="wf-utilities" class="commands">
+          <th colspan="2"><h4>Warframe Commands - Utility</h4></th>
+            <tr><td>armor</td>
+            <td>Display instructions for calculating armor</td></tr>
+            <tr><td>armor &lt;current armor&gt;</td>
+            <td>Display current damage resistance and amount of corrosive procs required to strip it.</td></tr>
+            <tr><td>armor &lt;base armor&gt; &lt;base level&gt; &lt;current level&gt;</td>
+            <td>Display the current armor, damage resistance, and necessary corrosive procs to strip armor.</td></tr>
+            <tr><td>damage</td>
+            <td>Display Damage 2.0 chart</td></tr>
+            <tr><td>cycle</td>
+            <td>Current and remaining time in cycle of Earth rotation.</td></tr>
+            <tr><td>mod</td>
+            <td>Search the Warframe Wiki for a mod's image</td></tr>
+            <tr><td>pricecheck &lt;item&gt;</td>
+            <td>Display an items worth from nexus-stats.com</td></tr>
+            <tr><td>frame profile &lt;warframe&gt;</td>
+            <td>Get a Warframe's profile video</td></tr>
+            <tr><td>progress</td>
+            <td>Display Warframe Progression Chart</td></tr>
+            <tr><td>raid &lt;username&gt;</td>
+            <td>Search for a users's raid stats</td></tr>
+            <td>shields &lt;base shields&gt; &lt;base level&gt; &lt;current level&gt;</td>
+            <td>Display an enemy's current shields.</td></tr>
+            <tr><td>tutorial &lt;subject&gt;</td>
+            <td>Get a Warframe Tutorial Video</td></tr>
+            <tr><td>whereis &lt;item&gt;</td>
+            <td>Display where an item drops</td></tr>
+            <tr><td>wiki &lt;topic&gt;</td>
+            <td>Search the Warframe wiki for a specific topic</td></tr>
+        </table>
+
+
+        <table id="tracking" class="commands">
+          <th colspan="2"><h4>Tracking Commands</h4></th>
+          <tr><td>ping off event</td>
+          <td>Show command for pinging for items</td></tr>
+          <tr><td>ping off event &lt;event(s) to disable ping for&gt;</td>
+          <td>Disable pinging for an event or events</td></tr>
+          <tr><td>ping off item</td>
+          <td>Show command for pinging for items</td></tr>
+          <tr><td>ping off item &lt;item(s) to disable ping for&gt;</td>
+          <td>Disable pinging for an item or items</td></tr>
+          <tr><td>ping on event</td>
+          <td>Show command for pinging for items</td></tr>
+          <tr><td>ping on event &lt;event(s) to enable ping for&gt;</td>
+          <td>Enable pinging for an event or events</td></tr>
+          <tr><td>ping on item</td>
+          <td>Show command for pinging for items</td></tr>
+          <tr><td>ping on item &lt;item(s) to enable ping for&gt;</td>
+          <td>Enable pinging for an item or items</td></tr>
+          <tr><td>platform &lt;platform&gt;</td>
+          <td>Change this channel's platform</td></tr>
+          <tr><td>track event</td>
+          <td>Show tracking command for tracking events</td></tr>
+          <tr><td>track event &lt;event(s) to track&gt;</td>
+          <td>Track an event or events</td></tr>
+          <tr><td>track item</td>
+          <td>Show tracking command for tracking items</td></tr>
+          <tr><td>track item &lt;item(s) to track&gt;</td>
+          <td>Track an item or items</td></tr>
+          <tr><td>untrack event</td>
+          <td>Show tracking command for untracking events</td></tr>
+          <tr><td>untrack event &lt;event(s) to untrack&gt;</td>
+          <td>Untrack an event or events</td></tr>
+          <tr><td>untrack item &lt;item to untrack&gt;</td>
+          <td>Unrack an item or items</td></tr>
+        </table>
+
+        <table id="settings" class="commands">
+          <th colspan="2"><h4>Settings Commands</h4></th>
+          <tr><td>delete after respond &lt;deleting enabled&gt;</td>
+          <td>Change if the bot to delete commands andor responses after responding in this channel</td></tr>
+          <tr><td>disable &lt;command id&gt; in &lt;channel&gt; for &lt;role|user&gt;</td>
+          <td>Disable a command for a role in a channel or channels</td></tr>
+          <tr><td>enable &lt;command id&gt; in &lt;channel&gt; for &lt;role|user&gt;</td>
+          <td>Enable a command for a role in a channel or channels</td></tr>
+          <tr><td>getcommandids</td>
+          <td>Get list of bot command ids available for you to view</td></tr>
+          <tr><td>language &lt;language&gt;</td>
+          <td>Change this channel's language</td></tr>
+          <tr><td>prefix &lt;prefix (up to 3 characters)&gt;</td>
+          <td>Change this server's bot prefix</td></tr>
+          <tr><td>respond to settings &lt;response enabled&gt;</td>
+          <td>Change if this channel has settings changes resonded in it</td></tr>
+          <tr><td>settings</td><td>Get settings</td></tr>
+        </table>
+
+        <table id="core" class = "commands">
+          <th colspan="2"><h4>Core Commands</h4></th>
+            <tr><td>bug &lt;bug report&gt;</td><td>Send a bug report to bot owner</tr>
+            <tr><td>bug &lt;subject&gt; | &lt;body&gt; | &lt;(optional) screenshot link&gt;</td><td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.</tr>
+            <tr><td>bug &lt;subject&gt; | &lt;body&gt; | &lt;attached image&gt;</td><td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.</tr>
+            <tr><td>invite</td><td>Send Invitation Link to Authorize Bot to Join a Server.</td></tr>
+            <tr><td>ping</td><td>Ping Genesis to test connectivity.</td></tr>
+            <tr><td>help</td><td>Displays all of the help commands that you can use.</td></tr>
+        </table>
+
+        <table id="utility" class = "commands">
+          <th colspan="2"><h4>Utility Commands</h4></th>
+            <tr><td>userinfo &lt;mention|id&gt;</td><td>Get info about a user sepcified, or the current user if no user is specified</tr>
+            <tr><td>serverinfo</td><td>Get info about the current server.</tr>
+        </table>
+
+        <table id="silly" class = "commands">
+          <th colspan="2"><h4>Silly Commands</h4></th>
+            <tr><td>hug</td><td>Hug Genesis</tr>
+        </table>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <hr>
+    &copy; Genesis Project and <code><a href="https://github.com/warframe-community-developers">Warframe Community Developers</a></code> | <code><a href="https://discord.me/cephalon-sanctuary">Contact</a></code>
+  </footer>
+</html>
