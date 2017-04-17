@@ -7,6 +7,7 @@ const WorldStateCache = require('./WorldStateCache.js');
 const Database = require('./settings/Database.js');
 const Tracker = require('./Tracker.js');
 const MessageManager = require('./settings/MessageManager.js');
+const Notifier = require('./notifications/Notifier.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -137,7 +138,7 @@ class Genesis {
      */
     this.platforms = ['pc', 'ps4', 'xb1'];
 
-    const worldStateTimeout = 60000 || process.env.WORLDSTATE_TIMEOUT;
+    const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     this.platforms.forEach((platform) => {
       this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout);
@@ -152,6 +153,9 @@ class Genesis {
     this.tracker = new Tracker(this.logger, this.client, { shardId, shardCount });
 
     this.messageManager = new MessageManager(this);
+
+    // Notification emitter
+    this.notifier = new Notifier(this);
 
     this.commandHandler.loadCommands();
 
@@ -170,7 +174,7 @@ class Genesis {
     // kill on disconnect so a new instance can be spawned
     this.client.on('disconnect', (event) => {
       this.logger.debug(`Disconnected with close event: ${event.code}`);
-      process.exit(4);
+      // process.exit(4);
     });
 
     this.client.on('error', error => this.logger.error(error));
@@ -186,6 +190,7 @@ class Genesis {
       return this.client.login(this.token);
     }).then((t) => {
       this.logger.debug(`Logged in with token ${t}`);
+      this.notifier.start();
     }).catch((e) => {
       this.logger.error(e.message);
       this.logger.fatal(e);
@@ -256,7 +261,8 @@ class Genesis {
       this.settings.addGuildTextChannel(channel).then(() => {
         this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild ` +
           `${channel.guild.name} (${channel.guild.id})`);
-      }).catch(this.logger.error);
+      }).catch(() => this.settings.addGuild(channel.guild)
+        .then(() => this.settings.addGuildTextChannel(channel)));
     } else {
       this.settings.addDMChannel(channel).then(() => {
         this.logger.debug(`DM channel with id ${channel.id} created`);

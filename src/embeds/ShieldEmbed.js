@@ -39,12 +39,10 @@ class ShieldEmbed extends BaseEmbed {
       const shields = params[1];
       const baseLevel = params[2];
       const currentLevel = params[3];
-      this.bot.logger.debug('Entered 3-param shield');
       const calc = shieldCalc(shields, baseLevel, currentLevel);
       this.fields[0].name = 'Shield calculation';
       this.fields[0].value = shieldString(calc, currentLevel);
     } else {
-      this.bot.logger.debug('Entered 0-param shield');
       this.fields[0].value = `${this.bot.prefix}shields (Base Shelds) (Base Level) (Current Level) - calculate shields and stats.`;
       this.fields[0].name = 'Possible uses include:';
     }

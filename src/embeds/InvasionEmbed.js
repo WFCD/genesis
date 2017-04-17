@@ -20,9 +20,9 @@ class InvasionEmbed extends BaseEmbed {
         if (!i.vsInfestation) {
           rewards = `${i.attackerReward} vs ${rewards}`;
         }
-
+        const completion = Math.round(i.completion * 100) / 100;
         return {
-          name: `${rewards} - ${Math.round(i.completion * 100) / 100}%`,
+          name: `${rewards} - ${completion > 0 ? completion : 0}%`,
           value: `${i.desc} on ${i.node} - ETA ${i.getETAString()}`,
         };
       });
@@ -34,12 +34,13 @@ class InvasionEmbed extends BaseEmbed {
       if (!i.vsInfestation) {
         rewards = `${i.attackerReward} vs ${rewards}`;
       }
-      this.title = `${rewards} - ${Math.round(i.completion * 100) / 100}%`;
+      const completion = Math.round(i.completion * 100) / 100;
+      this.title = `${rewards} - ${completion > 0 ? completion : 0}%`;
       this.description = i.desc;
       this.fields = [
         { name: 'Location', value: i.node, inline: true },
-        { name: 'Time Remaining', value: i.getETAString(), inline: true },
       ];
+      this.footer.text = `${i.getETAString().replace(/\\-?Infinityd/i, '\u221E')} remaining | ${new Date().toLocaleString()}`;
     }
 
     this.thumbnail = {

@@ -17,7 +17,7 @@ class WikiEmbed extends BaseEmbed {
     this.type = 'rich';
     this.url = details.basepath + item.url;
     this.image = {
-      url: item.thumbnail.replace(/\/revision\/.*/, ''),
+      url: item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : '_ _',
       width: item.original_dimensions.width,
       height: item.original_dimensions.height,
     };

@@ -37,11 +37,12 @@ class AlertEmbed extends BaseEmbed {
       if (this.description !== summary) {
         this.fields.push({ name: '_ _', value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}` });
       }
-      this.fields.push({ name: '_ _', value: `**Remaining:** ${a.getETAString()}`, inline: true }, { name: '_ _', value: `**Levels:** ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`, inline: true });
+      this.fields.push({ name: '_ _', value: `**Levels:** ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`, inline: true });
 
       if (this.title.indexOf('cr') === -1) {
         this.fields.push({ name: '_ _', value: `**Credits:** ${a.getReward().credits}cr`, inline: true });
       }
+      this.footer.text = `${a.getETAString()} remaining | ${new Date().toLocaleString()}`;
     }
   }
 }

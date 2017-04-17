@@ -31,7 +31,7 @@ class Shields extends Command {
   run(message) {
     const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/;
     const params = message.strippedContent.match(pattern3Params);
-    this.messageManager.embed(new ShieldEmbed(this.bot, params));
+    this.messageManager.embed(message, new ShieldEmbed(this.bot, params), true, false);
   }
 }
 

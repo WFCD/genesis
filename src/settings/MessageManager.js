@@ -82,7 +82,7 @@ class MessaageManager {
   }
 
   /**
-   * Send a message, with options to delete messages after calling
+   * Send an embed, with options to delete messages after calling
    * @param {Message} message original message being responded to
    * @param {Object} embed Embed object to send
    * @param {boolean} deleteOriginal True to delete the original message
@@ -101,6 +101,23 @@ class MessaageManager {
   }
 
   /**
+   * Send an embed
+   * @param {Channel} channel channel to send message to
+   * @param {Object} embed Embed object to send
+   * @param {string} prepend String to prepend to the embed
+   * @returns {Promise<Message>}
+   */
+  embedToChannel(channel, embed, prepend) {
+    if (channel
+      && ((channel.type === 'text'
+      && channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
+      || channel.type === 'dm')) {
+      return channel.sendMessage(prepend, { embed });
+    }
+    return null;
+  }
+
+  /**
    * Send a message, with options to delete messages after calling
    * @param {Message} message original message being responded to
    * @param {string} content String to send to a channel
@@ -111,7 +128,6 @@ class MessaageManager {
     promises.push(message.author.sendMessage(content).then((msg) => {
       this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
-
     promises.forEach(promise => promise.catch(this.logger.error));
   }
 
@@ -133,6 +149,13 @@ class MessaageManager {
     this.client.users.get(this.owner).sendEmbed(embed).catch(this.logger.error);
   }
 
+  sendFileToAuthor(message, file, fileName, deleteCall) {
+    message.author.sendFile(file, fileName)
+      .then((msg) => {
+        this.deleteCallAndResponse(message, msg, deleteCall, false);
+      });
+  }
+
   /**
    * Notify channel of settings change if enabled
    * @param {Message} message Message to reply to and fetch channel settings from
@@ -140,41 +163,48 @@ class MessaageManager {
    * @param {boolean} deleteResponse whether or not to delete the response message
    */
   notifySettingsChange(message, deleteOriginal, deleteResponse) {
-    const promises = [];
     message.react('\u2705');
     this.settings.getChannelResponseToSettings(message.channel)
       .then((respondToSettings) => {
         if (respondToSettings === '1') {
-          promises.push(message.reply('Settings updated')
+          return message.reply('Settings updated')
             .then((msg) => {
-              if (deleteResponse && msg.deletable) {
-                promises.push(msg.delete(5000));
-              }
-            }));
+              this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+            });
         }
-        if (deleteOriginal && message.deletable) {
-          promises.push(message.delete(5000));
-        }
+        return new Promise(resolve => resolve(true));
       })
       .catch(this.logger.error);
-    promises.forEach(promise => promise.catch(this.logger.error));
   }
 
+  /**
+   * Delete call and response for a command, depending on settings
+   * @param  {Message} call           calling command
+   * @param  {Message} response       response message
+   * @param  {boolean} deleteCall     whether or not to delete the calling message
+   * @param  {boolean} deleteResponse whether or not to delete the message response
+   */
   deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
-    const promises = [];
     this.settings.getChannelDeleteAfterResponse(call.channel)
       .then((deleteAfterRespond) => {
         if (deleteAfterRespond === '1') {
           if (deleteCall && call.deletable) {
-            promises.push(call.delete(10000));
+            call.delete(10000).catch(() => `Couldn't delete ${call}`);
           }
           if (deleteResponse && response.deletable) {
-            promises.push(response.delete(10000));
+            call.delete(10000).catch(() => `Couldn't delete ${call}`);
           }
         }
       })
       .catch(this.logger.error);
-    promises.forEach(promise => promise.catch(this.logger.error));
+  }
+
+  webhook(webhookId, embed) {
+    this.bot.client.fetchWebhook(webhookId).sendSlackMessage({
+      username: this.bot.client.user.username,
+      attachments: [embed],
+    })
+    .catch(this.logger.error);
   }
 }
 

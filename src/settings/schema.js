@@ -15,14 +15,18 @@ module.exports = [
     type VARCHAR(20) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (channel_id, type),
-    FOREIGN KEY (channel_id) REFERENCES channels(id)
+    FOREIGN KEY (channel_id)
+        REFERENCES channels(id)
+        ON DELETE CASCADE
   );`,
   `CREATE TABLE IF NOT EXISTS item_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
     item VARCHAR(20) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (channel_id, item),
-    FOREIGN KEY (channel_id) REFERENCES channels(id)
+    FOREIGN KEY (channel_id)
+        REFERENCES channels(id)
+        ON DELETE CASCADE
   );`,
   `CREATE TABLE IF NOT EXISTS channel_permissions (
     channel_id BIGINT UNSIGNED NOT NULL,
@@ -31,7 +35,9 @@ module.exports = [
     command_id VARCHAR(50) NOT NULL,
     allowed BOOLEAN NOT NULL,
     PRIMARY KEY (channel_id, target_id, command_id),
-    FOREIGN KEY (channel_id) REFERENCES channels(id)
+    FOREIGN KEY (channel_id)
+        REFERENCES channels(id)
+        ON DELETE CASCADE
   );`,
   `CREATE TABLE IF NOT EXISTS guild_permissions (
     guild_id BIGINT UNSIGNED NOT NULL,
@@ -52,6 +58,14 @@ module.exports = [
     setting VARCHAR(20) NOT NULL,
     val VARCHAR(255) NOT NULL,
     PRIMARY KEY (channel_id, setting),
-    FOREIGN KEY (channel_id) REFERENCES channels(id)
+    FOREIGN KEY (channel_id)
+        REFERENCES channels(id)
+        ON DELETE CASCADE
+  );`,
+  `CREATE TABLE IF NOT EXISTS notified_ids (
+    shard_id BIGINT UNSIGNED NOT NULL,
+    platform VARCHAR(3) NOT NULL DEFAULT 'pc',
+    id_list JSON NOT NULL,
+    PRIMARY KEY (shard_id, platform)
   );`,
 ];
