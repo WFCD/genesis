@@ -1,4 +1,4 @@
-# Project Genesis <img src="src/resources/genesis-vector-nexus.png" height="25" width="25" alt="Genesis Avatar"/>
+# Project Genesis <img src="src/resources/genesis-vector-cyan.png" height="25" width="25" alt="Genesis Avatar"/>
 
 [![Supported by Warframe Community Developers](https://raw.githubusercontent.com/Warframe-Community-Developers/banner/master/banner.png)](https://github.com/Warframe-Community-Developers "Supported by Warframe Community Developers")
 ### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more. 
