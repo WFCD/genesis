@@ -3,6 +3,7 @@
 const http = require('http');
 
 const WorldState = require('warframe-worldstate-parser');
+const EventEmitter = require('events');
 
 const worldStateURLs = {
   pc: 'http://content.warframe.com/dynamic/worldState.php',
@@ -10,23 +11,22 @@ const worldStateURLs = {
   xb1: 'http://content.xb1.warframe.com/dynamic/worldState.php',
 };
 
-class WorldStateCache {
+class WorldStateCache extends EventEmitter {
   constructor(platform, timeout) {
+    super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;
     this.currentData = null;
     this.lastUpdated = null;
     this.updating = null;
-
+    this.platform = platform;
+    this.updateInterval = setInterval(() => this.update(), timeout);
     this.update();
   }
 
   getData() {
     if (this.updating) {
       return this.updating;
-    }
-    if (Date.now() - this.lastUpdated > this.timeout) {
-      return this.update();
     }
     return Promise.resolve(this.currentData);
   }
@@ -36,6 +36,7 @@ class WorldStateCache {
       this.lastUpdated = Date.now();
       this.currentData = new WorldState(data);
       this.updating = null;
+      this.emit('newData', this.platform, this.currentData);
       return this.currentData;
     }).catch((err) => {
       this.updating = null;

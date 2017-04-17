@@ -33,11 +33,11 @@ class Help extends Command {
       this.messageManager.reply(message, this.helpReplyMsg, true, false);
     }
     this.sendCoreEmbed(message);
-    if(message.channel.type === 'dm' ||
+    if (message.channel.type === 'dm' ||
        message.channel
         .permissionsFor(message.author)
         .hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) {
-       this.sendSettingsEmbed(message);
+      this.sendSettingsEmbed(message);
     }
     this.sendWorldStateEmbed(message);
     this.sendWarframeEmbed(message);
@@ -68,7 +68,7 @@ class Help extends Command {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
       const ownerCommands = this.commandHandler.commands.filter(c => c.ownerOnly)
         .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
@@ -80,7 +80,7 @@ class Help extends Command {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
       const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /core/ig.test(c.id))
         .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
@@ -92,7 +92,7 @@ class Help extends Command {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
       const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.worldstate/ig.test(c.id))
         .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
@@ -104,7 +104,7 @@ class Help extends Command {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
       const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.(?!worldstate)/ig.test(c.id))
         .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
@@ -116,7 +116,7 @@ class Help extends Command {
     this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
       const ownerCommands = this.commandHandler.commands.filter(c => !c.ownerOnly && /settings/ig.test(c.id))
         .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(' ')}`,
+          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));

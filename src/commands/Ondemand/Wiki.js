@@ -45,9 +45,8 @@ class Wiki extends Command {
       })).then((details) => {
         this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
       })
-      .catch((err) => {
+      .catch(() => {
         this.messageManager.reply(message, this.noResult, true, true);
-        this.logger.error(err);
       });
     }
   }

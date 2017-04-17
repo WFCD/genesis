@@ -33,10 +33,10 @@ class SyndicateEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.title = 'Worldstate - Syndicate missions';
-    this.description = `Current Missions for Syndicate: ${syndicate || 'none'}`;
+    this.title = 'Worldstate - Syndicate Missions';
+    this.description = `Current Missions for ${syndicate || 'none'}`;
     this.thumbnail = {
-      url: 'https://github.com/aliasfalse/genesis/raw/master/src/resources/syndicate.png',
+      url: 'https://i.imgur.com/I8CjF9d.png',
     };
   }
 }

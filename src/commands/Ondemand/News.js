@@ -25,7 +25,7 @@ class News extends Command {
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
         const news = ws.news;
-        this.messageManager.embed(message, new NewsEmbed(this.bot, news), true, false);
+        this.messageManager.embed(message, new NewsEmbed(this.bot, news.filter(n => !n.isUpdate() && !n.isPrimeAccess())), true, false);
       })
       .catch(this.logger.error);
   }

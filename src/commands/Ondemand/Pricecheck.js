@@ -33,12 +33,9 @@ class PriceCheck extends Command {
    */
   run(message) {
     const item = message.strippedContent.match(this.regex)[1];
-
     this.nexusQuerier.priceCheckQueryAttachment(item)
-        .then((result) => {
-          this.messageManager.embed(message,
-            new PriceCheckEmbed(this.bot, result, item), true, false);
-        })
+        .then(result => this.messageManager.embed(message,
+            new PriceCheckEmbed(this.bot, result, item), true, false))
         .catch(this.logger.error);
   }
 }

@@ -1,7 +1,6 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const CommandIdEmbed = require('../../embeds/CommandIdEmbed.js');
 
 /**
  * Get a list of all servers
@@ -21,13 +20,18 @@ class GetCommandIds extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const commands = this.commandHandler.commands.filter(command =>
-      !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly));
-    const embed = new CommandIdEmbed(this.bot, commands);
+    const fileContents = [];
+    this.commandHandler.commands
+      .filter(command =>
+        !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly))
+      .forEach((command) => {
+        fileContents.push(`"${command.call}","${command.id}"`);
+      });
+
     if (message.channel.type !== 'dm') {
       this.messageManager.reply(message, 'Check your direct messages for more information.', true, true);
     }
-    this.messageManager.sendDirectEmbedToAuthor(message, embed, false);
+    this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'command_ids.csv', true);
   }
 }
 

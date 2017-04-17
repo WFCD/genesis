@@ -27,8 +27,6 @@ const client = Raven.config(process.env.RAVEN_URL, {
  */
 const Logger = require('./src/Logger.js');
 
-const logger = new Logger(client);
-
 /**
  * Class that manages the cluster's workers
  * @type {Function}
@@ -38,8 +36,11 @@ const ClusterManager = require('./src/ClusterManager.js');
 client.install();
 
 client.on('error', (error) => {
-  logger.error(`Could not report the following error to Sentry: ${error.message}`);
+  //  eslint-disable-next-line no-console
+  console.error(`Could not report the following error to Sentry: ${error.message}`);
 });
+
+const logger = new Logger(client);
 
 if (cluster.isMaster) {
   const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;

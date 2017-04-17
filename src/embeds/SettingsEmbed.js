@@ -9,12 +9,24 @@ class SettingsEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Channel} channel - The channel for which to send settings
-   * @param {Settings} settings -  The settngs to to display
+   * @param {Array.<Settings>} settings -  The settngs to to display
+   * @param {number} pageNumber - Whether or not this is a 'tracked' embed
    */
-  constructor(bot, channel, settings) {
+  constructor(bot, channel, settings, pageNumber) {
     super();
-
-    this.color = 0x00ff00;
+    switch (pageNumber) {
+      case 1:
+        this.color = 0x3366ff;
+        break;
+      case 2:
+        this.color = 0x6666cc;
+        break;
+      case 3:
+      default:
+        this.color = 0x77dd77;
+        break;
+    }
+    this.url = 'https://warframe-community-developers.github.io/genesis/index.html';
     if (channel.type === 'text') {
       this.title = `Settings for ${channel.name}`;
     } else {
@@ -25,7 +37,7 @@ class SettingsEmbed extends BaseEmbed {
     settings.forEach((setting) => {
       this.fields[0].value += `\n**${setting.name}:** ${setting.value}`;
     });
-    this.footer.text = 'Settings data provided by Cephalon Genesis | Warframe Community Developers';
+    this.footer.text = `Part ${pageNumber}`;
   }
 }
 

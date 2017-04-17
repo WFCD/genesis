@@ -1,19 +1,45 @@
 {
   "rewardTypes" :[
     "vauban",
+    "vandal",
+    "wraith",
     "skin",
     "helmet",
     "nitain",
     "mutalist",
     "weapon",
+    "fieldron",
+    "detonite",
+    "mutagen",
     "clantech",
     "aura",
-    "resource",
+    "neuralSensors",
+    "orokinCell",
+    "alloyPlate",
+    "circuits",
+    "controlModule",
+    "ferrite",
+    "gallium",
+    "morphics",
+    "nanoSpores",
+    "oxium",
+    "rubedo",
+    "salvage",
+    "plastids",
+    "polymerBundle",
+    "argonCrystal",
+    "cryotic",
+    "tellurium",
     "nightmare",
     "endo",
-    "potato",
+    "reactor",
+    "catalyst",
     "forma",
+    "synthula",
     "exilus",
+    "kavatGene",
+    "kubrowEgg",
+    "traces",
     "other"
   ],
   "eventTypes" : [
@@ -21,9 +47,14 @@
     "invasions",
     "news",
     "sorties",
-    "fissures",
+    "fissures.t1",
+    "fissures.t2",
+    "fissures.t3",
+    "fissures.t4",
     "baro",
     "darvo",
+    "deals.featured",
+    "deals.popular",
     "enemies",
     "conclave.weeklies",
     "conclave.dailies",
@@ -32,174 +63,8 @@
     "syndicate.loka",
     "syndicate.perrin",
     "syndicate.veil",
-    "syndicate.meridian"
-  ],
-  "objs": [
-  {
-    "name": "vauban",
-    "description": "Vauban parts",
-    "test": ["^vauban" , "i"],
-    "thumbnail": "https://raw.githubusercontent.com/Warframe-Community-Developers/warframe-worldstate-parser/master/resources/vauban_thumb.png",
-    "color": "0x5C5A53"
-  },
-  {
-    "name": "skin",
-    "description": "Weapon skins",
-    "test": ["skin", "i"],
-    "thumbnail": "https://raw.githubusercontent.com/Warframe-Community-Developers/warframe-worldstate-parser/master/resources/weapon_skin_thumb.png",
-    "color": "0x4F4C33"
-  },
-  {
-    "name": "helmet",
-    "description": "Alternative helmets",
-    "test": ["helmet", "i"],
-    "thumbnail": "https://raw.githubusercontent.com/Warframe-Community-Developers/warframe-worldstate-parser/master/resources/alt_helmet_thumb.png",
-    "color": "0x567677"
-  },
-  {
-    "name": "nitain",
-    "description": "Nitain extract",
-    "test": ["nitain", "i"],
-    "thumbnail": "https://raw.githubusercontent.com/Warframe-Community-Developers/warframe-worldstate-parser/master/resources/nitain_thumb.png",
-    "color": "0xAEADA4"
-  },
-  {
-    "name": "mutalistCoordinate",
-    "description": "Mutalist Alad V coordinates",
-    "test":["mutalist", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/mutalist_thumb.png",
-    "color": "0x26B37"
-  },
-  {
-    "name": "weapon",
-    "description": "Weapons",
-    "test": ["dagger|sword|glaive", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/glaive_thumb.png",
-    "color": "0xA3A097"
-  },
-  {
-    "name": "clantech",
-    "description": "Clantech resources",
-    "test": ["fieldron|detonite|mutagen", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/clantech_thmb.png",
-    "color": "0x4D5556"
-  },
-  {
-    "name": "aura",
-    "description": "Auras",
-    "test": "",
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/aura_thumb.png",
-    "color": "0xC8F8FF"
-  },
-  {
-    "name": "resource",
-    "description": "Resources",
-    "test": "",
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/resource_thumb.png",
-    "color": "0xFFEE9C"
-  },
-  {
-    "name": "nightmare",
-    "description": "Nightmare mods",
-    "test": "",
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/nightmare_thumb.png",
-    "color": "0xB22E2C"
-  },
-  {
-    "name": "endo",
-    "description": "Endo",
-    "test": ["\\d+\\sendo", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/endo_thumb.png",
-    "color": "0xC2A24C"
-  },
-  {
-    "name": "potato",
-    "description": "Orokin Catalysts/Reactors",
-    "test": ["catalyst|reactor", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/potato_thumb.png",
-    "color": "0x689ADD"
-  },
-  {
-    "name": "forma",
-    "description": "Forma",
-    "test": ["forma", "i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/forma_thumb.png",
-    "color": "0xF9E592"
-  },
-  {
-    "name": "exilus",
-    "description": "Exilus",
-    "test": ["exilus","i"],
-    "thumbnail": "https://github.com/Warframe-Community-Developers/warframe-worldstate-parser/raw/master/resources/exilus_thumb.png",
-    "color": "0x722824"
-  },
-  {
-    "name": "other",
-    "description": "Other",
-    "test": ".*",
-    "thumbnail": "",
-    "color": "0x4F545C"
-  }
-],
-"nightmare" : [
-  "Accelerated Blast",
-  "Animal Instinct",
-  "Armored Agility",
-  "Blaze",
-  "Constitution",
-  "Focus Energy",
-  "Fortitude",
-  "Hammer Shot",
-  "Ice Storm",
-  "Lethal Torrent",
-  "Rending Strike",
-  "Stunning Speed",
-  "Wildfire",
-  "Seeking Fury",
-  "Shred",
-  "Vigor"
-],
-"auras" : [
-  "Corrosive Projection",
-  "Dead Eye",
-  "EMP Aura",
-  "Enemy Radar",
-  "Energy Siphon",
-  "Infested Impedance",
-  "Loot Detector",
-  "Physique",
-  "Pistol Scavenger",
-  "Rejuvenation",
-  "Rifle Amp",
-  "Rifle Scavenger",
-  "Shield Disruption",
-  "Shotgun Scavenger",
-  "Sniper Scavenger",
-  "Speed Holster",
-  "Sprint Boost",
-  "Stand United",
-  "Steel Charge"
-],
-"resources" : [
-  "Neural Sensors",
-  "Orokin Cell",
-  "Neurodes",
-  "Alloy Plate",
-  "Circuits",
-  "Control Module",
-  "Ferrite",
-  "Gallium",
-  "Morphics",
-  "Nano Spores",
-  "Oxium",
-  "Rubedo",
-  "Salvage",
-  "Plastids",
-  "Polymer Bundle",
-  "Argon Crystal",
-  "Cryotic",
-  "Oxium",
-  "Tellurium",
-  "Javlock Capacitor"
-]
+    "syndicate.meridian",
+    "updates",
+    "primeaccess"
+  ]
 }

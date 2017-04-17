@@ -14,14 +14,16 @@ class SortieEmbed extends BaseEmbed {
     super();
 
     this.color = 0x00ff00;
-    this.fields = sortie.variants.map(v => ({
-      name: `${v.node} - ${v.missionType}`,
-      value: v.modifier,
-    }));
-    this.fields.push({ name: '_ _', value: `Ends in ${sortie.getETAString()}` });
+    if (typeof sortie !== 'undefined' && sortie) {
+      this.fields = sortie.variants.map(v => ({
+        name: `${v.node} - ${v.missionType}`,
+        value: v.modifier,
+      }));
+      this.description = `Currently in-progress sortie: **${sortie.getBoss()}**`;
+      this.footer.text = `${sortie.getETAString()} remaining | ${new Date().toLocaleString()}`;
+    }
 
     this.title = 'Worldstate - Sortie';
-    this.description = `Currently in-progress sortie: **${sortie.getBoss()}**`;
     this.thumbnail = {
       url: 'http://i.imgur.com/wWBRhaB.png',
     };

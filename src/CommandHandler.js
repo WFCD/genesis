@@ -96,7 +96,10 @@ class CommandHandler {
             .then((canAct) => {
               if (canAct) {
                 this.logger.debug(`Matched ${command.id}`);
-                message.react('\u2705').catch(this.logger.error);
+                if (message.channel.type === 'dm' ||
+                  (message.channel.permissionsFor(this.bot.client.user.id).hasPermission('ADD_REACTIONS'))) {
+                  message.react('\u2705').catch(this.logger.error);
+                }
                 command.run(messageWithStrippedContent);
               }
             });

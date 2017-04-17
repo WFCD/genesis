@@ -29,7 +29,7 @@ class RespondToSettings extends Command {
     } else {
       enable = enable.trim();
       let enableResponse = false;
-      if (enable === 'enable' || enable === 'enable' || enable === '1' || enable === 'true' || enable === 1) {
+      if (enable === 'enable' || enable === 'yes' || enable === '1' || enable === 'true' || enable === 1) {
         enableResponse = true;
       }
       this.bot.settings.setChannelDeleteAfterResponse(message.channel, enableResponse)

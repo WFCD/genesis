@@ -26,7 +26,7 @@ class Servers extends Command {
       fileContents.push(`"${guild.name}","${guild.owner.user.username}#${guild.owner.user.discriminator}","${guild.id}"`);
     });
 
-    message.author.sendFile(new Buffer(fileContents.join('\n'), 'ascii'), 'servers.csv');
+    this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'servers.csv', true);
   }
 }
 
