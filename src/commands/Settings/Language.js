@@ -9,6 +9,7 @@ class Language extends Command {
       { description: 'Change this channel\'s language', parameters: ['language'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(.+)?$`, 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {

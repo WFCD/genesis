@@ -772,6 +772,30 @@ class Database {
       return res[0][0].id_list;
     });
   }
+
+  setRolesForGuild(guild, roles) {
+    const query = SQL`INSERT INTO guild_joinable_roles VALUES
+      (${guild.id}, JSON_ARRAY(${roles.map(role => role.id)}))
+      ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles.map(role => role.id)});`;
+    return this.db.query(query);
+  }
+
+  getRolesForGuild(guild) {
+    const query = SQL`SELECT id_list
+      FROM guild_joinable_roles
+      WHERE guild_id=${guild.id}`;
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0].length === 0) {
+          return [];
+        }
+        const validList = res[0][0].id_list
+          .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined')
+          .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
+        return this.setRolesForGuild.setRolesForGuild(guild, validList)
+          .then(() => validList);
+      });
+  }
 }
 
 module.exports = Database;

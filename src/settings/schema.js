@@ -68,4 +68,9 @@ module.exports = [
     id_list JSON NOT NULL,
     PRIMARY KEY (shard_id, platform)
   );`,
+  `CREATE TABLE IF NOT EXISTS guild_joinable_roles (
+    guild_id BIGINT UNSIGNED NOT NULL,
+    id_list JSON NOT NULL,
+    PRIMARY KEY (guild_id)
+  );`,
 ];

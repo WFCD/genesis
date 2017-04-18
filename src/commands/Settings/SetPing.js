@@ -11,6 +11,7 @@ class SetPing extends Command {
       { description: 'Set ping for an event or item', parameters: ['event or reward'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?((${eventTypes.join('|')}|${rewardTypes.join('|')})(.+)?)?$`, 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {
