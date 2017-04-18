@@ -11,6 +11,7 @@ const discordListToken = process.env.DISCORD_LIST_TOKEN;
 const cachetToken = process.env.CACHET_TOKEN;
 const cachetHost = process.env.CACHET_HOST;
 const metricId = process.env.CACHET_BOT_METRIC_ID;
+const heartBeatTime = process.env.CACHET_HEARTBEAT || 600000;
 
 /**
  * Describes a tracking service for updating remote sites
@@ -36,7 +37,9 @@ class Tracker {
     if (discordListToken) {
       setInterval(() => this.updateDiscordList(this.client.guilds.size), updateInterval);
     }
-    
+    if (cachetToken && cachetHost && metricId) {
+      setInterval(() => this.postHeartBeat(), heartBeatTime);
+    }
   }
 
   /**
