@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('request-promise');
-const https = require('https');
 
 const carbonToken = process.env.DISCORD_CARBON_TOKEN;
 const botsDiscordPwToken = process.env.DISCORD_BOTS_WEB_TOKEN;
@@ -135,27 +134,23 @@ class Tracker {
    * Post the cachet heartbeat for the shardCount
    */
   postHeartBeat() {
-    const options = {
-      hostname: cachetHost,
-      port: 443,
-      path: `/api/v1/metrics/${metricId}/points`,
+    const requestBody = {
       method: 'POST',
+      url: `${cachetHost}/api/v1/metrics/${metricId}/points`,
       headers: {
         'Content-Type': 'application/json',
         'X-Cachet-Token': cachetToken,
       },
+      body: {
+        value: 1,
+      },
+      json: true,
     };
-    const payload = {"value": 1};
-    const request = https.request(options, (response) => {
-      if (response.statusCode < 200 || response.statusCode > 299) {
-        this.logger.error(new Error(`Failed to load page, status code: ${response.statusCode}`));
-      }
-      const body = [];
-      response.on('end', () => this.logger.debug(body.join('')));
-    });
-    request.on('error', this.logger.error);
-    request.write(payload);
-    request.end();
+    request(requestBody)
+    .then((parsedBody) => {
+      this.logger.debug(parsedBody);
+    })
+    .catch(this.logger.error);
   }
 }
 
