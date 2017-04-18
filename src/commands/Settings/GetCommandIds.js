@@ -12,6 +12,7 @@ class GetCommandIds extends Command {
    */
   constructor(bot) {
     super(bot, 'settings.getcommandids', 'getcommandids', 'Get list of bot command ids available for you to view');
+    this.requiresAuth = true;
   }
 
   /**

@@ -9,6 +9,7 @@ class Platform extends Command {
       { description: 'Change this channel\'s platform', parameters: ['platform'] },
     ];
     this.regex = new RegExp(`${this.call}(?:\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {

@@ -15,6 +15,7 @@ class Settings extends Command {
   constructor(bot) {
     super(bot, 'settings.settings', 'settings', 'Get settings');
     this.regex = new RegExp(`^${this.call}$`, 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {

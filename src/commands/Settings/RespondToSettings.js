@@ -9,6 +9,7 @@ class RespondToSettings extends Command {
       { description: 'Change if this channel has settings changes resonded in it', parameters: ['response enabled'] },
     ];
     this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(.+)?$', 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {

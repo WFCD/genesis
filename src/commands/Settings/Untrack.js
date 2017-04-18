@@ -15,6 +15,7 @@ class Untrack extends Command {
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
     this.regex = new RegExp(`^${this.call}(?:(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items)*)?`, 'i');
+    this.requiresAuth = true;
   }
 
   /**

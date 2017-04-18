@@ -9,6 +9,7 @@ class RespondToSettings extends Command {
       { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
     ];
     this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(.+)?$', 'i');
+    this.requiresAuth = true;
   }
 
   run(message) {
