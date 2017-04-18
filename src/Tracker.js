@@ -1,12 +1,16 @@
 'use strict';
 
 const request = require('request-promise');
+const https = require('https');
 
 const carbonToken = process.env.DISCORD_CARBON_TOKEN;
 const botsDiscordPwToken = process.env.DISCORD_BOTS_WEB_TOKEN;
 const botsDiscordPwUser = process.env.DISCORD_BOTS_WEB_USER;
 const updateInterval = process.env.TRACKERS_UPDATE_INTERVAL || 2600000;
 const discordListToken = process.env.DISCORD_LIST_TOKEN;
+const cachetToken = process.env.CACHET_TOKEN;
+const cachetHost = process.env.CACHET_HOST;
+const metricId = process.env.CACHET_BOT_METRIC_ID;
 
 /**
  * Describes a tracking service for updating remote sites
@@ -32,6 +36,7 @@ class Tracker {
     if (discordListToken) {
       setInterval(() => this.updateDiscordList(this.client.guilds.size), updateInterval);
     }
+    
   }
 
   /**
@@ -121,6 +126,33 @@ class Tracker {
     this.updateCarbonitex(guildsLen);
     this.updateDiscordBotsWeb(guildsLen);
     this.updateDiscordList(guildsLen);
+  }
+  
+  /**
+   * Post the cachet heartbeat for the shardCount
+   */
+  postHeartBeat() {
+    const options = {
+      hostname: cachetHost,
+      port: 443,
+      path: `/api/v1/metrics/${metricId}/points`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Cachet-Token': cachetToken,
+      },
+    };
+    const payload = {"value": 1};
+    const request = https.request(options, (response) => {
+      if (response.statusCode < 200 || response.statusCode > 299) {
+        this.logger.error(new Error(`Failed to load page, status code: ${response.statusCode}`));
+      }
+      const body = [];
+      response.on('end', () => this.logger.debug(body.join('')));
+    });
+    request.on('error', this.logger.error);
+    request.write(payload);
+    request.end();
   }
 }
 
