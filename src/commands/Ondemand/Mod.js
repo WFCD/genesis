@@ -40,7 +40,7 @@ class Mod extends Command {
         })
         .then((detailsJson) => {
           let thumbUrl = detailsJson.items[`${id}`].thumbnail;
-          thumbUrl = thumbUrl.replace(/\/revision\/.*/, '');
+          thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, 'https://i.imgur.com/11VCxbq.jpg') : '';
           warframe.getArticlesList({
             category: 'Mods',
             limit: 1000,
@@ -48,7 +48,7 @@ class Mod extends Command {
            .then((list) => {
              let sent = false;
              list.items.forEach((item) => {
-               if (item.id === id) {
+               if (item.id === id && !sent) {
                  sent = true;
                  const embed = {
                    title: query,
