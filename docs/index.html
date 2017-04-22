@@ -4,9 +4,30 @@
       <link rel="stylesheet" href="styles.css">
       <title>Genesis - Help</title>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-      <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css">
+      <link rel='stylesheet' href='//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
       <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-      <script src="tabs.js"></script>
+      <script type="text/javascript">
+        function openCommandTab(evt, cityName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+      </script>
    </head>
    <body>
       <h1>Welcome to Genesis' Help Page</h1>
@@ -44,15 +65,15 @@
                <h3>Commands</h3>
             </strong>
             <div class="tab">
-               <button class="tablinks" onclick="openCommandTab(event, 'tracking')"><p>Tracking</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'settings')"><p>Settings</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'ondemand')"><p>On Demand</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'wf-utilities')"><p>Warframe Utilities</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'core')"><p>Core</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'utility')"><p>Utility</p></button>
-               <button class="tablinks" onclick="openCommandTab(event, 'silly')"><p>Silly</p></button>
+               <button class="tablinks" onclick="openCommandTab(event, 'tracking')">Tracking</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'settings')">Settings</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'ondemand')">On Demand</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'wf-utilities')">Warframe Utilities</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'core')">Core</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'utility')">Utility</button>
+               <button class="tablinks" onclick="openCommandTab(event, 'silly')">Silly</button>
             </div>
-            <div id="tracking" class="tabcontent active">
+            <div id="tracking" class="tabcontent">
                <table id="tracking" class="commands">
                   <th colspan="2">
                      <h4>Tracking Commands</h4>
