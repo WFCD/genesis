@@ -773,27 +773,38 @@ class Database {
     });
   }
 
+  /**
+   * Set the joinable roles for a guild
+   * @param {Guild} guild Guild to set joinable roles for
+   * @param {Array.<string>} roles Array of role ids to set
+   * @returns {Promise}
+   */
   setRolesForGuild(guild, roles) {
     const query = SQL`INSERT INTO guild_joinable_roles VALUES
-      (${guild.id}, JSON_ARRAY(${roles.map(role => role.id)}))
-      ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles.map(role => role.id)});`;
+      (${guild.id}, JSON_ARRAY(${roles}))
+      ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles});`;
     return this.db.query(query);
   }
 
+  /**
+   * Get the roles that can be joined for a guild
+   * @param  {Guild} guild [description]
+   * @returns {Promise.<Array.<Role>>} Promise of array of roles that are joinable
+   */
   getRolesForGuild(guild) {
     const query = SQL`SELECT id_list
       FROM guild_joinable_roles
       WHERE guild_id=${guild.id}`;
     return this.db.query(query)
       .then((res) => {
-        if (res[0].length === 0) {
-          return [];
+        if (res[0][0]) {
+          const validListIds = res[0][0].id_list
+            .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined');
+          const validList = validListIds
+            .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
+          return validList;
         }
-        const validList = res[0][0].id_list
-          .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined')
-          .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
-        return this.setRolesForGuild.setRolesForGuild(guild, validList)
-          .then(() => validList);
+        return [];
       });
   }
 }
