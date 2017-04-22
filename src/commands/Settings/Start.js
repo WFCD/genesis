@@ -17,7 +17,7 @@ class Untrack extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    this.messageManager.reply(message, 'That\'s so 2016, Operator, in 2017, Cephalon Genesis uses `/track` and that\'s all', true, false);
+    this.messageManager.reply(message, 'That\'s so 2016, Operator, in 2017, Cephalon Genesis uses `/track` and that\'s all.\nCheck out <https://warframe-community-developers.github.io/genesis/index.html> for documentation.', true, false);
   }
 }
 
