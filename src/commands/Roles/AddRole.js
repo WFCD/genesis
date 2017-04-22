@@ -24,7 +24,7 @@ function getRoleForString(string, message) {
  */
 class AddRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.addRank', 'add rank');
+    super(bot, 'settings.addRole', 'add role');
     this.usages = [
       { description: 'Show instructions for adding joinable roles', parameters: [] },
       { description: 'Add a role', parameters: ['Role/Role id to add'] },
@@ -67,7 +67,7 @@ class AddRole extends Command {
   addAndCommitRole(message, roles, newRole) {
     this.bot.settings.setRolesForGuild(message.guild, roles);
     this.messageManager.embed(message, {
-      title: 'Added role',
+      title: 'Added role to joinable list',
       type: 'rich',
       color: 0x779ECB,
       fields: [
