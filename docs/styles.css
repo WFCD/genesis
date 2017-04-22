@@ -57,7 +57,16 @@ th [colspan="2"] {
     text-align: center;
 }
 
-footer { text-align: center;}
+/*footer { }*/
+
+footer {
+   position:fixed;
+   left:0px;
+   bottom:0px;
+   height:50px;
+   width:100%;
+   text-align: center;
+}
 
 
 /* Style the tab */
