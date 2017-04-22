@@ -24,7 +24,7 @@ function getRoleForString(string, message) {
  */
 class RemoveRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.removeRank', 'remove rank');
+    super(bot, 'settings.removeRole', 'remove role');
     this.usages = [
       { description: 'Show instructions for removing joinable roles', parameters: [] },
       { description: 'Remove a role', parameters: ['Role/Role id to add'] },
@@ -67,7 +67,7 @@ class RemoveRole extends Command {
   removeAndCommitRoles(message, roles, newRole) {
     this.bot.settings.setRolesForGuild(message.guild, roles);
     this.messageManager.embed(message, {
-      title: 'Removed rank',
+      title: 'Removed role from joinable list',
       type: 'rich',
       color: 0x779ECB,
       fields: [
