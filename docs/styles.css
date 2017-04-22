@@ -65,7 +65,9 @@ footer {
    bottom:0px;
    height:50px;
    width:100%;
+   margin-top: -10px;
    text-align: center;
+   background-color: inherit;
 }
 
 
