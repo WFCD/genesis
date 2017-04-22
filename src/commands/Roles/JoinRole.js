@@ -22,12 +22,12 @@ function getRoleForString(string, message) {
 /**
  * Add a joinable role
  */
-class AddRole extends Command {
+class JoinRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.addRank', 'add rank');
+    super(bot, 'settings.joinRole', 'join');
     this.usages = [
-      { description: 'Show instructions for adding joinable roles', parameters: [] },
-      { description: 'Add a role', parameters: ['Role/Role id to add'] },
+      { description: 'Show instructions for joining roles', parameters: [] },
+      { description: 'Joining a role', parameters: ['Role/Role id to join.'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
     this.requiresAuth = true;
@@ -51,12 +51,17 @@ class AddRole extends Command {
         this.bot.settings.getRolesForGuild(message.guild)
            .then((roles) => {
              const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-             if (filteredRoles.length > 0) {
-               this.sendAlreadyAddedEmbed(message);
+             const roleAddable = filteredRoles.length > 0
+               && !message.member.roles.get(role.id)
+               && message.member.highestRole
+                  .comparePositionTo(message.guild.members
+                    .get(this.bot.client.user.id).highestRole) < 0;
+             if (roleAddable) {
+               message.member.addRole(role.id)
+                .then(() => this.sendJoined(message, role))
+                .catch(this.logger.error);
              } else {
-               const rolesToCommit = roles.map(innerRole => innerRole.id);
-               rolesToCommit.push(role.id);
-               this.addAndCommitRole(message, rolesToCommit, role.name);
+               this.sendCantJoin(message);
              }
            })
            .catch(this.logger.error);
@@ -64,23 +69,23 @@ class AddRole extends Command {
     }
   }
 
-  addAndCommitRole(message, roles, newRole) {
-    this.bot.settings.setRolesForGuild(message.guild, roles);
+  sendJoined(message, role) {
     this.messageManager.embed(message, {
-      title: 'Added role',
+      title: 'Joined Role',
       type: 'rich',
       color: 0x779ECB,
       fields: [
         {
           name: '_ _',
-          value: newRole,
+          value: role.name,
           inline: true,
         },
       ],
-    }, true, false);
+    }, true, true);
   }
 
-  sendAlreadyAddedEmbed(message) {
+
+  sendCantJoin(message) {
     this.messageManager.embed(message, {
       title: 'Invalid Role',
       type: 'rich',
@@ -88,7 +93,7 @@ class AddRole extends Command {
       fields: [
         {
           name: '_ _',
-          value: 'That role is already joinable.',
+          value: 'You can\'t join that role.',
           inline: true,
         },
       ],
@@ -96,29 +101,32 @@ class AddRole extends Command {
   }
 
   sendInstructionEmbed(message) {
+    const embed = {
+      title: 'Usage',
+      type: 'rich',
+      color: 0x779ECB,
+      fields: [
+        {
+          name: '_ _',
+          value: 'Role or role id to join.',
+        },
+        {
+          name: 'Possible role values:',
+          value: '_ _',
+        },
+      ],
+    };
     this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x779ECB,
-        fields: [
-          {
-            name: `${prefix}${this.call} <role or role id>`,
-            value: 'Role or role id to be allowed for self-role.',
-          },
-          {
-            name: 'Possible values:',
-            value: '_ _',
-          },
-          {
-            name: '**Roles:**',
-            value: message.guild.roles.map(r => r.name).join('; '),
-            inline: true,
-          },
-        ],
-      }, true, false))
+      .then((prefix) => {
+        embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
+        return this.bot.settings.getRolesForGuild(message.guild);
+      })
+      .then((roles) => {
+        embed.fields[1].value = roles.map(role => role.name).join('; ');
+        this.messageManager.embed(message, embed, true, false);
+      })
       .catch(this.logger.error);
   }
 }
 
-module.exports = AddRole;
+module.exports = JoinRole;

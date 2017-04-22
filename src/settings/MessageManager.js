@@ -39,7 +39,6 @@ class MessaageManager {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
-
     promises.forEach(promise => promise.catch(this.logger.error));
   }
 
@@ -91,7 +90,8 @@ class MessaageManager {
   embed(message, embed, deleteOriginal, deleteResponse) {
     const promises = [];
     if ((message.channel.type === 'text' &&
-      message.channel.permissionsFor(this.client.user.id).hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS']))
+      message.channel.permissionsFor(this.client.user.id)
+        .hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
       promises.push(message.channel.sendEmbed(embed).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);

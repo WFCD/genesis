@@ -10,10 +10,11 @@ const Command = require('../../Command.js');
  */
 function getRoleForString(string, message) {
   const trimmedString = string.trim();
-  const roleFromId = this.client.roles.get(trimmedString);
+  const roleFromId = message.guild.roles.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {
-    roleFromName = message.guild.roles.find('name', trimmedString);
+    roleFromName = message.guild.roles
+      .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;
 }
@@ -23,13 +24,14 @@ function getRoleForString(string, message) {
  */
 class RemoveRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.removeRole', 'remove role');
+    super(bot, 'settings.removeRank', 'remove rank');
     this.usages = [
       { description: 'Show instructions for removing joinable roles', parameters: [] },
       { description: 'Remove a role', parameters: ['Role/Role id to add'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   /**
@@ -42,7 +44,7 @@ class RemoveRole extends Command {
     if (!stringRole) {
       this.sendInstructionEmbed(message);
     } else {
-      const role = getRoleForString(stringRole);
+      const role = getRoleForString(stringRole, message);
       if (!role) {
         this.sendInstructionEmbed(message);
       } else {
@@ -51,7 +53,8 @@ class RemoveRole extends Command {
             const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
             if (filteredRoles.length > 0) {
               this.removeAndCommitRoles(message, roles
-                .filter(storedRole => filteredRoles[0].id !== storedRole.id));
+                .filter(storedRole => filteredRoles[0].id !== storedRole.id)
+                .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
             } else {
               this.sendRoleNotAvailable(message);
             }
@@ -61,8 +64,20 @@ class RemoveRole extends Command {
     }
   }
 
-  removeAndCommitRoles(message, roles) {
-    this.settings.setRolesForGuild(message.guild, roles);
+  removeAndCommitRoles(message, roles, newRole) {
+    this.bot.settings.setRolesForGuild(message.guild, roles);
+    this.messageManager.embed(message, {
+      title: 'Removed rank',
+      type: 'rich',
+      color: 0x779ECB,
+      fields: [
+        {
+          name: '_ _',
+          value: newRole.name,
+          inline: true,
+        },
+      ],
+    }, true, false);
   }
 
   sendRoleNotAvailable(message) {
@@ -101,7 +116,7 @@ class RemoveRole extends Command {
             inline: true,
           },
         ],
-      }, true, false))
+      }, true, true))
       .catch(this.logger.error);
   }
 }
