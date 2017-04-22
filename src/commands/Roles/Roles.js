@@ -7,7 +7,7 @@ const Command = require('../../Command.js');
  */
 class Roles extends Command {
   constructor(bot) {
-    super(bot, 'settings.ranks', 'ranks', 'Get list of ranks');
+    super(bot, 'settings.ranks', 'roles', 'Get list of joinable roles');
     this.allowDM = false;
   }
 
