@@ -20,13 +20,13 @@ class Roles extends Command {
     this.bot.settings.getRolesForGuild(message.guild)
        .then((roles) => {
          this.messageManager.embed(message, {
-           title: 'Joinable Ranks',
+           title: 'Joinable Roles',
            type: 'rich',
            color: 0x779ECB,
            fields: [
              {
                name: '_ _',
-               value: roles.length ? roles.join('; ') : 'No joinable ranks',
+               value: roles.length ? roles.join('; ') : 'No joinable Roles',
              },
            ],
          }, true, true);
