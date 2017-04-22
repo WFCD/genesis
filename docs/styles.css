@@ -9,7 +9,6 @@ h1 {
   border-bottom-width:1px;
   border-bottom-color: #2C2F33;
   border-bottom-style: double;
-
   width: 100%;
   color: #99AAB5;
   text-align: center;
@@ -22,7 +21,7 @@ h3 {
 
 div {
   margin: auto;
-  width:75%;
+  width:90%;
 }
 
 a:visited {
@@ -50,12 +49,62 @@ code, .commands td:first-child {
   color: rgba(255,94,94,1);
   font-family: 'Hack', monospace;
 }
+table {
+  width: 100%;
+}
 
 th [colspan="2"] {
     text-align: center;
 }
 
-.commands { margin: auto;}
-.commands td {width: 500px;}
-
 footer { text-align: center;}
+
+
+/* Style the tab */
+div.tab {
+    overflow: hidden;
+    text-align:center;
+}
+
+/* Style the buttons inside the tab */
+div.tab button {
+    float: left;
+    border: none;
+    outline: none;
+    cursor: hand;
+    padding: 14px 16px;
+    transition: 0.3s;
+    background-color:inherit;
+    display:block; /* change this from inline-block */
+    width: 14.2857143%;
+    margin:0 auto; /* this will center  it */
+    position:relative;
+    color:inherit;
+    border-radius:2px;
+}
+
+div.tab button p {
+  text-align:center;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: rgba(255,94,94,1);
+}
+
+/* Create an active/current tablink class */
+div.tab button.active {
+    background-color: rgba(255,94,94,1);
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border-top: none;
+    text-align: center;
+}
+
+.commands td {width: 500px; padding-bottom: 12px;}
+.commands td:nth-child(1) {text-align:left;}
+.commands td:nth-child(2) {text-align:left;}
