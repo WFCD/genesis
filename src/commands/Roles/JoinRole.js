@@ -51,10 +51,7 @@ class JoinRole extends Command {
            .then((roles) => {
              const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
              const roleAddable = filteredRoles.length > 0
-               && !message.member.roles.get(role.id)
-               && message.member.highestRole
-                  .comparePositionTo(message.guild.members
-                    .get(this.bot.client.user.id).highestRole) < 0;
+               && !message.member.roles.get(role.id);
              if (roleAddable) {
                message.member.addRole(role.id)
                 .then(() => this.sendJoined(message, role))
