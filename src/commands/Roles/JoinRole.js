@@ -30,7 +30,6 @@ class JoinRole extends Command {
       { description: 'Joining a role', parameters: ['Role/Role id to join.'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
-    this.requiresAuth = true;
     this.allowDM = false;
   }
 

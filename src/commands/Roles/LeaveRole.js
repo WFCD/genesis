@@ -30,7 +30,6 @@ class LeaveRole extends Command {
       { description: 'Leave a role', parameters: ['Role/Role id to leave'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
-    this.requiresAuth = true;
     this.allowDM = false;
   }
 
