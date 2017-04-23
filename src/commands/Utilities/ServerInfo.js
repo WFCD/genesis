@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
+
 const verificationLevels = ['None', 'Low\nMust have a verified email on their Discord Account', 'Medium\nMust also be registered on Discord for longer than 5 minutes', '(╯°□°）╯︵ ┻━┻\nMust also be a member of this server for longer than 10 minutes.'];
 const verificationColors = [0x747f8d, 0x43b581, 0xfaa61a, 0xf04747];
 
@@ -24,8 +25,8 @@ class ServerInfo extends Command {
   run(message) {
     const guild = message.guild;
     if (!message.guild) {
-        this.messageManager.reply(message, 'Operator, this is a DM, you can\'t do that!', false, false);
-        return;
+      this.messageManager.reply(message, 'Operator, this is a DM, you can\'t do that!', false, false);
+      return;
     }
     const embed = {
       title: guild.name,
@@ -72,18 +73,17 @@ class ServerInfo extends Command {
         },
         {
           name: 'Verification Level:',
-                   value: verificationLevels[guild.verificationLevel],
+          value: verificationLevels[guild.verificationLevel],
           inline: true,
         },
         {
           name: 'Roles:',
-          value: `Count: ${guild.roles.array().length} \n`+
-                  `${guild.roles.map(role => role.name).join(', ')}`,
+          value: `Count: ${guild.roles.array().length}`,
           inline: true,
         },
       ],
       footer: {
-        text: `Server ID: ${guild.id}`
+        text: `Server ID: ${guild.id}`,
       },
     };
     message.channel.sendEmbed(embed).catch(this.logger.error);
