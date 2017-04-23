@@ -50,7 +50,8 @@ code, .commands td:first-child {
   font-family: 'Hack', monospace;
 }
 table {
-  width: 100%;
+  width: 75%;
+  margin: auto;
 }
 
 th [colspan="2"] {
