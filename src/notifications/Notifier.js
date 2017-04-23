@@ -58,7 +58,7 @@ class Notifier {
       const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.id) ?
         newData.voidTrader : undefined;
       const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
-        !ids.includes(cc.id) && !cc.inExpired && !cc.isRootChallenge());
+        !ids.includes(cc.id) && !cc.isExpired() && !cc.isRootChallenge());
       const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
       const eventsToNotify = newData.events
         .filter(e => !ids.includes(e.id) && !e.getExpired());
@@ -218,13 +218,19 @@ class Notifier {
   }
 
   sendConclaveDailies(newDailies, platform) {
-    const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
-    return this.broadcast(embed, platform, 'conclave.dailies', null);
+    if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
+      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
+      return this.broadcast(embed, platform, 'conclave.dailies', null);
+    }
+    return new Promise(resolve => resolve(true));
   }
 
   sendConclaveWeeklies(newDailies, platform) {
-    const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'week');
-    return this.broadcast(embed, platform, 'conclave.weeklies', null);
+    if (newDailies.filter(challenge => challenge.category === 'week').length > 0) {
+      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'week');
+      return this.broadcast(embed, platform, 'conclave.weeklies', null);
+    }
+    return new Promise(resolve => resolve(true));
   }
 
   sendDarvo(newDarvoDeals, platform) {

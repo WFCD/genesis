@@ -92,7 +92,8 @@ div.tab button {
     margin:0 auto; /* this will center  it */
     position:relative;
     color:inherit;
-    border-radius:2px;
+    border: 2px solid #23272A;
+    border-radius:4px;
 }
 
 div.tab button p {
@@ -113,6 +114,7 @@ div.tab button.active {
 .tabcontent {
     display: none;
     padding: 6px 12px;
+    padding-bottom: 20px;
     border-top: none;
     text-align: center;
 }
