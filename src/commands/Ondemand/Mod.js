@@ -52,7 +52,7 @@ class Mod extends Command {
                  sent = true;
                  const embed = {
                    title: query,
-				   url: detailsJson.basepath + detailsJson.items[`${id}`].url,
+                   url: detailsJson.basepath + detailsJson.items[`${id}`].url,
                    color: 0xC0C0C0,
                    description: `Mod result for ${query}`,
                    image: {
