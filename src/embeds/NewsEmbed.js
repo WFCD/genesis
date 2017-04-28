@@ -23,26 +23,21 @@ class NewsEmbed extends BaseEmbed {
     });
 
     this.color = news.length > 0 ? 0x00ff00 : 0xff0000;
-    let name = '';
     let value = news.map(n => n.toString()).join('\n');
     let title = '';
     if (type) {
       if (type === 'update') {
-        name = 'Current updates:';
         value = value.length > 0 ? value : 'No Update News Currently';
-        title = 'Worldstate - Updates';
+        title = 'Updates';
       } else {
-        name = 'Current prime access:';
         value = value.length > 0 ? value : 'No Prime Access Currently';
-        title = 'Worldstate - Prime Access';
+        title = 'Prime Access';
       }
     } else {
-      name = 'Current news:';
       value = value.length > 0 ? value : 'No News Currently';
-      title = 'Worldstate - News';
+      title = 'News';
     }
-
-    this.fields = [{ name, value }];
+    this.fields = [{ '_ _', value }];
     this.title = title;
   }
 }
