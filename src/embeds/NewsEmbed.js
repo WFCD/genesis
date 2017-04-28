@@ -37,7 +37,7 @@ class NewsEmbed extends BaseEmbed {
       value = value.length > 0 ? value : 'No News Currently';
       title = 'News';
     }
-    this.fields = [{ '_ _', value }];
+    this.fields = [{ name: '_ _', value }];
     this.title = title;
   }
 }
