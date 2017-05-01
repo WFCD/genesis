@@ -31,7 +31,7 @@ class PriceCheckEmbed extends BaseEmbed {
         icon_url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
         text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
       };
-      if (/riven/i.test(query)) {
+      if (/.*riven.*/ig.test(query)) {
         this.fields = [
           {
             name: '_ _',
