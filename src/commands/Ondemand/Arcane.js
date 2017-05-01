@@ -32,11 +32,12 @@ class Arcane extends Command {
     let arcane = message.strippedContent.match(this.regex)[1];
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      arcanes.forEach((enhancement) => {
-        if (new RegExp(enhancement.regex, 'ig').test(arcane)) {
-          this.messageManager.embed(message, new EnhancementEmbed(enhancement), true, false);
-        }
-      });
+      const results = arcanes.filter(enhancement => new RegExp(enhancement.regex, 'ig').test(arcane));
+      if (results.length > 0) {
+        this.messageManager.embed(message, new EnhancementEmbed(results[0]), true, false);
+      } else {
+        this.messageManager.embed(message, new EnhancementEmbed(undefined), true, false);
+      }
     } else {
       this.messageManager.embed(message, new EnhancementEmbed(undefined), true, false);
     }
