@@ -34,12 +34,12 @@ class Arcane extends Command {
       arcane = arcane.trim().toLowerCase();
       const results = arcanes.filter(enhancement => new RegExp(enhancement.regex, 'ig').test(arcane));
       if (results.length > 0) {
-        this.messageManager.embed(message, new EnhancementEmbed(results[0]), true, false);
+        this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
       } else {
-        this.messageManager.embed(message, new EnhancementEmbed(undefined), true, false);
+        this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
       }
     } else {
-      this.messageManager.embed(message, new EnhancementEmbed(undefined), true, false);
+      this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
     }
   }
 }

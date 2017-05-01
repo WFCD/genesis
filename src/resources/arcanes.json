@@ -29,7 +29,7 @@
   {
     "regex": "arachne",
     "name": "Arcane Arachne",
-    "effect": "On WALL LATCH, 15% / 30% / 45% / 60% chance \n for 100% Bonus Damage\n onNext Hit",
+    "effect": "On WALL LATCH, 15% / 30% / 45% / 60% chance \nfor 100% Bonus Damage\n onNext Hit",
     "rarity": "Uncommon",
     "location": "Jordas Verdict",
     "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/c/c1/Arcane_Arachne_160.png/revision/latest/scale-to-width-down/75?cb=20151101102048",
