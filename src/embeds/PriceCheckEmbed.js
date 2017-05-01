@@ -17,9 +17,6 @@ class PriceCheckEmbed extends BaseEmbed {
     if (typeof result[0] === 'string') {
       this.color = 0xff0000;
       this.url = 'http://nexus-stats.com';
-      this.thumbnail = {
-        url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
-      };
       this.fields = [
         {
           name: '_ _',
@@ -31,15 +28,6 @@ class PriceCheckEmbed extends BaseEmbed {
         icon_url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
         text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
       };
-      if (/.*riven.*/ig.test(query)) {
-        this.fields = [
-          {
-            name: '_ _',
-            value: 'Due to the complexity of Riven mod generation and unveiling, price checks are not guaranteed or reliably provided.',
-            inline: true,
-          },
-        ];
-      }
     } else {
       const attachment = result[0];
       this.color = parseInt(attachment.color, 16);
@@ -49,6 +37,15 @@ class PriceCheckEmbed extends BaseEmbed {
       this.fields = attachment.fields;
       this.thumbnail = attachment.thumbnail;
       this.footer = attachment.footer;
+    }
+    if (/.*riven.*/ig.test(query)) {
+      this.fields = [
+        {
+          name: '_ _',
+          value: 'Due to the complexity of Riven mod generation and unveiling, price checks are not guaranteed or reliably provided.',
+          inline: true,
+        },
+      ];
     }
   }
 }
