@@ -37,7 +37,7 @@ class Whereis extends Command {
     this.querier.getAll(item)
       .then((results) => {
         const resultsHasResults = Object.prototype.toString.call(results) === '[object Array]' && results.length > 0;
-        const color = resultsHasResults ? 0x00ff00 : 0xff0000;
+        const color = resultsHasResults ? 0xD8F6ED : 0xBAA97C;
         const fields = resultsHasResults ? [] : [{ name: 'Operator, there is no such item location available.', value: '_ _' }];
 
         let slicedResults = [];
@@ -72,7 +72,7 @@ class Whereis extends Command {
           thumbnail: { url: 'http://vignette2.wikia.nocookie.net/warframe/images/1/1a/VoidProjectionsIronC.png' },
           footer: {
             icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data evaluated by warframe-location-query, Warframe Community Developers',
+            text: 'Data from the wiki',
           },
         };
         message.channel.sendEmbed(embed).then(this.logger.debug);
