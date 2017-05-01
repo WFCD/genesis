@@ -34,7 +34,7 @@ class Arcane extends Command {
       arcane = arcane.trim().toLowerCase();
       arcanes.forEach((enhancement) => {
         if (new RegExp(enhancement.regex, 'ig').test(arcane)) {
-          this.messageManager.reply(message, new EnhancementEmbed(enhancement), true, false);
+          this.messageManager.embed(message, new EnhancementEmbed(enhancement), true, false);
         }
       });
     } else {
