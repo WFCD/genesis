@@ -1,152 +1,167 @@
 [
-  {
-    "regex": "ash(\\sprime)?",
-    "name": "Ash",
-    "url": "https://youtu.be/wOakp4nbIzw"
-  },
-  {
-    "regex": "atlas",
-    "name": "Atlas",
-    "url": "https://youtu.be/oiLFg1dPum4"
-  },
-  {
-    "regex": "banshee",
-    "name": "Banshee",
-    "url": "https://youtu.be/pJz7ZB0RLhY"
-  },
-  {
-    "regex": "chroma",
-    "name": "Chroma",
-    "url": "https://youtu.be/tseneCFkq24"
-  },
-  {
-    "regex": "ember(\\sprime)?",
-    "name": "Ember",
-    "url": "https://youtu.be/MdM8nUNOASg"
-  },
-  {
-    "regex": "equinox",
-    "name": "Equinox",
-    "url": "https://youtu.be/Ln-VsCtDVBU"
-  },
-  {
-    "regex": "excalibur(\\sprime)?",
-    "name": "Excalibur",
-    "url": "https://youtu.be/II8Up3NnZpI"
-  },
-  {
-    "regex": "frost(\\sprime)?",
-    "name": "Frost",
-    "url": "https://youtu.be/tecVALgPOFg"
-  },
    {
-    "regex": "hydroid",
-    "name": "Hydroid",
-    "url": "https://youtu.be/z2BHfrR3ikE"
-  },
+      "regex":"ash(\\sprime)?",
+      "name":"Ash",
+      "url":"https://youtu.be/wOakp4nbIzw"
+   },
    {
-    "regex": "inaros",
-    "name": "Inaros",
-    "url": "https://youtu.be/vYi1ETSjrFM"
-  },
+      "regex":"atlas",
+      "name":"Atlas",
+      "url":"https://youtu.be/oiLFg1dPum4"
+   },
    {
-    "regex": "ivara",
-    "name": "Ivara",
-    "url": "https://youtu.be/22RpqR-nCCA"
-  },
+      "regex":"banshee",
+      "name":"Banshee",
+      "url":"https://youtu.be/pJz7ZB0RLhY"
+   },
    {
-    "regex": "limbo",
-    "name": "Limbo",
-    "url": "https://youtu.be/e6VKmuZjrH4"
-  },
+      "regex":"chroma",
+      "name":"Chroma",
+      "url":"https://youtu.be/tseneCFkq24"
+   },
    {
-    "regex": "loki(\\sprime)?",
-    "name": "Loki",
-    "url": "https://youtu.be/VXsg-rMTvAM"
-  },
-  {
-    "regex": "mag(\\sprime)?",
-    "name": "Mag",
-    "url": "https://youtu.be/TS05wxbrNts"
-  },
-{
-    "regex": "mesa",
-    "name": "Mesa",
-    "url": "https://youtu.be/29nFicujxn4"
-  },
-{
-    "regex": "mirage",
-    "name": "Mirage",
-    "url": "https://youtu.be/3U8mcBd6yE0"
-  },
-{
-    "regex": "nekros",
-    "name": "Nekros",
-    "url": "https://youtu.be/rOO5vS0BpoQ"
-  },
-{
-    "regex": "nezha",
-    "name": "Nezha",
-    "url": "https://youtu.be/sPkSgfenxfo"
-  },
-{
-    "regex": "nova(\\sprime)?",
-    "name": "Nova",
-    "url": "https://youtu.be/TxJMDv4dYIU"
-  },
-{
-    "regex": "nyx(\\sprime)?",
-    "name": "Nyx",
-    "url": "https://youtu.be/JoyQo38BZf4"
-  },
-{
-    "regex": "oberon",
-    "name": "Oberon",
-    "url": "https://youtu.be/yAc1tXpH6Ns"
-  },
-{
-    "regex": "rhino(\\sprime)?",
-    "name": "Rhino",
-    "url": "https://youtu.be/24wDtcTwGvc"
-  },
-{
-    "regex": "saryn(\\sprime)?",
-    "name": "Saryn",
-    "url": "https://youtu.be/f0Ufldkykko"
-  },
-{
-    "regex": "trinity(\\sprime)?",
-    "name": "Trinity",
-    "url": "https://youtu.be/1dm7pNIHANo"
-  },
-{
-    "regex": "valkyr",
-    "name": "Valkyr",
-    "url": "https://youtu.be/K-jH6mP37_k"
-  },
-{
-    "regex": "vauban(\\sprime)?",
-    "name": "Vauban",
-    "url": "https://youtu.be/pQgp_dfJ_oI"
-  },
-{
-    "regex": "volt(\\sprime)?",
-    "name": "Volt",
-    "url": "https://youtu.be/ccQ9456TTuo"
-  },
-{
-    "regex": "wukong",
-    "name": "Wukong",
-    "url": "https://youtu.be/7n4bjy0PbxY"
-  },
-{
-    "regex": "zephyr",
-    "name": "Zephyr",
-    "url": "https://youtu.be/KurbStEIqrQ"
-  },
-{
-    "regex": "titania",
-    "name": "Titania",
-    "url": "https://youtu.be/Shm1Yvo2PHI"
-  }
+      "regex":"ember(\\sprime)?",
+      "name":"Ember",
+      "url":"https://youtu.be/MdM8nUNOASg"
+   },
+   {
+      "regex":"equinox",
+      "name":"Equinox",
+      "url":"https://youtu.be/Ln-VsCtDVBU"
+   },
+   {
+      "regex":"excalibur(\\sprime)?",
+      "name":"Excalibur",
+      "url":"https://youtu.be/II8Up3NnZpI"
+   },
+   {
+      "regex":"frost(\\sprime)?",
+      "name":"Frost",
+      "url":"https://youtu.be/tecVALgPOFg"
+   },
+   {
+      "regex":"hydroid",
+      "name":"Hydroid",
+      "url":"https://youtu.be/z2BHfrR3ikE"
+   },
+   {
+      "regex":"inaros",
+      "name":"Inaros",
+      "url":"https://youtu.be/vYi1ETSjrFM"
+   },
+   {
+      "regex":"ivara",
+      "name":"Ivara",
+      "url":"https://youtu.be/22RpqR-nCCA"
+   },
+   {
+      "regex":"limbo",
+      "name":"Limbo",
+      "url":"https://youtu.be/e6VKmuZjrH4"
+   },
+   {
+      "regex":"loki(\\sprime)?",
+      "name":"Loki",
+      "url":"https://youtu.be/VXsg-rMTvAM"
+   },
+   {
+      "regex":"mag(\\sprime)?",
+      "name":"Mag",
+      "url":"https://youtu.be/TS05wxbrNts"
+   },
+   {
+      "regex":"mesa",
+      "name":"Mesa",
+      "url":"https://youtu.be/29nFicujxn4"
+   },
+   {
+      "regex":"mirage",
+      "name":"Mirage",
+      "url":"https://youtu.be/3U8mcBd6yE0"
+   },
+   {
+      "regex":"nidus",
+      "name":"Nidus",
+      "url":"https://youtu.be/cmw4le23JX0"
+   },
+   {
+      "regex":"nekros",
+      "name":"Nekros",
+      "url":"https://youtu.be/rOO5vS0BpoQ"
+   },
+   {
+      "regex":"nezha",
+      "name":"Nezha",
+      "url":"https://youtu.be/sPkSgfenxfo"
+   },
+   {
+      "regex":"nova(\\sprime)?",
+      "name":"Nova",
+      "url":"https://youtu.be/TxJMDv4dYIU"
+   },
+   {
+      "regex":"nyx(\\sprime)?",
+      "name":"Nyx",
+      "url":"https://youtu.be/JoyQo38BZf4"
+   },
+   {
+      "regex":"octavia",
+      "name":"Octavia",
+      "url":"https://youtu.be/v2kzd1OCHXw"
+   },
+   {
+      "regex":"oberon",
+      "name":"Oberon",
+      "url":"https://youtu.be/yAc1tXpH6Ns"
+   },
+   {
+      "regex":"rhino(\\sprime)?",
+      "name":"Rhino",
+      "url":"https://youtu.be/24wDtcTwGvc"
+   },
+   {
+      "regex":"saryn(\\sprime)?",
+      "name":"Saryn",
+      "url":"https://youtu.be/f0Ufldkykko"
+   },
+   {
+      "regex":"titania",
+      "name":"Titania",
+      "url":"https://youtu.be/Shm1Yvo2PHI"
+   },
+   {
+      "regex":"trinity(\\sprime)?",
+      "name":"Trinity",
+      "url":"https://youtu.be/1dm7pNIHANo"
+   },
+   {
+      "regex":"valkyr",
+      "name":"Valkyr",
+      "url":"https://youtu.be/K-jH6mP37_k"
+   },
+   {
+      "regex":"vauban(\\sprime)?",
+      "name":"Vauban",
+      "url":"https://youtu.be/pQgp_dfJ_oI"
+   },
+   {
+      "regex":"volt(\\sprime)?",
+      "name":"Volt",
+      "url":"https://youtu.be/ccQ9456TTuo"
+   },
+   {
+      "regex":"wukong",
+      "name":"Wukong",
+      "url":"https://youtu.be/7n4bjy0PbxY"
+   },
+   {
+      "regex":"zephyr",
+      "name":"Zephyr",
+      "url":"https://youtu.be/KurbStEIqrQ"
+   },
+   {
+      "regex":"titania",
+      "name":"Titania",
+      "url":"https://youtu.be/Shm1Yvo2PHI"
+   }
 ]

@@ -1,0 +1,47 @@
+[
+  {
+    "regex": "acceleration",
+    "name": "Arcane Acceleration",
+    "effect": "On critical hit, 1% / 2% / 3% / 4% chance\nto give 5% / 10% / 15% / 20% Fire Rate to Rifles\nfor 1.5 / 3 / 4.5 / 6 Seconds",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/9/96/Arcane_Acceleration_160.png/revision/latest/scale-to-width-down/75?cb=20150407090527",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Acceleration"
+  },
+  {
+    "regex": "aegis",
+    "name": "Arcane Aegis",
+    "effect": "On DAMAGED 1.5% / 3% / 4.5% / 6% chance\nto give 15 / 30 / 45 / 60 Shield Regen per sec\nfor 5 / 10 / 15 / 20 Seconds",
+    "rarity": "Rare",
+    "location": "Jordas Verdict",
+    "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/b/b6/Arcane_Aegis_160.png/revision/latest/scale-to-width-down/75?cb=20151102021019",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Aegis"
+  },
+  {
+    "regex": "agility",
+    "name": "Arcane Agility",
+    "effect": "On DAMAGED 1% / 2% / 3% / 4% chance \nto give 5% / 10% / 15% / 20% Movement Speed\nfor2 / 4 / 6 / 8 Seconds",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/7/78/Arcane_Agility_160.png/revision/latest/scale-to-width-down/75?cb=20150414195529",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Agility"
+  },
+  {
+    "regex": "arachne",
+    "name": "Arcane Arachne",
+    "effect": "On WALL LATCH, 15% / 30% / 45% / 60% chance \n for 100% Bonus Damage\n onNext Hit",
+    "rarity": "Uncommon",
+    "location": "Jordas Verdict",
+    "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/c/c1/Arcane_Arachne_160.png/revision/latest/scale-to-width-down/75?cb=20151101102048",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Arachne"
+  },
+  {
+    "regex": "avenger",
+    "name": "Arcane Avenger",
+    "effect": "When DAMAGED 3.5% / 7% / 10.5% / 14% chance\nfor 7.5% / 15% / 22.5% / 30% Additive Critical Chance\nfor 2 / 4 / 6 / 8 Seconds",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/8/88/Arcane_Avenger_160.png/revision/latest/scale-to-width-down/75?cb=20150508155706",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Avenger"
+  }
+]
