@@ -11,7 +11,7 @@
   {
     "regex": "aegis",
     "name": "Arcane Aegis",
-    "effect": "On DAMAGED 1.5% / 3% / 4.5% / 6% chance\nto give 15 / 30 / 45 / 60 Shield Regen per sec\nfor 5 / 10 / 15 / 20 Seconds",
+    "effect": "When DAMAGED 1.5% / 3% / 4.5% / 6% chance\nto give 15 / 30 / 45 / 60 Shield Regen per sec\nfor 5 / 10 / 15 / 20 Seconds",
     "rarity": "Rare",
     "location": "Jordas Verdict",
     "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/b/b6/Arcane_Aegis_160.png/revision/latest/scale-to-width-down/75?cb=20151102021019",
@@ -20,7 +20,7 @@
   {
     "regex": "agility",
     "name": "Arcane Agility",
-    "effect": "On DAMAGED 1% / 2% / 3% / 4% chance \nto give 5% / 10% / 15% / 20% Movement Speed\nfor2 / 4 / 6 / 8 Seconds",
+    "effect": "When DAMAGED 1% / 2% / 3% / 4% chance \nto give 5% / 10% / 15% / 20% Movement Speed\nfor2 / 4 / 6 / 8 Seconds",
     "rarity": "Uncommon",
     "location": "Law of Retribution",
     "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/7/78/Arcane_Agility_160.png/revision/latest/scale-to-width-down/75?cb=20150414195529",
@@ -40,8 +40,233 @@
     "name": "Arcane Avenger",
     "effect": "When DAMAGED 3.5% / 7% / 10.5% / 14% chance\nfor 7.5% / 15% / 22.5% / 30% Additive Critical Chance\nfor 2 / 4 / 6 / 8 Seconds",
     "rarity": "Uncommon",
-    "location": "Law of Retribution",
+    "location": "Jordas Verdict",
     "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/8/88/Arcane_Avenger_160.png/revision/latest/scale-to-width-down/75?cb=20150508155706",
     "info": "http://warframe.wikia.com/wiki/Arcane_Avenger"
+  },
+  {
+    "regex": "awakening",
+    "name": "Arcane Awakening",
+    "effect": "On RELOAD 3% / 6% / 9% / 12% chance\nto add 15% / 30% / 45% / 60% Damage to Secondaries\n for 4 / 8 / 12 / 16 Seconds",
+    "rarity": "Common",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/f/fa/Arcane_Awakening_160.png/revision/latest/scale-to-width-down/75?cb=20151031165006",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Awakening"
+  },
+  {
+    "regex": "barrier",
+    "name": "Arcane Barrier",
+    "effect": "When DAMAGED, 1% / 2% / 3% / 4% chance to Full Shield Recovery",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/c/c7/Arcane_Barrier_LQ.png/revision/latest/scale-to-width-down/75?cb=20151031165652",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Barrier"
+  },
+  {
+    "regex": "consequence",
+    "name": "Arcane Consequence",
+    "effect": "On headshot, 25% / 50% / 75% / 100% chance\nto give 10% / 20% / 30% / 40% increased Aim Glide/Wall Latch\n for 3 / 6 / 9 / 12 Seconds",
+    "rarity": "Uncommon",
+    "location": "Jordas Verdict",
+    "thumbnail": "https://vignette1.wikia.nocookie.net/warframe/images/8/82/Arcane_Consequence_160.png/revision/latest/scale-to-width-down/75?cb=20151031215624",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Consequence"
+  },
+  {
+    "regex": "deflection",
+    "name": "Arcane Deflection",
+    "effect": "10% / 20% / 30% / 40% chance to Resist Slash proc",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "https://vignette2.wikia.nocookie.net/warframe/images/b/b1/Arcane_Deflection_160.png/revision/latest/scale-to-width-down/75?cb=20150414010409",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Deflection"
+  },
+  {
+    "regex": "energize",
+    "name": "Arcane Energize",
+    "effect": "On energy pickup, 10% / 20% / 30% / 40% chance\nto replenish energy to nearby allies\nwithin 5 / 10 / 15 / 20 Meters",
+    "rarity": "Rare",
+    "location": "Jordas Verdict",
+    "thumbnail": "https://vignette3.wikia.nocookie.net/warframe/images/e/e3/Arcane_Energize_160.png/revision/latest/scale-to-width-down/75?cb=20151102150026",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Energize"
+  },
+  {
+    "regex": "eruption",
+    "name": "Arcane Eruption",
+    "effect": "On energy pickup, 5% / 10% / 15% / 20% chance\nto Knockdown nearby Enemies\nwithin 5 / 10 / 15 / 20 Meters",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Eruption"
+  },
+  {
+    "regex": "fury",
+    "name": "Arcane Fury",
+    "effect": "On critical hit, 5% / 10% / 15% / 20% chance\n to give 10% / 20% / 30% / 40% increased Damage on Melee\n for 3 / 6 / 9 / 12 seconds",
+    "rarity": "Uncommon",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Fury"
+  },
+  {
+    "regex": "grace",
+    "name": "Arcane Grace",
+    "effect": "When damaged, 1.5% / 3% / 4.5% / 6% chance\nfor 1% / 2% / 3% / 4% Health Regen/sec for 1.5 / 3 / 4.5 / 6 seconds",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Grace"
+  },
+  {
+    "regex": "guardian",
+    "name": "Arcane Guardian",
+    "effect": "When damaged, 5% / 10% / 15% / 20% chance\nto give 15% / 30% / 45% / 60% Armor\n for 5 / 10 / 15 / 20 seconds",
+    "rarity": "Common",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Guardian"
+  },
+  {
+    "regex": "healing",
+    "name": "Arcane Healing",
+    "effect": "10% / 20% / 30% / 40% chance to resist Radiation proc",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Healing"
+  },
+  {
+    "regex": "ice",
+    "name": "Arcane Ice",
+    "effect": "10% / 20% / 30% / 40% chance to resist Heat proc",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Ice"
+  },
+  {
+    "regex": "momentum",
+    "name": "Arcane Momentum",
+    "effect": "On critical hit,	1% / 2% / 3% / 4% chance\n to give 25% / 50% / 75% / 100% Fire Rate on Snipers\n for 2 / 4 / 6 / 8 seconds",
+    "rarity": "Common",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Momentum"
+  },
+  {
+    "regex": "nullifier",
+    "name": "Arcane Nullifier",
+    "effect": "10% / 20% / 30% / 40% chance to resist Magnetic proc",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Nullifier"
+  },
+  {
+    "regex": "phantasm",
+    "name": "Arcane Phantasm",
+    "effect": "On PARRY 4% / 8% / 12% / 16% chance\nto give 5% / 10% / 15% / 20 increased Movement Speed\nfor 3 / 6 / 9 / 12 seconds",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Phantasm"
+  },
+  {
+    "regex": "precision",
+    "name": "Arcane Precision",
+    "effect": "On headshot, 10% / 20% / 30% / 40% chance\nto give 15% / 30% / 45% / 60% increased damage on secondaries\n for 2 / 4 / 6 / 8 seconds",
+    "rarity": "Uncommon",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Precision"
+  },
+  {
+    "regex": "pulse",
+    "name": "Arcane Pulse",
+    "effect": "On health pickup, 5% / 10% / 15% / 20% chance\nto heals nearby Allies\n within 5 / 10 / 15 / 20 meters",
+    "rarity": "Rare",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Pulse"
+  },
+  {
+    "regex": "rage",
+    "name": "Arcane Rage",
+    "effect": "On headshot, 2.5% / 5% / 7.5% / 10% chance\n to give 5% / 10% / 15% / 20% increased Damage on Primaries\nfor 4 / 8 / 12 / 16 seconds",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Rage"
+  },
+  {
+    "regex": "resistance",
+    "name": "Arcane Resistance",
+    "effect": "10% / 20% / 30% / 40% chance to resist Electricity proc",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Resistance"
+  },
+  {
+    "regex": "strike",
+    "name": "Arcane Strike",
+    "effect": "On HIT 2.5% / 5% / 7.5% / 10% chance\nto give 5% / 10% / 15% / 20% Attack Speed on Melee\nfor3 / 6 / 9 / 12 seconds",
+    "rarity": "Common",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Strike"
+  },
+  {
+    "regex": "tempo",
+    "name": "Arcane Tempo",
+    "effect": "On critical hit,	2.5% / 5% / 7.5% / 10% chance \nto give 15% / 30% / 45% / 60% increased Fire Rate on Shotguns\nfor 2 / 4 / 6 / 8 Seconds",
+    "rarity": "Common",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Tempo"
+  },
+  {
+    "regex": "trickery",
+    "name": "Arcane Trickery",
+    "effect": "On finisher, 2.5% / 5% / 7.5% / 10% chance\nto go invisible\nfor 5 / 10 / 15 / 20 seconds",
+    "rarity": "Common",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Trickery"
+  },
+  {
+    "regex": "ultimatum",
+    "name": "Arcane Ultimatum",
+    "effect": "On finisher, 25% / 50% / 75% / 100% chance\to give 15% / 30% / 45% / 60% Armor\nfor 10 / 20 / 30 / 40 seconds",
+    "rarity": "Common",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Ultimatum"
+  },
+  {
+    "regex": "velocity",
+    "name": "Arcane Velocity",
+    "effect": "On critical hit, 5% / 10% / 20% / 30% chance\nto give 5% / 10% / 15% / 20% increased fire rate on Secondaries\nfor 1.5 / 3 / 4.5 / 6 seconds",
+    "rarity": "Common",
+    "location": "Jordas Verdict",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Velocity"
+  },
+  {
+    "regex": "victory",
+    "name": "Arcane Victory",
+    "effect": "On headshot, 2% / 4% / 6% / 8% chance\nto give 0.5% / 1.0% / 1.5% / 2.0% Health Regen/sec\nfor 2 / 4 / 6 / 8 seconds",
+    "rarity": "Rare",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Victory"
+  },
+  {
+    "regex": "warmth",
+    "name": "Arcane Warmth",
+    "effect": "0% / 20% / 30% / 40% chance to resist Cold proc",
+    "rarity": "Uncommon",
+    "location": "Law of Retribution",
+    "thumbnail": "",
+    "info": "http://warframe.wikia.com/wiki/Arcane_Warmth"
   }
 ]
