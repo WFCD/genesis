@@ -146,7 +146,7 @@
   {
     "regex": "momentum",
     "name": "Arcane Momentum",
-    "effect": "On critical hit,	1% / 2% / 3% / 4% chance\n to give 25% / 50% / 75% / 100% Fire Rate on Snipers\n for 2 / 4 / 6 / 8 seconds",
+    "effect": "On critical hit, 1% / 2% / 3% / 4% chance\nto give 25% / 50% / 75% / 100% Fire Rate on Snipers\nfor 2 / 4 / 6 / 8 seconds",
     "rarity": "Common",
     "location": "Jordas Verdict",
     "thumbnail": "",
@@ -218,7 +218,7 @@
   {
     "regex": "tempo",
     "name": "Arcane Tempo",
-    "effect": "On critical hit,	2.5% / 5% / 7.5% / 10% chance \nto give 15% / 30% / 45% / 60% increased Fire Rate on Shotguns\nfor 2 / 4 / 6 / 8 Seconds",
+    "effect": "On critical hit, 2.5% / 5% / 7.5% / 10% chance\nto give 15% / 30% / 45% / 60% increased Fire Rate on Shotguns\nfor 2 / 4 / 6 / 8 Seconds",
     "rarity": "Common",
     "location": "Jordas Verdict",
     "thumbnail": "",
