@@ -5,6 +5,19 @@ body {
   border:0;
 }
 
+
+@media screen and (min-width: 700px) {
+  body {
+    font-size:14px;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  body {
+    font-size:12px;
+  }
+}
+
 h1 {
   border-bottom-width:1px;
   border-bottom-color: #2C2F33;
@@ -24,16 +37,8 @@ div {
   width:90%;
 }
 
-a:visited {
-  color:#99AAB5;
-}
-
-a:link {
+a:link, a:hover, a:visited, a:active {
   color:#7289DA;
-}
-
-a:active {
-  color:#2C2F33;
 }
 
 .wrapper {
@@ -49,6 +54,7 @@ code, .commands td:first-child {
   color: rgba(255,94,94,1);
   font-family: 'Hack', monospace;
 }
+
 table {
   width: 75%;
   margin: auto;
@@ -57,8 +63,6 @@ table {
 th [colspan="2"] {
     text-align: center;
 }
-
-/*footer { }*/
 
 footer {
    position:fixed;
@@ -71,33 +75,61 @@ footer {
    background-color: inherit;
 }
 
-
 /* Style the tab */
 div.tab {
     overflow: hidden;
     text-align:center;
+    margin-bottom: 40px;
+    width: auto;
+    min-width:90%;
+    max-width:100%;
 }
 
 /* Style the buttons inside the tab */
 div.tab button {
     float: left;
-    border: none;
     outline: none;
-    cursor: hand;
-    padding: 14px 16px;
+    cursor: pointer;
+    padding: 5px 2px;
     transition: 0.3s;
     background-color:inherit;
     display:block; /* change this from inline-block */
-    width: 14.2857143%;
-    margin:0 auto; /* this will center  it */
+    margin: 1.5px;
     position:relative;
     color:inherit;
-    border: 2px solid #23272A;
+    border: 1.5px solid rgba(255,94,94,1);
     border-radius:4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media screen and (min-width: 700px) {
+  div.tab button {
+    width: 14%;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  div.tab button {
+    width: 16%;
+  }
 }
 
 div.tab button p {
   text-align:center;
+}
+
+@media screen and (min-width: 700px) {
+  div.tab button p {
+    font-size:0.84em;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  div.tab button p {
+    font-size:0.6em;
+  }
 }
 
 /* Change background color of buttons on hover */
@@ -113,10 +145,11 @@ div.tab button.active {
 /* Style the tab content */
 .tabcontent {
     display: none;
-    padding: 6px 12px;
+    padding: 6px 7px;
     padding-bottom: 20px;
     border-top: none;
     text-align: center;
+    margin-bottom:40px;
 }
 
 .commands td {width: 500px; padding-bottom: 12px;}

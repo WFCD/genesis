@@ -12,8 +12,6 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 
 ## Get Help on Discord
 
-<a href="https://discord.gg/dte853p"><img src="https://discord.c99.nl/widget/theme-1/76685590585671680.png" width="320" alt="Contact me on Discord: Tobiah#8452"/></a>
-
 [![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/dte853p "Try Genesis on Discord!")
 
 [![Get Genesis on Discord](src/resources/ceph-gen-banner.png)](https://bot.discord.io/genesis "Add Cephalon Genesis to your Server!")
@@ -96,3 +94,8 @@ Command | Listener ID | Description
 ## Throughput
 
 [![Throughput Graph](https://graphs.waffle.io/aliasfalse/genesis/throughput.svg)](https://waffle.io/aliasfalse/genesis/metrics/throughput)
+
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
