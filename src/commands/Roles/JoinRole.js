@@ -51,7 +51,8 @@ class JoinRole extends Command {
            .then((roles) => {
              const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
              const roleAddable = filteredRoles.length > 0
-               && !message.member.roles.get(role.id);
+               && !message.member.roles.get(role.id)
+               && message.channel.permissionsFor(this.bot.client.user.id).hasPermission('MANAGE_ROLES');
              if (roleAddable) {
                message.member.addRole(role.id)
                 .then(() => this.sendJoined(message, role))
