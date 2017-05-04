@@ -24,21 +24,16 @@ class NewsEmbed extends BaseEmbed {
 
     this.color = news.length > 0 ? 0x00ff00 : 0xff0000;
     let value = news.map(n => n.toString()).join('\n');
-    let title = '';
     if (type) {
       if (type === 'update') {
         value = value.length > 0 ? value : 'No Update News Currently';
-        title = 'Updates';
       } else {
         value = value.length > 0 ? value : 'No Prime Access Currently';
-        title = 'Prime Access';
       }
     } else {
       value = value.length > 0 ? value : 'No News Currently';
-      title = 'News';
     }
     this.fields = [{ name: '_ _', value }];
-    this.title = title;
   }
 }
 
