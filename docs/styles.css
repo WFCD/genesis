@@ -55,6 +55,11 @@ code, .commands td:first-child {
   font-family: 'Hack', monospace;
 }
 
+.permissions {
+  color: #77dd77;
+  font-family: 'Hack', monospace;
+}
+
 table {
   width: 75%;
   margin: auto;
@@ -63,7 +68,24 @@ table {
 th [colspan="2"] {
     text-align: center;
 }
-
+tr:nth-child(even) {
+    background-color: #2d3034;
+}
+.commands td {
+  width: 500px;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+.commands td:nth-child(1) {
+  text-align:left;
+  padding-left: 5px;
+}
+.commands td:nth-child(2) {
+  text-align:left;
+}
+.commands {
+    border-spacing:0px;
+}
 footer {
    position:fixed;
    left:0px;
@@ -151,7 +173,3 @@ div.tab button.active {
     text-align: center;
     margin-bottom:40px;
 }
-
-.commands td {width: 500px; padding-bottom: 12px;}
-.commands td:nth-child(1) {text-align:left;}
-.commands td:nth-child(2) {text-align:left;}
