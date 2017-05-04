@@ -51,7 +51,8 @@ class LeaveRole extends Command {
            .then((roles) => {
              const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
              const roleRemoveable = filteredRoles.length > 0
-               && message.member.roles.get(role.id);
+               && message.member.roles.get(role.id)
+               && message.channel.permissionsFor(this.bot.client.user.id).hasPermission('MANAGE_ROLES');
              if (roleRemoveable) {
                message.member.removeRole(role.id)
                 .then(() => this.sendLeft(message, role))
