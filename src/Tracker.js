@@ -129,7 +129,7 @@ class Tracker {
     this.updateDiscordBotsWeb(guildsLen);
     this.updateDiscordList(guildsLen);
   }
-  
+
   /**
    * Post the cachet heartbeat for the shardCount
    */

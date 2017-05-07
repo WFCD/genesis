@@ -86,7 +86,7 @@ class ServerInfo extends Command {
         text: `Server ID: ${guild.id}`,
       },
     };
-    message.channel.sendEmbed(embed).catch(this.logger.error);
+    this.messageManager.embed(message, embed, true, false);
   }
 }
 

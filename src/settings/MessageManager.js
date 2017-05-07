@@ -33,9 +33,9 @@ class MessaageManager {
   sendMessage(message, content, deleteOriginal, deleteResponse) {
     const promises = [];
     if ((message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
-      promises.push(message.channel.sendMessage(`${this.zSWC}${content}`).then((msg) => {
+      promises.push(message.channel.send(`${this.zSWC}${content}`).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
@@ -52,9 +52,9 @@ class MessaageManager {
    */
   replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
     if ((message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
-      return message.channel.sendMessage(`${this.zSWC}${content}`).then((msg) => {
+      return message.channel.send(`${this.zSWC}${content}`).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       });
     }
@@ -71,7 +71,7 @@ class MessaageManager {
   reply(message, content, deleteOriginal, deleteResponse) {
     const promises = [];
     if ((message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       promises.push(message.reply(`${this.zSWC}${content}`).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
@@ -91,9 +91,9 @@ class MessaageManager {
     const promises = [];
     if ((message.channel.type === 'text' &&
       message.channel.permissionsFor(this.client.user.id)
-        .hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS']))
+        .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      promises.push(message.channel.sendEmbed(embed).then((msg) => {
+      promises.push(message.channel.send('', { embed }).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
@@ -110,9 +110,9 @@ class MessaageManager {
   embedToChannel(channel, embed, prepend) {
     if (channel
       && ((channel.type === 'text'
-      && channel.permissionsFor(this.client.user.id).hasPermission('SEND_MESSAGES'))
+      && channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
       || channel.type === 'dm')) {
-      return channel.sendMessage(prepend, { embed });
+      return channel.send(prepend, { embed });
     }
     return null;
   }
@@ -125,7 +125,7 @@ class MessaageManager {
    */
   sendDirectMessageToAuthor(message, content, deleteResponse) {
     const promises = [];
-    promises.push(message.author.sendMessage(content).then((msg) => {
+    promises.push(message.author.send(content).then((msg) => {
       this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
     promises.forEach(promise => promise.catch(this.logger.error));
@@ -139,18 +139,25 @@ class MessaageManager {
    */
   sendDirectEmbedToAuthor(message, embed, deleteResponse) {
     const promises = [];
-    promises.push(message.author.sendEmbed(embed).then((msg) => {
+    promises.push(message.author.send('', { embed }).then((msg) => {
       this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
     promises.forEach(promise => promise.catch(this.logger.error));
   }
 
   sendDirectEmbedToOwner(embed) {
-    this.client.users.get(this.owner).sendEmbed(embed).catch(this.logger.error);
+    this.client.users.get(this.owner).send('', { embed }).catch(this.logger.error);
   }
 
   sendFileToAuthor(message, file, fileName, deleteCall) {
-    message.author.sendFile(file, fileName)
+    message.author.send('', { file: { attachment: file, name: fileName } })
+      .then((msg) => {
+        this.deleteCallAndResponse(message, msg, deleteCall, false);
+      });
+  }
+
+  sendFile(message, prepend, file, fileName, deleteCall) {
+    message.channel.send(prepend || '', { file: { attachment: file, name: fileName } })
       .then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteCall, false);
       });

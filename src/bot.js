@@ -229,7 +229,7 @@ class Genesis {
     }
     this.settings.addGuild(guild).then(() => {
       this.logger.debug(`Joined guild ${guild} (${guild.id}`);
-      guild.defaultChannel.sendMessage(`**${this.client.user.username.toUpperCase()} ready! Type ` +
+      guild.defaultChannel.send(`**${this.client.user.username.toUpperCase()} ready! Type ` +
         `\`${this.prefix}help\` for help**`);
     }).catch(this.logger.error);
   }

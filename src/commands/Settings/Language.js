@@ -15,7 +15,7 @@ class Language extends Command {
   run(message) {
     const language = message.strippedContent.match(this.regex)[1];
     if (!language || !this.bot.languages.includes(language.toLowerCase())) {
-      message.channel.sendEmbed({
+      const embed = {
         title: 'Usage',
         type: 'rich',
         color: 0x0000ff,
@@ -25,7 +25,8 @@ class Language extends Command {
             value: `Language is one of ${this.bot.languages.join(', ')}`,
           },
         ],
-      });
+      };
+      this.messageManager.embed(message, embed, true, true);
     } else {
       this.bot.settings.setChannelLanguage(message.channel, language.toLowerCase()).then(() => {
         this.messageManager.notifySettingsChange(message, true, true);

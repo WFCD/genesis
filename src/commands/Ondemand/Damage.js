@@ -21,14 +21,9 @@ class Damage extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    message.channel.sendFile(this.damageChart, 'Damage.png',
-                             `Operator ${message.author.toString()}, the damage flowchart, at your request.`)
-     .then(() => {
-       if (message.deletable) {
-         return message.delete(2000);
-       }
-       return Promise.resolve();
-     }).catch(this.logger.error);
+    this.messageManager.sendFile(message,
+      `Operator ${message.author.toString()}, the damage flowchart, at your request.`,
+      this.damageChart, 'Damage.png', true);
   }
 }
 

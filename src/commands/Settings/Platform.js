@@ -15,7 +15,7 @@ class Platform extends Command {
   run(message) {
     const platform = message.strippedContent.match(this.regex)[1];
     if (!platform || !this.bot.platforms.includes(platform.toLowerCase())) {
-      message.channel.sendEmbed({
+      const embed = {
         title: 'Usage',
         type: 'rich',
         color: 0x0000ff,
@@ -25,7 +25,8 @@ class Platform extends Command {
             value: `Platform is one of ${this.bot.platforms.join(', ')}`,
           },
         ],
-      });
+      };
+      this.messageManager.embed(message, embed, true, true);
     } else {
       this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase())
       .then(() => this.messageManager.notifySettingsChange(message, true, true))

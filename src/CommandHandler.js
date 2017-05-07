@@ -98,7 +98,7 @@ class CommandHandler {
                 this.logger.debug(`Matched ${command.id}`);
                 if (message.channel.type === 'dm' ||
                   (message.channel.permissionsFor(this.bot.client.user.id)
-                   .hasPermissions(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES']))) {
+                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES']))) {
                   message.react('\u2705').catch(this.logger.error);
                 }
                 command.run(messageWithStrippedContent);
@@ -122,7 +122,7 @@ class CommandHandler {
         resolve(false);
       } else if (message.channel.type === 'text') {
         if (command.requiresAuth) {
-          if (message.channel.permissionsFor(message.author).hasPermission('MANAGE_ROLES_OR_PERMISSIONS')) {
+          if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
             this.bot.settings
             .getChannelPermissionForMember(message.channel, message.author.id, command.id)
               .then((userHasPermission) => {

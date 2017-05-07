@@ -272,7 +272,7 @@ class Notifier {
       })).then((details) => {
         const item = Object.values(details.items)[0];
         const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-        if (thumb && !a.getRewardTypes().includes('reactor') && !a.getRewardTypes().includes('catalyst')) {
+        if (thumb && !invasion.getRewardTypes().includes('reactor') && !invasion.getRewardTypes().includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
         return this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes());
