@@ -10,7 +10,7 @@ class Disable extends Command {
     this.usages = [
       { description: 'Disable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@)?\\d+(?:\\>)?|\\*))?)?)?`,
+    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?)?`,
       'i');
     this.blacklistable = false;
     this.requiresAuth = true;

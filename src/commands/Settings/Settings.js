@@ -21,6 +21,8 @@ class Settings extends Command {
   run(message) {
     const settings = [];
     const tracked = [];
+    let perms = [];
+    let finalPingIndex = 3;
     this.bot.settings.getChannelLanguage(message.channel)
       .then((language) => {
         settings.push({ name: 'Language', value: language, inline: true });
@@ -76,11 +78,55 @@ class Settings extends Command {
               inline: false,
             }];
             const embed = new SettingsEmbed(this.bot, message.channel, val, 3 + index);
+            finalPingIndex += 1;
             this.messageManager.embed(message, embed, false, false);
           });
         }
       })
+      .then(() => this.bot.settings.permissionsForGuild(message.guild))
+      .then((permissions) => {
+        perms = perms.concat(permissions);
+        return this.bot.settings.permissionsForChannel(message.channel);
+      })
+      .then((permissions) => {
+        const channelParts = permissions
+                  .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+        const guildParts = perms
+                  .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+        const channelSections = createGroupedArray(channelParts, 20);
+        const guildSections = createGroupedArray(guildParts, 20);
+        let finalGuildIndex = finalPingIndex;
+        guildSections.forEach((item, index) => {
+          const val = [{
+            name: 'Guild Permissions',
+            value: item.length > 0 ? `\n\t${item.join('\n\t')}` : 'No Configured Guild Permission',
+            inline: false,
+          }];
+          const embed = new SettingsEmbed(this.bot, message.channel, val, finalPingIndex + index);
+          finalGuildIndex += 1;
+          this.messageManager.embed(message, embed, false, false);
+        });
+        channelSections.forEach((item, index) => {
+          const val = [{
+            name: 'Channel Permissions',
+            value: item.length > 0 ? `\n\t${item.join('\n\t')}` : 'No Configured Channel Permission',
+            inline: false,
+          }];
+          const embed = new SettingsEmbed(this.bot, message.channel, val, finalGuildIndex + index);
+          this.messageManager.embed(message, embed, false, false);
+        });
+      })
       .catch(this.logger.error);
+  }
+
+  evalAppliesTo(type, id, message) {
+    if (type === 'role') {
+      return message.guild.roles.get(id);
+    }
+    if (id === message.guild.id) {
+      return 'everyone';
+    }
+    return this.bot.client.users.get(id);
   }
 }
 

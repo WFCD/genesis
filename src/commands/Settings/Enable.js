@@ -10,7 +10,7 @@ class Enable extends Command {
     this.usages = [
       { description: 'Enable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|\\*|here)(?:\\s+for\\s((?:\\<\\@)?\\d+(?:\\>)?|\\*))?)?)?`,
+    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?)?`,
       'i');
     this.requiresAuth = true;
     this.blacklistable = false;
@@ -33,9 +33,10 @@ class Enable extends Command {
       }
 
       let target = {};
-      if (params[2]) {
-        target = this.getTarget(params[2], message.mentions.roles,
-          message.mentions.users, message);
+      if (params[2] ||
+        message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
+        target = this.getTarget(params[2], message.mentions ? message.mentions.roles : [],
+          message.mentions ? message.mentions.users : [], message);
       } else {
         target = message.guild.roles.find('name', '@everyone');
       }
@@ -59,9 +60,6 @@ class Enable extends Command {
         });
       });
       promises.forEach(promise => promise.catch(this.logger.error));
-    }
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
     }
   }
 
@@ -111,20 +109,20 @@ class Enable extends Command {
    * @param {Array<Role>} roleMentions role mentions from the command
    * @param {Array<User>} userMentions user mentions from the command
    * @param {Message} message message to get information on users and roles
-   * @returns {Role|User} target or user to enable commands for
+   * @returns {Role|User} target or user to disable commands for
    */
   getTarget(targetParam, roleMentions, userMentions, message) {
     let target;
-    if (roleMentions.length > 0) {
-      target = roleMentions[0];
+    if (roleMentions.array().length > 0) {
+      target = roleMentions.array()[0];
       target.type = 'Role';
-    } else if (userMentions.length > 0) {
-      target = userMentions[0];
+    } else if (userMentions.array().length > 0) {
+      target = userMentions.array()[0];
       target.type = 'User';
     } else {
       const userTarget = this.bot.client.users.get(targetParam);
       const roleTarget = message.guild.roles.get(targetParam);
-      if (targetParam) {
+      if (targetParam === '*') {
         target = message.guild.roles.find('name', '@everyone');
         target.type = 'Role';
       } else if (roleTarget) {

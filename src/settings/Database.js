@@ -807,6 +807,40 @@ class Database {
         return [];
       });
   }
+
+  permissionsForGuild(guild) {
+    const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0]) {
+          return res[0].map(value => ({
+            level: 'guild',
+            command: value.command_id,
+            isAllowed: value.allowed,
+            type: value.is_user ? 'user' : 'role',
+            appliesToId: value.target_id,
+          }));
+        }
+        return [];
+      });
+  }
+
+  permissionsForChannel(channel) {
+    const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0]) {
+          return res[0].map(value => ({
+            level: 'channel',
+            command: value.command_id,
+            isAllowed: value.allowed,
+            type: value.is_user ? 'user' : 'role',
+            appliesToId: value.target_id,
+          }));
+        }
+        return [];
+      });
+  }
 }
 
 module.exports = Database;
