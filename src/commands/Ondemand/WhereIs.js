@@ -75,7 +75,7 @@ class Whereis extends Command {
             text: 'Data from the wiki',
           },
         };
-        message.channel.sendEmbed(embed).then(this.logger.debug);
+        this.messageManager.embed(message, embed, true, false);
       })
       .catch(this.logger.error);
   }
