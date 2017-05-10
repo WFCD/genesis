@@ -1,6 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
 const Command = require('../../Command.js');
 
 /**
@@ -27,7 +26,7 @@ class Roles extends Command {
            fields: [
              {
                name: '_ _',
-               value: roles.length ? `\`\`\`haskell\n${roles.map(role => `${rpad(role.name, 14, ' ')}| ${role.members.size}`).join('\n')}\`\`\`` : 'No joinable Roles',
+               value: roles.length ? `${roles.map(role => `${role.name} | ${role.members.size} Members`).join('\n')}` : 'No joinable Roles',
              },
            ],
          }, true, true);
