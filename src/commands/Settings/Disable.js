@@ -19,7 +19,7 @@ class Disable extends Command {
   run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
-      message.channel.sendEmbed(new EnableUsageEmbed(this.bot, null, 0));
+      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, null, 0), true, false);
     } else {
       params.splice(0, 1);
       const commands = this.getCommandsToEnable(params[0]);
