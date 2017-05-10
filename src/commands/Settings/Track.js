@@ -84,12 +84,12 @@ class Track extends Command {
           },
           {
             name: '**Events:**',
-            value: eventTypes.join('\n'),
+            value: `${eventTypes.join('\n')}\nall\nevents`,
             inline: true,
           },
           {
             name: '**Rewards:**',
-            value: rewardTypes.join('\n'),
+            value: `${rewardTypes.join('\n')}\nall\nitems`,
             inline: true,
           },
         ],
