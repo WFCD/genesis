@@ -29,7 +29,7 @@ class LeaveRole extends Command {
       { description: 'Show instructions for leaving roles', parameters: [] },
       { description: 'Leave a role', parameters: ['Role/Role id to leave'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.allowDM = false;
   }
 
