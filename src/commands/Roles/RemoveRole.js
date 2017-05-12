@@ -29,7 +29,7 @@ class RemoveRole extends Command {
       { description: 'Show instructions for removing joinable roles', parameters: [] },
       { description: 'Remove a role', parameters: ['Role/Role id to add'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
