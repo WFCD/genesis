@@ -29,7 +29,7 @@ class JoinRole extends Command {
       { description: 'Show instructions for joining roles', parameters: [] },
       { description: 'Joining a role', parameters: ['Role/Role id to join.'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.allowDM = false;
   }
 
