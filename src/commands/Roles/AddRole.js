@@ -29,7 +29,7 @@ class AddRole extends Command {
       { description: 'Show instructions for adding joinable roles', parameters: [] },
       { description: 'Add a role', parameters: ['Role/Role id to add'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
