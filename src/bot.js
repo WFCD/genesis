@@ -26,6 +26,41 @@ const Notifier = require('./notifications/Notifier.js');
  * @property {string} codeBlock    - String for denoting multi-line code blocks
  */
 
+
+function checkPrivateRooms(self, shardId) {
+  self.logger.debug(`Checking private rooms... Shard ${shardId}`);
+  self.settings.getPrivateRooms()
+     .then((privateRooms) => {
+       self.logger.debug(`Private rooms... ${privateRooms.length}`);
+       privateRooms.forEach((room) => {
+         if (room && room.voiceChannel && room.textChannel) {
+           const now = new Date();
+           if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
+                > self.channelTimeout)
+             && room.voiceChannel.members.size === 0) {
+             if (room.textChannel.deletable) {
+               self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
+               room.textChannel.delete()
+                 .then(() => {
+                   if (room.voiceChannel.deletable) {
+                     self.logger.debug(`Deleting text channel... ${room.voiceChannel.id}`);
+                     return room.voiceChannel.delete();
+                   }
+                   return new Promise();
+                 })
+                 .then(() => {
+                   if (room.textChannel.deletable && room.voiceChannel.deletable) {
+                     self.settings
+                      .deletePrivateRoom(room.guild, room.textChannel, room.voiceChannel);
+                   }
+                 });
+             }
+           }
+         }
+       });
+     });
+}
+
 /**
  * Class describing Genesis bot
  */
@@ -65,6 +100,8 @@ class Genesis {
      * @private
      */
     this.token = discordToken;
+
+    this.channelTimeout = 300000;
 
     /**
      * The logger object
@@ -207,6 +244,9 @@ class Genesis {
     this.client.user.setGame(`@${this.client.user.username} help (${this.shardId + 1}/${this.shardCount})`);
     this.settings.ensureData(this.client);
     this.readyToExecute = true;
+
+    const self = this;
+    setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
   }
 
   /**

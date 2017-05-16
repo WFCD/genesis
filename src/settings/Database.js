@@ -40,6 +40,7 @@ class Database {
       platform: 'pc',
       language: 'en-us',
       delete_after_respond: true,
+      createPrivateChannel: false,
     };
   }
 
@@ -300,7 +301,7 @@ class Database {
     guild.channels.array().forEach((channel) => {
       promises.push(this.setChannelSetting(channel, setting, val));
     });
-    return null;
+    return Promise.each(promises, () => {});
   }
 
   /**
@@ -836,6 +837,32 @@ class Database {
             isAllowed: value.allowed,
             type: value.is_user ? 'user' : 'role',
             appliesToId: value.target_id,
+          }));
+        }
+        return [];
+      });
+  }
+
+  addPrivateRoom(guild, textChannel, voiceChannel) {
+    const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id})`;
+    return this.db.query(query);
+  }
+
+  deletePrivateRoom(guild, textChannel, voiceChannel) {
+    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id}`;
+    return this.db.query(query);
+  }
+
+  getPrivateRooms() {
+    const query = SQL`SELECT guild_id, text_id, voice_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0]) {
+          return res[0].map(value => ({
+            guild: this.bot.client.guilds.get(value.guild_id),
+            textChannel: this.bot.client.channels.get(value.text_id),
+            voiceChannel: this.bot.client.channels.get(value.voice_id),
+            createdAt: value.crt_sec,
           }));
         }
         return [];
