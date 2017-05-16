@@ -60,7 +60,7 @@ class Create extends Command {
    */
   run(message) {
     const type = message.strippedContent.match(this.regex)[1];
-    const optName = message.strippedContent.match(this.regex)[2].trim().replace(/[^\w|-]/ig, '');
+    const optName = message.strippedContent.match(this.regex)[2];
     this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel')
       .then((createPrivateChannelAllowed) => {
         if (createPrivateChannelAllowed && type) {
