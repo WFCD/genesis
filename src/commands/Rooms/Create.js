@@ -60,7 +60,7 @@ class Create extends Command {
    */
   run(message) {
     const type = message.strippedContent.match(this.regex)[1];
-    const optName = message.strippedContent.match(this.regex)[2];
+    const optName = message.strippedContent.match(this.regex)[2].trim().replace(/[^\w|-]/ig, '');
     this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel')
       .then((createPrivateChannelAllowed) => {
         if (createPrivateChannelAllowed && type) {
@@ -69,7 +69,7 @@ class Create extends Command {
             const users = getUsersForCall(message);
             const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
             if (users.length < 11 && !message.guild.channels.find('name', name)) {
-              message.guild.createChannel(name.replace(/[^\w|-]/g, ' '), 'text')
+              message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text')
                 .then(textChannel => [message.guild.createChannel(name, 'voice'), textChannel])
                 .then((params) => {
                   const textChannel = params[1];
