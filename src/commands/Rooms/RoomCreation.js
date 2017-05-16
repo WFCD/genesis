@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 
-class RespondToSettings extends Command {
+class AllowPrivateRoom extends Command {
   constructor(bot) {
     super(bot, 'settings.allowprivateroom', 'allow private room', 'Set whether or not to allow the bot to create private rooms.');
     this.usages = [
@@ -41,4 +41,4 @@ class RespondToSettings extends Command {
   }
 }
 
-module.exports = RespondToSettings;
+module.exports = AllowPrivateRoom;
