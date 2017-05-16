@@ -133,6 +133,20 @@ class MessaageManager {
 
   /**
    * Send a message, with options to delete messages after calling
+   * @param {TextChannel} user user being sent a message
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   */
+  sendDirectMessageToUser(user, content, deleteResponse) {
+    const promises = [];
+    promises.push(user.send(content).then((msg) => {
+      this.deleteCallAndResponse(user, msg, false, deleteResponse);
+    }));
+    promises.forEach(promise => promise.catch(this.logger.error));
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
    * @param {Message} message original message being responded to
    * @param {Object} embed Embed object to send
    * @param {boolean} deleteResponse True to delete the sent message after time
@@ -192,18 +206,20 @@ class MessaageManager {
    * @param  {boolean} deleteResponse whether or not to delete the message response
    */
   deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
-    this.settings.getChannelDeleteAfterResponse(call.channel)
-      .then((deleteAfterRespond) => {
-        if (deleteAfterRespond === '1') {
-          if (deleteCall && call.deletable) {
-            call.delete(10000).catch(() => `Couldn't delete ${call}`);
+    if (call.channel) {
+      this.settings.getChannelDeleteAfterResponse(call.channel)
+        .then((deleteAfterRespond) => {
+          if (deleteAfterRespond === '1') {
+            if (deleteCall && call.deletable) {
+              call.delete(10000).catch(() => `Couldn't delete ${call}`);
+            }
+            if (deleteResponse && response.deletable) {
+              call.delete(10000).catch(() => `Couldn't delete ${call}`);
+            }
           }
-          if (deleteResponse && response.deletable) {
-            call.delete(10000).catch(() => `Couldn't delete ${call}`);
-          }
-        }
-      })
-      .catch(this.logger.error);
+        })
+        .catch(this.logger.error);
+    }
   }
 
   webhook(webhookId, embed) {
