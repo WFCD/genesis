@@ -12,7 +12,7 @@ class Progression extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.progress', 'progress', 'Display Warframe Progression Chart');
-    this.progressionChart = 'http://chart.warframestat.us';
+    this.progressionChart = 'https://i.imgur.com/aulXjWx.png';
   }
 
   /**
@@ -21,14 +21,9 @@ class Progression extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    message.channel.sendFile(this.progressionChart, 'progression.png',
-                             `Operator ${message.author.toString()}, the progression flowchart, at your request.`)
-     .then(() => {
-       if (message.deletable) {
-         return message.delete(2000);
-       }
-       return Promise.resolve();
-     }).catch(this.logger.error);
+    this.messageManager.sendFile(message,
+      `Operator ${message.author.toString()}, the progression flowchart, at your request.`,
+      this.progressionChart, 'Progress.png', true);
   }
 }
 

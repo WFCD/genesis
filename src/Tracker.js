@@ -21,14 +21,18 @@ class Tracker {
    * Constructs a simple tracking service with the given logger
    * @param {Logger} logger          Simple logger for logging information
    * @param {Client} client Discord Client for fetching statistucs from
+   * @param {ShardClientUtil} shardUtil Discord shard client util used to fetch shard count of all shards
    */
-  constructor(logger, client, { shardId = 0, shardCount = 1 }) {
+  constructor(logger, client, shardUtil, { shardId = 0, shardCount = 1 }) {
     this.logger = logger;
     this.client = client;
+    this.shardUtil = shardUtil;
     this.shardId = shardId;
     this.shardCount = shardCount;
-    if (carbonToken) {
-      setInterval(() => this.updateCarbonitex(this.client.guilds.size), updateInterval);
+    
+    
+    if (carbonToken && this.shardId === 0) {
+      setInterval(() => this.updateCarbonitex(this.shardUtil), updateInterval);
     }
     if (botsDiscordPwToken && botsDiscordPwUser) {
       setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), updateInterval);
@@ -43,25 +47,32 @@ class Tracker {
 
   /**
    * Updates carbonitex.net if the corresponding token is provided
-   * @param   {number}  guildsLen number of guilds that this bot is present on
+   * @param {ShardClientUtil} shardUtil Discord shard client util used to fetch shard count of all shards
    */
-  updateCarbonitex(guildsLen) {
+  updateCarbonitex(shardUtil) {
     if (carbonToken) {
-      this.logger.debug('Updating Carbonitex');
-      this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
-      const requestBody = {
-        url: 'https://www.carbonitex.net/discord/data/botdata.php',
-        body: {
-          key: carbonToken,
-          servercount: guildsLen,
-        },
-        json: true,
-      };
-      request(requestBody)
-        .then((parsedBody) => {
-          this.logger.debug(parsedBody);
+      client.shard.fetchClientValues('guilds.size')
+        .then(results => {
+          return results.reduce((prev, val) => prev + val, 0);
         })
-        .catch(this.logger.error);
+        .then((guildsLen)=> {
+          this.logger.debug('Updating Carbonitex');
+          this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
+          const requestBody = {
+            url: 'https://www.carbonitex.net/discord/data/botdata.php',
+            body: {
+              key: carbonToken,
+              servercount: guildsLen,
+            },
+            json: true,
+          };
+          request(requestBody)
+            .then((parsedBody) => {
+              this.logger.debug(parsedBody);
+            })
+            .catch(this.logger.error);
+            })
+            .catch(console.error);
     }
   }
 

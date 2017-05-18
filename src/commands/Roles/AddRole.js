@@ -77,7 +77,7 @@ class AddRole extends Command {
           inline: true,
         },
       ],
-    }, true, false);
+    }, true, true);
   }
 
   sendAlreadyAddedEmbed(message) {

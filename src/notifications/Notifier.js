@@ -55,7 +55,7 @@ class Notifier {
         .filter(e => !ids.includes(e.id) && e.isDiscovered);
       const alertsToNotify = newData.alerts
         .filter(a => !ids.includes(a.id) && a.getRewardTypes().length && !a.getExpired());
-      const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.id) ?
+      const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
         newData.voidTrader : undefined;
       const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
         !ids.includes(cc.id) && !cc.isExpired() && !cc.isRootChallenge());
@@ -92,7 +92,7 @@ class Notifier {
                     .concat(newData.persistentEnemies.map(p => p.id))
                     .concat(newData.sortie ? [newData.sortie.id] : [])
                     .concat(newData.syndicateMissions.map(m => m.id))
-                    .concat(newData.voidTrader ? [newData.voidTrader.id] : []);
+                    .concat(newData.voidTrader ? [newData.voidTrader.psId] : []);
 
       // Send all notifications
       return this.updateNotified(notifiedIds, platform)
