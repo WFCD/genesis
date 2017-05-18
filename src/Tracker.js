@@ -51,7 +51,7 @@ class Tracker {
    */
   updateCarbonitex(shardUtil) {
     if (carbonToken) {
-      client.shard.fetchClientValues('guilds.size')
+      shardUtil.fetchClientValues('guilds.size')
         .then(results => {
           return results.reduce((prev, val) => prev + val, 0);
         })
