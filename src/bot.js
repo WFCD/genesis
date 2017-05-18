@@ -139,17 +139,24 @@ class Genesis {
     this.readyToExecute = false;
 
     /**
+     * The bot's owner
+     * @type {string}
+     */
+    this.owner = owner;
+
+    /**
+     * Shard client for communicating with other shards
+     * @type {Discord.ShardClientUtil}
+     */
+    this.shardClient = new Discord.ShardClientUtil(this.client);
+
+    /**
      * Command handler for this Bot
      * @type {CommandHandler}
      * @private
      */
     this.commandHandler = new CommandHandler(this);
 
-    /**
-     * The bot's owner
-     * @type {string}
-     */
-    this.owner = owner;
 
     /**
      * Persistent storage for settings
@@ -187,7 +194,7 @@ class Genesis {
      */
     this.languages = ['en-us'];
 
-    this.tracker = new Tracker(this.logger, this.client, { shardId, shardCount });
+    this.tracker = new Tracker(this.logger, this.client, this.shardClient, { shardId, shardCount });
 
     this.messageManager = new MessageManager(this);
 
