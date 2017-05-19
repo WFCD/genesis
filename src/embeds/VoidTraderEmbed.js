@@ -15,7 +15,7 @@ class VoidTraderEmbed extends BaseEmbed {
 
     this.color = voidTrader.isActive() ? 0x00ff00 : 0xff0000;
 
-    if (voidTrader.isActive()) {
+    if (voidTrader.isActive() || voidTrader.inventory.length > 0) {
       this.fields = voidTrader.inventory.map(i => ({
         name: i.item,
         value: `${i.ducats} ducats + ${i.credits}cr`,
