@@ -63,61 +63,63 @@ class Create extends Command {
     const optName = message.strippedContent.match(this.regex)[2];
     this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel')
       .then((createPrivateChannelAllowed) => {
-        if (createPrivateChannelAllowed && type) {
-          const roomType = type.trim();
-          if (roomType === 'room' || roomType === 'raid' || roomType === 'team') {
-            const users = getUsersForCall(message);
-            const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
-            if (users.length < 11 && !message.guild.channels.find('name', name)) {
-              message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text')
-                .then(textChannel => [message.guild.createChannel(name, 'voice'), textChannel])
-                .then((params) => {
-                  const textChannel = params[1];
-                  // set up listener to delete channels if inactive for more than 5 minutes
-                  return params[0].then((voiceChannel) => {
-                    // set up overwrites
-                    this.setOverwrites(textChannel, voiceChannel, users, message.guild.id);
-                    // add channel to listenedChannels
-                    this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel)
-                      .then(() => {})
-                      .catch(this.logger.error);
-                    // send users invite link to new rooms
-                    this.sendInvites(voiceChannel, users, message.author);
-                    // set room limits
-                    this.setLimits(voiceChannel, roomType);
-                    this.messageManager.embed(message, {
-                      title: 'Channels created',
-                      fields: [{
-                        name: '_ _',
-                        value: `Voice Channel: ${voiceChannel.name}\n` +
-                          `Text Channel: ${textChannel.name}`,
-                      }],
-                    }, false, false);
+        if (parseInt(createPrivateChannelAllowed, 10)) {
+          if (type) {
+            const roomType = type.trim();
+            if (roomType === 'room' || roomType === 'raid' || roomType === 'team') {
+              const users = getUsersForCall(message);
+              const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
+              if (users.length < 11 && !message.guild.channels.find('name', name)) {
+                message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text')
+                  .then(textChannel => [message.guild.createChannel(name, 'voice'), textChannel])
+                  .then((params) => {
+                    const textChannel = params[1];
+                    // set up listener to delete channels if inactive for more than 5 minutes
+                    return params[0].then((voiceChannel) => {
+                      // set up overwrites
+                      this.setOverwrites(textChannel, voiceChannel, users, message.guild.id);
+                      // add channel to listenedChannels
+                      this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel)
+                        .then(() => {})
+                        .catch(this.logger.error);
+                      // send users invite link to new rooms
+                      this.sendInvites(voiceChannel, users, message.author);
+                      // set room limits
+                      this.setLimits(voiceChannel, roomType);
+                      this.messageManager.embed(message, {
+                        title: 'Channels created',
+                        fields: [{
+                          name: '_ _',
+                          value: `Voice Channel: ${voiceChannel.name}\n` +
+                            `Text Channel: ${textChannel.name}`,
+                        }],
+                      }, false, false);
+                    });
+                  }).catch((error) => {
+                    this.logger.error(error);
+                    if (error.response) {
+                      this.logger.debug(`${error.message}: ${error.status}.\n` +
+                        `Stack trace: ${error.stack}\n` +
+                        `Response: ${error.response.body}`);
+                    }
                   });
-                }).catch((error) => {
-                  this.logger.error(error);
-                  if (error.response) {
-                    this.logger.debug(`${error.message}: ${error.status}.\n` +
-                      `Stack trace: ${error.stack}\n` +
-                      `Response: ${error.response.body}`);
-                  }
-                });
-            } else {
-              let msg = '';
-              if (users.length > 10) {
-                // notify caller that there's too many users if role is more than 10 people.
-                msg = 'you are trying to send an invite to too many people, please keep the total number under 10';
               } else {
-                msg = 'that room already exists.';
+                let msg = '';
+                if (users.length > 10) {
+                  // notify caller that there's too many users if role is more than 10 people.
+                  msg = 'you are trying to send an invite to too many people, please keep the total number under 10';
+                } else {
+                  msg = 'that room already exists.';
+                }
+                this.messageManager.reply(message, msg, true, true);
               }
-              this.messageManager.reply(message, msg, true, true);
             }
+          } else {
+            this.messageManager.reply(message, '```haskell\n' +
+              'Sorry, you need to specify what you want to create. Right now these are available to create:' +
+              `\n* ${useable.join('\n* ')}\n\`\`\``
+              , true, false);
           }
-        } else {
-          this.messageManager.reply(message, '```haskell\n' +
-            'Sorry, you need to specify what you want to create. Right now these are available to create:' +
-            `\n* ${useable.join('\n* ')}\n\`\`\``
-            , true, false);
         }
       });
   }
