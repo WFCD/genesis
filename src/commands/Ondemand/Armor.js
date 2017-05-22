@@ -83,14 +83,8 @@ class Armor extends Command {
 
       const embed = {
         color: 0xffa500,
-        author: {
-          name: this.bot.client.user.clientID,
-          icon_url: this.bot.client.user.avatarURL,
-        },
-        title: 'Warframe - Armor',
-        url: 'https://warframe.com',
         thumbnail: {
-          url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/grineer.png',
+          url: 'https://raw.githubusercontent.com/wfcd/genesis/master/src/resources/grineer.png',
         },
         fields: [
           {
@@ -100,7 +94,6 @@ class Armor extends Command {
         ],
         footer: {
           icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-          text: 'Data evaluated by Warframe Community Developers',
         },
       };
       this.messageManager.embed(message, embed, true, false);
@@ -117,14 +110,8 @@ class Armor extends Command {
   sendUsage(message) {
     const embed = {
       color: 0xff0000,
-      author: {
-        name: this.bot.client.user.clientID,
-        icon_url: this.bot.client.user.avatarURL,
-      },
-      title: 'Warframe - Armor',
-      url: 'https://warframe.com',
       thumbnail: {
-        url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/grineer.png',
+        url: 'https://raw.githubusercontent.com/wfcd/genesis/master/src/resources/grineer.png',
       },
       fields: [
         {
@@ -135,7 +122,6 @@ class Armor extends Command {
       ],
       footer: {
         icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-        text: 'Data evaluated by Warframe Community Developers',
       },
     };
 
