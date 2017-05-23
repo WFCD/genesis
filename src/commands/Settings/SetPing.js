@@ -36,11 +36,17 @@ class SetPing extends Command {
         return;
       } else if (!pingString) {
         eventsAndItems.forEach(eventOrItem => {
-          promises.push(this.bot.settings.removePing(message.guild, eventOrItem));
+          console.log(`Remove : ${eventOrItem}`);
+          if(eventOrItem) {
+            promises.push(this.bot.settings.removePing(message.guild, eventOrItem));
+          }
         });
       } else {
-        eventsAndItems.forEach(eventOrItem => {
-          promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
+        eventsAndItems.forEach((eventOrItem) => {
+          console.log(`Set : ${eventOrItem}`);
+          if(eventOrItem) {
+            promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
+          }
         });
       }
       Promise.each(promises,  () => {})
