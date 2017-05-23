@@ -5,6 +5,9 @@ const Promise = require('bluebird');
 const Command = require('../../Command.js');
 const trackFunctions =  require('../../TrackFunctions.js');
 
+const eventTypes = require('../../resources/trackables.json').eventTypes;
+const rewardTypes = require('../../resources/trackables.json').rewardTypes;
+
 /**
  * Sets the current guild's custom prefix
  */
@@ -15,7 +18,7 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items)*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)*)?`, 'i');
     this.requiresAuth = true;
   }
 
