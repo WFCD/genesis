@@ -51,7 +51,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
       {
         name: 'Possible values:',
         value: '_ _',
-        inline: true,
+        inline: false,
       },
       {
         name: '**Events:**',
