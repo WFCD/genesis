@@ -43,7 +43,7 @@ class SetPing extends Command {
           promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
         });
       }
-      Promise.each(promises,  () => {}))
+      Promise.each(promises,  () => {})
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
     } else {
