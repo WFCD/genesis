@@ -1,6 +1,9 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 const Command = require('../../Command.js');
+const trackFunctions =  require('../../TrackFunctions.js');
 const eventTypes = require('../../resources/trackables.json').eventTypes;
 const rewardTypes = require('../../resources/trackables.json').rewardTypes;
 
@@ -10,68 +13,46 @@ class SetPing extends Command {
     this.usages = [
       { description: 'Set ping for an event or item', parameters: ['event or reward', '@role or user mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?((${eventTypes.join('|')}|${rewardTypes.join('|')})(.+)?)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s+?((${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?)?$`, 'i');
     this.requiresAuth = true;
   }
 
   run(message) {
-    const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')})(.+)?`, 'i');
+    const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
     } else if (match) {
-      const eventOrItem = match[1].trim();
+      const trackables = trackFunctions.trackablesFromParameters(match[1].trim());
+      const eventsAndItems = [].concat(trackables.events).concat(trackables.itesm);
       const pingString = match[2] ? match[2].trim() : undefined;
-
-      if (!eventOrItem || !eventTypes.concat(rewardTypes).includes(eventOrItem)) {
-        this.sendInstructions(message);
+      
+      const promises = [];
+      if (!eventsAndItems.length) {
+        this.bot.settings.getChannelPrefix(message.channel)
+        .then(prefix => this.messageManager
+              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+        .catch(this.logger.error);
+        return;
       } else if (!pingString) {
-        this.bot.settings.removePing(message.guild, eventOrItem).then(() => {
-          this.messageManager.notifySettingsChange(message, true, true);
-        }).catch(this.logger.error);
+        eventsAndItems.forEach(eventOrItem => {
+          promises.push(this.bot.settings.removePing(message.guild, eventOrItem));
+        });
       } else {
-        this.bot.settings.setPing(message.guild, eventOrItem, pingString).then(() => {
-          this.messageManager.notifySettingsChange(message, true, true);
-        }).catch(this.logger.error);
+        eventsAndItems.forEach(eventOrItem => {
+          promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
+        });
       }
+      Promise.each(promises,  () => {}))
+        .then(() => this.messageManager.notifySettingsChange(message, true, true))
+        .catch(this.logger.error);
     } else {
-      this.sendInstructions(message);
+      this.bot.settings.getChannelPrefix(message.channel)
+        .then(prefix => this.messageManager
+              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+        .catch(this.logger.error);
+      return;
     }
-  }
-
-  sendInstructions(message) {
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${prefix}${this.call} <event(s)/item(s) to ping for>`,
-            value: 'Disable pinging for an event/item',
-          },
-          {
-            name: 'Possible values:',
-            value: '_ _',
-          },
-          {
-            name: '**Events:**',
-            value: eventTypes.join('\n'),
-            inline: true,
-          },
-          {
-            name: '**Rewards:**',
-            value: rewardTypes.join('\n'),
-            inline: true,
-          },
-          {
-            name: '**Ping:**',
-            value: 'Whatever string you want to be added before a notification for this item or event',
-            inline: true,
-          },
-        ],
-      }, true, false))
-      .catch(this.logger.error);
   }
 }
 
