@@ -24,7 +24,7 @@ class SetPing extends Command {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
     } else if (match) {
       const trackables = trackFunctions.trackablesFromParameters(match[1].trim());
-      const eventsAndItems = [].concat(trackables.events).concat(trackables.itesm);
+      const eventsAndItems = [].concat(trackables.events).concat(trackables.items);
       const pingString = match[2] ? match[2].trim() : undefined;
       
       const promises = [];
@@ -36,14 +36,12 @@ class SetPing extends Command {
         return;
       } else if (!pingString) {
         eventsAndItems.forEach(eventOrItem => {
-          console.log(`Remove : ${eventOrItem}`);
           if(eventOrItem) {
             promises.push(this.bot.settings.removePing(message.guild, eventOrItem));
           }
         });
       } else {
         eventsAndItems.forEach((eventOrItem) => {
-          console.log(`Set : ${eventOrItem}`);
           if(eventOrItem) {
             promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
           }
