@@ -42,6 +42,7 @@ function trackablesFromParameters (paramString) {
       }
     });
   }
+  console.log(`Events: ${trackables.events.length}, Items: ${trackables.items.length}`);
   return trackables; 
 }
 
