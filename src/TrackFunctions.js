@@ -4,7 +4,7 @@ const eventTypes = require('./resources/trackables.json').eventTypes;
 const rewardTypes = require('./resources/trackables.json').rewardTypes;
 
 function trackablesFromParameters (paramString) {
-  const items = paramString.split(' ');
+  let items = paramString.split(' ');
 
   const trackables = {
     events: [],
