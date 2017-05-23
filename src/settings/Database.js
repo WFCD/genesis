@@ -404,6 +404,16 @@ class Database {
         .map(result => result.text).join(', ');
     });
   }
+  
+  /**
+   * Clear all pings for a guild
+   * @param {Guild} guild The guild
+   * @returns {Promise}
+   */
+  clearPingsForGuild(guild) {
+    const query = SQL`DELETE FROM pings WHERE guild_id=${guild.id}`;
+    return this.db.query(query);
+  }
 
   getPingsForGuild(guild) {
     if (guild) {
