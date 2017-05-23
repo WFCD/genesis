@@ -9,7 +9,7 @@ const eventTypes = require('../../resources/trackables.json').eventTypes;
 const rewardTypes = require('../../resources/trackables.json').rewardTypes;
 
 /**
- * Sets the current guild's custom prefix
+ * Track an event or item
  */
 class Track extends Command {
   constructor(bot) {
