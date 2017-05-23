@@ -1,8 +1,9 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 const Command = require('../../Command.js');
-const eventTypes = require('../../resources/trackables.json').eventTypes;
-const rewardTypes = require('../../resources/trackables.json').rewardTypes;
+const trackFunctions =  require('../../TrackFunctions.js');
 
 /**
  * Sets the current guild's custom prefix
@@ -26,75 +27,31 @@ class Track extends Command {
   run(message) {
     const unsplitItems = message.strippedContent.replace(`${this.call} `, '');
     if (!unsplitItems) {
-      this.sendInstructionEmbed(message);
+      this.bot.settings.getChannelPrefix(message.channel)
+        .then(prefix => this.messageManager
+              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+        .catch(this.logger.error);
       return;
     }
-
-    const items = unsplitItems.split(' ');
-    let itemsToTrack = [];
-    let eventsToTrack = [];
-    let saveTrack = true;
-    if (items[0].toLowerCase() === 'all') {
-      eventsToTrack = eventsToTrack.concat(eventTypes);
-      itemsToTrack = itemsToTrack.concat(rewardTypes);
+    const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
+    if (!trackables.events.length || !trackables.items.length) {
+      this.bot.settings.getChannelPrefix(message.channel)
+        .then(prefix => this.messageManager
+              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+        .catch(this.logger.error);
     } else {
-      items.forEach((item) => {
-        if (item.toLowerCase() === 'items') {
-          itemsToTrack = itemsToTrack.concat(rewardTypes);
-        } else if (item.toLowerCase() === 'events') {
-          eventsToTrack = eventsToTrack.concat(eventTypes);
-        } else if (rewardTypes.includes(item.trim()) && saveTrack) {
-          itemsToTrack.push(item.trim());
-        } else if (eventTypes.includes(item.trim()) && saveTrack) {
-          eventsToTrack.push(item.trim());
-        } else if ((eventsToTrack.length === 0 || itemsToTrack.length === 0) && saveTrack) {
-          this.sendInstructionEmbed(message);
-          saveTrack = false;
-        }
-      });
-    }
-
-    const promises = [];
-    if (saveTrack) {
-      eventsToTrack = eventsToTrack.filter((elem, pos) => eventsToTrack.indexOf(elem) === pos);
-      itemsToTrack = itemsToTrack.filter((elem, pos) => itemsToTrack.indexOf(elem) === pos);
-      eventsToTrack.forEach(event => promises.push(this.bot.settings
+      const promises = [];
+      trackFunctions.events = trackFunctions.events.filter((elem, pos) => trackFunctions.events.indexOf(elem) === pos);
+      trackFunctions.items = trackFunctions.items.filter((elem, pos) => trackFunctions.items.indexOf(elem) === pos);
+      trackFunctions.events.forEach(event => promises.push(this.bot.settings
         .trackEventType(message.channel, event)));
-      itemsToTrack.forEach(item => promises.push(this.bot.settings
+      trackFunctions.items.forEach(item => promises.push(this.bot.settings
         .trackItem(message.channel, item)));
-      this.messageManager.notifySettingsChange(message, true, true);
-    }
-    promises.forEach(promise => promise.catch(this.logger.error));
-  }
-
-  sendInstructionEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${prefix}${this.call} <event(s)/item(s) to track>`,
-            value: 'Track events/items to be alerted in this channel.',
-          },
-          {
-            name: 'Possible values:',
-            value: '_ _',
-          },
-          {
-            name: '**Events:**',
-            value: `${eventTypes.join('\n')}\nall\nevents`,
-            inline: true,
-          },
-          {
-            name: '**Rewards:**',
-            value: `${rewardTypes.join('\n')}\nall\nitems`,
-            inline: true,
-          },
-        ],
-      }, true, false))
-      .catch(this.logger.error);
+      
+      Promise.each(promises, () => {})
+        .then(() => this.messageManager.notifySettingsChange(message, true, true))
+        .catch(this.logger.error));
+    }    
   }
 }
 
