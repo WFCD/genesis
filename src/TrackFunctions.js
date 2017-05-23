@@ -56,7 +56,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: '**Events:**',
-        value: `${eventTypes.join('\n')}\nall\nevents`,
+        value: `${eventTypes.concat(['all', 'events', 'fissures', 'syndicates', 'conclave']).join('\n')}`,
         inline: true,
       },
       {
