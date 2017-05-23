@@ -15,6 +15,7 @@ function trackablesFromParameters (paramString) {
     trackables.events = trackables.events.concat(eventTypes);
     trackables.items = trackables.items.concat(rewardTypes);
   } else {
+    items = items.map(item => item.trim());
     items.forEach((item) => {
       if (item.toLowerCase() === 'items') {
         trackables.items = trackables.items.concat(rewardTypes);
