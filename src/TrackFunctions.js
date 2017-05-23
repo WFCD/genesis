@@ -29,9 +29,9 @@ function trackablesFromParameters (paramString) {
         trackables.events = trackables.events.concat([ 'conclave.weeklies', 'conclave.dailies' ]);
       } else if (item.toLowerCase === 'deals') {
         trackables.events = trackables.events.concat([ "deals.featured", "deals.popular"  ]);
-      } else if (rewardTypes.includes(item.trim()) && saveTrack) {
+      } else if (rewardTypes.includes(item.trim())) {
         trackables.items.push(item.trim());
-      } else if (eventTypes.includes(item.trim()) && saveTrack) {
+      } else if (eventTypes.includes(item.trim())) {
         trackables.events.push(item.trim());
       }
     });
