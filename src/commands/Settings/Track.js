@@ -44,11 +44,11 @@ class Track extends Command {
         .catch(this.logger.error);
     } else {
       const promises = [];
-      trackFunctions.events = trackFunctions.events.filter((elem, pos) => trackFunctions.events.indexOf(elem) === pos);
-      trackFunctions.items = trackFunctions.items.filter((elem, pos) => trackFunctions.items.indexOf(elem) === pos);
-      trackFunctions.events.forEach(event => promises.push(this.bot.settings
+      trackables.events = trackables.events.filter((elem, pos) => trackables.events.indexOf(elem) === pos);
+      trackables.items = trackables.items.filter((elem, pos) => trackables.items.indexOf(elem) === pos);
+      trackables.events.forEach(event => promises.push(this.bot.settings
         .trackEventType(message.channel, event)));
-      trackFunctions.items.forEach(item => promises.push(this.bot.settings
+      trackables.items.forEach(item => promises.push(this.bot.settings
         .trackItem(message.channel, item)));
       
       Promise.each(promises, () => {})
