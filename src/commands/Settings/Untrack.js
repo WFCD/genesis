@@ -37,7 +37,7 @@ class Untrack extends Command {
       return;
     }
     const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
-    if (!trackables.events.length || !trackables.items.length) {
+    if (!(trackables.events.length || trackables.items.length)) {
       this.bot.settings.getChannelPrefix(message.channel)
         .then(prefix => this.messageManager
               .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
