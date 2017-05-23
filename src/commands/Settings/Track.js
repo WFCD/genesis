@@ -51,8 +51,7 @@ class Track extends Command {
       Promise.each(promises, () => {})
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
-      }
-    }    
+    }
   }
 }
 
