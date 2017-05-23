@@ -3,6 +3,11 @@
 const eventTypes = require('./resources/trackables.json').eventTypes;
 const rewardTypes = require('./resources/trackables.json').rewardTypes;
 
+const fissures = ['fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4'];
+const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian'];
+const conclave = ['conclave.weeklies', 'conclave.dailies'];
+const deals = ['deals.featured', 'deals.popular']
+
 function trackablesFromParameters (paramString) {
   let items = paramString.split(' ');
 
@@ -17,18 +22,19 @@ function trackablesFromParameters (paramString) {
   } else {
     items = items.map(item => item.trim());
     items.forEach((item) => {
-      if (item.toLowerCase() === 'items') {
+      const i = item.toLowerCase().trim();
+      if (i === 'items') {
         trackables.items = trackables.items.concat(rewardTypes);
-      } else if (item.toLowerCase() === 'events') {
+      } else if (i === 'events') {
         trackables.events = trackables.events.concat(eventTypes);
-      } else if (item.toLowerCase === 'fissures') {
-        trackables.events = trackables.events.concat([ 'fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4' ]);
-      } else if (item.toLowerCase === 'syndicates') {
-        trackables.events = trackables.events.concat([ 'syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian' ]);
-      } else if (item.toLowerCase === 'conclave') {
-        trackables.events = trackables.events.concat([ 'conclave.weeklies', 'conclave.dailies' ]);
-      } else if (item.toLowerCase === 'deals') {
-        trackables.events = trackables.events.concat([ "deals.featured", "deals.popular"  ]);
+      } else if (i === 'fissures') {
+        trackables.events = trackables.events.concat(fissures);
+      } else if (i === 'syndicates') {
+        trackables.events = trackables.events.concat(syndicates);
+      } else if (i === 'conclave') {
+        trackables.events = trackables.events.concat(conclave);
+      } else if (i === 'deals') {
+        trackables.events = trackables.events.concat(deals);
       } else if (rewardTypes.includes(item.trim())) {
         trackables.items.push(item.trim());
       } else if (eventTypes.includes(item.trim())) {
