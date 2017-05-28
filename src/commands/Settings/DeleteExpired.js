@@ -2,14 +2,15 @@
 
 const Command = require('../../Command.js');
 
-class RespondToSettings extends Command {
+class DeleteExpired extends Command {
   constructor(bot) {
-    super(bot, 'settings.deleteafterrespond', 'delete after respond', 'Set whether or not to allow the bot to delete commands and/or responses after responding.');
+    super(bot, 'settings.deleteexpired', 'delete expired', 'Set whether or not to delete expired notifications.');
     this.usages = [
-      { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
+      { description: 'Change if the bot to deletes expired notifications', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^delete\\s?expired\\s?(.+)?$', 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {
@@ -34,11 +35,11 @@ class RespondToSettings extends Command {
           || enable === 'true' || enable === 'on' || enable === 1) {
         enableResponse = true;
       }
-      this.bot.settings.setChannelDeleteAfterResponse(message.channel, enableResponse)
+      this.bot.settings.setGuildSetting(message.guild, 'deleteExpired', enableResponse)
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
     }
   }
 }
 
-module.exports = RespondToSettings;
+module.exports = DeleteExpired;

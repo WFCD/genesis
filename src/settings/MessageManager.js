@@ -1,5 +1,7 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 /**
  * MessageManager for
  */
@@ -39,7 +41,7 @@ class MessaageManager {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -77,7 +79,7 @@ class MessaageManager {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -97,7 +99,7 @@ class MessaageManager {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -105,14 +107,25 @@ class MessaageManager {
    * @param {Channel} channel channel to send message to
    * @param {Object} embed Embed object to send
    * @param {string} prepend String to prepend to the embed
+   * @param {nunber} deleteAfter delete after a specified time
    * @returns {Promise<Message>}
    */
-  embedToChannel(channel, embed, prepend) {
+  embedToChannel(channel, embed, prepend, deleteAfter) {
     if (channel
       && ((channel.type === 'text'
-      && channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+      && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || channel.type === 'dm')) {
-      return channel.send(prepend, { embed });
+      return channel.send(prepend, { embed })
+        .then((msg) => {
+          if (msg.deletable && deleteAfter > 0) {
+            this.settings.getChannelSetting(channel, 'deleteExpired')
+              .then((deleteExpired) => {
+                if (parseInt(deleteExpired, 10)) {
+                  msg.delete(deleteAfter);
+                }
+              });
+          }
+        });
     }
     return null;
   }
@@ -128,7 +141,7 @@ class MessaageManager {
     promises.push(message.author.send(content).then((msg) => {
       this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -142,7 +155,7 @@ class MessaageManager {
     promises.push(user.send(content).then((msg) => {
       this.deleteCallAndResponse(user, msg, false, deleteResponse);
     }));
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -156,7 +169,7 @@ class MessaageManager {
     promises.push(message.author.send('', { embed }).then((msg) => {
       this.deleteCallAndResponse(message, msg, false, deleteResponse);
     }));
-    promises.forEach(promise => promise.catch(this.logger.error));
+    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   sendDirectEmbedToOwner(embed) {
@@ -211,10 +224,10 @@ class MessaageManager {
         .then((deleteAfterRespond) => {
           if (deleteAfterRespond === '1') {
             if (deleteCall && call.deletable) {
-              call.delete(10000).catch(() => `Couldn't delete ${call}`);
+              call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
             }
             if (deleteResponse && response.deletable) {
-              call.delete(10000).catch(() => `Couldn't delete ${call}`);
+              call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
             }
           }
         })

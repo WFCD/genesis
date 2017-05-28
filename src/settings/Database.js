@@ -41,6 +41,7 @@ class Database {
       language: 'en-us',
       delete_after_respond: true,
       createPrivateChannel: false,
+      deleteExpired: false,
     };
   }
 
@@ -404,7 +405,7 @@ class Database {
         .map(result => result.text).join(', ');
     });
   }
-  
+
   /**
    * Clear all pings for a guild
    * @param {Guild} guild The guild
@@ -819,6 +820,11 @@ class Database {
       });
   }
 
+  /**
+   * Get a dump of allowed and denied permissions
+   * @param  {Guild} guild guild to fetch settings for
+   * @returns {Object}       Data about allowed data
+   */
   permissionsForGuild(guild) {
     const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
     return this.db.query(query)
@@ -836,6 +842,11 @@ class Database {
       });
   }
 
+  /**
+   * Get a dump of allowed and denied permissions
+   * @param  {Channel} channel channel to fetch settings for
+   * @returns {Object}       Data about allowed data
+   */
   permissionsForChannel(channel) {
     const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
     return this.db.query(query)

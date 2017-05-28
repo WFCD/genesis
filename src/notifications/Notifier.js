@@ -19,6 +19,16 @@ const VoidTraderEmbed = require('../embeds/VoidTraderEmbed.js');
 const warframe = new Wikia('warframe');
 
 /**
+ * Returns the number of milliseconds between now and a given date
+ * @param   {Date} d         The date from which the current time will be subtracted
+ * @param   {function} [now] A function that returns the current UNIX time in milliseconds
+ * @returns {number}
+ */
+function fromNow(d, now = Date.now) {
+  return d.getTime() - now();
+}
+
+/**
  * Notifier for alerts, invasions, etc.
  */
 class Notifier {
@@ -146,9 +156,10 @@ class Notifier {
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
    * @param  {Array}  [items=[]] Items to broadcast
+   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
    * @returns {Promise}
    */
-  broadcast(embed, platform, type, items = []) {
+  broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     return this.bot.settings.getNotifications(type, platform, items)
     .then(channels => Promise.map(channels, channelResults =>
       channelResults.forEach((result) => {
@@ -156,9 +167,11 @@ class Notifier {
         if (channel) {
           if (channel.type === 'text') {
             return this.settings.getPing(channel.guild, (items || []).concat([type]))
-              .then(prepend => this.bot.messageManager.embedToChannel(channel, embed, prepend));
+              .then(prepend => this.bot.messageManager
+                .embedToChannel(channel, embed, prepend, deleteAfter));
           } else if (channel.type === 'dm') {
-            return this.bot.messageManager.embedToChannel(channel, embed, '');
+            return this.bot.messageManager
+              .embedToChannel(channel, embed, '', deleteAfter);
           }
         }
         return null;
@@ -188,7 +201,7 @@ class Notifier {
   sendAcolytes(newAcolytes, platform) {
     return Promise.map(newAcolytes, (a) => {
       const embed = new EnemyEmbed(this.bot, [a]);
-      return this.broadcast(embed, platform, 'enemies', null);
+      return this.broadcast(embed, platform, 'enemies', null, 3600000);
     });
   }
 
@@ -206,9 +219,9 @@ class Notifier {
         if (thumb && !a.getRewardTypes().includes('reactor') && !a.getRewardTypes().includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'alerts', a.getRewardTypes());
+        return this.broadcast(embed, platform, 'alerts', a.getRewardTypes(), fromNow(a.expiry));
       })
-      .catch(() => this.broadcast(embed, platform, 'alerts', a.getRewardTypes()));
+      .catch(() => this.broadcast(embed, platform, 'alerts', a.getRewardTypes(), fromNow(a.expiry)));
     });
   }
 
@@ -236,28 +249,28 @@ class Notifier {
   sendDarvo(newDarvoDeals, platform) {
     return Promise.map(newDarvoDeals, (d) => {
       const embed = new DarvoEmbed(this.bot, d);
-      return this.broadcast(embed, platform, 'darvo', null);
+      return this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry));
     });
   }
 
   sendEvent(newEvents, platform) {
     return Promise.map(newEvents, (e) => {
       const embed = new EventEmbed(this.bot, [e]);
-      return this.broadcast(embed, platform, 'events', null);
+      return this.broadcast(embed, platform, 'events', null, fromNow(e.expiry));
     });
   }
 
   sendFeaturedDeals(newFeaturedDeals, platform) {
     return Promise.map(newFeaturedDeals, (d) => {
       const embed = new SalesEmbed(this.bot, [d]);
-      return this.broadcast(embed, platform, 'deals.featured', null);
+      return this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry));
     });
   }
 
   sendFissures(newFissures, platform) {
     return Promise.map(newFissures, (f) => {
       const embed = new FissureEmbed(this.bot, [f]);
-      return this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null);
+      return this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry));
     });
   }
 
@@ -322,9 +335,9 @@ class Notifier {
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
-      return this.broadcast(embed, platform, 'sorties', null);
+      return this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     })
-    .catch(() => this.broadcast(embed, platform, 'sorties', null));
+    .catch(() => this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry)));
   }
 
   sendSyndicateArbiters(newSyndicates, platform) {
