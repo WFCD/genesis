@@ -46,6 +46,10 @@ class Settings extends Command {
       })
       .then((privChan) => {
         settings.push({ name: 'Allow creation of private channels', value: privChan === '1' ? 'yes' : 'no', inline: true });
+        return this.bot.settings.getChannelSetting(message.channel, 'deleteExpired');
+      })
+      .then((deleteExpired) => {
+        settings.push({ name: 'Deleted Expired Notifications (not all)', value: deleteExpired === '1' ? 'yes' : 'no', inline: true });
         const embed = new SettingsEmbed(this.bot, message.channel, settings, 1);
         this.messageManager.embed(message, embed, false, false);
         return this.bot.settings.getTrackedItems(message.channel);
