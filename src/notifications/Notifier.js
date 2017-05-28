@@ -233,15 +233,15 @@ class Notifier {
   sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
       const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
-      return this.broadcast(embed, platform, 'conclave.dailies', null);
+      return this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
     return new Promise(resolve => resolve(true));
   }
 
-  sendConclaveWeeklies(newDailies, platform) {
-    if (newDailies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'week');
-      return this.broadcast(embed, platform, 'conclave.weeklies', null);
+  sendConclaveWeeklies(newWeeklies, platform) {
+    if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
+      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week');
+      return this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
     return new Promise(resolve => resolve(true));
   }
@@ -288,9 +288,9 @@ class Notifier {
         if (thumb && !invasion.getRewardTypes().includes('reactor') && !invasion.getRewardTypes().includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes());
+        return this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes(), 86400000);
       })
-      .catch(() => this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes()));
+      .catch(() => this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes(), 86400000));
     });
   }
 
@@ -304,7 +304,7 @@ class Notifier {
   sendPopularDeals(newPopularDeals, platform) {
     return Promise.map(newPopularDeals, (d) => {
       const embed = new SalesEmbed(this.bot, [d]);
-      return this.broadcast(embed, platform, 'deals.popular', null);
+      return this.broadcast(embed, platform, 'deals.popular', null, 86400000);
     });
   }
 
@@ -342,32 +342,32 @@ class Notifier {
 
   sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis');
-    return this.broadcast(embed, platform, 'syndicate.arbiters', null);
+    return this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
   }
 
   sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka');
-    return this.broadcast(embed, platform, 'syndicate.loka', null);
+    return this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
   }
 
   sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian');
-    return this.broadcast(embed, platform, 'syndicate.meridian', null);
+    return this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
   }
 
   sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence');
-    return this.broadcast(embed, platform, 'syndicate.perin', null);
+    return this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
   }
 
   sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda');
-    return this.broadcast(embed, platform, 'syndicate.suda', null);
+    return this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
   }
 
   sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil');
-    return this.broadcast(embed, platform, 'syndicate.veil', null);
+    return this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
   }
 }
 
