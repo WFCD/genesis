@@ -227,7 +227,7 @@ class MessaageManager {
               call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
             }
             if (deleteResponse && response.deletable) {
-              call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
+              response.delete(10000).catch(() => this.logger.error(`Couldn't delete ${response}`));
             }
           }
         })

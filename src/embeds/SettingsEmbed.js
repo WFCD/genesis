@@ -26,7 +26,7 @@ class SettingsEmbed extends BaseEmbed {
         this.color = 0x77dd77;
         break;
     }
-    this.url = 'https://warframe-community-developers.github.io/genesis/index.html';
+    this.url = 'https://wfcd.github.io/genesis';
     if (channel.type === 'text') {
       this.title = `Settings for ${channel.name}`;
     } else {
