@@ -72,13 +72,16 @@ class CommandHandler {
    * @param {Message} message Message whose command should be checked and handled
    */
   handleCommand(message) {
-    let content = message.cleanContent;
+    let content = message.content;
     const botping = `@${message.guild ?
           message.guild.members.get(this.bot.client.user.id).displayName :
           this.bot.client.user.username}`;
+    const botPingId = `<@${this.bot.client.user.id}>`;
     this.bot.settings.getChannelPrefix(message.channel)
       .then((prefix) => {
-        if (!content.startsWith(prefix) && !content.startsWith(botping)) {
+        if (!content.startsWith(prefix)
+            && !content.startsWith(botping)
+            && !content.startsWith(botPingId)) {
           return;
         }
         if (content.startsWith(prefix)) {
@@ -86,6 +89,9 @@ class CommandHandler {
         }
         if (content.startsWith(botping)) {
           content = content.replace(new RegExp(`${botping}\\s+`, 'i'), '');
+        }
+        if (content.startsWith(botPingId)) {
+          content = content.replace(new RegExp(`${botPingId}\\s+`, 'i'), '');
         }
         const messageWithStrippedContent = message;
         messageWithStrippedContent.strippedContent = content;
