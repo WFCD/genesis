@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
+const rpad = require('right-pad');
 
 /**
  * Add a joinable role
@@ -26,7 +27,7 @@ class Roles extends Command {
            fields: [
              {
                name: '_ _',
-               value: roles.length ? `${roles.map(role => `${role.name} | ${role.members.size} Members`).join('\n')}` : 'No joinable Roles',
+               value: roles.length ? `${roles.map(role => `${rpad(role.name, 10, ' ')}${rpad(role.members.size, 5, ' ')} members`).join('\n')}` : 'No joinable Roles',
              },
            ],
          }, true, true);
