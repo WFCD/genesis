@@ -27,8 +27,11 @@ class Roles extends Command {
            fields: [
              {
                name: '_ _',
-               value: roles.length ? `${roles.map(role => `${rpad(role.name, 10, ' ')}${rpad(role.members.size, 5, ' ')} members`).join('\n')}` : 'No joinable Roles',
+               value: roles.length ? `\`${roles.map(role => `${rpad(role.name, 17, ' ')}${rpad(role.members.size, 5, ' ')} members\``).join('\n')}` : 'No joinable Roles',
              },
+             {
+               name: '_ _',
+               value: '**Use the `/join` command to join a role**',
            ],
          }, true, true);
        })
