@@ -6,15 +6,15 @@ const rewardTypes = require('./resources/trackables.json').rewardTypes;
 const fissures = ['fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4'];
 const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian'];
 const conclave = ['conclave.weeklies', 'conclave.dailies'];
-const deals = ['deals.featured', 'deals.popular']
+const deals = ['deals.featured', 'deals.popular'];
 
-function trackablesFromParameters (paramString) {
+function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
 
   const trackables = {
     events: [],
     items: [],
-  }
+  };
 
   if (items[0].toLowerCase() === 'all') {
     trackables.events = trackables.events.concat(eventTypes);
@@ -42,7 +42,7 @@ function trackablesFromParameters (paramString) {
       }
     });
   }
-  return trackables; 
+  return trackables;
 }
 
 function getTrackInstructionEmbed(message, prefix, call) {
@@ -72,21 +72,23 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
     ],
   };
-  
+
   switch (call) {
     case 'track':
-      embed.fields[0].value = 'Track events/items to be alerted in this channel.'
+      embed.fields[0].value = 'Track events/items to be alerted in this channel.';
       break;
     case 'untrack':
-      embed.fields[0].value = 'Untrack events/items to be alerted in this channel.'
+      embed.fields[0].value = 'Untrack events/items to be alerted in this channel.';
       break;
     case 'set ping':
-      embed.fields[0].value = 'Set the text added before an event/item notification.'
+      embed.fields[0].value = 'Set the text added before an event/item notification.';
       embed.fields.push({
         name: '**Ping:**',
         value: 'Whatever string you want to be added before a notification for this item or event. If you leave this blank, the ping for this item/event will be cleared',
         inline: true,
       });
+      break;
+    default:
       break;
   }
   return embed;

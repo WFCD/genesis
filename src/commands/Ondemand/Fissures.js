@@ -24,7 +24,7 @@ class Fissures extends Command {
     this.bot.settings.getChannelPlatform(message.channel)
       .then(platform => this.bot.worldStates[platform].getData())
       .then((ws) => {
-        const fissures = ws.fissures.sort((a, b) => { return a.tierNum > b.TierNum; });
+        const fissures = ws.fissures.sort((a, b) => a.tierNum > b.TierNum);
         this.messageManager.embed(message,
           new FissureEmbed(this.bot, fissures), true, false);
       })
