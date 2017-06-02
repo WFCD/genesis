@@ -26,6 +26,11 @@ class FrameEmbed extends BaseEmbed {
       this.color = frame.color;
       this.fields = [
         {
+          name: 'Profile',
+          value: `[Frame Profile](${frame.url})${frame.prime_url ? `\n[Prime Intro](${frame.prime_url})` : ''}`,
+          inline: false,
+        },
+        {
           name: '_ _',
           value: 'The stats in parentheses `()` denotes the prime variant\'s stats, if one exists.',
           inline: false,
@@ -68,11 +73,6 @@ class FrameEmbed extends BaseEmbed {
         {
           name: 'Polarities',
           value: `${frame.polarities ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
-          inline: false,
-        },
-        {
-          name: 'Profile',
-          value: `[Frame Profile](${frame.url})${frame.prime_url ? ` [Prime Intro](${frame.prime_url})` : ''}`,
           inline: true,
         },
       ];
