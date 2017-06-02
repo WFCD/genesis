@@ -70,6 +70,11 @@ class FrameEmbed extends BaseEmbed {
           value: `${frame.polarities ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
           inline: false,
         },
+        {
+          name: 'Profile',
+          value: `[Frame Profile](${frame.url})${frame.prime_url ? ` [Prime Intro](${frame.prime_url})` : ''}`,
+          inline: true,
+        },
       ];
     } else {
       this.title = 'Available Warframes';
