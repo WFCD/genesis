@@ -8,35 +8,60 @@ class RespondToSettings extends Command {
     this.usages = [
       { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(all|command|respond|none)?$', 'i');
     this.requiresAuth = true;
   }
 
   run(message) {
-    let enable = message.strippedContent.match(this.regex)[1];
-    if (!enable) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <yes|no>`,
-            value: '_ _',
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
+    let option = message.strippedContent.match(this.regex)[1];
+    const usageEmbed = {
+      title: 'Usage',
+      type: 'rich',
+      color: 0x779ECB,
+      fields: [
+        {
+          name: '_ _',
+          value: `${this.bot.prefix}${this.call} < all | command | respond | none > `,
+        },
+      ],
+    };
+    if (!option) {
+      this.messageManager.embed(message, usageEmbed, true, true);
     } else {
-      enable = enable.trim();
-      let enableResponse = false;
-      if (enable === 'enable' || enable === 'yes' || enable === '1'
-          || enable === 'true' || enable === 'on' || enable === 1) {
-        enableResponse = true;
+      option = option.trim();
+      let delCall = false;
+      let delResponse = false;
+      let doNothing = false;
+      switch (option) {
+        case 'all':
+          delCall = true;
+          delResponse = true;
+          break;
+        case 'command':
+          delCall = true;
+          delResponse = false;
+          break;
+        case 'respond':
+          delCall = false;
+          delResponse = true;
+          break;
+        case 'none':
+          tdelCall = false;
+          delResponse = false;
+          break;
+        default:
+          doNothing = true;
+          break;
       }
-      this.bot.settings.setChannelDeleteAfterResponse(message.channel, enableResponse)
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+
+      if (!doNothing) {
+        this.bot.settings.setChannelDeleteAfterResponse(message.channel, delCall)
+          .then(() => this.bot.settings.setChannelSetting(message.channel, 'delete_response_after_respond', delResponse))
+          .then(() => this.messageManager.notifySettingsChange(message, true, true))
+          .catch(this.logger.error);
+      } else {
+        this.messageManager.embed(message, usageEmbed, true, true);
+      }
     }
   }
 }

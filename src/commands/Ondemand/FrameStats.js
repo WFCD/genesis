@@ -14,7 +14,7 @@ class FrameStats extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.stats', 'stats', 'Get stats for a Warframe');
-    this.regex = new RegExp('^stats(.+)?', 'i');
+    this.regex = new RegExp(`${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {
         description: 'Get stats for a Warframe',

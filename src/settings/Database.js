@@ -40,6 +40,7 @@ class Database {
       platform: 'pc',
       language: 'en-us',
       delete_after_respond: true,
+      delete_response_after_respond: true,
       createPrivateChannel: false,
       deleteExpired: false,
     };
