@@ -109,8 +109,8 @@ class Settings extends Command {
                   .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
         const guildParts = perms
                   .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
-        const channelSections = createGroupedArray(channelParts, 20);
-        const guildSections = createGroupedArray(guildParts, 20);
+        const channelSections = createGroupedArray(channelParts, 15);
+        const guildSections = createGroupedArray(guildParts, 15);
         let finalGuildIndex = finalPingIndex;
         guildSections.forEach((item, index) => {
           const val = [{
