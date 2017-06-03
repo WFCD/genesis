@@ -20,6 +20,8 @@ class Roles extends Command {
   run(message) {
     this.bot.settings.getRolesForGuild(message.guild)
        .then((roles) => {
+         const longest = roles.map(role => role.name)
+          .reduce((a, b) => (a.length > b.length ? a : b));
          this.messageManager.embed(message, {
            title: 'Joinable Roles',
            type: 'rich',
@@ -27,7 +29,7 @@ class Roles extends Command {
            fields: [
              {
                name: '_ _',
-               value: roles.length ? `${roles.map(role => `\`${rpad(role.name, 17, ' ')}${rpad(String(role.members.size), 4, ' ')} members\``).join(' \n')}` : 'No joinable Roles',
+               value: roles.length ? `${roles.map(role => `\`${rpad(role.name, Number(longest.length + 2), ' ')}${rpad(String(role.members.size), 4, ' ')} members\``).join(' \n')}` : 'No joinable Roles',
              },
              {
                name: '_ _',
