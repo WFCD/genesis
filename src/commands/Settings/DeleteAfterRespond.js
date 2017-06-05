@@ -46,7 +46,7 @@ class RespondToSettings extends Command {
           delResponse = true;
           break;
         case 'none':
-          tdelCall = false;
+          delCall = false;
           delResponse = false;
           break;
         default:
