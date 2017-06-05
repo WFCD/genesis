@@ -105,7 +105,7 @@ class CommandHandler {
                 if (message.channel.type === 'dm' ||
                   (message.channel.permissionsFor(this.bot.client.user.id)
                    .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES']))) {
-                  message.react('312314752711786497').catch(this.logger.error);
+                  message.react('314349398811475968').catch(this.logger.error);
                 }
                 command.run(messageWithStrippedContent);
               }
