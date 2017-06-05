@@ -34,7 +34,7 @@ class Wiki extends Command {
   run(message) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
-      this.MessageManager.reply(message, this.noResult, true, true);
+      this.messageManager.reply(message, this.noResult, true, true);
     } else {
       this.logger.debug(`Searched for query: ${query}`);
       warframe.getSearchList({
