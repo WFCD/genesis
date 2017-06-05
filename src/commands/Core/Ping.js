@@ -61,8 +61,8 @@ class Ping extends Command {
         .then((result) => {
           results.push({
             name: host,
-            value: `${result.alive ? '\u2705' : ':x:'} ` +
-              `${typeof result.time !== 'undefined' ? result.time : '\u221E'}ms`,
+            value: `${result.alive ? '<:check:314349398811475968>' : '<:empty:314349398723264512>'} ` +
+              `${typeof result.time !== 'undefined' ? result.time : '<:xmark:314349398824058880>'}ms`,
           });
         });
     });
