@@ -42,6 +42,10 @@ client.on('error', (error) => {
 
 const logger = new Logger(client);
 
+const Nexus = require('warframe-nexus-query');
+
+const nexusQuerier = new Nexus();
+
 if (cluster.isMaster) {
   const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
   const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
@@ -56,6 +60,7 @@ if (cluster.isMaster) {
     prefix: process.env.PREFIX,
     logger,
     owner: process.env.OWNER,
+    nexusQuerier,
   });
   shard.start();
 }

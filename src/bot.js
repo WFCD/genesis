@@ -75,7 +75,7 @@ class Genesis {
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    */
   constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
-                                     mdConfig = md, owner = null } = {}) {
+                                     mdConfig = md, owner = null, nexusQuerier = {} } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -200,6 +200,8 @@ class Genesis {
 
     // Notification emitter
     this.notifier = new Notifier(this);
+
+    this.nexusQuerier = nexusQuerier;
 
     this.commandHandler.loadCommands();
 
