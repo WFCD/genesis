@@ -70,7 +70,7 @@ class Tracker {
             .then((parsedBody) => {
               this.logger.debug(parsedBody);
             })
-            .catch(this.logger.error);
+            .catch((error) => this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${error.statusCode} | Guilds: ${guildsLen}`));
         })
         .catch(this.logger.error);
     }
@@ -97,7 +97,7 @@ class Tracker {
         .then((parsedBody) => {
           this.logger.debug(parsedBody);
         })
-        .catch(this.logger.error);
+        .catch(error => this.logger.error(`Error updating DiscordList. Token: ${discordListToken} | Error Code: ${error.statusCode}`));
     }
   }
 
@@ -127,7 +127,7 @@ class Tracker {
       .then((parsedBody) => {
         this.logger.debug(parsedBody);
       })
-      .catch(this.logger.error);
+      .catch(error =>this.logger.error(`Error updating DiscordList. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
     }
   }
 
