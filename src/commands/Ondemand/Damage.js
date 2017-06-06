@@ -21,9 +21,27 @@ class Damage extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    this.messageManager.sendFile(message,
-      `Operator ${message.author.toString()}, the damage flowchart, at your request.`,
-      this.damageChart, 'Damage.png', true);
+    this.messageManager.embed(message, {
+      title: 'Legend',
+      image: {
+        url: 'http://i.imgur.com/EOzr440.png',
+      },
+      fields: [
+        { name: 'Blast', value: '<:blast:321463957292318720>', inline: true },
+        { name: 'Cold', value: '<:cold:321463957019951105>', inline: true },
+        { name: 'Corrosive', value: '<:corrosive:321463957305032714>', inline: true },
+        { name: 'Electricity', value: '<:electricity:321463957212626944>', inline: true },
+        { name: 'Gas', value: '<:gas:321463957259026432>', inline: true },
+        { name: 'Heat', value: '<:heat:321463957061763083>', inline: true },
+        { name: 'Impact', value: '<:impact:321463957221015562>', inline: true },
+        { name: 'Magnetic', value: '<:magnetic:321463957984641024>', inline: true },
+        { name: 'Puncture', value: '<:puncture:321463957296775168>', inline: true },
+        { name: 'Radiation', value: '<:radiation:321463957221277706>', inline: true },
+        { name: 'Slash', value: '<:slash:321463957296644103>', inline: true },
+        { name: 'Toxin', value: '<:toxin:321463957325873153>', inline: true },
+        { name: 'Viral', value: '<:viral:321463957292580864>', inline: true },
+      ],
+    }, true, false);
   }
 }
 
