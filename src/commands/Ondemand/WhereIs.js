@@ -54,7 +54,7 @@ class Whereis extends Command {
             fields.push({
               name: result.component + (result.type === 'Prime Part' ?
                 ` worth ${result.ducats}` : ''),
-              value: `${this.md.codeMulti}${extraSpace}${result.locations.join(`,${this.bot.md.lineEnd}${extraSpace}`).replace(/,,/g, ',')}${this.md.blockEnd}`,
+              value: `${this.md.codeMulti}${result.locations.join(`,${this.bot.md.lineEnd}`).replace(/,,/g, ',')}${this.md.blockEnd}`,
             });
           });
         }
