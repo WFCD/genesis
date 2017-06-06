@@ -496,6 +496,16 @@ class Database {
     .then(res => res[0].map(r => r.type));
   }
 
+  deleteChannelPermissions(channel) {
+    const query = SQL`DELETE FROM channel_permissions WHERE channel_id = ${channel.id}`;
+    return this.db.query(query);
+  }
+
+  deleteGuildPermissions(guild) {
+    const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guild.id}`;
+    return this.db.query(query);
+  }
+
   /**
    * Enables or disables a command for an individual member in a channel
    * @param {GuildChannel} channel - A discord guild channel
