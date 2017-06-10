@@ -19,10 +19,12 @@ class Roles extends Command {
    */
   run(message) {
     this.bot.settings.getRolesForGuild(message.guild)
-       .then((roles) => {
+       .then(roles => this.bot.settings.getChannelPrefix(message.channel)
+         .then(prefix => ({ roles, prefix })))
+       .then(({ roles, prefix }) => {
          const longest = roles.map(role => role.name)
           .reduce((a, b) => (a.length > b.length ? a : b));
-         this.messageManager.embed(message, {
+         const rolesEmbed = {
            title: 'Joinable Roles',
            type: 'rich',
            color: 0x779ECB,
@@ -33,10 +35,11 @@ class Roles extends Command {
              },
              {
                name: '_ _',
-               value: '**Use the `/join` command to join a role**',
+               value: `**Use the \`${prefix}join\` command to join a role**`,
              },
            ],
-         }, true, true);
+         };
+         this.messageManager.embed(message, rolesEmbed, true, true);
        })
        .catch(this.logger.error);
   }
