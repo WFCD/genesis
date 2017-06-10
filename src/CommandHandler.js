@@ -104,8 +104,8 @@ class CommandHandler {
                 this.logger.debug(`Matched ${command.id}`);
                 if (message.channel.type === 'dm' ||
                   (message.channel.permissionsFor(this.bot.client.user.id)
-                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES']))) {
-                  message.react(this.bot.client.emojis.get('314349398811475968') || '✅').catch(this.logger.error);
+                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) {
+                  message.react('✅').catch(this.logger.error);
                 }
                 command.run(messageWithStrippedContent);
               }
