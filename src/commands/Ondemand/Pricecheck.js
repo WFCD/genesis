@@ -3,6 +3,8 @@
 const Command = require('../../Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
 
+const inProgressEmbed = { title: 'Processing search...' };
+
 /**
  * Looks up items from Nexus-stats.com
  */
@@ -30,10 +32,11 @@ class PriceCheck extends Command {
    */
   run(message) {
     const item = message.strippedContent.match(this.regex)[1];
-    this.bot.nexusQuerier.priceCheckQueryAttachment(item)
-        .then(result => this.messageManager.embed(message,
-            new PriceCheckEmbed(this.bot, result, item), true, false))
-        .catch(this.logger.error);
+    message.channel.send('', { embed: inProgressEmbed })
+      .then(sentMessage => this.bot.nexusQuerier.priceCheckQueryAttachment(item)
+          .then(result => ({ result, sentMessage })))
+      .then(({ result, sentMessage }) => sentMessage.edit('', { embed: new PriceCheckEmbed(this.bot, result, item) }))
+      .catch(this.logger.error);
   }
 }
 
