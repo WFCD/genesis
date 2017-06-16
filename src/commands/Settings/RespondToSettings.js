@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 
 class RespondToSettings extends Command {
   constructor(bot) {
-    super(bot, 'settings.respondSettings', 'respond yo settings', 'Set whether or not to respond to settings');
+    super(bot, 'settings.respondSettings', 'respond to settings', 'Toggle whether or not the bot tells you when settings change from your command.');
     this.usages = [
       { description: 'Change if this channel has settings changes resonded in it', parameters: ['response enabled'] },
     ];
