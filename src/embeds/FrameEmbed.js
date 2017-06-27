@@ -67,12 +67,12 @@ class FrameEmbed extends BaseEmbed {
         },
         {
           name: 'Aura',
-          value: `${frame.aura || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
+          value: `${frame.aura.length > 0 || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
           inline: true,
         },
         {
           name: 'Polarities',
-          value: `${frame.polarities ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
+          value: `${frame.polarities.length > 0 ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
           inline: true,
         },
       ];
