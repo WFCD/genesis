@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 
 const Command = require('../../Command.js');
-const trackFunctions =  require('../../TrackFunctions.js');
+const trackFunctions = require('../../TrackFunctions.js');
 
 const eventTypes = require('../../resources/trackables.json').eventTypes;
 const rewardTypes = require('../../resources/trackables.json').rewardTypes;
@@ -32,7 +32,8 @@ class Track extends Command {
     if (!unsplitItems) {
       this.bot.settings.getChannelPrefix(message.channel)
         .then(prefix => this.messageManager
-              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+              .embed(message, trackFunctions
+                .getTrackInstructionEmbed(message, prefix, this.call), true, true))
         .catch(this.logger.error);
       return;
     }
@@ -40,17 +41,20 @@ class Track extends Command {
     if (!(trackables.events.length || trackables.items.length)) {
       this.bot.settings.getChannelPrefix(message.channel)
         .then(prefix => this.messageManager
-              .embed(message, trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true))
+              .embed(message, trackFunctions
+                .getTrackInstructionEmbed(message, prefix, this.call), true, true))
         .catch(this.logger.error);
     } else {
       const promises = [];
-      trackables.events = trackables.events.filter((elem, pos) => trackables.events.indexOf(elem) === pos);
-      trackables.items = trackables.items.filter((elem, pos) => trackables.items.indexOf(elem) === pos);
+      trackables.events = trackables.events
+        .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
+      trackables.items = trackables.items
+        .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
       trackables.events.forEach(event => promises.push(this.bot.settings
         .trackEventType(message.channel, event)));
       trackables.items.forEach(item => promises.push(this.bot.settings
         .trackItem(message.channel, item)));
-      
+
       Promise.each(promises, () => {})
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
