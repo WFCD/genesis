@@ -9,6 +9,40 @@ const founderEmoji = {
   disciple: '<:disciple:329484752098951168>',
 };
 
+const mrSigil = [
+  '',
+  'https://vignette2.wikia.nocookie.net/warframe/images/4/4e/Initiate.jpg/revision/latest?cb=20131207082819',
+  'https://vignette3.wikia.nocookie.net/warframe/images/a/a4/Silver-initiate.jpg/revision/latest?cb=20131207083232',
+  'https://vignette2.wikia.nocookie.net/warframe/images/8/8f/Gold-initiate.jpg/revision/latest?cb=20131207083401',
+  'https://vignette2.wikia.nocookie.net/warframe/images/9/91/Novice.jpg/revision/latest?cb=20131207083549',
+  'https://vignette2.wikia.nocookie.net/warframe/images/9/99/Silver-novice.jpg/revision/latest?cb=20131207085318',
+  'https://vignette1.wikia.nocookie.net/warframe/images/6/69/Gold-novice.jpg/revision/latest?cb=20131207085328',
+  'https://vignette2.wikia.nocookie.net/warframe/images/9/92/Disciple.jpg/revision/latest?cb=20131207085340',
+  'https://vignette3.wikia.nocookie.net/warframe/images/f/f8/Silver-disciple.jpg/revision/latest?cb=20131207085348',
+  'https://vignette2.wikia.nocookie.net/warframe/images/8/84/Gold-disciple.jpg/revision/latest?cb=20131207085356',
+  'https://vignette4.wikia.nocookie.net/warframe/images/4/4b/Seeker.jpg/revision/latest?cb=20131207085405',
+  'https://vignette3.wikia.nocookie.net/warframe/images/0/0e/Silver-seeker.jpg/revision/latest?cb=20131207085412',
+  'https://vignette2.wikia.nocookie.net/warframe/images/b/b9/Gold-seeker.jpg/revision/latest?cb=20131207085419',
+  'https://vignette1.wikia.nocookie.net/warframe/images/2/2a/Hunter.jpg/revision/latest?cb=20131207085428',
+  'https://vignette2.wikia.nocookie.net/warframe/images/1/19/Silver-hunter.jpg/revision/latest?cb=20131207085434',
+  'https://vignette1.wikia.nocookie.net/warframe/images/7/75/Gold-hunter.jpg/revision/latest?cb=20131207085443',
+  'https://vignette4.wikia.nocookie.net/warframe/images/0/0b/Eagle.jpg/revision/latest?cb=20131207085451',
+  'https://vignette1.wikia.nocookie.net/warframe/images/c/c3/Silver-eagle.jpg/revision/latest?cb=20131207085458',
+  'https://vignette3.wikia.nocookie.net/warframe/images/a/af/Gold-eagle.jpg/revision/latest?cb=20131207085504',
+  'https://vignette3.wikia.nocookie.net/warframe/images/0/05/Tiger.jpg/revision/latest?cb=20131211200425',
+  'https://vignette4.wikia.nocookie.net/warframe/images/d/d2/Silver-tiger.jpg/revision/latest?cb=20131211200435',
+  'https://vignette2.wikia.nocookie.net/warframe/images/7/7e/Gold-tiger.jpg/revision/latest?cb=20131211200442',
+  'https://vignette3.wikia.nocookie.net/warframe/images/b/bb/Dragon.jpg/revision/latest?cb=20131211200549',
+  'https://vignette1.wikia.nocookie.net/warframe/images/3/3c/Silver-dragon.jpg/revision/latest?cb=20131211200600',
+  'https://vignette2.wikia.nocookie.net/warframe/images/8/83/Gold-dragon.jpg/revision/latest?cb=20131211200607',
+  'https://vignette3.wikia.nocookie.net/warframe/images/7/70/Sage.jpg/revision/latest?cb=20131211200700',
+  'https://vignette4.wikia.nocookie.net/warframe/images/b/b0/Silver-sage.jpg/revision/latest?cb=20131211200711',
+  'https://vignette3.wikia.nocookie.net/warframe/images/2/29/Gold-sage.jpg/revision/latest?cb=20131211200719',
+  'https://vignette4.wikia.nocookie.net/warframe/images/7/7d/Master.jpg/revision/latest?cb=20131211200819',
+  'https://vignette4.wikia.nocookie.net/warframe/images/f/f8/Middle-master.jpg/revision/latest?cb=20131211200826',
+  'https://vignette3.wikia.nocookie.net/warframe/images/4/4d/Grand-master.jpg/revision/latest?cb=20131211200834',
+];
+
 /**
  * Generates enemy embeds
  */
@@ -20,40 +54,43 @@ class ProfileEmbed extends BaseEmbed {
   constructor(bot, player) {
     super();
 
-    if (player && typeof player !== 'undefined') {
+    if (player && typeof player !== 'undefined' && player.name) {
       this.author = {
         name: player.name,
-        icon_url: 'https://i.imgur.com/IrGOTEf.png',
       };
-      this.color = 0x993F37;
+      this.thumbnail = { url: mrSigil[player.mastery.rank.number] };
+      this.color = 0x4B458D;
       const accolades = [];
       if (player.accolades.founder) {
-        accolades.push(`:white_small_square: ${player.accolades.founder} Founder ` +
-          `${founderEmoji[player.accolades.founder.toLowerCase().split(' ').join('')]}`);
+        accolades.push(`${founderEmoji[player.accolades.founder.toLowerCase().split(' ').join('')]} ${player.accolades.founder} Founder`);
       }
       if (player.accolades.guide) {
-        accolades.push(`:white_small_square: ${player.accolades.guide} <:gotl:329511107536486400>`);
+        accolades.push(`<:gotl:329511107536486400> ${player.accolades.guide}`);
       }
       if (player.accolades.moderator) {
-        accolades.push(' :white_small_square: Community Moderator');
+        accolades.push('<:commod:329774757576704001> Community Moderator');
       }
       if (player.accolades.partner) {
-        accolades.push(' :white_small_square: Warframe Partner');
+        accolades.push('<:partner:329771535327952897> Warframe Partner');
       }
       if (player.accolades.staff) {
-        accolades.push(' :white_small_square: Digital Extremes');
+        accolades.push(' <:de:249288585675669504> Digital Extremes');
       }
-      this.fields = [
-        {
+      this.fields = [];
+
+      if (accolades.length > 0) {
+        this.fields.push({
           name: 'Accolades',
           value: accolades.length > 0 ? accolades.join('\n') : 'None',
           inline: false,
-        },
-        {
-          name: 'Mastery',
-          value: `${player.mastery.rank.number} - ${player.mastery.rank.name}`,
-          inline: true,
-        },
+        });
+      }
+
+      this.fields.push({
+        name: 'Mastery',
+        value: `${player.mastery.rank.number} - ${player.mastery.rank.name}`,
+        inline: true,
+      },
         {
           name: 'Current Mastery',
           value: player.mastery.xp,
@@ -61,22 +98,22 @@ class ProfileEmbed extends BaseEmbed {
         },
         {
           name: 'Next Rank',
-          value: `${player.mastery.xpUntilNextRank} until ${player.mastery.rank.next}`,
+          value: `${player.mastery.xpUntilNextRank} until **${player.mastery.rank.next}**`,
           inline: true,
         },
         {
           name: 'Clan',
-          value: player.clan.type ? `Rank **${player.clan.rank}** ${player.clan.type} - ${player.clan.name}` : player.clan.rank,
+          value: player.clan.type ? `Rank **${player.clan.rank}** ${player.clan.type}\n${player.clan.name}` : player.clan.rank,
           inline: true,
         },
         {
           name: 'Marked for Death',
-          value: `**Stalker**: ${player.marked.stalker ? 'yes' : 'no'}\n` +
-                  `**Grustrag Three**: ${player.marked.g3 ? 'yes' : 'no'}\n` +
-                  `**Zanuka Harvester**: ${player.marked.zanuka ? 'yes' : 'no'}`,
-          inline: false,
-        },
-      ];
+          value: `${player.marked.stalker ? '<:stalker:329792213326364672>' : ''} ` +
+                  `${player.marked.g3 ? '<:g3:329792212244103168>' : ''} ` +
+                  `${player.marked.zanuka ? '<:zanuka:329792213083095040>' : ''}`,
+          inline: true,
+        });
+      this.footer.text = `${this.footer.text} | Last Updated ${new Date(player.updatedAt).toLocaleString()}`;
     } else {
       this.fields = [{ name: '_ _', value: 'No Such Player' }];
     }

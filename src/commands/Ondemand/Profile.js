@@ -1,9 +1,17 @@
 'use strict';
 
+const https = require('https');
+const Promise = require('bluebird');
+
 const Command = require('../../Command.js');
 const ProfileEmbed = require('../../embeds/ProfileEmbed.js');
 
-const inProgressEmbed = { title: 'Processing search... 0s Remaining...' };
+const inProgressEmbed = { title: 'Processing search...' };
+const profileUrl = 'https://api.nexus-stats.com/warframe/v1/players/$1/profile';
+const statusUrl = 'https://api.nexus-stats.com/warframe/v1/bots/status';
+const retryCodes = [429].concat((process.env.JSON_CACHE_RETRY_CODES || '')
+  .split(',').map(code => parseInt(code.trim(), 10)));
+
 
 /**
  * Looks up items from Nexus-stats.com
@@ -15,7 +23,7 @@ class PriceCheck extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.profile', 'profile', 'profile');
-    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w+))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(.+))?`, 'i');
 
     this.usages = [
       {
@@ -37,41 +45,14 @@ class PriceCheck extends Command {
       return;
     }
     message.channel.send('', { embed: inProgressEmbed })
-      .then(sentMessage => ({
-        profile:
-        {
-          name: 'tobiah',
-          accolades: {
-            founder: 'Grand Master',
-            guide: 'Senior Guide of the Lotus',
-            moderator: false,
-            partner: false,
-            staff: false,
-          },
-          mastery: {
-            rank: {
-              name: 'Gold Dragon',
-              number: 24,
-              next: 'Sage',
-            },
-            xp: 1440334,
-            xpUntilNextRank: 122166,
-          },
-          clan: {
-            name: 'Morningstar',
-            rank: 9,
-            type: 'Shadow Clan',
-          },
-          marked: {
-            stalker: true,
-            g3: false,
-            zanuka: false,
-          },
-          updatedAt: '2017-06-28T06:31:30.270Z',
-        },
-        sentMessage,
-      }))
-      .then(({ profile, sentMessage }) => sentMessage.edit('', { embed: new ProfileEmbed(this.bot, profile) }))
+      .then(sentMessage => this.httpGet(statusUrl)
+          .then((status) => {
+            const embedWithTime = { title: `Processing search... ${status['Player-Sentry'].queue.timeRemaining}...` };
+            return sentMessage.edit('', { embed: embedWithTime });
+          }))
+      .then(sentMessage => this.httpGet(profileUrl.replace('$1', encodeURI(username)))
+          .then(profile => ({ sentMessage, profile })))
+      .then(({ sentMessage, profile }) => sentMessage.edit('', { embed: new ProfileEmbed(this.bot, profile) }))
       .catch(this.logger.error);
   }
 
@@ -97,6 +78,34 @@ class PriceCheck extends Command {
         this.messageManager.embed(message, embed, true, true);
       })
       .catch(this.logger.error);
+  }
+
+  httpGet(url) {
+    return new Promise((resolve) => {
+      const request = https.get(url, (response) => {
+        const body = [];
+        if (response.statusCode < 200 || response.statusCode > 299) {
+          if ((response.statusCode > 499 || retryCodes.indexOf(response.statusCode) > -1)
+            && this.retryCount < 30) {
+            this.retryCount += 1;
+            setTimeout(() => this.httpGet().then(resolve), 1000);
+          } else {
+            this.logger.error(new Error(`Failed to load page, status code: ${response.statusCode}`));
+            resolve({});
+          }
+        } else {
+          response.on('data', chunk => body.push(chunk));
+          response.on('end', () => {
+            this.retryCount = 0;
+            resolve(JSON.parse(body.join('')));
+          });
+        }
+      });
+      request.on('error', (err) => {
+        this.logger.error(`Error code: ${err.statusCode} on request on ${this.url}`);
+        resolve({});
+      });
+    });
   }
 }
 
