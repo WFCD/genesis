@@ -12,7 +12,7 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 
 ## Get Help on Discord
 
-[![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/dte853p "Try Genesis on Discord!")
+[![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/DuFunUv "Try Genesis on Discord!")
 
 [![Get Genesis on Discord](src/resources/ceph-gen-banner.png)](https://bot.discord.io/genesis "Add Cephalon Genesis to your Server!")
 
