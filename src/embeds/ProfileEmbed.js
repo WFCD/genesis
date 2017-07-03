@@ -74,7 +74,7 @@ class ProfileEmbed extends BaseEmbed {
         accolades.push('<:partner:329771535327952897> Warframe Partner');
       }
       if (player.accolades.staff) {
-        accolades.push(' <:de:249288585675669504> Digital Extremes');
+        accolades.push(' <:de:330057826133213194> Digital Extremes');
       }
       this.fields = [];
 
@@ -103,17 +103,19 @@ class ProfileEmbed extends BaseEmbed {
         },
         {
           name: 'Clan',
-          value: player.clan.type ? `Rank **${player.clan.rank}** ${player.clan.type}\n${player.clan.name}` : player.clan.rank,
+          value: player.clan.type ? `${player.clan.name}\nRank **${player.clan.rank}** ${player.clan.type}` : player.clan.name,
           inline: true,
         },
         {
           name: 'Marked for Death',
-          value: `${player.marked.stalker ? '<:stalker:329792213326364672>' : ''} ` +
-                  `${player.marked.g3 ? '<:g3:329792212244103168>' : ''} ` +
-                  `${player.marked.zanuka ? '<:zanuka:329792213083095040>' : ''}`,
+          value: (player.marked.stalker || player.marked.g3 || player.marked.zanuka)
+                ? `${player.marked.stalker ? '<:stalker:330021480169603076>' : ''} ` +
+                  `${player.marked.g3 ? '<:g3:330021480442101771>' : ''} ` +
+                  `${player.marked.zanuka ? '<:zanuka:330021480912125953>' : ''}`
+                : 'Unmarked',
           inline: true,
         });
-      this.footer.text = `${this.footer.text} | Last Updated ${new Date(player.updatedAt).toLocaleString()}`;
+      this.footer.text = `Last Updated ${new Date(player.updatedAt).toLocaleString()} | Data provided by Nexus-Stats.com`;
     } else {
       this.fields = [{ name: '_ _', value: 'No Such Player' }];
     }

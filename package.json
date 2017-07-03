@@ -31,6 +31,7 @@
     "discord.js": "^11.1.0",
     "json-fetch-cache": "0.0.5",
     "mysql2": "^1.1.2",
+    "nexus-stats-api": "0.0.26",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "ping": "^0.2.1",
