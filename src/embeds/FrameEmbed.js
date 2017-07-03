@@ -37,42 +37,42 @@ class FrameEmbed extends BaseEmbed {
         },
         {
           name: 'Minimum Mastery',
-          value: `${frame.mr}${frame.prime_mr ? ` (${frame.prime_mr})` : ''}`,
+          value: `${frame.mr || 'N/A'}${frame.prime_mr ? ` (${frame.prime_mr})` : ''}`,
           inline: true,
         },
         {
           name: 'Health',
-          value: `${frame.health}${frame.prime_health ? ` (${frame.prime_health})` : ''}`,
+          value: `${frame.health || 'N/A'}${frame.prime_health ? ` (${frame.prime_health})` : ''}`,
           inline: true,
         },
         {
           name: 'Shields',
-          value: `${frame.shield}${frame.prime_shield ? ` (${frame.prime_shield})` : ''}`,
+          value: `${frame.shield || 'N/A'}${frame.prime_shield ? ` (${frame.prime_shield})` : ''}`,
           inline: true,
         },
         {
           name: 'Armor',
-          value: `${frame.armor}${frame.prime_armor ? ` (${frame.prime_armor})` : ''}`,
+          value: `${frame.armor || 'N/A'}${frame.prime_armor ? ` (${frame.prime_armor})` : ''}`,
           inline: true,
         },
         {
           name: 'Power',
-          value: `${frame.power}${frame.prime_power ? ` (${frame.prime_power})` : ''}`,
+          value: `${frame.power || 'N/A'}${frame.prime_power ? ` (${frame.prime_power})` : ''}`,
           inline: true,
         },
         {
           name: 'Conclave',
-          value: `${frame.conclave}${frame.prime_conclave ? ` (${frame.prime_conclave})` : ''}`,
+          value: `${frame.conclave || 'N/A'}${frame.prime_conclave ? ` (${frame.prime_conclave})` : ''}`,
           inline: true,
         },
         {
           name: 'Aura',
-          value: `${frame.aura || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
+          value: `${frame.aura.length > 0 || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
           inline: true,
         },
         {
           name: 'Polarities',
-          value: `${frame.polarities ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
+          value: `${frame.polarities.length > 0 ? frame.polarities.join(', ') : 'No polarities'}${frame.prime_polarities ? ` (${frame.prime_polarities.join(', ')})` : ''}`,
           inline: true,
         },
       ];
