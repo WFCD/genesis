@@ -20,6 +20,7 @@ class PriceCheck extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.profile', 'profile', 'profile');
     this.regex = new RegExp(`^${this.call}(?:\\s+(.+))?`, 'i');
+    this.ownerOnly = true;
     this.usages = [
       {
         description: 'Search for a player\'s profile',
@@ -33,8 +34,6 @@ class PriceCheck extends Command {
       ignore_limiter: true,
     };
     this.nexusFetcher = new Nexus(nexusKey && nexusSecret ? nexusOptions : {});
-
-    this.ownerOwnly = true;
   }
 
   /**
