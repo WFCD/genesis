@@ -3,8 +3,6 @@
 const Query = require('warframe-location-query');
 const Command = require('../../Command.js');
 
-const extraSpace = '　　';
-
 /**
  * Looks up locations of items
  */

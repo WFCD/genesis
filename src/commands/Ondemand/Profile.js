@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 const ProfileEmbed = require('../../embeds/ProfileEmbed.js');
 const Nexus = require('nexus-stats-api');
 
-const inProgressEmbed = { title: 'Processing search...' };
+const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 
 const nexusKey = process.env.NEXUSSTATS_USER_KEY || undefined;
 const nexusSecret = process.env.NEXUSSTATS_USER_SECRET || undefined;
@@ -34,7 +34,7 @@ class PriceCheck extends Command {
     };
     this.nexusFetcher = new Nexus(nexusKey && nexusSecret ? nexusOptions : {});
 
-    this.ownerOwnly = true;
+    this.ownerOnly = true;
   }
 
   /**

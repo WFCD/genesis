@@ -30,6 +30,7 @@
     "decache": "^4.1.0",
     "discord.js": "^11.1.0",
     "json-fetch-cache": "0.0.5",
+    "json-query": "^2.2.2",
     "mysql2": "^1.1.2",
     "nexus-stats-api": "0.0.26",
     "node-md-config": "^2.0.1",
