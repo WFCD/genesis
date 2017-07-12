@@ -20,7 +20,6 @@ class PriceCheck extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.profile', 'profile', 'profile');
     this.regex = new RegExp(`^${this.call}(?:\\s+(.+))?`, 'i');
-    this.ownerOnly = true;
     this.usages = [
       {
         description: 'Search for a player\'s profile',
