@@ -71,10 +71,10 @@ class ProfileEmbed extends BaseEmbed {
         accolades.push('<:commod:329774757576704001> Community Moderator');
       }
       if (player.accolades.partner) {
-        accolades.push('<:partner:329771535327952897> Warframe Partner');
+        accolades.push('<:partner:335483679285575700> Warframe Partner');
       }
       if (player.accolades.staff) {
-        accolades.push(' <:de:330057826133213194> Digital Extremes');
+        accolades.push('<:de:330057826133213194> Digital Extremes');
       }
       this.fields = [];
 
