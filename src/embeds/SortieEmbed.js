@@ -13,7 +13,7 @@ class SortieEmbed extends BaseEmbed {
   constructor(bot, sortie) {
     super();
 
-    this.color = 0x00ff00;
+    this.color = 0xa84300;
     if (typeof sortie !== 'undefined' && sortie) {
       this.fields = sortie.variants.map(v => ({
         name: `${v.node} - ${v.missionType}`,
