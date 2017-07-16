@@ -1,7 +1,15 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const rpad = require('right-pad');
+const RolesEmbed = require('../../embeds/RolesEmbed.js');
+
+function createGroupedArray(arr, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    groups.push(arr.slice(i, i + chunkSize));
+  }
+  return groups;
+}
 
 /**
  * Add a joinable role
@@ -24,22 +32,12 @@ class Roles extends Command {
        .then(({ roles, prefix }) => {
          const longest = roles.map(role => role.name)
           .reduce((a, b) => (a.length > b.length ? a : b));
-         const rolesEmbed = {
-           title: 'Joinable Roles',
-           type: 'rich',
-           color: 0x779ECB,
-           fields: [
-             {
-               name: '_ _',
-               value: roles.length ? `${roles.map(role => `\`${rpad(role.name, Number(longest.length + 2), ' ')}${rpad(String(role.members.size), 4, ' ')} members\``).join(' \n')}` : 'No joinable Roles',
-             },
-             {
-               name: '_ _',
-               value: `**Use the \`${prefix}join\` command to join a role**`,
-             },
-           ],
-         };
-         this.messageManager.embed(message, rolesEmbed, true, true);
+         const groupedRoles = createGroupedArray(roles, 24);
+         groupedRoles.forEach((roleGroup) => {
+           this.messageManager.embed(message,
+            new RolesEmbed(this.bot, roleGroup, prefix, longest.length),
+              true, true);
+         });
        })
        .catch(this.logger.error);
   }

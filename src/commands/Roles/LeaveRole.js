@@ -53,12 +53,15 @@ class LeaveRole extends Command {
              const roleRemoveable = filteredRoles.length > 0
                && message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
+             const userDoesntHaveRole = filteredRoles.length > 0
+                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS')
+                && !message.member.roles.get(role.id);
              if (roleRemoveable) {
                message.member.removeRole(role.id)
                 .then(() => this.sendLeft(message, role))
                 .catch(this.logger.error);
              } else {
-               this.sendCantLeave(message);
+               this.sendCantLeave(message, userDoesntHaveRole);
              }
            })
            .catch(this.logger.error);
@@ -81,15 +84,15 @@ class LeaveRole extends Command {
     }, true, true);
   }
 
-  sendCantLeave(message) {
+  sendCantLeave(message, userDoesntHaveRole) {
     this.messageManager.embed(message, {
-      title: 'Invalid Role',
+      title: 'Can\'t Leave',
       type: 'rich',
       color: 0x779ECB,
       fields: [
         {
           name: '_ _',
-          value: 'You can\'t leave that role.',
+          value: userDoesntHaveRole ? 'You aren\'t in that role.' : 'You can\'t leave that role.',
           inline: true,
         },
       ],

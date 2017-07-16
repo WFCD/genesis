@@ -72,7 +72,7 @@ class MessaageManager {
    */
   reply(message, content, deleteOriginal, deleteResponse) {
     const promises = [];
-    if ((message.channel.type === 'text' &&
+    if ((message.channel && message.channel.type === 'text' &&
         message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       promises.push(message.reply(`${this.zSWC}${content}`).then((msg) => {

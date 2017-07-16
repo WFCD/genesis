@@ -53,12 +53,15 @@ class JoinRole extends Command {
              const roleAddable = filteredRoles.length > 0
                && !message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
+             const userHasRole = filteredRoles.length > 0
+               && message.member.roles.get(role.id)
+               && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
              if (roleAddable) {
                message.member.addRole(role.id)
                 .then(() => this.sendJoined(message, role))
                 .catch(this.logger.error);
              } else {
-               this.sendCantJoin(message);
+               this.sendCantJoin(message, userHasRole);
              }
            })
            .catch(this.logger.error);
@@ -82,15 +85,15 @@ class JoinRole extends Command {
   }
 
 
-  sendCantJoin(message) {
+  sendCantJoin(message, userHasRole) {
     this.messageManager.embed(message, {
-      title: 'Invalid Role',
+      title: 'Can\'t Join',
       type: 'rich',
       color: 0x779ECB,
       fields: [
         {
           name: '_ _',
-          value: 'You can\'t join that role.',
+          value: userHasRole ? 'You already have that role.' : 'You can\'t join that role.',
           inline: true,
         },
       ],
