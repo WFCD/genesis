@@ -54,7 +54,7 @@ class Untrack extends Command {
       trackables.items = trackables.items
         .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
-      const channelParam = message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '');
+      const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
       const channel = this.getChannel(channelParam, message);
 
       trackables.events.forEach(event => promises.push(this.bot.settings

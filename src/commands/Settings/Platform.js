@@ -28,7 +28,7 @@ class Platform extends Command {
       };
       this.messageManager.embed(message, embed, true, true);
     } else {
-      const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+      const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
       const channel = this.getChannel(channelParam, message);
       this.bot.settings.setChannelPlatform(channel, platform.toLowerCase())
       .then(() => this.messageManager.notifySettingsChange(message, true, true))

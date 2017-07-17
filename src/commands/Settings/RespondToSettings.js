@@ -14,7 +14,7 @@ class RespondToSettings extends Command {
 
   run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
-    const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+    const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
     if (!enable) {
       const embed = {
