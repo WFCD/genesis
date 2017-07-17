@@ -55,7 +55,8 @@ class RespondToSettings extends Command {
       }
 
       if (!doNothing) {
-        const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+        const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
+        const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
         const channel = this.getChannel(channelParam, message);
         this.bot.settings.setChannelDeleteAfterResponse(channel, delCall)
           .then(() => this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse))
