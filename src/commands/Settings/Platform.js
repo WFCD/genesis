@@ -8,7 +8,7 @@ class Platform extends Command {
     this.usages = [
       { description: 'Change this channel\'s platform', parameters: ['platform'] },
     ];
-    this.regex = new RegExp(`${this.call}(?:\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.regex = new RegExp(`${this.call}(?:\\s+([pcsxb14]{2,3}))?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$`, 'i');
     this.requiresAuth = true;
   }
 
@@ -28,13 +28,31 @@ class Platform extends Command {
       };
       this.messageManager.embed(message, embed, true, true);
     } else {
-      this.bot.settings.setChannelPlatform(message.channel, platform.toLowerCase())
+      const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+      const channel = this.getChannel(channelParam, message);
+      this.bot.settings.setChannelPlatform(channel, platform.toLowerCase())
       .then(() => this.messageManager.notifySettingsChange(message, true, true))
       .catch(this.logger.error);
     }
-    if (message.deletable) {
-      message.delete(5000).catch(this.logger.error);
+  }
+
+  /**
+   * Get the list of channels to enable commands in based on the parameters
+   * @param {string|Array<Channel>} channelsParam parameter for determining channels
+   * @param {Message} message Discord message to get information on channels
+   * @returns {Array<string>} channel ids to enable commands in
+   */
+  getChannel(channelsParam, message) {
+    let channel = message.channel;
+    if (typeof channelsParam === 'string') {
+      // handle it for strings
+      if (channelsParam !== 'here') {
+        channel = this.bot.client.channels.get(channelsParam.trim());
+      } else if (channelsParam === 'here') {
+        channel = message.channel;
+      }
     }
+    return channel;
   }
 }
 

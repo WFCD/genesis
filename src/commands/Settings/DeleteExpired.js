@@ -8,7 +8,7 @@ class DeleteExpired extends Command {
     this.usages = [
       { description: 'Change if the bot to deletes expired notifications', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^delete\\s?expired\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^delete\\s?expired\\s?(yes|no)?$', 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

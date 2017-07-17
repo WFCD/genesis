@@ -13,11 +13,10 @@ function createGroupedArray(arr, chunkSize) {
   return groups;
 }
 
-
 class Settings extends Command {
   constructor(bot) {
     super(bot, 'settings.settings', 'settings', 'Get settings');
-    this.regex = new RegExp(`^${this.call}(?:\\s*((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+in\\s+((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
     this.requiresAuth = true;
   }
 
@@ -43,10 +42,10 @@ class Settings extends Command {
         })
         .then((deleteAfterRespond) => {
           settings.push({ name: 'Delete Message After Responding', value: deleteAfterRespond === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'delete_response_after_respond');
+          return this.bot.settings.getChannelSetting(channel, 'delete_response');
         })
         .then((deleteResponseAfterRespond) => {
-          settings.push({ name: 'Delete Message Response After Responding', value: deleteResponseAfterRespond ? 'yes' : 'no', inline: true });
+          settings.push({ name: 'Delete Message Response After Responding', value: deleteResponseAfterRespond === '1' ? 'yes' : 'no', inline: true });
           return this.bot.settings.getChannelPrefix(channel);
         })
         .then((prefix) => {

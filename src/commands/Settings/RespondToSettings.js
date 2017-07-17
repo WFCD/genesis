@@ -8,12 +8,14 @@ class RespondToSettings extends Command {
     this.usages = [
       { description: 'Change if this channel has settings changes resonded in it', parameters: ['response enabled'] },
     ];
-    this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;
   }
 
   run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
+    const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+    const channel = this.getChannel(channelParam, message);
     if (!enable) {
       const embed = {
         title: 'Usage',
@@ -21,7 +23,7 @@ class RespondToSettings extends Command {
         color: 0x0000ff,
         fields: [
           {
-            name: `${this.bot.prefix}${this.call} <yes|no>`,
+            name: `${this.bot.prefix}${this.call} <on|off>`,
             value: '_ _',
           },
         ],
@@ -30,13 +32,32 @@ class RespondToSettings extends Command {
     } else {
       enable = enable.trim();
       let enableResponse = false;
-      if (enable === 'enable' || enable === 'enable' || enable === '1' || enable === 'true' || enable === 1) {
+      if (enable === 'on') {
         enableResponse = true;
       }
-      this.bot.settings.setChannelResponseToSettings(message.channel, enableResponse)
+      this.bot.settings.setChannelResponseToSettings(channel, enableResponse)
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
     }
+  }
+
+  /**
+   * Get the list of channels to enable commands in based on the parameters
+   * @param {string|Array<Channel>} channelsParam parameter for determining channels
+   * @param {Message} message Discord message to get information on channels
+   * @returns {Array<string>} channel ids to enable commands in
+   */
+  getChannel(channelsParam, message) {
+    let channel = message.channel;
+    if (typeof channelsParam === 'string') {
+      // handle it for strings
+      if (channelsParam !== 'here') {
+        channel = this.bot.client.channels.get(channelsParam.trim());
+      } else if (channelsParam === 'here') {
+        channel = message.channel;
+      }
+    }
+    return channel;
   }
 }
 

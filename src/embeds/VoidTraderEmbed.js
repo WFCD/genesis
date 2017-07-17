@@ -13,7 +13,7 @@ class VoidTraderEmbed extends BaseEmbed {
   constructor(bot, voidTrader) {
     super();
 
-    this.color = voidTrader.isActive() ? 0x00ff00 : 0xff0000;
+    this.color = voidTrader.isActive() ? 0x0EC9FF : 0xff6961;
 
     if (voidTrader.isActive() || voidTrader.inventory.length > 0) {
       this.fields = voidTrader.inventory.map(i => ({

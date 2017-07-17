@@ -8,7 +8,7 @@ class RespondToSettings extends Command {
     this.usages = [
       { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(all|command|respond|none)?$', 'i');
+    this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(all|command|respond|none)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;
   }
 
@@ -55,14 +55,35 @@ class RespondToSettings extends Command {
       }
 
       if (!doNothing) {
-        this.bot.settings.setChannelDeleteAfterResponse(message.channel, delCall)
-          .then(() => this.bot.settings.setChannelSetting(message.channel, 'delete_response_after_respond', delResponse))
+        const channelParam = message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '');
+        const channel = this.getChannel(channelParam, message);
+        this.bot.settings.setChannelDeleteAfterResponse(channel, delCall)
+          .then(() => this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse))
           .then(() => this.messageManager.notifySettingsChange(message, true, true))
           .catch(this.logger.error);
       } else {
         this.messageManager.embed(message, usageEmbed, true, true);
       }
     }
+  }
+
+  /**
+   * Get the list of channels to enable commands in based on the parameters
+   * @param {string|Array<Channel>} channelsParam parameter for determining channels
+   * @param {Message} message Discord message to get information on channels
+   * @returns {Array<string>} channel ids to enable commands in
+   */
+  getChannel(channelsParam, message) {
+    let channel = message.channel;
+    if (typeof channelsParam === 'string') {
+      // handle it for strings
+      if (channelsParam !== 'here') {
+        channel = this.bot.client.channels.get(channelsParam.trim());
+      } else if (channelsParam === 'here') {
+        channel = message.channel;
+      }
+    }
+    return channel;
   }
 }
 

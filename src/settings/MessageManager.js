@@ -222,13 +222,13 @@ class MessaageManager {
     if (call.channel) {
       this.settings.getChannelDeleteAfterResponse(call.channel)
         .then((deleteAfterRespond) => {
-          if (parseInt(deleteAfterRespond, 10) && deleteCall && call.deletable) {
+          if (deleteAfterRespond === '1' && deleteCall && call.deletable) {
             call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
           }
-          return this.settings.getChannelSetting(call.channel, 'delete_response_after_respond');
+          return this.settings.getChannelSetting(call.channel, 'delete_response');
         })
         .then((deleteResponseAfterRespond) => {
-          if (parseInt(deleteResponseAfterRespond, 10) && deleteResponse && response.deletable) {
+          if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
             response.delete(10000).catch(() => this.logger.error(`Couldn't delete ${response}`));
           }
         })

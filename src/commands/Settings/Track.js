@@ -18,7 +18,7 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
     this.requiresAuth = true;
   }
 
@@ -28,7 +28,10 @@ class Track extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const unsplitItems = message.strippedContent.replace(`${this.call} `, '');
+    const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave`, 'ig');
+    const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
+
+    const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
     if (!unsplitItems) {
       this.bot.settings.getChannelPrefix(message.channel)
         .then(prefix => this.messageManager
@@ -50,15 +53,38 @@ class Track extends Command {
         .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
       trackables.items = trackables.items
         .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
+
+      const channelParam = message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '');
+      const channel = this.getChannel(channelParam, message);
+
       trackables.events.forEach(event => promises.push(this.bot.settings
-        .trackEventType(message.channel, event)));
+        .trackEventType(channel, event)));
       trackables.items.forEach(item => promises.push(this.bot.settings
-        .trackItem(message.channel, item)));
+        .trackItem(channel, item)));
 
       Promise.each(promises, () => {})
         .then(() => this.messageManager.notifySettingsChange(message, true, true))
         .catch(this.logger.error);
     }
+  }
+
+  /**
+   * Get the list of channels to enable commands in based on the parameters
+   * @param {string|Array<Channel>} channelsParam parameter for determining channels
+   * @param {Message} message Discord message to get information on channels
+   * @returns {Array<string>} channel ids to enable commands in
+   */
+  getChannel(channelsParam, message) {
+    let channel = message.channel;
+    if (typeof channelsParam === 'string') {
+      // handle it for strings
+      if (channelsParam !== 'here') {
+        channel = this.bot.client.channels.get(channelsParam.trim());
+      } else if (channelsParam === 'here') {
+        channel = message.channel;
+      }
+    }
+    return channel;
   }
 }
 

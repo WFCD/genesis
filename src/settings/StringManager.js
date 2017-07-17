@@ -29,7 +29,7 @@ class StringManager {
     return new Promise((resolve, reject) => {
       this.settings.getChannelLanguage(message.channel.id)
         .then((language) => {
-          const lang = language !== null ? language : 'english';
+          const lang = language !== null ? language : 'en_US';
           let resStr = strings.languages[`${lang}`][`${stringId}`];
           if (typeof resStr !== 'undefined') {
             if (message !== null) {
