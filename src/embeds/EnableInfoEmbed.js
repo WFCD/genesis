@@ -24,13 +24,12 @@ class EnableInfoEmbed extends BaseEmbed {
       },
     ];
     if (params[1]) {
-      this.fields.push({ name: 'Channels', value: params[1].length > 0 ? params[1].join('; ') : 'No channels' });
+      this.fields.push({ name: 'Channels', value: params[1].join('; ') || 'No channels' });
     }
     if (params[2]) {
-      this.fields.push({ name: 'User or Role', value: params[2] ? params[2] : 'No user or role' });
+      this.fields.push({ name: 'User or Role', value: params[2].trim() ? params[2] : 'No user or role' });
     }
     this.fields.push({ name: 'Enable', value: enable === 1 ? 'Yes' : 'No' });
-    this.footer.text = 'Data provided by Warframe Community Developers';
   }
 }
 

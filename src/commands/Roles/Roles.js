@@ -30,14 +30,20 @@ class Roles extends Command {
        .then(roles => this.bot.settings.getChannelPrefix(message.channel)
          .then(prefix => ({ roles, prefix })))
        .then(({ roles, prefix }) => {
-         const longest = roles.map(role => role.name)
-          .reduce((a, b) => (a.length > b.length ? a : b));
-         const groupedRoles = createGroupedArray(roles, 24);
-         groupedRoles.forEach((roleGroup) => {
+         if (roles.length > 0) {
+           const longest = roles.map(role => role.name)
+            .reduce((a, b) => (a.length > b.length ? a : b));
+           const groupedRoles = createGroupedArray(roles, 24);
+           groupedRoles.forEach((roleGroup) => {
+             this.messageManager.embed(message,
+              new RolesEmbed(this.bot, roleGroup, prefix, longest.length),
+                true, true);
+           });
+         } else {
            this.messageManager.embed(message,
-            new RolesEmbed(this.bot, roleGroup, prefix, longest.length),
+            new RolesEmbed(this.bot, [], prefix, 0),
               true, true);
-         });
+         }
        })
        .catch(this.logger.error);
   }

@@ -19,7 +19,7 @@ class Enable extends Command {
   run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
-      this.messageManager.embed(message, new EnableUsageEmbed(this.bot), true, false);
+      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, params, 1), true, false);
     } else {
       params.splice(0, 1);
       const commands = this.getCommandsToEnable(params[0]);
@@ -27,7 +27,7 @@ class Enable extends Command {
 
       if (params[1]) {
         channels = this.getChannels(message.mentions.channels.length > 0
-          ? message.mentions.channels : params[1], message);
+          ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
       } else {
         channels = [message.channel];
       }

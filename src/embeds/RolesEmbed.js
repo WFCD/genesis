@@ -25,7 +25,7 @@ class RolesEmbed extends BaseEmbed {
       },
       {
         name: '_ _',
-        value: `**Use the \`${prefix}join\` command to join a role**`,
+        value: roles.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
       },
     ];
   }

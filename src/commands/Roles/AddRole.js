@@ -116,7 +116,7 @@ class AddRole extends Command {
             inline: true,
           },
         ],
-      }, true, false))
+      }, true, true))
       .catch(this.logger.error);
   }
 }

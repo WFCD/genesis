@@ -36,7 +36,6 @@ class EnableUsageEmbed extends BaseEmbed {
     if (params) {
       this.fields.push({ name: 'Provided parameters', value: params.join(' | ') });
     }
-    this.footer.text = 'Data provided by Warframe Community Developers';
   }
 }
 
