@@ -1,6 +1,8 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const rpad = require('right-pad');
+const lpad = require('pad-left');
 
 /**
  * Generates enemy embeds
@@ -21,7 +23,9 @@ class WhatsinEmbed extends BaseEmbed {
     this.fields = [
       {
         name: '_ _',
-        value: details.rewards.map(drop => `\`${drop.name.padEnd(longest.length + 1)} ${drop.intact.value.padStart(6).substring(0,5)}/${drop.exceptional.value.padStart(6).substring(0,5)}/${drop.flawless.value.padStart(6).substring(0,5)}/${drop.radiant.value.padStart(6)}\``).join('\n'),
+        value: details.rewards.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')} ` +
+        `${lpad(drop.intact.value, 6, ' ').substring(0, 5)}/${lpad(drop.exceptional.value, 6, ' ').substring(0, 5)}` +
+        `/${lpad(drop.flawless.value, 6, ' ').substring(0, 5)}/${lpad(drop.radiant.value, 6, ' ')}\``).join('\n'),
       },
     ];
   }
