@@ -35,6 +35,7 @@
     "nexus-stats-api": "0.0.26",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
+    "pad-left": "^2.1.0",
     "ping": "^0.2.1",
     "raven": "^1.2.0",
     "request-promise": "^4.1.1",
