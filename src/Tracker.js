@@ -6,7 +6,6 @@ const carbonToken = process.env.DISCORD_CARBON_TOKEN;
 const botsDiscordPwToken = process.env.DISCORD_BOTS_WEB_TOKEN;
 const botsDiscordPwUser = process.env.DISCORD_BOTS_WEB_USER;
 const updateInterval = process.env.TRACKERS_UPDATE_INTERVAL || 2600000;
-const discordListToken = process.env.DISCORD_LIST_TOKEN;
 const cachetToken = process.env.CACHET_TOKEN;
 const cachetHost = process.env.CACHET_HOST;
 const metricId = process.env.CACHET_BOT_METRIC_ID;
@@ -38,9 +37,6 @@ class Tracker {
     if (botsDiscordPwToken && botsDiscordPwUser) {
       setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), updateInterval);
     }
-    if (discordListToken) {
-      setInterval(() => this.updateDiscordList(this.client.guilds.size), updateInterval);
-    }
     if (cachetToken && cachetHost && metricId) {
       setInterval(() => this.postHeartBeat(), heartBeatTime);
     }
@@ -70,34 +66,9 @@ class Tracker {
             .then((parsedBody) => {
               this.logger.debug(parsedBody);
             })
-            .catch((error) => this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${error.statusCode} | Guilds: ${guildsLen}`));
+            .catch(error => this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${error.statusCode} | Guilds: ${guildsLen}`));
         })
         .catch(this.logger.error);
-    }
-  }
-
-  /**
-   * Updates discordlist.net if the corresponding token is provided
-   * @param   {number}  guildsLen number of guilds that this bot is present on
-   */
-  updateDiscordList(guildsLen) {
-    if (discordListToken) {
-      this.logger.debug('Updating DiscordList');
-      this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
-
-      const requestBody = {
-        url: 'https://bots.discordlist.net/api',
-        body: {
-          token: discordListToken,
-          servers: guildsLen,
-        },
-        json: true,
-      };
-      request(requestBody)
-        .then((parsedBody) => {
-          this.logger.debug(parsedBody);
-        })
-        .catch(error => this.logger.error(`Error updating DiscordList. Token: ${discordListToken} | Error Code: ${error.statusCode}`));
     }
   }
 
@@ -127,7 +98,7 @@ class Tracker {
       .then((parsedBody) => {
         this.logger.debug(parsedBody);
       })
-      .catch(error =>this.logger.error(`Error updating DiscordList. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
+      .catch(error => this.logger.error(`Error updating DiscordList. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
     }
   }
 
@@ -138,7 +109,6 @@ class Tracker {
   updateAll(guildsLen) {
     this.updateCarbonitex(guildsLen);
     this.updateDiscordBotsWeb(guildsLen);
-    this.updateDiscordList(guildsLen);
   }
 
   /**
