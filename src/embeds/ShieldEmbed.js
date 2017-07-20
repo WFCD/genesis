@@ -43,7 +43,7 @@ class ShieldEmbed extends BaseEmbed {
       this.fields[0].name = 'Shield calculation';
       this.fields[0].value = shieldString(calc, currentLevel);
     } else {
-      this.fields[0].value = `${this.bot.prefix}shields (Base Shelds) (Base Level) (Current Level) - calculate shields and stats.`;
+      this.fields[0].value = 'shields (Base Shelds) (Base Level) (Current Level) - calculate shields and stats.';
       this.fields[0].name = 'Possible uses include:';
     }
   }
