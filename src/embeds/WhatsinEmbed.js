@@ -2,6 +2,7 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 const rpad = require('right-pad');
+const lpad = require('pad-left');
 
 /**
  * Generates enemy embeds
@@ -13,32 +14,18 @@ class WhatsinEmbed extends BaseEmbed {
    */
   constructor(bot, details) {
     super();
-    const longest = details.rewards.intact.map(drop => drop.name)
+    const longest = details.rewards.map(drop => drop.name)
      .reduce((a, b) => (a.length > b.length ? a : b));
 
-    this.title = `${details.tier} ${details.type} Intact`;
+    this.title = `${details.tier} ${details.type}`;
     this.color = 0x3498db;
     this.type = 'rich';
     this.fields = [
       {
-        name: 'Intact',
-        value: details.rewards.intact.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')}- ${drop.rarity.name} @ ${drop.rarity.value}\``).join('\n'),
-        inline: true,
-      },
-      {
-        name: 'Radiant',
-        value: details.rewards.radiant.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')}- ${drop.rarity.name} @ ${drop.rarity.value}\``).join('\n'),
-        inline: true,
-      },
-      {
-        name: 'Exceptional',
-        value: details.rewards.exceptional.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')}- ${drop.rarity.name} @ ${drop.rarity.value}\``).join('\n'),
-        inline: true,
-      },
-      {
-        name: 'Flawless',
-        value: details.rewards.flawless.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')}- ${drop.rarity.name} @ ${drop.rarity.value}\``).join('\n'),
-        inline: true,
+        name: '_ _',
+        value: details.rewards.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')} ` +
+        `${lpad(drop.intact.value, 6, ' ').substring(0, 5)}/${lpad(drop.exceptional.value, 6, ' ').substring(0, 5)}` +
+        `/${lpad(drop.flawless.value, 6, ' ').substring(0, 5)}/${lpad(drop.radiant.value, 6, ' ')}\``).join('\n'),
       },
     ];
   }
