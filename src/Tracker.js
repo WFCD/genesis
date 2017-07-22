@@ -98,7 +98,7 @@ class Tracker {
       .then((parsedBody) => {
         this.logger.debug(parsedBody);
       })
-      .catch(error => this.logger.error(`Error updating DiscordList. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
+      .catch(error => this.logger.error(`Error updating Bots.Discord.pw. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
     }
   }
 
