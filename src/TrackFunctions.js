@@ -65,12 +65,12 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: '**Events:**',
-        value: `${eventTypes.concat(['all', 'events', 'fissures', 'syndicates', 'conclave']).join('\n')}`,
+        value: `${eventTypes.concat(['all', 'events', 'fissures', 'syndicates', 'conclave', 'deals']).join('\n')}`,
         inline: true,
       },
       {
         name: '**Rewards:**',
-        value: `${rewardTypes.join('\n')}\nall\nitems`,
+        value: `${rewardTypes.concat(['all', 'items', 'clantech']).join('\n')}`,
         inline: true,
       },
     ],

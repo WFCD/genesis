@@ -18,7 +18,7 @@ class Untrack extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals)*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
     this.requiresAuth = true;
   }
 
@@ -28,7 +28,7 @@ class Untrack extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave`, 'ig');
+    const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals`, 'ig');
     const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
 
     const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
