@@ -43,6 +43,8 @@ class Database {
       delete_response: true,
       createPrivateChannel: false,
       deleteExpired: false,
+      allowCustom: false,
+      allowInline: false,
     };
   }
 

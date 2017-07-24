@@ -26,7 +26,12 @@ const Notifier = require('./notifications/Notifier.js');
  * @property {string} codeBlock    - String for denoting multi-line code blocks
  */
 
-
+/**
+ * Check if private rooms have expired and are empty. If not, do nothing.
+ * If so, delete the corresponding channels.
+ * @param  {Genesis} self    Bot instance
+ * @param  {number} shardId shard identifier
+ */
 function checkPrivateRooms(self, shardId) {
   self.logger.debug(`Checking private rooms... Shard ${shardId}`);
   self.settings.getPrivateRooms()
@@ -73,9 +78,12 @@ class Genesis {
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
+   * @param  {WarframeNexusQuery} [options.nexusQuerier] API for querying nexus-stats' warframe api
+   * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
    */
   constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
-                                     mdConfig = md, owner = null, nexusQuerier = {} } = {}) {
+                                     mdConfig = md, owner = null, nexusQuerier = {},
+                                     caches = {} } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -100,6 +108,8 @@ class Genesis {
      * @private
      */
     this.token = discordToken;
+
+    this.caches = caches;
 
     this.channelTimeout = 300000;
 
