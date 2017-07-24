@@ -7,6 +7,7 @@ const fissures = ['fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4'];
 const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian'];
 const conclave = ['conclave.weeklies', 'conclave.dailies'];
 const deals = ['deals.featured', 'deals.popular'];
+const clantech = ['mutagen', 'fieldron', 'detonite'];
 
 function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
@@ -35,6 +36,8 @@ function trackablesFromParameters(paramString) {
         trackables.events = trackables.events.concat(conclave);
       } else if (i === 'deals') {
         trackables.events = trackables.events.concat(deals);
+      } else if (i === 'clantech') {
+        trackables.items = trackables.items.concat(clantech);
       } else if (rewardTypes.includes(item.trim())) {
         trackables.items.push(item.trim());
       } else if (eventTypes.includes(item.trim())) {

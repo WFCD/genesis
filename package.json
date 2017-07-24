@@ -43,7 +43,8 @@
     "sql-template-strings": "^2.2.2",
     "warframe-location-query": "^0.0.3",
     "warframe-nexus-query": "^1.1.0",
-    "warframe-worldstate-parser": "^1.7.6"
+    "warframe-worldstate-parser": "^1.7.6",
+    "warframe-worldstate-data": "git://github.com/wfcd/warframe-worldstate-data.git"
   },
   "devDependencies": {
     "chai": "^3.5.0",
