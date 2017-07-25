@@ -14,12 +14,11 @@ class SimarisEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'https://github.com/aliasfalse/genesis/raw/master/src/resources/simaris.png',
+      url: 'http://i.imgur.com/mRKOHyv.png',
     };
     this.title = 'Worldstate - Sanctuary';
-    this.description = 'Current Sanctuary status:';
     this.color = simaris.isTargetActive > 2 ? 0x00ff00 : 0xff0000;
-    this.fields = [{ name: simaris.toString(), value: '_ _' }];
+    this.fields = [{ name: simaris.asString, value: '_ _' }];
   }
 }
 

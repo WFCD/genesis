@@ -14,15 +14,16 @@ class EnemyEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'http://i.imgur.com/KDMV660.png',
+      url: 'http://i.imgur.com/pMRt2Cp.png',
     };
-    this.title = 'Worldstate - Enemies';
-    this.description = 'Currently discovered enemies:';
+    this.title = 'Acolytes';
     if (enemies.length > 1) {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
       this.fields = enemies.map(e => ({
         name: e.agentType,
-        value: `Last discovered at ${e.lastDiscoveredAt}.\nIt has ${(100 * Number(e.healthPercent)).toFixed(2)}% health remaining and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
+        value: `Last discovered at ${e.lastDiscoveredAt}.\n` +
+          `It has ${(100 * Number(e.healthPercent)).toFixed(2)}% health remaining ` +
+          `and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
       }));
     } else if (enemies.length === 1) {
       const e = enemies[0];

@@ -22,9 +22,9 @@ class Alerts extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
-        const alerts = ws.alerts.filter(a => !a.getExpired());
+        const alerts = ws.alerts.filter(a => !a.expired);
         this.messageManager.embed(message, new AlertEmbed(this.bot, alerts), true, false);
       })
       .catch(this.logger.error);

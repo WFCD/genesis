@@ -23,9 +23,9 @@ class PrimeAccess extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
-        const news = ws.news.filter(n => n.isPrimeAccess());
+        const news = ws.news.filter(n => n.primeAccess);
         this.messageManager.embed(message, new PrimeAccessEmbed(this.bot, news, 'primeaccess'), true, false);
       })
       .catch(this.logger.error);

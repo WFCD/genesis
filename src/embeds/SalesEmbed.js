@@ -14,17 +14,15 @@ class SalesEmbed extends BaseEmbed {
     super();
 
     this.color = 0x0000ff;
-    this.title = `Worldstate - ${sales[0].isPopular ? 'Popular Sales' : 'Featured Deal'}`;
-    this.url = 'https://warframe.com';
-    this.description = 'Today\'s Darvo deal';
+    this.title = sales[0].isPopular ? 'Popular Sales' : 'Featured Deal';
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/darvo.png',
+      url: 'http://i.imgur.com/i9IXX7P.png',
     };
     this.fields = [];
     sales.forEach((sale) => {
       this.fields.push({
         name: `${sale.item}, ${sale.premiumOverride}p ${sale.discount > 0 ? `${sale.discount}% off` : ''}`,
-        value: `Expires in ${sale.getETAString()}`,
+        value: `Expires in ${sale.eta}`,
       });
     });
   }

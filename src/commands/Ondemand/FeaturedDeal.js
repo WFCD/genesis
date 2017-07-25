@@ -23,7 +23,7 @@ class FeaturedDeal extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
         this.messageManager.embed(message,

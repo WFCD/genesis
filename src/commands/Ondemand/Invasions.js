@@ -17,12 +17,12 @@ class Invasions extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Message} message Messdsage with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const invasions = ws.invasions.filter(i => !i.completed);
         this.messageManager.embed(message,

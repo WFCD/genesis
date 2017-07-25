@@ -15,17 +15,16 @@ class FissureEmbed extends BaseEmbed {
 
     if (fissures.length < 2) {
       this.title = 'Worldstate - Void Fissures';
-      this.description = 'Current Void Fissures';
     }
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/Warframe-Community-Developers/genesis/master/src/resources/voidFissure.png',
+      url: 'http://i.imgur.com/EfIRu6v.png',
     };
     if (fissures.length > 1) {
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
       this.fields = fissures.map(f => ({
         name: `${f.missionType} ${f.tier}`,
-        value: `[${f.getETAString()}] ${f.node} against ${f.enemy}`,
+        value: `[${f.eta}] ${f.node} against ${f.enemy}`,
       }));
     } else if (fissures.length === 0) {
       this.fields = {
@@ -36,7 +35,7 @@ class FissureEmbed extends BaseEmbed {
       const f = fissures[0];
       this.title = `${f.missionType} ${f.tier}`;
       this.description = `${f.node} against ${f.enemy}`;
-      this.footer.text = `${f.getETAString()} remaining | ${new Date().toLocaleString()}`;
+      this.footer.text = `${f.eta} remaining | ${new Date().toLocaleString()}`;
       this.thumbnail.url = 'https://i.imgur.com/EfIRu6v.png';
     }
 

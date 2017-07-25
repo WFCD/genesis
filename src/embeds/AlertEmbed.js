@@ -19,7 +19,7 @@ class AlertEmbed extends BaseEmbed {
     this.color = 0xF1C40F;
     if (alerts.length > 1) {
       this.fields = alerts.map(a => ({
-        name: `${a.getReward().toString().replace(/^1\s/, '')} - ${a.getETAString()} left`,
+        name: `${a.mission.reward.asString} - ${a.eta} left`,
         value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n` +
         `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`,
       }));
@@ -27,14 +27,11 @@ class AlertEmbed extends BaseEmbed {
       this.description = 'Currently in-progress alerts:';
     } else {
       const a = alerts[0];
-      const item = a.getReward().toString().replace(/\s*\+\s*\d*cr/ig, '').replace(/^1\s/, '');
-      this.title = item === '' ? a.getReward().replace(/^1\s/, '') : item;
-      if (a.getReward().getTypesFull()[0].color) {
-        this.color = a.getReward().getTypesFull()[0].color;
-      }
-      this.thumbnail.url = a.getReward().getTypesFull()[0].thumbnail;
+      this.title = a.mission.reward.itemString;
+      this.color = a.mission.reward.color;
+      this.thumbnail.url = a.mission.reward.thumbnail;
       const summary = `${a.mission.faction} ${a.mission.type} on ${a.mission.node}`;
-      this.description = a.getDescription() && a.getDescription() !== '' ? a.getDescription() : summary;
+      this.description = a.description || summary;
       this.fields = [];
       if (this.description !== summary) {
         this.fields.push({ name: '_ _', value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}` });
@@ -43,9 +40,9 @@ class AlertEmbed extends BaseEmbed {
       this.fields.push({ name: 'Archwing Required', value: a.mission.archwingRequired ? 'Yes' : 'No', inline: true });
 
       if (this.title.indexOf('cr') === -1) {
-        this.fields.push({ name: '_ _', value: `**Credits:** ${a.getReward().credits}cr`, inline: true });
+        this.fields.push({ name: '_ _', value: `**Credits:** ${a.mission.reward.credits}cr`, inline: true });
       }
-      this.footer.text = `${a.getETAString()} remaining | ${new Date().toLocaleString()}`;
+      this.footer.text = `${a.eta} remaining | ${new Date().toLocaleString()}`;
     }
   }
 }

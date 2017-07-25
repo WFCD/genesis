@@ -22,9 +22,9 @@ class Updates extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
-        const news = ws.news.filter(n => n.isUpdate());
+        const news = ws.news.filter(n => n.update);
         this.messageManager.embed(message, new UpdateEmbed(this.bot, news, 'update'), true, false);
       })
       .catch(this.logger.error);

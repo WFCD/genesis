@@ -22,7 +22,7 @@ class Darvo extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const deal = ws.dailyDeals[0];
         this.messageManager.embed(message, new DarvoEmbed(this.bot, deal), true, false);
