@@ -19,6 +19,7 @@ class VoidTraderEmbed extends BaseEmbed {
       this.fields = voidTrader.inventory.map(i => ({
         name: i.item,
         value: `${i.ducats} ducats + ${i.credits}cr`,
+        inline: true,
       }));
     } else {
       this.fields = [];
@@ -28,7 +29,6 @@ class VoidTraderEmbed extends BaseEmbed {
       value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` || 'Data Pending',
     });
     this.title = 'Worldstate - Void Trader';
-    this.description = 'Current Void Trader status';
     this.thumbnail = {
       url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/voidtrader.png',
     };
