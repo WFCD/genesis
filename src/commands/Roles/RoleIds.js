@@ -27,7 +27,15 @@ class Roles extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const roles = message.guild.roles.array().sort((a, b) => { a.localeCompare(b) });
+    const roles = message.guild.roles.array().sort((a, b) => { 
+      if (a < b) {
+        return -1;
+      } else if (b > a) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
     const longest = roles.map(role => role.name)
      .reduce((a, b) => (a.length > b.length ? a : b));
     const roleGroups = createGroupedArray(roles.map(role => `\`${rpad(role.name, longest.length, ' ')} ${role.id}\``), 20);
