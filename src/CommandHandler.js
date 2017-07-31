@@ -22,6 +22,13 @@ class CommandHandler {
      * @private
      */
     this.commands = [];
+
+    /**
+     * Array of custom comamnd objects that can be called
+     * @type {Array<Command>}
+     * @private
+     */
+    this.customCommands = [];
   }
 
   /**
@@ -65,6 +72,11 @@ class CommandHandler {
       }
     })
       .filter(c => c !== null);
+
+    this.bot.settings.getCustomCommands()
+      .then((customCommands) => {
+        this.customCommands = customCommands;
+      });
   }
 
   /**
@@ -77,8 +89,8 @@ class CommandHandler {
           message.guild.members.get(this.bot.client.user.id).displayName :
           this.bot.client.user.username}`;
     const botPingId = `<@${this.bot.client.user.id}>`;
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then((prefix) => {
+    this.bot.settings.getCommandContext(message.channel)
+      .then(({ prefix, allowCustom, allowInline }) => {
         if (!content.startsWith(prefix)
             && !content.startsWith(botping)
             && !content.startsWith(botPingId)) {
@@ -96,9 +108,9 @@ class CommandHandler {
         const messageWithStrippedContent = message;
         messageWithStrippedContent.strippedContent = content;
         this.logger.debug(`Handling \`${content}\``);
-        this.commands.forEach((command) => {
+        this.commands.concat(this.customCommands).forEach((command) => {
           if (command.regex.test(content)) {
-            this.checkCanAct(command, messageWithStrippedContent)
+            this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline)
             .then((canAct) => {
               if (canAct) {
                 this.logger.debug(`Matched ${command.id}`);
@@ -120,11 +132,15 @@ class CommandHandler {
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
    * @param   {Message} message Discord message object
-   * @returns {boolean} Whether or not the ucrrent command can be called by the author
+   * @param   {boolean} allowCustom Whether or not to allow custom commands
+   * @param   {boolean} allowInline Whether or not to allow inline commands
+   * @returns {Promise<boolean>} Whether or not the ucrrent command can be called by the author
    */
-  checkCanAct(command, message) {
+  checkCanAct(command, message, allowCustom, allowInline) {
     return new Promise((resolve) => {
-      if (command.ownerOnly && message.author.id !== this.bot.owner) {
+      if (command.isCustomCommand && allowCustom) {
+        resolve(command.inline ? allowInline : true);
+      } else if (command.ownerOnly && message.author.id !== this.bot.owner) {
         resolve(false);
       } else if (message.channel.type === 'text') {
         if (command.requiresAuth) {
