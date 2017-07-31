@@ -27,9 +27,10 @@ class Roles extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const longest = message.guild.roles.map(role => role.name)
+    const roles = message.guild.roles.array().sort((a, b) => { a.localeCompare(b) });
+    const longest = roles.map(role => role.name)
      .reduce((a, b) => (a.length > b.length ? a : b));
-    const roleGroups = createGroupedArray(message.guild.roles.map(role => `\`${rpad(role.name, longest.length, ' ')} ${role.id}\``), 20);
+    const roleGroups = createGroupedArray(roles.map(role => `\`${rpad(role.name, longest.length, ' ')} ${role.id}\``), 20);
     this.messageManager.embed(message,
       {
         fields: roleGroups.map(roleGroup => ({
