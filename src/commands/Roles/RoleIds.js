@@ -30,7 +30,7 @@ class Roles extends Command {
     const roles = message.guild.roles.array().sort((a, b) => { 
       if (a < b) {
         return -1;
-      } else if (b > a) {
+      } else if (a > b) {
         return 1;
       } else {
         return 0;
