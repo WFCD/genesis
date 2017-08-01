@@ -924,13 +924,15 @@ class Database {
   }
 
   addCustomCommand(message, call, response) {
-    const query = SQL`INSERT INTO custom_commands (guild_id, command, response, creator_id)
-      VALUES (${message.guild.id},${call},${response},${message.author.id})`;
+    const id = `${call}${message.guild.id}`;
+    const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
+      VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
     return this.db.query(query);
   }
 
   deleteCustomCommand(message, call) {
-    const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${message.guild.id} and command = ${call}`;
+    const id = `${call}${message.guild.id}`;
+    const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
     return this.db.query(query);
   }
 }

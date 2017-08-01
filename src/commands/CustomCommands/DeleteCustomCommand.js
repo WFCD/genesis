@@ -23,7 +23,7 @@ class DeleteCustomCommand extends Command {
     } else {
       this.bot.settings.deleteCustomCommand(message, params[1])
         .then(() => {
-          this.commandHandler.loadCommands();
+          this.commandHandler.loadCustomCommands();
           this.messageManager.notifySettingsChange(message, true, true);
         });
     }

@@ -7,17 +7,16 @@ const Command = require('./Command.js');
  */
 class CustomCommand extends Command {
   /**
-   * Base class for custom bot commands
+   * Base class for inline bot commands
    * @param {Genesis} bot  The bot object
+   * @param {string}  id   The command's unique id
    * @param {string}  call The string that invokes this command
-   * @param {string}  response What the responds to the command
-   * @param {string} guildId Guild id for the guild it was created in
+   * @param {string}  description A description for this command
    */
-  constructor(bot, call, response, guildId) {
-    super(bot, `custom.${call}`, call, `A cusom command responding ${response} to ${call}`);
-    this.isCustomCommand = true;
-    this.response = response;
-    this.guildId = guildId;
+  constructor(bot, id, call, description) {
+    super(bot, `inline.${id}`, call, description);
+    this.regex = /test/ig;
+    this.isInline = true;
   }
 
   /**
@@ -26,7 +25,7 @@ class CustomCommand extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    this.messageManager.reply(message, this.response);
+    this.messageManager.reply(message, 'An inline command');
   }
 }
 

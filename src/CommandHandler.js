@@ -55,7 +55,7 @@ class CommandHandler {
 
     this.logger.debug(`Loading commands: ${files}`);
 
-    this.commands = files.map((f) => {
+    const commands = files.map((f) => {
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Cmd = require(path.join(commandDir, f));
@@ -71,8 +71,16 @@ class CommandHandler {
         return null;
       }
     })
-      .filter(c => c !== null);
+    .filter(c => c !== null);
 
+    this.commands = commands.filter(c => !c.isInline);
+
+    this.inlineCommands = commands.filter(c => c.isInline);
+
+    this.loadCustomCommands();
+  }
+
+  loadCustomCommands() {
     this.bot.settings.getCustomCommands()
       .then((customCommands) => {
         this.customCommands = customCommands;
@@ -91,11 +99,19 @@ class CommandHandler {
     const botPingId = `<@${this.bot.client.user.id}>`;
     this.bot.settings.getCommandContext(message.channel)
       .then(({ prefix, allowCustom, allowInline }) => {
-        if (!content.startsWith(prefix)
-            && !content.startsWith(botping)
-            && !content.startsWith(botPingId)) {
-          return;
+        let checkOnlyInlines = false;
+        const notStartWithPrefix = !content.startsWith(prefix)
+          && !content.startsWith(botping) && !content.startsWith(botPingId);
+        if (notStartWithPrefix && (allowInline && this.inlineCommands.length > 0)) {
+          if (allowInline && this.inlineCommands.length > 0) {
+            checkOnlyInlines = true;
+          } else {
+            return;
+          }
         }
+
+        const commands = checkOnlyInlines ? this.inlineCommands :
+          this.commands.concat(this.customCommands).concat(this.inlineCommands);
         if (content.startsWith(prefix)) {
           content = content.replace(prefix, '');
         }
@@ -108,22 +124,25 @@ class CommandHandler {
         const messageWithStrippedContent = message;
         messageWithStrippedContent.strippedContent = content;
         this.logger.debug(`Handling \`${content}\``);
-        this.commands.concat(this.customCommands).forEach((command) => {
-          if (command.regex.test(content)) {
-            this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline)
+        let done = false;
+        commands
+          .forEach((command) => {
+            if (command.regex.test(content) && !done) {
+              this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline)
             .then((canAct) => {
               if (canAct) {
                 this.logger.debug(`Matched ${command.id}`);
-                if (message.channel.type === 'dm' ||
+                if ((message.channel.type === 'dm' ||
                   (message.channel.permissionsFor(this.bot.client.user.id)
-                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) {
+                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline) {
                   message.react('✅').catch(this.logger.error);
                 }
                 command.run(messageWithStrippedContent);
+                done = true;
               }
             });
-          }
-        });
+            }
+          });
       })
       .catch(this.logger.error);
   }
@@ -139,7 +158,9 @@ class CommandHandler {
   checkCanAct(command, message, allowCustom, allowInline) {
     return new Promise((resolve) => {
       if (command.isCustomCommand && allowCustom) {
-        resolve(command.inline ? allowInline : true);
+        resolve(command.isInline ? allowInline : true);
+      } else if (command.isInline && allowInline) {
+        resolve(true);
       } else if (command.ownerOnly && message.author.id !== this.bot.owner) {
         resolve(false);
       } else if (message.channel.type === 'text') {

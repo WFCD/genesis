@@ -18,12 +18,17 @@ class AddCustomCommand extends Command {
     if (!params[1] || !params[2]) {
       this.messageManager.embed(message, {
         title: 'Adding Custom Commands',
-        fields: [{ name: '_ _', value: `**${this.call}**\n**command call**: command trigger\n**comamnd response**: response to the trigger` }],
+        fields: [{
+          name: '_ _',
+          value: `**${this.call}**\n` +
+            '**command call**: command trigger\n' +
+            '**comamnd response**: response to the trigger',
+        }],
       }, true, false);
     } else {
       this.bot.settings.addCustomCommand(message, params[1], params[2])
         .then(() => {
-          this.commandHandler.loadCommands();
+          this.commandHandler.loadCustomCommands();
           this.messageManager.notifySettingsChange(message, true, true);
         });
     }
