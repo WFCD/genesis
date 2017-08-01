@@ -908,7 +908,7 @@ class Database {
     return this.getChannelSetting(channel, 'prefix')
       .then(prefix => this.getChannelSetting(channel, 'allowCustom')
           .then(allowCustom => this.getChannelSetting(channel, 'allowInline')
-              .then(allowInline => ({ prefix, allowCustom, allowInline }))));
+              .then(allowInline => ({ prefix, allowCustom: allowCustom === '1', allowInline: allowInline === '1' }))));
   }
 
   getCustomCommands() {

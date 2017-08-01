@@ -102,7 +102,7 @@ class CommandHandler {
         let checkOnlyInlines = false;
         const notStartWithPrefix = !content.startsWith(prefix)
           && !content.startsWith(botping) && !content.startsWith(botPingId);
-        if (notStartWithPrefix && (allowInline && this.inlineCommands.length > 0)) {
+        if (notStartWithPrefix) {
           if (allowInline && this.inlineCommands.length > 0) {
             checkOnlyInlines = true;
           } else {
@@ -110,8 +110,15 @@ class CommandHandler {
           }
         }
 
-        const commands = checkOnlyInlines ? this.inlineCommands :
-          this.commands.concat(this.customCommands).concat(this.inlineCommands);
+        let commands = [];
+        if (checkOnlyInlines) {
+          commands = this.inlineCommands;
+        } else if (allowCustom) {
+          commands = this.commands.concat(this.customCommands);
+        } else {
+          commands = this.commands;
+        }
+
         if (content.startsWith(prefix)) {
           content = content.replace(prefix, '');
         }
