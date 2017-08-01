@@ -78,6 +78,7 @@ class BugReport extends Command {
           },
           title: `Bug Report | ${message.author}`,
           fields: [{ name: '_ _', value: 'Need to provide a bug report, see `/help` for syntax.' }],
+          footer: { text: 'Add Tobiah#8452 as a friend so he can respond to your bug report' },
         };
         this.messageManager.embed(message, embed, true, false);
       }
