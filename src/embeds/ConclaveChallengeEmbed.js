@@ -21,9 +21,9 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     if (categoryInValues) {
       this.fields = challenges.filter(
         c => (c.category === category.toLowerCase() || category.toLowerCase() === 'all') &&
-        !c.isRootChallenge()).map(c => ({
+        !c.rootChallenge).map(c => ({
           name: c.mode,
-          value: `${c.description} expires in ${c.getEndString()}`,
+          value: `${c.description} expires in ${c.endString}`,
         }));
     } else {
       this.fields = [{
@@ -34,7 +34,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     this.title = 'Worldstate - Conclave Challenges';
     this.description = `Current Challenges for category: ${category || 'none'}`;
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/conclave.png',
+      url: 'http://i.imgur.com/KDzKPYA.png',
     };
   }
 }

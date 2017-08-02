@@ -58,6 +58,14 @@ class Settings extends Command {
         })
         .then((deleteExpired) => {
           settings.push({ name: 'Deleted Expired Notifications (not all)', value: deleteExpired === '1' ? 'yes' : 'no', inline: true });
+          return this.bot.settings.getChannelSetting(channel, 'allowInline');
+        })
+        .then((allowInline) => {
+          settings.push({ name: 'Allow Inline Commands', value: allowInline === '1' ? 'yes' : 'no', inline: true });
+          return this.bot.settings.getChannelSetting(channel, 'allowInline');
+        })
+        .then((allowCustom) => {
+          settings.push({ name: 'Allow Custom Commands', value: allowCustom === '1' ? 'yes' : 'no', inline: true });
           const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
           lastIndex += 1;
           this.messageManager.embed(message, embed, false, false);

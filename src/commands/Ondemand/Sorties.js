@@ -26,10 +26,10 @@ class Sorties extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const sortie = ws.sortie;
-        if (sortie.isExpired()) {
+        if (sortie.expired) {
           this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
         }
         const embed = new SortieEmbed(this.bot, sortie);

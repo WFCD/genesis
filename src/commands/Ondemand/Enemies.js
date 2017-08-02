@@ -22,7 +22,7 @@ class Enemies extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const persistentEnemies = ws.persistentEnemies;
         this.messageManager.embed(message,

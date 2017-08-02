@@ -13,9 +13,9 @@ class VoidTraderEmbed extends BaseEmbed {
   constructor(bot, voidTrader) {
     super();
 
-    this.color = voidTrader.isActive() ? 0x0EC9FF : 0xff6961;
+    this.color = voidTrader.active ? 0x0EC9FF : 0xff6961;
 
-    if (voidTrader.isActive() || voidTrader.inventory.length > 0) {
+    if (voidTrader.active || voidTrader.inventory.length > 0) {
       this.fields = voidTrader.inventory.map(i => ({
         name: i.item,
         value: `${i.ducats} ducats + ${i.credits}cr`,
@@ -25,12 +25,12 @@ class VoidTraderEmbed extends BaseEmbed {
       this.fields = [];
     }
     this.fields.push({
-      name: `Time until ${voidTrader.isActive() ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
-      value: `${voidTrader.isActive() ? voidTrader.getEndString() : voidTrader.getStartString()}` || 'Data Pending',
+      name: `Time until ${voidTrader.active ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
+      value: `${voidTrader.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
     });
     this.title = 'Worldstate - Void Trader';
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/voidtrader.png',
+      url: 'http://i.imgur.com/z0wU29P.png',
     };
   }
 }

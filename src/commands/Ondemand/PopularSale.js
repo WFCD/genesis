@@ -6,7 +6,7 @@ const SalesEmbed = require('../../embeds/SalesEmbed.js');
 /**
  * Displays current popular sales
  */
-class PopularSale extends Command {
+class PopularDeal extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -23,7 +23,7 @@ class PopularSale extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
         this.messageManager.embed(message, new SalesEmbed(this.bot, sales), true, false);
@@ -32,4 +32,4 @@ class PopularSale extends Command {
   }
 }
 
-module.exports = PopularSale;
+module.exports = PopularDeal;

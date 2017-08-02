@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/aliasfalse/genesis.git"
+    "url": "http://github.com/wfcd/genesis.git"
   },
   "bugs": {
-    "url": "http://github.com/aliasfalse/genesis/issues"
+    "url": "http://github.com/wfcd/genesis/issues"
   },
-  "homepage": "http://github.com/aliasfalse/genesis#readme",
+  "homepage": "http://genesis.warframestat.us",
   "keywords": [
     "warframe",
     "genesis",
@@ -42,9 +42,7 @@
     "right-pad": "^1.0.1",
     "sql-template-strings": "^2.2.2",
     "warframe-location-query": "^0.0.3",
-    "warframe-nexus-query": "^1.1.0",
-    "warframe-worldstate-parser": "^1.7.6",
-    "warframe-worldstate-data": "git://github.com/wfcd/warframe-worldstate-data.git"
+    "warframe-nexus-query": "^1.2.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

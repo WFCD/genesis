@@ -24,7 +24,8 @@ class SyndicateEmbed extends BaseEmbed {
         .map(m => (
           {
             name: m.syndicate,
-            value: `${m.nodes.join('\n')}\n\nExpires in ${m.getETAString()}`,
+            value: `${m.nodes.join('\n')}\n\nExpires in ${m.eta}`,
+            inline: true,
           }));
     } else {
       this.color = 0xff0000;

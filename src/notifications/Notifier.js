@@ -20,12 +20,12 @@ const warframe = new Wikia('warframe');
 
 /**
  * Returns the number of milliseconds between now and a given date
- * @param   {Date} d         The date from which the current time will be subtracted
+ * @param   {string} d         The date from which the current time will be subtracted
  * @param   {function} [now] A function that returns the current UNIX time in milliseconds
  * @returns {number}
  */
 function fromNow(d, now = Date.now) {
-  return d.getTime() - now();
+  return new Date(d).getTime() - now();
 }
 
 /**
@@ -64,31 +64,31 @@ class Notifier {
       const acolytesToNotify = newData.persistentEnemies
         .filter(e => !ids.includes(e.id) && e.isDiscovered);
       const alertsToNotify = newData.alerts
-        .filter(a => !ids.includes(a.id) && a.getRewardTypes().length && !a.getExpired());
-      const baroToNotify = newData.voidTrader && !ids.includes(`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`) ?
+        .filter(a => !ids.includes(a.id) && a.rewardTypes.length && !a.expired);
+      const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
         newData.voidTrader : undefined;
       const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
-        !ids.includes(cc.id) && !cc.isExpired() && !cc.isRootChallenge());
+        !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
       const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
       const eventsToNotify = newData.events
-        .filter(e => !ids.includes(e.id) && !e.getExpired());
+        .filter(e => !ids.includes(e.id) && !e.expired);
       const invasionsToNotify = newData.invasions
-        .filter(i => !ids.includes(i.id) && i.getRewardTypes().length);
+        .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
       const featuredDealsToNotify = newData.flashSales
         .filter(d => !ids.includes(d.id) && d.isFeatured);
       const fissuresToNotify = newData.fissures
-        .filter(f => !ids.includes(f.id) && !f.getExpired());
+        .filter(f => !ids.includes(f.id) && !f.expired);
       const newsToNotify = newData.news
-        .filter(n => !ids.includes(n.id) && !n.isPrimeAccess() && !n.isUpdate());
+        .filter(n => !ids.includes(n.id) && !n.primeAccess && !n.update);
       const popularDealsToNotify = newData.flashSales
         .filter(d => !ids.includes(d.id) && d.isPopular);
       const primeAccessToNotify = newData.news
-          .filter(n => !ids.includes(n.id) && n.isPrimeAccess());
+          .filter(n => !ids.includes(n.id) && n.primeAccess);
       const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
-        && !newData.sortie.isExpired() ? newData.sortie : undefined;
+        && !newData.sortie.expired ? newData.sortie : undefined;
       const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
       const updatesToNotify = newData.news
-        .filter(n => !ids.includes(n.id) && n.isUpdate());
+        .filter(n => !ids.includes(n.id) && n.update);
       // Concat all notified ids
       notifiedIds = notifiedIds
                     .concat(newData.alerts.map(a => a.id))
@@ -209,19 +209,19 @@ class Notifier {
     return Promise.map(newAlerts, (a) => {
       const embed = new AlertEmbed(this.bot, [a]);
       return warframe.getSearchList({
-        query: a.getReward().toString().replace(/\s*\+\s*\d*cr/ig, '').replace(/^1\s/, ''),
+        query: a.mission.reward.itemString,
         limit: 1,
       }).then(articles => warframe.getArticleDetails({
         ids: articles.items.map(i => i.id),
       })).then((details) => {
         const item = Object.values(details.items)[0];
         const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-        if (thumb && !a.getRewardTypes().includes('reactor') && !a.getRewardTypes().includes('catalyst')) {
+        if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'alerts', a.getRewardTypes(), fromNow(a.expiry));
+        return this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
       })
-      .catch(() => this.broadcast(embed, platform, 'alerts', a.getRewardTypes(), fromNow(a.expiry)));
+      .catch(() => this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry)));
     });
   }
 
@@ -278,19 +278,19 @@ class Notifier {
     return Promise.map(newInvasions, (invasion) => {
       const embed = new InvasionEmbed(this.bot, [invasion]);
       return warframe.getSearchList({
-        query: invasion.attackerReward.toString().replace(/\s*\+\s*\d*cr/ig, '').replace(/^1\s/, ''),
+        query: invasion.attackerReward.itemString,
         limit: 1,
       }).then(articles => warframe.getArticleDetails({
         ids: articles.items.map(i => i.id),
       })).then((details) => {
         const item = Object.values(details.items)[0];
         const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-        if (thumb && !invasion.getRewardTypes().includes('reactor') && !invasion.getRewardTypes().includes('catalyst')) {
+        if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes(), 86400000);
+        return this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
       })
-      .catch(() => this.broadcast(embed, platform, 'invasions', invasion.getRewardTypes(), 86400000));
+      .catch(() => this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000));
     });
   }
 

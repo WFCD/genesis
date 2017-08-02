@@ -80,4 +80,13 @@ module.exports = [
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (guild_id, text_id, voice_id)
   );`,
+  `CREATE TABLE IF NOT EXISTS custom_commands (
+    command_id VARCHAR(255) NOT NULL,
+    guild_id BIGINT UNSIGNED NOT NULL,
+    command VARCHAR(20) NOT NULL,
+    response VARCHAR(255) NOT NULL,
+    creator_id BIGINT UNSIGNED NOT NULL,
+    creation_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (command_id)
+  );`,
 ];

@@ -14,6 +14,8 @@ const Raven = require('raven');
  */
 const Genesis = require('./src/bot.js');
 
+const Cache = require('json-fetch-cache');
+
 /**
  * Raven client instance for logging errors and debugging events
  */
@@ -42,9 +44,26 @@ client.on('error', (error) => {
 
 const logger = new Logger(client);
 
+const NexusFetcher = require('nexus-stats-api');
+
+const nexusOptions = {
+  user_key: process.env.NEXUSSTATS_USER_KEY || undefined,
+  user_secret: process.env.NEXUSSTATS_USER_SECRET || undefined,
+  ignore_limiter: true,
+};
+
+const nexusFetcher = new NexusFetcher(nexusOptions.nexusKey
+    && nexusOptions.nexusSecret ? nexusOptions : {});
+
 const Nexus = require('warframe-nexus-query');
 
-const nexusQuerier = new Nexus();
+const nexusQuerier = new Nexus(nexusFetcher);
+
+const caches = {
+  pc: new Cache('https://ws.warframestat.us/pc', 600000),
+  xb1: new Cache('https://ws.warframestat.us/xb1', 600000),
+  ps4: new Cache('https://ws.warframestat.us/ps4', 600000),
+};
 
 if (cluster.isMaster) {
   const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
@@ -61,6 +80,8 @@ if (cluster.isMaster) {
     logger,
     owner: process.env.OWNER,
     nexusQuerier,
+    caches,
+    nexusFetcher,
   });
   shard.start();
 }

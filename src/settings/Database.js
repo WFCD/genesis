@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise');
 const SQL = require('sql-template-strings');
 const Promise = require('bluebird');
 const schema = require('./schema.js');
+const CustomCommand = require('../CustomCommand.js');
 
 /**
  * Connection options for the database
@@ -43,6 +44,8 @@ class Database {
       delete_response: true,
       createPrivateChannel: false,
       deleteExpired: false,
+      allowCustom: false,
+      allowInline: false,
     };
   }
 
@@ -899,6 +902,38 @@ class Database {
         }
         return [];
       });
+  }
+
+  getCommandContext(channel) {
+    return this.getChannelSetting(channel, 'prefix')
+      .then(prefix => this.getChannelSetting(channel, 'allowCustom')
+          .then(allowCustom => this.getChannelSetting(channel, 'allowInline')
+              .then(allowInline => ({ prefix, allowCustom: allowCustom === '1', allowInline: allowInline === '1' }))));
+  }
+
+  getCustomCommands() {
+    const query = SQL`SELECT * FROM custom_commands WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0]) {
+          return res[0].map(value =>
+            new CustomCommand(this.bot, value.command, value.response, value.guild_id));
+        }
+        return [];
+      });
+  }
+
+  addCustomCommand(message, call, response) {
+    const id = `${call}${message.guild.id}`;
+    const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
+      VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
+    return this.db.query(query);
+  }
+
+  deleteCustomCommand(message, call) {
+    const id = `${call}${message.guild.id}`;
+    const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
+    return this.db.query(query);
   }
 }
 

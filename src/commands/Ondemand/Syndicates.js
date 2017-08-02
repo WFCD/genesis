@@ -31,11 +31,10 @@ class Syndicates extends Command {
   run(message) {
     const syndicate = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
-        const syndicateMissions = ws.syndicateMissions;
         this.messageManager.embed(message, new SyndicateEmbed(this.bot,
-          syndicateMissions, syndicate), true, false);
+          ws.syndicateMissions, syndicate), true, false);
       })
       .catch(this.logger.error);
   }

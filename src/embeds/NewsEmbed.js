@@ -16,14 +16,14 @@ class NewsEmbed extends BaseEmbed {
     super();
 
     news.sort((a, b) => {
-      const date1 = a.endDate ? a.endDate : a.date;
-      const date2 = b.endDate ? b.endDate : b.date;
+      const date1 = new Date(a.endDate || a.date);
+      const date2 = new Date(b.endDate || b.date);
 
       return date2.getTime() - date1.getTime();
     });
 
     this.color = news.length > 0 ? 0x00ff00 : 0xff0000;
-    let value = news.map(n => n.toString()).join('\n');
+    let value = news.map(n => n.asString).join('\n');
     if (type) {
       if (type === 'update') {
         value = value.length > 0 ? value : 'No Update News Currently';

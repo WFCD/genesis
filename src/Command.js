@@ -98,6 +98,18 @@ class Command {
     this.allowDM = true;
 
     /**
+     * True if this is an inline command
+     * @type {Boolean}
+     */
+    this.isInline = false;
+
+    /**
+     * True if command is a custom command
+     * @type {Boolean}
+     */
+    this.isCustomCommand = false;
+
+    /**
      * Message manager for sending and managing messages
      * @type {MessageManager}
      */

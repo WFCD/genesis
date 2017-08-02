@@ -14,16 +14,14 @@ class DarvoEmbed extends BaseEmbed {
     super();
 
     this.color = 0x0000ff;
-    this.title = 'Worldstate - Darvo';
-    this.url = 'https://warframe.com';
-    this.description = 'Today\'s Darvo deal';
+    this.title = 'Darvo Deal';
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/darvo.png',
+      url: 'http://i.imgur.com/UotylUm.png',
     };
     this.fields = [
       {
         name: `${deal.item}, ${deal.salePrice}p - ${deal.total - deal.sold}/${deal.total} left`,
-        value: `Original price: ${deal.originalPrice}p, expires in ${deal.getEtaString()}`,
+        value: `Original price: ${deal.originalPrice}p, expires in ${deal.eta}`,
       },
     ];
   }

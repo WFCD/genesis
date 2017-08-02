@@ -22,10 +22,11 @@ class News extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         const news = ws.news;
-        this.messageManager.embed(message, new NewsEmbed(this.bot, news.filter(n => !n.isUpdate() && !n.isPrimeAccess())), true, false);
+        this.messageManager.embed(message, new NewsEmbed(this.bot, news
+          .filter(n => !n.update && !n.primeAccess)), true, false);
       })
       .catch(this.logger.error);
   }

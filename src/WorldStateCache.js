@@ -1,14 +1,13 @@
 'use strict';
 
-const http = require('http');
+const https = require('https');
 
-const WorldState = require('warframe-worldstate-parser');
 const EventEmitter = require('events');
 
 const worldStateURLs = {
-  pc: 'http://content.warframe.com/dynamic/worldState.php',
-  ps4: 'http://content.ps4.warframe.com/dynamic/worldState.php',
-  xb1: 'http://content.xb1.warframe.com/dynamic/worldState.php',
+  pc: 'https://ws.warframestat.us/pc',
+  ps4: 'https://ws.warframestat.us/ps4',
+  xb1: 'https://ws.warframestat.us/xb1',
 };
 
 class WorldStateCache extends EventEmitter {
@@ -34,7 +33,7 @@ class WorldStateCache extends EventEmitter {
   update() {
     this.updating = this.httpGet().then((data) => {
       this.lastUpdated = Date.now();
-      this.currentData = new WorldState(data);
+      this.currentData = JSON.parse(data);
       this.updating = null;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;
@@ -47,7 +46,7 @@ class WorldStateCache extends EventEmitter {
 
   httpGet() {
     return new Promise((resolve, reject) => {
-      const request = http.get(this.url, (response) => {
+      const request = https.get(this.url, (response) => {
         if (response.statusCode < 200 || response.statusCode > 299) {
           reject(new Error(`Failed to load page, status code: ${response.statusCode}`));
         }

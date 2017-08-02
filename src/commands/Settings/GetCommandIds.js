@@ -26,7 +26,7 @@ class GetCommandIds extends Command {
       .filter(command =>
         !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly))
       .forEach((command) => {
-        fileContents.push(`"${command.call}","${command.id}"`);
+        fileContents.push(`"${command.call}","${command.id}","${command.blacklistable ? 'blacklistable' : 'not blacklistable'}"`);
       });
 
     if (message.channel.type !== 'dm') {

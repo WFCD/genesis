@@ -22,7 +22,7 @@ class Baro extends Command {
    */
   run(message) {
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platform].getDataJson())
       .then((ws) => {
         this.messageManager.embed(message,
           new VoidTraderEmbed(this.bot, ws.voidTrader), true, false);
