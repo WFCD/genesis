@@ -44,9 +44,20 @@ client.on('error', (error) => {
 
 const logger = new Logger(client);
 
+const NexusFetcher = require('nexus-stats-api');
+
+const nexusOptions = {
+  user_key: process.env.NEXUSSTATS_USER_KEY || undefined,
+  user_secret: process.env.NEXUSSTATS_USER_SECRET || undefined,
+  ignore_limiter: true,
+};
+
+const nexusFetcher = new NexusFetcher(nexusOptions.nexusKey
+    && nexusOptions.nexusSecret ? nexusOptions : {});
+
 const Nexus = require('warframe-nexus-query');
 
-const nexusQuerier = new Nexus();
+const nexusQuerier = new Nexus(nexusFetcher);
 
 const caches = {
   pc: new Cache('https://ws.warframestat.us/pc', 600000),
@@ -70,6 +81,7 @@ if (cluster.isMaster) {
     owner: process.env.OWNER,
     nexusQuerier,
     caches,
+    nexusFetcher,
   });
   shard.start();
 }

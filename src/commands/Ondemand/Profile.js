@@ -2,12 +2,8 @@
 
 const Command = require('../../Command.js');
 const ProfileEmbed = require('../../embeds/ProfileEmbed.js');
-const Nexus = require('nexus-stats-api');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
-
-const nexusKey = process.env.NEXUSSTATS_USER_KEY || undefined;
-const nexusSecret = process.env.NEXUSSTATS_USER_SECRET || undefined;
 
 /**
  * Looks up items from Nexus-stats.com
@@ -26,13 +22,6 @@ class PriceCheck extends Command {
         parameters: ['in-game name (PC only)'],
       },
     ];
-
-    const nexusOptions = {
-      user_key: nexusKey,
-      user_secret: nexusSecret,
-      ignore_limiter: true,
-    };
-    this.nexusFetcher = new Nexus(nexusKey && nexusSecret ? nexusOptions : {});
   }
 
   /**
@@ -48,7 +37,7 @@ class PriceCheck extends Command {
     }
 
     message.channel.send('', { embed: inProgressEmbed })
-      .then(sentMessage => this.nexusFetcher.get('/warframe/v1/bots/status')
+      .then(sentMessage => this.bot.nexusFetcher.get('/warframe/v1/bots/status')
           .then((status) => {
             let embedWithTime = {};
             if (!status['Player-Sentry'].online) {
@@ -58,7 +47,7 @@ class PriceCheck extends Command {
             }
             return sentMessage.edit('', { embed: embedWithTime });
           }))
-      .then(sentMessage => this.nexusFetcher.get(`/warframe/v1/players/${username}/profile`)
+      .then(sentMessage => this.bot.nexusFetcher.get(`/warframe/v1/players/${username}/profile`)
           .then(profile => ({ sentMessage, profile })))
       .then(({ sentMessage, profile }) => {
         if (profile.name || profile.error === `${username} could not be found.`) {

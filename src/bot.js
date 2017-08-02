@@ -80,10 +80,11 @@ class Genesis {
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    * @param  {WarframeNexusQuery} [options.nexusQuerier] API for querying nexus-stats' warframe api
    * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
+   * @param {NexusFetcher}      [options.nexusFetcher] Nexus Stats direct api
    */
   constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
                                      mdConfig = md, owner = null, nexusQuerier = {},
-                                     caches = {} } = {}) {
+                                     caches = {}, nexusFetcher } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -110,6 +111,8 @@ class Genesis {
     this.token = discordToken;
 
     this.caches = caches;
+
+    this.nexusFetcher = nexusFetcher;
 
     this.channelTimeout = 300000;
 
