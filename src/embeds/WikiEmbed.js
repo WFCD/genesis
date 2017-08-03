@@ -23,7 +23,7 @@ class WikiEmbed extends BaseEmbed {
       height: item.original_dimensions.height,
     };
     if (thumbnail) {
-      this.thumnail = imgThing;
+      this.thumbnail = imgThing;
     } else {
       this.image = imgThing;
     }
