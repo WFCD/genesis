@@ -46,7 +46,7 @@ class FrameStatsInline extends Command {
         }).then(articles => warframe.getArticleDetails({
           ids: articles.items.map(i => i.id),
         })).then((details) => {
-          this.messageManager.embed(message, new WikiEmbed(this.bot, details), false, true);
+          this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
         })
         .catch(e => this.logger.error(e));
       }
