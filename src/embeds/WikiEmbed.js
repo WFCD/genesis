@@ -10,17 +10,23 @@ class WikiEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Attachment>} details details to derive data from
    */
-  constructor(bot, details) {
+  constructor(bot, details, thumbnail) {
     super();
     const item = Object.values(details.items)[0];
     this.title = item.title;
     this.type = 'rich';
     this.url = details.basepath + item.url;
-    this.image = {
+    
+    const imgThing = {
       url: item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : '_ _',
       width: item.original_dimensions.width,
       height: item.original_dimensions.height,
     };
+    if (thumbnail) {
+      this.thumnail = imgThing;
+    } else {
+      this.image = imgThing;
+    }
     this.description = item.abstract;
   }
 }
