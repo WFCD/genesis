@@ -18,11 +18,11 @@ class FrameStatsInline extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.info', 'frame', 'Get stats for a Warframe');
-    this.regex = new RegExp('\\`\\[[a-zA-z\\s\']*\\]\\`', 'ig');
+    this.regex = new RegExp('\\[[a-zA-z\\s\']*\\]', 'ig');
     this.usages = [
       {
         description: 'Get stats for a Warframe',
-        parameters: ['`[warframe name]``'],
+        parameters: ['[warframe name]'],
       },
     ];
   }
