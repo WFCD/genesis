@@ -10,7 +10,7 @@ const founderEmoji = {
 };
 
 const mrSigil = [
-  '',
+  'https://vignette3.wikia.nocookie.net/warframe/images/a/ae/MasteryAffinity64.png/revision/latest?cb=20170501023543',
   'https://vignette2.wikia.nocookie.net/warframe/images/4/4e/Initiate.jpg/revision/latest?cb=20131207082819',
   'https://vignette3.wikia.nocookie.net/warframe/images/a/a4/Silver-initiate.jpg/revision/latest?cb=20131207083232',
   'https://vignette2.wikia.nocookie.net/warframe/images/8/8f/Gold-initiate.jpg/revision/latest?cb=20131207083401',
