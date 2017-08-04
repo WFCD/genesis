@@ -2,6 +2,14 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+function createGroupedArray(arr, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
+    groups.push(arr.slice(i, i + (chunkSize || 10)));
+  }
+  return groups;
+}
+
 /**
  * Utility class for making rich embeds
  */
@@ -16,13 +24,11 @@ class EnableInfoEmbed extends BaseEmbed {
     this.title = 'Settings to Change';
     this.type = 'rich';
     this.color = 0x0000ff;
-    this.fields = [
-      {
-        name: 'Command Ids',
-        value: params[0].join('; ') || 'No commands',
-        inline: true,
-      },
-    ];
+    this.fields = [{ name: 'Command Ids', value: params[0].length > 1 ? 'No Commands' : '_ _', inline: true }];
+    
+    createGroupedArray(params[0]).forEach((commandArray) => {
+	    this.fields.push({ name: '_ _', value: commandArray.join('; '), inline: false });
+    });
     if (params[1]) {
       this.fields.push({ name: 'Channels', value: params[1].join('; ') || 'No channels' });
     }
