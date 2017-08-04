@@ -22,7 +22,10 @@ class GetCommandIds extends Command {
    */
   run(message) {
     const fileContents = [];
-    this.commandHandler.commands
+    const commands = this.bot.commandHandler.commands
+      .concat(this.bot.commandHandler.inlineCommands || [])
+      .concat(this.bot.commandHandler.customCommands || []);
+    commands
       .filter(command =>
         !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly))
       .forEach((command) => {
