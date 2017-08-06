@@ -57,6 +57,7 @@
             <div class="tab">
                <button class="tablinks" onclick="openCommandTab(this, 'tracking')">Track</button>
                <button class="tablinks" onclick="openCommandTab(this, 'settings')">Settings</button>
+               <button class="tablinks" onclick="openCommandTab(this, 'welcoming')">Welcoming</button>
                <button class="tablinks" onclick="openCommandTab(this, 'ondemand')">On Demand</button>
                <button class="tablinks" onclick="openCommandTab(this, 'wf-utilities')">Utils - WF</button>
                <button class="tablinks" onclick="openCommandTab(this, 'core')">Core</button>
@@ -156,18 +157,46 @@
                      <td>Change this server's bot prefix</td>
                   </tr>
                   <tr>
-                     <td>respond to settings &lt;response enabled&gt;</td>
+                     <td>respond to settings &lt;on or off&gt;</td>
                      <td>Toggle whether or not the bot tells you when settings change from your command.</td>
                   </tr>
                   <tr>
-                     <td>allow private room &lt;rooms enabled&gt;</td>
+                     <td>allow private room &lt;on or off&gt;</td>
                      <td>Change if the users in this server are allowed to make private rooms</td>
                   </tr>
                   <tr>
-                     <td>delete expired &lt;auto-deletion enabled&gt;</td>
+                     <td>allow custom commands &lt;on or off&gt;</td>
+                     <td>Change if the users in this server are allowed to use custom commands</td>
+                  </tr>
+                  <tr>
+                     <td>allow inline commands &lt;on or off&gt;</td>
+                     <td>Change if the users in this channel are allowed to use inline commands</td>
+                  </tr>
+                  <tr>
+                     <td>delete expired &lt;on or off&gt;</td>
                      <td>Change if expired alerts will be automatically deleted on expiration.</td>
                   </tr>
                </table>
+            </div>
+            <div id="welcoming" class="tabcontent">
+              <table id="welcoming" class="commands">
+                <tr>
+                   <td>set welcome message &lt;welcome message&gt;</td>
+                   <td>Sets the welcome message for the current guild (not the direct message). If one exists, the message, but not the channel will be updated.</td>
+                </tr>
+                <tr>
+                   <td>set welcome dm &lt;welcome message&gt;</td>
+                   <td>Sets the welcome message for the current guild (not the message). If one exists, the message will be updated.</td>
+                </tr>
+                <tr>
+                   <td>clear welcome message</td>
+                   <td>Clears the welcome message for the current guild (not the direct message)</td>
+                </tr>
+                <tr>
+                   <td>clear welcome dm</td>
+                   <td>Clears the welcome dm for the current guild (not the message)</td>
+                </tr>
+              </table>
             </div>
             <div id="ondemand" class="tabcontent">
                <table id="ondemand" class="commands">
