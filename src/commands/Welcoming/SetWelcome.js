@@ -8,7 +8,7 @@ class SetWelcome extends Command {
     this.usages = [
       { description: 'Set welcome message for this server in this channel', parameters: ['message'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s+?(.+)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?((.+|\\n)+)?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

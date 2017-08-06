@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 
 class ClearWelcomeDM extends Command {
   constructor(bot) {
-    super(bot, 'settings.clearwelcomedm', 'clear welcome direct', 'Clears all pings for the server');
+    super(bot, 'settings.clearwelcomedm', 'clear welcome dm', 'Clears all pings for the server');
     this.requiresAuth = true;
     this.allowDM = false;
   }
