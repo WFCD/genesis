@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 
 class SetWelcomeDM extends Command {
   constructor(bot) {
-    super(bot, 'settings.setwelcome', 'set welcome dm');
+    super(bot, 'settings.setwelcomedm', 'set welcome dm');
     this.usages = [
       { description: 'Set welcome message for this server in this channel to send to a user in DM', parameters: ['message'] },
     ];

@@ -14,7 +14,7 @@ class Syndicates extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.');
-    this.regex = new RegExp('^syndicate(?:\\s+([\\w+\\s]+))?', 'i');
+    this.regex = new RegExp('^syndicates?\\s?(?:([\\w+\\s]+))?', 'i');
     this.usages = [
       {
         description: 'Display syndicate nodes for a syndicate.',

@@ -354,14 +354,17 @@ class Genesis {
         welcomes.forEach((welcome) => {
           if (welcome.isDm === '1') {
             this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
-              .replace(/\$username/ig, guildMember.username)
-              .replace(/\$usermention/ig, guildMember));
+              .replace(/\$username/ig, guildMember.displayName)
+              .replace(/\$usermention/ig, guildMember)
+              .replace(/\$timestamp/ig, new Date().toLocaleString()));
           } else {
             this.messageManager
               .sendMessage({ channel: welcome.channel }
                 , welcome.message
-                .replace(/\$username/ig, guildMember.username)
-                .replace(/\$usermention/ig, guildMember), false, false);
+                .replace(/\$username/ig, guildMember.displayName)
+                .replace(/\$usermention/ig, guildMember)
+                .replace(/\$timestamp/ig, new Date().toLocaleString()),
+                false, false);
           }
         });
       });

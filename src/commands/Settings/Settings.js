@@ -21,7 +21,7 @@ class Settings extends Command {
   }
 
   run(message) {
-    const settings = [];
+    let settings = [];
     const tracked = [];
     let lastIndex = 0;
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
@@ -66,6 +66,10 @@ class Settings extends Command {
         })
         .then((allowCustom) => {
           settings.push({ name: 'Allow Custom Commands', value: allowCustom === '1' ? 'yes' : 'no', inline: true });
+          const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
+          lastIndex += 1;
+          this.messageManager.embed(message, embed, false, false);
+          settings = [];
           return this.bot.settings.getWelcomes(message.guild);
         })
         .then((welcomes) => {
@@ -110,7 +114,7 @@ class Settings extends Command {
               inline: false,
             }];
             const embed = new SettingsEmbed(this.bot, message.channel, val,
-              lastIndex + index);
+              lastIndex + index + 1);
             this.messageManager.embed(message, embed, false, false);
           });
           lastIndex += channelSections.length;

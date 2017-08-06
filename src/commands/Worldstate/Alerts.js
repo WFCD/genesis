@@ -12,7 +12,7 @@ class Alerts extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.alerts', 'alerts', 'Display the currently active alerts');
+    super(bot, 'warframe.worldstate.alerts', 'alert', 'Display the currently active alerts');
   }
 
   /**

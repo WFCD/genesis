@@ -12,7 +12,7 @@ class Updates extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.updates', 'updates', 'Display the currently active update news');
+    super(bot, 'warframe.worldstate.updates', 'update', 'Display the currently active update news');
   }
 
   /**
