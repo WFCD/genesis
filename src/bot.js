@@ -279,7 +279,8 @@ class Genesis {
    * @param {Message} message to handle
    */
   onMessage(message) {
-    if (this.readyToExecute && message.author.id !== this.client.user.id) {
+    if (this.readyToExecute &&
+      message.author.id !== this.client.user.id && !message.author.bot) {
       this.commandHandler.handleCommand(message);
     }
   }
