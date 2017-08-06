@@ -18,7 +18,7 @@ class FrameStatsInline extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.info', 'frame', 'Get stats for a Warframe');
-    this.regex = new RegExp('\\[[a-zA-z\\s\']*\\]', 'ig');
+    this.regex = new RegExp('\\[(.*?)\\]', 'ig');
     this.usages = [
       {
         description: 'Get stats for a Warframe',
@@ -33,23 +33,25 @@ class FrameStatsInline extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    let query = message.strippedContent.match(this.regex)[0];
-    if (query) {
-      query = query.replace(/\[|\]`/ig, '').trim().toLowerCase();
-      const results = frames.filter(entry => new RegExp(entry.regex, 'ig').test(query));
-      if (results.length > 0) {
-        this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), false, true);
-      } else {
-        warframe.getSearchList({
-          query,
-          limit: 1,
-        }).then(articles => warframe.getArticleDetails({
-          ids: articles.items.map(i => i.id),
-        })).then((details) => {
-          this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
-        })
-        .catch(e => this.logger.error(e));
-      }
+    const queries = message.strippedContent.match(this.regex);
+    if (queries.length > 0) {
+      queries.forEach((query) => {
+        const strippedQuery = query.replace(/\[|\]`/ig, '').trim().toLowerCase();
+        const results = frames.filter(entry => new RegExp(entry.regex, 'ig').test(strippedQuery));
+        if (results.length > 0) {
+          this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), false, true);
+        } else {
+          warframe.getSearchList({
+            query: strippedQuery,
+            limit: 1,
+          }).then(articles => warframe.getArticleDetails({
+            ids: articles.items.map(i => i.id),
+          })).then((details) => {
+            this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
+          })
+          .catch(e => this.logger.error(e));
+        }
+      });
     }
   }
 }
