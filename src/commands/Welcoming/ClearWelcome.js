@@ -2,9 +2,9 @@
 
 const Command = require('../../Command.js');
 
-class ClearPings extends Command {
+class ClearWelcome extends Command {
   constructor(bot) {
-    super(bot, 'settings.clearpings', 'clear pings', 'Clears all pings for the server');
+    super(bot, 'settings.clearwelcomemessage', 'clear welcome message', 'Clears all pings for the server');
     this.requiresAuth = true;
     this.allowDM = false;
   }
@@ -16,4 +16,4 @@ class ClearPings extends Command {
   }
 }
 
-module.exports = ClearPings;
+module.exports = ClearWelcome;

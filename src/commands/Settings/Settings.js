@@ -79,9 +79,11 @@ class Settings extends Command {
               value: `${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``,
             });
           });
-          const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
-          lastIndex += 1;
-          this.messageManager.embed(message, embed, false, false);
+          if (welcomes.length > 0) {
+            const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
+            lastIndex += 1;
+            this.messageManager.embed(message, embed, false, false);
+          }
           return this.bot.settings.getTrackedItems(channel);
         })
         .then((items) => {
