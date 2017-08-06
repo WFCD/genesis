@@ -14,6 +14,7 @@ class Disable extends Command {
       'i');
     this.blacklistable = false;
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {

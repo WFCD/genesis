@@ -14,6 +14,7 @@ class Enable extends Command {
       'i');
     this.requiresAuth = true;
     this.blacklistable = false;
+    this.allowDM = false;
   }
 
   run(message) {

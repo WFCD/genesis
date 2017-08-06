@@ -10,7 +10,7 @@ class ClearPings extends Command {
   }
 
   run(message) {
-    this.bot.settings.clearPingsForGuild(message.guild).then(() => {
+    this.bot.settings.clearWelcomeForGuild(message.guild, false).then(() => {
       this.messageManager.notifySettingsChange(message, true, true);
     }).catch(this.logger.error);
   }

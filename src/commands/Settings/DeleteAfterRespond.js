@@ -10,6 +10,7 @@ class RespondToSettings extends Command {
     ];
     this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(all|command|respond|none)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {

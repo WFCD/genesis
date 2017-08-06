@@ -66,6 +66,15 @@ class Settings extends Command {
         })
         .then((allowCustom) => {
           settings.push({ name: 'Allow Custom Commands', value: allowCustom === '1' ? 'yes' : 'no', inline: true });
+          return this.bot.settings.getWelcomes(message.guild);
+        })
+        .then((welcomes) => {
+          welcomes.forEach((welcome) => {
+            settings.push({
+              name: `Welcome${welcome.isDm === '1' ? ' Direct ' : ''}`,
+              value: `${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``,
+            });
+          });
           const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
           lastIndex += 1;
           this.messageManager.embed(message, embed, false, false);

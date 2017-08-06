@@ -15,6 +15,7 @@ class SetPing extends Command {
     ];
     this.regex = new RegExp(`^${this.call}\\s+?((${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?)?$`, 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {

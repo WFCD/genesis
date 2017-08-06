@@ -236,6 +236,9 @@ class Genesis {
       // process.exit(4);
     });
 
+    // send welcome_messages
+    this.client.on('guildMemberAdd', guildMember => this.onGuildMemberAdd(guildMember));
+
     this.client.on('error', error => this.logger.error(error));
     this.client.on('warn', warning => this.logger.warning(warning));
   }
@@ -343,6 +346,25 @@ class Genesis {
     this.settings.deleteChannel(channel).then(() => {
       this.logger.debug(`Channel with id ${channel.id} deleted`);
     }).catch(this.logger.error);
+  }
+
+  onGuildMemberAdd(guildMember) {
+    this.settings.getWelcomes(guildMember.guild)
+      .then((welcomes) => {
+        welcomes.forEach((welcome) => {
+          if (welcome.isDm === '1') {
+            this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
+              .replace(/\$username/ig, guildMember.username)
+              .replace(/\$usermention/ig, guildMember));
+          } else {
+            this.messageManager
+              .sendMessage({ channel: welcome.channel }
+                , welcome.message
+                .replace(/\$username/ig, guildMember.username)
+                .replace(/\$usermention/ig, guildMember), false, false);
+          }
+        });
+      });
   }
 }
 

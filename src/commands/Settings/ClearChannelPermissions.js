@@ -9,6 +9,7 @@ class ClearChannelPermissions extends Command {
     super(bot, 'settings.clearChannelPerms', 'clear permissions', 'Clear channel permisions for this or specified room, or guild');
     this.regex = new RegExp(`^${this.call}(?:\\s*((?:(?:<#)?\\d+(?:>)?)|current|all|guild))?$`, 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {

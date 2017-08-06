@@ -89,4 +89,11 @@ module.exports = [
     creation_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (command_id)
   );`,
+  `CREATE TABLE IF NOT EXISTS welcome_messages (
+    guild_id BIGINT UNSIGNED NOT NULL,
+    is_dm VARCHAR(1) NOT NULL,
+    channel_id BIGINT UNSIGNED NOT NULL,
+    message TEXT NOT NULL,
+    PRIMARY KEY (guild_id, is_dm)
+  );`,
 ];

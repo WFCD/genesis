@@ -10,6 +10,7 @@ class AllowCustomCommands extends Command {
     ];
     this.regex = new RegExp('^allow\\s?custom(?:\\s?commands)?\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   run(message) {
