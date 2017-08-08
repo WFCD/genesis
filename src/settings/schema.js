@@ -90,10 +90,11 @@ module.exports = [
     PRIMARY KEY (command_id)
   );`,
   `CREATE TABLE IF NOT EXISTS welcome_messages (
-    guild_id BIGINT UNSIGNED NOT NULL,
-    is_dm VARCHAR(1) NOT NULL,
-    channel_id BIGINT UNSIGNED NOT NULL,
-    message TEXT NOT NULL,
-    PRIMARY KEY (guild_id, is_dm)
+    guild_id bigint(20) unsigned NOT NULL,
+    is_dm varchar(1) NOT NULL,
+    channel_id bigint(20) unsigned NOT NULL,
+    message text NOT NULL,
+    welcome_message_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (welcome_message_id)
   );`,
 ];
