@@ -955,7 +955,7 @@ class Database {
    * @returns {Promise}
    */
   setWelcome(message, isDm, text) {
-    const query = SQL`INSERT INTO welcome_messages VALUES (${message.guild.id}, ${isDm}, ${message.channel.id}, ${text}, 1)
+    const query = SQL`INSERT INTO welcome_messages (guild_id, is_dm, channel_id, message) VALUES (${message.guild.id}, ${isDm}, ${message.channel.id}, ${text})
       ON DUPLICATE KEY UPDATE message = ${text};`;
     return this.db.query(query);
   }
