@@ -56,7 +56,7 @@ class Database {
   createSchema() {
     return Promise.mapSeries(schema, q => this.db.query(q));
   }
-
+  
  /**
   * Initialize data for guilds in channels for existing guilds
   * @param {Client} client for pulling guild information
@@ -99,6 +99,24 @@ class Database {
   deleteGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id};`;
     return this.db.query(query);
+  }
+  
+  /**
+   * Gets the current count of guilds and channels
+   * @returns {Promise}
+   */
+  getChannelAndGuildCounts() {
+    const query = 'select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;'
+    return this.db.query(query)
+      .then((res) => {
+        if (res[0]) {
+          return {
+              channels: res[0].countChannels,
+              guilds: res[0].countGuilds,
+            };
+        }
+        return {};
+      });
   }
 
   /**
