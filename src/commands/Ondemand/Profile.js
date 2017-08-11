@@ -50,7 +50,9 @@ class PriceCheck extends Command {
       .then(sentMessage => this.bot.nexusFetcher.get(`/warframe/v1/players/${username}/profile`)
           .then(profile => ({ sentMessage, profile })))
       .then(({ sentMessage, profile }) => {
-        if (profile.name || profile.error === `${username} could not be found.`) {
+        if (profile.name || (profile.error === `${username} could not be found.`
+                             && (sentMessage.embeds.length > 0 
+                                 && 'Profile Engine Offline. New Entries will not be processed.' !== sentMessage.embeds[0].title))) {
           return sentMessage.edit('', { embed: new ProfileEmbed(this.bot, profile.name ? profile : {}) });
         }
         return null;
