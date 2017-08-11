@@ -229,7 +229,7 @@ class MessaageManager {
         })
         .then((deleteResponseAfterRespond) => {
           if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
-            response.delete(10000).catch(() => this.logger.error(`Couldn't delete ${response}`));
+            response.delete(30000).catch(() => this.logger.error(`Couldn't delete ${response}`));
           }
         })
         .catch(this.logger.error);
