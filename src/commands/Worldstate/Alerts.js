@@ -13,6 +13,7 @@ class Alerts extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.alerts', 'alert', 'Display the currently active alerts');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
   /**
@@ -21,8 +22,9 @@ class Alerts extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const alerts = ws.alerts.filter(a => !a.expired);
         this.messageManager.embed(message, new AlertEmbed(this.bot, alerts), true, false);

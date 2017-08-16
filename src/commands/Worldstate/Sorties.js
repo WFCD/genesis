@@ -17,6 +17,7 @@ class Sorties extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.sorties', 'sortie', 'Display the currently active sorties');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
   /**
@@ -25,8 +26,9 @@ class Sorties extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const sortie = ws.sortie;
         if (sortie.expired) {

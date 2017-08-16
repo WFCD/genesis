@@ -13,7 +13,7 @@ class PrimeAccess extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.primeaccess', 'primeaccess', 'Display the currently active prime access news');
-    this.regex = new RegExp('^prime\\s?access$', 'i');
+    this.regex = new RegExp('^prime\\s?access(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
   /**
@@ -22,8 +22,9 @@ class PrimeAccess extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const news = ws.news.filter(n => n.primeAccess);
         this.messageManager.embed(message, new PrimeAccessEmbed(this.bot, news, 'primeaccess'), true, false);

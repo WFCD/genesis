@@ -34,8 +34,7 @@ class SyndicateEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.title = 'Worldstate - Syndicate Missions';
-    this.description = `Current Missions for ${syndicate || 'none'}`;
+    this.description = `Current Missions for ${syndicate || 'None'}`;
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };

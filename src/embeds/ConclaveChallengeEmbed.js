@@ -12,8 +12,9 @@ class ConclaveChallengeEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<ConclaveChallenge>} challenges - The challenges to be included in the embed
    * @param {string} category - The category of the challenges in the embed
+   * @param {string} platform - The platform for the information
    */
-  constructor(bot, challenges, category) {
+  constructor(bot, challenges, category, platform) {
     super();
 
     const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
@@ -31,8 +32,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.title = 'Worldstate - Conclave Challenges';
-    this.description = `Current Challenges for category: ${category || 'none'}`;
+    this.description = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
     this.thumbnail = {
       url: 'http://i.imgur.com/KDzKPYA.png',
     };

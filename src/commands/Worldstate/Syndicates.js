@@ -3,6 +3,7 @@
 const Command = require('../../Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
 
+const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil'];
 
 /**
  * Displays the currently active Invasions
@@ -14,7 +15,7 @@ class Syndicates extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.');
-    this.regex = new RegExp('^syndicates?\\s?(?:([\\w+\\s]+))?', 'i');
+    this.regex = new RegExp(`^${this.call}s?(?:(${values.join('|')}))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
     this.usages = [
       {
         description: 'Display syndicate nodes for a syndicate.',
@@ -29,9 +30,18 @@ class Syndicates extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const syndicate = message.strippedContent.match(this.regex)[1];
+    const matches = message.strippedContent.match(this.regex);
+    const param1 = (matches[1] || '').toLowerCase();
+    const param2 = (matches[2] || '').toLowerCase();
+    const syndicate = values.indexOf(param1) > -1 ? param1 : 'all';
+    let platformParam;
+    if (this.platforms.indexOf(param2) > -1) {
+      platformParam = param2;
+    } else if (this.platforms.indexOf(param1) > -1) {
+      platformParam = param1;
+    }
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         this.messageManager.embed(message, new SyndicateEmbed(this.bot,
           ws.syndicateMissions, syndicate), true, false);

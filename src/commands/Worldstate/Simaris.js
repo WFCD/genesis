@@ -13,6 +13,7 @@ class Simaris extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
   /**
@@ -21,8 +22,9 @@ class Simaris extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platform].getData())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const simaris = ws.simaris;
         this.messageManager.embed(message, new SimarisEmbed(this.bot, simaris), true, false);

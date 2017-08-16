@@ -13,6 +13,7 @@ class Enemies extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.acolytes', 'acolyte', 'Display any currently active acolyte-style enemies.');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
   /**
@@ -21,12 +22,12 @@ class Enemies extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
-        const persistentEnemies = ws.persistentEnemies;
         this.messageManager.embed(message,
-          new EnemyEmbed(this.bot, persistentEnemies), true, false);
+          new EnemyEmbed(this.bot, ws.persistentEnemies), true, false);
       })
       .catch(this.logger.error);
   }

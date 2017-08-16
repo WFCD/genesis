@@ -13,7 +13,7 @@ class PopularDeal extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.populardeals', 'populardeal', 'Displays current featured deals');
-    this.regex = new RegExp('^popular\\sdeals?$', 'i');
+    this.regex = new RegExp('^popular\\sdeals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
   /**
@@ -22,8 +22,9 @@ class PopularDeal extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
         this.messageManager.embed(message, new SalesEmbed(this.bot, sales), true, false);

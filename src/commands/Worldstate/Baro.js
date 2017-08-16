@@ -13,6 +13,7 @@ class Baro extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.baro', 'baro', 'Display the current status of the Void Trader');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
   /**
@@ -21,8 +22,9 @@ class Baro extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         this.messageManager.embed(message,
           new VoidTraderEmbed(this.bot, ws.voidTrader), true, false);

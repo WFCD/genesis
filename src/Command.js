@@ -114,6 +114,8 @@ class Command {
      * @type {MessageManager}
      */
     this.messageManager = bot.messageManager;
+
+    this.platforms = ['pc', 'ps4', 'xb1'];
   }
 
   /**

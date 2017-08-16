@@ -13,7 +13,7 @@ class FeaturedDeal extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.featureddeal', 'featureddeal', 'Displays current featured deals');
-    this.regex = new RegExp('^featured\\s?deals?$', 'i');
+    this.regex = new RegExp('^featured\\s?deals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
   /**
@@ -22,8 +22,9 @@ class FeaturedDeal extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
         this.messageManager.embed(message,

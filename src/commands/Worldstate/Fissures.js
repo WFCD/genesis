@@ -13,6 +13,7 @@ class Fissures extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.fissures', 'fissure', 'Get the current list of Void Fissure Missions');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
   /**
@@ -21,8 +22,9 @@ class Fissures extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
         this.messageManager.embed(message,

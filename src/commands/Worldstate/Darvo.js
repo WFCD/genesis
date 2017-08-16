@@ -13,6 +13,7 @@ class Darvo extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.darvo', 'darvo', 'Displays today\'s Darvo deal');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
   /**
@@ -21,8 +22,9 @@ class Darvo extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
+    const platformParam = message.strippedContent.match(this.regex)[1];
     this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platform].getDataJson())
+      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
       .then((ws) => {
         const deal = ws.dailyDeals[0];
         this.messageManager.embed(message, new DarvoEmbed(this.bot, deal), true, false);
