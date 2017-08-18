@@ -11,11 +11,12 @@ class RaidStatEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Simaris} userStats - User raid stat json
    * @param {string} query - Query for this embed
+   * @param {string} platform - Platform for the query
    */
-  constructor(bot, userStats, query) {
+  constructor(bot, userStats, query, platform) {
     super();
     this.title = `Raid statistics for ${query}`;
-    this.url = encodeURI(`https://trials.wf/player/?user=${query}`);
+    this.url = encodeURI(`https://${platform.toLowerCase() !== 'pc' ? `${platform.toLowerCase()}.` : ''}trials.wf/player/?user=${query}`);
     this.color = 0xaf5b4b;
     this.thumbnail = {
       url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/NightmareRaidSekhara.png',
