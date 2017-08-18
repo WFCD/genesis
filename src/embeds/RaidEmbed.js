@@ -16,7 +16,7 @@ class RaidStatEmbed extends BaseEmbed {
   constructor(bot, userStats, query, platform) {
     super();
     this.title = `Raid statistics for ${query}`;
-    this.url = encodeURI(`https://${platform.toLowerCase() !== 'pc' ? `${platform.toLowerCase()}.` : ''}trials.wf/player/?user=${query}`);
+    this.url = encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`);
     this.color = 0xaf5b4b;
     this.thumbnail = {
       url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/NightmareRaidSekhara.png',
