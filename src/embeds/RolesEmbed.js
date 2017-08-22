@@ -31,10 +31,9 @@ class RolesEmbed extends BaseEmbed {
     }
       
     this.fields.push({
-        name: '_ _',
-        value: roleGroups.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
-      }),
-    ];
+      name: '_ _',
+      value: roleGroups.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
+    });
   }
 }
 
