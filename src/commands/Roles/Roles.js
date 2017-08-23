@@ -34,6 +34,13 @@ class Roles extends Command {
            const longest = roles.map(role => role.name)
             .reduce((a, b) => (a.length > b.length ? a : b));
            const groupedRoles = createGroupedArray(roles, 24);
+           const metaGroups = createGroupedArray(groupedRoles, 4);
+           metaGroups.forEach((metaGroup) => {
+             this.messageManager.embed(message,
+             new RolesEmbed(this.bot, groupedRoles, prefix, longest.length),
+              true, true);
+           });
+
            this.messageManager.embed(message,
             new RolesEmbed(this.bot, groupedRoles, prefix, longest.length),
               true, true);
