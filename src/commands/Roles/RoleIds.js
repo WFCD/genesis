@@ -28,9 +28,9 @@ class Roles extends Command {
    */
   run(message) {
     const roles = message.guild.roles.array().sort((a, b) => { 
-      if (a < b) {
+      if (a.name < b.name) {
         return -1;
-      } else if (a > b) {
+      } else if (a.name > b.name) {
         return 1;
       } else {
         return 0;
@@ -39,13 +39,16 @@ class Roles extends Command {
     const longest = roles.map(role => role.name)
      .reduce((a, b) => (a.length > b.length ? a : b));
     const roleGroups = createGroupedArray(roles.map(role => `\`${rpad(role.name, longest.length, ' ')} ${role.id}\``), 20);
-    this.messageManager.embed(message,
+    const metaGroups = createGroupedArray(rolegroups, 4);
+    metagroups.forEach((metaGroup) => {
+      this.messageManager.embed(message,
       {
-        fields: roleGroups.map(roleGroup => ({
+        fields: metaGroup.map(roleGroup => ({
           name: '_ _',
           value: roleGroup.join('\n'),
         })),
       }, true, false);
+    });
   }
 }
 
