@@ -37,7 +37,7 @@ class Roles extends Command {
            const metaGroups = createGroupedArray(groupedRoles, 4);
            metaGroups.forEach((metaGroup) => {
              this.messageManager.embed(message,
-             new RolesEmbed(this.bot, groupedRoles, prefix, longest.length),
+             new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
               true, true);
            });
 
