@@ -276,10 +276,6 @@ class Genesis {
     this.client.user.setPresence({
       status: `@${this.client.user.username} help (${this.shardId + 1}/${this.shardCount})`,
       afk: false,
-      game: {
-        name: 'Warframe',
-        url: 'https://warframe.com',
-      },
     });
     this.settings.ensureData(this.client);
     this.readyToExecute = true;
