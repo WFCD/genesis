@@ -273,7 +273,14 @@ class Genesis {
   onReady() {
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
-    this.client.user.setGame(`@${this.client.user.username} help (${this.shardId + 1}/${this.shardCount})`);
+    this.client.user.setPresence({
+      status: `@${this.client.user.username} help (${this.shardId + 1}/${this.shardCount})`,
+      afk: false,
+      game: {
+        name: 'Warframe',
+        url: 'https://warframe.com',
+      },
+    });
     this.settings.ensureData(this.client);
     this.readyToExecute = true;
 
