@@ -69,7 +69,7 @@ class Database {
     Promise.all(promises.map(x => x.reflect()))
       .then((results) => {
         results.forEach((result) => {
-          if (!result.isFulfilled()) {
+          if (result && !result.isFulfilled()) {
             this.logger.error(result.reason());
           }
         });
@@ -83,12 +83,15 @@ class Database {
    */
   addGuild(guild) {
     const channelIDs = guild.channels.filter(c => c.type === 'text').keyArray();
-    const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
-    channelIDs.forEach((id, index) => {
-      query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
-    });
+    if (channelIDs.length) {
+      const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
+      channelIDs.forEach((id, index) => {
+        query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
+      });
 
-    return this.db.query(query);
+      return this.db.query(query);
+    }
+    return false;
   }
 
   /**
