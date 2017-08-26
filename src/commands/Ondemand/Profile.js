@@ -30,11 +30,12 @@ class PriceCheck extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const username = message.strippedContent.match(this.regex)[1].trim();
+    let username = message.strippedContent.match(this.regex)[1];
     if (typeof username === 'undefined') {
       this.sendUsageEmbed(message);
       return;
     }
+    username = username.trim();
 
     message.channel.send('', { embed: inProgressEmbed })
       .then(sentMessage => this.bot.nexusFetcher.get('/warframe/v1/bots/status')
@@ -51,8 +52,8 @@ class PriceCheck extends Command {
           .then(profile => ({ sentMessage, profile })))
       .then(({ sentMessage, profile }) => {
         if (profile.name || (profile.error === `${username} could not be found.`
-                             && (sentMessage.embeds.length > 0 
-                                 && 'Profile Engine Offline. New Entries will not be processed.' !== sentMessage.embeds[0].title))) {
+                             && (sentMessage.embeds.length > 0
+                                 && sentMessage.embeds[0].title !== 'Profile Engine Offline. New Entries will not be processed.'))) {
           return sentMessage.edit('', { embed: new ProfileEmbed(this.bot, profile.name ? profile : {}) });
         }
         return null;
