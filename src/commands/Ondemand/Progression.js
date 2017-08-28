@@ -2,6 +2,13 @@
 
 const Command = require('../../Command.js');
 
+const embed = {
+      color: 0xBCC9EB,
+      image: {
+        url: 'https://warframestat.us/chart.low.png',
+      },
+    };
+
 /**
  * Displays the Warframe Progression Chart
  */
@@ -12,7 +19,6 @@ class Progression extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.progress', 'progress', 'Display Warframe Progression Chart');
-    this.progressionChart = 'https://warframestat.us/chart.low.png';
   }
 
   /**
@@ -21,10 +27,7 @@ class Progression extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    this.messageManager.sendFile(message,
-      `Operator ${message.author.toString()}, the progression flowchart, at your request.`,
-      this.progressionChart, 'Progress.png', true);
-  }
+    this.messageManager.embed(message, embed, true, false, `Operator ${message.author.toString()}, the progression flowchart, at your request.`);
 }
 
 module.exports = Progression;
