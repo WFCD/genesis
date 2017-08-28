@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 
-const buildChart = 'http://i.imgur.com/9g6iIff.png';
+const buildChart = 'http://i.imgur.com/UzDIQBA.png';
 
 /**
  * Displays the weapon crafting chart
