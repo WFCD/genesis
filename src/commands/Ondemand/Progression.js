@@ -28,6 +28,7 @@ class Progression extends Command {
    */
   run(message) {
     this.messageManager.embed(message, embed, true, false, `Operator ${message.author.toString()}, the progression flowchart, at your request.`);
+  }
 }
 
 module.exports = Progression;
