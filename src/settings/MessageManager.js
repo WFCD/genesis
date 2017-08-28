@@ -89,13 +89,13 @@ class MessaageManager {
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
    */
-  embed(message, embed, deleteOriginal, deleteResponse) {
+  embed(message, embed, deleteOriginal, deleteResponse, content) {
     const promises = [];
     if ((message.channel.type === 'text' &&
       message.channel.permissionsFor(this.client.user.id)
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      promises.push(message.channel.send('', { embed }).then((msg) => {
+      promises.push(message.channel.send(content || '', { embed }).then((msg) => {
         this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       }));
     }
