@@ -24,6 +24,7 @@ class BuildChart extends Command {
   run(message) {
     this.messageManager.embed(message, {
       title: 'Legend',
+      color: 0xBCC9EB,
       image: {
         url: buildChart,
       },
