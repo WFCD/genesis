@@ -64,7 +64,9 @@ class Database {
   ensureData(client) {
     const promises = [];
     client.guilds.array().forEach((guild) => {
-      promises.push(this.addGuild(guild));
+      if (guild.channels.array().length) {
+        promises.push(this.addGuild(guild));
+      }
     });
     Promise.all(promises.map(x => x.reflect()))
       .then((results) => {
@@ -83,15 +85,12 @@ class Database {
    */
   addGuild(guild) {
     const channelIDs = guild.channels.filter(c => c.type === 'text').keyArray();
-    if (channelIDs.length) {
-      const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
-      channelIDs.forEach((id, index) => {
-        query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
-      });
+    const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
+    channelIDs.forEach((id, index) => {
+      query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
+    });
 
-      return this.db.query(query);
-    }
-    return false;
+    return this.db.query(query);
   }
 
   /**
