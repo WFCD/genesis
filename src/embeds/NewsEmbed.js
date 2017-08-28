@@ -22,7 +22,7 @@ class NewsEmbed extends BaseEmbed {
       return date2.getTime() - date1.getTime();
     });
 
-    this.color = news.length > 0 ? 0x00ff00 : 0xff0000;
+    this.color = news.length > 0 ? 0x779ecb : 0xff6961;
     let value = news.map(n => n.asString).join('\n');
     if (type) {
       if (type === 'update') {
