@@ -233,7 +233,15 @@
       "info": "http://warframe.wikia.com/wiki/Hydroid",
       "thumbnail": "https://vignette1.wikia.nocookie.net/warframe/images/9/9f/HydroidNewLook.png/revision/latest/scale-to-width-down/291?cb=20141124023113",
       "location": "Councilor Vay Hek - Oro, Earth",
-      "color": 7702919
+      "color": 7702919,
+      "prime_mr": "5",
+      "prime_health": "",
+      "prime_shield": "175/525",
+      "prime_armor": "250",
+      "prime_speed": "1.2",
+      "prime_power": "150/225",
+      "prime_polarities": [],
+      "prime_aura": ""
    },
    {
       "regex":"inaros",
