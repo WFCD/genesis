@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 
-const buildChart = 'http://i.imgur.com/UzDIQBA.png';
+const buildChart = 'https://vignette3.wikia.nocookie.net/warframe/images/6/66/Ww.jpg/revision/latest';
 
 /**
  * Displays the weapon crafting chart
