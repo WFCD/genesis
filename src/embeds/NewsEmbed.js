@@ -34,6 +34,7 @@ class NewsEmbed extends BaseEmbed {
       value = value.length > 0 ? value : 'No News Currently';
     }
     this.fields = [{ name: '_ _', value }];
+    this.image = { url: news[0] ? news[0].imageLink : ''};
   }
 }
 
