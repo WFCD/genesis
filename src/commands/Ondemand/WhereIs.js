@@ -72,7 +72,7 @@ class Whereis extends Command {
         return this.bot.caches.dropCache.getData()
           .then((data) => {
             const results = data
-              .filter(entry => entry.item.toLowerCase().indexOf(query) > -1)
+              .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
               .sort(itemSort);
             const longestName = results.map(result => result.item)
               .reduce((a, b) => (a.length > b.length ? a : b));
