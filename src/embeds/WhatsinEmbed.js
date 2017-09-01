@@ -11,21 +11,45 @@ class WhatsinEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Object} details details to derive data from
+   * @param {string} tier Relic tier
+   * @param {string} type Relic type
    */
-  constructor(bot, details) {
+  constructor(bot, details, tier, type) {
     super();
-    const longest = details.rewards.map(drop => drop.name)
-     .reduce((a, b) => (a.length > b.length ? a : b));
+    const transformedRewards = {};
+    const rewards = [details.rewards.Intact, details.rewards.Exceptional,
+      details.rewards.Flawless, details.rewards.Radiant];
+    rewards.forEach((rewardTier) => {
+      rewardTier.forEach((reward) => {
+        if (!transformedRewards[reward.itemName]) {
+          transformedRewards[reward.itemName] = [];
+        }
+        if (!transformedRewards[reward.itemName][rewards.indexOf(rewardTier)]) {
+          transformedRewards[reward.itemName][rewards.indexOf(rewardTier)] = reward.chance;
+        }
+      });
+    });
 
-    this.title = `${details.tier} ${details.type}`;
+    const longest = Object.keys(transformedRewards).reduce((a, b) => (a.length > b.length ? a : b));
+    const tokens = [];
+    Object.keys(transformedRewards).forEach((rewardName) => {
+      const reward = transformedRewards[rewardName];
+      const qualities = [];
+      reward.forEach((quality) => {
+        const wrappedQuality = lpad(`${quality.toFixed(2)}`, 6, ' ').substring(0, 5);
+        qualities.push(wrappedQuality);
+      });
+      tokens.push(`\`${rpad(rewardName, longest.length + 1, ' ')} ${qualities.join('/')}%\``);
+    });
+
+
+    this.title = `${tier} ${type}`;
     this.color = 0x3498db;
     this.type = 'rich';
     this.fields = [
       {
         name: '_ _',
-        value: details.rewards.map(drop => `\`${rpad(drop.name, longest.length + 1, ' ')} ` +
-        `${lpad(drop.intact.value, 6, ' ').substring(0, 5)}/${lpad(drop.exceptional.value, 6, ' ').substring(0, 5)}` +
-        `/${lpad(drop.flawless.value, 6, ' ').substring(0, 5)}/${lpad(drop.radiant.value, 6, ' ')}\``).join('\n'),
+        value: tokens.join('\n'),
       },
     ];
   }

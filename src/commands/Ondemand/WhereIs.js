@@ -1,7 +1,41 @@
 'use strict';
 
-const Query = require('warframe-location-query');
 const Command = require('../../Command.js');
+const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
+
+const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
+const noResultsEmbed = { title: 'No results for that query. Please refine your search.', description: 'This is either due to the item being vaulted or an invalid search. Sorry.', color: 0xff6961 };
+
+function createGroupedArray(arr, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    groups.push(arr.slice(i, i + chunkSize));
+  }
+  return groups;
+}
+
+function placeSort(a, b) {
+  if (a.place < b.place) {
+    return -1;
+  } else if (a.place > b.place) {
+    return 1;
+  }
+  return 0;
+}
+
+function itemSort(a, b) {
+  if (a.item < b.item) {
+    return -1;
+  } else if (a.item > b.item) {
+    return 1;
+  }
+  return placeSort(a, b);
+}
+
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
+
 
 /**
  * Looks up locations of items
@@ -12,17 +46,15 @@ class Whereis extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.whereis', 'whereis', 'whereis');
-    this.regex = new RegExp('^where(?:\\s?is)?(?:\\s+([\\w+\\s]+))?', 'i');
+    super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops');
+    this.regex = new RegExp('^where\\s?is\\s?(.+)?', 'i');
 
     this.usages = [
       {
-        description: 'Display where an item drops',
+        description: 'Display where something drops from',
         parameters: ['item'],
       },
     ];
-
-    this.querier = new Query();
   }
 
   /**
@@ -31,51 +63,35 @@ class Whereis extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const item = message.strippedContent.match(this.regex)[1];
-    this.querier.getAll(item)
-      .then((results) => {
-        const resultsHasResults = Object.prototype.toString.call(results) === '[object Array]' && results.length > 0;
-        const color = resultsHasResults ? 0xD8F6ED : 0xBAA97C;
-        const fields = resultsHasResults ? [] : [{ name: 'Operator, there is no such item location available.', value: '_ _' }];
-
-        let slicedResults = [];
-        let sliced = false;
-        if (results.length > 4) {
-          slicedResults = results.slice(0, 4);
-          sliced = true;
-        } else {
-          slicedResults = results;
+    let query = message.strippedContent.match(this.regex)[1];
+    message.channel.send('', { embed: inProgressEmbed })
+      .then((sentMessage) => {
+        if (!query) {
+          return sentMessage.edit('', { embed: noResultsEmbed });
         }
-
-        if (resultsHasResults) {
-          slicedResults.forEach((result) => {
-            fields.push({
-              name: result.component + (result.type === 'Prime Part' ?
-                ` worth ${result.ducats}` : ''),
-              value: `${this.md.codeMulti}${result.locations.join(`,${this.bot.md.lineEnd}`).replace(/,,/g, ',')}${this.md.blockEnd}`,
+        return this.bot.caches.dropCache.getData()
+          .then((data) => {
+            const results = data
+              .filter(entry => entry.item.toLowerCase().indexOf(query) > -1)
+              .sort(itemSort);
+            const longestName = results.map(result => result.item)
+              .reduce((a, b) => (a.length > b.length ? a : b));
+            const longestRelic = results.map(result => result.place)
+              .reduce((a, b) => (a.length > b.length ? a : b));
+            query = toTitleCase(query.trim());
+            createGroupedArray(results, 40).forEach((group) => {
+              sentMessage.edit('', { embed: new WhereisEmbed(this.bot, createGroupedArray(group, 4),
+                query, longestName.length, longestRelic.length) });
             });
+          })
+          .catch((error) => {
+            this.logger.error(error);
+            sentMessage.edit('', { embed: noResultsEmbed });
           });
-        }
-
-        if (sliced) {
-          fields.push({ name: 'Your query returned more results than I can display, operator. Refine your search for more accurate results.', value: '_ _' });
-        }
-
-        const embed = {
-          color,
-          title: 'Warframe Where Is?',
-          url: 'https://warframe.com',
-          description: `Location query for ${item}`,
-          fields,
-          thumbnail: { url: 'http://vignette2.wikia.nocookie.net/warframe/images/1/1a/VoidProjectionsIronC.png' },
-          footer: {
-            icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-            text: 'Data from the wiki',
-          },
-        };
-        this.messageManager.embed(message, embed, true, false);
       })
-      .catch(this.logger.error);
+      .catch((e) => {
+        this.logger.error(e);
+      });
   }
 }
 

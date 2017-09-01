@@ -30,7 +30,7 @@ const levels = [
 levels.forEach((level) => {
   // eslint-disable-next-line func-names
   Logger.prototype[level.toLowerCase()] = function (message) {
-    if (levels.indexOf(level) >= levels.indexOf(logLevel) && ['fatal', 'error'].indexOf(level.toLowerCase()) > -1) {
+    if (levels.indexOf(level) >= levels.indexOf(logLevel)) {
       // eslint-disable-next-line no-console
       console.log(`[${level}] ${message}`);
     }

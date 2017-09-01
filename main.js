@@ -1,6 +1,9 @@
 'use strict';
 
 const cluster = require('cluster');
+const Nexus = require('warframe-nexus-query');
+const Cache = require('json-fetch-cache');
+const DataCache = require('./src/resources/DropCache.js');
 
 /**
  * Raven client for logging errors and debugging events
@@ -13,8 +16,6 @@ const Raven = require('raven');
  * @type {Genesis}
  */
 const Genesis = require('./src/bot.js');
-
-const Cache = require('json-fetch-cache');
 
 /**
  * Raven client instance for logging errors and debugging events
@@ -55,14 +56,13 @@ const nexusOptions = {
 const nexusFetcher = new NexusFetcher(nexusOptions.nexusKey
     && nexusOptions.nexusSecret ? nexusOptions : {});
 
-const Nexus = require('warframe-nexus-query');
-
 const nexusQuerier = new Nexus(nexusFetcher);
 
 const caches = {
   pc: new Cache('https://ws.warframestat.us/pc', 600000),
   xb1: new Cache('https://ws.warframestat.us/xb1', 600000),
   ps4: new Cache('https://ws.warframestat.us/ps4', 600000),
+  dropCache: new DataCache(logger),
 };
 
 if (cluster.isMaster) {
