@@ -28,6 +28,7 @@ class AlertEmbed extends BaseEmbed {
     } else {
       const a = alerts[0];
       this.title = a.mission.reward.itemString;
+      this.url = 'https://ws.warframestat.us/';
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;
       const summary = `${a.mission.faction} ${a.mission.type} on ${a.mission.node}`;
