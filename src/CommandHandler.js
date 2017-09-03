@@ -91,67 +91,61 @@ class CommandHandler {
    * Handle the command contained in the message contents, if any.
    * @param {Message} message Message whose command should be checked and handled
    */
-  handleCommand(message) {
+  async handleCommand(message) {
     let content = message.content;
     const botping = `@${message.guild ?
           message.guild.members.get(this.bot.client.user.id).displayName :
           this.bot.client.user.username}`;
     const botPingId = `<@${this.bot.client.user.id}>`;
-    this.bot.settings.getCommandContext(message.channel)
-      .then(({ prefix, allowCustom, allowInline }) => {
-        let checkOnlyInlines = false;
-        const notStartWithPrefix = !content.startsWith(prefix)
-          && !content.startsWith(botping) && !content.startsWith(botPingId);
-        if (notStartWithPrefix) {
-          if (allowInline && this.inlineCommands.length > 0) {
-            checkOnlyInlines = true;
-          } else {
-            return;
+    const { prefix, allowCustom, allowInline } = await this.bot.settings.getCommandContext(message.channel);
+    let checkOnlyInlines = false;
+    const notStartWithPrefix = !content.startsWith(prefix)
+      && !content.startsWith(botping) && !content.startsWith(botPingId);
+    if (notStartWithPrefix) {
+      if (allowInline && this.inlineCommands.length > 0) {
+        checkOnlyInlines = true;
+      } else {
+        return;
+      }
+    }
+
+    let commands = [];
+    if (checkOnlyInlines) {
+      commands = this.inlineCommands;
+    } else if (allowCustom) {
+      commands = this.commands.concat(this.customCommands);
+    } else {
+      commands = this.commands;
+    }
+
+    if (content.startsWith(prefix)) {
+      content = content.replace(prefix, '');
+    }
+    if (content.startsWith(botping)) {
+      content = content.replace(new RegExp(`${botping}\\s+`, 'i'), '');
+    }
+    if (content.startsWith(botPingId)) {
+      content = content.replace(new RegExp(`${botPingId}\\s+`, 'i'), '');
+    }
+    const messageWithStrippedContent = message;
+    messageWithStrippedContent.strippedContent = content;
+    this.logger.debug(`Handling \`${content}\``);
+    let done = false;
+    commands.forEach(async (command) => {
+      if (command.regex.test(content) && !done) {
+        const canAct = await this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline);
+        if (canAct) {
+          this.logger.debug(`Matched ${command.id}`);
+          if ((message.channel.type === 'dm' ||
+              (message.channel.permissionsFor(this.bot.client.user.id)
+              .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline) {
+            message.react('✅');
           }
+          command.run(messageWithStrippedContent);
+          done = true;
         }
-
-        let commands = [];
-        if (checkOnlyInlines) {
-          commands = this.inlineCommands;
-        } else if (allowCustom) {
-          commands = this.commands.concat(this.customCommands);
-        } else {
-          commands = this.commands;
-        }
-
-        if (content.startsWith(prefix)) {
-          content = content.replace(prefix, '');
-        }
-        if (content.startsWith(botping)) {
-          content = content.replace(new RegExp(`${botping}\\s+`, 'i'), '');
-        }
-        if (content.startsWith(botPingId)) {
-          content = content.replace(new RegExp(`${botPingId}\\s+`, 'i'), '');
-        }
-        const messageWithStrippedContent = message;
-        messageWithStrippedContent.strippedContent = content;
-        this.logger.debug(`Handling \`${content}\``);
-        let done = false;
-        commands
-          .forEach((command) => {
-            if (command.regex.test(content) && !done) {
-              this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline)
-            .then((canAct) => {
-              if (canAct) {
-                this.logger.debug(`Matched ${command.id}`);
-                if ((message.channel.type === 'dm' ||
-                  (message.channel.permissionsFor(this.bot.client.user.id)
-                   .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline) {
-                  message.react('✅').catch(this.logger.error);
-                }
-                command.run(messageWithStrippedContent);
-                done = true;
-              }
-            });
-            }
-          });
-      })
-      .catch(this.logger.error);
+      }
+    });
   }
 
   /**
@@ -160,56 +154,42 @@ class CommandHandler {
    * @param   {Message} message Discord message object
    * @param   {boolean} allowCustom Whether or not to allow custom commands
    * @param   {boolean} allowInline Whether or not to allow inline commands
-   * @returns {Promise<boolean>} Whether or not the ucrrent command can be called by the author
+   * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
-  checkCanAct(command, message, allowCustom, allowInline) {
-    return new Promise((resolve) => {
-      if (command.isCustomCommand && allowCustom) {
-        resolve(command.isInline ? allowInline : true);
-      } else if (command.isInline && allowInline) {
-        resolve(true);
-      } else if (command.ownerOnly && message.author.id !== this.bot.owner) {
-        resolve(false);
-      } else if (message.channel.type === 'text') {
-        if (command.requiresAuth) {
-          if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
-            this.bot.settings
-            .getChannelPermissionForMember(message.channel, message.author.id, command.id)
-              .then((userHasPermission) => {
-                resolve(userHasPermission);
-              })
-              .catch(() => {
-                this.bot.settings
-                .getChannelPermissionForUserRoles(message.channel,
-                  message.author, command.id)
-                  .then((userHasPermission) => {
-                    resolve(userHasPermission);
-                  });
-              });
-          } else {
-            resolve(false);
+  async checkCanAct(command, message, allowCustom, allowInline) {
+    if (command.isCustomCommand && allowCustom) {
+      return command.isInline ? allowInline : true;
+    } else if (command.isInline && allowInline) {
+      return true;
+    } else if (command.ownerOnly && message.author.id !== this.bot.owner) {
+      return false;
+    } else if (message.channel.type === 'text') {
+      if (command.requiresAuth) {
+        if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
+          try {
+            return this.bot.settings
+                   .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+          } catch (err) {
+            return this.bot.settings
+                   .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
           }
         } else {
-          this.bot.settings
-          .getChannelPermissionForMember(message.channel, message.author.id, command.id)
-            .then((userHasPermission) => {
-              resolve(userHasPermission);
-            })
-            .catch(() => {
-              this.bot.settings
-              .getChannelPermissionForUserRoles(message.channel,
-                message.author, command.id)
-                .then((userHasPermission) => {
-                  resolve(userHasPermission);
-                });
-            });
+          return false;
         }
-      } else if (message.channel.type === 'dm' && command.allowDM) {
-        resolve(true);
       } else {
-        resolve(false);
+        try {
+          return this.bot.settings
+                 .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+        } catch (err) {
+          return this.bot.settings
+                     .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+        }
       }
-    });
+    } else if (message.channel.type === 'dm' && command.allowDM) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
