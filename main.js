@@ -3,19 +3,12 @@
 const cluster = require('cluster');
 const Nexus = require('warframe-nexus-query');
 const Cache = require('json-fetch-cache');
-const DataCache = require('./src/resources/DropCache.js');
-
-/**
- * Raven client for logging errors and debugging events
- * @type {Raven}
- */
+const NexusFetcher = require('nexus-stats-api');
 const Raven = require('raven');
 
-/**
- * Bot class for interacting with discord and handling commands
- * @type {Genesis}
- */
+const DataCache = require('./src/resources/DropCache.js');
 const Genesis = require('./src/bot.js');
+const ClusterManager = require('./src/ClusterManager.js');
 
 /**
  * Raven client instance for logging errors and debugging events
@@ -30,22 +23,19 @@ const client = Raven.config(process.env.RAVEN_URL, {
  */
 const Logger = require('./src/Logger.js');
 
-/**
- * Class that manages the cluster's workers
- * @type {Function}
- */
-const ClusterManager = require('./src/ClusterManager.js');
-
 client.install();
-
 client.on('error', (error) => {
   //  eslint-disable-next-line no-console
   console.error(`Could not report the following error to Sentry: ${error.message}`);
 });
 
 const logger = new Logger(client);
-
-const NexusFetcher = require('nexus-stats-api');
+process.on('uncaughtException', (err) => {
+  logger.error(err);
+});
+process.on('unhandledRejection', (err) => {
+  logger.error(err);
+});
 
 const nexusOptions = {
   user_key: process.env.NEXUSSTATS_USER_KEY || undefined,
