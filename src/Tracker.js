@@ -47,28 +47,26 @@ class Tracker {
    * @param {ShardClientUtil} shardUtil Discord shard client util used
    * to fetch shard count of all shards
    */
-  updateCarbonitex(shardUtil) {
+  async updateCarbonitex(shardUtil) {
     if (carbonToken) {
-      shardUtil.fetchClientValues('guilds.size')
-        .then(results => results.reduce((prev, val) => prev + val, 0))
-        .then((guildsLen) => {
-          this.logger.debug('Updating Carbonitex');
-          this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
-          const requestBody = {
-            url: 'https://www.carbonitex.net/discord/data/botdata.php',
-            body: {
-              key: carbonToken,
-              servercount: guildsLen,
-            },
-            json: true,
-          };
-          request(requestBody)
-            .then((parsedBody) => {
-              this.logger.debug(parsedBody);
-            })
-            .catch(error => this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${error.statusCode} | Guilds: ${guildsLen}`));
-        })
-        .catch(this.logger.error);
+      const results = await shardUtil.fetchClientValues('guilds.size');
+      const guildsLen = results.reduce((prev, val) => prev + val, 0);
+      this.logger.debug('Updating Carbonitex');
+      this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
+      const requestBody = {
+        url: 'https://www.carbonitex.net/discord/data/botdata.php',
+        body: {
+          key: carbonToken,
+          servercount: guildsLen,
+        },
+        json: true,
+      };
+      try {
+        const parsedBody = await request(requestBody);
+        this.logger.debug(parsedBody);
+      } catch (err) {
+        this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
+      }
     }
   }
 
@@ -76,7 +74,7 @@ class Tracker {
    * Updates bots.discord.pw if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on
    */
-  updateDiscordBotsWeb(guildsLen) {
+  async updateDiscordBotsWeb(guildsLen) {
     if (botsDiscordPwToken && botsDiscordPwUser) {
       this.logger.debug('Updating discord bots');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
@@ -94,11 +92,12 @@ class Tracker {
         },
         json: true,
       };
-      request(requestBody)
-      .then((parsedBody) => {
+      try {
+        const parsedBody = await request(requestBody);
         this.logger.debug(parsedBody);
-      })
-      .catch(error => this.logger.error(`Error updating Bots.Discord.pw. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${error.statusCode}`));
+      } catch (err) {
+        this.logger.error(`Error updating Bots.Discord.pw. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${err.statusCode}`);
+      }
     }
   }
 
@@ -114,7 +113,7 @@ class Tracker {
   /**
    * Post the cachet heartbeat for the shardCount
    */
-  postHeartBeat() {
+  async postHeartBeat() {
     const requestBody = {
       method: 'POST',
       url: `${cachetHost}/api/v1/metrics/${metricId}/points`,
@@ -127,11 +126,8 @@ class Tracker {
       },
       json: true,
     };
-    request(requestBody)
-    .then((parsedBody) => {
-      this.logger.debug(parsedBody);
-    })
-    .catch(this.logger.error);
+    const parsedBody = await request(requestBody);
+    this.logger.debug(parsedBody);
   }
 }
 

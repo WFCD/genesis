@@ -32,38 +32,30 @@ const Notifier = require('./notifications/Notifier.js');
  * @param  {Genesis} self    Bot instance
  * @param  {number} shardId shard identifier
  */
-function checkPrivateRooms(self, shardId) {
+async function checkPrivateRooms(self, shardId) {
   self.logger.debug(`Checking private rooms... Shard ${shardId}`);
-  self.settings.getPrivateRooms()
-     .then((privateRooms) => {
-       self.logger.debug(`Private rooms... ${privateRooms.length}`);
-       privateRooms.forEach((room) => {
-         if (room && room.voiceChannel && room.textChannel) {
-           const now = new Date();
-           if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
-                > self.channelTimeout)
-             && room.voiceChannel.members.size === 0) {
-             if (room.textChannel.deletable) {
-               self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
-               room.textChannel.delete()
-                 .then(() => {
-                   if (room.voiceChannel.deletable) {
-                     self.logger.debug(`Deleting text channel... ${room.voiceChannel.id}`);
-                     return room.voiceChannel.delete();
-                   }
-                   return new Promise();
-                 })
-                 .then(() => {
-                   if (room.textChannel.deletable && room.voiceChannel.deletable) {
-                     self.settings
-                      .deletePrivateRoom(room.guild, room.textChannel, room.voiceChannel);
-                   }
-                 });
-             }
-           }
-         }
-       });
-     });
+  const privateRooms = await self.settings.getPrivateRooms();
+  self.logger.debug(`Private rooms... ${privateRooms.length}`);
+  privateRooms.forEach(async (room) => {
+    if (room && room.voiceChannel && room.textChannel) {
+      const now = new Date();
+      if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt >
+          self.channelTimeout) &&
+        room.voiceChannel.members.size === 0) {
+        if (room.textChannel.deletable) {
+          self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
+          await room.textChannel.delete();
+        }
+        if (room.voiceChannel.deletable) {
+          self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
+          await room.voiceChannel.delete();
+        }
+        if (room.textChannel.deletable && room.voiceChannel.deletable) {
+          self.settings.deletePrivateRoom(room.guild, room.textChannel, room.voiceChannel);
+        }
+      }
+    }
+  });
 }
 
 /**
@@ -82,9 +74,16 @@ class Genesis {
    * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
    * @param {NexusFetcher}      [options.nexusFetcher] Nexus Stats direct api
    */
-  constructor(discordToken, logger, { shardId = 0, shardCount = 1, prefix = process.env.PREFIX,
-                                     mdConfig = md, owner = null, nexusQuerier = {},
-                                     caches = {}, nexusFetcher } = {}) {
+  constructor(discordToken, logger, {
+    shardId = 0,
+    shardCount = 1,
+    prefix = process.env.PREFIX,
+    mdConfig = md,
+    owner = null,
+    nexusQuerier = {},
+    caches = {},
+    nexusFetcher,
+  } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -214,7 +213,10 @@ class Genesis {
      */
     this.languages = ['en-us'];
 
-    this.tracker = new Tracker(this.logger, this.client, this.shardClient, { shardId, shardCount });
+    this.tracker = new Tracker(this.logger, this.client, this.shardClient, {
+      shardId,
+      shardCount,
+    });
 
     this.messageManager = new MessageManager(this);
 
@@ -253,18 +255,18 @@ class Genesis {
   /**
    * Creates the database schema and logs in the bot to Discord
    */
-  start() {
-    this.settings.createSchema(this.client).then(() => {
-      this.logger.debug('Schema created');
-      return this.client.login(this.token);
-    }).then((t) => {
+  async start() {
+    await this.settings.createSchema(this.client);
+    this.logger.debug('Schema created');
+    try {
+      const t = await this.client.login(this.token);
       this.logger.debug(`Logged in with token ${t}`);
       this.notifier.start();
-    }).catch((e) => {
-      this.logger.error(e.message);
-      this.logger.fatal(e);
+    } catch (err) {
+      this.logger.error(err.message);
+      this.logger.fatal(err);
       process.exit(1);
-    });
+    }
   }
 
   /**
@@ -303,50 +305,48 @@ class Genesis {
    * Handle guild creation
    * @param {Guild} guild The guild that was created
    */
-  onGuildCreate(guild) {
+  async onGuildCreate(guild) {
     if (!guild.available) {
       return;
     }
-    this.settings.addGuild(guild).then(() => {
-      this.logger.debug(`Joined guild ${guild} (${guild.id}`);
-      guild.defaultChannel.send(`**${this.client.user.username.toUpperCase()} ready! Type ` +
-        `\`${this.prefix}help\` for help**`);
-    }).catch(this.logger.error);
+    await this.settings.addGuild(guild);
+    this.logger.debug(`Joined guild ${guild} (${guild.id}`);
+    guild.defaultChannel.send(`**${this.client.user.username.toUpperCase()} ready! Type ` +
+    `\`${this.prefix}help\` for help**`);
   }
 
   /**
    * Handle deleting or leaving a guild
    * @param {Guild} guild The guild that was deleted/left
    */
-  onGuildDelete(guild) {
+  async onGuildDelete(guild) {
     if (!guild.available) {
       return;
     }
-    this.settings.deleteGuild(guild)
-      .then(() => {
-        this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
-      })
-      .catch(this.logger.error);
+    await this.settings.deleteGuild(guild);
+    this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
   }
 
   /**
    * Handle channel creation
    * @param {Channel} channel The channel that was created
    */
-  onChannelCreate(channel) {
+  async onChannelCreate(channel) {
     if (channel.type === 'voice') {
       return;
     }
     if (channel.type === 'text') {
-      this.settings.addGuildTextChannel(channel).then(() => {
+      try {
+        await this.settings.addGuildTextChannel(channel);
         this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild ` +
           `${channel.guild.name} (${channel.guild.id})`);
-      }).catch(() => this.settings.addGuild(channel.guild)
-        .then(() => this.settings.addGuildTextChannel(channel)));
+      } catch (err) {
+        await this.settings.addGuild(channel.guild);
+        this.settings.addGuildTextChannel(channel);
+      }
     } else {
-      this.settings.addDMChannel(channel).then(() => {
-        this.logger.debug(`DM channel with id ${channel.id} created`);
-      }).catch(this.logger.error);
+      await this.settings.addDMChannel(channel);
+      this.logger.debug(`DM channel with id ${channel.id} created`);
     }
   }
 
@@ -354,35 +354,31 @@ class Genesis {
    * Handle channel deletion
    * @param {Channel} channel The channel that was deleted
    */
-  onChannelDelete(channel) {
+  async onChannelDelete(channel) {
     if (channel.type === 'voice') {
       return;
     }
-    this.settings.deleteChannel(channel).then(() => {
-      this.logger.debug(`Channel with id ${channel.id} deleted`);
-    }).catch(this.logger.error);
+    await this.settings.deleteChannel(channel);
+    this.logger.debug(`Channel with id ${channel.id} deleted`);
   }
 
-  onGuildMemberAdd(guildMember) {
-    this.settings.getWelcomes(guildMember.guild)
-      .then((welcomes) => {
-        welcomes.forEach((welcome) => {
-          if (welcome.isDm === '1') {
-            this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
-              .replace(/\$username/ig, guildMember.displayName)
-              .replace(/\$usermention/ig, guildMember)
-              .replace(/\$timestamp/ig, new Date().toLocaleString()));
-          } else {
-            this.messageManager
-              .sendMessage({ channel: welcome.channel }
-                , welcome.message
-                .replace(/\$username/ig, guildMember.displayName)
-                .replace(/\$usermention/ig, guildMember)
-                .replace(/\$timestamp/ig, new Date().toLocaleString()),
-                false, false);
-          }
-        });
-      });
+  async onGuildMemberAdd(guildMember) {
+    const welcomes = await this.settings.getWelcomes(guildMember.guild);
+    welcomes.forEach((welcome) => {
+      if (welcome.isDm === '1') {
+        this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
+          .replace(/\$username/ig, guildMember.displayName)
+          .replace(/\$usermention/ig, guildMember)
+          .replace(/\$timestamp/ig, new Date().toLocaleString()));
+      } else {
+        this.messageManager
+          .sendMessage({ channel: welcome.channel }, welcome.message
+            .replace(/\$username/ig, guildMember.displayName)
+            .replace(/\$usermention/ig, guildMember)
+            .replace(/\$timestamp/ig, new Date().toLocaleString()),
+            false, false);
+      }
+    });
   }
 }
 

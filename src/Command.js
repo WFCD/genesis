@@ -123,14 +123,9 @@ class Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
-    message.reply('This is a basic Command')
-      .then((msg) => {
-        this.logger.debug(`Sent ${msg}`);
-      })
-      .catch((error) => {
-        this.logger.error(`Error: ${error}`);
-      });
+  async run(message) {
+    const msg = await message.reply('This is a basic Command');
+    this.logger.debug(`Sent ${msg}`);
   }
 }
 
