@@ -10,6 +10,12 @@
 Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
 
 
+## Thanks Discord, Legalese things
+
+Due to the New Discord T.O.S , if you continue to use, participate, be in, or not leave Cephalon Sanctuary, you agree to allowing me, any person, user, or member, any bot, service, app, and anything to collect, use, transmit, or any data related to your user account, any data made available by Discord in the API or SDK, any metadata from your user account, any messages and or content you send, and anything else you do or give by staying in Cephalon Sanctuary, or by using my bot.
+
+If you do not agree to letting Genesis, Oratoris, or any other bot there do so, please kick Genesis from your clan or depart from Cephalon Sanctuary.
+
 ## Get Help on Discord
 
 [![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/DuFunUv "Try Genesis on Discord!")
