@@ -1,7 +1,6 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const frames = require('../resources/frames.json');
 
 const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
 
@@ -15,14 +14,10 @@ class WeaponEmbed extends BaseEmbed {
    */
   constructor(bot, weapon) {
     super();
-
-    this.thumbnail = {
-      url: 'https://i.imgur.com/tIBB0ea.png',
-    };
     if (weapon && typeof weapon !== 'undefined') {
       this.title = weapon.name;
-      this.url = weapon.url;
-      this.thumbnail.url = weapon.thumbnail;
+      this.url = weapon.url || '';
+      this.thumbnail = { url: weapon.thumbnail || '' };
       this.description = `${weapon.type} ${weapon.subtype ? `| ${weapon.subtype}` : ''}`;
       this.footer = { text: `Drops from: ${weapon.location}` };
       this.color = weapon.color;
@@ -192,8 +187,9 @@ class WeaponEmbed extends BaseEmbed {
         });
       }
     } else {
-      this.title = 'Available Warframes';
-      this.fields = [{ name: '_ _', value: frames.map(stat => stat.name).join('\n') }];
+      this.title = 'Invalid Query';
+      this.color = 0xff6961;
+      this.footer = undefined;
     }
   }
 }

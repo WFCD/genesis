@@ -27,20 +27,22 @@ class FrameStats extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let frame = message.strippedContent.match(this.regex)[1];
     if (frame) {
       frame = frame.trim().toLowerCase();
       const results = frames.filter(entry => new RegExp(entry.regex, 'ig').test(frame));
       if (results.length > 0) {
         this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), true, false);
-      } else {
-        this.messageManager.embed(message, new FrameEmbed(this.bot, undefined), true, false);
+        return this.messageManager.statuses.SUCCESS;
       }
-    } else {
       this.messageManager.embed(message, new FrameEmbed(this.bot, undefined), true, false);
+      return this.messageManager.statuses.FAILURE;
     }
+    this.messageManager.embed(message, new FrameEmbed(this.bot, undefined), true, false);
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

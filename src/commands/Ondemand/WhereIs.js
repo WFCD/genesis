@@ -61,42 +61,42 @@ class Whereis extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
-    message.channel.send('', { embed: inProgressEmbed })
-      .then((sentMessage) => {
-        if (!query) {
-          return sentMessage.edit('', { embed: noResultsEmbed });
+    const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
+    if (!query) {
+      await sentMessage.edit('', { embed: noResultsEmbed });
+      return this.messageManager.statuses.FAILURE;
+    }
+    try {
+      const data = await this.bot.caches.dropCache.getData();
+      const results = data
+        .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
+        .sort(itemSort);
+      const longestName = results.map(result => result.item)
+        .reduce((a, b) => (a.length > b.length ? a : b));
+      const longestRelic = results.map(result => result.place)
+        .reduce((a, b) => (a.length > b.length ? a : b));
+      query = toTitleCase(query.trim());
+      createGroupedArray(results, 70).forEach((group, index) => {
+        const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4),
+          query, longestName.length, longestRelic.length);
+        if (index === 0) {
+          sentMessage.edit('', { embed });
+        } else {
+          this.messageManager.embed(sentMessage, embed, false, false);
         }
-        return this.bot.caches.dropCache.getData()
-          .then((data) => {
-            const results = data
-              .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
-              .sort(itemSort);
-            const longestName = results.map(result => result.item)
-              .reduce((a, b) => (a.length > b.length ? a : b));
-            const longestRelic = results.map(result => result.place)
-              .reduce((a, b) => (a.length > b.length ? a : b));
-            query = toTitleCase(query.trim());
-            createGroupedArray(results, 70).forEach((group, index) => {
-              const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4),
-                query, longestName.length, longestRelic.length);
-              if (index === 0) {
-                sentMessage.edit('', { embed });
-              } else {
-                this.messageManager.embed(sentMessage, embed, false, false);
-              }
-            });
-          })
-          .catch((error) => {
-            this.logger.error(error);
-            sentMessage.edit('', { embed: noResultsEmbed });
-          });
-      })
-      .catch((e) => {
-        this.logger.error(e);
       });
+      if (results.length > 0) {
+        return this.messageManager.statuses.SUCCESS;
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
+    await sentMessage.edit('', { embed: noResultsEmbed });
+    return this.messageManager.statuses.FAILURE;
   }
 }
 
