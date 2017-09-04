@@ -63,8 +63,9 @@ class Armor extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?/;
     const params3 = message.content.match(pattern3Params);
     let armorString = '';
@@ -97,10 +98,11 @@ class Armor extends Command {
         },
       };
       this.messageManager.embed(message, embed, true, false);
-    } else {
-      this.logger.debug('Entered 0-param armor');
-      this.sendUsage(message);
+      return this.messageManager.statuses.success;
     }
+    this.logger.debug('Entered 0-param armor');
+    this.sendUsage(message);
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**

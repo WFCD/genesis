@@ -23,6 +23,12 @@ class MessaageManager {
      * @type {string}
      */
     this.zSWC = '\u200B';
+
+    this.statuses = {
+      SUCCESS: 'SUCCESS',
+      FAILURE: 'FAILURE',
+      NO_ACCESS: 'NO ACCESS',
+    };
   }
 
   /**
@@ -88,6 +94,7 @@ class MessaageManager {
    * @param {Object} embed Embed object to send
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @param {content} content Content of the embed, prepended to the embed.
    */
   embed(message, embed, deleteOriginal, deleteResponse, content) {
     const promises = [];

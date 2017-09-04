@@ -27,8 +27,9 @@ class Help extends Command {
   /**
    * Send help message
    * @param {Message} message Message to reply to
+   * @returns{boolean} success status
    */
-  run(message) {
+  async run(message) {
     if (message.channel.type !== 'dm') {
       this.messageManager.reply(message, this.helpReplyMsg, true, false);
     }
@@ -45,6 +46,7 @@ class Help extends Command {
     if (message.author.id === this.bot.owner) {
       this.sendOwnerOnlyEmbed(message);
     }
+    return this.messageManager.statuses.SUCCESS;
   }
 
   sendHelpEmbed(message) {

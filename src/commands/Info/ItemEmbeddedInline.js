@@ -31,8 +31,9 @@ class FrameStatsInline extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const queries = message.strippedContent.match(this.regex);
     if (queries.length > 0) {
       queries.forEach((query) => {
@@ -40,19 +41,21 @@ class FrameStatsInline extends Command {
         const results = frames.filter(entry => new RegExp(entry.regex, 'ig').test(strippedQuery));
         if (results.length > 0) {
           this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), false, true);
-        } else {
-          warframe.getSearchList({
-            query: strippedQuery,
-            limit: 1,
-          }).then(articles => warframe.getArticleDetails({
-            ids: articles.items.map(i => i.id),
-          })).then((details) => {
-            this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
-          })
-          .catch(e => this.logger.error(e));
+          return this.messageManager.statuses.SUCCESS;
         }
+        warframe.getSearchList({
+          query: strippedQuery,
+          limit: 1,
+        }).then(articles => warframe.getArticleDetails({
+          ids: articles.items.map(i => i.id),
+        })).then((details) => {
+          this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
+        })
+          .catch(e => this.logger.error(e));
+        return this.messageManager.statuses.SUCCESS;
       });
     }
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

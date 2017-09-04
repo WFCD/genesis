@@ -35,8 +35,9 @@ class BugReport extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns{boolean} success status
    */
-  run(message) {
+  async run(message) {
     const bugReport = message.strippedContent.match(this.regex)[1];
 
     if (this.bot.owner) {
@@ -70,19 +71,21 @@ class BugReport extends Command {
         }
         this.messageManager.sendDirectEmbedToOwner(embed);
         this.messageManager.reply(message, 'Bug report sent.', true, true);
-      } else {
-        const embed = {
-          author: {
-            icon_url: message.author.avatarURL,
-            name: `${message.author.username}#${message.author.discriminator}`,
-          },
-          title: `Bug Report | ${message.author}`,
-          fields: [{ name: '_ _', value: 'Need to provide a bug report, see `/help` for syntax.' }],
-          footer: { text: 'Add Tobiah#8452 as a friend so he can respond to your bug report' },
-        };
-        this.messageManager.embed(message, embed, true, false);
+        return this.messageManager.statuses.SUCCESS;
       }
+      const embed = {
+        author: {
+          icon_url: message.author.avatarURL,
+          name: `${message.author.username}#${message.author.discriminator}`,
+        },
+        title: `Bug Report | ${message.author}`,
+        fields: [{ name: '_ _', value: 'Need to provide a bug report, see `/help` for syntax.' }],
+        footer: { text: 'Add Tobiah#8452 as a friend so he can respond to your bug report' },
+      };
+      this.messageManager.embed(message, embed, true, false);
+      return this.messageManager.statuses.FAILURE;
     }
+    return this.messageManager.statuses.NO_ACCESS;
   }
 }
 
