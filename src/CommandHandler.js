@@ -77,6 +77,8 @@ class CommandHandler {
 
     this.inlineCommands = commands.filter(c => c.isInline);
 
+    this.statuses = this.bot.messageManager.statuses;
+
     this.loadCustomCommands();
   }
 
@@ -97,7 +99,8 @@ class CommandHandler {
           message.guild.members.get(this.bot.client.user.id).displayName :
           this.bot.client.user.username}`;
     const botPingId = `<@${this.bot.client.user.id}>`;
-    const { prefix, allowCustom, allowInline } = await this.bot.settings.getCommandContext(message.channel);
+    const { prefix, allowCustom, allowInline } = await this.bot.settings
+      .getCommandContext(message.channel);
     let checkOnlyInlines = false;
     const notStartWithPrefix = !content.startsWith(prefix)
       && !content.startsWith(botping) && !content.startsWith(botPingId);
@@ -133,15 +136,31 @@ class CommandHandler {
     let done = false;
     commands.forEach(async (command) => {
       if (command.regex.test(content) && !done) {
-        const canAct = await this.checkCanAct(command, messageWithStrippedContent, allowCustom, allowInline);
+        const canAct = await this.checkCanAct(command, messageWithStrippedContent,
+          allowCustom, allowInline);
         if (canAct) {
           this.logger.debug(`Matched ${command.id}`);
-          if ((message.channel.type === 'dm' ||
+
+          const status = await command.run(messageWithStrippedContent);
+          const canReact = (message.channel.type === 'dm' ||
               (message.channel.permissionsFor(this.bot.client.user.id)
-              .has(['ADD_REACTIONS', 'READ_MESSAGES', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline) {
-            message.react('✅');
+              .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+          switch (status) {
+            case this.statuses.SUCCESS:
+              if (canReact) {
+                message.react('✅');
+              }
+              break;
+            case this.statuses.FAILURE:
+              if (canReact) {
+                message.react('❌');
+              }
+              break;
+            case this.statuses.NO_ACCESS:
+            default:
+              break;
+
           }
-          command.run(messageWithStrippedContent);
           done = true;
         }
       }
@@ -168,10 +187,12 @@ class CommandHandler {
         if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
           try {
             return this.bot.settings
-                   .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+                   .getChannelPermissionForMember(message.channel,
+                     message.author.id, command.id);
           } catch (err) {
             return this.bot.settings
-                   .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+                   .getChannelPermissionForUserRoles(message.channel,
+                     message.author.id, command.id);
           }
         } else {
           return false;

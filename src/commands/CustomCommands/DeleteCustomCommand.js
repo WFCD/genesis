@@ -13,20 +13,21 @@ class DeleteCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
       this.messageManager.embed(message, {
         title: 'Delete Custom Command',
         fields: [{ name: '_ _', value: `**${this.call}**\n**command call**: command trigger to delete` }],
       }, true, false);
-    } else {
-      this.bot.settings.deleteCustomCommand(message, params[1])
+      return this.messageManager.statuses.FAILURE;
+    }
+    this.bot.settings.deleteCustomCommand(message, params[1])
         .then(() => {
           this.commandHandler.loadCustomCommands();
           this.messageManager.notifySettingsChange(message, true, true);
         });
-    }
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

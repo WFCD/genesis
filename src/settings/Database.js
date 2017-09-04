@@ -612,9 +612,8 @@ class Database {
     AND is_user = true AND target_id = ${memberId}`;
     return this.db.query(query)
       .then((res) => {
-        if (res.rows.length === 0) {
-          throw new Error(`The channel permissions for the channel ${channel.id}
-             for member ${memberId} was not found in the database`);
+        if (res[0].length === 0) {
+          return true;
         }
         return res.rows[0].allowed;
       });

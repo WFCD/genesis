@@ -51,8 +51,9 @@ class Ping extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const hosts = ['content.warframe.com', 'forums.warframe.com', 'trials.wf', 'store.warframe.com', 'nexus-stats.com', 'warframe.market'];
     const results = [];
 
@@ -95,6 +96,7 @@ class Ping extends Command {
         }
       })
       .catch(this.logger.error);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

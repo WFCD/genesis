@@ -13,7 +13,7 @@ class AddCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1] || !params[2]) {
       this.messageManager.embed(message, {
@@ -25,13 +25,14 @@ class AddCustomCommand extends Command {
             '**comamnd response**: response to the trigger',
         }],
       }, true, false);
-    } else {
-      this.bot.settings.addCustomCommand(message, params[1], params[2])
+      return this.messageManager.statuses.FAILURE;
+    }
+    this.bot.settings.addCustomCommand(message, params[1], params[2])
         .then(() => {
           this.commandHandler.loadCustomCommands();
           this.messageManager.notifySettingsChange(message, true, true);
         });
-    }
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

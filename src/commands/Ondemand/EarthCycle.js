@@ -19,12 +19,14 @@ class EarthCycle extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     this.bot.caches.pc.getDataJson()
       .then(ws => this.messageManager
         .embed(message, new EarthCycleEmbed(this.bot, ws.earthCycle), true, true))
       .catch(this.logger.error);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
