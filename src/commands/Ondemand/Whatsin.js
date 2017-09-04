@@ -36,30 +36,30 @@ class Whatsin extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let tier = message.strippedContent.match(this.regex)[1];
     let relicName = message.strippedContent.match(this.regex)[2];
 
-    message.channel.send('', { embed: inProgressEmbed })
-      .then((sentMessage) => {
-        if (!(tier && relicName)) {
-          return sentMessage.edit('', { embed: noResultsEmbed });
-        }
-        tier = toTitleCase(tier.trim());
-        relicName = toTitleCase(relicName.trim());
-        return (new Fetcher(`${relicBase}/${tier}/${relicName}.json`)).httpGet()
-          .then((relicData) => {
-            if (relicData) {
-              sentMessage.edit('', { embed: new WhatsinEmbed(this.bot, relicData, tier, relicName) });
-            }
-          })
-          .catch((error) => {
-            this.logger.error(error);
-            sentMessage.edit('', { embed: noResultsEmbed });
-          });
-      })
-      .catch(this.logger.error);
+    const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
+    if (!(tier && relicName)) {
+      sentMessage.edit('', { embed: noResultsEmbed });
+      return this.messageManager.statuses.FAILURE;
+    }
+    tier = toTitleCase(tier.trim());
+    relicName = toTitleCase(relicName.trim());
+    try {
+      const relicData = await (new Fetcher(`${relicBase}/${tier}/${relicName}.json`)).httpGet();
+      if (relicData) {
+        sentMessage.edit('', { embed: new WhatsinEmbed(this.bot, relicData, tier, relicName) });
+        return this.messageManager.statuses.SUCCESS;
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
+    sentMessage.edit('', { embed: noResultsEmbed });
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

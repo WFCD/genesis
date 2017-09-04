@@ -25,8 +25,9 @@ class FrameProfile extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
     if (query) {
       query = query.trim().toLowerCase();
@@ -36,16 +37,17 @@ class FrameProfile extends Command {
           this.messageManager.reply(`Warfame Tutorial | ${tutorial.name} : ${tutorial.url}`);
         }
       });
-    } else {
-      this.messageManager.embed(message, {
-        title: 'Available Tutorials',
-        fields: [{ name: '_ _', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
-        footer: {
-          icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
-          text: 'Data evaluated by Warframe Community Developers',
-        },
-      }, true, false);
+      return this.messageManager.statuses.FAILURE;
     }
+    this.messageManager.embed(message, {
+      title: 'Available Tutorials',
+      fields: [{ name: '_ _', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
+      footer: {
+        icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+        text: 'Data evaluated by Warframe Community Developers',
+      },
+    }, true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

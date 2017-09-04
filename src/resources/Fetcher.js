@@ -14,7 +14,7 @@ class Fetcher {
     this.Promise = promiseLib;
   }
 
-  httpGet() {
+  async httpGet() {
     return new this.Promise((resolve) => {
       const request = this.protocol.get(this.url, (response) => {
         const body = [];

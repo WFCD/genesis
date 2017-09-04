@@ -1,6 +1,6 @@
 'use strict';
 
-const Cache = require('json-fetch-cache');
+const Fetcher = require('../../resources/Fetcher.js');
 const RaidEmbed = require('../../embeds/RaidEmbed.js');
 const Command = require('../../Command.js');
 
@@ -27,8 +27,9 @@ class Raid extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
     if (!query || typeof query === 'undefined') {
       query = message.member ? message.member.displayName : message.author.username;
@@ -36,15 +37,12 @@ class Raid extends Command {
     }
     this.logger.debug(`Searched for query: ${query}`);
 
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then((platform) => {
-        const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
-        const raidCache = new Cache(url, 999999);
-        raidCache.getDataJson().then((data) => {
-          this.messageManager.embed(message, new RaidEmbed(this.bot, data, query, platform.toLowerCase()), true, false);
-        });
-      })
-      .catch(this.logger.error);
+    const platform = await this.bot.settings.getChannelPlatform(message.channel);
+    const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
+    const data = await (new Fetcher(url)).httpGet();
+    this.messageManager.embed(message, new RaidEmbed(this.bot,
+      data, query, platform.toLowerCase()), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
