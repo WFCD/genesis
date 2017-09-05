@@ -53,7 +53,7 @@ class Ping extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const hosts = ['content.warframe.com', 'forums.warframe.com', 'wf.christx.tw', 'store.warframe.com'];
+    const hosts = ['content.warframe.com', 'forums.warframe.com', 'trials.wf', 'store.warframe.com', 'nexus-stats.com', 'warframe.market'];
     const results = [];
 
     hosts.forEach((host) => {
