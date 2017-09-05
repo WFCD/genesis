@@ -68,7 +68,7 @@ class ServerInfo extends Command {
         },
         {
           name: 'Default Channel:',
-          value: `${guild.defaultChannel.name} (${guild.defaultChannel})`,
+          value: guild.defaultChannel ? `${guild.defaultChannel.name} (${guild.defaultChannel})` : 'No Default Channel',
           inline: true,
         },
         {
