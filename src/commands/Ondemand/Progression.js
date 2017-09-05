@@ -3,11 +3,11 @@
 const Command = require('../../Command.js');
 
 const embed = {
-      color: 0xBCC9EB,
-      image: {
-        url: 'https://warframestat.us/chart.low.png',
-      },
-    };
+  color: 0xBCC9EB,
+  image: {
+    url: 'https://warframestat.us/chart.low.png',
+  },
+};
 
 /**
  * Displays the Warframe Progression Chart
@@ -25,9 +25,11 @@ class Progression extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     this.messageManager.embed(message, embed, true, false, `Operator ${message.author.toString()}, the progression flowchart, at your request.`);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

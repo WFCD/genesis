@@ -23,56 +23,42 @@ class Mod extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const query = this.regex.exec(message.strippedContent.match(this.regex)[0])[1];
     if (!query) {
       this.messageManager.reply(message, this.noResultStr, true, false);
-    } else {
-      warframe.getSearchList({
-        query,
-        limit: 1,
-      })
-      .then((searchJson) => {
-        const id = searchJson.items[0].id;
-        warframe.getArticleDetails({
-          ids: [id],
-        })
-        .then((detailsJson) => {
-          let thumbUrl = detailsJson.items[`${id}`].thumbnail;
-          thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
-          warframe.getArticlesList({
-            category: 'Mods',
-            limit: 1000,
-          })
-           .then((list) => {
-             let sent = false;
-             list.items.forEach((item) => {
-               if (item.id === id && !sent) {
-                 sent = true;
-                 const embed = {
-                   title: query,
-                   url: detailsJson.basepath + detailsJson.items[`${id}`].url,
-                   color: 0xC0C0C0,
-                   description: `Mod result for ${query}`,
-                   image: {
-                     url: thumbUrl,
-                   },
-                 };
-                 this.messageManager.embed(message, embed, true, false);
-               }
-             });
-             if (!sent) {
-               this.messageManager.reply(message, this.noResultStr, true, false);
-             }
-           });
-        });
-      })
-      .catch((error) => {
-        this.logger.error(error);
-        this.messageManager.reply(message, this.noResultStr, true, false);
-      });
+      return this.messageManager.statuses.FAILURE;
     }
+    const searchJson = await warframe.getSearchList({ query, limit: 1 });
+    const id = searchJson.items[0].id;
+    const detailsJson = await warframe.getArticleDetails({ ids: [id] });
+    let thumbUrl = detailsJson.items[`${id}`].thumbnail;
+    thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
+
+    const list = await warframe.getArticlesList({ category: 'Mods', limit: 1000 });
+    let sent = false;
+    list.items.forEach((item) => {
+      if (item.id === id && !sent) {
+        sent = true;
+        const embed = {
+          title: query,
+          url: detailsJson.basepath + detailsJson.items[`${id}`].url,
+          color: 0xC0C0C0,
+          description: `Mod result for ${query}`,
+          image: {
+            url: thumbUrl,
+          },
+        };
+        this.messageManager.embed(message, embed, true, false);
+      }
+    });
+    if (!sent) {
+      this.messageManager.reply(message, this.noResultStr, true, false);
+      return this.messageManager.statuses.FAILURE;
+    }
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

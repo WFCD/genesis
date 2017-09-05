@@ -4,6 +4,7 @@ const Command = require('../../Command.js');
 const ProfileEmbed = require('../../embeds/ProfileEmbed.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
+const offlineMessage = 'Profile Engine Offline. New Entries will not be processed.';
 
 /**
  * Looks up items from Nexus-stats.com
@@ -28,37 +29,33 @@ class PriceCheck extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let username = message.strippedContent.match(this.regex)[1];
     if (typeof username === 'undefined') {
       this.sendUsageEmbed(message);
-      return;
+      return this.messageManager.statuses.FAILURE;
     }
     username = username.trim();
 
-    message.channel.send('', { embed: inProgressEmbed })
-      .then(sentMessage => this.bot.nexusFetcher.get('/warframe/v1/bots/status')
-          .then((status) => {
-            let embedWithTime = {};
-            if (!status['Player-Sentry'].online) {
-              embedWithTime = { title: 'Profile Engine Offline. New Entries will not be processed.', color: 0xaa0000 };
-            } else {
-              embedWithTime = { title: `Profile Engine Online... ${status['Player-Sentry'].queue.timeRemaining} remaining...` };
-            }
-            return sentMessage.edit('', { embed: embedWithTime });
-          }))
-      .then(sentMessage => this.bot.nexusFetcher.get(`/warframe/v1/players/${username}/profile`)
-          .then(profile => ({ sentMessage, profile })))
-      .then(({ sentMessage, profile }) => {
-        if (profile.name || (profile.error === `${username} could not be found.`
-                             && (sentMessage.embeds.length > 0
-                                 && sentMessage.embeds[0].title !== 'Profile Engine Offline. New Entries will not be processed.'))) {
-          return sentMessage.edit('', { embed: new ProfileEmbed(this.bot, profile.name ? profile : {}) });
-        }
-        return null;
-      })
-      .catch(this.logger.error);
+    const inProgressMesage = await message.channel.send('', { embed: inProgressEmbed });
+    const status = await this.bot.nexusFetcher.get('/warframe/v1/bots/status');
+    let embedWithTime = {};
+    if (!status['Player-Sentry'].online) {
+      embedWithTime = { title: 'Profile Engine Offline. New Entries will not be processed.', color: 0xaa0000 };
+    } else {
+      embedWithTime = { title: `Profile Engine Online... ${status['Player-Sentry'].queue.timeRemaining} remaining...` };
+    }
+    const messageWithTime = await inProgressMesage.edit('', { embed: embedWithTime });
+    const profile = await this.bot.nexusFetcher.get(`/warframe/v1/players/${username}/profile`);
+    if (profile.name || (profile.error === `${username} could not be found.`
+                         && (messageWithTime.embeds.length > 0
+                             && messageWithTime.embeds[0].title !== offlineMessage))) {
+      await messageWithTime.edit('', { embed: new ProfileEmbed(this.bot, profile.name ? profile : {}) });
+      return this.messageManager.statuses.SUCCESS;
+    }
+    return this.messageManager.statuses.FAILURE;
   }
 
   sendUsageEmbed(message) {

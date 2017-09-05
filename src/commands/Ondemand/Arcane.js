@@ -27,20 +27,22 @@ class Arcane extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     let arcane = message.strippedContent.match(this.regex)[1];
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
       const results = arcanes.filter(enhancement => new RegExp(enhancement.regex, 'ig').test(arcane));
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
-      } else {
-        this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
+        return this.messageManager.statuses.SUCCESS;
       }
-    } else {
       this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
+      return this.messageManager.statuses.FAILURE;
     }
+    this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
+    return this.messageManager.statuses.FAILURE;
   }
 }
 
