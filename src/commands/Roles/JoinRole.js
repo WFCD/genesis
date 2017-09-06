@@ -38,39 +38,35 @@ class JoinRole extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
-      this.sendInstructionEmbed(message);
+      await this.sendInstructionEmbed(message);
     } else {
       const role = getRoleForString(stringRole, message);
       if (!role) {
-        this.sendInstructionEmbed(message);
+        await this.sendInstructionEmbed(message);
       } else {
-        this.bot.settings.getRolesForGuild(message.guild)
-           .then((roles) => {
-             const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-             const roleAddable = filteredRoles.length > 0
+        const roles = await this.bot.settings.getRolesForGuild(message.guild);
+        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+        const roleAddable = filteredRoles.length > 0
                && !message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-             const userHasRole = filteredRoles.length > 0
+        const userHasRole = filteredRoles.length > 0
                && message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-             if (roleAddable) {
-               message.member.addRole(role.id)
-                .then(() => this.sendJoined(message, role))
-                .catch(this.logger.error);
-             } else {
-               this.sendCantJoin(message, userHasRole);
-             }
-           })
-           .catch(this.logger.error);
+        if (roleAddable) {
+          await message.member.addRole(role.id);
+          await this.sendJoined(message, role);
+        } else {
+          await this.sendCantJoin(message, userHasRole);
+        }
       }
     }
   }
 
-  sendJoined(message, role) {
-    this.messageManager.embed(message, {
+  async sendJoined(message, role) {
+    await this.messageManager.embed(message, {
       title: 'Joined Role',
       type: 'rich',
       color: 0x779ECB,
@@ -85,8 +81,8 @@ class JoinRole extends Command {
   }
 
 
-  sendCantJoin(message, userHasRole) {
-    this.messageManager.embed(message, {
+  async sendCantJoin(message, userHasRole) {
+    await this.messageManager.embed(message, {
       title: 'Can\'t Join',
       type: 'rich',
       color: 0x779ECB,
@@ -100,7 +96,7 @@ class JoinRole extends Command {
     }, true, true);
   }
 
-  sendInstructionEmbed(message) {
+  async sendInstructionEmbed(message) {
     const embed = {
       title: 'Usage',
       type: 'rich',
@@ -116,16 +112,11 @@ class JoinRole extends Command {
         },
       ],
     };
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then((prefix) => {
-        embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
-        return this.bot.settings.getRolesForGuild(message.guild);
-      })
-      .then((roles) => {
-        embed.fields[1].value = roles.map(role => role.name).join('; ');
-        this.messageManager.embed(message, embed, true, false);
-      })
-      .catch(this.logger.error);
+    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    embed.fields[1].value = roles.map(role => role.name).join('; ');
+    this.messageManager.embed(message, embed, true, false);
   }
 }
 

@@ -27,7 +27,7 @@ class Roles extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    const roles = message.guild.roles.array().sort((a, b) => { 
+    const roles = message.guild.roles.array().sort((a, b) => {
       if (a.name < b.name) {
         return -1;
       } else if (a.name > b.name) {
@@ -37,12 +37,11 @@ class Roles extends Command {
       }
     });
     const longest = roles.map(role => role.name)
-     .reduce((a, b) => (a.length > b.length ? a : b));
+      .reduce((a, b) => (a.length > b.length ? a : b));
     const roleGroups = createGroupedArray(roles.map(role => `\`${rpad(role.name, longest.length, ' ')} ${role.id}\``), 20);
     const metaGroups = createGroupedArray(roleGroups, 4);
     metaGroups.forEach((metaGroup) => {
-      this.messageManager.embed(message,
-      {
+      this.messageManager.embed(message, {
         fields: metaGroup.map(roleGroup => ({
           name: '_ _',
           value: roleGroup.join('\n'),
