@@ -20,13 +20,13 @@ class Servers extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const fileContents = [];
     this.bot.client.guilds.array().forEach((guild) => {
       fileContents.push(`"${guild.name}","${guild.owner.user.username}#${guild.owner.user.discriminator}","${guild.id}"`);
     });
 
-    this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'servers.csv', true);
+    await this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'servers.csv', true);
   }
 }
 

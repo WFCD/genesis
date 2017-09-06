@@ -39,34 +39,31 @@ class RemoveRole extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
-      this.sendInstructionEmbed(message);
+      await this.sendInstructionEmbed(message);
     } else {
       const role = getRoleForString(stringRole, message);
       if (!role) {
-        this.sendInstructionEmbed(message);
+        await this.sendInstructionEmbed(message);
       } else {
-        this.bot.settings.getRolesForGuild(message.guild)
-          .then((roles) => {
-            const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-            if (filteredRoles.length > 0) {
-              this.removeAndCommitRoles(message, roles
-                .filter(storedRole => filteredRoles[0].id !== storedRole.id)
-                .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
-            } else {
-              this.sendRoleNotAvailable(message);
-            }
-          })
-          .catch(this.logger.error);
+        const roles = await this.bot.settings.getRolesForGuild(message.guild);
+        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+        if (filteredRoles.length > 0) {
+          this.removeAndCommitRoles(message, roles
+            .filter(storedRole => filteredRoles[0].id !== storedRole.id)
+            .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
+        } else {
+          await this.sendRoleNotAvailable(message);
+        }
       }
     }
   }
 
-  removeAndCommitRoles(message, roles, newRole) {
+  async removeAndCommitRoles(message, roles, newRole) {
     this.bot.settings.setRolesForGuild(message.guild, roles);
-    this.messageManager.embed(message, {
+    await this.messageManager.embed(message, {
       title: 'Removed role from joinable list',
       type: 'rich',
       color: 0x779ECB,
@@ -80,8 +77,8 @@ class RemoveRole extends Command {
     }, true, false);
   }
 
-  sendRoleNotAvailable(message) {
-    this.messageManager.embed(message, {
+  async sendRoleNotAvailable(message) {
+    await this.messageManager.embed(message, {
       title: 'Invalid Role',
       type: 'rich',
       color: 0x0000ff,
@@ -95,29 +92,28 @@ class RemoveRole extends Command {
     }, true, false);
   }
 
-  sendInstructionEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${prefix}${this.call} <role or role id>`,
-            value: 'Role or role id to be disallowed for self-role.',
-          },
-          {
-            name: 'Possible values:',
-            value: '_ _',
-          },
-          {
-            name: '**Roles:**',
-            value: message.guild.roles.map(r => r.name).join('; '),
-            inline: true,
-          },
-        ],
-      }, true, true))
-      .catch(this.logger.error);
+  async sendInstructionEmbed(message) {
+    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    await this.messageManager.embed(message, {
+      title: 'Usage',
+      type: 'rich',
+      color: 0x0000ff,
+      fields: [
+        {
+          name: `${prefix}${this.call} <role or role id>`,
+          value: 'Role or role id to be disallowed for self-role.',
+        },
+        {
+          name: 'Possible values:',
+          value: '_ _',
+        },
+        {
+          name: '**Roles:**',
+          value: message.guild.roles.map(r => r.name).join('; '),
+          inline: true,
+        },
+      ],
+    }, true, true);
   }
 }
 

@@ -38,39 +38,35 @@ class LeaveRole extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
-      this.sendInstructionEmbed(message);
+      await this.sendInstructionEmbed(message);
     } else {
       const role = getRoleForString(stringRole, message);
       if (!role) {
-        this.sendInstructionEmbed(message);
+        await this.sendInstructionEmbed(message);
       } else {
-        this.bot.settings.getRolesForGuild(message.guild)
-           .then((roles) => {
-             const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-             const roleRemoveable = filteredRoles.length > 0
-               && message.member.roles.get(role.id)
-               && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-             const userDoesntHaveRole = filteredRoles.length > 0
-                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS')
-                && !message.member.roles.get(role.id);
-             if (roleRemoveable) {
-               message.member.removeRole(role.id)
-                .then(() => this.sendLeft(message, role))
-                .catch(this.logger.error);
-             } else {
-               this.sendCantLeave(message, userDoesntHaveRole);
-             }
-           })
-           .catch(this.logger.error);
+        const roles = await this.bot.settings.getRolesForGuild(message.guild);
+        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+        const roleRemoveable = filteredRoles.length > 0
+          && message.member.roles.get(role.id)
+          && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
+        const userDoesntHaveRole = filteredRoles.length > 0
+          && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS')
+          && !message.member.roles.get(role.id);
+        if (roleRemoveable) {
+          await message.member.removeRole(role.id);
+          await this.sendLeft(message, role);
+        } else {
+          await this.sendCantLeave(message, userDoesntHaveRole);
+        }
       }
     }
   }
 
-  sendLeft(message, role) {
-    this.messageManager.embed(message, {
+  async sendLeft(message, role) {
+    await this.messageManager.embed(message, {
       title: 'Left Role',
       type: 'rich',
       color: 0x779ECB,
@@ -84,8 +80,8 @@ class LeaveRole extends Command {
     }, true, true);
   }
 
-  sendCantLeave(message, userDoesntHaveRole) {
-    this.messageManager.embed(message, {
+  async sendCantLeave(message, userDoesntHaveRole) {
+    await this.messageManager.embed(message, {
       title: 'Can\'t Leave',
       type: 'rich',
       color: 0x779ECB,
@@ -99,7 +95,7 @@ class LeaveRole extends Command {
     }, true, true);
   }
 
-  sendInstructionEmbed(message) {
+  async sendInstructionEmbed(message) {
     const embed = {
       title: 'Usage',
       type: 'rich',
@@ -115,16 +111,11 @@ class LeaveRole extends Command {
         },
       ],
     };
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then((prefix) => {
-        embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
-        return this.bot.settings.getRolesForGuild(message.guild);
-      })
-      .then((roles) => {
-        embed.fields[1].value = roles.map(role => role.name).join('; ');
-        this.messageManager.embed(message, embed, true, false);
-      })
-      .catch(this.logger.error);
+    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    embed.fields[1].value = roles.map(role => role.name).join('; ');
+    this.messageManager.embed(message, embed, true, false);
   }
 }
 
