@@ -47,7 +47,7 @@ class Whereis extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops');
-    this.regex = new RegExp('^where\\s?is\\s?(.+)?', 'i');
+    this.regex = new RegExp('^where\\s?(?:is\\s?)?(.+)?', 'i');
 
     this.usages = [
       {
@@ -80,7 +80,7 @@ class Whereis extends Command {
               .reduce((a, b) => (a.length > b.length ? a : b));
             query = toTitleCase(query.trim());
             createGroupedArray(results, 70).forEach((group, index) => {
-              const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4), 
+              const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4),
                 query, longestName.length, longestRelic.length);
               if (index === 0) {
                 sentMessage.edit('', { embed });
