@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 const Command = require('../../Command.js');
 const SettingsEmbed = require('../../embeds/SettingsEmbed.js');
 
@@ -20,147 +18,95 @@ class Settings extends Command {
     this.requiresAuth = true;
   }
 
-  run(message) {
-    let settings = [];
-    const tracked = [];
+  async run(message) {
     let lastIndex = 0;
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
-    Promise.each(channels, (channel) => {
-      this.bot.settings.getChannelLanguage(channel)
-        .then((language) => {
-          settings.push({ name: 'Language', value: language, inline: true });
-          return this.bot.settings.getChannelPlatform(channel);
-        })
-        .then((platform) => {
-          settings.push({ name: 'Platform', value: platform, inline: true });
-          return this.bot.settings.getChannelResponseToSettings(channel);
-        })
-        .then((respond) => {
-          settings.push({ name: 'Respond to Settings', value: respond === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelDeleteAfterResponse(channel);
-        })
-        .then((deleteAfterRespond) => {
-          settings.push({ name: 'Delete Message After Responding', value: deleteAfterRespond === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'delete_response');
-        })
-        .then((deleteResponseAfterRespond) => {
-          settings.push({ name: 'Delete Message Response After Responding', value: deleteResponseAfterRespond === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelPrefix(channel);
-        })
-        .then((prefix) => {
-          settings.push({ name: 'Command Prefix', value: prefix, inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'createPrivateChannel');
-        })
-        .then((privChan) => {
-          settings.push({ name: 'Allow creation of private channels', value: privChan === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'deleteExpired');
-        })
-        .then((deleteExpired) => {
-          settings.push({ name: 'Deleted Expired Notifications (not all)', value: deleteExpired === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'allowInline');
-        })
-        .then((allowInline) => {
-          settings.push({ name: 'Allow Inline Commands', value: allowInline === '1' ? 'yes' : 'no', inline: true });
-          return this.bot.settings.getChannelSetting(channel, 'allowInline');
-        })
-        .then((allowCustom) => {
-          settings.push({ name: 'Allow Custom Commands', value: allowCustom === '1' ? 'yes' : 'no', inline: true });
-          const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
-          lastIndex += 1;
-          this.messageManager.embed(message, embed, false, false);
-          settings = [];
-          return this.bot.settings.getWelcomes(message.guild);
-        })
-        .then((welcomes) => {
-          welcomes.forEach((welcome) => {
-            settings.push({
-              name: `Welcome${welcome.isDm === '1' ? ' Direct ' : ''}`,
-              value: `${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``,
-            });
-          });
-          if (welcomes.length > 0) {
-            const embed = new SettingsEmbed(this.bot, channel, settings, lastIndex + 1);
-            lastIndex += 1;
-            this.messageManager.embed(message, embed, false, false);
-          }
-          return this.bot.settings.getTrackedItems(channel);
-        })
-        .then((items) => {
-          tracked.push({
-            name: 'Tracked Items',
-            value: items.length > 0 ? `\n${items.join(' ')}` : 'No Tracked Items',
-            inline: true,
-          });
-          return this.bot.settings.getTrackedEventTypes(channel);
-        })
-        .then((types) => {
-          tracked.push({
-            name: 'Tracked Events',
-            value: types.length > 0 ? `\n${types.join(' ')}` : 'No Tracked Event Types',
-            inline: true,
-          });
-          const embed = new SettingsEmbed(this.bot, channel, tracked, lastIndex + 1);
-          lastIndex += 1;
-          this.messageManager.embed(message, embed, false, false);
-          return this.bot.settings.permissionsForChannel(channel);
-        })
-        .then((permissions) => {
-          const channelParts = permissions
-                    .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
-          const channelSections = createGroupedArray(channelParts, 15);
-          channelSections.forEach((item, index) => {
-            const val = [{
-              name: 'Channel Permissions',
-              value: item.length > 0 ? `\n\t${item.join('\n\t')}` : 'No Configured Channel Permission',
-              inline: false,
-            }];
-            const embed = new SettingsEmbed(this.bot, message.channel, val,
-              lastIndex + index + 1);
-            this.messageManager.embed(message, embed, false, false);
-          });
-          lastIndex += channelSections.length;
-        });
-    })
-    .catch(this.logger.error);
+    for (const channel of channels) {
+      let tokens = [
+        `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
+        `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
+        `**Prefix:** ${await this.bot.settings.getChannelSetting(channel, 'prefix')}`,
+        `**Respond to Settings:** ${(await this.bot.settings.getChannelSetting(channel, 'respond_to_settings')) === 1 ? 'yes' : 'no'}`,
+        `**Delete Message After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_after_respond')) === 1 ? 'yes' : 'no'}`,
+        `**Delete Message Response After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_response')) === 1 ? 'yes' : 'no'}`,
+        `**Allow creation of private channels:** ${(await this.bot.settings.getChannelSetting(channel, 'createPrivateChannel')) === 1 ? 'yes' : 'no'}`,
+        `**Deleted Expired Notifications (not all):** ${(await this.bot.settings.getChannelSetting(channel, 'deleteExpired')) === 1 ? 'yes' : 'no'}`,
+        `**Allow Inline Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowInline')) === 1 ? 'yes' : 'no'}`,
+        `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
+        `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
+      ];
+      const items = await this.bot.settings.getTrackedItems(channel);
+      if (items.length > 0) {
+        tokens.push('\n**Tracked Items:**');
+        const itemsGroups = createGroupedArray(items, 15);
+        itemsGroups.forEach(group => tokens.push(group.join('; ')));
+      } else {
+        tokens.push('**Tracked Items:** No Tracked Items');
+      }
+      const events = await this.bot.settings.getTrackedEventTypes(channel);
+      if (events.length > 0) {
+        tokens.push('**Tracked Events:**');
+        const eventGroups = createGroupedArray(items, 15);
+        eventGroups.forEach(group => tokens.push(group.join('; ')));
+      } else {
+        tokens.push('**Tracked Events:** No Tracked Events');
+      }
 
-    this.bot.settings.getPingsForGuild(message.guild)
-      .then((pingsArray) => {
-        if (pingsArray.length > 0) {
-          const pingParts = pingsArray
-                    .filter(obj => obj.thing && obj.text)
-                    .map(obj => `**${obj.thing}**: ${obj.text}`);
-          const pingSections = createGroupedArray(pingParts, 10);
+      const permissions = await this.bot.settings.permissionsForChannel(channel);
+      const channelParts = permissions
+        .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+      const channelSections = createGroupedArray(channelParts, 5);
+      const things = channelSections.map((item, index) => `${index > 0 ? '' : '\n**Channel Permissions:** \n'}${item.length > 0 ? `\t${item.join('\n\t')}` : 'No Configured Channel Permission'}`);
+      tokens = tokens.concat(things);
 
-          pingSections.forEach((item, index) => {
-            const val = [{
-              name: 'Pings per Item',
-              value: item.length > 0 ? `\n\t${item.join('\n\t')}` : 'No Configured Pings',
-              inline: false,
-            }];
-            const embed = new SettingsEmbed(this.bot, message.channel, val, 3 + index);
-            lastIndex += 1;
-            this.messageManager.embed(message, embed, false, false);
-          });
-        }
-      })
-      .then(() => this.bot.settings.permissionsForGuild(message.guild))
-      .then((permissions) => {
-        const guildParts = permissions
-                  .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
-        const guildSections = createGroupedArray(guildParts, 15);
-        guildSections.forEach((item, index) => {
-          const val = [{
-            name: 'Guild Permissions',
-            value: item.length > 0 ? `\n\t${item.join('\n\t')}` : 'No Configured Guild Permission',
-            inline: false,
-          }];
-          const embed = new SettingsEmbed(this.bot, message.channel, val, lastIndex + index);
-          this.messageManager.embed(message, embed, false, false);
-        });
-        lastIndex += guildSections.length;
-      })
-      .catch(this.logger.error);
+      const tokenGroups = createGroupedArray(tokens, 6);
+      // eslint-disable-next-line no-loop-func
+      tokenGroups.forEach((tokenGroup) => {
+        const embed = new SettingsEmbed(this.bot, message.channel,
+          createGroupedArray(tokenGroup, 3), lastIndex + 1);
+        this.messageManager.embed(message, embed);
+        lastIndex += 1;
+      });
+    }
+    let guildTokens = await this.bot.settings.getWelcomes(message.guild);
+
+    // Welcomes
+    guildTokens = guildTokens.map(welcome => `**Welcome${welcome.isDm === '1' ? ' Direct ' : ' Message'}**\n${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``);
+
+    // Guild Pings
+    const guildPings = await this.bot.settings.getPingsForGuild(message.guild);
+    const pingParts = guildPings
+                .filter(obj => obj.thing && obj.text)
+                .map(obj => `**${obj.thing}**: ${obj.text}`);
+    if (pingParts.length > 0) {
+      // add them all
+      guildTokens.push('\n**Pings per Item:**');
+      pingParts.forEach(item => guildTokens.push(`\t${item}`));
+    } else {
+      guildTokens.push('\n**Pings per Item:** No Configured Pings');
+    }
+
+    // Guild Permissions
+    const guildPermissions = await this.bot.settings.permissionsForGuild(message.guild);
+    const guildParts = guildPermissions
+                   .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+
+    if (guildParts.length > 0) {
+      guildTokens.push('\n**Guild Permissions:**');
+      guildParts.forEach(part => guildTokens.push(`\t${part}`));
+    } else {
+      guildTokens.push('\n**Guild Permissions:** No Configured Guild Permissions');
+    }
+
+    const tokenGroups = createGroupedArray(guildTokens, 30);
+    // eslint-disable-next-line no-loop-func
+    tokenGroups.forEach((tokenGroup) => {
+      const embed = new SettingsEmbed(this.bot, message.channel,
+        createGroupedArray(tokenGroup, 15), lastIndex + 1);
+      this.messageManager.embed(message, embed);
+      lastIndex += 1;
+    });
   }
 
   evalAppliesTo(type, id, message) {
