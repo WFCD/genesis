@@ -98,7 +98,7 @@ class Armor extends Command {
         },
       };
       this.messageManager.embed(message, embed, true, false);
-      return this.messageManager.statuses.success;
+      return this.messageManager.statuses.SUCCESS;
     }
     this.logger.debug('Entered 0-param armor');
     this.sendUsage(message);

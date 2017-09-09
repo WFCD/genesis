@@ -38,27 +38,29 @@ class AddRole extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-    } else {
-      const role = getRoleForString(stringRole, message);
-      if (!role) {
-        await this.sendInstructionEmbed(message);
-      } else {
-        const roles = await this.bot.settings.getRolesForGuild(message.guild);
-        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-        if (filteredRoles.length > 0) {
-          await this.sendAlreadyAddedEmbed(message);
-        } else {
-          const rolesToCommit = roles.map(innerRole => innerRole.id);
-          rolesToCommit.push(role.id);
-          await this.addAndCommitRole(message, rolesToCommit, role.name);
-        }
-      }
+      return this.messageManager.statuses.FAILURE;
     }
+    const role = getRoleForString(stringRole, message);
+    if (!role) {
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+    if (filteredRoles.length > 0) {
+      await this.sendAlreadyAddedEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const rolesToCommit = roles.map(innerRole => innerRole.id);
+    rolesToCommit.push(role.id);
+    await this.addAndCommitRole(message, rolesToCommit, role.name);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   async addAndCommitRole(message, roles, newRole) {

@@ -25,6 +25,7 @@ class Roles extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   run(message) {
     const roles = message.guild.roles.array().sort((a, b) => {
@@ -32,9 +33,8 @@ class Roles extends Command {
         return -1;
       } else if (a.name > b.name) {
         return 1;
-      } else {
-        return 0;
       }
+      return 0;
     });
     const longest = roles.map(role => role.name)
       .reduce((a, b) => (a.length > b.length ? a : b));
@@ -48,6 +48,7 @@ class Roles extends Command {
         })),
       }, true, false);
     });
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

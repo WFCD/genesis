@@ -37,32 +37,34 @@ class LeaveRole extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-    } else {
-      const role = getRoleForString(stringRole, message);
-      if (!role) {
-        await this.sendInstructionEmbed(message);
-      } else {
-        const roles = await this.bot.settings.getRolesForGuild(message.guild);
-        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-        const roleRemoveable = filteredRoles.length > 0
+      return this.messageManager.statuses.FAILURE;
+    }
+    const role = getRoleForString(stringRole, message);
+    if (!role) {
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+    const roleRemoveable = filteredRoles.length > 0
           && message.member.roles.get(role.id)
           && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-        const userDoesntHaveRole = filteredRoles.length > 0
+    const userDoesntHaveRole = filteredRoles.length > 0
           && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS')
           && !message.member.roles.get(role.id);
-        if (roleRemoveable) {
-          await message.member.removeRole(role.id);
-          await this.sendLeft(message, role);
-        } else {
-          await this.sendCantLeave(message, userDoesntHaveRole);
-        }
-      }
+    if (roleRemoveable) {
+      await message.member.removeRole(role.id);
+      await this.sendLeft(message, role);
+      return this.messageManager.statuses.SUCCESS;
     }
+    await this.sendCantLeave(message, userDoesntHaveRole);
+    return this.messageManager.statuses.FAILURE;
   }
 
   async sendLeft(message, role) {
