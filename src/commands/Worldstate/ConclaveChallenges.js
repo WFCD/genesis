@@ -26,11 +26,6 @@ class ConclaveChallenges extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
@@ -47,6 +42,7 @@ class ConclaveChallenges extends Command {
     const conclaveChallenges = ws.conclaveChallenges;
     const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category, platform);
     await this.messageManager.embed(message, embed, true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

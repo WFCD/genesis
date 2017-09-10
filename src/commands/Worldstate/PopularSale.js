@@ -16,17 +16,13 @@ class PopularDeal extends Command {
     this.regex = new RegExp('^popular\\sdeals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
     const ws = await this.bot.caches[platform].getDataJson();
     const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
     await this.messageManager.embed(message, new SalesEmbed(this.bot, sales), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

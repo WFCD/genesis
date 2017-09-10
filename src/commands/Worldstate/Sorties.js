@@ -20,11 +20,6 @@ class Sorties extends Command {
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
@@ -32,6 +27,7 @@ class Sorties extends Command {
     const sortie = ws.sortie;
     if (sortie.expired) {
       await this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
+      return this.messageManager.statuses.FAILURE;
     }
     const embed = new SortieEmbed(this.bot, sortie);
     try {
@@ -43,8 +39,10 @@ class Sorties extends Command {
         embed.thumbnail.url = thumb;
       }
       await this.messageManager.embed(message, embed, true, false);
+      return this.messageManager.statuses.SUCCESS;
     } catch (err) {
       await this.messageManager.embed(message, embed, true, false);
+      return this.messageManager.statuses.SUCCESS;
     }
   }
 }

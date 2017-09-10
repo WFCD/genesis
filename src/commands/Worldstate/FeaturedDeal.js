@@ -16,11 +16,6 @@ class FeaturedDeal extends Command {
     this.regex = new RegExp('^featured\\s?deals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
@@ -28,6 +23,7 @@ class FeaturedDeal extends Command {
     const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
     await this.messageManager.embed(message,
       new SalesEmbed(this.bot, sales), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

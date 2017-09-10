@@ -16,17 +16,13 @@ class Simaris extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
     const ws = await this.bot.caches[platform].getDataJson();
     const simaris = ws.simaris;
     await this.messageManager.embed(message, new SimarisEmbed(this.bot, simaris), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

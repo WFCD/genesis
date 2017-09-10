@@ -24,11 +24,6 @@ class Syndicates extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   async run(message) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
@@ -44,6 +39,7 @@ class Syndicates extends Command {
     const ws = await this.bot.caches[platform].getDataJson();
     await this.messageManager.embed(message, new SyndicateEmbed(this.bot,
       ws.syndicateMissions, syndicate), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
