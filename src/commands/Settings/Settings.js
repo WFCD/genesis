@@ -107,6 +107,7 @@ class Settings extends Command {
       this.messageManager.embed(message, embed);
       lastIndex += 1;
     });
+    return this.messageManager.statuses.SUCCESS;
   }
 
   evalAppliesTo(type, id, message) {

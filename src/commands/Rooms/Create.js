@@ -57,71 +57,59 @@ class Create extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const type = message.strippedContent.match(this.regex)[1];
     const optName = message.strippedContent.match(this.regex)[2];
-    this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel')
-      .then((createPrivateChannelAllowed) => {
-        if (parseInt(createPrivateChannelAllowed, 10)) {
-          if (type) {
-            const roomType = type.trim();
-            if (roomType === 'room' || roomType === 'raid' || roomType === 'team') {
-              const users = getUsersForCall(message);
-              const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
-              if (users.length < 11 && !message.guild.channels.find('name', name)) {
-                message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text')
-                  .then(textChannel => [message.guild.createChannel(name, 'voice'), textChannel])
-                  .then((params) => {
-                    const textChannel = params[1];
-                    // set up listener to delete channels if inactive for more than 5 minutes
-                    return params[0].then((voiceChannel) => {
-                      // set up overwrites
-                      this.setOverwrites(textChannel, voiceChannel, users, message.guild.id);
-                      // add channel to listenedChannels
-                      this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel)
-                        .then(() => {})
-                        .catch(this.logger.error);
-                      // send users invite link to new rooms
-                      this.sendInvites(voiceChannel, users, message.author);
-                      // set room limits
-                      this.setLimits(voiceChannel, roomType);
-                      this.messageManager.embed(message, {
-                        title: 'Channels created',
-                        fields: [{
-                          name: '_ _',
-                          value: `Voice Channel: ${voiceChannel.name}\n` +
-                            `Text Channel: ${textChannel.name}`,
-                        }],
-                      }, false, false);
-                    });
-                  }).catch((error) => {
-                    this.logger.error(error);
-                    if (error.response) {
-                      this.logger.debug(`${error.message}: ${error.status}.\n` +
-                        `Stack trace: ${error.stack}\n` +
-                        `Response: ${error.response.body}`);
-                    }
-                  });
-              } else {
-                let msg = '';
-                if (users.length > 10) {
-                  // notify caller that there's too many users if role is more than 10 people.
-                  msg = 'you are trying to send an invite to too many people, please keep the total number under 10';
-                } else {
-                  msg = 'that room already exists.';
-                }
-                this.messageManager.reply(message, msg, true, true);
-              }
-            }
-          } else {
-            this.messageManager.reply(message, '```haskell\n' +
-              'Sorry, you need to specify what you want to create. Right now these are available to create:' +
-              `\n* ${useable.join('\n* ')}\n\`\`\``
-              , true, false);
+    const createPrivateChannelAllowed = parseInt(await this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel'), 10);
+    if (createPrivateChannelAllowed) {
+      if (type) {
+        const roomType = type.trim();
+        if (roomType === 'room' || roomType === 'raid' || roomType === 'team') {
+          const users = getUsersForCall(message);
+          const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
+          if (users.length < 11 && !message.guild.channels.find('name', name)) {
+            const textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text');
+            const voiceChannel = await message.guild.createChannel(name, 'voice');
+            // set up listener to delete channels if inactive for more than 5 minutes
+            // set up overwrites
+            this.setOverwrites(textChannel, voiceChannel, users, message.guild.id);
+            // add channel to listenedChannels
+            await this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel);
+            // send users invite link to new rooms
+            this.sendInvites(voiceChannel, users, message.author);
+            // set room limits
+            this.setLimits(voiceChannel, roomType);
+            this.messageManager.embed(message, {
+              title: 'Channels created',
+              fields: [{
+                name: '_ _',
+                value: `Voice Channel: ${voiceChannel.name}\n` +
+                  `Text Channel: ${textChannel.name}`,
+              }],
+            }, false, false);
+            return this.messageManager.statuses.SUCCESS;
           }
+          let msg = '';
+          if (users.length > 10) {
+              // notify caller that there's too many users if role is more than 10 people.
+            msg = 'you are trying to send an invite to too many people, please keep the total number under 10';
+          } else {
+            msg = 'that room already exists.';
+          }
+          this.messageManager.reply(message, msg, true, true);
+          return this.messageManager.statuses.FAILURE;
         }
-      });
+      } else {
+        this.messageManager.reply(message, '```haskell\n' +
+          'Sorry, you need to specify what you want to create. Right now these are available to create:' +
+          `\n* ${useable.join('\n* ')}\n\`\`\``
+          , true, false);
+        return this.messageManager.statuses.FAILURE;
+      }
+    }
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**
@@ -130,13 +118,12 @@ class Create extends Command {
    * @param {Array.<User>} users Array of users to send invites to
    * @param {User} author Calling user who sends message
    */
-  sendInvites(voiceChannel, users, author) {
+  async sendInvites(voiceChannel, users, author) {
     if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
-      users.forEach((user) => {
-        voiceChannel.createInvite({ maxUses: 1 }).then((invite) => {
-          this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
-        });
-      });
+      for (const user of users) {
+        const invite = await voiceChannel.createInvite({ maxUses: 1 });
+        this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
+      }
     }
   }
 
@@ -193,7 +180,7 @@ class Create extends Command {
     overwritePromises.forEach(promise => promise.catch(this.logger.error));
   }
 
-  setLimits(voiceChannel, type) {
+  async setLimits(voiceChannel, type) {
     let limit = 99;
     switch (type) {
       case 'team':
@@ -206,8 +193,8 @@ class Create extends Command {
       default:
         break;
     }
-    voiceChannel.setUserLimit(limit)
-      .then(vc => this.logger.debug(`User limit set to ${limit} for ${vc.name}`));
+    const vc = await voiceChannel.setUserLimit(limit);
+    this.logger.debug(`User limit set to ${limit} for ${vc.name}`);
   }
 }
 

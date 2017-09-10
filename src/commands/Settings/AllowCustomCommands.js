@@ -13,7 +13,7 @@ class AllowCustomCommands extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
@@ -30,16 +30,16 @@ class AllowCustomCommands extends Command {
         ],
       };
       this.messageManager.embed(message, embed, true, true);
-    } else {
-      enable = enable.trim();
-      let allowInline = false;
-      if (enable === 'on') {
-        allowInline = true;
-      }
-      this.bot.settings.setChannelSetting(channel, 'allowCustom', allowInline)
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+      return this.messageManager.statuses.FAILURE;
     }
+    enable = enable.trim();
+    let allowInline = false;
+    if (enable === 'on') {
+      allowInline = true;
+    }
+    await this.bot.settings.setChannelSetting(channel, 'allowCustom', allowInline);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**

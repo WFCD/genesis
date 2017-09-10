@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
 const eventTypes = require('../../resources/trackables.json').eventTypes;
@@ -18,47 +16,41 @@ class SetPing extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
+      return this.messageManager.statuses.FAILURE;
     } else if (match) {
       const trackables = trackFunctions.trackablesFromParameters(match[1].trim());
       const eventsAndItems = [].concat(trackables.events).concat(trackables.items);
       const pingString = match[2] ? match[2].trim() : undefined;
 
-      const promises = [];
       if (!eventsAndItems.length) {
-        this.bot.settings.getChannelPrefix(message.channel)
-        .then(prefix => this.messageManager
-              .embed(message, trackFunctions
-                .getTrackInstructionEmbed(message, prefix, this.call), true, true))
-        .catch(this.logger.error);
-        return;
-      } else if (!pingString) {
-        eventsAndItems.forEach((eventOrItem) => {
-          if (eventOrItem) {
-            promises.push(this.bot.settings.removePing(message.guild, eventOrItem));
-          }
-        });
-      } else {
-        eventsAndItems.forEach((eventOrItem) => {
-          if (eventOrItem) {
-            promises.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
-          }
-        });
+        const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+        this.messageManager.embed(message,
+          trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
+        return this.messageManager.statuses.FAILURE;
       }
-      Promise.each(promises, () => {})
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
-    } else {
-      this.bot.settings.getChannelPrefix(message.channel)
-        .then(prefix => this.messageManager
-              .embed(message, trackFunctions
-                  .getTrackInstructionEmbed(message, prefix, this.call), true, true))
-        .catch(this.logger.error);
+      if (!pingString) {
+        for (const eventOrItem of eventsAndItems) {
+          if (eventOrItem) {
+            if (!pingString) {
+              await this.bot.settings.removePing(message.guild, eventOrItem);
+            } else {
+              await this.bot.settings.setPing(message.guild, eventOrItem, pingString);
+            }
+          }
+        }
+      }
+      this.messageManager.notifySettingsChange(message, true, true);
+      return this.messageManager.statuses.SUCCESS;
     }
+    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    this.messageManager.embed(message, trackFunctions
+        .getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

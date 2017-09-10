@@ -15,12 +15,7 @@ class GetCommandIds extends Command {
     this.requiresAuth = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const fileContents = [];
     const commands = this.bot.commandHandler.commands
       .concat(this.bot.commandHandler.inlineCommands || [])
@@ -36,6 +31,7 @@ class GetCommandIds extends Command {
       this.messageManager.reply(message, 'Check your direct messages for more information.', true, true);
     }
     this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'command_ids.csv', true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
