@@ -14,7 +14,7 @@ class Language extends Command {
     this.requiresAuth = true;
   }
 
-  run(message) {
+  async run(message) {
     const language = message.strippedContent.match(this.regex)[1];
     if (!language || !this.bot.languages.includes(language.toLowerCase())) {
       const embed = {
@@ -29,13 +29,13 @@ class Language extends Command {
         ],
       };
       this.messageManager.embed(message, embed, true, true);
-    } else {
-      const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
-      const channel = this.getChannel(channelParam, message);
-      this.bot.settings.setChannelLanguage(channel, language.toLowerCase()).then(() => {
-        this.messageManager.notifySettingsChange(message, true, true);
-      }).catch(this.logger.error);
+      return this.messageManager.statuses.FAILURE;
     }
+    const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
+    const channel = this.getChannel(channelParam, message);
+    await this.bot.settings.setChannelLanguage(channel, language.toLowerCase());
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**

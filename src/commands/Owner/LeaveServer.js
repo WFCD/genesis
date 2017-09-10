@@ -26,15 +26,17 @@ class LeaveServer extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const serverid = message.strippedContent.match(this.regex)[1];
     if (this.bot.client.guilds.has(serverid)) {
       const guild = await this.bot.client.guilds.get(serverid).leave();
       this.messageManager.reply(message, `Left ${guild.name}`, true, true);
-    } else {
-      message.reply('No such guild cached');
+      return this.messageManager.statuses.SUCCESS;
     }
+    message.reply('No such guild cached');
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

@@ -24,6 +24,7 @@ class Roles extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const roles = await this.bot.settings.getRolesForGuild(message.guild);
@@ -38,11 +39,12 @@ class Roles extends Command {
           new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
           true, true);
       });
-    } else {
-      await this.messageManager.embed(message,
+      return this.messageManager.statuses.SUCCESS;
+    }
+    await this.messageManager.embed(message,
         new RolesEmbed(this.bot, [], prefix, 0),
         true, true);
-    }
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

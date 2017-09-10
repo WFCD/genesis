@@ -38,27 +38,29 @@ class RemoveRole extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-    } else {
-      const role = getRoleForString(stringRole, message);
-      if (!role) {
-        await this.sendInstructionEmbed(message);
-      } else {
-        const roles = await this.bot.settings.getRolesForGuild(message.guild);
-        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-        if (filteredRoles.length > 0) {
-          this.removeAndCommitRoles(message, roles
+      return this.messageManager.statuses.FAILURE;
+    }
+    const role = getRoleForString(stringRole, message);
+    if (!role) {
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+    if (filteredRoles.length > 0) {
+      this.removeAndCommitRoles(message, roles
             .filter(storedRole => filteredRoles[0].id !== storedRole.id)
             .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
-        } else {
-          await this.sendRoleNotAvailable(message);
-        }
-      }
+      return this.messageManager.statuses.SUCCESS;
     }
+    await this.sendRoleNotAvailable(message);
+    return this.messageManager.statuses.FAILURE;
   }
 
   async removeAndCommitRoles(message, roles, newRole) {

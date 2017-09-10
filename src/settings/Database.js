@@ -446,7 +446,7 @@ class Database {
       return this.db.query(query)
       .then((res) => {
         if (res[0].length === 0) {
-          return '';
+          return [];
         }
         return res[0]
           .map(result => ({ text: result.text, thing: result.item_or_type }));

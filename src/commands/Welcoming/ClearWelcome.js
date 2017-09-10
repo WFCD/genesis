@@ -9,10 +9,10 @@ class ClearWelcome extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
-    this.bot.settings.clearWelcomeForGuild(message.guild, false).then(() => {
-      this.messageManager.notifySettingsChange(message, true, true);
-    }).catch(this.logger.error);
+  async run(message) {
+    await this.bot.settings.clearWelcomeForGuild(message.guild, false);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

@@ -1,6 +1,7 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../Command');
+const UserInfoEmbed = require('../../embeds/UserInfoEmbed');
 
 /**
  * Get info about a user
@@ -15,12 +16,7 @@ class UserInfo extends Command {
     this.regex = new RegExp(`^${this.call}\\s*((?:\\<\\@?\\!?)?\\d+(?:\\>)?)?`);
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const params = message.strippedContent.match(this.regex);
     let user;
     let member;
@@ -44,7 +40,7 @@ class UserInfo extends Command {
     }
     if (!user) {
       this.messageManager.reply(message, 'can\'t find that user. Please specify another.', false, false);
-      return;
+      return this.messageManager.statuses.FAILURE;
     }
 
     const guildsWithUser = this.bot.client.guilds.array()
@@ -53,83 +49,9 @@ class UserInfo extends Command {
     const guilds = guildsWithUser.length > 25 ?
         guildsWithUser.splice(0, 24) :
         guildsWithUser;
-    const guildString = guilds.filter(guild => guild.members.get(user.id)).map(guild => guild.name).join('; ');
-    const embed = {
-      author: {
-        name: `${user.username}#${user.discriminator} | ${user.id}`,
-        icon_url: user.displayAvatarURL,
-      },
-      thumbnail: {
-        url: user.avatarURL,
-      },
-      fields: [
-        {
-          name: 'Profile',
-          value: user.toString(),
-          inline: true,
-        },
-        {
-          name: 'Registered for Discord',
-          value: user.createdAt.toLocaleString(),
-          inline: true,
-        },
-        {
-          name: 'Shared Servers (on this shard)',
-          value: guildString.length > 0 ? guildString : 'None Shared',
-          inline: true,
-        },
-      ],
-      footer: {
-        icon_url: user.defaultAvatarURL,
-        text: `${new Date().toLocaleString()} | ${user.username} is ${user.bot ? '' : 'not'} a bot`,
-      },
-    };
-
-    if (member) {
-      embed.fields = embed.fields.concat([
-        {
-          name: 'nickname',
-          value: member.displayName || 'none',
-          inline: true,
-        },
-        {
-          name: 'Owns the server?',
-          value: member.id === message.guild.ownerID ? 'Yes' : 'No',
-          inline: true,
-        },
-        {
-          name: 'Status',
-          value: member.presence.status,
-          inline: true,
-        },
-        {
-          name: 'Game',
-          value: member.presence.game ? member.presence.game.name : 'No game',
-          inline: true,
-        },
-        {
-          name: 'Joined the Guild',
-          value: member.joinedAt.toLocaleString(),
-          inline: true,
-        },
-        {
-          name: 'Current State:',
-          value: `**Deafened:** ${member.deaf ? 'yes' : 'no'}\n` +
-                  `**Kickable (by the bot):** ${member.kickable ? 'yes' : 'no'}\n` +
-                  `**Muted:** ${member.mute ? 'yes' : 'no'}\n` +
-                  `**Speaking:** ${member.speaking ? 'yes' : 'no'}\n` +
-                  `**Guild Muted:** ${member.serverMute ? 'yes' : 'no'}\n` +
-                  `**Guild Deafened:** ${member.serverDeaf ? 'yes' : 'no'}`,
-          inline: true,
-        },
-        {
-          name: 'Roles:',
-          value: member.roles.array().length ? member.roles.map(role => role.name).join(', ') : 'User has no roles.',
-          inline: true,
-        },
-      ]);
-    }
+    const embed = new UserInfoEmbed(this.bot, guilds, user, member, message);
     this.messageManager.embed(message, embed, true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

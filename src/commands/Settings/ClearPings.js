@@ -9,10 +9,10 @@ class ClearPings extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
-    this.bot.settings.clearPingsForGuild(message.guild).then(() => {
-      this.messageManager.notifySettingsChange(message, true, true);
-    }).catch(this.logger.error);
+  async run(message) {
+    await this.bot.settings.clearPingsForGuild(message.guild);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

@@ -37,32 +37,34 @@ class JoinRole extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
   async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-    } else {
-      const role = getRoleForString(stringRole, message);
-      if (!role) {
-        await this.sendInstructionEmbed(message);
-      } else {
-        const roles = await this.bot.settings.getRolesForGuild(message.guild);
-        const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-        const roleAddable = filteredRoles.length > 0
+      return this.messageManager.statuses.FAILURE;
+    }
+    const role = getRoleForString(stringRole, message);
+    if (!role) {
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+    const roleAddable = filteredRoles.length > 0
                && !message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-        const userHasRole = filteredRoles.length > 0
+    const userHasRole = filteredRoles.length > 0
                && message.member.roles.get(role.id)
                && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
-        if (roleAddable) {
-          await message.member.addRole(role.id);
-          await this.sendJoined(message, role);
-        } else {
-          await this.sendCantJoin(message, userHasRole);
-        }
-      }
+    if (roleAddable) {
+      await message.member.addRole(role.id);
+      await this.sendJoined(message, role);
+      return this.messageManager.statuses.SUCCESS;
     }
+    await this.sendCantJoin(message, userHasRole);
+    return this.messageManager.statuses.FAILURE;
   }
 
   async sendJoined(message, role) {
