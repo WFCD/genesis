@@ -21,16 +21,13 @@ class FeaturedDeal extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
-        this.messageManager.embed(message,
-          new SalesEmbed(this.bot, sales), true, false);
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const ws = await this.bot.caches[platform].getDataJson();
+    const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
+    await this.messageManager.embed(message,
+      new SalesEmbed(this.bot, sales), true, false);
   }
 }
 

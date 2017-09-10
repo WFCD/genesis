@@ -21,16 +21,13 @@ class Invasions extends Command {
    * @param {Message} message Messdsage with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        const invasions = ws.invasions.filter(i => !i.completed);
-        this.messageManager.embed(message,
+    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const ws = await this.bot.caches[platform].getDataJson();
+    const invasions = ws.invasions.filter(i => !i.completed);
+    await this.messageManager.embed(message,
           new InvasionEmbed(this.bot, invasions), true, false);
-      })
-      .catch(this.logger.error);
   }
 }
 

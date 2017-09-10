@@ -31,7 +31,7 @@ class ConclaveChallenges extends Command {
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    */
-  run(message) {
+  async run(message) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
     const param2 = (matches[2] || '').toLowerCase();
@@ -42,15 +42,11 @@ class ConclaveChallenges extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.worldStates[platformParam || platform].getData()
-          .then(ws => ({ ws, platform: platformParam || platform })))
-      .then(({ ws, platform }) => {
-        const conclaveChallenges = ws.conclaveChallenges;
-        const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category, platform);
-        this.messageManager.embed(message, embed, true, false);
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const ws = await this.bot.worldStates[platform].getData();
+    const conclaveChallenges = ws.conclaveChallenges;
+    const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category, platform);
+    await this.messageManager.embed(message, embed, true, false);
   }
 }
 
