@@ -57,7 +57,7 @@ class Notifier {
    */
   async onNewData(platform, newData) {
     let notifiedIds = [];
-    const ids = await this.getNotifiedIds(platform);
+    const ids = await this.settings.getNotifiedIds(platform, this.bot.shardId);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.id) && e.isDiscovered);
@@ -136,7 +136,7 @@ class Notifier {
   }
 
   /**
-  * Braodcast embed to all channels for a platform and type
+  * Broadcast embed to all channels for a platform and type
    * @param  {Object} embed      Embed to send to a channel
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
@@ -200,156 +200,163 @@ class Notifier {
         if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
       } catch (e) {
+        this.logger.error(e);
+      } finally {
         await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
       }
     }
   }
 
-  sendBaro(newBaro, platform) {
+  async sendBaro(newBaro, platform) {
     const embed = new VoidTraderEmbed(this.bot, newBaro);
-    return this.broadcast(embed, platform, 'baro', null);
+    await this.broadcast(embed, platform, 'baro', null);
   }
 
-  sendConclaveDailies(newDailies, platform) {
+  async sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
       const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
-      return this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
+      await this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
-    return new Promise(resolve => resolve(true));
   }
 
-  sendConclaveWeeklies(newWeeklies, platform) {
+  async sendConclaveWeeklies(newWeeklies, platform) {
     if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
       const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week');
-      return this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
+      await this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
-    return new Promise(resolve => resolve(true));
   }
 
-  sendDarvo(newDarvoDeals, platform) {
-    return Promise.map(newDarvoDeals, (d) => {
+  async sendDarvo(newDarvoDeals, platform) {
+    for (const d of newDarvoDeals) {
       const embed = new DarvoEmbed(this.bot, d);
-      return this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry));
-    });
+      await this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry));
+    }
   }
 
-  sendEvent(newEvents, platform) {
-    return Promise.map(newEvents, (e) => {
+  async sendEvent(newEvents, platform) {
+    for (const e of newEvents) {
       const embed = new EventEmbed(this.bot, [e]);
-      return this.broadcast(embed, platform, 'events', null, fromNow(e.expiry));
-    });
+      await this.broadcast(embed, platform, 'events', null, fromNow(e.expiry));
+    }
   }
 
-  sendFeaturedDeals(newFeaturedDeals, platform) {
-    return Promise.map(newFeaturedDeals, (d) => {
+  async sendFeaturedDeals(newFeaturedDeals, platform) {
+    for (const d of newFeaturedDeals){
       const embed = new SalesEmbed(this.bot, [d]);
-      return this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry));
-    });
+      await this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry));
+    }
   }
 
-  sendFissures(newFissures, platform) {
-    return Promise.map(newFissures, (f) => {
+  async sendFissures(newFissures, platform) {
+    for (const f of newFissures) {
       const embed = new FissureEmbed(this.bot, [f]);
-      return this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry));
-    });
+      await this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry));
+    }
   }
 
-  sendInvasions(newInvasions, platform) {
-    return Promise.map(newInvasions, (invasion) => {
+  async sendInvasions(newInvasions, platform) {
+    for (const invasion of newInvasions) {
       const embed = new InvasionEmbed(this.bot, [invasion]);
-      return warframe.getSearchList({
-        query: invasion.attackerReward.itemString,
-        limit: 1,
-      }).then(articles => warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      })).then((details) => {
+      try {
+        const articles = await warframe.getSearchList({
+          query: invasion.attackerReward.itemString,
+          limit: 1,
+        });
+        const details = await  warframe.getArticleDetails({
+          ids: articles.items.map(i => i.id),
+        });
         const item = Object.values(details.items)[0];
         const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
         if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
-      })
-      .catch(() => this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000));
-    });
+      } catch (e) {
+        this.logger.error(e);
+      } finally {
+        await this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
+      }
+    }
   }
 
-  sendNews(newNews, platform) {
-    return Promise.map(newNews, (i) => {
+  async sendNews(newNews, platform) {
+    for (const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
-      return this.broadcast(embed, platform, 'news');
-    });
+      await this.broadcast(embed, platform, 'news');
+    }
   }
 
-  sendPopularDeals(newPopularDeals, platform) {
-    return Promise.map(newPopularDeals, (d) => {
+  async sendPopularDeals(newPopularDeals, platform) {
+    for (const d of newPopularDeals){
       const embed = new SalesEmbed(this.bot, [d]);
-      return this.broadcast(embed, platform, 'deals.popular', null, 86400000);
-    });
+      await this.broadcast(embed, platform, 'deals.popular', null, 86400000);
+    }
   }
 
-  sendPrimeAccess(newNews, platform) {
-    return Promise.map(newNews, (i) => {
+  async sendPrimeAccess(newNews, platform) {
+    for(const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
-      return this.broadcast(embed, platform, 'primeaccess', null);
-    });
+      await this.broadcast(embed, platform, 'primeaccess', null);
+    }
   }
 
-  sendUpdates(newNews, platform) {
-    return Promise.map(newNews, (i) => {
+  async sendUpdates(newNews, platform) {
+    for (const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
       return this.broadcast(embed, platform, 'updates', null);
-    });
+    }
   }
 
-  sendSortie(newSortie, platform) {
+  async sendSortie(newSortie, platform) {
     const embed = new SortieEmbed(this.bot, newSortie);
-    return warframe.getSearchList({
-      query: newSortie.boss,
-      limit: 1,
-    }).then(articles => warframe.getArticleDetails({
-      ids: articles.items.map(i => i.id),
-    })).then((details) => {
+    try {
+      const articles = await warframe.getSearchList({
+        query: newSortie.boss,
+        limit: 1,
+      });
+      const details = await warframe.getArticleDetails({
+        ids: articles.items.map(i => i.id),
+      });
       const item = Object.values(details.items)[0];
       const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
-      return this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
-    })
-    .catch(() => this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry)));
+    } catch (e) {
+      this.logger.error(e);
+    } finally {
+      await this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
+    }
   }
 
-  sendSyndicateArbiters(newSyndicates, platform) {
+  async sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis');
-    return this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
   }
 
-  sendSyndicateLoka(newSyndicates, platform) {
+  async sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka');
-    return this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
   }
 
-  sendSyndicateMeridian(newSyndicates, platform) {
+  async sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian');
-    return this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
   }
 
-  sendSyndicatePerrin(newSyndicates, platform) {
+  async sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence');
-    return this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
   }
 
-  sendSyndicateSuda(newSyndicates, platform) {
+  async sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda');
-    return this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
   }
 
-  sendSyndicateVeil(newSyndicates, platform) {
+  async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil');
-    return this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
+    await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
   }
 }
 
