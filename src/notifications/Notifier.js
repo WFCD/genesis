@@ -44,11 +44,10 @@ class Notifier {
   /**
    * Start the notifier
    */
-  start() {
-    Object.keys(this.bot.worldStates).forEach((k) => {
-      this.bot.worldStates[k].on('newData', (platform, newData, oldData) =>
-        this.onNewData(platform, newData, oldData));
-    });
+  async start() {
+    for (const k of Object.keys(this.bot.worldStates)) {
+      this.bot.worldStates[k].on('newData', this.onNewData);
+    }
   }
 
   /**
@@ -56,98 +55,84 @@ class Notifier {
    * @param  {string} platform Platform to be updated
    * @param  {json} newData  Updated data from the worldstate
    */
-  onNewData(platform, newData) {
+  async onNewData(platform, newData) {
     let notifiedIds = [];
+    const ids = await this.getNotifiedIds(platform);
+    // Set up data to notify
+    const acolytesToNotify = newData.persistentEnemies
+      .filter(e => !ids.includes(e.id) && e.isDiscovered);
+    const alertsToNotify = newData.alerts
+      .filter(a => !ids.includes(a.id) && a.rewardTypes.length && !a.expired);
+    const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
+      newData.voidTrader : undefined;
+    const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
+      !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
+    const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
+    const eventsToNotify = newData.events
+      .filter(e => !ids.includes(e.id) && !e.expired);
+    const invasionsToNotify = newData.invasions
+      .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
+    const featuredDealsToNotify = newData.flashSales
+      .filter(d => !ids.includes(d.id) && d.isFeatured);
+    const fissuresToNotify = newData.fissures
+      .filter(f => !ids.includes(f.id) && !f.expired);
+    const newsToNotify = newData.news
+      .filter(n => !ids.includes(n.id) && !n.primeAccess && !n.update);
+    const popularDealsToNotify = newData.flashSales
+      .filter(d => !ids.includes(d.id) && d.isPopular);
+    const primeAccessToNotify = newData.news
+        .filter(n => !ids.includes(n.id) && n.primeAccess);
+    const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
+      && !newData.sortie.expired ? newData.sortie : undefined;
+    const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
+    const updatesToNotify = newData.news
+      .filter(n => !ids.includes(n.id) && n.update);
+    // Concat all notified ids
+    notifiedIds = notifiedIds
+                  .concat(newData.alerts.map(a => a.id))
+                  .concat(newData.conclaveChallenges.map(c => c.id))
+                  .concat(newData.dailyDeals.map(d => d.id))
+                  .concat(newData.events.map(e => e.id))
+                  .concat(newData.fissures.map(f => f.id))
+                  .concat(newData.flashSales.map(d => d.id))
+                  .concat(newData.invasions.map(i => i.id))
+                  .concat(newData.news.map(n => n.id))
+                  .concat(newData.persistentEnemies.map(p => p.id))
+                  .concat(newData.sortie ? [newData.sortie.id] : [])
+                  .concat(newData.syndicateMissions.map(m => m.id))
+                  .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
 
-    this.getNotifiedIds(platform).then((ids) => {
-      // Set up data to notify
-      const acolytesToNotify = newData.persistentEnemies
-        .filter(e => !ids.includes(e.id) && e.isDiscovered);
-      const alertsToNotify = newData.alerts
-        .filter(a => !ids.includes(a.id) && a.rewardTypes.length && !a.expired);
-      const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
-        newData.voidTrader : undefined;
-      const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
-        !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
-      const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
-      const eventsToNotify = newData.events
-        .filter(e => !ids.includes(e.id) && !e.expired);
-      const invasionsToNotify = newData.invasions
-        .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
-      const featuredDealsToNotify = newData.flashSales
-        .filter(d => !ids.includes(d.id) && d.isFeatured);
-      const fissuresToNotify = newData.fissures
-        .filter(f => !ids.includes(f.id) && !f.expired);
-      const newsToNotify = newData.news
-        .filter(n => !ids.includes(n.id) && !n.primeAccess && !n.update);
-      const popularDealsToNotify = newData.flashSales
-        .filter(d => !ids.includes(d.id) && d.isPopular);
-      const primeAccessToNotify = newData.news
-          .filter(n => !ids.includes(n.id) && n.primeAccess);
-      const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
-        && !newData.sortie.expired ? newData.sortie : undefined;
-      const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
-      const updatesToNotify = newData.news
-        .filter(n => !ids.includes(n.id) && n.update);
-      // Concat all notified ids
-      notifiedIds = notifiedIds
-                    .concat(newData.alerts.map(a => a.id))
-                    .concat(newData.conclaveChallenges.map(c => c.id))
-                    .concat(newData.dailyDeals.map(d => d.id))
-                    .concat(newData.events.map(e => e.id))
-                    .concat(newData.fissures.map(f => f.id))
-                    .concat(newData.flashSales.map(d => d.id))
-                    .concat(newData.invasions.map(i => i.id))
-                    .concat(newData.news.map(n => n.id))
-                    .concat(newData.persistentEnemies.map(p => p.id))
-                    .concat(newData.sortie ? [newData.sortie.id] : [])
-                    .concat(newData.syndicateMissions.map(m => m.id))
-                    .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
-
-      // Send all notifications
-      return this.updateNotified(notifiedIds, platform)
-        .then(() => this.sendAcolytes(acolytesToNotify, platform))
-        .then(() => this.sendAlerts(alertsToNotify, platform))
-        .then(() => {
-          if (baroToNotify) {
-            this.sendBaro(baroToNotify, platform);
-          }
-          return true;
-        })
-        .then(() => {
-          if (conclaveToNotify && conclaveToNotify.length > 0) {
-            return this.sendConclaveDailies(conclaveToNotify, platform)
-              .then(() => this.sendConclaveWeeklies(conclaveToNotify, platform));
-          }
-          return true;
-        })
-        .then(() => this.sendDarvo(dailyDealsToNotify, platform))
-        .then(() => this.sendEvent(eventsToNotify, platform))
-        .then(() => this.sendFeaturedDeals(featuredDealsToNotify, platform))
-        .then(() => this.sendFissures(fissuresToNotify, platform))
-        .then(() => this.sendNews(newsToNotify, platform))
-        .then(() => this.sendPopularDeals(popularDealsToNotify, platform))
-        .then(() => this.sendPrimeAccess(primeAccessToNotify, platform))
-        .then(() => this.sendInvasions(invasionsToNotify, platform))
-        .then(() => {
-          if (sortieToNotify) {
-            return this.sendSortie(sortieToNotify, platform);
-          }
-          return true;
-        })
-        .then(() => {
-          if (syndicateToNotify && syndicateToNotify.length > 0) {
-            return this.sendSyndicateArbiters(syndicateToNotify, platform)
-              .then(() => this.sendSyndicatePerrin(syndicateToNotify, platform))
-              .then(() => this.sendSyndicateSuda(syndicateToNotify, platform))
-              .then(() => this.sendSyndicateMeridian(syndicateToNotify, platform))
-              .then(() => this.sendSyndicateLoka(syndicateToNotify, platform))
-              .then(() => this.sendSyndicateVeil(syndicateToNotify, platform));
-          }
-          return true;
-        })
-        .then(() => this.sendUpdates(updatesToNotify, platform));
-    }).catch(this.logger.error);
+    // Send all notifications
+    await this.updateNotified(notifiedIds, platform);
+    await this.sendAcolytes(acolytesToNotify, platform);
+    await this.sendAlerts(alertsToNotify, platform);
+    if (baroToNotify) {
+      await this.sendBaro(baroToNotify, platform);
+    }
+    if (conclaveToNotify && conclaveToNotify.length > 0) {
+      await this.sendConclaveDailies(conclaveToNotify, platform);
+      await this.sendConclaveWeeklies(conclaveToNotify, platform);
+    }
+    await this.sendDarvo(dailyDealsToNotify, platform);
+    await this.sendEvent(eventsToNotify, platform);
+    await this.sendFeaturedDeals(featuredDealsToNotify, platform);
+    await this.sendFissures(fissuresToNotify, platform);
+    await this.sendNews(newsToNotify, platform);
+    await this.sendPopularDeals(popularDealsToNotify, platform);
+    await this.sendPrimeAccess(primeAccessToNotify, platform);
+    await this.sendInvasions(invasionsToNotify, platform);
+    if (sortieToNotify) {
+      await this.sendSortie(sortieToNotify, platform);
+    }
+    if (syndicateToNotify && syndicateToNotify.length > 0) {
+      await this.sendSyndicateArbiters(syndicateToNotify, platform);
+      await this.sendSyndicatePerrin(syndicateToNotify, platform);
+      await this.sendSyndicateSuda(syndicateToNotify, platform);
+      await this.sendSyndicateMeridian(syndicateToNotify, platform);
+      await this.sendSyndicateLoka(syndicateToNotify, platform);
+      await this.sendSyndicateVeil(syndicateToNotify, platform);
+    }
+    await this.sendUpdates(updatesToNotify, platform);
   }
 
   /**
@@ -157,72 +142,69 @@ class Notifier {
    * @param  {string} type       Type of new data to notify
    * @param  {Array}  [items=[]] Items to broadcast
    * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
-   * @returns {Promise}
    */
-  broadcast(embed, platform, type, items = [], deleteAfter = 0) {
-    return this.bot.settings.getNotifications(type, platform, items)
-    .then(channels => Promise.map(channels, channelResults =>
-      channelResults.forEach((result) => {
+  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
+    const channels = await this.bot.settings.getNotifications(type, platform, items);
+    for (const channelResults of channels) {
+      for (const result of channelResults) {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
-            return this.settings.getPing(channel.guild, (items || []).concat([type]))
-              .then(prepend => this.bot.messageManager
-                .embedToChannel(channel, embed, prepend, deleteAfter));
+            const prepend = await this.settings
+              .getPing(channel.guild, (items || []).concat([type]));
+            this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
           } else if (channel.type === 'dm') {
-            return this.bot.messageManager
-              .embedToChannel(channel, embed, '', deleteAfter);
+            await this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter);
           }
         }
-        return null;
-      })));
+      }
+    }
   }
 
   /**
    * Get the list of notified ids
    * @param  {string} platform Platform to get notified ids for
-   * @returns {Promise.<Array>}
+   * @returns {Array}
    */
-  getNotifiedIds(platform) {
-    return this.settings.getNotifiedIds(platform, this.bot.shardId);
+  async getNotifiedIds(platform) {
+    return await this.settings.getNotifiedIds(platform, this.bot.shardId);
   }
 
   /**
    * Set the notified ids for a given platform and shard id
    * @param {JSON} ids list of oids that have been notifiedIds
    * @param {string} platform    platform corresponding to notified ids
-   * @returns {Promise}
    */
-  updateNotified(ids, platform) {
-    return this.settings.setNotifiedIds(platform, this.bot.shardId, ids)
-      .catch(this.logger.error);
+  async updateNotified(ids, platform) {
+    await this.settings.setNotifiedIds(platform, this.bot.shardId, ids);
   }
 
-  sendAcolytes(newAcolytes, platform) {
-    return Promise.map(newAcolytes, (a) => {
+  async sendAcolytes(newAcolytes, platform) {
+    for (const a of newAcolytes) {
       const embed = new EnemyEmbed(this.bot, [a]);
-      return this.broadcast(embed, platform, 'enemies', null, 3600000);
-    });
+      await this.broadcast(embed, platform, 'enemies', null, 3600000);
+    }
   }
 
-  sendAlerts(newAlerts, platform) {
-    return Promise.map(newAlerts, (a) => {
+  async sendAlerts(newAlerts, platform) {
+    for (const a of newAlerts) {
       const embed = new AlertEmbed(this.bot, [a]);
-      return warframe.getSearchList({
-        query: a.mission.reward.itemString,
-        limit: 1,
-      }).then(articles => warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      })).then((details) => {
+      try {
+        const articles = await warframe.getSearchList({
+          query: a.mission.reward.itemString,
+          limit: 1,
+        });
+        const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
         const item = Object.values(details.items)[0];
         const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
         if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
-        return this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
-      })
-      .catch(() => this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry)));
-    });
+        await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
+      } catch (e) {
+        await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
+      }
+    }
   }
 
   sendBaro(newBaro, platform) {
