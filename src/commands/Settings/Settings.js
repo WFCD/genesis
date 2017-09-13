@@ -34,7 +34,6 @@ class Settings extends Command {
         `**Deleted Expired Notifications (not all):** ${(await this.bot.settings.getChannelSetting(channel, 'deleteExpired')) === 1 ? 'yes' : 'no'}`,
         `**Allow Inline Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowInline')) === 1 ? 'yes' : 'no'}`,
         `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
-        `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
       ];
       const items = await this.bot.settings.getTrackedItems(channel);
       if (items.length > 0) {

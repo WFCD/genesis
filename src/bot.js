@@ -261,7 +261,7 @@ class Genesis {
     try {
       const t = await this.client.login(this.token);
       this.logger.debug(`Logged in with token ${t}`);
-      this.notifier.start();
+      await this.notifier.start();
     } catch (err) {
       this.logger.error(err.message);
       this.logger.fatal(err);
