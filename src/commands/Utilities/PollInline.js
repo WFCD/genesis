@@ -27,17 +27,17 @@ class PollInline extends Command {
    *                          or perform an action based on parameters.
    */
   async run(message) {
-	if (message.channel.permissionsFor(this.bot.client.user.id)
-		.has(['USE_EXTERNAL_EMOJIS', 'ADD_REACTIONS'])) {
-		message.react('314349398811475968')
-			.then(() => {
-			  return message.react('314349398824058880');
-			})
-			.then(() => {
-			  return message.react('314349398723264512');
-			})
-			.catch(this.logger.error);
-	}
+    if (message.channel.permissionsFor(this.bot.client.user.id)
+      .has(['USE_EXTERNAL_EMOJIS', 'ADD_REACTIONS'])) {
+      message.react('👍')
+        .then(() => {
+          return message.react('👎');
+        })
+        .then(() => {
+          return message.react('👌');
+        })
+        .catch(this.logger.error);
+    }
   }
 }
 
