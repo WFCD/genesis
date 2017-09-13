@@ -34,7 +34,7 @@ class PollInline extends Command {
           return message.react('👎');
         })
         .then(() => {
-          return message.react('👌');
+          return message.react('🤷');
         })
         .catch(this.logger.error);
     }
