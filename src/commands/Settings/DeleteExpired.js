@@ -8,7 +8,7 @@ class DeleteExpired extends Command {
     this.usages = [
       { description: 'Change if the bot to deletes expired notifications', parameters: ['deleting enabled'] },
     ];
-    this.regex = new RegExp('^delete\\s?expired\\s?(yes|no)?$', 'i');
+    this.regex = new RegExp('^delete\\s?expired\\s?(on|off)?$', 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
@@ -31,8 +31,7 @@ class DeleteExpired extends Command {
     } else {
       enable = enable.trim();
       let enableResponse = false;
-      if (enable === 'enable' || enable === 'yes' || enable === '1'
-          || enable === 'true' || enable === 'on' || enable === 1) {
+      if (enable === 'on') {
         enableResponse = true;
       }
       this.bot.settings.setGuildSetting(message.guild, 'deleteExpired', enableResponse)
