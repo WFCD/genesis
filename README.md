@@ -7,6 +7,8 @@
 
 [![Stories in Ready](https://badge.waffle.io/aliasfalse/genesis.png?label=ready&title=Ready)](http://waffle.io/aliasfalse/genesis)
 
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord)
+
 Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
 
 
