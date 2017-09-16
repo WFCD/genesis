@@ -65,6 +65,7 @@
     "syndicate.veil",
     "syndicate.meridian",
     "updates",
-    "primeaccess"
+    "primeaccess",
+    "stream"
   ]
 }
