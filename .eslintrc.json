@@ -23,6 +23,7 @@
     }],
     "strict": ["error", "safe"],
     "linebreak-style": "off",
-    "no-restricted-syntax": ["off"]
+    "no-restricted-syntax": ["off"],
+    "no-await-in-loop": "off"
   }
 }
