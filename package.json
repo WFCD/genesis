@@ -4,7 +4,7 @@
   "description": "A Warframe bot for your Discord server or clan   Star",
   "main": "main.js",
   "scripts": {
-    "test": "eslint src/ test/ && node_modules/.bin/mocha",
+    "test": "npm i",
     "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c jsdoc.conf -R README.md -r main.js src/. -d docs"
   },
   "repository": {

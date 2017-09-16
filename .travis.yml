@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "node"
+  - "6.11.3"
+
+notifications:
+    webhooks:
+        urls:
+          - https://warframestat.us/parser/travis-ci.php
+        on_success: always # default: always
+        on_failure: always # default: always
+        on_start: change   # default: never
+        on_cancel: always # default: always
+        on_error: always # default: always
