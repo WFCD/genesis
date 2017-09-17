@@ -22,8 +22,8 @@ class Settings extends Command {
     let lastIndex = 0;
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
+    /* eslint-disable no-await-in-loop */
     for (const channel of channels) {
-      // eslint-disable no-await-in-loop
       let tokens = [
         `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
         `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
@@ -67,8 +67,8 @@ class Settings extends Command {
         this.messageManager.embed(message, embed);
         lastIndex += 1;
       });
-      // eslint-enable no-await-in-loop
     }
+    /* eslint-enable no-await-in-loop */
     let guildTokens = await this.bot.settings.getWelcomes(message.guild);
 
     // Welcomes
