@@ -18,57 +18,61 @@ class Settings extends Command {
     this.requiresAuth = true;
   }
 
+  async composeChannelSettings(channel, message, lastIndex) {
+    let tokens = [
+      `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
+      `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
+      `**Prefix:** ${await this.bot.settings.getChannelSetting(channel, 'prefix')}`,
+      `**Respond to Settings:** ${(await this.bot.settings.getChannelSetting(channel, 'respond_to_settings')) === 1 ? 'yes' : 'no'}`,
+      `**Delete Message After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_after_respond')) === 1 ? 'yes' : 'no'}`,
+      `**Delete Message Response After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_response')) === 1 ? 'yes' : 'no'}`,
+      `**Allow creation of private channels:** ${(await this.bot.settings.getChannelSetting(channel, 'createPrivateChannel')) === 1 ? 'yes' : 'no'}`,
+      `**Deleted Expired Notifications (not all):** ${(await this.bot.settings.getChannelSetting(channel, 'deleteExpired')) === 1 ? 'yes' : 'no'}`,
+      `**Allow Inline Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowInline')) === 1 ? 'yes' : 'no'}`,
+      `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
+    ];
+    const items = await this.bot.settings.getTrackedItems(channel);
+    if (items.length > 0) {
+      tokens.push('\n**Tracked Items:**');
+      const itemsGroups = createGroupedArray(items, 15);
+      itemsGroups.forEach(group => tokens.push(group.join('; ')));
+    } else {
+      tokens.push('**Tracked Items:** No Tracked Items');
+    }
+    const events = await this.bot.settings.getTrackedEventTypes(channel);
+    if (events.length > 0) {
+      tokens.push('**Tracked Events:**');
+      const eventGroups = createGroupedArray(events, 15);
+      eventGroups.forEach(group => tokens.push(group.join('; ')));
+    } else {
+      tokens.push('**Tracked Events:** No Tracked Events');
+    }
+    const permissions = await this.bot.settings.permissionsForChannel(channel);
+    const channelParts = permissions
+      .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+    const channelSections = createGroupedArray(channelParts, 5);
+    const things = channelSections.map((item, index) => `${index > 0 ? '' : '\n**Channel Permissions:** \n'}${item.length > 0 ? `\t${item.join('\n\t')}` : 'No Configured Channel Permission'}`);
+    tokens = tokens.concat(things);
+
+    const tokenGroups = createGroupedArray(tokens, 6);
+    // eslint-disable-next-line no-loop-func
+    tokenGroups.forEach((tokenGroup) => {
+      const embed = new SettingsEmbed(this.bot, message.channel,
+        createGroupedArray(tokenGroup, 3), lastIndex);
+      this.messageManager.embed(message, embed);
+    });
+  }
+
   async run(message) {
     let lastIndex = 0;
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
-    /* eslint-disable no-await-in-loop */
+    const channelsResults = [];
     for (const channel of channels) {
-      let tokens = [
-        `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
-        `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
-        `**Prefix:** ${await this.bot.settings.getChannelSetting(channel, 'prefix')}`,
-        `**Respond to Settings:** ${(await this.bot.settings.getChannelSetting(channel, 'respond_to_settings')) === 1 ? 'yes' : 'no'}`,
-        `**Delete Message After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_after_respond')) === 1 ? 'yes' : 'no'}`,
-        `**Delete Message Response After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_response')) === 1 ? 'yes' : 'no'}`,
-        `**Allow creation of private channels:** ${(await this.bot.settings.getChannelSetting(channel, 'createPrivateChannel')) === 1 ? 'yes' : 'no'}`,
-        `**Deleted Expired Notifications (not all):** ${(await this.bot.settings.getChannelSetting(channel, 'deleteExpired')) === 1 ? 'yes' : 'no'}`,
-        `**Allow Inline Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowInline')) === 1 ? 'yes' : 'no'}`,
-        `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === 1 ? 'yes' : 'no'}`,
-      ];
-      const items = await this.bot.settings.getTrackedItems(channel);
-      if (items.length > 0) {
-        tokens.push('\n**Tracked Items:**');
-        const itemsGroups = createGroupedArray(items, 15);
-        itemsGroups.forEach(group => tokens.push(group.join('; ')));
-      } else {
-        tokens.push('**Tracked Items:** No Tracked Items');
-      }
-      const events = await this.bot.settings.getTrackedEventTypes(channel);
-      if (events.length > 0) {
-        tokens.push('**Tracked Events:**');
-        const eventGroups = createGroupedArray(events, 15);
-        eventGroups.forEach(group => tokens.push(group.join('; ')));
-      } else {
-        tokens.push('**Tracked Events:** No Tracked Events');
-      }
-      const permissions = await this.bot.settings.permissionsForChannel(channel);
-      const channelParts = permissions
-        .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
-      const channelSections = createGroupedArray(channelParts, 5);
-      const things = channelSections.map((item, index) => `${index > 0 ? '' : '\n**Channel Permissions:** \n'}${item.length > 0 ? `\t${item.join('\n\t')}` : 'No Configured Channel Permission'}`);
-      tokens = tokens.concat(things);
-
-      const tokenGroups = createGroupedArray(tokens, 6);
-      // eslint-disable-next-line no-loop-func
-      tokenGroups.forEach((tokenGroup) => {
-        const embed = new SettingsEmbed(this.bot, message.channel,
-          createGroupedArray(tokenGroup, 3), lastIndex + 1);
-        this.messageManager.embed(message, embed);
-        lastIndex += 1;
-      });
+      lastIndex += 1;
+      channelsResults.push(this.composeChannelSettings(channel, message, lastIndex));
     }
-    /* eslint-enable no-await-in-loop */
+    Promise.all(channelsResults);
     let guildTokens = await this.bot.settings.getWelcomes(message.guild);
 
     // Welcomes
