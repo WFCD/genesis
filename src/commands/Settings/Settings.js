@@ -23,6 +23,7 @@ class Settings extends Command {
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
     for (const channel of channels) {
+      // eslint-disable no-await-in-loop
       let tokens = [
         `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
         `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
@@ -46,12 +47,11 @@ class Settings extends Command {
       const events = await this.bot.settings.getTrackedEventTypes(channel);
       if (events.length > 0) {
         tokens.push('**Tracked Events:**');
-        const eventGroups = createGroupedArray(items, 15);
+        const eventGroups = createGroupedArray(events, 15);
         eventGroups.forEach(group => tokens.push(group.join('; ')));
       } else {
         tokens.push('**Tracked Events:** No Tracked Events');
       }
-
       const permissions = await this.bot.settings.permissionsForChannel(channel);
       const channelParts = permissions
         .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
@@ -67,6 +67,7 @@ class Settings extends Command {
         this.messageManager.embed(message, embed);
         lastIndex += 1;
       });
+      // eslint-enable no-await-in-loop
     }
     let guildTokens = await this.bot.settings.getWelcomes(message.guild);
 

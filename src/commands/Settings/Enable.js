@@ -42,21 +42,26 @@ class Enable extends Command {
     } else {
       target = message.guild.roles.find('name', '@everyone');
     }
-    const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
-    const respondToSettings = await this.bot.settings.getChannelResponseToSettings(message.channel);
-    if (respondToSettings) {
-      this.messageManager.embed(message, infoEmbed, true, false);
-    }
+    const results = [];
+    // set the stuff
     for (const command of commands) {
       for (const channel of channels) {
         if (target.type === 'Role') {
-          await this.bot.settings
-                  .setChannelPermissionForRole(channel, target, command, 0);
+          results.push(this.bot.settings
+              .setChannelPermissionForRole(channel, target, command, 1));
         } else {
-          await this.bot.settings
-                  .setChannelPermissionForMember(channel, target, command, 0);
+          results.push(this.bot.settings
+              .setChannelPermissionForMember(channel, target, command, 1));
         }
       }
+    }
+    await Promise.all(results);
+    // notify info embed
+    const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
+    const respondToSettings = await this.bot.settings
+        .getChannelResponseToSettings(message.channel);
+    if (respondToSettings) {
+      this.messageManager.embed(message, infoEmbed, true, false);
     }
     return this.messageManager.statuses.SUCCESS;
   }

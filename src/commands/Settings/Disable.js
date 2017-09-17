@@ -44,18 +44,20 @@ class Disable extends Command {
       target = message.guild.roles.find('name', '@everyone');
     }
 
+    const results = [];
     // set the stuff
     for (const command of commands) {
       for (const channel of channels) {
         if (target.type === 'Role') {
-          await this.bot.settings
-              .setChannelPermissionForRole(channel, target, command, 0);
+          results.push(this.bot.settings
+              .setChannelPermissionForRole(channel, target, command, 0));
         } else {
-          await this.bot.settings
-              .setChannelPermissionForMember(channel, target, command, 0);
+          results.push(this.bot.settings
+              .setChannelPermissionForMember(channel, target, command, 0));
         }
       }
     }
+    await Promise.all(results);
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 0, [commands, channels, target.toString()]);
     const respondToSettings = await this.bot.settings

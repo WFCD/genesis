@@ -14,9 +14,11 @@ class ClearChannelPermissions extends Command {
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
     if (channels.length) {
+      const results = [];
       for (const channel of channels) {
-        await this.bot.settings.deleteChannelPermissions(channel);
+        results.push(this.bot.settings.deleteChannelPermissions(channel));
       }
+      await Promise.all(results);
     } else {
       await this.bot.settings.deleteGuildPermissions(message.guild);
     }

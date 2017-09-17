@@ -34,15 +34,17 @@ class SetPing extends Command {
         return this.messageManager.statuses.FAILURE;
       }
       if (!pingString) {
+        const results = [];
         for (const eventOrItem of eventsAndItems) {
           if (eventOrItem) {
             if (!pingString) {
-              await this.bot.settings.removePing(message.guild, eventOrItem);
+              results.push(this.bot.settings.removePing(message.guild, eventOrItem));
             } else {
-              await this.bot.settings.setPing(message.guild, eventOrItem, pingString);
+              results.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
             }
           }
         }
+        Promise.all(results);
       }
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

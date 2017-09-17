@@ -153,10 +153,12 @@ class Notifier {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
+            // eslint-disable-next-line no-await-in-loop
             const prepend = await this.settings
               .getPing(channel.guild, (items || []).concat([type]));
             this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
           } else if (channel.type === 'dm') {
+            // eslint-disable-next-line no-await-in-loop
             await this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter);
           }
         }
@@ -170,7 +172,7 @@ class Notifier {
    * @returns {Array}
    */
   async getNotifiedIds(platform) {
-    return await this.bot.settings.getNotifiedIds(platform, this.bot.shardId);
+    return this.bot.settings.getNotifiedIds(platform, this.bot.shardId);
   }
 
   /**
@@ -183,31 +185,39 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
+    const results = [];
     for (const a of newAcolytes) {
       const embed = new EnemyEmbed(this.bot, [a]);
-      await this.broadcast(embed, platform, 'enemies', null, 3600000);
+      results.push(this.broadcast(embed, platform, 'enemies', null, 3600000));
     }
+    Promise.all(results);
   }
 
   async sendAlerts(newAlerts, platform) {
+    const results = [];
     for (const a of newAlerts) {
-      const embed = new AlertEmbed(this.bot, [a]);
-      try {
-        const articles = await warframe.getSearchList({
-          query: a.mission.reward.itemString,
-          limit: 1,
-        });
-        const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-        const item = Object.values(details.items)[0];
-        const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-        if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
-          embed.thumbnail.url = thumb;
-        }
-      } catch (e) {
-        this.logger.error(e);
-      } finally {
-        await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
+      results.push(this.sendAlert(a, platform));
+    }
+    Promise.all(results);
+  }
+
+  async sendAlert(a, platform) {
+    const embed = new AlertEmbed(this.bot, [a]);
+    try {
+      const articles = await warframe.getSearchList({
+        query: a.mission.reward.itemString,
+        limit: 1,
+      });
+      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+      const item = Object.values(details.items)[0];
+      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
+        embed.thumbnail.url = thumb;
       }
+    } catch (e) {
+      this.logger.error(e);
+    } finally {
+      await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
     }
   }
 
@@ -231,91 +241,115 @@ class Notifier {
   }
 
   async sendDarvo(newDarvoDeals, platform) {
+    const results = [];
     for (const d of newDarvoDeals) {
       const embed = new DarvoEmbed(this.bot, d);
-      await this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry));
+      results.push(this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry)));
     }
+    Promise.all(results);
   }
 
   async sendEvent(newEvents, platform) {
+    const results = [];
     for (const e of newEvents) {
       const embed = new EventEmbed(this.bot, [e]);
-      await this.broadcast(embed, platform, 'events', null, fromNow(e.expiry));
+      results.push(this.broadcast(embed, platform, 'events', null, fromNow(e.expiry)));
     }
+    Promise.all(results);
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
+    const results = [];
     for (const d of newFeaturedDeals) {
       const embed = new SalesEmbed(this.bot, [d]);
-      await this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry));
+      results.push(this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry)));
     }
+    Promise.all(results);
   }
 
   async sendFissures(newFissures, platform) {
+    const results = [];
     for (const f of newFissures) {
       const embed = new FissureEmbed(this.bot, [f]);
-      await this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry));
+      results.push(this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry)));
     }
+    Promise.all(results);
   }
 
   async sendInvasions(newInvasions, platform) {
+    const results = [];
     for (const invasion of newInvasions) {
-      const embed = new InvasionEmbed(this.bot, [invasion]);
-      try {
-        const articles = await warframe.getSearchList({
-          query: invasion.attackerReward.itemString,
-          limit: 1,
-        });
-        const details = await warframe.getArticleDetails({
-          ids: articles.items.map(i => i.id),
-        });
-        const item = Object.values(details.items)[0];
-        const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-        if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
-          embed.thumbnail.url = thumb;
-        }
-      } catch (e) {
-        this.logger.error(e);
-      } finally {
-        await this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
+      results.push(this.sendInvasion(invasion, platform));
+    }
+    Promise.all(results);
+  }
+
+  async sendInvasion(invasion, platform) {
+    const embed = new InvasionEmbed(this.bot, [invasion]);
+    try {
+      const articles = await warframe.getSearchList({
+        query: invasion.attackerReward.itemString,
+        limit: 1,
+      });
+      const details = await warframe.getArticleDetails({
+        ids: articles.items.map(i => i.id),
+      });
+      const item = Object.values(details.items)[0];
+      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
+        embed.thumbnail.url = thumb;
       }
+    } catch (e) {
+      this.logger.error(`${e.exception.code}: ${e.exception.message}`);
+    } finally {
+      await this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
     }
   }
 
   async sendNews(newNews, platform) {
+    const results = [];
     for (const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
-      await this.broadcast(embed, platform, 'news');
+      results.push(this.broadcast(embed, platform, 'news'));
     }
+    Promise.all(results);
   }
 
   async sendStreams(newStreams, platform) {
+    const results = [];
     for (const i of newStreams) {
       const embed = new NewsEmbed(this.bot, [i]);
-      await this.broadcast(embed, platform, 'streams');
+      results.push(this.broadcast(embed, platform, 'streams'));
     }
+    Promise.all(results);
   }
 
 
   async sendPopularDeals(newPopularDeals, platform) {
+    const results = [];
     for (const d of newPopularDeals) {
       const embed = new SalesEmbed(this.bot, [d]);
-      await this.broadcast(embed, platform, 'deals.popular', null, 86400000);
+      results.push(this.broadcast(embed, platform, 'deals.popular', null, 86400000));
     }
+    Promise.all(results);
   }
 
   async sendPrimeAccess(newNews, platform) {
+    const results = [];
     for (const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
-      await this.broadcast(embed, platform, 'primeaccess', null);
+      results.push(this.broadcast(embed, platform, 'primeaccess', null));
     }
+    Promise.all(results);
   }
 
   async sendUpdates(newNews, platform) {
+    const results = [];
     for (const i of newNews) {
       const embed = new NewsEmbed(this.bot, [i]);
-      await this.broadcast(embed, platform, 'updates', null);
+      results.push(this.broadcast(embed, platform, 'updates', null));
     }
+    Promise.all(results);
   }
 
   async sendSortie(newSortie, platform) {
@@ -334,7 +368,7 @@ class Notifier {
         embed.thumbnail.url = thumb;
       }
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error(`${e.exception.code}: ${e.exception.message}`);
     } finally {
       await this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }

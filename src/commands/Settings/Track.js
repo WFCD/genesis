@@ -2,9 +2,10 @@
 
 const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
+const allTrackables = require('../../resources/trackables.json');
 
-const eventTypes = require('../../resources/trackables.json').eventTypes;
-const rewardTypes = require('../../resources/trackables.json').rewardTypes;
+const eventTypes = allTrackables.eventTypes;
+const rewardTypes = allTrackables.rewardTypes;
 
 /**
  * Track an event or item
@@ -26,17 +27,11 @@ class Track extends Command {
 
     const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
     if (!unsplitItems) {
-      const prefix = await this.bot.settings.getChannelPrefix(message.channel);
-      this.messageManager.embed(message,
-        trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.failure(message);
     }
     const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
-      const prefix = await this.bot.settings.getChannelPrefix(message.channel);
-      this.messageManager.embed(message,
-        trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.failure(message);
     }
     trackables.events = trackables.events
         .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
@@ -45,14 +40,23 @@ class Track extends Command {
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
+    const results = [];
     for (const event of trackables.events) {
-      await this.bot.settings.trackEventType(channel, event);
+      results.push(this.bot.settings.trackEventType(channel, event));
     }
     for (const item of trackables.items) {
-      await this.bot.settings.trackItem(channel, item);
+      results.push(this.bot.settings.trackItem(channel, item));
     }
+    Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
+  }
+
+  async failure(message) {
+    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    this.messageManager.embed(message,
+      trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**

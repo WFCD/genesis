@@ -120,8 +120,8 @@ class Create extends Command {
    */
   async sendInvites(voiceChannel, users, author) {
     if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
+      const invite = await voiceChannel.createInvite({ maxUses: users.length });
       for (const user of users) {
-        const invite = await voiceChannel.createInvite({ maxUses: 1 });
         this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
       }
     }
