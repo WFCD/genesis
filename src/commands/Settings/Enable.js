@@ -59,7 +59,7 @@ class Enable extends Command {
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
     const respondToSettings = await this.bot.settings
-        .getChannelResponseToSettings(message.channel);
+        .getChannelSetting(message.channel, 'respond_to_settings');
     if (respondToSettings) {
       this.messageManager.embed(message, infoEmbed, true, false);
     }

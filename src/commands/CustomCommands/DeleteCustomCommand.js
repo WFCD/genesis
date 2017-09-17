@@ -22,11 +22,9 @@ class DeleteCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    this.bot.settings.deleteCustomCommand(message, params[1])
-        .then(() => {
-          this.commandHandler.loadCustomCommands();
-          this.messageManager.notifySettingsChange(message, true, true);
-        });
+    await this.bot.settings.deleteCustomCommand(message, params[1]);
+    await this.commandHandler.loadCustomCommands();
+    await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

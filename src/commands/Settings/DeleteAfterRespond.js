@@ -60,7 +60,7 @@ class RespondToSettings extends Command {
       const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
       const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
       const channel = this.getChannel(channelParam, message);
-      await this.bot.settings.setChannelDeleteAfterResponse(channel, delCall);
+      await this.bot.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
       await this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

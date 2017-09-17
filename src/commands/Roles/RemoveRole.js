@@ -64,7 +64,7 @@ class RemoveRole extends Command {
   }
 
   async removeAndCommitRoles(message, roles, newRole) {
-    this.bot.settings.setRolesForGuild(message.guild, roles);
+    await this.bot.settings.setRolesForGuild(message.guild, roles);
     await this.messageManager.embed(message, {
       title: 'Removed role from joinable list',
       type: 'rich',
@@ -95,7 +95,7 @@ class RemoveRole extends Command {
   }
 
   async sendInstructionEmbed(message) {
-    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
     await this.messageManager.embed(message, {
       title: 'Usage',
       type: 'rich',

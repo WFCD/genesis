@@ -22,7 +22,7 @@ class Sorties extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform].getDataJson();
     const sortie = ws.sortie;
     if (sortie.expired) {

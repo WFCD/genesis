@@ -33,25 +33,25 @@ class Help extends Command {
     if (message.channel.type !== 'dm') {
       this.messageManager.reply(message, this.helpReplyMsg, true, false);
     }
-    this.sendCoreEmbed(message);
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    this.sendCoreEmbed(message, prefix);
     if (message.channel.type === 'dm' ||
        message.channel
         .permissionsFor(message.author)
         .has('MANAGE_ROLES_OR_PERMISSIONS')) {
-      this.sendSettingsEmbed(message);
+      this.sendSettingsEmbed(message, prefix);
     }
-    this.sendWorldStateEmbed(message);
-    this.sendWarframeEmbed(message);
-    this.sendHelpEmbed(message);
+    this.sendWorldStateEmbed(message, prefix);
+    this.sendWarframeEmbed(message, prefix);
+    this.sendHelpEmbed(message, prefix);
     if (message.author.id === this.bot.owner) {
-      this.sendOwnerOnlyEmbed(message);
+      this.sendOwnerOnlyEmbed(message, prefix);
     }
     return this.messageManager.statuses.SUCCESS;
   }
 
-  sendHelpEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const commands = this.commandHandler.commands.filter(c =>
+  sendHelpEmbed(message, prefix) {
+    const commands = this.commandHandler.commands.filter(c =>
         !c.ownerOnly &&
         !/core/ig.test(c.id) &&
         !(/warframe/ig.test(c.id)) &&
@@ -62,68 +62,57 @@ class Help extends Command {
           inline: false,
         }
       )));
-      this.sendEmbedForCommands(message, commands, 'Help!', 0x00ff00);
-    }).catch(this.logger.error);
+    this.sendEmbedForCommands(message, commands, 'Help!', 0x00ff00);
   }
 
-  sendOwnerOnlyEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const ownerCommands = this.commandHandler.commands.filter(c => c.ownerOnly)
+  sendOwnerOnlyEmbed(message, prefix) {
+    const ownerCommands = this.commandHandler.commands.filter(c => c.ownerOnly)
         .map(c => c.usages.map(u => ({
           name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
-      this.sendEmbedForCommands(message, ownerCommands, 'Owner Only', 0xff0000);
-    }).catch(this.logger.error);
+    this.sendEmbedForCommands(message, ownerCommands, 'Owner Only', 0xff0000);
   }
 
-  sendCoreEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /core/ig.test(c.id))
+  sendCoreEmbed(message, prefix) {
+    const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /core/ig.test(c.id))
         .map(c => c.usages.map(u => ({
           name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
-      this.sendEmbedForCommands(message, commands, 'Core Commands', 0x000000);
-    }).catch(this.logger.error);
+    this.sendEmbedForCommands(message, commands, 'Core Commands', 0x000000);
   }
 
-  sendWorldStateEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.worldstate/ig.test(c.id))
+  sendWorldStateEmbed(message, prefix) {
+    const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.worldstate/ig.test(c.id))
         .map(c => c.usages.map(u => ({
           name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
-      this.sendEmbedForCommands(message, commands, 'Warframe Commands - Worldstate', 0x4068BD);
-    }).catch(this.logger.error);
+    this.sendEmbedForCommands(message, commands, 'Warframe Commands - Worldstate', 0x4068BD);
   }
 
-  sendWarframeEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.(?!worldstate)/ig.test(c.id))
+  sendWarframeEmbed(message, prefix) {
+    const commands = this.commandHandler.commands.filter(c => !c.ownerOnly && /warframe.(?!worldstate)/ig.test(c.id))
         .map(c => c.usages.map(u => ({
           name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
           value: u.description,
           inline: false,
         })));
-      this.sendEmbedForCommands(message, commands, 'Warframe Commands - Utility', 0x4068BD);
-    }).catch(this.logger.error);
+    this.sendEmbedForCommands(message, commands, 'Warframe Commands - Utility', 0x4068BD);
   }
 
-  sendSettingsEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel).then((prefix) => {
-      const ownerCommands = this.commandHandler.commands.filter(c => !c.ownerOnly && /settings/ig.test(c.id))
-        .map(c => c.usages.map(u => ({
-          name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
-          value: u.description,
-          inline: false,
-        })));
-      this.sendEmbedForCommands(message, ownerCommands, 'Settings Commands', 0xe5c100);
-    }).catch(this.logger.error);
+  sendSettingsEmbed(message, prefix) {
+    const ownerCommands = this.commandHandler.commands.filter(c => !c.ownerOnly && /settings/ig.test(c.id))
+      .map(c => c.usages.map(u => ({
+        name: `${prefix}${c.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
+        value: u.description,
+        inline: false,
+      })));
+    this.sendEmbedForCommands(message, ownerCommands, 'Settings Commands', 0xe5c100);
   }
 
   sendEmbedForCommands(message, commands, title, color) {

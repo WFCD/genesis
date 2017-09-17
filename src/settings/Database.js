@@ -107,18 +107,16 @@ class Database {
    * Gets the current count of guilds and channels
    * @returns {Promise}
    */
-  getChannelAndGuildCounts() {
+  async getChannelAndGuildCounts() {
     const query = 'select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;';
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return {
-            channels: res[0].countChannels,
-            guilds: res[0].countGuilds,
-          };
-        }
-        return {};
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return {
+        channels: res[0].countChannels,
+        guilds: res[0].countGuilds,
+      };
+    }
+    return {};
   }
 
   /**
@@ -126,7 +124,7 @@ class Database {
    * @param {TextChannel} channel A discord guild text channel
    * @returns {Promise}
    */
-  addGuildTextChannel(channel) {
+  async addGuildTextChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES (${channel.id}, ${channel.guild.id});`;
     return this.db.query(query);
   }
@@ -136,7 +134,7 @@ class Database {
    * @param {DMChannel|GroupDMChannel} channel A discord DM or group DM channel
    * @returns {Promise}
    */
-  addDMChannel(channel) {
+  async addDMChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id) VALUES (${channel.id});`;
     return this.db.query(query);
   }
@@ -146,134 +144,9 @@ class Database {
    * @param {Channel} channel The channel to delete
    * @returns {Promise}
    */
-  deleteChannel(channel) {
+  async deleteChannel(channel) {
     const query = SQL`DELETE FROM channels WHERE id = ${channel.id};`;
     return this.db.query(query);
-  }
-
-  /**
-   * Sets the language for a channel
-   * @param {Channel} channel The Discord channel for which to set the language
-   * @param {string} language The new language for this channel
-   * @returns {Promise}
-   */
-  setChannelLanguage(channel, language) {
-    return this.setChannelSetting(channel, 'language', language);
-  }
-
-  /**
-   * Sets the platform for a channel
-   * @param {Channel} channel The Discord channel for which to set the platform
-   * @param {string} platform The new platform for this channel
-   * @returns {Promise}
-   */
-  setChannelPlatform(channel, platform) {
-    return this.setChannelSetting(channel, 'platform', platform.toLowerCase());
-  }
-
-  /**
-   * Sets whether or not to respond in a channel to settings changes
-   * @param {Channel} channel The Discord channel for which to set the response setting
-   * @param {boolean} respond Whether or not to respond to settings changes
-   * @returns {Promise}
-   */
-  setChannelResponseToSettings(channel, respond) {
-    return this.setChannelSetting(channel, 'respond_to_settings', respond);
-  }
-
-  /**
-   * Sets whether or not to delete messages and responses after responding
-   * @param {Channel} channel The Discord channel for which to set the response setting
-   * @param {boolean} deleteAfterRespond Whether or not to delete messages
-   *                                     and responses after responding
-   * @returns {Promise}
-   */
-  setChannelDeleteAfterResponse(channel, deleteAfterRespond) {
-    return this.setChannelSetting(channel, 'delete_after_respond', deleteAfterRespond);
-  }
-
-  /**
-   * Sets the custom prefix for this guild
-   * @param {Guild} guild The Discord guild for which to set the response setting
-   * @param {string} prefix The prefix for this guild
-   * @returns {Promise}
-   */
-  setGuildPrefix(guild, prefix) {
-    return this.setGuildSetting(guild, 'prefix', prefix);
-  }
-
-  /**
-   * Resets the custom prefix for this guild to the bot's globally configured prefix
-   * @param {Guild} guild The Discord guild for which to set the response setting
-   * @returns {Promise}
-   */
-  resetGuildPrefix(guild) {
-    return this.setGuildSetting(guild, 'prefix', this.bot.prefix);
-  }
-
-  /**
-   * Sets the custom prefix for this channel
-   * @param {Channel} channel The Discord channel for which to set the response setting
-   * @param {string} prefix The prefix for this channel
-   * @returns {Promise}
-   */
-  setChannelPrefix(channel, prefix) {
-    return this.setChannelSetting(channel, 'prefix', prefix);
-  }
-
-  /**
-   * Resets the custom prefix for this guild to the bot's globally configured prefix
-   * @param {Channel} channel The Discord guild for which to set the response setting
-   * @param {string} prefix The prefix for this channel
-   * @returns {Promise}
-   */
-  resetChannelPrefix(channel) {
-    return this.setChannelSetting(channel, 'prefix', this.bot.prefix);
-  }
-
-  /**
-   * Returns the language for a channel
-   * @param {Channel} channel The channel
-   * @returns {Promise.<string>}
-   */
-  getChannelLanguage(channel) {
-    return this.getChannelSetting(channel, 'language');
-  }
-
-  /**
-   * Returns the platform for a channel
-   * @param {Channel} channel The channel
-   * @returns {Promise.<string>}
-   */
-  getChannelPlatform(channel) {
-    return this.getChannelSetting(channel, 'platform').then(prefix => unescape(prefix));
-  }
-
-  /**
-   * Returns the respond_to_settings setting for a channel
-   * @param {Channel} channel The channel
-   * @returns {Promise.<boolean>}
-   */
-  getChannelResponseToSettings(channel) {
-    return this.getChannelSetting(channel, 'respond_to_settings');
-  }
-
-  /**
-   * Returns the delete_after_respond setting for a channel
-   * @param {Channel} channel The channel
-   * @returns {Promise.<boolean>}
-   */
-  getChannelDeleteAfterResponse(channel) {
-    return this.getChannelSetting(channel, 'delete_after_respond');
-  }
-
-  /**
-   * Returns the prefix setting for a guild
-   * @param {Channel} channel The guild
-   * @returns {Promis.<string>} the previs setting for the guild
-   */
-  getChannelPrefix(channel) {
-    return this.getChannelSetting(channel, 'prefix');
   }
 
   /**
@@ -282,24 +155,20 @@ class Database {
    * @param {string} setting name of the setting to get
    * @returns {Promise} setting
    */
-  getChannelSetting(channel, setting) {
+  async getChannelSetting(channel, setting) {
     const query = SQL`SELECT val FROM settings WHERE channel_id=${channel.id} and setting=${setting};`;
-    return this.db.query(query)
-    .then((res) => {
-      if (res[0].length === 0) {
-        if (channel.type === 'text') {
-          return this.addGuildTextChannel(channel)
-          .then(() => this.setChannelSetting(channel, setting, this.defaults[`${setting}`]))
-          .then(() => this.defaults[`${setting}`])
-          ;
-        }
-        return this.addDMChannel(channel)
-        .then(() => this.setChannelSetting(channel, setting, this.defaults[`${setting}`]))
-        .then(() => this.defaults[`${setting}`])
-        ;
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      if (channel.type === 'text') {
+        await this.addGuildTextChannel(channel);
+        await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
+        return this.defaults[`${setting}`];
       }
-      return res[0][0].val;
-    });
+      await this.addDMChannel(channel);
+      await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
+      return this.defaults[`${setting}`];
+    }
+    return res[0][0].val;
   }
 
   /**
@@ -309,7 +178,7 @@ class Database {
    * @param {string|boolean} value value of the setting to be set
    * @returns {Promise} setting
    */
-  setChannelSetting(channel, setting, value) {
+  async setChannelSetting(channel, setting, value) {
     const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
     return this.db.query(query);
   }
@@ -321,12 +190,12 @@ class Database {
    * @param {string|boolean} val value of the setting to be set
    * @returns {Promise}
    */
-  setGuildSetting(guild, setting, val) {
+  async setGuildSetting(guild, setting, val) {
     const promises = [];
     guild.channels.array().forEach((channel) => {
       promises.push(this.setChannelSetting(channel, setting, val));
     });
-    return Promise.each(promises, () => {});
+    return Promise.all(promises);
   }
 
   /**
@@ -335,7 +204,7 @@ class Database {
    * @param {string} item The item to track
    * @returns {Promise}
    */
-  trackItem(channel, item) {
+  async trackItem(channel, item) {
     const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id},${item});`;
     return this.db.query(query);
   }
@@ -346,7 +215,7 @@ class Database {
    * @param {string} item The item to track
    * @returns {Promise}
    */
-  untrackItem(channel, item) {
+  async untrackItem(channel, item) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND item = ${item};`;
     return this.db.query(query);
   }
@@ -357,7 +226,7 @@ class Database {
    * @param {string} type The item to track
    * @returns {Promise}
    */
-  trackEventType(channel, type) {
+  async trackEventType(channel, type) {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id},${type});`;
     return this.db.query(query);
   }
@@ -368,7 +237,7 @@ class Database {
    * @param {string} type The item to track
    * @returns {Promise}
    */
-  untrackEventType(channel, type) {
+  async untrackEventType(channel, type) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND type = ${type};`;
     return this.db.query(query);
   }
@@ -380,7 +249,7 @@ class Database {
    * @param {boolean} enabled true to enable pinging, false to disable
    * @returns {Promise}
    */
-  setItemPing(channel, item, enabled) {
+  async setItemPing(channel, item, enabled) {
     const query = SQL`UPDATE item_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND item = ${item};`;
     return this.db.query(query);
@@ -393,7 +262,7 @@ class Database {
    * @param {boolean} enabled true to enable pinging, false to disable
    * @returns {Promise}
    */
-  setEventTypePing(channel, type, enabled) {
+  async setEventTypePing(channel, type, enabled) {
     const query = SQL`UPDATE type_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND type = ${type};`;
     return this.db.query(query);
@@ -406,7 +275,7 @@ class Database {
    * @param {string} text The text of the ping message
    * @returns {Promise}
    */
-  setPing(guild, itemOrType, text) {
+  async setPing(guild, itemOrType, text) {
     const query = SQL`INSERT INTO pings VALUES (${guild.id}, ${itemOrType}, ${text})
       ON DUPLICATE KEY UPDATE text = ${text};`;
     return this.db.query(query);
@@ -418,16 +287,14 @@ class Database {
    * @param  {Array.<string>} itemsOrTypes array of strings corresponding to event and reward types
    * @returns {Promise.<string>}            Promise of a string to prepend to a message
    */
-  getPing(guild, itemsOrTypes) {
+  async getPing(guild, itemsOrTypes) {
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
-    return this.db.query(query)
-    .then((res) => {
-      if (res[0].length === 0) {
-        return '';
-      }
-      return res[0]
-        .map(result => result.text).join(', ');
-    });
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return '';
+    }
+    return res[0]
+      .map(result => result.text).join(', ');
   }
 
   /**
@@ -435,24 +302,22 @@ class Database {
    * @param {Guild} guild The guild
    * @returns {Promise}
    */
-  clearPingsForGuild(guild) {
+  async clearPingsForGuild(guild) {
     const query = SQL`DELETE FROM pings WHERE guild_id=${guild.id}`;
     return this.db.query(query);
   }
 
-  getPingsForGuild(guild) {
+  async getPingsForGuild(guild) {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
-      return this.db.query(query)
-      .then((res) => {
-        if (res[0].length === 0) {
-          return [];
-        }
-        return res[0]
+      const res = await this.db.query(query);
+      if (res[0].length === 0) {
+        return [];
+      }
+      return res[0]
           .map(result => ({ text: result.text, thing: result.item_or_type }));
-      });
     }
-    return new Promise(resolve => resolve([]));
+    return [];
   }
 
   /**
@@ -461,12 +326,12 @@ class Database {
    * @param {string} itemOrType The item or event type associated to the ping message
    * @returns {Promise}
    */
-  removePing(guild, itemOrType) {
+  async removePing(guild, itemOrType) {
     if (guild) {
       const query = SQL`DELETE FROM pings WHERE guild_id = ${guild.id} AND item_or_type = ${itemOrType};`;
       return this.db.query(query);
     }
-    return new Promise(resolve => resolve(false));
+    return false;
   }
 
   /**
@@ -476,7 +341,7 @@ class Database {
    * @param {Array.<string>} items The items in the reward that is being notified
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
-  getNotifications(type, platform, items) {
+  async getNotifications(type, platform, items) {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
@@ -502,10 +367,10 @@ class Database {
    * @param {Channel} channel A Discord channel
    * @returns {Promise.<Array.<string>>}
    */
-  getTrackedItems(channel) {
+  async getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
-    return this.db.query(query)
-      .then(res => res[0].map(r => r.item));
+    const res = await this.db.query(query);
+    return res[0].map(r => r.item);
   }
 
   /**
@@ -513,18 +378,18 @@ class Database {
    * @param {Channel} channel A Discord channel
    * @returns {Promise.<Array.<string>>}
    */
-  getTrackedEventTypes(channel) {
+  async getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
-    return this.db.query(query)
-    .then(res => res[0].map(r => r.type));
+    const res = await this.db.query(query);
+    return res[0].map(r => r.type);
   }
 
-  deleteChannelPermissions(channel) {
+  async deleteChannelPermissions(channel) {
     const query = SQL`DELETE FROM channel_permissions WHERE channel_id = ${channel.id}`;
     return this.db.query(query);
   }
 
-  deleteGuildPermissions(guild) {
+  async deleteGuildPermissions(guild) {
     const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guild.id}`;
     return this.db.query(query);
   }
@@ -537,7 +402,7 @@ class Database {
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
-  setChannelPermissionForMember(channel, member, commandId, allowed) {
+  async setChannelPermissionForMember(channel, member, commandId, allowed) {
     const query = SQL`INSERT INTO channel_permissions VALUES
       (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
@@ -552,7 +417,7 @@ class Database {
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
-  setChannelPermissionForRole(channel, role, commandId, allowed) {
+  async setChannelPermissionForRole(channel, role, commandId, allowed) {
     const query = SQL`INSERT INTO channel_permissions VALUES
       (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
@@ -567,7 +432,7 @@ class Database {
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
-  setGuildPermissionForMember(guild, member, commandId, allowed) {
+  async setGuildPermissionForMember(guild, member, commandId, allowed) {
     const query = SQL`INSERT INTO guild_permissions VALUES
       (${guild.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
@@ -582,7 +447,7 @@ class Database {
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
-  setGuildPermissionForRole(guild, role, commandId, allowed) {
+  async setGuildPermissionForRole(guild, role, commandId, allowed) {
     const query = SQL`INSERT INTO guild_permissions VALUES
       (${guild.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
@@ -594,7 +459,7 @@ class Database {
    * @param {Channel} channel - A Discord channel
    * @returns {Promise}
    */
-  stopTracking(channel) {
+  async stopTracking(channel) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.db.query(query);
   }
@@ -606,17 +471,15 @@ class Database {
    * @param {string} commandId - String representing a command identifier
    * @returns {Promise}
    */
-  getChannelPermissionForMember(channel, memberId, commandId) {
+  async getChannelPermissionForMember(channel, memberId, commandId) {
     const query = SQL`SELECT allowed FROM channel_permissions
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0].length === 0) {
-          return true;
-        }
-        return res.rows[0].allowed;
-      });
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return true;
+    }
+    return res.rows[0].allowed;
   }
 
   /**
@@ -626,17 +489,15 @@ class Database {
    * @param {string} commandId String representing a command identifier
    * @returns {Promise}
    */
-  getChannelPermissionForRole(channel, role, commandId) {
+  async getChannelPermissionForRole(channel, role, commandId) {
     const query = SQL`SELECT allowed FROM channel_permissions
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0].length === 0) {
-          return true;
-        }
-        return res.rows[0].allowed === 1;
-      });
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return true;
+    }
+    return res.rows[0].allowed === 1;
   }
 
   /**
@@ -648,7 +509,7 @@ class Database {
    *                           a command to check permisions for
    * @returns {Promise}
    */
-  getChannelPermissionForUserRoles(channel, user, commandId) {
+  async getChannelPermissionForUserRoles(channel, user, commandId) {
     const userRoles = channel.type === 'text' ? channel.guild.member(user).roles : {};
     const userRoleIds = userRoles.keyArray();
     const query = SQL`SELECT target_id, is_user, allowed
@@ -668,13 +529,11 @@ class Database {
         WHERE channel_permissions.target_id IS NULL
           AND channels.id = ${channel.id}
           AND guild_permissions.target_id IN (${userRoleIds});`;
-    return this.db.query(query)
-    .then((res) => {
-      if (res[0].length === 0) {
-        return true;
-      }
-      return res[0][0].allowed;
-    });
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return true;
+    }
+    return res[0][0].allowed;
   }
 
   /**
@@ -684,18 +543,16 @@ class Database {
    * @param {string} commandId - String representing a command identifier
    * @returns {Promise}
    */
-  getGuildPermissionForMember(guild, memberId, commandId) {
+  async getGuildPermissionForMember(guild, memberId, commandId) {
     const query = SQL`SELECT allowed FROM guild_permissions
     WHERE channel_id = ${guild.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res.rows.length === 0) {
-          throw new Error(`The guild permissions for the guild ${guild.id}
-             for member ${memberId} was not found in the database`);
-        }
-        return res.rows[0].allowed;
-      });
+    const res = await this.db.query(query);
+    if (res.rows.length === 0) {
+      throw new Error(`The guild permissions for the guild ${guild.id}
+         for member ${memberId} was not found in the database`);
+    }
+    return res.rows[0].allowed;
   }
 
   /**
@@ -705,18 +562,16 @@ class Database {
    * @param {string} commandId String representing a command identifier
    * @returns {Promise}
    */
-  getGuildPermissionForRole(guild, role, commandId) {
+  async getGuildPermissionForRole(guild, role, commandId) {
     const query = SQL`SELECT allowed FROM guild_permissions
     WHERE channel_id = ${guild.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res.rows.length === 0) {
-          throw new Error(`The guild permissions for the guild ${guild.id}
-             for member ${role.id} was not found in the database`);
-        }
-        return res.rows[0].allowed;
-      });
+    const res = await this.db.query(query);
+    if (res.rows.length === 0) {
+      throw new Error(`The guild permissions for the guild ${guild.id}
+         for member ${role.id} was not found in the database`);
+    }
+    return res.rows[0].allowed;
   }
 
   /**
@@ -724,21 +579,18 @@ class Database {
    * @param  {snowflake} guild Guild to be removed from database
    * @returns {Promise.<string>} status of removal
    */
-  removeGuild(guild) {
+  async removeGuild(guild) {
     const channelIds = guild.channels.keyArray();
-    const permissionResults = [];
-    const notificationsResults = [];
+    const results = [];
     channelIds.forEach((channelId) => {
-      permissionResults.push(this.removeChannelPermissions(channelId));
-      notificationsResults.push(this.removeItemNotifications(channelId));
+      results.push(this.removeChannelPermissions(channelId));
+      results.push(this.removeItemNotifications(channelId));
     });
-    permissionResults.push(this.removeGuildPermissions(guild.id));
-    notificationsResults.push(this.removePings(guild.id));
-    permissionResults.forEach(result => result.then(removalSucceeded => this.logger.debug(`Result of removal: ${removalSucceeded ? 'success' : 'failure'}`)));
-    notificationsResults.forEach(result => result.then(removalSucceeded => this.logger.debug(`Result of removal: ${removalSucceeded ? 'success' : 'failure'}`)));
+    results.push(this.removeGuildPermissions(guild.id));
+    results.push(this.removePings(guild.id));
+    await Promise.all(results);
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id})`;
-    return this.db.query(query)
-    .then(res => res);
+    return this.db.query(query);
   }
 
   /**
@@ -746,10 +598,9 @@ class Database {
    * @param  {snowflake} guildId guild identifier for removal
    * @returns {Promise.<string>} status of removal
    */
-  removeGuildPermissions(guildId) {
+  async removeGuildPermissions(guildId) {
     const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guildId}`;
-    return this.db.query(query)
-      .then(res => res);
+    return this.db.query(query);
   }
 
   /**
@@ -757,10 +608,9 @@ class Database {
    * @param  {snowflake} channelId channel identifier for removal
    * @returns {Promise.<string>} status of removal
    */
-  removeChannelPermissions(channelId) {
+  async removeChannelPermissions(channelId) {
     const query = SQL`DELETE FROM channel_permisions WHERE channel_id = ${channelId}`;
-    return this.db.query(query)
-    .then(res => res);
+    return this.db.query(query);
   }
 
   /**
@@ -768,10 +618,9 @@ class Database {
    * @param  {snowflake} channelId channel identifier for removal
    * @returns {Promise.<string>} status of removal
    */
-  removeItemNotifications(channelId) {
+  async removeItemNotifications(channelId) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
-    return this.db.query(query)
-    .then(res => res);
+    return this.db.query(query);
   }
 
   /**
@@ -779,10 +628,9 @@ class Database {
    * @param  {snowflake} guildId guild identifier for removal
    * @returns {Promise.<string>} status of removal
    */
-  removePings(guildId) {
+  async removePings(guildId) {
     const query = SQL`DELETE FROM pings WHERE guild_id = ${guildId}`;
-    return this.db.query(query)
-    .then(res => res);
+    return this.db.query(query);
   }
 
   /**
@@ -792,7 +640,7 @@ class Database {
    * @param {JSON} notifiedIds list of oids that have been notifiedIds
    * @returns {Promise}
    */
-  setNotifiedIds(platform, shardId, notifiedIds) {
+  async setNotifiedIds(platform, shardId, notifiedIds) {
     const query = SQL`INSERT INTO notified_ids VALUES
       (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
@@ -805,17 +653,15 @@ class Database {
    * @param  {number} shardId  Identifier of the corresponding shard
    * @returns {Promise.<Array>} Array of notified oids
    */
-  getNotifiedIds(platform, shardId) {
+  async getNotifiedIds(platform, shardId) {
     const query = SQL`SELECT id_list
       FROM notified_ids
       WHERE shard_id=${shardId} AND platform=${platform};`;
-    return this.db.query(query)
-    .then((res) => {
-      if (res[0].length === 0) {
-        return [];
-      }
-      return res[0][0].id_list;
-    });
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return [];
+    }
+    return res[0][0].id_list;
   }
 
   /**
@@ -824,7 +670,7 @@ class Database {
    * @param {Array.<string>} roles Array of role ids to set
    * @returns {Promise}
    */
-  setRolesForGuild(guild, roles) {
+  async setRolesForGuild(guild, roles) {
     const query = SQL`INSERT INTO guild_joinable_roles VALUES
       (${guild.id}, JSON_ARRAY(${roles}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles});`;
@@ -836,21 +682,19 @@ class Database {
    * @param  {Guild} guild [description]
    * @returns {Promise.<Array.<Role>>} Promise of array of roles that are joinable
    */
-  getRolesForGuild(guild) {
+  async getRolesForGuild(guild) {
     const query = SQL`SELECT id_list
       FROM guild_joinable_roles
       WHERE guild_id=${guild.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0][0]) {
-          const validListIds = res[0][0].id_list
-            .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined');
-          const validList = validListIds
-            .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
-          return validList;
-        }
-        return [];
-      });
+    const res = await this.db.query(query);
+    if (res[0][0]) {
+      const validListIds = res[0][0].id_list
+        .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined');
+      const validList = validListIds
+        .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
+      return validList;
+    }
+    return [];
   }
 
   /**
@@ -858,21 +702,19 @@ class Database {
    * @param  {Guild} guild guild to fetch settings for
    * @returns {Object}       Data about allowed data
    */
-  permissionsForGuild(guild) {
+  async permissionsForGuild(guild) {
     const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return res[0].map(value => ({
-            level: 'guild',
-            command: value.command_id,
-            isAllowed: value.allowed,
-            type: value.is_user ? 'user' : 'role',
-            appliesToId: value.target_id,
-          }));
-        }
-        return [];
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value => ({
+        level: 'guild',
+        command: value.command_id,
+        isAllowed: value.allowed,
+        type: value.is_user ? 'user' : 'role',
+        appliesToId: value.target_id,
+      }));
+    }
+    return [];
   }
 
   /**
@@ -880,76 +722,70 @@ class Database {
    * @param  {Channel} channel channel to fetch settings for
    * @returns {Object}       Data about allowed data
    */
-  permissionsForChannel(channel) {
+  async permissionsForChannel(channel) {
     const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return res[0].map(value => ({
-            level: 'channel',
-            command: value.command_id,
-            isAllowed: value.allowed,
-            type: value.is_user ? 'user' : 'role',
-            appliesToId: value.target_id,
-          }));
-        }
-        return [];
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value => ({
+        level: 'channel',
+        command: value.command_id,
+        isAllowed: value.allowed,
+        type: value.is_user ? 'user' : 'role',
+        appliesToId: value.target_id,
+      }));
+    }
+    return [];
   }
 
-  addPrivateRoom(guild, textChannel, voiceChannel) {
+  async addPrivateRoom(guild, textChannel, voiceChannel) {
     const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id})`;
     return this.db.query(query);
   }
 
-  deletePrivateRoom(guild, textChannel, voiceChannel) {
+  async deletePrivateRoom(guild, textChannel, voiceChannel) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id}`;
     return this.db.query(query);
   }
 
-  getPrivateRooms() {
+  async getPrivateRooms() {
     const query = SQL`SELECT guild_id, text_id, voice_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return res[0].map(value => ({
-            guild: this.bot.client.guilds.get(value.guild_id),
-            textChannel: this.bot.client.channels.get(value.text_id),
-            voiceChannel: this.bot.client.channels.get(value.voice_id),
-            createdAt: value.crt_sec,
-          }));
-        }
-        return [];
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value => ({
+        guild: this.bot.client.guilds.get(value.guild_id),
+        textChannel: this.bot.client.channels.get(value.text_id),
+        voiceChannel: this.bot.client.channels.get(value.voice_id),
+        createdAt: value.crt_sec,
+      }));
+    }
+    return [];
   }
 
-  getCommandContext(channel) {
-    return this.getChannelSetting(channel, 'prefix')
-      .then(prefix => this.getChannelSetting(channel, 'allowCustom')
-          .then(allowCustom => this.getChannelSetting(channel, 'allowInline')
-              .then(allowInline => ({ prefix, allowCustom: allowCustom === '1', allowInline: allowInline === '1' }))));
+  async getCommandContext(channel) {
+    const prefix = await this.getChannelSetting(channel, 'prefix');
+    const allowCustom = await this.getChannelSetting(channel, 'allowCustom') === '1';
+    const allowInline = await this.getChannelSetting(channel, 'allowInline') === '1';
+    return { prefix, allowCustom, allowInline };
   }
 
-  getCustomCommands() {
+  async getCustomCommands() {
     const query = SQL`SELECT * FROM custom_commands WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return res[0].map(value =>
-            new CustomCommand(this.bot, value.command, value.response, value.guild_id));
-        }
-        return [];
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value =>
+        new CustomCommand(this.bot, value.command, value.response, value.guild_id));
+    }
+    return [];
   }
 
-  addCustomCommand(message, call, response) {
+  async addCustomCommand(message, call, response) {
     const id = `${call}${message.guild.id}`;
     const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
       VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
     return this.db.query(query);
   }
 
-  deleteCustomCommand(message, call) {
+  async deleteCustomCommand(message, call) {
     const id = `${call}${message.guild.id}`;
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
     return this.db.query(query);
@@ -961,7 +797,7 @@ class Database {
    * @param {boolean} isDm whether or not the message to be cleared is the dm or in-chat message
    * @returns {Promise}
    */
-  clearWelcomeForGuild(guild, isDm) {
+  async clearWelcomeForGuild(guild, isDm) {
     const query = SQL`DELETE FROM welcome_messages WHERE guild_id=${guild.id} && is_dm=${isDm}`;
     return this.db.query(query);
   }
@@ -973,26 +809,24 @@ class Database {
    * @param {string} text The text of the ping message
    * @returns {Promise}
    */
-  setWelcome(message, isDm, text) {
+  async setWelcome(message, isDm, text) {
     const query = SQL`INSERT INTO welcome_messages (guild_id, is_dm, channel_id, message) VALUES (${message.guild.id}, ${isDm}, ${message.channel.id}, ${text})
       ON DUPLICATE KEY UPDATE message = ${text};`;
     return this.db.query(query);
   }
 
-  getWelcomes(guild) {
+  async getWelcomes(guild) {
     const query = SQL`SELECT * FROM welcome_messages WHERE guild_id = ${guild.id}`;
-    return this.db.query(query)
-      .then((res) => {
-        if (res[0]) {
-          return res[0].map(value =>
-            ({
-              isDm: value.is_dm,
-              message: value.message,
-              channel: this.bot.client.channels.get(value.channel_id),
-            }));
-        }
-        return {};
-      });
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value =>
+        ({
+          isDm: value.is_dm,
+          message: value.message,
+          channel: this.bot.client.channels.get(value.channel_id),
+        }));
+    }
+    return {};
   }
 }
 

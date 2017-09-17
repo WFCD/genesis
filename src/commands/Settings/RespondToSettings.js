@@ -36,7 +36,7 @@ class RespondToSettings extends Command {
     if (enable === 'on') {
       enableResponse = true;
     }
-    await this.bot.settings.setChannelResponseToSettings(channel, enableResponse);
+    await this.bot.settings.setChannelSetting(channel, 'respond_to_settings', enableResponse);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

@@ -53,7 +53,7 @@ class Untrack extends Command {
   }
 
   async failure(message) {
-    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
     this.messageManager.embed(message,
       trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;

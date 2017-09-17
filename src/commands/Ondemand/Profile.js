@@ -34,7 +34,7 @@ class PriceCheck extends Command {
   async run(message) {
     let username = message.strippedContent.match(this.regex)[1];
     if (typeof username === 'undefined') {
-      this.sendUsageEmbed(message);
+      await this.sendUsageEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
     username = username.trim();
@@ -58,28 +58,25 @@ class PriceCheck extends Command {
     return this.messageManager.statuses.FAILURE;
   }
 
-  sendUsageEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then((prefix) => {
-        const embed = {
-          type: 'rich',
-          color: 0x0000ff,
-          fields: [
-            {
-              name: `${prefix}${this.call} <ign>`,
-              value: 'Search for Player Profile',
-              inline: true,
-            },
-            {
-              name: 'Parameters:',
-              value: '`player in-game name` : In-game name of user whose profile you wish to fetch',
-              inline: false,
-            },
-          ],
-        };
-        this.messageManager.embed(message, embed, true, true);
-      })
-      .catch(this.logger.error);
+  async sendUsageEmbed(message) {
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const embed = {
+      type: 'rich',
+      color: 0x0000ff,
+      fields: [
+        {
+          name: `${prefix}${this.call} <ign>`,
+          value: 'Search for Player Profile',
+          inline: true,
+        },
+        {
+          name: 'Parameters:',
+          value: '`player in-game name` : In-game name of user whose profile you wish to fetch',
+          inline: false,
+        },
+      ],
+    };
+    await this.messageManager.embed(message, embed, true, true);
   }
 }
 

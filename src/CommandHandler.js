@@ -79,14 +79,12 @@ class CommandHandler {
 
     this.statuses = this.bot.messageManager.statuses;
 
-    this.loadCustomCommands();
+    this.loadCustomCommands().then();
   }
 
-  loadCustomCommands() {
-    this.bot.settings.getCustomCommands()
-      .then((customCommands) => {
-        this.customCommands = customCommands;
-      });
+  async loadCustomCommands() {
+    const customCommands = await this.bot.settings.getCustomCommands();
+    this.customCommands = customCommands;
   }
 
   /**

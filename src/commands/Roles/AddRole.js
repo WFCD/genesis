@@ -64,7 +64,7 @@ class AddRole extends Command {
   }
 
   async addAndCommitRole(message, roles, newRole) {
-    this.bot.settings.setRolesForGuild(message.guild, roles);
+    await this.bot.settings.setRolesForGuild(message.guild, roles);
     await this.messageManager.embed(message, {
       title: 'Added role to joinable list',
       type: 'rich',
@@ -95,7 +95,7 @@ class AddRole extends Command {
   }
 
   async sendInstructionEmbed(message) {
-    const prefix = await this.bot.settings.getChannelPrefix(message.channel);
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
     this.messageManager.embed(message, {
       title: 'Usage',
       type: 'rich',

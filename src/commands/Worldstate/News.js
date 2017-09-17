@@ -18,7 +18,7 @@ class News extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform].getDataJson();
     const news = ws.news.filter(n => !n.update && !n.primeAccess);
     await this.messageManager.embed(message, new NewsEmbed(this.bot, news), true, false);

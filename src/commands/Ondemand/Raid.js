@@ -37,7 +37,7 @@ class Raid extends Command {
     }
     this.logger.debug(`Searched for query: ${query}`);
 
-    const platform = await this.bot.settings.getChannelPlatform(message.channel);
+    const platform = await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
     const data = await (new Fetcher(url)).httpGet();
     this.messageManager.embed(message, new RaidEmbed(this.bot,

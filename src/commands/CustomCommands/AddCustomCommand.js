@@ -27,11 +27,9 @@ class AddCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    this.bot.settings.addCustomCommand(message, params[1], params[2])
-        .then(() => {
-          this.commandHandler.loadCustomCommands();
-          this.messageManager.notifySettingsChange(message, true, true);
-        });
+    await this.bot.settings.addCustomCommand(message, params[1], params[2]);
+    await this.commandHandler.loadCustomCommands();
+    await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

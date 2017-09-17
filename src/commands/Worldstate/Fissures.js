@@ -18,7 +18,7 @@ class Fissures extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelPlatform(message.channel);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform].getDataJson();
     const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
     await this.messageManager.embed(message,

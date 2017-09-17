@@ -34,14 +34,14 @@ class Prefix extends Command {
       return this.messageManager.statuses.FAILURE;
     } else if (prefix === 'reset') {
       if (message.channel.type === 'text') {
-        await this.bot.settings.resetGuildPrefix(message.channel.guild);
+        await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
       } else {
-        await this.bot.settings.resetChannelPrefix(message.channel);
+        await this.bot.settings.setChannelSetting(message.channel, 'prefix', this.bot.prefix);
       }
     } else if (message.channel.type === 'text') {
-      await this.bot.settings.setGuildPrefix(message.channel.guild, prefix);
+      await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', prefix);
     } else {
-      await this.bot.settings.setChannelPrefix(message.channel, prefix);
+      await this.bot.settings.setChannelSetting(message.channel, 'prefix', prefix);
     }
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
