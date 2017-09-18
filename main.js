@@ -1,7 +1,6 @@
 'use strict';
 
 const cluster = require('cluster');
-// eslint-disable-next-line import/no-unresolved
 const Nexus = require('warframe-nexus-query');
 const Cache = require('json-fetch-cache');
 const NexusFetcher = require('nexus-stats-api');
