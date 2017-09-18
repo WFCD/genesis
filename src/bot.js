@@ -224,10 +224,6 @@ class Genesis {
     this.notifier = new Notifier(this);
 
     this.nexusQuerier = nexusQuerier;
-
-    this.commandHandler.loadCommands();
-
-    this.setupHandlers();
   }
 
   setupHandlers() {
@@ -258,6 +254,9 @@ class Genesis {
   async start() {
     await this.settings.createSchema(this.client);
     this.logger.debug('Schema created');
+    await this.commandHandler.loadCommands();
+
+    this.setupHandlers();
     try {
       const t = await this.client.login(this.token);
       this.logger.debug(`Logged in with token ${t}`);

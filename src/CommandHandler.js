@@ -34,7 +34,7 @@ class CommandHandler {
   /**
    * Loads the commands from disk into this.commands
    */
-  loadCommands() {
+  async loadCommands() {
     const commandDir = path.join(__dirname, 'commands');
     let files = fs.readdirSync(commandDir);
 
@@ -79,7 +79,7 @@ class CommandHandler {
 
     this.statuses = this.bot.messageManager.statuses;
 
-    this.loadCustomCommands().then();
+    await this.loadCustomCommands();
   }
 
   async loadCustomCommands() {
