@@ -28,7 +28,7 @@ class Event extends Command {
         await Promise.all(results);
         return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(message, new EventEmbed(this.bot, undefined, platform.toUpperCase()), true, true));
+    await this.messageManager.embed(message, new EventEmbed(this.bot, undefined, platform.toUpperCase()), true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }
