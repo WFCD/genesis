@@ -16,12 +16,12 @@ class ConstructionEmbed extends BaseEmbed {
 
     this.color = 0xff6961;
     this.fields = [{
-        name: `[${platform}] Construction Status:`,
-        value: '```' +
-        `Razorback: ${construction.razorbackProgress}` +
-        `Fomorian:  ${construction.fomorianProgress}` +
-        `Unknown:   ${construction.unknwonProgress}` +
-        '```'
+      name: `[${platform}] Construction Status:`,
+      value: '```' +
+      `Razorback: ${construction.razorbackProgress}` +
+      `Fomorian:  ${construction.fomorianProgress}` +
+      `Unknown:   ${construction.unknwonProgress}` +
+      '```'
     }];
   }
 }
