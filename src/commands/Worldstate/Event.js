@@ -23,14 +23,14 @@ class Event extends Command {
     const ws = await this.bot.caches[platform].getDataJson();
     if (ws.events.length > 0) {
       const results = [];
-      ws.events.forEach(event => {
-          results.push(this.messageManager.embed(message, 
+      ws.events.forEach((event) => {
+          results.push(this.messageManager.embed(message,
             new EventEmbed(this.bot, event, platform.toUpperCase()), true, true));
       });
       await Promise.all(results);
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(message, new EventEmbed(this.bot, 
+    await this.messageManager.embed(message, new EventEmbed(this.bot,
       undefined, platform.toUpperCase()), true, true);
     return this.messageManager.statuses.FAILURE;
   }
