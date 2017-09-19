@@ -18,9 +18,11 @@ class Construction extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.bot.settings
+      .getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform].getDataJson();
-    await this.messageManager.embed(message, new EventEmbed(this.bot, ws.constructionProgress, platform.toUpperCase()), true, true);
+    await this.messageManager.embed(message, new EventEmbed(this.bot,
+      ws.constructionProgress, platform.toUpperCase()), true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }
