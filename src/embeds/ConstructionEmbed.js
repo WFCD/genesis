@@ -18,10 +18,10 @@ class ConstructionEmbed extends BaseEmbed {
     this.fields = [{
       name: `[${platform}] Construction Status:`,
       value: '```' +
-      `Razorback: ${construction.razorbackProgress}` +
-      `Fomorian:  ${construction.fomorianProgress}` +
-      `Unknown:   ${construction.unknwonProgress}` +
-      '```'
+      `Razorback: ${constructionProgress.razorbackProgress}` +
+      `Fomorian:  ${constructionProgress.fomorianProgress}` +
+      `Unknown:   ${constructionProgress.unknwonProgress}` +
+      '```',
     }];
   }
 }
