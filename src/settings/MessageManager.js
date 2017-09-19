@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 /**
  * MessageManager for
  */
@@ -23,6 +21,12 @@ class MessaageManager {
      * @type {string}
      */
     this.zSWC = '\u200B';
+
+    this.statuses = {
+      SUCCESS: 'SUCCESS',
+      FAILURE: 'FAILURE',
+      NO_ACCESS: 'NO ACCESS',
+    };
   }
 
   /**
@@ -32,16 +36,13 @@ class MessaageManager {
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
    */
-  sendMessage(message, content, deleteOriginal, deleteResponse) {
-    const promises = [];
+  async sendMessage(message, content, deleteOriginal, deleteResponse) {
     if ((message.channel.type === 'text' &&
         message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
-      promises.push(message.channel.send(`${this.zSWC}${content}`).then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-      }));
+      const msg = await message.channel.send(`${this.zSWC}${content}`);
+      await this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
-    Promise.each(promises, () => {}).catch(this.logger.error);
   }
 
   /**
@@ -52,13 +53,12 @@ class MessaageManager {
    * @param {boolean} deleteResponse True to delete the sent message after time
    * @returns {null|Promise<Message>}
    */
-  replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
+  async replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
     if ((message.channel.type === 'text' &&
         message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
-      return message.channel.send(`${this.zSWC}${content}`).then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-      });
+      const msg = await message.channel.send(`${this.zSWC}${content}`);
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
     return null;
   }
@@ -69,17 +69,16 @@ class MessaageManager {
    * @param {string} content String to send to a channel
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {null|Promise<Message>}
    */
-  reply(message, content, deleteOriginal, deleteResponse) {
-    const promises = [];
+  async reply(message, content, deleteOriginal, deleteResponse) {
     if ((message.channel && message.channel.type === 'text' &&
         message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
-      promises.push(message.reply(`${this.zSWC}${content}`).then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-      }));
+      const msg = await message.reply(`${this.zSWC}${content}`);
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
-    Promise.each(promises, () => {}).catch(this.logger.error);
+    return null;
   }
 
   /**
@@ -88,18 +87,18 @@ class MessaageManager {
    * @param {Object} embed Embed object to send
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @param {content} content Content of the embed, prepended to the embed.
+   * @returns {null|Promise<Message>}
    */
-  embed(message, embed, deleteOriginal, deleteResponse, content) {
-    const promises = [];
+  async embed(message, embed, deleteOriginal, deleteResponse, content) {
     if ((message.channel.type === 'text' &&
       message.channel.permissionsFor(this.client.user.id)
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      promises.push(message.channel.send(content || '', { embed }).then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-      }));
+      const msg = await message.channel.send(content || '', { embed });
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
-    Promise.each(promises, () => {}).catch(this.logger.error);
+    return null;
   }
 
   /**
@@ -110,22 +109,10 @@ class MessaageManager {
    * @param {nunber} deleteAfter delete after a specified time
    * @returns {Promise<Message>}
    */
-  embedToChannel(channel, embed, prepend, deleteAfter) {
-    if (channel
-      && ((channel.type === 'text'
-      && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS']))
-      || channel.type === 'dm')) {
-      return channel.send(prepend, { embed })
-        .then((msg) => {
-          if (msg.deletable && deleteAfter > 0) {
-            this.settings.getChannelSetting(channel, 'deleteExpired')
-              .then((deleteExpired) => {
-                if (parseInt(deleteExpired, 10)) {
-                  msg.delete(deleteAfter);
-                }
-              });
-          }
-        });
+  async embedToChannel(channel, embed, prepend, deleteAfter) {
+    if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
+      const msg = await channel.send(prepend, { embed });
+      return this.deleteCallAndResponse(msg, msg, false, deleteAfter);
     }
     return null;
   }
@@ -135,13 +122,11 @@ class MessaageManager {
    * @param {Message} message original message being responded to
    * @param {string} content String to send to a channel
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise<Message>}
    */
-  sendDirectMessageToAuthor(message, content, deleteResponse) {
-    const promises = [];
-    promises.push(message.author.send(content).then((msg) => {
-      this.deleteCallAndResponse(message, msg, false, deleteResponse);
-    }));
-    Promise.each(promises, () => {}).catch(this.logger.error);
+  async sendDirectMessageToAuthor(message, content, deleteResponse) {
+    const msg = await message.author.send(content);
+    return this.deleteCallAndResponse(message, msg, false, deleteResponse);
   }
 
   /**
@@ -149,13 +134,11 @@ class MessaageManager {
    * @param {TextChannel} user user being sent a message
    * @param {string} content String to send to a channel
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise<Message>}
    */
-  sendDirectMessageToUser(user, content, deleteResponse) {
-    const promises = [];
-    promises.push(user.send(content).then((msg) => {
-      this.deleteCallAndResponse(user, msg, false, deleteResponse);
-    }));
-    Promise.each(promises, () => {}).catch(this.logger.error);
+  async sendDirectMessageToUser(user, content, deleteResponse) {
+    const msg = await user.send(content);
+    return this.deleteCallAndResponse(user, msg, false, deleteResponse);
   }
 
   /**
@@ -163,31 +146,25 @@ class MessaageManager {
    * @param {Message} message original message being responded to
    * @param {Object} embed Embed object to send
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise<Message>}
    */
-  sendDirectEmbedToAuthor(message, embed, deleteResponse) {
-    const promises = [];
-    promises.push(message.author.send('', { embed }).then((msg) => {
-      this.deleteCallAndResponse(message, msg, false, deleteResponse);
-    }));
-    Promise.each(promises, () => {}).catch(this.logger.error);
+  async sendDirectEmbedToAuthor(message, embed, deleteResponse) {
+    const msg = await message.author.send('', { embed });
+    return this.deleteCallAndResponse(message, msg, false, deleteResponse);
   }
 
-  sendDirectEmbedToOwner(embed) {
-    this.client.users.get(this.owner).send('', { embed }).catch(this.logger.error);
+  async sendDirectEmbedToOwner(embed) {
+    return this.client.users.get(this.owner).send('', { embed });
   }
 
-  sendFileToAuthor(message, file, fileName, deleteCall) {
-    message.author.send('', { file: { attachment: file, name: fileName } })
-      .then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteCall, false);
-      });
+  async sendFileToAuthor(message, file, fileName, deleteCall) {
+    const msg = await message.author.send('', { file: { attachment: file, name: fileName } });
+    return this.deleteCallAndResponse(message, msg, deleteCall, false);
   }
 
-  sendFile(message, prepend, file, fileName, deleteCall) {
-    message.channel.send(prepend || '', { file: { attachment: file, name: fileName } })
-      .then((msg) => {
-        this.deleteCallAndResponse(message, msg, deleteCall, false);
-      });
+  async sendFile(message, prepend, file, fileName, deleteCall) {
+    const msg = await message.channel.send(prepend || '', { file: { attachment: file, name: fileName } });
+    return this.deleteCallAndResponse(message, msg, deleteCall, false);
   }
 
   /**
@@ -195,20 +172,17 @@ class MessaageManager {
    * @param {Message} message Message to reply to and fetch channel settings from
    * @param {boolean} deleteOriginal whether or not to delete the original message
    * @param {boolean} deleteResponse whether or not to delete the response message
+   * @returns {null|Promise<Message>}
    */
-  notifySettingsChange(message, deleteOriginal, deleteResponse) {
-    message.react('\u2705');
-    this.settings.getChannelResponseToSettings(message.channel)
-      .then((respondToSettings) => {
-        if (respondToSettings === '1') {
-          return message.reply('Settings updated')
-            .then((msg) => {
-              this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-            });
-        }
-        return new Promise(resolve => resolve(true));
-      })
-      .catch(this.logger.error);
+  async notifySettingsChange(message, deleteOriginal, deleteResponse) {
+    await message.react('\u2705');
+    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings');
+
+    if (respondToSettings === '1') {
+      const msg = await message.reply('Settings updated');
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+    }
+    return null;
   }
 
   /**
@@ -218,25 +192,20 @@ class MessaageManager {
    * @param  {boolean} deleteCall     whether or not to delete the calling message
    * @param  {boolean} deleteResponse whether or not to delete the message response
    */
-  deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
-    if (call.channel) {
-      this.settings.getChannelDeleteAfterResponse(call.channel)
-        .then((deleteAfterRespond) => {
-          if (deleteAfterRespond === '1' && deleteCall && call.deletable) {
-            call.delete(10000).catch(() => this.logger.error(`Couldn't delete ${call}`));
-          }
-          return this.settings.getChannelSetting(call.channel, 'delete_response');
-        })
-        .then((deleteResponseAfterRespond) => {
-          if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
-            response.delete(30000).catch(() => this.logger.error(`Couldn't delete ${response}`));
-          }
-        })
-        .catch(this.logger.error);
+  async deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
+    if (call && call.channel) {
+      const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond');
+      const deleteResponseAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_response');
+      if (deleteAfterRespond === '1' && deleteCall && call.deletable) {
+        await call.delete(10000);
+      }
+      if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
+        await response.delete(30000);
+      }
     }
   }
 
-  webhook(webhookId, embed) {
+  async webhook(webhookId, embed) {
     this.bot.client.fetchWebhook(webhookId).sendSlackMessage({
       username: this.bot.client.user.username,
       attachments: [embed],

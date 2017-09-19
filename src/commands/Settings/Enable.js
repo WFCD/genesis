@@ -17,51 +17,53 @@ class Enable extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
       this.messageManager.embed(message, new EnableUsageEmbed(this.bot, params, 1), true, false);
-    } else {
-      params.splice(0, 1);
-      const commands = this.getCommandsToEnable(params[0]);
-      let channels = [];
-
-      if (params[1]) {
-        channels = this.getChannels(message.mentions.channels.length > 0
-          ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
-      } else {
-        channels = [message.channel];
-      }
-
-      let target = {};
-      if (params[2] ||
-        message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
-        target = this.getTarget(params[2], message.mentions ? message.mentions.roles : [],
-          message.mentions ? message.mentions.users : [], message);
-      } else {
-        target = message.guild.roles.find('name', '@everyone');
-      }
-      const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
-      const promises = [];
-      this.bot.settings.getChannelResponseToSettings(message.channel)
-        .then((respondToSettings) => {
-          if (respondToSettings) {
-            this.messageManager.embed(message, infoEmbed, true, false);
-          }
-        });
-      commands.forEach((command) => {
-        channels.forEach((channel) => {
-          if (target.type === 'Role') {
-            promises.push(this.bot.settings
-              .setChannelPermissionForRole(channel, target, command, 1));
-          } else {
-            promises.push(this.bot.settings
-              .setChannelPermissionForMember(channel, target, command, 1));
-          }
-        });
-      });
-      promises.forEach(promise => promise.catch(this.logger.error));
+      return this.messageManager.statuses.FAILURE;
     }
+    params.splice(0, 1);
+    const commands = this.getCommandsToEnable(params[0]);
+    let channels = [];
+
+    if (params[1]) {
+      channels = this.getChannels(message.mentions.channels.length > 0
+          ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
+    } else {
+      channels = [message.channel];
+    }
+
+    let target = {};
+    if (params[2] ||
+        message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
+      target = this.getTarget(params[2], message.mentions ? message.mentions.roles : [],
+          message.mentions ? message.mentions.users : [], message);
+    } else {
+      target = message.guild.roles.find('name', '@everyone');
+    }
+    const results = [];
+    // set the stuff
+    for (const command of commands) {
+      for (const channel of channels) {
+        if (target.type === 'Role') {
+          results.push(this.bot.settings
+              .setChannelPermissionForRole(channel, target, command, 1));
+        } else {
+          results.push(this.bot.settings
+              .setChannelPermissionForMember(channel, target, command, 1));
+        }
+      }
+    }
+    await Promise.all(results);
+    // notify info embed
+    const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
+    const respondToSettings = await this.bot.settings
+        .getChannelSetting(message.channel, 'respond_to_settings');
+    if (respondToSettings) {
+      this.messageManager.embed(message, infoEmbed, true, false);
+    }
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**

@@ -13,7 +13,7 @@ class RespondToSettings extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     let option = message.strippedContent.match(this.regex)[1];
     const usageEmbed = {
       title: 'Usage',
@@ -28,45 +28,45 @@ class RespondToSettings extends Command {
     };
     if (!option) {
       this.messageManager.embed(message, usageEmbed, true, true);
-    } else {
-      option = option.trim();
-      let delCall = false;
-      let delResponse = false;
-      let doNothing = false;
-      switch (option) {
-        case 'all':
-          delCall = true;
-          delResponse = true;
-          break;
-        case 'command':
-          delCall = true;
-          delResponse = false;
-          break;
-        case 'respond':
-          delCall = false;
-          delResponse = true;
-          break;
-        case 'none':
-          delCall = false;
-          delResponse = false;
-          break;
-        default:
-          doNothing = true;
-          break;
-      }
-
-      if (!doNothing) {
-        const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
-        const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
-        const channel = this.getChannel(channelParam, message);
-        this.bot.settings.setChannelDeleteAfterResponse(channel, delCall)
-          .then(() => this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse))
-          .then(() => this.messageManager.notifySettingsChange(message, true, true))
-          .catch(this.logger.error);
-      } else {
-        this.messageManager.embed(message, usageEmbed, true, true);
-      }
+      return this.messageManager.statuses.FAILURE;
     }
+    option = option.trim();
+    let delCall = false;
+    let delResponse = false;
+    let doNothing = false;
+    switch (option) {
+      case 'all':
+        delCall = true;
+        delResponse = true;
+        break;
+      case 'command':
+        delCall = true;
+        delResponse = false;
+        break;
+      case 'respond':
+        delCall = false;
+        delResponse = true;
+        break;
+      case 'none':
+        delCall = false;
+        delResponse = false;
+        break;
+      default:
+        doNothing = true;
+        break;
+    }
+
+    if (!doNothing) {
+      const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
+      const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
+      const channel = this.getChannel(channelParam, message);
+      await this.bot.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
+      await this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse);
+      this.messageManager.notifySettingsChange(message, true, true);
+      return this.messageManager.statuses.SUCCESS;
+    }
+    this.messageManager.embed(message, usageEmbed, true, true);
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**

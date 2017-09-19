@@ -16,51 +16,35 @@ class Prefix extends Command {
     this.requiresAuth = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const prefix = message.strippedContent.match(this.regex)[1];
     if (!prefix) {
-      this.settings.getChannelPrefix(message.channel)
-      .then((configuredPrefix) => {
-        this.messageManager.embed(message, {
-          title: 'Usage',
-          type: 'rich',
-          color: 0x0000ff,
-          fields: [
-            {
-              name: `${configuredPrefix}${this.call} <prefix>`,
-              value: 'Set the channel\'s custom prefix',
-            },
-          ],
-        }, true, false);
-      });
+      const configuredPrefix = this.settings.getChannelPrefix(message.channel);
+      this.messageManager.embed(message, {
+        title: 'Usage',
+        type: 'rich',
+        color: 0x0000ff,
+        fields: [
+          {
+            name: `${configuredPrefix}${this.call} <prefix>`,
+            value: 'Set the channel\'s custom prefix',
+          },
+        ],
+      }, true, false);
+      return this.messageManager.statuses.FAILURE;
     } else if (prefix === 'reset') {
-      let promise = null;
       if (message.channel.type === 'text') {
-        this.bot.settings.resetGuildPrefix(message.channel.guild);
+        await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
       } else {
-        promise = this.bot.settings.resetChannelPrefix(message.channel);
+        await this.bot.settings.setChannelSetting(message.channel, 'prefix', this.bot.prefix);
       }
-      promise.then(() => {
-        this.messageManager.notifySettingsChange(message, true, true);
-      }).catch(this.logger.error);
+    } else if (message.channel.type === 'text') {
+      await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', prefix);
     } else {
-      let promise = null;
-      if (message.channel.type === 'text') {
-        this.bot.settings.setGuildPrefix(message.channel.guild, prefix);
-      } else {
-        promise = this.bot.settings.setChannelPrefix(message.channel, prefix);
-      }
-      if (promise) {
-        promise.then(() => {
-          this.messageManager.notifySettingsChange(message, true, true);
-        }).catch(this.logger.error);
-      }
+      await this.bot.settings.setChannelSetting(message.channel, 'prefix', prefix);
     }
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

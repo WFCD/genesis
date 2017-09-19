@@ -26,12 +26,18 @@ class Avatar extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const url = message.strippedContent.match(this.regex)[1];
-    this.bot.client.user.setAvatar(url)
-    .then(() => this.messageManager.reply(message, 'New avatar set!', true, true))
-    .catch(this.logger.error);
+    try {
+      await this.bot.client.user.setAvatar(url);
+      this.messageManager.reply(message, 'New avatar set!', true, true);
+      return this.messageManager.statuses.SUCCESS;
+    } catch (e) {
+      this.logger.error(e);
+      return this.messageManager.statuses.FAILURE;
+    }
   }
 }
 

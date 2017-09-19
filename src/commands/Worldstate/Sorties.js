@@ -20,37 +20,30 @@ class Sorties extends Command {
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        const sortie = ws.sortie;
-        if (sortie.expired) {
-          this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
-        }
-        const embed = new SortieEmbed(this.bot, sortie);
-        return warframe.getSearchList({
-          query: sortie.boss,
-          limit: 1,
-        }).then(articles => warframe.getArticleDetails({
-          ids: articles.items.map(i => i.id),
-        })).then((details) => {
-          const item = Object.values(details.items)[0];
-          const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-          if (thumb) {
-            embed.thumbnail.url = thumb;
-          }
-          this.messageManager.embed(message, embed, true, false);
-        })
-        .catch(() => this.messageManager.embed(message, embed, true, false));
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const ws = await this.bot.caches[platform].getDataJson();
+    const sortie = ws.sortie;
+    if (sortie.expired) {
+      await this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const embed = new SortieEmbed(this.bot, sortie);
+    try {
+      const articles = await warframe.getSearchList({ query: sortie.boss, limit: 1 });
+      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+      const item = Object.values(details.items)[0];
+      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      if (thumb) {
+        embed.thumbnail.url = thumb;
+      }
+      await this.messageManager.embed(message, embed, true, false);
+      return this.messageManager.statuses.SUCCESS;
+    } catch (err) {
+      await this.messageManager.embed(message, embed, true, false);
+      return this.messageManager.statuses.SUCCESS;
+    }
   }
 }
 

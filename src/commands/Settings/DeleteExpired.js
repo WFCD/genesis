@@ -13,7 +13,7 @@ class DeleteExpired extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
       const embed = {
@@ -22,22 +22,22 @@ class DeleteExpired extends Command {
         color: 0x0000ff,
         fields: [
           {
-            name: `${this.bot.prefix}${this.call} <yes|no>`,
+            name: `${this.bot.prefix}${this.call} <on|off>`,
             value: '_ _',
           },
         ],
       };
       this.messageManager.embed(message, embed, true, true);
-    } else {
-      enable = enable.trim();
-      let enableResponse = false;
-      if (enable === 'on') {
-        enableResponse = true;
-      }
-      this.bot.settings.setGuildSetting(message.guild, 'deleteExpired', enableResponse)
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+      return this.messageManager.statuses.FAILURE;
     }
+    enable = enable.trim();
+    let enableResponse = false;
+    if (enable === 'on') {
+      enableResponse = true;
+    }
+    await this.bot.settings.setGuildSetting(message.guild, 'deleteExpired', enableResponse);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

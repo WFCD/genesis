@@ -4,7 +4,7 @@
   "description": "A Warframe bot for your Discord server or clan   Star",
   "main": "main.js",
   "scripts": {
-    "test": "eslint src/ test/ && node_modules/.bin/mocha",
+    "test": "npm i",
     "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c jsdoc.conf -R README.md -r main.js src/. -d docs"
   },
   "repository": {
@@ -26,38 +26,38 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "bluebird": "^3.4.7",
+    "bluebird": "^3.5.0",
     "decache": "^4.1.0",
-    "discord.js": "^11.1.0",
+    "discord.js": "^11.2.1",
     "json-fetch-cache": "0.0.5",
     "json-query": "^2.2.2",
-    "mysql2": "^1.1.2",
+    "mysql2": "^1.4.2",
     "nexus-stats-api": "^0.1.0",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
-    "ping": "^0.2.1",
-    "raven": "^1.2.0",
-    "request-promise": "^4.1.1",
+    "ping": "^0.2.2",
+    "raven": "^1.2.1",
+    "request-promise": "^4.2.1",
     "right-pad": "^1.0.1",
     "sql-template-strings": "^2.2.2",
-    "warframe-location-query": "^0.0.3",
+    "warframe-location-query": "0.0.3",
     "warframe-nexus-query": "^1.2.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.9.1",
     "eslint-config-airbnb": "^13.0.0",
-    "eslint-config-airbnb-base": "^11.0.1",
-    "eslint-plugin-import": "^2.1.0",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.6.0",
     "ink-docstrap": "^1.3.0",
-    "jsdoc": "^3.4.2",
-    "mocha": "^3.1.0",
+    "jsdoc": "^3.5.4",
+    "mocha": "^3.5.3",
     "rewire": "^2.5.2",
     "sinon": "^1.17.6",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.13.0"
   },
   "license": "MIT"
 }

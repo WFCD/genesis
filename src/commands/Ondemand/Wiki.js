@@ -30,24 +30,24 @@ class Wiki extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
       this.messageManager.reply(message, this.noResult, true, true);
-    } else {
+      return this.messageManager.statuses.FAILURE;
+    }
+    try {
       this.logger.debug(`Searched for query: ${query}`);
-      warframe.getSearchList({
-        query,
-        limit: 1,
-      }).then(articles => warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      })).then((details) => {
-        this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
-      })
-      .catch(() => {
-        this.messageManager.reply(message, this.noResult, true, true);
-      });
+      const articles = await warframe.getSearchList({ query, limit: 1 });
+      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+      this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
+      return this.messageManager.statuses.SUCCESS;
+    } catch (error) {
+      this.logger.error(error);
+      this.messageManager.reply(message, this.noResult, true, true);
+      return this.messageManager.statuses.FAILURE;
     }
   }
 }

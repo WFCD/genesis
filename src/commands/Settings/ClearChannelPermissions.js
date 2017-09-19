@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 const Command = require('../../Command.js');
 
 class ClearChannelPermissions extends Command {
@@ -12,20 +10,20 @@ class ClearChannelPermissions extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
     if (channels.length) {
-      Promise.each(channels, (channel) => {
-        this.bot.settings.deleteChannelPermissions(channel);
-      })
-      .then(() => this.messageManager.notifySettingsChange(message, true, true))
-      .catch(this.logger.error);
+      const results = [];
+      for (const channel of channels) {
+        results.push(this.bot.settings.deleteChannelPermissions(channel));
+      }
+      await Promise.all(results);
     } else {
-      this.bot.settings.deleteGuildPermissions(message.guild)
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+      await this.bot.settings.deleteGuildPermissions(message.guild);
     }
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**

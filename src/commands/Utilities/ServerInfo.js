@@ -1,10 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
-
-const verificationLevels = ['None', 'Low\nMust have a verified email on their Discord Account', 'Medium\nMust also be registered on Discord for longer than 5 minutes', '(╯°□°）╯︵ ┻━┻\nMust also be a member of this server for longer than 10 minutes.', 'Insane: ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻\nMust have a verified phone on their Discord Account.'];
-const verificationColors = [0x747f8d, 0x43b581, 0xfaa61a, 0xf57731, 0xf04747];
-
+const ServerInfoEmbed = require('../../embeds/ServerInfoEmbed');
 /**
  * Get a list of all servers
  */
@@ -17,76 +14,15 @@ class ServerInfo extends Command {
     super(bot, 'util.serverInfo', 'serverinfo', 'Get info about current server');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const guild = message.guild;
     if (!message.guild) {
       this.messageManager.reply(message, 'Operator, this is a DM, you can\'t do that!', false, false);
-      return;
+      return this.messageManager.statuses.FAILURE;
     }
-    const embed = {
-      title: guild.name,
-      description: `**Region:** ${guild.region}`,
-      color: verificationColors[guild.verificationLevel],
-      thumbnail: {
-        url: guild.iconURL,
-      },
-      fields: [
-        {
-          name: 'Created:',
-          value: guild.createdAt.toLocaleString(),
-          inline: true,
-        },
-        {
-          name: 'Owner:',
-          value: `${guild.owner.displayName} (${guild.owner})`,
-          inline: true,
-        },
-        {
-          name: 'Text Channels:',
-          value: guild.channels.filterArray(channel => channel.type === 'text').length,
-          inline: true,
-        },
-        {
-          name: 'Voice Channels:',
-          value: guild.channels.filterArray(channel => channel.type === 'voice').length,
-          inline: true,
-        },
-        {
-          name: 'Members:',
-          value: `${guild.members.filterArray(member => member.presence.status === 'online' || member.presence.status === 'idle' || member.presence.status === 'dnd').length}/${guild.memberCount}`,
-          inline: true,
-        },
-        {
-          name: 'Emojis:',
-          value: `Count: ${guild.emojis.array().length}`,
-          inline: true,
-        },
-        {
-          name: 'Default Channel:',
-          value: guild.defaultChannel ? `${guild.defaultChannel.name} (${guild.defaultChannel})` : 'No Default Channel',
-          inline: true,
-        },
-        {
-          name: 'Verification Level:',
-          value: verificationLevels[guild.verificationLevel],
-          inline: true,
-        },
-        {
-          name: 'Roles:',
-          value: `Count: ${guild.roles.array().length}`,
-          inline: true,
-        },
-      ],
-      footer: {
-        text: `Server ID: ${guild.id}`,
-      },
-    };
+    const embed = new ServerInfoEmbed(this.bot, guild);
     this.messageManager.embed(message, embed, true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

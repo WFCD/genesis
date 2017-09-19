@@ -16,20 +16,13 @@ class Alerts extends Command {
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        const alerts = ws.alerts.filter(a => !a.expired);
-        this.messageManager.embed(message, new AlertEmbed(this.bot, alerts), true, false);
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const ws = await this.bot.caches[platform].getDataJson();
+    const alerts = ws.alerts.filter(a => !a.expired);
+    await this.messageManager.embed(message, new AlertEmbed(this.bot, alerts), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

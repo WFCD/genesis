@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
 
@@ -22,50 +20,43 @@ class Untrack extends Command {
     this.requiresAuth = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals`, 'ig');
     const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
 
     const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
     if (!unsplitItems) {
-      this.bot.settings.getChannelPrefix(message.channel)
-        .then(prefix => this.messageManager
-              .embed(message, trackFunctions
-                .getTrackInstructionEmbed(message, prefix, this.call), true, true))
-        .catch(this.logger.error);
-      return;
+      return this.failure(message);
     }
     const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
-      this.bot.settings.getChannelPrefix(message.channel)
-        .then(prefix => this.messageManager
-              .embed(message, trackFunctions
-                .getTrackInstructionEmbed(message, prefix, this.call), true, true))
-        .catch(this.logger.error);
-    } else {
-      const promises = [];
-      trackables.events = trackables.events
+      return this.failure(message);
+    }
+    trackables.events = trackables.events
         .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
-      trackables.items = trackables.items
+    trackables.items = trackables.items
         .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
-      const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
-      const channel = this.getChannel(channelParam, message);
+    const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
+    const channel = this.getChannel(channelParam, message);
 
-      trackables.events.forEach(event => promises.push(this.bot.settings
-        .untrackEventType(channel, event)));
-      trackables.items.forEach(item => promises.push(this.bot.settings
-        .untrackItem(channel, item)));
-
-      Promise.each(promises, () => {})
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+    const results = [];
+    for (const event of trackables.events) {
+      results.push(this.bot.settings.untrackEventType(channel, event));
     }
+    for (const item of trackables.items) {
+      results.push(this.bot.settings.untrackItem(channel, item));
+    }
+    Promise.all(results);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
+  }
+
+  async failure(message) {
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    this.messageManager.embed(message,
+      trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**

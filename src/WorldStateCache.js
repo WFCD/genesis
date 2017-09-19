@@ -23,11 +23,11 @@ class WorldStateCache extends EventEmitter {
     this.update();
   }
 
-  getData() {
+  async getData() {
     if (this.updating) {
       return this.updating;
     }
-    return Promise.resolve(this.currentData);
+    return this.currentData;
   }
 
   update() {

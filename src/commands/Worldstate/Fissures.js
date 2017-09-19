@@ -16,21 +16,14 @@ class Fissures extends Command {
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
-        this.messageManager.embed(message,
-          new FissureEmbed(this.bot, fissures), true, false);
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const ws = await this.bot.caches[platform].getDataJson();
+    const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
+    await this.messageManager.embed(message,
+      new FissureEmbed(this.bot, fissures), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

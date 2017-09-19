@@ -38,35 +38,34 @@ class AddRole extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
-      this.sendInstructionEmbed(message);
-    } else {
-      const role = getRoleForString(stringRole, message);
-      if (!role) {
-        this.sendInstructionEmbed(message);
-      } else {
-        this.bot.settings.getRolesForGuild(message.guild)
-           .then((roles) => {
-             const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-             if (filteredRoles.length > 0) {
-               this.sendAlreadyAddedEmbed(message);
-             } else {
-               const rolesToCommit = roles.map(innerRole => innerRole.id);
-               rolesToCommit.push(role.id);
-               this.addAndCommitRole(message, rolesToCommit, role.name);
-             }
-           })
-           .catch(this.logger.error);
-      }
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
     }
+    const role = getRoleForString(stringRole, message);
+    if (!role) {
+      await this.sendInstructionEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+    if (filteredRoles.length > 0) {
+      await this.sendAlreadyAddedEmbed(message);
+      return this.messageManager.statuses.FAILURE;
+    }
+    const rolesToCommit = roles.map(innerRole => innerRole.id);
+    rolesToCommit.push(role.id);
+    await this.addAndCommitRole(message, rolesToCommit, role.name);
+    return this.messageManager.statuses.SUCCESS;
   }
 
-  addAndCommitRole(message, roles, newRole) {
-    this.bot.settings.setRolesForGuild(message.guild, roles);
-    this.messageManager.embed(message, {
+  async addAndCommitRole(message, roles, newRole) {
+    await this.bot.settings.setRolesForGuild(message.guild, roles);
+    await this.messageManager.embed(message, {
       title: 'Added role to joinable list',
       type: 'rich',
       color: 0x779ECB,
@@ -80,8 +79,8 @@ class AddRole extends Command {
     }, true, true);
   }
 
-  sendAlreadyAddedEmbed(message) {
-    this.messageManager.embed(message, {
+  async sendAlreadyAddedEmbed(message) {
+    await this.messageManager.embed(message, {
       title: 'Invalid Role',
       type: 'rich',
       color: 0x779ECB,
@@ -95,29 +94,28 @@ class AddRole extends Command {
     }, true, true);
   }
 
-  sendInstructionEmbed(message) {
-    this.bot.settings.getChannelPrefix(message.channel)
-      .then(prefix => this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x779ECB,
-        fields: [
-          {
-            name: `${prefix}${this.call} <role or role id>`,
-            value: 'Role or role id to be allowed for self-role.',
-          },
-          {
-            name: 'Possible values:',
-            value: '_ _',
-          },
-          {
-            name: '**Roles:**',
-            value: message.guild.roles.map(r => r.name).join('; '),
-            inline: true,
-          },
-        ],
-      }, true, true))
-      .catch(this.logger.error);
+  async sendInstructionEmbed(message) {
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    this.messageManager.embed(message, {
+      title: 'Usage',
+      type: 'rich',
+      color: 0x779ECB,
+      fields: [
+        {
+          name: `${prefix}${this.call} <role or role id>`,
+          value: 'Role or role id to be allowed for self-role.',
+        },
+        {
+          name: 'Possible values:',
+          value: '_ _',
+        },
+        {
+          name: '**Roles:**',
+          value: message.guild.roles.map(r => r.name).join('; '),
+          inline: true,
+        },
+      ],
+    }, true, true);
   }
 }
 

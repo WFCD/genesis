@@ -13,13 +13,14 @@ class SetWelcomeDM extends Command {
     this.allowDM = false;
   }
 
-  run(message) {
+  async run(message) {
     const match = message.strippedContent.match(this.regex)[1];
     if (match) {
-      this.bot.settings.setWelcome(message, true, match.trim())
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+      await this.bot.settings.setWelcome(message, true, match.trim());
+      this.messageManager.notifySettingsChange(message, true, true);
+      return this.messageManager.statuses.SUCCESS;
     }
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

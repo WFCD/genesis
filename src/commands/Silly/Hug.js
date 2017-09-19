@@ -14,13 +14,9 @@ class Hug extends Command {
     super(bot, 'silly.hug', 'hug', 'Hug Genesis');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   run(message) {
     this.messageManager.reply(message, '```haskell\nOperator, Cephalons do not g-g-g-give huuuu~~ Screw it. ⊂（♡⌂♡）⊃```', false, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

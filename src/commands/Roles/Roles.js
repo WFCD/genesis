@@ -24,29 +24,27 @@ class Roles extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
-    this.bot.settings.getRolesForGuild(message.guild)
-       .then(roles => this.bot.settings.getChannelPrefix(message.channel)
-         .then(prefix => ({ roles, prefix })))
-       .then(({ roles, prefix }) => {
-         if (roles.length > 0) {
-           const longest = roles.map(role => role.name)
-            .reduce((a, b) => (a.length > b.length ? a : b));
-           const groupedRoles = createGroupedArray(roles, 20);
-           const metaGroups = createGroupedArray(groupedRoles, 4);
-           metaGroups.forEach((metaGroup) => {
-             this.messageManager.embed(message,
-             new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
-              true, true);
-           });
-         } else {
-           this.messageManager.embed(message,
-            new RolesEmbed(this.bot, [], prefix, 0),
-              true, true);
-         }
-       })
-       .catch(this.logger.error);
+  async run(message) {
+    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    if (roles.length > 0) {
+      const longest = roles.map(role => role.name)
+        .reduce((a, b) => (a.length > b.length ? a : b));
+      const groupedRoles = createGroupedArray(roles, 20);
+      const metaGroups = createGroupedArray(groupedRoles, 4);
+      metaGroups.forEach((metaGroup) => {
+        this.messageManager.embed(message,
+          new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
+          true, true);
+      });
+      return this.messageManager.statuses.SUCCESS;
+    }
+    await this.messageManager.embed(message,
+        new RolesEmbed(this.bot, [], prefix, 0),
+        true, true);
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

@@ -12,7 +12,7 @@ class RespondToSettings extends Command {
     this.requiresAuth = true;
   }
 
-  run(message) {
+  async run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
@@ -29,16 +29,16 @@ class RespondToSettings extends Command {
         ],
       };
       this.messageManager.embed(message, embed, true, true);
-    } else {
-      enable = enable.trim();
-      let enableResponse = false;
-      if (enable === 'on') {
-        enableResponse = true;
-      }
-      this.bot.settings.setChannelResponseToSettings(channel, enableResponse)
-        .then(() => this.messageManager.notifySettingsChange(message, true, true))
-        .catch(this.logger.error);
+      return this.messageManager.statuses.FAILURE;
     }
+    enable = enable.trim();
+    let enableResponse = false;
+    if (enable === 'on') {
+      enableResponse = true;
+    }
+    await this.bot.settings.setChannelSetting(channel, 'respond_to_settings', enableResponse);
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**

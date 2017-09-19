@@ -1,0 +1,7 @@
+linters:
+    eslint:
+        config: './.eslintrc.json'
+    flake8:
+        enable: false
+files:
+    ignore: ['package.json']

@@ -29,14 +29,20 @@ class PriceCheck extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} success status
    */
-  run(message) {
-    const item = message.strippedContent.match(this.regex)[1];
-    message.channel.send('', { embed: inProgressEmbed })
-      .then(sentMessage => this.bot.nexusQuerier.priceCheckQueryAttachment(item)
-          .then(result => ({ result, sentMessage })))
-      .then(({ result, sentMessage }) => sentMessage.edit('', { embed: new PriceCheckEmbed(this.bot, result, item) }))
-      .catch(this.logger.error);
+  async run(message) {
+    try {
+      const item = message.strippedContent.match(this.regex)[1];
+      const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
+      const result = await this.bot.nexusQuerier.priceCheckQueryAttachment(item);
+      sentMessage.edit('', { embed: new PriceCheckEmbed(this.bot, result, item) });
+      return result[0].attachment.color === 0xff55ff ?
+        this.messageManager.statuses.FAILURE : this.messageManager.statuses.SUCCESS;
+    } catch (error) {
+      this.logger.error(error);
+      return this.messageManager.statuses.FAILURE;
+    }
   }
 }
 

@@ -24,12 +24,7 @@ class Syndicates extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
-  run(message) {
+  async run(message) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
     const param2 = (matches[2] || '').toLowerCase();
@@ -40,13 +35,11 @@ class Syndicates extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    this.bot.settings.getChannelPlatform(message.channel)
-      .then(platform => this.bot.caches[platformParam || platform].getDataJson())
-      .then((ws) => {
-        this.messageManager.embed(message, new SyndicateEmbed(this.bot,
-          ws.syndicateMissions, syndicate), true, false);
-      })
-      .catch(this.logger.error);
+    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const ws = await this.bot.caches[platform].getDataJson();
+    await this.messageManager.embed(message, new SyndicateEmbed(this.bot,
+      ws.syndicateMissions, syndicate), true, false);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
