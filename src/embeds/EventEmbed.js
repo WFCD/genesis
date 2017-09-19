@@ -21,7 +21,8 @@ class EventEmbed extends BaseEmbed {
       this.fields = [];
 
       if (event.victimNode) {
-          this.fields.push({name: '_ _', value: `Defend ${event.victimNode} by attacking the ${event.faction} at ${event.node}.` });
+        this.fields.push({ name: '_ _', value: `Defend ${event.victimNode}` +
+          ` by attacking the ${event.faction} at ${event.node}.` });
       }
       this.fields.push({ name: 'Rewards', value: event.rewards.map(reward => reward.asString).join('; ') });
       this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
