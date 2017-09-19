@@ -22,7 +22,7 @@ class EventEmbed extends BaseEmbed {
 
       if (event.victimNode) {
         this.fields.push({
-          name: '_ _', 
+          name: '_ _',
           value: `Defend ${event.victimNode} by attacking the ${event.faction} at ${event.node}.`,
         });
       }
