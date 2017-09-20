@@ -36,8 +36,9 @@ class PriceCheck extends Command {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
       const result = await this.bot.nexusQuerier.priceCheckQueryAttachment(item);
-      sentMessage.edit('', { embed: new PriceCheckEmbed(this.bot, result, item) });
-      return result[0].attachment.color === 0xff55ff ?
+      const embed = new PriceCheckEmbed(this.bot, result, item);
+      sentMessage.edit('', { embed });      
+      return embed.color === 0xff55ff ?
         this.messageManager.statuses.FAILURE : this.messageManager.statuses.SUCCESS;
     } catch (error) {
       this.logger.error(error);
