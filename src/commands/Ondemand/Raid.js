@@ -41,7 +41,7 @@ class Raid extends Command {
     const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
     const data = await (new Fetcher(url)).httpGet();
     this.messageManager.embed(message, new RaidEmbed(this.bot,
-      data, query, platform.toLowerCase()), true, false);
+      data, query, platform.toLowerCase()), true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }
