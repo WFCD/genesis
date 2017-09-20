@@ -9,8 +9,9 @@ class AlertEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Alert>} alerts - The alerts to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, alerts) {
+  constructor(bot, alerts, platform) {
     super();
 
     this.thumbnail = {
@@ -23,11 +24,10 @@ class AlertEmbed extends BaseEmbed {
         value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n` +
         `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`,
       }));
-      this.title = 'Worldstate - Alerts';
-      this.description = 'Currently in-progress alerts:';
+      this.title = `[${platform.toUpperCase()}] Worldstate - Alerts`;
     } else {
       const a = alerts[0];
-      this.title = a.mission.reward.itemString;
+      this.title = `[${platform.toUpperCase()}] ${a.mission.reward.itemString}`;
       this.url = 'https://ws.warframestat.us/';
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;

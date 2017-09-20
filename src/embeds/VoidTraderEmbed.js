@@ -9,8 +9,9 @@ class VoidTraderEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {VoidTrader} voidTrader - The current state of the Void Trader
+   * @param {string} platform - platform
    */
-  constructor(bot, voidTrader) {
+  constructor(bot, voidTrader, platform) {
     super();
 
     this.color = voidTrader.active ? 0x0EC9FF : 0xff6961;
@@ -28,7 +29,7 @@ class VoidTraderEmbed extends BaseEmbed {
       name: `Time until ${voidTrader.active ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
       value: `${voidTrader.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
     });
-    this.title = 'Worldstate - Void Trader';
+    this.title = `[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {
       url: 'http://i.imgur.com/z0wU29P.png',
     };

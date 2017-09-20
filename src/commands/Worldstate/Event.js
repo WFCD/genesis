@@ -18,9 +18,9 @@ class Event extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings
-      .getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform].getDataJson();
+    const platform = (platformParam || await this.bot.settings
+      .getChannelSetting(message.channel, 'platform')).toLowerCase();
+    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     if (ws.events.length > 0) {
       const results = [];
       ws.events.forEach((event) => {

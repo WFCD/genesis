@@ -17,7 +17,7 @@ class EventEmbed extends BaseEmbed {
     this.color = 0xfdec96;
 
     if (event) {
-      this.title = `[${platform}] ${event.description}`;
+      this.title = `[${platform.toUpperCase()}] ${event.description}`;
       this.fields = [];
 
       if (event.victimNode) {
@@ -30,7 +30,7 @@ class EventEmbed extends BaseEmbed {
       this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
 
       if (event.health) {
-        this.fields.push({ name: '_ _', value: `${event.health}% Remaining` });
+        this.footer.text = `${event.health}% Remaining | ${this.footer.text}`;
       }
     } else {
       this.title = 'No Current Events';

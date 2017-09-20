@@ -16,7 +16,7 @@ class ConstructionEmbed extends BaseEmbed {
 
     this.color = 0xff6961;
     this.fields = [{
-      name: `[${platform}] Construction Status:`,
+      name: `[${platform.toUpperCase()}] Construction Status:`,
       value: '```' +
       `Razorback: ${constructionProgress.razorbackProgress}` +
       `Fomorian:  ${constructionProgress.fomorianProgress}` +

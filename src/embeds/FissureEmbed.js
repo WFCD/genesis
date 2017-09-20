@@ -9,12 +9,13 @@ class FissureEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Fissure>} fissures - The fissures to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, fissures) {
+  constructor(bot, fissures, platform) {
     super();
 
     if (fissures.length < 2) {
-      this.title = 'Worldstate - Void Fissures';
+      this.title = `[${platform.toUpperCase()}] Worldstate - Void Fissures`;
     }
     this.thumbnail = {
       url: 'http://i.imgur.com/EfIRu6v.png',
@@ -33,7 +34,7 @@ class FissureEmbed extends BaseEmbed {
       };
     } else {
       const f = fissures[0];
-      this.title = `${f.missionType} ${f.tier}`;
+      this.title = `[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
       this.description = `${f.node} against ${f.enemy}`;
       this.footer.text = `${f.eta} remaining | ${new Date().toLocaleString()}`;
       this.thumbnail.url = 'https://i.imgur.com/EfIRu6v.png';
