@@ -9,12 +9,13 @@ class DarvoEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {DailyDeal} deal - The deal to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, deal) {
+  constructor(bot, deal, platform) {
     super();
 
     this.color = 0x0000ff;
-    this.title = 'Darvo Deal';
+    this.title = `[${platform.toUpperCase()}] Darvo Deal`;
     this.thumbnail = {
       url: 'http://i.imgur.com/UotylUm.png',
     };

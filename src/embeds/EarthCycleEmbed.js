@@ -9,12 +9,13 @@ class EarthCycleEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Object} state - The current state of the cycle
+   * @param {string} platform - platform
    */
-  constructor(bot, state) {
+  constructor(bot, state, platform) {
     super();
 
     this.color = state.isDay ? 0x00ff00 : 0x000066;
-    this.title = 'Worldstate - Earth Cycle';
+    this.title = `[${platform.toUpperCase()}] Worldstate - Earth Cycle`;
     this.thumbnail = {
       url: 'http://vignette1.wikia.nocookie.net/warframe/images/1/1e/Earth.png',
     };

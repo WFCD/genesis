@@ -9,12 +9,13 @@ class SalesEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<FeaturedItemSales>} sales - The sales to be displayed as featured or popular
+   * @param {string} platform - platform
    */
-  constructor(bot, sales) {
+  constructor(bot, sales, platform) {
     super();
 
     this.color = 0x0000ff;
-    this.title = sales[0].isPopular ? 'Popular Sales' : 'Featured Deal';
+    this.title = sales[0].isPopular ? `[${platform.toUpperCase()}] Popular Sales ` : `[${platform.toUpperCase()}] Featured Deal`;
     this.thumbnail = {
       url: 'http://i.imgur.com/i9IXX7P.png',
     };

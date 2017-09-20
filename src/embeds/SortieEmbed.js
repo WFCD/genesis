@@ -9,8 +9,9 @@ class SortieEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Sortie} sortie - The sortie to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, sortie) {
+  constructor(bot, sortie, platform) {
     super();
 
     this.color = 0xa84300;
@@ -19,7 +20,7 @@ class SortieEmbed extends BaseEmbed {
         name: `${v.node} - ${v.missionType}`,
         value: v.modifier,
       }));
-      this.description = `Currently in-progress sortie: **${sortie.boss}**`;
+      this.description = `[${platform.toUpperCase()}] Currently in-progress sortie: **${sortie.boss}**`;
       this.footer.text = `${sortie.eta} remaining | ${new Date().toLocaleString()}`;
     }
 

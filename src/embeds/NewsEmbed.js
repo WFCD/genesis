@@ -11,8 +11,9 @@ class NewsEmbed extends BaseEmbed {
    * @param {Array.<News>} news - The news to be included in the embed
    * @param {string} type - [Optional] type of embed between news, updates,
    *                        or prime access. Not provided for news.
+   * @param {string} platform - platform
    */
-  constructor(bot, news, type) {
+  constructor(bot, news, type, platform) {
     super();
 
     news.sort((a, b) => {
@@ -34,7 +35,8 @@ class NewsEmbed extends BaseEmbed {
       value = value.length > 0 ? value : 'No News Currently';
     }
     this.fields = [{ name: '_ _', value }];
-    this.image = { url: news[0] ? news[0].imageLink : ''};
+    this.image = { url: news[0] ? news[0].imageLink : '' };
+    this.footer.text += ` | [${platform.toUpperCase()}]`;
   }
 }
 

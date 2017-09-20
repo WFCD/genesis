@@ -19,9 +19,10 @@ class Alerts extends Command {
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform].getDataJson();
+    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const alerts = ws.alerts.filter(a => !a.expired);
-    await this.messageManager.embed(message, new AlertEmbed(this.bot, alerts), true, false);
+    await this.messageManager.embed(message,
+      new AlertEmbed(this.bot, alerts, platform), true, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }

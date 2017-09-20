@@ -181,13 +181,13 @@ class Notifier {
    * @param {string} platform    platform corresponding to notified ids
    */
   async updateNotified(ids, platform) {
-    await this.settings.setNotifiedIds(platform, this.bot.shardId, ids);
+    await this.settings.setNotifiedIds(platform, this.bot.shardId, ids, platform);
   }
 
   async sendAcolytes(newAcolytes, platform) {
     const results = [];
     for (const a of newAcolytes) {
-      const embed = new EnemyEmbed(this.bot, [a]);
+      const embed = new EnemyEmbed(this.bot, [a], platform);
       results.push(this.broadcast(embed, platform, 'enemies', null, 3600000));
     }
     Promise.all(results);
@@ -202,7 +202,7 @@ class Notifier {
   }
 
   async sendAlert(a, platform) {
-    const embed = new AlertEmbed(this.bot, [a]);
+    const embed = new AlertEmbed(this.bot, [a], platform);
     try {
       const articles = await warframe.getSearchList({
         query: a.mission.reward.itemString,
@@ -222,20 +222,20 @@ class Notifier {
   }
 
   async sendBaro(newBaro, platform) {
-    const embed = new VoidTraderEmbed(this.bot, newBaro);
+    const embed = new VoidTraderEmbed(this.bot, newBaro, platform);
     await this.broadcast(embed, platform, 'baro', null);
   }
 
   async sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
+      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day', platform);
       await this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week');
+      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week', platform);
       await this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
   }
@@ -243,7 +243,7 @@ class Notifier {
   async sendDarvo(newDarvoDeals, platform) {
     const results = [];
     for (const d of newDarvoDeals) {
-      const embed = new DarvoEmbed(this.bot, d);
+      const embed = new DarvoEmbed(this.bot, d, platform);
       results.push(this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry)));
     }
     Promise.all(results);
@@ -252,7 +252,7 @@ class Notifier {
   async sendEvent(newEvents, platform) {
     const results = [];
     for (const e of newEvents) {
-      const embed = new EventEmbed(this.bot, [e]);
+      const embed = new EventEmbed(this.bot, [e], platform);
       results.push(this.broadcast(embed, platform, 'events', null, fromNow(e.expiry)));
     }
     Promise.all(results);
@@ -261,7 +261,7 @@ class Notifier {
   async sendFeaturedDeals(newFeaturedDeals, platform) {
     const results = [];
     for (const d of newFeaturedDeals) {
-      const embed = new SalesEmbed(this.bot, [d]);
+      const embed = new SalesEmbed(this.bot, [d], platform);
       results.push(this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry)));
     }
     Promise.all(results);
@@ -270,7 +270,7 @@ class Notifier {
   async sendFissures(newFissures, platform) {
     const results = [];
     for (const f of newFissures) {
-      const embed = new FissureEmbed(this.bot, [f]);
+      const embed = new FissureEmbed(this.bot, [f], platform);
       results.push(this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry)));
     }
     Promise.all(results);
@@ -285,7 +285,7 @@ class Notifier {
   }
 
   async sendInvasion(invasion, platform) {
-    const embed = new InvasionEmbed(this.bot, [invasion]);
+    const embed = new InvasionEmbed(this.bot, [invasion], platform);
     try {
       const articles = await warframe.getSearchList({
         query: invasion.attackerReward.itemString,
@@ -309,7 +309,7 @@ class Notifier {
   async sendNews(newNews, platform) {
     const results = [];
     for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
+      const embed = new NewsEmbed(this.bot, [i], undefined, platform);
       results.push(this.broadcast(embed, platform, 'news'));
     }
     Promise.all(results);
@@ -318,17 +318,16 @@ class Notifier {
   async sendStreams(newStreams, platform) {
     const results = [];
     for (const i of newStreams) {
-      const embed = new NewsEmbed(this.bot, [i]);
+      const embed = new NewsEmbed(this.bot, [i], platform);
       results.push(this.broadcast(embed, platform, 'streams'));
     }
     Promise.all(results);
   }
 
-
   async sendPopularDeals(newPopularDeals, platform) {
     const results = [];
     for (const d of newPopularDeals) {
-      const embed = new SalesEmbed(this.bot, [d]);
+      const embed = new SalesEmbed(this.bot, [d], platform);
       results.push(this.broadcast(embed, platform, 'deals.popular', null, 86400000));
     }
     Promise.all(results);
@@ -337,7 +336,7 @@ class Notifier {
   async sendPrimeAccess(newNews, platform) {
     const results = [];
     for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
+      const embed = new NewsEmbed(this.bot, [i], platform);
       results.push(this.broadcast(embed, platform, 'primeaccess', null));
     }
     Promise.all(results);
@@ -346,14 +345,14 @@ class Notifier {
   async sendUpdates(newNews, platform) {
     const results = [];
     for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
+      const embed = new NewsEmbed(this.bot, [i], platform);
       results.push(this.broadcast(embed, platform, 'updates', null));
     }
     Promise.all(results);
   }
 
   async sendSortie(newSortie, platform) {
-    const embed = new SortieEmbed(this.bot, newSortie);
+    const embed = new SortieEmbed(this.bot, newSortie, platform);
     try {
       const articles = await warframe.getSearchList({
         query: newSortie.boss,
@@ -375,32 +374,32 @@ class Notifier {
   }
 
   async sendSyndicateArbiters(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
     await this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
     await this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
     await this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
     await this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
     await this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
     await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
   }
 }
