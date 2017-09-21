@@ -641,7 +641,7 @@ class Database {
    * @returns {Promise}
    */
   async setNotifiedIds(platform, shardId, notifiedIds) {
-    console.log(`notifiedIds being set: ${notifiedIds.length}`);
+    console.log(`notifiedIds being set for ${platform}: ${notifiedIds.length}`);
     const query = SQL`INSERT INTO notified_ids VALUES
       (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
@@ -662,7 +662,7 @@ class Database {
     if (res[0].length === 0) {
       return [];
     }
-    console.log(`nodified ids from database: ${res[0][0].id_list.length}`);
+    console.log(`nodified ids from database for ${platform}: ${res[0][0].id_list.length}`);
     return res[0][0].id_list;
   }
 
