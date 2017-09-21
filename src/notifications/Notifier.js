@@ -46,9 +46,9 @@ class Notifier {
    */
   async start() {
     for (const k of Object.keys(this.bot.worldStates)) {
-      this.bot.worldStates[k].on('newData', (platform, newData) => {
+      this.bot.worldStates[k].on('newData', async (platform, newData) => {
         this.logger.debug(`Processing new data for ${platform}`);
-        this.onNewData(platform, newData);
+        await this.onNewData(platform, newData);
       });
     }
   }
