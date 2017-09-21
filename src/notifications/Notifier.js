@@ -62,6 +62,7 @@ class Notifier {
   async onNewData(platform, newData) {
     let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
+    console.log(`Notified ids: ${JSON.stringify(ids)}`);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.id) && e.isDiscovered);
@@ -160,7 +161,7 @@ class Notifier {
             // eslint-disable-next-line no-await-in-loop
             const prepend = await this.settings
               .getPing(channel.guild, (items || []).concat([type]));
-            this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
+            await this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
           } else if (channel.type === 'dm') {
             // eslint-disable-next-line no-await-in-loop
             await this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter);
@@ -194,7 +195,7 @@ class Notifier {
       const embed = new EnemyEmbed(this.bot, [a], platform);
       results.push(this.broadcast(embed, platform, 'enemies', null, 3600000));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendAlerts(newAlerts, platform) {
@@ -202,7 +203,7 @@ class Notifier {
     for (const a of newAlerts) {
       results.push(this.sendAlert(a, platform));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendAlert(a, platform) {
@@ -250,7 +251,7 @@ class Notifier {
       const embed = new DarvoEmbed(this.bot, d, platform);
       results.push(this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry)));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendEvent(newEvents, platform) {
@@ -259,7 +260,7 @@ class Notifier {
       const embed = new EventEmbed(this.bot, [e], platform);
       results.push(this.broadcast(embed, platform, 'events', null, fromNow(e.expiry)));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
@@ -268,7 +269,7 @@ class Notifier {
       const embed = new SalesEmbed(this.bot, [d], platform);
       results.push(this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry)));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendFissures(newFissures, platform) {
@@ -277,7 +278,7 @@ class Notifier {
       const embed = new FissureEmbed(this.bot, [f], platform);
       results.push(this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry)));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendInvasions(newInvasions, platform) {
@@ -285,7 +286,7 @@ class Notifier {
     for (const invasion of newInvasions) {
       results.push(this.sendInvasion(invasion, platform));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendInvasion(invasion, platform) {
@@ -316,7 +317,7 @@ class Notifier {
       const embed = new NewsEmbed(this.bot, [i], undefined, platform);
       results.push(this.broadcast(embed, platform, 'news'));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendStreams(newStreams, platform) {
@@ -325,7 +326,7 @@ class Notifier {
       const embed = new NewsEmbed(this.bot, [i], undefined, platform);
       results.push(this.broadcast(embed, platform, 'streams'));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
@@ -334,7 +335,7 @@ class Notifier {
       const embed = new SalesEmbed(this.bot, [d], platform);
       results.push(this.broadcast(embed, platform, 'deals.popular', null, 86400000));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendPrimeAccess(newNews, platform) {
@@ -343,7 +344,7 @@ class Notifier {
       const embed = new NewsEmbed(this.bot, [i], 'primeaccess', platform);
       results.push(this.broadcast(embed, platform, 'primeaccess', null));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendUpdates(newNews, platform) {
@@ -352,7 +353,7 @@ class Notifier {
       const embed = new NewsEmbed(this.bot, [i], 'updates', platform);
       results.push(this.broadcast(embed, platform, 'updates', null));
     }
-    Promise.all(results);
+    await Promise.all(results);
   }
 
   async sendSortie(newSortie, platform) {
