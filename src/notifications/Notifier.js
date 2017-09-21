@@ -61,7 +61,7 @@ class Notifier {
   async onNewData(platform, newData) {
     let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
-    console.log(`Notified ids: ${JSON.stringify(ids)}`);
+    console.log(`Notified ids: ${ids.length}`);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.id) && e.isDiscovered);
