@@ -27,6 +27,13 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
+async function getThumbnailForItem(query) {
+  const articles = await warframe.getSearchList({ query, limit: 1 });
+  const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+  const item = Object.values(details.items)[0];
+  return item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+}
+
 /**
  * Notifier for alerts, invasions, etc.
  */
@@ -61,7 +68,6 @@ class Notifier {
   async onNewData(platform, newData) {
     let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
-    console.log(`Notified ids for ${platform}: ${ids.length}`);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.id) && e.isDiscovered);
@@ -189,32 +195,21 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    const results = [];
-    for (const a of newAcolytes) {
-      const embed = new EnemyEmbed(this.bot, [a], platform);
-      results.push(this.broadcast(embed, platform, 'enemies', null, 3600000));
-    }
-    await Promise.all(results);
+    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(this.bot,
+      [a], platform), platform, 'enemies', null, 3600000)));
   }
 
   async sendAlerts(newAlerts, platform) {
-    const results = [];
-    for (const a of newAlerts) {
-      results.push(this.sendAlert(a, platform));
+    if (newAlerts.length) {
+      this.logger.debug(`New Alerts! ${newAlerts.length}`);
     }
-    await Promise.all(results);
+    await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 
   async sendAlert(a, platform) {
     const embed = new AlertEmbed(this.bot, [a], platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: a.mission.reward.itemString,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(a.mission.reward.itemString);
       if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
         embed.thumbnail.url = thumb;
       }
@@ -245,61 +240,29 @@ class Notifier {
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    const results = [];
-    for (const d of newDarvoDeals) {
-      const embed = new DarvoEmbed(this.bot, d, platform);
-      results.push(this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry)));
-    }
-    await Promise.all(results);
+    await Promise.all(newDarvoDeals.map(d => this.broadcast(new DarvoEmbed(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
   }
 
   async sendEvent(newEvents, platform) {
-    const results = [];
-    for (const e of newEvents) {
-      const embed = new EventEmbed(this.bot, [e], platform);
-      results.push(this.broadcast(embed, platform, 'events', null, fromNow(e.expiry)));
-    }
-    await Promise.all(results);
+    await Promise.all(newEvents.map(e => this.broadcast(new EventEmbed(this.bot, [e], platform), platform, 'events', null, fromNow(e.expiry))));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    const results = [];
-    for (const d of newFeaturedDeals) {
-      const embed = new SalesEmbed(this.bot, [d], platform);
-      results.push(this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry)));
-    }
-    await Promise.all(results);
+    await Promise.all(newFeaturedDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
   }
 
   async sendFissures(newFissures, platform) {
-    const results = [];
-    for (const f of newFissures) {
-      const embed = new FissureEmbed(this.bot, [f], platform);
-      results.push(this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry)));
-    }
-    await Promise.all(results);
+    await Promise.all(newFissures.map(f => this.broadcast(new FissureEmbed(this.bot, [f], platform), platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry))));
   }
 
   async sendInvasions(newInvasions, platform) {
-    const results = [];
-    for (const invasion of newInvasions) {
-      results.push(this.sendInvasion(invasion, platform));
-    }
-    await Promise.all(results);
+    await Promise.all(newInvasions.map(invasion => this.sendInvasion(invasion, platform)));
   }
 
   async sendInvasion(invasion, platform) {
     const embed = new InvasionEmbed(this.bot, [invasion], platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: invasion.attackerReward.itemString,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(invasion.attackerReward.itemString);
       if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
         embed.thumbnail.url = thumb;
       }
@@ -311,62 +274,29 @@ class Notifier {
   }
 
   async sendNews(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i], undefined, platform);
-      results.push(this.broadcast(embed, platform, 'news'));
-    }
-    await Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'news')));
   }
 
   async sendStreams(newStreams, platform) {
-    const results = [];
-    for (const i of newStreams) {
-      const embed = new NewsEmbed(this.bot, [i], undefined, platform);
-      results.push(this.broadcast(embed, platform, 'streams'));
-    }
-    await Promise.all(results);
+    await Promise.all(newStreams.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'streams')));
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    const results = [];
-    for (const d of newPopularDeals) {
-      const embed = new SalesEmbed(this.bot, [d], platform);
-      results.push(this.broadcast(embed, platform, 'deals.popular', null, 86400000));
-    }
-    await Promise.all(results);
+    await Promise.all(newPopularDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i], 'primeaccess', platform);
-      results.push(this.broadcast(embed, platform, 'primeaccess', null));
-    }
-    await Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
   async sendUpdates(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i], 'updates', platform);
-      results.push(this.broadcast(embed, platform, 'updates', null));
-    }
-    await Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendSortie(newSortie, platform) {
     const embed = new SortieEmbed(this.bot, newSortie, platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: newSortie.boss,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(newSortie.boss);
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
