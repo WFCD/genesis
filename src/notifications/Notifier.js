@@ -336,7 +336,7 @@ class Notifier {
   async sendPrimeAccess(newNews, platform) {
     const results = [];
     for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i], platform);
+      const embed = new NewsEmbed(this.bot, [i], 'primeaccess', platform);
       results.push(this.broadcast(embed, platform, 'primeaccess', null));
     }
     Promise.all(results);
