@@ -57,7 +57,7 @@ class Database {
     return Promise.mapSeries(schema, q => this.db.query(q));
   }
 
- /**
+  /**
   * Initialize data for guilds in channels for existing guilds
   * @param {Client} client for pulling guild information
   */
@@ -315,7 +315,7 @@ class Database {
         return [];
       }
       return res[0]
-          .map(result => ({ text: result.text, thing: result.item_or_type }));
+        .map(result => ({ text: result.text, thing: result.item_or_type }));
     }
     return [];
   }
@@ -345,15 +345,15 @@ class Database {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-      .append(items && items.length > 0 ?
-              SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
-      .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
-      .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
-      .append(SQL`
+        .append(items && items.length > 0 ?
+          SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
+        .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
+        .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
+        .append(SQL`
         WHERE type_notifications.type = ${String(type)}
           AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}
           AND settings.setting = "platform"  AND settings.val = ${platform || 'pc'} `)
-      .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
+        .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return this.db.query(query);
     } catch (e) {
@@ -641,6 +641,7 @@ class Database {
    * @returns {Promise}
    */
   async setNotifiedIds(platform, shardId, notifiedIds) {
+    console.log(`notifiedIds being set: ${notifiedIds.length}`);
     const query = SQL`INSERT INTO notified_ids VALUES
       (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
@@ -661,6 +662,7 @@ class Database {
     if (res[0].length === 0) {
       return [];
     }
+    console.log(`nodified ids from database: ${res[0][0].id_list.length}`);
     return res[0][0].id_list;
   }
 
