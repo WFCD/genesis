@@ -318,7 +318,7 @@ class Notifier {
   async sendStreams(newStreams, platform) {
     const results = [];
     for (const i of newStreams) {
-      const embed = new NewsEmbed(this.bot, [i], platform);
+      const embed = new NewsEmbed(this.bot, [i], undefined, platform);
       results.push(this.broadcast(embed, platform, 'streams'));
     }
     Promise.all(results);
