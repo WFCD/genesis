@@ -107,14 +107,17 @@ class MessaageManager {
    * @param {Object} embed Embed object to send
    * @param {string} prepend String to prepend to the embed
    * @param {nunber} deleteAfter delete after a specified time
-   * @returns {Promise<Message>}
    */
   async embedToChannel(channel, embed, prepend, deleteAfter) {
     if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
       const msg = await channel.send(prepend, { embed });
-      return this.deleteCallAndResponse(msg, msg, false, deleteAfter);
+      if (msg.deletable && deleteAfter > 0) {
+        const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired');
+        if (parseInt(deleteExpired, 10)) {
+          msg.delete(deleteAfter);
+        }
+      }
     }
-    return null;
   }
 
   /**
