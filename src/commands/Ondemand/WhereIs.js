@@ -75,10 +75,10 @@ class Whereis extends Command {
       const results = data
         .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
         .sort(itemSort);
-      const longestName = results.map(result => result.item)
-        .reduce((a, b) => (a.length > b.length ? a : b));
-      const longestRelic = results.map(result => result.place)
-        .reduce((a, b) => (a.length > b.length ? a : b));
+      const longestName = results.length ? results.map(result => result.item)
+        .reduce((a, b) => (a.length > b.length ? a : b)) : '';
+      const longestRelic = results.length ? results.map(result => result.place)
+        .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
       createGroupedArray(results, 70).forEach((group, index) => {
         const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4),
