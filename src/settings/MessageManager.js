@@ -197,10 +197,10 @@ class MessaageManager {
       const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond');
       const deleteResponseAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_response');
       if (deleteAfterRespond === '1' && deleteCall && call.deletable) {
-        await call.delete(10000);
+        call.delete(10000);
       }
       if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
-        await response.delete(30000);
+        response.delete(30000);
       }
     }
   }
