@@ -73,44 +73,47 @@ class Settings extends Command {
       channelsResults.push(this.composeChannelSettings(channel, message, lastIndex));
     }
     Promise.all(channelsResults);
-    let guildTokens = await this.bot.settings.getWelcomes(message.guild);
 
-    // Welcomes
-    guildTokens = guildTokens.map(welcome => `**Welcome${welcome.isDm === '1' ? ' Direct ' : ' Message'}**\n${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``);
+    if (message.channel.guild) {
+      let guildTokens = await this.bot.settings.getWelcomes(message.guild);
 
-    // Guild Pings
-    const guildPings = await this.bot.settings.getPingsForGuild(message.guild);
-    const pingParts = guildPings
-                .filter(obj => obj.thing && obj.text)
-                .map(obj => `**${obj.thing}**: ${obj.text}`);
-    if (pingParts.length > 0) {
-      // add them all
-      guildTokens.push('\n**Pings per Item:**');
-      pingParts.forEach(item => guildTokens.push(`\t${item}`));
-    } else {
-      guildTokens.push('\n**Pings per Item:** No Configured Pings');
+      // Welcomes
+      guildTokens = guildTokens.map(welcome => `**Welcome${welcome.isDm === '1' ? ' Direct ' : ' Message'}**\n${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``);
+
+      // Guild Pings
+      const guildPings = await this.bot.settings.getPingsForGuild(message.guild);
+      const pingParts = guildPings
+                  .filter(obj => obj.thing && obj.text)
+                  .map(obj => `**${obj.thing}**: ${obj.text}`);
+      if (pingParts.length > 0) {
+        // add them all
+        guildTokens.push('\n**Pings per Item:**');
+        pingParts.forEach(item => guildTokens.push(`\t${item}`));
+      } else {
+        guildTokens.push('\n**Pings per Item:** No Configured Pings');
+      }
+
+      // Guild Permissions
+      const guildPermissions = await this.bot.settings.permissionsForGuild(message.guild);
+      const guildParts = guildPermissions
+                     .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+
+      if (guildParts.length > 0) {
+        guildTokens.push('\n**Guild Permissions:**');
+        guildParts.forEach(part => guildTokens.push(`\t${part}`));
+      } else {
+        guildTokens.push('\n**Guild Permissions:** No Configured Guild Permissions');
+      }
+
+      const tokenGroups = createGroupedArray(guildTokens, 30);
+      // eslint-disable-next-line no-loop-func
+      tokenGroups.forEach((tokenGroup) => {
+        const embed = new SettingsEmbed(this.bot, message.channel,
+          createGroupedArray(tokenGroup, 15), lastIndex + 1);
+        this.messageManager.embed(message, embed);
+        lastIndex += 1;
+      });
     }
-
-    // Guild Permissions
-    const guildPermissions = await this.bot.settings.permissionsForGuild(message.guild);
-    const guildParts = guildPermissions
-                   .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
-
-    if (guildParts.length > 0) {
-      guildTokens.push('\n**Guild Permissions:**');
-      guildParts.forEach(part => guildTokens.push(`\t${part}`));
-    } else {
-      guildTokens.push('\n**Guild Permissions:** No Configured Guild Permissions');
-    }
-
-    const tokenGroups = createGroupedArray(guildTokens, 30);
-    // eslint-disable-next-line no-loop-func
-    tokenGroups.forEach((tokenGroup) => {
-      const embed = new SettingsEmbed(this.bot, message.channel,
-        createGroupedArray(tokenGroup, 15), lastIndex + 1);
-      this.messageManager.embed(message, embed);
-      lastIndex += 1;
-    });
     return this.messageManager.statuses.SUCCESS;
   }
 
