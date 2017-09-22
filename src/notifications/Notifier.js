@@ -115,35 +115,35 @@ class Notifier {
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
 
     // Send all notifications
-    await this.updateNotified(notifiedIds, platform);
-    await this.sendAcolytes(acolytesToNotify, platform);
-    await this.sendAlerts(alertsToNotify, platform);
+    this.updateNotified(notifiedIds, platform);
+    this.sendAcolytes(acolytesToNotify, platform);
+    this.sendAlerts(alertsToNotify, platform);
     if (baroToNotify) {
-      await this.sendBaro(baroToNotify, platform);
+      this.sendBaro(baroToNotify, platform);
     }
     if (conclaveToNotify && conclaveToNotify.length > 0) {
-      await this.sendConclaveDailies(conclaveToNotify, platform);
-      await this.sendConclaveWeeklies(conclaveToNotify, platform);
+      this.sendConclaveDailies(conclaveToNotify, platform);
+      this.sendConclaveWeeklies(conclaveToNotify, platform);
     }
-    await this.sendDarvo(dailyDealsToNotify, platform);
-    await this.sendEvent(eventsToNotify, platform);
-    await this.sendFeaturedDeals(featuredDealsToNotify, platform);
-    await this.sendFissures(fissuresToNotify, platform);
-    await this.sendNews(newsToNotify, platform);
-    await this.sendStreams(streamsToNotify, platform);
-    await this.sendPopularDeals(popularDealsToNotify, platform);
-    await this.sendPrimeAccess(primeAccessToNotify, platform);
-    await this.sendInvasions(invasionsToNotify, platform);
+    this.sendDarvo(dailyDealsToNotify, platform);
+    this.sendEvent(eventsToNotify, platform);
+    this.sendFeaturedDeals(featuredDealsToNotify, platform);
+    this.sendFissures(fissuresToNotify, platform);
+    this.sendNews(newsToNotify, platform);
+    this.sendStreams(streamsToNotify, platform);
+    this.sendPopularDeals(popularDealsToNotify, platform);
+    this.sendPrimeAccess(primeAccessToNotify, platform);
+    this.sendInvasions(invasionsToNotify, platform);
     if (sortieToNotify) {
-      await this.sendSortie(sortieToNotify, platform);
+      this.sendSortie(sortieToNotify, platform);
     }
     if (syndicateToNotify && syndicateToNotify.length > 0) {
-      await this.sendSyndicateArbiters(syndicateToNotify, platform);
-      await this.sendSyndicatePerrin(syndicateToNotify, platform);
-      await this.sendSyndicateSuda(syndicateToNotify, platform);
-      await this.sendSyndicateMeridian(syndicateToNotify, platform);
-      await this.sendSyndicateLoka(syndicateToNotify, platform);
-      await this.sendSyndicateVeil(syndicateToNotify, platform);
+      this.sendSyndicateArbiters(syndicateToNotify, platform);
+      this.sendSyndicatePerrin(syndicateToNotify, platform);
+      this.sendSyndicateSuda(syndicateToNotify, platform);
+      this.sendSyndicateMeridian(syndicateToNotify, platform);
+      this.sendSyndicateLoka(syndicateToNotify, platform);
+      this.sendSyndicateVeil(syndicateToNotify, platform);
     }
     await this.sendUpdates(updatesToNotify, platform);
   }
