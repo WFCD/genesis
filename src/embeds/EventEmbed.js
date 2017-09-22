@@ -3,54 +3,38 @@
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
- * Generates fissure embeds
+ * Generates daily deal embeds
  */
 class EventEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
-   * @param {Array.<Event>} events - The fissures to be included in the embed
+   * @param {Event} event - The deal to be included in the embed
+   * @param {string} platform - The platform the event is for
    */
-  constructor(bot, events) {
+  constructor(bot, event, platform) {
     super();
 
-    if (events.length < 2) {
-      this.title = 'Worldstate - Events';
-      this.description = 'Events';
-    }
+    this.color = 0xfdec96;
 
-    if (events.length > 1) {
-      this.fields = events.map(e => ({
-        name: `${e.description}`,
-        value: `Takes place on: ${e.concurrentNodes.join(', ')}\nRewards: ${e.rewards.join(', ')}`,
-      }));
-    } else if (events.length === 0) {
-      this.fields = {
-        name: 'Currently no events',
-        value: '_ _',
-      };
+    if (event) {
+      this.title = `[${platform.toUpperCase()}] ${event.description}`;
+      this.fields = [];
+
+      if (event.victimNode) {
+        this.fields.push({
+          name: '_ _',
+          value: `Defend ${event.victimNode} by attacking the ${event.faction} at ${event.node}.`,
+        });
+      }
+      this.fields.push({ name: 'Rewards', value: event.rewards ? event.rewards.map(reward => reward.asString).join('; ') : 'No Rewards' });
+      this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
+
+      if (event.health) {
+        this.footer.text = `${event.health}% Remaining | ${this.footer.text}`;
+      }
     } else {
-      const e = events[0];
-      this.title = 'Event! ';
-      this.description = `${e.description} against ${e.faction}`;
-      this.fields = [
-        {
-          name: 'Rewards',
-          value: e.rewards.join('\n'),
-          inline: true,
-        },
-        {
-          name: 'Nodes',
-          value: `${e.concurrentNodes.join('\n')}\n${e.node ? e.node : ''}\n${e.victimNode ? e.victimNode : ''}`,
-          inline: true,
-        },
-      ];
-      this.footer.text = e.toolTip ? e.toolTip : this.footer.text;
+      this.title = 'No Current Events';
     }
-
-    this.color = events.length > 2 ? 0x00ff00 : 0xff0000;
-    this.thumbnail = {
-      url: 'https://i.imgur.com/EfIRu6v.png',
-    };
   }
 }
 

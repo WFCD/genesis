@@ -33,19 +33,19 @@ class SetPing extends Command {
           trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
         return this.messageManager.statuses.FAILURE;
       }
-      if (!pingString) {
-        const results = [];
-        for (const eventOrItem of eventsAndItems) {
-          if (eventOrItem) {
-            if (!pingString) {
-              results.push(this.bot.settings.removePing(message.guild, eventOrItem));
-            } else {
-              results.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
-            }
+      const results = [];
+      eventsAndItems.forEach((eventOrItem) => {
+        if (eventOrItem) {
+          if (!pingString) {
+            this.logger.debug('No ping string.');
+            results.push(this.bot.settings.removePing(message.guild, eventOrItem));
+          } else {
+            this.logger.debug(`${pingString} to be set for ${eventOrItem}`);
+            results.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
           }
         }
-        Promise.all(results);
-      }
+      });
+      Promise.all(results);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }

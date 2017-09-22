@@ -9,8 +9,9 @@ class InvasionEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, invasions) {
+  constructor(bot, invasions, platform) {
     super();
 
     this.color = 0x3498db;
@@ -26,7 +27,7 @@ class InvasionEmbed extends BaseEmbed {
           value: `${i.desc} on ${i.node} - ETA ${i.eta}`,
         };
       });
-      this.title = 'Worldstate - Invasions';
+      this.title = `[${platform.toUpperCase()}] Worldstate - Invasions`;
       this.description = 'Currently in-progress invasions:';
     } else {
       const i = invasions[0];
@@ -35,7 +36,7 @@ class InvasionEmbed extends BaseEmbed {
         rewards = `${i.attackerReward.asString} vs ${rewards}`;
       }
       const completion = Math.round(i.completion * 100) / 100;
-      this.title = `${rewards} - ${completion > 0 ? completion : 0}%`;
+      this.title = `[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
       this.description = i.desc;
       this.fields = [
         { name: 'Location', value: i.node, inline: true },

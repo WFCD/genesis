@@ -27,6 +27,13 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
+async function getThumbnailForItem(query) {
+  const articles = await warframe.getSearchList({ query, limit: 1 });
+  const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+  const item = Object.values(details.items)[0];
+  return item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+}
+
 /**
  * Notifier for alerts, invasions, etc.
  */
@@ -46,7 +53,10 @@ class Notifier {
    */
   async start() {
     for (const k of Object.keys(this.bot.worldStates)) {
-      this.bot.worldStates[k].on('newData', (platform, newData) => this.onNewData(platform, newData));
+      this.bot.worldStates[k].on('newData', async (platform, newData) => {
+        this.logger.debug(`Processing new data for ${platform}`);
+        await this.onNewData(platform, newData);
+      });
     }
   }
 
@@ -138,6 +148,12 @@ class Notifier {
     await this.sendUpdates(updatesToNotify, platform);
   }
 
+  async sendWithPrepend(channel, embed, type, items, deleteAfter) {
+    const prepend = await this.settings
+      .getPing(channel.guild, (items || []).concat([type]));
+    return this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
+  }
+
   /**
   * Broadcast embed to all channels for a platform and type
    * @param  {Object} embed      Embed to send to a channel
@@ -148,22 +164,20 @@ class Notifier {
    */
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
-    for (const channelResults of channels) {
-      for (const result of channelResults) {
+    const results = [];
+    channels.forEach((channelResults) => {
+      channelResults.forEach((result) => {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
-            // eslint-disable-next-line no-await-in-loop
-            const prepend = await this.settings
-              .getPing(channel.guild, (items || []).concat([type]));
-            this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
+            results.push(this.sendWithPrepend(channel, embed, type, items, deleteAfter));
           } else if (channel.type === 'dm') {
-            // eslint-disable-next-line no-await-in-loop
-            await this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter);
+            results.push(this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter));
           }
         }
-      }
-    }
+      });
+    });
+    await Promise.all(results);
   }
 
   /**
@@ -185,32 +199,21 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    const results = [];
-    for (const a of newAcolytes) {
-      const embed = new EnemyEmbed(this.bot, [a]);
-      results.push(this.broadcast(embed, platform, 'enemies', null, 3600000));
-    }
-    Promise.all(results);
+    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(this.bot,
+      [a], platform), platform, 'enemies', null, 3600000)));
   }
 
   async sendAlerts(newAlerts, platform) {
-    const results = [];
-    for (const a of newAlerts) {
-      results.push(this.sendAlert(a, platform));
+    if (newAlerts.length) {
+      this.logger.debug(`New Alerts! ${newAlerts.length}`);
     }
-    Promise.all(results);
+    await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 
   async sendAlert(a, platform) {
-    const embed = new AlertEmbed(this.bot, [a]);
+    const embed = new AlertEmbed(this.bot, [a], platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: a.mission.reward.itemString,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(a.mission.reward.itemString);
       if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
         embed.thumbnail.url = thumb;
       }
@@ -222,80 +225,48 @@ class Notifier {
   }
 
   async sendBaro(newBaro, platform) {
-    const embed = new VoidTraderEmbed(this.bot, newBaro);
+    const embed = new VoidTraderEmbed(this.bot, newBaro, platform);
     await this.broadcast(embed, platform, 'baro', null);
   }
 
   async sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day');
+      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day', platform);
       await this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week');
+      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week', platform);
       await this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    const results = [];
-    for (const d of newDarvoDeals) {
-      const embed = new DarvoEmbed(this.bot, d);
-      results.push(this.broadcast(embed, platform, 'darvo', null, fromNow(d.expiry)));
-    }
-    Promise.all(results);
+    await Promise.all(newDarvoDeals.map(d => this.broadcast(new DarvoEmbed(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
   }
 
   async sendEvent(newEvents, platform) {
-    const results = [];
-    for (const e of newEvents) {
-      const embed = new EventEmbed(this.bot, [e]);
-      results.push(this.broadcast(embed, platform, 'events', null, fromNow(e.expiry)));
-    }
-    Promise.all(results);
+    await Promise.all(newEvents.map(e => this.broadcast(new EventEmbed(this.bot, [e], platform), platform, 'events', null, fromNow(e.expiry))));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    const results = [];
-    for (const d of newFeaturedDeals) {
-      const embed = new SalesEmbed(this.bot, [d]);
-      results.push(this.broadcast(embed, platform, 'deals.featured', null, fromNow(d.expiry)));
-    }
-    Promise.all(results);
+    await Promise.all(newFeaturedDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
   }
 
   async sendFissures(newFissures, platform) {
-    const results = [];
-    for (const f of newFissures) {
-      const embed = new FissureEmbed(this.bot, [f]);
-      results.push(this.broadcast(embed, platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry)));
-    }
-    Promise.all(results);
+    await Promise.all(newFissures.map(f => this.broadcast(new FissureEmbed(this.bot, [f], platform), platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry))));
   }
 
   async sendInvasions(newInvasions, platform) {
-    const results = [];
-    for (const invasion of newInvasions) {
-      results.push(this.sendInvasion(invasion, platform));
-    }
-    Promise.all(results);
+    await Promise.all(newInvasions.map(invasion => this.sendInvasion(invasion, platform)));
   }
 
   async sendInvasion(invasion, platform) {
-    const embed = new InvasionEmbed(this.bot, [invasion]);
+    const embed = new InvasionEmbed(this.bot, [invasion], platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: invasion.attackerReward.itemString,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(invasion.attackerReward.itemString);
       if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
         embed.thumbnail.url = thumb;
       }
@@ -307,63 +278,29 @@ class Notifier {
   }
 
   async sendNews(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
-      results.push(this.broadcast(embed, platform, 'news'));
-    }
-    Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'news')));
   }
 
   async sendStreams(newStreams, platform) {
-    const results = [];
-    for (const i of newStreams) {
-      const embed = new NewsEmbed(this.bot, [i]);
-      results.push(this.broadcast(embed, platform, 'streams'));
-    }
-    Promise.all(results);
+    await Promise.all(newStreams.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'streams')));
   }
 
-
   async sendPopularDeals(newPopularDeals, platform) {
-    const results = [];
-    for (const d of newPopularDeals) {
-      const embed = new SalesEmbed(this.bot, [d]);
-      results.push(this.broadcast(embed, platform, 'deals.popular', null, 86400000));
-    }
-    Promise.all(results);
+    await Promise.all(newPopularDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
-      results.push(this.broadcast(embed, platform, 'primeaccess', null));
-    }
-    Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
   async sendUpdates(newNews, platform) {
-    const results = [];
-    for (const i of newNews) {
-      const embed = new NewsEmbed(this.bot, [i]);
-      results.push(this.broadcast(embed, platform, 'updates', null));
-    }
-    Promise.all(results);
+    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendSortie(newSortie, platform) {
-    const embed = new SortieEmbed(this.bot, newSortie);
+    const embed = new SortieEmbed(this.bot, newSortie, platform);
     try {
-      const articles = await warframe.getSearchList({
-        query: newSortie.boss,
-        limit: 1,
-      });
-      const details = await warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      });
-      const item = Object.values(details.items)[0];
-      const thumb = item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      const thumb = await getThumbnailForItem(newSortie.boss);
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
@@ -375,32 +312,32 @@ class Notifier {
   }
 
   async sendSyndicateArbiters(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
     await this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
     await this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
     await this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
     await this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
     await this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
-    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil');
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
     await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
   }
 }

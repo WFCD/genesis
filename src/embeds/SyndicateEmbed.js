@@ -12,8 +12,9 @@ class SyndicateEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<SyndicateMission>} missions - The missions to be included in the embed
    * @param {string} syndicate - The syndicate to display the missions for
+   * @param {string} platform - Platform
    */
-  constructor(bot, missions, syndicate) {
+  constructor(bot, missions, syndicate, platform) {
     super();
 
     const foundSyndicate = values.find(v => syndicate &&
@@ -34,7 +35,7 @@ class SyndicateEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.description = `Current Missions for ${syndicate || 'None'}`;
+    this.description = `[${platform.toUpperCase()}] Current Missions`;
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };

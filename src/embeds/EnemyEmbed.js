@@ -9,14 +9,15 @@ class EnemyEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<PersistentEnemy>} enemies - The persistentEnemies to be included in the embed
+   * @param {string} platform - platform
    */
-  constructor(bot, enemies) {
+  constructor(bot, enemies, platform) {
     super();
 
     this.thumbnail = {
       url: 'http://i.imgur.com/pMRt2Cp.png',
     };
-    this.title = 'Acolytes';
+    this.title = `[${platform.toUpperCase()}] Acolytes`;
     if (enemies.length > 1) {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
       this.fields = enemies.map(e => ({
@@ -27,7 +28,7 @@ class EnemyEmbed extends BaseEmbed {
       }));
     } else if (enemies.length === 1) {
       const e = enemies[0];
-      this.title = e.agentType;
+      this.title = `[${platform.toUpperCase()}] ${e.agentType}`;
       this.description = `Enemy ${e.discovered ? 'Discovered' : 'Hiding'}!`;
       this.color = 0xaf5b4b;
       this.fields = [{ name: '_ _', value: `**${e.discovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },

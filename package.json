@@ -37,7 +37,7 @@
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
     "ping": "^0.2.2",
-    "raven": "^1.2.1",
+    "raven": "^2.1.2",
     "request-promise": "^4.2.1",
     "right-pad": "^1.0.1",
     "sql-template-strings": "^2.2.2",

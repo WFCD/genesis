@@ -23,13 +23,13 @@ class Sorties extends Command {
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform].getDataJson();
+    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const sortie = ws.sortie;
     if (sortie.expired) {
       await this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
       return this.messageManager.statuses.FAILURE;
     }
-    const embed = new SortieEmbed(this.bot, sortie);
+    const embed = new SortieEmbed(this.bot, sortie, platform);
     try {
       const articles = await warframe.getSearchList({ query: sortie.boss, limit: 1 });
       const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
