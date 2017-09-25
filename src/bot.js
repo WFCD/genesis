@@ -309,8 +309,9 @@ class Genesis {
     }
     await this.settings.addGuild(guild);
     this.logger.debug(`Joined guild ${guild} (${guild.id}`);
-    guild.defaultChannel.send(`**${this.client.user.username.toUpperCase()} ready! Type ` +
-    `\`${this.prefix}help\` for help**`);
+    guild.owner.send(`**${this.client.user.username.toUpperCase()} has been added ` +
+                     `to ${guild.name} and is ready\n Type ` +
+                     `\`${this.prefix}help\` for help**`);
   }
 
   /**
