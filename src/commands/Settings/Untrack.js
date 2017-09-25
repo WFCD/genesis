@@ -22,7 +22,7 @@ class Untrack extends Command {
 
   async run(message) {
     const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals`, 'ig');
-    const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
+    const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
 
     const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
     if (!unsplitItems) {
