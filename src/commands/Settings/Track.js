@@ -7,8 +7,6 @@ const allTrackables = require('../../resources/trackables.json');
 const eventTypes = allTrackables.eventTypes;
 const rewardTypes = allTrackables.rewardTypes;
 
-const thingsToCheckForTracking = eventTypes.concat(rewardTypes).concat(['all', 'events', 'items', 'fissures', 'syndicates', 'conclave', 'clantech', 'deals']);
-
 /**
  * Track an event or item
  */
@@ -19,16 +17,15 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals)*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals)*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message) {
     const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals`, 'ig');
     const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
-    const matches = message.strippedContent.match(eventsOrItems);
-    
-    const unsplitItems = matches ? matches.join(' ') : undefined;
+
+    const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
     if (!unsplitItems) {
       return this.failure(message);
     }
@@ -41,7 +38,7 @@ class Track extends Command {
     trackables.items = trackables.items
         .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
-    const channelParam =  ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
+    const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
     const results = [];
     for (const event of trackables.events) {
@@ -57,7 +54,7 @@ class Track extends Command {
 
   async failure(message) {
     const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
-    await this.messageManager.embed(message,
+    this.messageManager.embed(message,
       trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;
   }
