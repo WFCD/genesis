@@ -19,12 +19,12 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${thingsToCheckForTracking.join('|')})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals)*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message) {
-    const eventsOrItems = new RegExp(thingsToCheckForTracking.join('|'), 'ig');
+    const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|clantech|deals`, 'ig');
     const roomId = new RegExp('(?:\\<\\#)?\\d+(?:\\>)?|here', 'ig');
     const matches = message.strippedContent.match(eventsOrItems);
     
@@ -44,9 +44,13 @@ class Track extends Command {
     const channelParam =  ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
     const results = [];
-    trackables.events.forEach(event => results.push(this.bot.settings.trackEventType(channel, event)));
-    trackables.items.forEach(item => results.push(this.bot.settings.trackItem(channel, item)));
-    await Promise.all(results);
+    for (const event of trackables.events) {
+      results.push(this.bot.settings.untrackEventType(channel, event));
+    }
+    for (const item of trackables.items) {
+      results.push(this.bot.settings.untrackItem(channel, item));
+    }
+    Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
