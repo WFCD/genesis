@@ -164,7 +164,7 @@ class Tracker {
   async postHeartBeat() {
     const requestBody = {
       method: 'POST',
-      url: `${config.cachet.host}/api/v1/metrics/${metricId}/points`,
+      url: `${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`,
       headers: {
         'Content-Type': 'application/json',
         'X-Cachet-Token': config.cachet.token,
