@@ -8,6 +8,7 @@ const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 's
 const conclave = ['conclave.weeklies', 'conclave.dailies'];
 const deals = ['deals.featured', 'deals.popular'];
 const clantech = ['mutagen', 'fieldron', 'detonite'];
+const resources = ['neuralSensors', 'orokinCell', 'alloyPlate', 'circuits', 'controlModule', 'ferrite', 'gallium', 'morphics', 'nanoSpores', 'oxium', 'rubedo', 'salvage', 'plastids', 'polymerBundle', 'argonCrystal', 'cryotic', 'tellurium'];
 
 function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
@@ -38,6 +39,8 @@ function trackablesFromParameters(paramString) {
         trackables.events = trackables.events.concat(deals);
       } else if (i === 'clantech') {
         trackables.items = trackables.items.concat(clantech);
+      } else if (i === 'resources') {
+        trackables.items = trackables.items.concat(resources);
       } else if (rewardTypes.includes(item.trim())) {
         trackables.items.push(item.trim());
       } else if (eventTypes.includes(item.trim())) {
@@ -70,7 +73,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: '**Rewards:**',
-        value: `${rewardTypes.concat(['all', 'items', 'clantech']).join('\n')}`,
+        value: `${rewardTypes.concat(['all', 'items', 'clantech', 'resources']).join('\n')}`,
         inline: true,
       },
     ],
