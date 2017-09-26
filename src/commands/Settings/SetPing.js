@@ -11,13 +11,13 @@ class SetPing extends Command {
     this.usages = [
       { description: 'Set ping for an event or item', parameters: ['event or reward', '@role or user mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s+?((${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s+?((${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|resources|deals|clantech)(.+)?)?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
 
   async run(message) {
-    const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave)(.+)?`, 'i');
+    const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|resources|deals|clantech)(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
