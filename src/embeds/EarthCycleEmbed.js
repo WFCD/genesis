@@ -15,7 +15,7 @@ class EarthCycleEmbed extends BaseEmbed {
     super();
 
     this.color = state.isDay ? 0x00ff00 : 0x000066;
-    this.title = `[${platform.toUpperCase()}] Worldstate - Earth Cycle`;
+    this.title = 'Worldstate - Earth Cycle';
     this.thumbnail = {
       url: 'http://vignette1.wikia.nocookie.net/warframe/images/1/1e/Earth.png',
     };
