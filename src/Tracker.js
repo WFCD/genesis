@@ -51,7 +51,7 @@ class Tracker {
     if (config.botsDiscordOrg.token && config.botsDiscordOrg.token) {
       setInterval(() => this.updateDiscordBotsOrg(this.client.guilds.size), config.updateInterval);
     }
-    if (cachetToken && cachetHost && metricId) {
+    if (config.cachet.host && config.cachet.token && config.cachet.metricId) {
       setInterval(() => this.postHeartBeat(), heartBeatTime);
     }
   }
@@ -163,10 +163,10 @@ class Tracker {
   async postHeartBeat() {
     const requestBody = {
       method: 'POST',
-      url: `${cachetHost}/api/v1/metrics/${metricId}/points`,
+      url: `${config.cachet.host}/api/v1/metrics/${metricId}/points`,
       headers: {
         'Content-Type': 'application/json',
-        'X-Cachet-Token': cachetToken,
+        'X-Cachet-Token': config.cachet.token,
       },
       body: {
         value: 1,
