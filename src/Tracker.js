@@ -2,14 +2,25 @@
 
 const request = require('request-promise');
 
-const carbonToken = process.env.DISCORD_CARBON_TOKEN;
-const botsDiscordPwToken = process.env.DISCORD_BOTS_WEB_TOKEN;
-const botsDiscordPwUser = process.env.DISCORD_BOTS_WEB_USER;
-const updateInterval = process.env.TRACKERS_UPDATE_INTERVAL || 3660000;
-const cachetToken = process.env.CACHET_TOKEN;
-const cachetHost = process.env.CACHET_HOST;
-const metricId = process.env.CACHET_BOT_METRIC_ID;
-const heartBeatTime = process.env.CACHET_HEARTBEAT || 600000;
+const config = {
+    updateInterval: process.env.TRACKERS_UPDATE_INTERVAL || 3660000,
+    carbon: {
+        token: process.env.DISCORD_CARBON_TOKEN,
+    },
+    botsDiscordPw: {
+        token: process.env.DISCORD_BOTS_WEB_TOKEN,
+        id: process.env.DISCORD_BOTS_WEB_USER,
+    },
+    cachet: {
+        metricId: process.env.CACHET_BOT_METRIC_ID,
+        host: process.env.CACHET_HOST,
+        token: process.env.CACHET_TOKEN,
+    },
+    botsDiscordOrg: {
+        token: process.env.DISCORD_BOTS_ORG_TOKEN,
+        id: process.env.DISCORD_BOTS_ORG_ID
+    },
+};
 
 /**
  * Describes a tracking service for updating remote sites
@@ -31,11 +42,14 @@ class Tracker {
     this.shardCount = shardCount;
 
 
-    if (carbonToken && this.shardId === 0) {
-      setInterval(() => this.updateCarbonitex(this.shardUtil), updateInterval);
+    if (config.carbon.token && this.shardId === 0) {
+      setInterval(() => this.updateCarbonitex(this.shardUtil), config.updateInterval);
     }
-    if (botsDiscordPwToken && botsDiscordPwUser) {
-      setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), updateInterval);
+    if (config.botsDiscordPw.token && config.botsDiscordPw.user) {
+      setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), config.updateInterval);
+    }
+    if (config.botsDiscordOrg.token && config.botsDiscordOrg.token) {
+      setInterval(() => this.updateDiscordBotsOrg(this.client.guilds.size), config.updateInterval);
     }
     if (cachetToken && cachetHost && metricId) {
       setInterval(() => this.postHeartBeat(), heartBeatTime);
@@ -48,7 +62,7 @@ class Tracker {
    * to fetch shard count of all shards
    */
   async updateCarbonitex(shardUtil) {
-    if (carbonToken) {
+    if (caonfig.carbon.token) {
       const results = await shardUtil.fetchClientValues('guilds.size');
       const guildsLen = results.reduce((prev, val) => prev + val, 0);
       this.logger.debug('Updating Carbonitex');
@@ -56,8 +70,10 @@ class Tracker {
       const requestBody = {
         url: 'https://www.carbonitex.net/discord/data/botdata.php',
         body: {
-          key: carbonToken,
+          key: config.carbon.token,
           servercount: guildsLen,
+          shardid: parseInt(this.shardId, 10),
+          shardcount: parseInt(this.shardCount, 10),
         },
         json: true,
       };
@@ -65,7 +81,7 @@ class Tracker {
         const parsedBody = await request(requestBody);
         this.logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating carbonitex. Token: ${carbonToken} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
+        this.logger.error(`Error updating carbonitex. Token: ${config.carbon.token} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
       }
     }
   }
@@ -75,14 +91,14 @@ class Tracker {
    * @param   {number}  guildsLen number of guilds that this bot is present on
    */
   async updateDiscordBotsWeb(guildsLen) {
-    if (botsDiscordPwToken && botsDiscordPwUser) {
+    if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
       this.logger.debug('Updating discord bots');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
       const requestBody = {
         method: 'POST',
-        url: `https://bots.discord.pw/api/bots/${botsDiscordPwUser}/stats`,
+        url: `https://bots.discord.pw/api/bots/${config.botsDiscordPw.id}/stats`,
         headers: {
-          Authorization: botsDiscordPwToken,
+          Authorization: config.botsDiscordPw.token,
           'Content-Type': 'application/json',
         },
         body: {
@@ -96,7 +112,38 @@ class Tracker {
         const parsedBody = await request(requestBody);
         this.logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating Bots.Discord.pw. Token: ${botsDiscordPwToken} | User: ${botsDiscordPwUser} | Error Code: ${err.statusCode}`);
+        this.logger.error(`Error updating bots.discord.pw. Token: ${config.botsDiscordPw.token} | User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
+      }
+    }
+  } 
+  
+  /**
+   * Updates discordbots.org if the corresponding token is provided
+   * @param   {number}  guildsLen number of guilds that this bot is present on
+   */
+  async updateDiscordBotsOrg(guildsLen) {
+    if (config.botsDiscordOrg.token && config.botsDiscordOrg.id) {
+      this.logger.debug('Updating discordbots.org');
+      this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
+      const requestBody = {
+        method: 'POST',
+        url: `https://discordbots.org/api/bots/${config.botsDiscordOrg.id}/stats`,
+        headers: {
+          Authorization: config.botsDiscordOrg.token,
+          'Content-Type': 'application/json',
+        },
+        body: {
+          shard_id: parseInt(this.shardId, 10),
+          shard_count: parseInt(this.shardCount, 10),
+          server_count: parseInt(guildsLen, 10),
+        },
+        json: true,
+      };
+      try {
+        const parsedBody = await request(requestBody);
+        this.logger.debug(parsedBody);
+      } catch (err) {
+        this.logger.error(`Error updating discordbots.org. Token: ${config.botsDiscordOrg.token} | User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
       }
     }
   }
