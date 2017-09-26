@@ -15,6 +15,7 @@ const config = {
         metricId: process.env.CACHET_BOT_METRIC_ID,
         host: process.env.CACHET_HOST,
         token: process.env.CACHET_TOKEN,
+        heartbeat: process.env.CACHET_HEARTBEAT || 600000,
     },
     botsDiscordOrg: {
         token: process.env.DISCORD_BOTS_ORG_TOKEN,
@@ -52,7 +53,7 @@ class Tracker {
       setInterval(() => this.updateDiscordBotsOrg(this.client.guilds.size), config.updateInterval);
     }
     if (config.cachet.host && config.cachet.token && config.cachet.metricId) {
-      setInterval(() => this.postHeartBeat(), heartBeatTime);
+      setInterval(() => this.postHeartBeat(), config.cachet.heartbeat);
     }
   }
 
