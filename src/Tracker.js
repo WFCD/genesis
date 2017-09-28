@@ -63,7 +63,7 @@ class Tracker {
    * to fetch shard count of all shards
    */
   async updateCarbonitex(shardUtil) {
-    if (caonfig.carbon.token) {
+    if (config.carbon.token) {
       const results = await shardUtil.fetchClientValues('guilds.size');
       const guildsLen = results.reduce((prev, val) => prev + val, 0);
       this.logger.debug('Updating Carbonitex');
