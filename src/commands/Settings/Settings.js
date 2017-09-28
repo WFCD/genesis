@@ -57,7 +57,7 @@ class Settings extends Command {
     const tokenGroups = createGroupedArray(tokens, 6);
     // eslint-disable-next-line no-loop-func
     tokenGroups.forEach((tokenGroup) => {
-      const embed = new SettingsEmbed(this.bot, message.channel,
+      const embed = new SettingsEmbed(this.bot, channel,
         createGroupedArray(tokenGroup, 3), lastIndex);
       this.messageManager.embed(message, embed);
     });
