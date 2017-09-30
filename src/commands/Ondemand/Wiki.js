@@ -45,7 +45,6 @@ class Wiki extends Command {
       this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
       return this.messageManager.statuses.SUCCESS;
     } catch (error) {
-      this.logger.error(error);
       this.messageManager.reply(message, this.noResult, true, true);
       return this.messageManager.statuses.FAILURE;
     }

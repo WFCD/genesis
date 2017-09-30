@@ -138,9 +138,8 @@ class CommandHandler {
           allowCustom, allowInline);
         if (canAct) {
           this.logger.debug(`Matched ${command.id}`);
-
           const status = await command.run(messageWithStrippedContent);
-          const canReact = (message.channel.type === 'dm' ||
+          const canReact = message && (message.channel.type === 'dm' ||
               (message.channel.permissionsFor(this.bot.client.user.id)
               .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
           switch (status) {

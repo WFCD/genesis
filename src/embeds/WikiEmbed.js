@@ -9,6 +9,7 @@ class WikiEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Attachment>} details details to derive data from
+   * @param {boolean} thumbnail - whether or not to use the image as a thumbnail or image
    */
   constructor(bot, details, thumbnail) {
     super();
@@ -16,11 +17,9 @@ class WikiEmbed extends BaseEmbed {
     this.title = item.title;
     this.type = 'rich';
     this.url = details.basepath + item.url;
-    
+
     const imgThing = {
       url: item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : '_ _',
-      width: item.original_dimensions.width,
-      height: item.original_dimensions.height,
     };
     if (thumbnail) {
       this.thumbnail = imgThing;
