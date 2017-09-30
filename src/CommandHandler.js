@@ -182,32 +182,30 @@ class CommandHandler {
     } else if (message.channel.type === 'text') {
       if (command.requiresAuth) {
         if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
-          try {
-            return this.bot.settings
-                   .getChannelPermissionForMember(message.channel,
-                     message.author.id, command.id);
-          } catch (err) {
-            return this.bot.settings
+          const memberHasPermForRequiredAuthCommand = await this.bot.settings
+            .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+          if (memberHasPermForRequiredAuthCommand === 'none') {
+            const roleHasPermForRequiredAuthCommand = await this.bot.settings
                    .getChannelPermissionForUserRoles(message.channel,
                      message.author.id, command.id);
+            return roleHasPermForRequiredAuthCommand;
           }
-        } else {
-          return false;
+          return memberHasPermForRequiredAuthCommand;
         }
-      } else {
-        try {
-          return this.bot.settings
-                 .getChannelPermissionForMember(message.channel, message.author.id, command.id);
-        } catch (err) {
-          return this.bot.settings
-                     .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
-        }
+        return false;
       }
+      const memberHasPermForNonAuthCommand = await this.bot.settings
+                 .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+      if (memberHasPermForNonAuthCommand === 'none') {
+        const roleHasPermForNonAuthCommand = await this.bot.settings
+                     .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+        return roleHasPermForNonAuthCommand;
+      }
+      return memberHasPermForNonAuthCommand;
     } else if (message.channel.type === 'dm' && command.allowDM) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 }
 

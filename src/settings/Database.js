@@ -477,7 +477,7 @@ class Database {
     AND is_user = true AND target_id = ${memberId}`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
-      return true;
+      return 'none';
     }
     return res.rows[0].allowed;
   }
@@ -495,7 +495,7 @@ class Database {
     AND is_user = false AND target_id = ${role.id}`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
-      return true;
+      return 'none';
     }
     return res.rows[0].allowed === 1;
   }
@@ -531,7 +531,7 @@ class Database {
           AND guild_permissions.target_id IN (${userRoleIds});`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
-      return true;
+      return 'none';
     }
     return res[0][0].allowed;
   }
