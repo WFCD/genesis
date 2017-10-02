@@ -15,7 +15,7 @@ class EventEmbed extends BaseEmbed {
     super();
 
     this.color = 0xfdec96;
-
+    this.url = 'https://ws.warframestat.us/';
     if (event) {
       this.title = `[${platform.toUpperCase()}] ${event.description}`;
       this.fields = [];
