@@ -12,7 +12,7 @@ class PollInline extends Command {
    */
   constructor(bot) {
     super(bot, 'poll', 'poll:', 'Create a simple poll');
-    this.regex = new RegExp('poll\:.+', 'ig');
+    this.regex = new RegExp('poll:.+', 'ig');
     this.usages = [
       {
         description: 'Create a simple poll',
@@ -29,14 +29,9 @@ class PollInline extends Command {
   async run(message) {
     if (message.channel.permissionsFor(this.bot.client.user.id)
       .has(['USE_EXTERNAL_EMOJIS', 'ADD_REACTIONS'])) {
-      message.react('👍')
-        .then(() => {
-          return message.react('👎');
-        })
-        .then(() => {
-          return message.react('🤷');
-        })
-        .catch(this.logger.error);
+      await message.react('👍');
+      await message.react('👎');
+      await message.react('🤷');
     }
   }
 }
