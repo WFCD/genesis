@@ -19,6 +19,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
 
     const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
+    this.url = 'https://ws.warframestat.us/';
     if (categoryInValues) {
       this.fields = challenges.filter(
         c => (c.category === category.toLowerCase() || category.toLowerCase() === 'all') &&
@@ -32,7 +33,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.description = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
+    this.title = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
     this.thumbnail = {
       url: 'http://i.imgur.com/KDzKPYA.png',
     };
