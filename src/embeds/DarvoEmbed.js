@@ -16,6 +16,7 @@ class DarvoEmbed extends BaseEmbed {
 
     this.color = 0x0000ff;
     this.title = `[${platform.toUpperCase()}] Darvo Deal`;
+    this.url = 'https://ws.warframestat.us/';
     this.thumbnail = {
       url: 'http://i.imgur.com/UotylUm.png',
     };
