@@ -17,6 +17,7 @@ class EnemyEmbed extends BaseEmbed {
     this.thumbnail = {
       url: 'http://i.imgur.com/pMRt2Cp.png',
     };
+    this.url = 'https://ws.warframestat.us/';
     this.title = `[${platform.toUpperCase()}] Acolytes`;
     if (enemies.length > 1) {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
