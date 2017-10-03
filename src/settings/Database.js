@@ -886,6 +886,7 @@ class Database {
       return res[0].map(build => ({
         id: build.build_id,
         owner: this.bot.client.users.get(build.owner_id) || build.owner_id,
+        title: build.title
       }));
     }
     return [];
