@@ -36,7 +36,7 @@ class ListBuilds extends Command {
       const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
       const tokenGroups = createGroupedArray(tokens, 6);
       await Promise.all(tokenGroups.map(tokenGroup => {
-        tokenGroup[0].fields.value = `\`Build ID | Title | Owner\`\n${tokenGroup[0].fields.value}`;
+        tokenGroup[0].value = `\`Build ID | Title | Owner\`\n${tokenGroup[0].fields.value}`;
         return this.messageManager.embed(message, {
           color: 0xcda2a3,
           fields: tokenGroup,
