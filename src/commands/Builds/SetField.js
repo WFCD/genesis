@@ -29,12 +29,12 @@ class AddBuild extends Command {
       // let them know there's not enough params
       return this.messageManager.statuses.FAILURE;
     }
-    const buildId = params[0];
+    const buildId = (params[0] || '').trim();
     const build = await this.bot.settings.getBuild(buildId);
     let title;
     let body;
     let image;
-    if (build && build.owner_id === message.owner.id) {
+    if (build && (build.owner_id === message.author.id || message.author.id === this.bot.owner)) {
       if (type === 'all') {
         title = params[1];
         body = params[2];
@@ -53,10 +53,10 @@ class AddBuild extends Command {
     }
 
     // save params based on order
-    const status = await this.settings.setBuildFileds(buildId, { title, body, image });
+    const status = await this.bot.settings.setBuildFields(buildId, { title, body, image });
     if (status) {
       this.messageManager.embed(message, new BuildEmbed(this.bot,
-        await this.settings.getBuild(buildId)), true, true);
+        await this.bot.settings.getBuild(buildId)), true, true);
       return this.messageManager.statuses.SUCCESS;
     }
     return this.failure(message, buildId);

@@ -853,7 +853,6 @@ class Database {
     if (buildId) {
       const query = SQL`SELECT * FROM builds WHERE build_id=${buildId};`;
       const res = await this.db.query(query);
-      // console.log(res);
       if (res[0] && res[0][0]) {
         const result = res[0][0];
         return {
@@ -895,18 +894,16 @@ class Database {
   async setBuildFields(buildId, { title = undefined, body = undefined, image = undefined }) {
     const setTokens = [];
     if (title) {
-      setTokens.push(`title=${title}`);
+      setTokens.push(`title = '${title.trim().replace(/'/ig, '\\\'')}'`);
     }
     if (body) {
-      setTokens.push(`body=${body}`);
+      setTokens.push(`body = '${body.trim().replace(/'/ig, '\\\'')}'`);
     }
-    if (body) {
-      setTokens.push(`image=${image}`);
+    if (image) {
+      setTokens.push(`image = '${image.trim().replace(/'/ig, '\\\'')}'`);
     }
-    if (title || body || image) {
-      const query = SQL`UPDATE builds
-        SET ${setTokens.join(',')}
-        WHERE build_id=${buildId};`;
+    if (setTokens.length > 0) {
+      const query = `UPDATE builds SET ${setTokens.join(', ')} WHERE build_id='${buildId}';`;
       return this.db.query(query);
     }
     return false;
