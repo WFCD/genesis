@@ -33,12 +33,15 @@ class ListBuilds extends Command {
     const builds = await this.bot.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
       const buildGroups = createGroupedArray(builds, 20);
-      const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
+      const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
       const tokenGroups = createGroupedArray(tokens, 6);
-      await Promise.all(tokenGroups.map(tokenGroup => this.messageManager.embed(message, {
-        color: 0xcda2a3,
-        fields: tokenGroup,
-      }, true, true)));
+      await Promise.all(tokenGroups.map(tokenGroup => {
+        tokenGroup.unshift('`Build ID | Title | Owner`');
+        return this.messageManager.embed(message, {
+          color: 0xcda2a3,
+          fields: tokenGroup,
+        }, true, true);
+      }));
       return this.messageManager.statuses.SUCCESS;
     }
     await this.messageManager.embed(message, { color: 0xcda2a3, title: 'No builds for user' }, true, true);
