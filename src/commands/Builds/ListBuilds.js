@@ -21,7 +21,7 @@ class ListBuilds extends Command {
    */
   constructor(bot) {
     super(bot, 'builds.list', 'list builds', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call}|lb)\\s?(.+)?`, 'i');
 
     this.usages = [
       { description: 'Display information on an existing build from Genesis. `|` separates title, body, and image. `;` separates sections in the body.', parameters: ['title | body | image'] },
