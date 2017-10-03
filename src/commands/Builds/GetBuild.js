@@ -13,7 +13,7 @@ class GetBuild extends Command {
    */
   constructor(bot) {
     super(bot, 'builds.get', 'get build', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call}|gb)\\s?(.+)?`, 'i');
 
     this.usages = [
       { description: 'Display information on an existing build from Genesis', parameters: [] },
