@@ -862,6 +862,7 @@ class Database {
           url: result.image,
           id: result.build_id,
           owner: this.bot.client.users.get(result.owner_id) || result.owner_id,
+          owner_id: result.owner_id,
         };
       }
     }
@@ -889,6 +890,26 @@ class Database {
       }));
     }
     return [];
+  }
+
+  async setBuildFields(buildId, { title = undefined, body = undefined, image = undefined }) {
+    const setTokens = [];
+    if (title) {
+      setTokens.push(`title=${title}`);
+    }
+    if (body) {
+      setTokens.push(`body=${body}`);
+    }
+    if (body) {
+      setTokens.push(`image=${image}`);
+    }
+    if (title || body || image) {
+      const query = SQL`UPDATE builds
+        SET ${setTokens.join(',')}
+        WHERE build_id=${buildId};`;
+      return this.db.query(query);
+    }
+    return false;
   }
 }
 
