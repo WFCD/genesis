@@ -97,4 +97,12 @@ module.exports = [
     welcome_message_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (welcome_message_id)
   );`,
+  `CREATE TABLE IF NOT EXISTS builds (
+    build_id VARCHAR(8) NOT NULL,
+    title VARCHAR(255) NOT NULL default 'My Build',
+    body VARCHAR(255) NOT NULL default 'My Build Body',
+    image VARCHAR(255) NOT NULL default 'https://i.imgur.com/2ZJiRKC.png',
+    owner_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (build_id)
+  );`,
 ];
