@@ -82,7 +82,7 @@ class Whereis extends Command {
       query = toTitleCase(query.trim());
       createGroupedArray(results, 60).forEach((group, index) => {
         const embed = new WhereisEmbed(this.bot, createGroupedArray(group, 4),
-          query, longestName.length, longestRelic.length);
+          query, longestName.length - 1, longestRelic.length - 1);
         if (index === 0) {
           sentMessage.edit('', { embed });
         } else {
