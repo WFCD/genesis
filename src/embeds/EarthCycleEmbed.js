@@ -9,9 +9,8 @@ class EarthCycleEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Object} state - The current state of the cycle
-   * @param {string} platform - platform
    */
-  constructor(bot, state, platform) {
+  constructor(bot, state) {
     super();
 
     this.color = state.isDay ? 0x00ff00 : 0x000066;
