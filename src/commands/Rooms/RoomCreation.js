@@ -8,7 +8,7 @@ class AllowPrivateRoom extends Command {
     this.usages = [
       { description: 'Change if the bot is allowed to create private channels', parameters: ['private rooms enabled'] },
     ];
-    this.regex = new RegExp('^allow\\s?private\\s?rooms?\\s?(.+)?$', 'i');
+    this.regex = new RegExp('^allow\\s?private\\s?rooms?\\s?(on|off)?$', 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
@@ -28,7 +28,7 @@ class AllowPrivateRoom extends Command {
         color: 0x0000ff,
         fields: [
           {
-            name: `${this.bot.prefix}${this.call} <yes|no>`,
+            name: `${this.bot.prefix}${this.call} <on|off>`,
             value: '_ _',
           },
         ],
@@ -38,8 +38,7 @@ class AllowPrivateRoom extends Command {
     }
     enable = enable.trim();
     let enableResponse = false;
-    if (enable === 'enable' || enable === 'yes' || enable === '1'
-          || enable === 'true' || enable === 'on' || enable === 1) {
+    if (enable ===  'on') {
       enableResponse = true;
     }
     await this.bot.settings.setGuildSetting(message.guild, 'createPrivateChannel', enableResponse);
