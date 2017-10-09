@@ -4,6 +4,8 @@ const Command = require('../../Command.js');
 
 const useable = ['room', 'raid', 'team'];
 
+const vulgar = [];
+
 /**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
@@ -23,7 +25,15 @@ function getUsersForCall(message) {
       }
     });
   }
-  users.push(message.author);
+  let authorIncluded = false;
+  users.forEach((user) => {
+	  if (user.id === message.author.id) {
+		authorIncluded = true;
+	  }
+  });
+  if (!authorIncluded) {
+	users.push(message.author);
+  }
   return users;
 }
 /**
@@ -36,7 +46,7 @@ class Create extends Command {
    */
   constructor(bot) {
     super(bot, 'rooms.create', 'create', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team)?(\\w|-)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team)?(\\w|-)?(?:\-n(.+))?`, 'i');
 
     this.usages = [
       { description: 'Display instructions for creating temporary rooms', parameters: [] },
@@ -47,6 +57,10 @@ class Create extends Command {
       {
         description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles.',
         parameters: ['room | raid | team', 'users and/or role'],
+      },
+	  {
+        description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with a custom name',
+        parameters: ['room | raid | team', 'users and/or role', '-n name'],
       },
     ];
 
@@ -60,8 +74,14 @@ class Create extends Command {
    * @returns {string} success status
    */
   async run(message) {
+	const channelNameRegex = new RegExp('-n\\s+(.+)', 'ig');
     const type = message.strippedContent.match(this.regex)[1];
-    const optName = message.strippedContent.match(this.regex)[2];
+	const namingResults = message.strippedContent.match(channelNameRegex);
+    let optName = (namingResults ? namingResults[0] : '')
+		.replace('-n ', '');
+	if (vulgar.length) {
+		optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); //remove vulgar
+	}
     const createPrivateChannelAllowed = parseInt(await this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel'), 10);
     if (createPrivateChannelAllowed) {
       if (type) {
@@ -86,7 +106,7 @@ class Create extends Command {
               fields: [{
                 name: '_ _',
                 value: `Voice Channel: ${voiceChannel.name}\n` +
-                  `Text Channel: ${textChannel.name}`,
+                  `Text Channel: ${textChannel}`,
               }],
             }, false, false);
             return this.messageManager.statuses.SUCCESS;
@@ -140,20 +160,22 @@ class Create extends Command {
     const overwritePromises = [];
     // create text channel perms
     overwritePromises.push(textChannel.overwritePermissions(everyoneId, {
-      READ_MESSAGES: false,
+      VIEW_CHANNEL: false,
     }));
     // create voice channel perms
     overwritePromises.push(voiceChannel.overwritePermissions(everyoneId, {
       CONNECT: false,
+	  VIEW_CHANNEL: false,
     }));
 
     // allow bot to manage channels
     overwritePromises.push(textChannel.overwritePermissions(this.bot.client.user.id, {
-      READ_MESSAGES: true,
-      SEND_MESSAGES: true,
+      VIEW_CHANNEL: true,
+        SEND_MESSAGES: true,
     }));
     overwritePromises.push(voiceChannel.overwritePermissions(this.bot.client.user.id, {
-      CREATE_INSTANT_INVITE: true,
+      VIEW_CHANNEL: true,
+	  CREATE_INSTANT_INVITE: true,
       CONNECT: true,
       SPEAK: true,
       MUTE_MEMBERS: true,
@@ -167,11 +189,12 @@ class Create extends Command {
     // set up overwrites per-user
     users.forEach((user) => {
       overwritePromises.push(textChannel.overwritePermissions(user.id, {
-        READ_MESSAGES: true,
+        VIEW_CHANNEL: true,
         SEND_MESSAGES: true,
       }));
       overwritePromises.push(voiceChannel.overwritePermissions(user.id, {
-        CONNECT: true,
+        VIEW_CHANNEL: true,
+		CONNECT: true,
         SPEAK: true,
         USE_VAD: true,
       }));
