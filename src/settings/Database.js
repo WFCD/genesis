@@ -178,10 +178,10 @@ class Database {
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
-        return checkWebhookAndReturn(channel, setting);
+        return this.checkWebhookAndReturn(channel, setting);
       }
       await this.addDMChannel(channel);
-      return checkWebhookAndReturn(channel, setting);
+      return this.checkWebhookAndReturn(channel, setting);
     }
     return res[0][0].val;
   }
