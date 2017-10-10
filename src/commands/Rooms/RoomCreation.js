@@ -38,7 +38,7 @@ class AllowPrivateRoom extends Command {
     }
     enable = enable.trim();
     let enableResponse = false;
-    if (enable ===  'on') {
+    if (enable === 'on') {
       enableResponse = true;
     }
     await this.bot.settings.setGuildSetting(message.guild, 'createPrivateChannel', enableResponse);

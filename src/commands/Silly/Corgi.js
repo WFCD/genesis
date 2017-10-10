@@ -22,13 +22,12 @@ class Corgi extends Command {
    * @returns {string} success status
    */
   async run(message) {
-	const corgi = await corggit();
-	if (corgi) {
-		await this.messageManager.sendMessage(message, corgi.url, true, true);
-		return this.messageManager.statuses.SUCCESS;
-	} else {
-		return this.messageManager.statuses.FAILURE;
-	}
+    const corgi = await corggit();
+    if (corgi) {
+      await this.messageManager.sendMessage(message, corgi.url, true, true);
+      return this.messageManager.statuses.SUCCESS;
+    }
+    return this.messageManager.statuses.FAILURE;
   }
 }
 
