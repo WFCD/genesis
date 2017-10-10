@@ -158,6 +158,14 @@ class Database {
     return this.db.query(query);
   }
 
+  async checkWebhookAndReturn(channel, setting) {
+    if (!/webhook/.test(setting)) {
+      await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
+      return this.defaults[`${setting}`];
+    }
+    return undefined;
+  }
+
   /**
    * Get a setting for a particular channel
    * @param {Channel} channel channel to get the setting for
@@ -170,18 +178,10 @@ class Database {
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
-        if (!/webhook/.test(setting)) {
-          await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
-          return this.defaults[`${setting}`];
-        }
-        return undefined;
+        return checkWebhookAndReturn(channel, setting);
       }
       await this.addDMChannel(channel);
-      if (!/webhook/.test(setting)) {
-        await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
-        return this.defaults[`${setting}`];
-      }
-      return undefined;
+      return checkWebhookAndReturn(channel, setting);
     }
     return res[0][0].val;
   }
