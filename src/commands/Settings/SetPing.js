@@ -2,8 +2,7 @@
 
 const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
-const eventTypes = require('../../resources/trackables.json').eventTypes;
-const rewardTypes = require('../../resources/trackables.json').rewardTypes;
+const { eventTypes, rewardTypes } = require('../../resources/trackables.json');
 
 class SetPing extends Command {
   constructor(bot) {
@@ -29,8 +28,10 @@ class SetPing extends Command {
 
       if (!eventsAndItems.length) {
         const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
-        this.messageManager.embed(message,
-          trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
+        this.messageManager.embed(
+          message,
+          trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+        );
         return this.messageManager.statuses.FAILURE;
       }
       const results = [];
@@ -51,7 +52,7 @@ class SetPing extends Command {
     }
     const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
     this.messageManager.embed(message, trackFunctions
-        .getTrackInstructionEmbed(message, prefix, this.call), true, true);
+      .getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

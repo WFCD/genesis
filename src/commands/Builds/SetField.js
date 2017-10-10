@@ -36,15 +36,13 @@ class AddBuild extends Command {
     let image;
     if (build && (build.owner_id === message.author.id || message.author.id === this.bot.owner)) {
       if (type === 'all') {
-        title = params[1];
-        body = params[2];
-        image = params[3];
+        [, title, body, image] = params;
       } else if (type === 'title') {
-        title = params[1];
+        [, title] = params;
       } else if (type === 'body') {
-        body = params[1];
+        [, body] = params;
       } else if (type === 'image') {
-        image = params[1];
+        [, image] = params;
       } else {
         return this.failure(message, buildId);
       }
@@ -55,8 +53,10 @@ class AddBuild extends Command {
     // save params based on order
     const status = await this.bot.settings.setBuildFields(buildId, { title, body, image });
     if (status) {
-      this.messageManager.embed(message, new BuildEmbed(this.bot,
-        await this.bot.settings.getBuild(buildId)), true, true);
+      this.messageManager.embed(message, new BuildEmbed(
+        this.bot,
+        await this.bot.settings.getBuild(buildId),
+      ), true, true);
       return this.messageManager.statuses.SUCCESS;
     }
     return this.failure(message, buildId);

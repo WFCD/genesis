@@ -22,9 +22,11 @@ class Efficiency extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    this.messageManager.sendFile(message,
-       `Operator ${message.author.toString()}, the efficiency table, at your request.`,
-      this.efficiencyChart, 'efficiency.png', true);
+    this.messageManager.sendFile(
+      message,
+      `Operator ${message.author.toString()}, the efficiency table, at your request.`,
+      this.efficiencyChart, 'efficiency.png', true,
+    );
     return this.messageManager.statuses.SUCCESS;
   }
 }

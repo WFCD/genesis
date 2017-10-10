@@ -10,8 +10,10 @@ class Enable extends Command {
     this.usages = [
       { description: 'Enable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?)?`,
-      'i');
+    this.regex = new RegExp(
+      `^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?)?`,
+      'i',
+    );
     this.requiresAuth = true;
     this.blacklistable = false;
     this.allowDM = false;
@@ -29,7 +31,7 @@ class Enable extends Command {
 
     if (params[1]) {
       channels = this.getChannels(message.mentions.channels.length > 0
-          ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
+        ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
     } else {
       channels = [message.channel];
     }
@@ -37,8 +39,10 @@ class Enable extends Command {
     let target = {};
     if (params[2] ||
         message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
-      target = this.getTarget(params[2], message.mentions ? message.mentions.roles : [],
-          message.mentions ? message.mentions.users : [], message);
+      target = this.getTarget(
+        params[2], message.mentions ? message.mentions.roles : [],
+        message.mentions ? message.mentions.users : [], message,
+      );
     } else {
       target = message.guild.roles.find('name', '@everyone');
     }
@@ -48,10 +52,10 @@ class Enable extends Command {
       for (const channel of channels) {
         if (target.type === 'Role') {
           results.push(this.bot.settings
-              .setChannelPermissionForRole(channel, target, command, 1));
+            .setChannelPermissionForRole(channel, target, command, 1));
         } else {
           results.push(this.bot.settings
-              .setChannelPermissionForMember(channel, target, command, 1));
+            .setChannelPermissionForMember(channel, target, command, 1));
         }
       }
     }
@@ -59,7 +63,7 @@ class Enable extends Command {
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
     const respondToSettings = await this.bot.settings
-        .getChannelSetting(message.channel, 'respond_to_settings');
+      .getChannelSetting(message.channel, 'respond_to_settings');
     if (respondToSettings) {
       this.messageManager.embed(message, infoEmbed, true, false);
     }
@@ -119,11 +123,13 @@ class Enable extends Command {
    */
   getTarget(targetParam, roleMentions, userMentions, message) {
     let target;
+    const roleMention = roleMentions.first();
+    const userMention = userMentions.first();
     if (roleMentions.array().length > 0) {
-      target = roleMentions.array()[0];
+      target = roleMention;
       target.type = 'Role';
     } else if (userMentions.array().length > 0) {
-      target = userMentions.array()[0];
+      target = userMention;
       target.type = 'User';
     } else {
       const userTarget = this.bot.client.users.get(targetParam);

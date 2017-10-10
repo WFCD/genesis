@@ -30,7 +30,7 @@ class GetCommandIds extends Command {
     if (message.channel.type !== 'dm') {
       this.messageManager.reply(message, 'Check your direct messages for more information.', true, true);
     }
-    this.messageManager.sendFileToAuthor(message, new Buffer(fileContents.join('\n'), 'ascii'), 'command_ids.csv', true);
+    this.messageManager.sendFileToAuthor(message, Buffer.from(fileContents.join('\n'), 'ascii'), 'command_ids.csv', true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

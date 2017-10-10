@@ -26,7 +26,7 @@ class AddBuild extends Command {
     const matches = message.strippedContent.match(this.regex)[1];
     const params = (matches || '').split('|');
     if (params.length < 1) {
-        // let them know there's not enough params
+      // let them know there's not enough params
       return this.messageManager.statuses.FAILURE;
     }
     // save params based on order

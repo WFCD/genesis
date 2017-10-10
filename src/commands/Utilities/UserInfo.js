@@ -12,7 +12,7 @@ class UserInfo extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'util.userinfo', 'userinfodsfpoigjs', 'Get info about a user');
+    super(bot, 'util.userinfo', 'userinfo', 'Get info about a user');
     this.regex = new RegExp(`^${this.call}\\s*((?:\\<\\@?\\!?)?\\d+(?:\\>)?)?`);
   }
 
@@ -22,11 +22,12 @@ class UserInfo extends Command {
     let member;
     let mention;
     if (message.mentions.users) {
+      const { a, b } = message.mentions.users.array();
       if (message.mentions.users.array().length > 1
         && message.mentions.users.array()[0].id === this.bot.client.id) {
-        mention = message.mentions.users.array()[1];
+        mention = b;
       } else {
-        mention = message.mentions.users.array()[0];
+        mention = a;
       }
     }
 
@@ -47,8 +48,8 @@ class UserInfo extends Command {
       .filter(guild => guild.members.get(user.id));
 
     const guilds = guildsWithUser.length > 25 ?
-        guildsWithUser.splice(0, 24) :
-        guildsWithUser;
+      guildsWithUser.splice(0, 24) :
+      guildsWithUser;
     const embed = new UserInfoEmbed(this.bot, guilds, user, member, message);
     this.messageManager.embed(message, embed, true, false);
     return this.messageManager.statuses.SUCCESS;

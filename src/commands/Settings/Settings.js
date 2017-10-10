@@ -57,8 +57,10 @@ class Settings extends Command {
     const tokenGroups = createGroupedArray(tokens, 6);
     // eslint-disable-next-line no-loop-func
     tokenGroups.forEach((tokenGroup) => {
-      const embed = new SettingsEmbed(this.bot, channel,
-        createGroupedArray(tokenGroup, 3), lastIndex);
+      const embed = new SettingsEmbed(
+        this.bot, channel,
+        createGroupedArray(tokenGroup, 3), lastIndex,
+      );
       this.messageManager.embed(message, embed);
     });
   }
@@ -83,8 +85,8 @@ class Settings extends Command {
       // Guild Pings
       const guildPings = await this.bot.settings.getPingsForGuild(message.guild);
       const pingParts = guildPings
-                  .filter(obj => obj.thing && obj.text)
-                  .map(obj => `**${obj.thing}**: ${obj.text}`);
+        .filter(obj => obj.thing && obj.text)
+        .map(obj => `**${obj.thing}**: ${obj.text}`);
       if (pingParts.length > 0) {
         // add them all
         guildTokens.push('\n**Pings per Item:**');
@@ -96,7 +98,7 @@ class Settings extends Command {
       // Guild Permissions
       const guildPermissions = await this.bot.settings.permissionsForGuild(message.guild);
       const guildParts = guildPermissions
-                     .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
+        .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
 
       if (guildParts.length > 0) {
         guildTokens.push('\n**Guild Permissions:**');
@@ -108,8 +110,10 @@ class Settings extends Command {
       const tokenGroups = createGroupedArray(guildTokens, 30);
       // eslint-disable-next-line no-loop-func
       tokenGroups.forEach((tokenGroup) => {
-        const embed = new SettingsEmbed(this.bot, message.channel,
-          createGroupedArray(tokenGroup, 15), lastIndex + 1);
+        const embed = new SettingsEmbed(
+          this.bot, message.channel,
+          createGroupedArray(tokenGroup, 15), lastIndex + 1,
+        );
         this.messageManager.embed(message, embed);
         lastIndex += 1;
       });

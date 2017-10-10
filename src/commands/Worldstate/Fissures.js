@@ -21,8 +21,10 @@ class Fissures extends Command {
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
-    await this.messageManager.embed(message,
-      new FissureEmbed(this.bot, fissures, platform), true, false);
+    await this.messageManager.embed(
+      message,
+      new FissureEmbed(this.bot, fissures, platform), true, false,
+    );
     return this.messageManager.statuses.SUCCESS;
   }
 }

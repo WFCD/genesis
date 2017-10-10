@@ -55,8 +55,8 @@ class RemoveRole extends Command {
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     if (filteredRoles.length > 0) {
       this.removeAndCommitRoles(message, roles
-            .filter(storedRole => filteredRoles[0].id !== storedRole.id)
-            .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
+        .filter(storedRole => filteredRoles[0].id !== storedRole.id)
+        .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
       return this.messageManager.statuses.SUCCESS;
     }
     await this.sendRoleNotAvailable(message);

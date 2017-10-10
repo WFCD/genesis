@@ -32,7 +32,7 @@ class Mod extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const searchJson = await warframe.getSearchList({ query, limit: 1 });
-    const id = searchJson.items[0].id;
+    const { item: { id } } = searchJson.items;
     const detailsJson = await warframe.getArticleDetails({ ids: [id] });
     let thumbUrl = detailsJson.items[`${id}`].thumbnail;
     thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';

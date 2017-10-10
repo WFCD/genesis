@@ -15,8 +15,8 @@ class ServerInfo extends Command {
   }
 
   async run(message) {
-    const guild = message.guild;
-    if (!message.guild) {
+    const { guild } = message;
+    if (!guild) {
       this.messageManager.reply(message, 'Operator, this is a DM, you can\'t do that!', false, false);
       return this.messageManager.statuses.FAILURE;
     }

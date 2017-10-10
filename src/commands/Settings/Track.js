@@ -4,8 +4,7 @@ const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
 const allTrackables = require('../../resources/trackables.json');
 
-const eventTypes = allTrackables.eventTypes;
-const rewardTypes = allTrackables.rewardTypes;
+const { eventTypes, rewardTypes } = allTrackables;
 
 /**
  * Track an event or item
@@ -34,9 +33,9 @@ class Track extends Command {
       return this.failure(message);
     }
     trackables.events = trackables.events
-        .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
+      .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
     trackables.items = trackables.items
-        .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
+      .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
@@ -54,8 +53,10 @@ class Track extends Command {
 
   async failure(message) {
     const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
-    this.messageManager.embed(message,
-      trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    this.messageManager.embed(
+      message,
+      trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+    );
     return this.messageManager.statuses.FAILURE;
   }
 
@@ -66,12 +67,13 @@ class Track extends Command {
    * @returns {Array<string>} channel ids to enable commands in
    */
   getChannel(channelsParam, message) {
-    let channel = message.channel;
+    let { channel } = message;
     if (typeof channelsParam === 'string') {
       // handle it for strings
       if (channelsParam !== 'here') {
         channel = this.bot.client.channels.get(channelsParam.trim());
       } else if (channelsParam === 'here') {
+        // eslint-disable-next-line prefer-destructuring
         channel = message.channel;
       }
     }

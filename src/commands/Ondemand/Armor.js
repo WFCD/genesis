@@ -78,8 +78,10 @@ class Armor extends Command {
         armorString = this.armorSimple(parseInt(armor, 10));
       } else {
         this.logger.debug('Entered 3-param armor');
-        armorString = this.armorFull(parseFloat(armor), parseFloat(baseLevel),
-          parseFloat(currentLevel));
+        armorString = this.armorFull(
+          parseFloat(armor), parseFloat(baseLevel),
+          parseFloat(currentLevel),
+        );
       }
 
       const embed = {

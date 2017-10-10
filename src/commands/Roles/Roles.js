@@ -35,15 +35,19 @@ class Roles extends Command {
       const groupedRoles = createGroupedArray(roles, 20);
       const metaGroups = createGroupedArray(groupedRoles, 4);
       metaGroups.forEach((metaGroup) => {
-        this.messageManager.embed(message,
+        this.messageManager.embed(
+          message,
           new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
-          true, true);
+          true, true,
+        );
       });
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(message,
-        new RolesEmbed(this.bot, [], prefix, 0),
-        true, true);
+    await this.messageManager.embed(
+      message,
+      new RolesEmbed(this.bot, [], prefix, 0),
+      true, true,
+    );
     return this.messageManager.statuses.FAILURE;
   }
 }
