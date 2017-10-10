@@ -34,6 +34,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
       }];
     }
     this.title = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
+    this.url = 'https://warframe.com';
     this.thumbnail = {
       url: 'http://i.imgur.com/KDzKPYA.png',
     };

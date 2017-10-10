@@ -4,7 +4,6 @@
  * MessageManager for
  */
 class MessaageManager {
-
   /**
    * Construct a message manager for sending and managing messages
    * @param {Genesis} bot bot containing necessary settings
@@ -14,6 +13,7 @@ class MessaageManager {
     this.logger = bot.logger;
     this.settings = bot.settings;
     this.owner = bot.owner;
+    this.discord = bot.discord;
 
     /**
      * Zero space whitespace character to prepend to any messages sent
@@ -208,12 +208,61 @@ class MessaageManager {
     }
   }
 
-  async webhook(webhookId, embed) {
-    this.bot.client.fetchWebhook(webhookId).sendSlackMessage({
-      username: this.bot.client.user.username,
-      attachments: [embed],
-    })
-    .catch(this.logger.error);
+  async webhook(ctx, { text = '_ _', embed = undefined }) {
+    if (ctx.webhook.id && ctx.webhook.token) {
+      const client = new this.discord.WebhookClient(ctx.webhook.id, ctx.webhook.token);
+      try {
+        return client.send(text, embed);
+      } catch (e) {
+        this.logger.error(`Something went wrong sending webhook: ${JSON.stringify(embed)} | ${text}`);
+      }
+    }
+    const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
+    if (channelWebhook.token && channelWebhook.id) {
+      // eslint-disable-next-line no-param-reassign
+      ctx.webhook = channelWebhook;
+      return this.webhook(ctx, { text, embed });
+    } else if (ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
+      const webhooks = await ctx.channel.fetchWebhooks();
+      let webhook;
+      if (webhooks.array().length > 0) {
+        webhook = webhooks.array()[0];
+      } else {
+        webhook = await ctx.channel.createWebhook(this.client.user.username);
+      }
+      await this.settings.setChannelSetting(ctx.channel, 'webhookId', String(webhook.id));
+      await this.settings.setChannelSetting(ctx.channel, 'webhookToken', String(webhook.token));
+      await this.settings.setChannelSetting(ctx.channel, 'webhookName', this.client.user.username);
+      await this.settings.setChannelSetting(ctx.channel, 'webhookAvatar', this.client.user.avatarURL.replace('?size=2048', ''));
+      // eslint-disable-next-line no-param-reassign
+      ctx.webhook = webhook;
+      return this.webhook(ctx, { text, embed });
+    }
+    if (ctx.message) {
+      if (embed) {
+        return Promise.all(embed.embeds.map(subEmbed =>
+          this.embed(ctx.message, subEmbed, ctx.deleteCall, ctx.deleteResponse)));
+      }
+      return this.reply(ctx.message, text, ctx.deleteCall, ctx.deleteResponse);
+    }
+    return Promise.all(embed.embeds.map(subEmbed =>
+      this.embedToChannel(ctx.chnnel, subEmbed, text, ctx.deleteAfterDuration)));
+  }
+
+  webhookWrapEmbed(embed, ctx) {
+    return {
+      username: ctx.webhook.name || this.client.user.username,
+      avatarURL: ctx.webhook.avatar || this.client.user.avatarURL,
+      embeds: [embed],
+    };
+  }
+
+  webhookWrapEmbeds(embeds, ctx) {
+    return {
+      username: ctx.webhook.name || this.client.user.username,
+      avatarURL: ctx.webhook.avatar || this.client.user.avatarURL,
+      embeds,
+    };
   }
 }
 

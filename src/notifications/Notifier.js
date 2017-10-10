@@ -115,8 +115,8 @@ class Notifier {
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
 
     // Send all notifications
-    this.updateNotified(notifiedIds, platform);
-    this.sendAcolytes(acolytesToNotify, platform);
+    await this.updateNotified(notifiedIds, platform);
+    await this.sendAcolytes(acolytesToNotify, platform);
     this.sendAlerts(alertsToNotify, platform);
     if (baroToNotify) {
       this.sendBaro(baroToNotify, platform);
@@ -148,12 +148,6 @@ class Notifier {
     await this.sendUpdates(updatesToNotify, platform);
   }
 
-  async sendWithPrepend(channel, embed, type, items, deleteAfter) {
-    const prepend = await this.settings
-      .getPing(channel.guild, (items || []).concat([type]));
-    return this.bot.messageManager.embedToChannel(channel, embed, prepend, deleteAfter);
-  }
-
   /**
   * Broadcast embed to all channels for a platform and type
    * @param  {Object} embed      Embed to send to a channel
@@ -178,6 +172,22 @@ class Notifier {
       });
     });
     await Promise.all(results);
+  }
+
+  async sendWithoutPrepend(channel, embed, deleteAfter) {
+    const ctx = await this.settings.getCommandContext(channel);
+    ctx.deleteAfterDuration = deleteAfter;
+    return this.bot.messageManager.webhook(ctx,
+      { embed: this.bot.messageManager.webhookWrapEmbed(embed) });
+  }
+
+  async sendWithPrepend(channel, embed, type, items, deleteAfter) {
+    const prepend = await this.settings
+      .getPing(channel.guild, (items || []).concat([type]));
+    const ctx = await this.settings.getCommandContext(channel);
+    ctx.deleteAfterDuration = deleteAfter;
+    return this.bot.messageManager.webhook(ctx,
+      { text: prepend, embed: this.bot.messageManager.webhookWrapEmbed(embed, ctx) });
   }
 
   /**
@@ -271,7 +281,7 @@ class Notifier {
         embed.thumbnail.url = thumb;
       }
     } catch (e) {
-      this.logger.error(`${e.exception.code}: ${e.exception.message}`);
+      // do nothing, it happens
     } finally {
       await this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
     }

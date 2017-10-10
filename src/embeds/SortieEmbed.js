@@ -20,11 +20,11 @@ class SortieEmbed extends BaseEmbed {
         name: `${v.node} - ${v.missionType}`,
         value: v.modifier,
       }));
-      this.description = `[${platform.toUpperCase()}] Currently in-progress sortie: **${sortie.boss}**`;
+      this.description = `Currently in-progress sortie: **${sortie.boss}**`;
       this.footer.text = `${sortie.eta} remaining | ${new Date().toLocaleString()}`;
     }
 
-    this.title = 'Worldstate - Sortie';
+    this.title = `[${platform.toUpperCase()}] Worldstate - Sortie`;
     this.thumbnail = {
       url: 'http://i.imgur.com/wWBRhaB.png',
     };
