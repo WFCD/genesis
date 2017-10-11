@@ -20,8 +20,8 @@ class Baro extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
-    await this.messageManager.embed(message,
-      new VoidTraderEmbed(this.bot, ws.voidTrader, platform), true, false);
+    await this.messageManager
+      .embed(message, new VoidTraderEmbed(this.bot, ws.voidTrader, platform), true, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }

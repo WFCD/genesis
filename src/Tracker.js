@@ -3,24 +3,24 @@
 const request = require('request-promise');
 
 const config = {
-    updateInterval: process.env.TRACKERS_UPDATE_INTERVAL || 3660000,
-    carbon: {
-        token: process.env.DISCORD_CARBON_TOKEN,
-    },
-    botsDiscordPw: {
-        token: process.env.DISCORD_BOTS_WEB_TOKEN,
-        id: process.env.DISCORD_BOTS_WEB_USER,
-    },
-    cachet: {
-        metricId: process.env.CACHET_BOT_METRIC_ID,
-        host: process.env.CACHET_HOST,
-        token: process.env.CACHET_TOKEN,
-        heartbeat: process.env.CACHET_HEARTBEAT || 600000,
-    },
-    botsDiscordOrg: {
-        token: process.env.DISCORD_BOTS_ORG_TOKEN,
-        id: process.env.DISCORD_BOTS_ORG_ID
-    },
+  updateInterval: process.env.TRACKERS_UPDATE_INTERVAL || 3660000,
+  carbon: {
+    token: process.env.DISCORD_CARBON_TOKEN,
+  },
+  botsDiscordPw: {
+    token: process.env.DISCORD_BOTS_WEB_TOKEN,
+    id: process.env.DISCORD_BOTS_WEB_USER,
+  },
+  cachet: {
+    metricId: process.env.CACHET_BOT_METRIC_ID,
+    host: process.env.CACHET_HOST,
+    token: process.env.CACHET_TOKEN,
+    heartbeat: process.env.CACHET_HEARTBEAT || 600000,
+  },
+  botsDiscordOrg: {
+    token: process.env.DISCORD_BOTS_ORG_TOKEN,
+    id: process.env.DISCORD_BOTS_ORG_ID,
+  },
 };
 
 /**
@@ -116,8 +116,8 @@ class Tracker {
         this.logger.error(`Error updating bots.discord.pw. Token: ${config.botsDiscordPw.token} | User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
       }
     }
-  } 
-  
+  }
+
   /**
    * Updates discordbots.org if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on

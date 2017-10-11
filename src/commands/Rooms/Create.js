@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 
 const useable = ['room', 'raid', 'team'];
 
-const vulgar = [];
+const vulgar = ['n[i!1]gg[e3]r', 'n[i!1]gg[ua]', 'h[i!1]tl[e3]r', 'n[a@]z[i!1]', '[©ck]un[t7]', 'fu[©c]k', '[©c]umm', 'f[a@4]g', 'd[i!1]ck', 'c[o0]ck', 'boner', 'sperm', 'gay', 'gooch', 'jizz', 'pussy', 'penis', 'r[i!1]mjob', 'schlong', 'slut', 'wank', 'whore', 'sh[i!1]t', 'sex', 'fuk', 'heil', 'porn', 'suck', 'rape', 'scrotum'];
 
 /**
  * Gets the list of users from the mentions in the call
@@ -27,12 +27,12 @@ function getUsersForCall(message) {
   }
   let authorIncluded = false;
   users.forEach((user) => {
-	  if (user.id === message.author.id) {
-		authorIncluded = true;
-	  }
+    if (user.id === message.author.id) {
+      authorIncluded = true;
+    }
   });
   if (!authorIncluded) {
-	users.push(message.author);
+    users.push(message.author);
   }
   return users;
 }
@@ -46,7 +46,7 @@ class Create extends Command {
    */
   constructor(bot) {
     super(bot, 'rooms.create', 'create', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team)?(\\w|-)?(?:\-n(.+))?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team)?(\\w|-)?(?:-n(.+))?`, 'i');
 
     this.usages = [
       { description: 'Display instructions for creating temporary rooms', parameters: [] },
@@ -58,7 +58,7 @@ class Create extends Command {
         description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles.',
         parameters: ['room | raid | team', 'users and/or role'],
       },
-	  {
+      {
         description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with a custom name',
         parameters: ['room | raid | team', 'users and/or role', '-n name'],
       },
@@ -74,14 +74,14 @@ class Create extends Command {
    * @returns {string} success status
    */
   async run(message) {
-	const channelNameRegex = new RegExp('-n\\s+(.+)', 'ig');
+    const channelNameRegex = new RegExp('-n\\s+(.+)', 'ig');
     const type = message.strippedContent.match(this.regex)[1];
-	const namingResults = message.strippedContent.match(channelNameRegex);
+    const namingResults = message.strippedContent.match(channelNameRegex);
     let optName = (namingResults ? namingResults[0] : '')
-		.replace('-n ', '');
-	if (vulgar.length) {
-		optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); //remove vulgar
-	}
+      .replace('-n ', '');
+    if (vulgar.length) {
+      optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); // remove vulgar
+    }
     const createPrivateChannelAllowed = parseInt(await this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel'), 10);
     if (createPrivateChannelAllowed) {
       if (type) {
@@ -113,7 +113,7 @@ class Create extends Command {
           }
           let msg = '';
           if (users.length > 10) {
-              // notify caller that there's too many users if role is more than 10 people.
+            // notify caller that there's too many users if role is more than 10 people.
             msg = 'you are trying to send an invite to too many people, please keep the total number under 10';
           } else {
             msg = 'that room already exists.';
@@ -122,10 +122,12 @@ class Create extends Command {
           return this.messageManager.statuses.FAILURE;
         }
       } else {
-        this.messageManager.reply(message, '```haskell\n' +
+        this.messageManager.reply(
+          message, '```haskell\n' +
           'Sorry, you need to specify what you want to create. Right now these are available to create:' +
           `\n* ${useable.join('\n* ')}\n\`\`\``
-          , true, false);
+          , true, false,
+        );
         return this.messageManager.statuses.FAILURE;
       }
     }
@@ -165,17 +167,17 @@ class Create extends Command {
     // create voice channel perms
     overwritePromises.push(voiceChannel.overwritePermissions(everyoneId, {
       CONNECT: false,
-	  VIEW_CHANNEL: false,
+      VIEW_CHANNEL: false,
     }));
 
     // allow bot to manage channels
     overwritePromises.push(textChannel.overwritePermissions(this.bot.client.user.id, {
       VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
+      SEND_MESSAGES: true,
     }));
     overwritePromises.push(voiceChannel.overwritePermissions(this.bot.client.user.id, {
       VIEW_CHANNEL: true,
-	  CREATE_INSTANT_INVITE: true,
+      CREATE_INSTANT_INVITE: true,
       CONNECT: true,
       SPEAK: true,
       MUTE_MEMBERS: true,
@@ -194,7 +196,7 @@ class Create extends Command {
       }));
       overwritePromises.push(voiceChannel.overwritePermissions(user.id, {
         VIEW_CHANNEL: true,
-		CONNECT: true,
+        CONNECT: true,
         SPEAK: true,
         USE_VAD: true,
       }));

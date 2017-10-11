@@ -35,7 +35,7 @@ class SyndicateEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.description = `[${platform.toUpperCase()}] Current Missions`;
+    this.title = `[${platform.toUpperCase()}] Syndicate Mission Nodes`;
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };

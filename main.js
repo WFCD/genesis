@@ -40,6 +40,8 @@ process.on('unhandledRejection', (err) => {
 const nexusOptions = {
   user_key: process.env.NEXUSSTATS_USER_KEY || undefined,
   user_secret: process.env.NEXUSSTATS_USER_SECRET || undefined,
+  api_url: process.env.NEXUS_API_OVERRIDE || undefined,
+  auth_url: process.env.NEXUS_AUTH_OVERRIDE || undefined,
   ignore_limiter: true,
 };
 

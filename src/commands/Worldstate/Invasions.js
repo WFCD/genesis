@@ -21,8 +21,10 @@ class Invasions extends Command {
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const invasions = ws.invasions.filter(i => !i.completed);
-    await this.messageManager.embed(message,
-      new InvasionEmbed(this.bot, invasions, platform), true, false);
+    await this.messageManager.embed(
+      message,
+      new InvasionEmbed(this.bot, invasions, platform), true, false,
+    );
     return this.messageManager.statuses.SUCCESS;
   }
 }

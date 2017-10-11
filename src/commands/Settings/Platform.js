@@ -43,12 +43,13 @@ class Platform extends Command {
    * @returns {Array<string>} channel ids to enable commands in
    */
   getChannel(channelsParam, message) {
-    let channel = message.channel;
+    let { channel } = message;
     if (typeof channelsParam === 'string') {
       // handle it for strings
       if (channelsParam !== 'here') {
         channel = this.bot.client.channels.get(channelsParam.trim());
       } else if (channelsParam === 'here') {
+        // eslint-disable-next-line prefer-destructuring
         channel = message.channel;
       }
     }

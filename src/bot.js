@@ -122,6 +122,12 @@ class Genesis {
     this.channelTimeout = 300000;
 
     /**
+     * Discord.js API
+     * @type {Discord}
+     */
+    this.discord = Discord;
+
+    /**
      * The logger object
      * @type {Logger}
      * @private
@@ -375,7 +381,7 @@ class Genesis {
             .replace(/\$username/ig, guildMember.displayName)
             .replace(/\$usermention/ig, guildMember)
             .replace(/\$timestamp/ig, new Date().toLocaleString()),
-            false, false);
+          false, false);
       }
     });
   }

@@ -37,8 +37,10 @@ class Syndicates extends Command {
     }
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
-    await this.messageManager.embed(message, new SyndicateEmbed(this.bot,
-      ws.syndicateMissions, syndicate, platform), true, false);
+    await this.messageManager.embed(message, new SyndicateEmbed(
+      this.bot,
+      ws.syndicateMissions, syndicate, platform,
+    ), true, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }

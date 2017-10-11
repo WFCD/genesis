@@ -22,8 +22,9 @@ class EarthCycle extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const ws = await this.bot.caches.pc.getDataJson()
-    await this.messageManager.embed(message, new EarthCycleEmbed(this.bot, ws.earthCycle), true, true);
+    const ws = await this.bot.caches.pc.getDataJson();
+    const embed = new EarthCycleEmbed(this.bot, ws.earthCycle);
+    await this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

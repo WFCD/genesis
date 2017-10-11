@@ -71,7 +71,7 @@ class CommandHandler {
         return null;
       }
     })
-    .filter(c => c !== null);
+      .filter(c => c !== null);
 
     this.commands = commands.filter(c => !c.isInline);
 
@@ -94,16 +94,16 @@ class CommandHandler {
   async handleCommand(message) {
     let content = message.content;
     const botping = `@${message.guild ?
-          message.guild.members.get(this.bot.client.user.id).displayName :
-          this.bot.client.user.username}`;
+      message.guild.members.get(this.bot.client.user.id).displayName :
+      this.bot.client.user.username}`;
     const botPingId = `<@${this.bot.client.user.id}>`;
-    const { prefix, allowCustom, allowInline } = await this.bot.settings
+    const ctx = await this.bot.settings
       .getCommandContext(message.channel);
     let checkOnlyInlines = false;
-    const notStartWithPrefix = !content.startsWith(prefix)
+    const notStartWithPrefix = !content.startsWith(ctx.prefix)
       && !content.startsWith(botping) && !content.startsWith(botPingId);
     if (notStartWithPrefix) {
-      if (allowInline && this.inlineCommands.length > 0) {
+      if (ctx.allowInline && this.inlineCommands.length > 0) {
         checkOnlyInlines = true;
       } else {
         return;
@@ -113,14 +113,14 @@ class CommandHandler {
     let commands = [];
     if (checkOnlyInlines) {
       commands = this.inlineCommands;
-    } else if (allowCustom) {
+    } else if (ctx.allowCustom) {
       commands = this.commands.concat(this.customCommands);
     } else {
       commands = this.commands;
     }
 
-    if (content.startsWith(prefix)) {
-      content = content.replace(prefix, '');
+    if (content.startsWith(ctx.prefix)) {
+      content = content.replace(ctx.prefix, '');
     }
     if (content.startsWith(botping)) {
       content = content.replace(new RegExp(`${botping}\\s+`, 'i'), '');
@@ -135,13 +135,14 @@ class CommandHandler {
     commands.forEach(async (command) => {
       if (command.regex.test(content) && !done) {
         const canAct = await this.checkCanAct(command, messageWithStrippedContent,
-          allowCustom, allowInline);
+          ctx.allowCustom, ctx.allowInline);
         if (canAct) {
           this.logger.debug(`Matched ${command.id}`);
-          const status = await command.run(messageWithStrippedContent);
-          const canReact = message && (message.channel.type === 'dm' ||
+          ctx.message = messageWithStrippedContent;
+          const status = await command.run(messageWithStrippedContent, ctx);
+          const canReact = (message.channel.type === 'dm' ||
               (message.channel.permissionsFor(this.bot.client.user.id)
-              .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+                .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
           switch (status) {
             case this.statuses.SUCCESS:
               if (canReact) {
@@ -156,7 +157,6 @@ class CommandHandler {
             case this.statuses.NO_ACCESS:
             default:
               break;
-
           }
           done = true;
         }

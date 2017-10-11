@@ -21,8 +21,8 @@ class Construction extends Command {
     const platform = platformParam || await this.bot.settings
       .getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
-    await this.messageManager.embed(message, new EventEmbed(this.bot,
-      ws.constructionProgress, platform.toUpperCase()), true, true);
+    const embed = new EventEmbed(this.bot, ws.constructionProgress, platform.toUpperCase());
+    await this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

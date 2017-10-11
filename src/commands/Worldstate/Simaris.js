@@ -20,9 +20,11 @@ class Simaris extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
-    const simaris = ws.simaris;
-    await this.messageManager.embed(message,
-      new SimarisEmbed(this.bot, simaris, platform), true, false);
+    const { simaris } = ws;
+    await this.messageManager.embed(
+      message,
+      new SimarisEmbed(this.bot, simaris, platform), true, false,
+    );
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -158,6 +158,14 @@ class Database {
     return this.db.query(query);
   }
 
+  async checkWebhookAndReturn(channel, setting) {
+    if (!/webhook/.test(setting)) {
+      await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
+      return this.defaults[`${setting}`];
+    }
+    return undefined;
+  }
+
   /**
    * Get a setting for a particular channel
    * @param {Channel} channel channel to get the setting for
@@ -170,14 +178,21 @@ class Database {
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
-        await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
-        return this.defaults[`${setting}`];
+        return this.checkWebhookAndReturn(channel, setting);
       }
       await this.addDMChannel(channel);
-      await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
-      return this.defaults[`${setting}`];
+      return this.checkWebhookAndReturn(channel, setting);
     }
     return res[0][0].val;
+  }
+
+  async getChannelWebhook(channel) {
+    return {
+      avatar: await this.getChannelSetting(channel, 'webhookAvatar') || this.bot.client.user.avatarURL.replace('?size=2048', ''),
+      name: await this.getChannelSetting(channel, 'webhookName') || this.bot.client.user.username,
+      id: await this.getChannelSetting(channel, 'webhookId'),
+      token: await this.getChannelSetting(channel, 'webhookToken'),
+    };
   }
 
   /**
@@ -774,7 +789,13 @@ class Database {
     const prefix = await this.getChannelSetting(channel, 'prefix');
     const allowCustom = await this.getChannelSetting(channel, 'allowCustom') === '1';
     const allowInline = await this.getChannelSetting(channel, 'allowInline') === '1';
-    return { prefix, allowCustom, allowInline };
+    const webhook = {
+      id: await this.getChannelSetting(channel, 'webhookId'),
+      token: await this.getChannelSetting(channel, 'webhookToken'),
+      name: await this.getChannelSetting(channel, 'webhookName'),
+      avatar: await this.getChannelSetting(channel, 'webhookAvatar'),
+    };
+    return { prefix, allowCustom, allowInline, webhook, channel };
   }
 
   async getCustomCommands() {

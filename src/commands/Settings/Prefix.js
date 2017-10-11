@@ -11,8 +11,10 @@ class Prefix extends Command {
     this.usages = [
       { description: 'Change this channel\'s platform', parameters: ['prefix (up to 3 characters)'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(.+))?`,
-      'i');
+    this.regex = new RegExp(
+      `^${this.call}(?:\\s+(.+))?`,
+      'i',
+    );
     this.requiresAuth = true;
   }
 
