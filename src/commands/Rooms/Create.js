@@ -94,7 +94,7 @@ class Create extends Command {
             const voiceChannel = await message.guild.createChannel(name, 'voice');
             // set up listener to delete channels if inactive for more than 5 minutes
             // set up overwrites
-            this.setOverwrites(textChannel, voiceChannel, users, message.guild.id);
+            this.setOverwrites(textChannel, voiceChannel, users, message.guild.id, message.author);
             // add channel to listenedChannels
             await this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel);
             // send users invite link to new rooms
@@ -157,7 +157,7 @@ class Create extends Command {
    * @param {Array.<User>} users        Array of users for whom to allow into channels
    * @param {string} everyoneId         Snowflake id for the everyone role
    */
-  setOverwrites(textChannel, voiceChannel, users, everyoneId) {
+  setOverwrites(textChannel, voiceChannel, users, everyoneId, author) {
     // create overwrites
     const overwritePromises = [];
     // create text channel perms
@@ -201,6 +201,19 @@ class Create extends Command {
         USE_VAD: true,
       }));
     });
+    
+    overwritePromises.push(textChannel.overwritePermissions(author.id, {
+        VIEW_CHANNEL: true,
+        SEND_MESSAGES: true,
+        MANAGE_CHANNELS: true,
+    }));
+    overwritePromises.push(voiceChannel.overwritePermissions(user.id, {
+        VIEW_CHANNEL: true,
+        CONNECT: true,
+        SPEAK: true,
+        USE_VAD: true,
+        MANAGE_CHANNELS: true,
+    }));
 
     overwritePromises.forEach(promise => promise.catch(this.logger.error));
   }
