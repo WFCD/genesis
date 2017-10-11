@@ -42,7 +42,7 @@
     "right-pad": "^1.0.1",
     "sql-template-strings": "^2.2.2",
     "warframe-location-query": "0.0.3",
-    "warframe-nexus-query": "^1.2.1"
+    "warframe-nexus-query": "^1.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
