@@ -156,6 +156,7 @@ class Create extends Command {
    * @param {VoiceChannel} voiceChannel Voice channel to set permissions for
    * @param {Array.<User>} users        Array of users for whom to allow into channels
    * @param {string} everyoneId         Snowflake id for the everyone role
+   * @param {User} author               User object for creator of room
    */
   setOverwrites(textChannel, voiceChannel, users, everyoneId, author) {
     // create overwrites
