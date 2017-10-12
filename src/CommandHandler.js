@@ -186,8 +186,8 @@ class CommandHandler {
             .getChannelPermissionForMember(message.channel, message.author.id, command.id);
           if (memberHasPermForRequiredAuthCommand === 'none') {
             const roleHasPermForRequiredAuthCommand = await this.bot.settings
-                   .getChannelPermissionForUserRoles(message.channel,
-                     message.author.id, command.id);
+              .getChannelPermissionForUserRoles(message.channel,
+                message.author.id, command.id);
             return roleHasPermForRequiredAuthCommand;
           }
           return memberHasPermForRequiredAuthCommand;
@@ -195,10 +195,10 @@ class CommandHandler {
         return false;
       }
       const memberHasPermForNonAuthCommand = await this.bot.settings
-                 .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+        .getChannelPermissionForMember(message.channel, message.author.id, command.id);
       if (memberHasPermForNonAuthCommand === 'none') {
         const roleHasPermForNonAuthCommand = await this.bot.settings
-                     .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+          .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
         return roleHasPermForNonAuthCommand;
       }
       return memberHasPermForNonAuthCommand;
