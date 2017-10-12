@@ -12,7 +12,7 @@ class FrameProfile extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.tutorial', 'tutorial', 'Get a Warframe Tutorial Video');
-    this.regex = new RegExp('^tutorial(.+)?', 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {
         description: 'Get a Warframe Tutorial Video',
@@ -31,13 +31,13 @@ class FrameProfile extends Command {
     let query = message.strippedContent.match(this.regex)[1];
     if (query) {
       query = query.trim().toLowerCase();
-
+      JSON.stringify(query);
       tutorials.forEach((tutorial) => {
         if (new RegExp(tutorial.regex, 'ig').test(query)) {
-          this.messageManager.reply(`Warfame Tutorial | ${tutorial.name} : ${tutorial.url}`);
+          this.messageManager.reply(message, `Warfame Tutorial | ${tutorial.name} : ${tutorial.url}`, true, true);
         }
       });
-      return this.messageManager.statuses.FAILURE;
+      return this.messageManager.statuses.SUCCESS;
     }
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
@@ -47,7 +47,7 @@ class FrameProfile extends Command {
         text: 'Data evaluated by Warframe Community Developers',
       },
     }, true, false);
-    return this.messageManager.statuses.SUCCESS;
+    return this.messageManager.statuses.FAILURE;
   }
 }
 
