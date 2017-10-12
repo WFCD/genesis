@@ -29,7 +29,7 @@ class RolesEmbed extends BaseEmbed {
     if (roleGroups.length === 0) {
       this.fields.push({ name: '_ _', value: 'No joinable Roles' });
     }
-      
+
     this.fields.push({
       name: '_ _',
       value: roleGroups.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
