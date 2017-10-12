@@ -86,11 +86,23 @@ class ProfileEmbed extends BaseEmbed {
         });
       }
 
-      this.fields.push({
-        name: 'Mastery',
-        value: `${player.mastery.rank.number} - ${player.mastery.rank.name}`,
-        inline: true,
-      },
+      const markedTokens = [];
+      if (player.marked.stalker) {
+        markedTokens.push('<:stalker:330021480169603076>');
+      }
+      if (player.marked.g3) {
+        markedTokens.push('<:g3:330021480442101771>');
+      }
+      if (player.marked.zanuka) {
+        markedTokens.push('<:zanuka:330021480912125953');
+      }
+
+      this.fields.push(
+        {
+          name: 'Mastery',
+          value: `${player.mastery.rank.number} - ${player.mastery.rank.name}`,
+          inline: true,
+        },
         {
           name: 'Current Mastery',
           value: player.mastery.xp,
@@ -108,13 +120,10 @@ class ProfileEmbed extends BaseEmbed {
         },
         {
           name: 'Marked for Death',
-          value: (player.marked.stalker || player.marked.g3 || player.marked.zanuka)
-                ? `${player.marked.stalker ? '<:stalker:330021480169603076>' : ''} ` +
-                  `${player.marked.g3 ? '<:g3:330021480442101771>' : ''} ` +
-                  `${player.marked.zanuka ? '<:zanuka:330021480912125953>' : ''}`
-                : 'Unmarked',
+          value: markedTokens.length ? markedTokens.join('') : 'Unmarked',
           inline: true,
-        });
+        },
+      );
       this.footer.text = `Last Updated ${new Date(player.updatedAt).toLocaleString()} | Data provided by Nexus-Stats.com`;
     } else {
       this.fields = [{ name: '_ _', value: 'No Such Player' }];
