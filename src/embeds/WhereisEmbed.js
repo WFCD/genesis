@@ -7,7 +7,6 @@ const rpad = require('right-pad');
  * Generates enemy embeds
  */
 class WhereisEmbed extends BaseEmbed {
-
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Object} resultsGroups details to derive data from
