@@ -33,8 +33,8 @@ class EnemyEmbed extends BaseEmbed {
       this.description = `Enemy ${e.discovered ? 'Discovered' : 'Hiding'}!`;
       this.color = 0xaf5b4b;
       this.fields = [{ name: '_ _', value: `**${e.discovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
-      { name: '_ _', value: `**Health Remaining:** ${(100 * Number(e.healthPercent)).toFixed(2)}%` },
-      { name: '_ _', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!` }];
+        { name: '_ _', value: `**Health Remaining:** ${(100 * Number(e.healthPercent)).toFixed(2)}%` },
+        { name: '_ _', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!` }];
     } else {
       this.color = 0xaf5b4b;
       this.fields = [{ name: 'There are currently no enemies to combat', value: '_ _' }];
