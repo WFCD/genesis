@@ -25,7 +25,7 @@ class RolesEmbed extends BaseEmbed {
         value: `${roleGroup.map(role => `\`${rpad(role.name, Number(longest + 2), ' ')}${rpad(String(role.members.size), 4, ' ')} members\``).join(' \n')}`,
       });
     });
-    
+
     if (roleGroups.length === 0) {
       this.fields.push({ name: '_ _', value: 'No joinable Roles' });
     }
