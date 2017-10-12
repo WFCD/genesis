@@ -91,10 +91,10 @@ class Command {
      */
     this.requiresAuth = false;
 
-   /**
-    * True if this command is allowed in direct messages
-    * @type {Boolean}
-    */
+    /**
+     * True if this command is allowed in direct messages
+     * @type {Boolean}
+     */
     this.allowDM = true;
 
     /**
