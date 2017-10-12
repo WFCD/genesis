@@ -4,6 +4,10 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const values = ['all', 'day', 'week'];
 
+const compareCCategory = (c, category) => {
+  return c.category === (category.toLowerCase() || category.toLowerCase() === 'all') && !c.rootChallenge;
+}
+
 /**
  * Generates conclave challenge embeds
  */
@@ -21,9 +25,9 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
     this.url = 'https://ws.warframestat.us/';
     if (categoryInValues) {
-      this.fields = challenges.filter(
-        c => (c.category === category.toLowerCase() || category.toLowerCase() === 'all') &&
-        !c.rootChallenge).map(c => ({
+      this.fields = challenges
+        .filter(c => (compareCCategory(c, category))
+        .map(c => ({
           name: c.mode,
           value: `${c.description} expires in ${c.endString}`,
         }));
