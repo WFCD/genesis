@@ -34,9 +34,9 @@ class StringManager {
     if (typeof resStr !== 'undefined') {
       if (message !== null) {
         resStr = resStr.replace(/\$author/i, message.author.toString())
-            .replace(/\$message/i, message.cleanContent)
-            .replace(/\$channel/i, message.channel.name)
-            .replace(/\$ch_mntn/i, message.channel.toString());
+          .replace(/\$message/i, message.cleanContent)
+          .replace(/\$channel/i, message.channel.name)
+          .replace(/\$ch_mntn/i, message.channel.toString());
       }
       if (command !== '') {
         resStr = resStr.replace(/\$command/i, command);
