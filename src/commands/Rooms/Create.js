@@ -201,18 +201,18 @@ class Create extends Command {
         USE_VAD: true,
       }));
     });
-    
+
     overwritePromises.push(textChannel.overwritePermissions(author.id, {
-        VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
-        MANAGE_CHANNELS: true,
+      VIEW_CHANNEL: true,
+      SEND_MESSAGES: true,
+      MANAGE_CHANNELS: true,
     }));
-    overwritePromises.push(voiceChannel.overwritePermissions(user.id, {
-        VIEW_CHANNEL: true,
-        CONNECT: true,
-        SPEAK: true,
-        USE_VAD: true,
-        MANAGE_CHANNELS: true,
+    overwritePromises.push(voiceChannel.overwritePermissions(author.id, {
+      VIEW_CHANNEL: true,
+      CONNECT: true,
+      SPEAK: true,
+      USE_VAD: true,
+      MANAGE_CHANNELS: true,
     }));
 
     overwritePromises.forEach(promise => promise.catch(this.logger.error));
