@@ -112,8 +112,8 @@ class MessaageManager {
     if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
       const msg = await channel.send(prepend, { embed });
       if (msg.deletable && deleteAfter > 0) {
-        const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired');
-        if (parseInt(deleteExpired, 10)) {
+        const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
+        if (deleteExpired) {
           msg.delete(deleteAfter);
         }
       }
@@ -179,9 +179,9 @@ class MessaageManager {
    */
   async notifySettingsChange(message, deleteOriginal, deleteResponse) {
     await message.react('\u2705');
-    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings');
+    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings' === '1');
 
-    if (respondToSettings === '1') {
+    if (respondToSettings) {
       const msg = await message.reply('Settings updated');
       return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
@@ -197,12 +197,12 @@ class MessaageManager {
    */
   async deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
     if (call && call.channel) {
-      const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond');
-      const deleteResponseAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_response');
-      if (deleteAfterRespond === '1' && deleteCall && call.deletable) {
+      const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond') === '1';
+      const deleteResponseAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_response' === '1');
+      if (deleteAfterRespond && deleteCall && call.deletable) {
         call.delete(10000);
       }
-      if (deleteResponseAfterRespond === '1' && deleteResponse && response.deletable) {
+      if (deleteResponseAfterRespond && deleteResponse && response.deletable) {
         response.delete(30000);
       }
     }
