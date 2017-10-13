@@ -930,6 +930,11 @@ class Database {
     }
     return false;
   }
+  
+  async deleteWebhooksForChannel(channelId) {
+    const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting like "webhook%";`
+    return this.db.query(query);
+  }
 }
 
 module.exports = Database;
