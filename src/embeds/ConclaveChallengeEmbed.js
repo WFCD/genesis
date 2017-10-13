@@ -26,7 +26,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     this.url = 'https://ws.warframestat.us/';
     if (categoryInValues) {
       this.fields = challenges
-        .filter(c => (compareCCategory(c, category))
+        .filter(c => compareCCategory(c, category))
         .map(c => ({
           name: c.mode,
           value: `${c.description} expires in ${c.endString}`,
