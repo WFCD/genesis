@@ -4,9 +4,7 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const values = ['all', 'day', 'week'];
 
-const compareCCategory = (c, category) => {
-  return c.category === (category.toLowerCase() || category.toLowerCase() === 'all') && !c.rootChallenge;
-}
+const compareCCategory = (c, category) => c.category === (category.toLowerCase() || category.toLowerCase() === 'all') && !c.rootChallenge;
 
 /**
  * Generates conclave challenge embeds

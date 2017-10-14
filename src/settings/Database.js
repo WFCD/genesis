@@ -795,7 +795,9 @@ class Database {
       name: await this.getChannelSetting(channel, 'webhookName'),
       avatar: await this.getChannelSetting(channel, 'webhookAvatar'),
     };
-    return { prefix, allowCustom, allowInline, webhook, channel };
+    return {
+      prefix, allowCustom, allowInline, webhook, channel,
+    };
   }
 
   async getCustomCommands() {
@@ -867,7 +869,9 @@ class Database {
     const query = SQL`INSERT INTO builds VALUES (${buildId}, ${title}, ${body}, ${image}, ${owner.id})
       ON DUPLICATE KEY UPDATE title=${title}, body=${body}, image=${image};`;
     await this.db.query(query);
-    return { id: buildId, title, body, url: image, owner };
+    return {
+      id: buildId, title, body, url: image, owner,
+    };
   }
 
   async getBuild(buildId) {
@@ -930,9 +934,9 @@ class Database {
     }
     return false;
   }
-  
+
   async deleteWebhooksForChannel(channelId) {
-    const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting like "webhook%";`
+    const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting like "webhook%";`;
     return this.db.query(query);
   }
 }
