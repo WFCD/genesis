@@ -14,7 +14,6 @@ class EarthCycleEmbed extends BaseEmbed {
     super();
 
     this.color = state.isDay ? 0xB64624 : 0x000066;
-    this.title = `Worldstate - ${state.isCetus ? 'Plains of Eidolon' : 'Earth'} Cycle`;
     this.thumbnail = {
       url: state.isCetus ? 'https://i.imgur.com/Ph337PR.png' : 'https://i.imgur.com/oR6Sskf.png',
     };
