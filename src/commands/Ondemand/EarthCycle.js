@@ -13,6 +13,7 @@ class EarthCycle extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.cycle', 'cycle', 'Current and remaining time in cycle of Earth rotation.');
+    this.regex = new RegExp(`^${this.call}\\s?(earth)?`, 'i');
   }
 
   /**
@@ -22,8 +23,15 @@ class EarthCycle extends Command {
    * @returns {string} success status
    */
   async run(message) {
+    let cycleData;
+    const matches = message.content.match(this.regex);
     const ws = await this.bot.caches.pc.getDataJson();
-    const embed = new EarthCycleEmbed(this.bot, ws.earthCycle);
+    if (matches ? matches[1] : false) {
+      cycleData = ws.earthCycle;
+    } else {
+      cycleData = ws.cetusCycle;
+    }
+    const embed = new EarthCycleEmbed(this.bot, cycleData);
     await this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
