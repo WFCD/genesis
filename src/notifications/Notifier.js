@@ -14,6 +14,7 @@ const SalesEmbed = require('../embeds/SalesEmbed.js');
 const SortieEmbed = require('../embeds/SortieEmbed.js');
 const SyndicateEmbed = require('../embeds/SyndicateEmbed.js');
 const VoidTraderEmbed = require('../embeds/VoidTraderEmbed.js');
+const EarthCycleEmbed = require('../embeds/EarthCycleEmbed.js');
 
 const warframe = new Wikia('warframe');
 
@@ -99,6 +100,7 @@ class Notifier {
       .filter(n => !ids.includes(n.id) && n.update && !n.stream);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream);
+    const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
       // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
@@ -112,7 +114,8 @@ class Notifier {
       .concat(newData.persistentEnemies.map(p => p.id))
       .concat(newData.sortie ? [newData.sortie.id] : [])
       .concat(newData.syndicateMissions.map(m => m.id))
-      .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
+      .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
+      .concat([newData.cetusCycle.id]);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -144,6 +147,9 @@ class Notifier {
       this.sendSyndicateMeridian(syndicateToNotify, platform);
       this.sendSyndicateLoka(syndicateToNotify, platform);
       this.sendSyndicateVeil(syndicateToNotify, platform);
+    }
+    if (cetusCycleChange) {
+      this.sendCetusCycle(newData.cetusCycle, platform);
     }
     await this.sendUpdates(updatesToNotify, platform);
   }
@@ -349,6 +355,10 @@ class Notifier {
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
     await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
+  }
+
+  async sendCetusCycle(newCetusCycle, platform) {
+    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle), platform, 'cetus');
   }
 }
 
