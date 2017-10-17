@@ -38,6 +38,7 @@ class SyndicateEmbed extends BaseEmbed {
       }];
     }
     this.title = `[${platform.toUpperCase()}] Syndicates`;
+    this.url = 'https://warframe.com';
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };
