@@ -32,7 +32,7 @@
     "json-fetch-cache": "0.0.5",
     "json-query": "^2.2.2",
     "mysql2": "^1.4.2",
-    "nexus-stats-api": "^0.1.0",
+    "nexus-stats-api": "^0.2.1",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
