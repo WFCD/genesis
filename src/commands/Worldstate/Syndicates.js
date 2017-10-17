@@ -3,7 +3,7 @@
 const Command = require('../../Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
 
-const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil'];
+const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil', 'Ostrons', 'Assassins'];
 
 /**
  * Displays the currently active Invasions
