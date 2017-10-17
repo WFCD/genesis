@@ -2,7 +2,7 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil'];
+const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil', 'Ostrons', 'Assassins', 'Quills'];
 
 /**
  * Generates syndicate embeds
@@ -25,7 +25,9 @@ class SyndicateEmbed extends BaseEmbed {
         .map(m => (
           {
             name: m.syndicate,
-            value: `${m.nodes.join('\n')}\n\nExpires in ${m.eta}`,
+            value: m.jobs ? `${m.jobs.map(job => `${job.type} | Lvls: ${job.enemyLevels.join(' - ')} ` +
+              `| Standing: ${job.standing.reduce((a, b) => a + b, 0)}`).join('\n')}\n\nExpires in ${m.eta}`
+              : `${m.nodes.join('\n')}\n\nExpires in ${m.eta}`,
             inline: true,
           }));
     } else {
@@ -35,7 +37,7 @@ class SyndicateEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.title = `[${platform.toUpperCase()}] Syndicate Mission Nodes`;
+    this.title = `[${platform.toUpperCase()}] Syndicates`;
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };
