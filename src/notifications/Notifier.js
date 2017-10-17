@@ -147,6 +147,8 @@ class Notifier {
       this.sendSyndicateMeridian(syndicateToNotify, platform);
       this.sendSyndicateLoka(syndicateToNotify, platform);
       this.sendSyndicateVeil(syndicateToNotify, platform);
+      this.sendSyndicateOstrons(syndicateToNotify, platform);
+      this.sendSyndicateAssassins(syndicateToNotify, platform);
     }
     if (cetusCycleChange) {
       this.sendCetusCycle(newData.cetusCycle, platform);
@@ -355,6 +357,16 @@ class Notifier {
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
     await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
+  }
+
+  async sendSyndicateOstrons(newSyndicates, platform) {
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Ostrons', platform);
+    await this.broadcast(embed, platform, 'syndicate.ostrons', null, new Date(newSyndicates[0].expiry).getTime());
+  }
+
+  async sendSyndicateAssassins(newSyndicates, platform) {
+    const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Assassins', platform);
+    await this.broadcast(embed, platform, 'syndicate.assassins', null, 86400000);
   }
 
   async sendCetusCycle(newCetusCycle, platform) {
