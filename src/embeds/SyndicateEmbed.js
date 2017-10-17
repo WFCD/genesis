@@ -25,7 +25,7 @@ class SyndicateEmbed extends BaseEmbed {
         .map(m => (
           {
             name: m.syndicate,
-            value: m.jobs ? `${m.jobs.map(job => `${job.type} ${job.enemyLevels.join(' - ')} ` +
+            value: m.jobs.length ? `${m.jobs.map(job => `${job.type} (${job.enemyLevels.join(' - ')}) ` +
               `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)}`).join('\n')}\n\nExpires in ${m.eta}`
               : `${m.nodes.join('\n')}\n\nExpires in ${m.eta}`,
             inline: true,
