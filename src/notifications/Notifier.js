@@ -43,7 +43,7 @@ class Notifier {
     this.bot = bot;
     this.logger = bot.logger;
     this.ids = {};
-    this.messageManager = bot.MessageManager;
+    this.messageManager = bot.messageManager;
     this.settings = bot.settings;
     this.client = bot.client;
     this.logger.debug(`Shard ${this.bot.shardId} Notifier ready`);
@@ -101,7 +101,7 @@ class Notifier {
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream);
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
-      // Concat all notified ids
+    // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
       .concat(newData.conclaveChallenges.map(c => c.id))
@@ -174,7 +174,7 @@ class Notifier {
           if (channel.type === 'text') {
             results.push(this.sendWithPrepend(channel, embed, type, items, deleteAfter));
           } else if (channel.type === 'dm') {
-            results.push(this.bot.messageManager.embedToChannel(channel, embed, '', deleteAfter));
+            results.push(this.messageManager.embedToChannel(channel, embed, '', deleteAfter));
           }
         }
       });
@@ -185,8 +185,10 @@ class Notifier {
   async sendWithoutPrepend(channel, embed, deleteAfter) {
     const ctx = await this.settings.getCommandContext(channel);
     ctx.deleteAfterDuration = deleteAfter;
-    return this.bot.messageManager.webhook(ctx,
-      { embed: this.bot.messageManager.webhookWrapEmbed(embed) });
+    return this.messageManager.webhook(
+      ctx,
+      { embed: this.messageManager.webhookWrapEmbed(embed) },
+    );
   }
 
   async sendWithPrepend(channel, embed, type, items, deleteAfter) {
@@ -194,8 +196,10 @@ class Notifier {
       .getPing(channel.guild, (items || []).concat([type]));
     const ctx = await this.settings.getCommandContext(channel);
     ctx.deleteAfterDuration = deleteAfter;
-    return this.bot.messageManager.webhook(ctx,
-      { text: prepend, embed: this.bot.messageManager.webhookWrapEmbed(embed, ctx) });
+    return this.messageManager.webhook(
+      ctx,
+      { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
+    );
   }
 
   /**
@@ -217,8 +221,10 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(this.bot,
-      [a], platform), platform, 'enemies', null, 3600000)));
+    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(
+      this.bot,
+      [a], platform,
+    ), platform, 'enemies', null, 3600000)));
   }
 
   async sendAlerts(newAlerts, platform) {

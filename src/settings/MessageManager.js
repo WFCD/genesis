@@ -226,7 +226,7 @@ class MessaageManager {
       const webhooks = await ctx.channel.fetchWebhooks();
       let webhook;
       if (webhooks.array().length > 0) {
-        webhook = webhooks.array()[0];
+        [webhook] = webhooks.array();
       } else {
         webhook = await ctx.channel.createWebhook(this.client.user.username);
       }
@@ -246,7 +246,7 @@ class MessaageManager {
       return this.reply(ctx.message, text, ctx.deleteCall, ctx.deleteResponse);
     }
     return Promise.all(embed.embeds.map(subEmbed =>
-      this.embedToChannel(ctx.chnnel, subEmbed, text, ctx.deleteAfterDuration)));
+      this.embedToChannel(ctx.channel, subEmbed, text, ctx.deleteAfterDuration)));
   }
 
   webhookWrapEmbed(embed, ctx) {

@@ -209,7 +209,7 @@ class Genesis {
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout);
+      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
     });
 
     /**
@@ -377,11 +377,13 @@ class Genesis {
           .replace(/\$timestamp/ig, new Date().toLocaleString()));
       } else {
         this.messageManager
-          .sendMessage({ channel: welcome.channel }, welcome.message
-            .replace(/\$username/ig, guildMember.displayName)
-            .replace(/\$usermention/ig, guildMember)
-            .replace(/\$timestamp/ig, new Date().toLocaleString()),
-          false, false);
+          .sendMessage(
+            { channel: welcome.channel }, welcome.message
+              .replace(/\$username/ig, guildMember.displayName)
+              .replace(/\$usermention/ig, guildMember)
+              .replace(/\$timestamp/ig, new Date().toLocaleString()),
+            false, false,
+          );
       }
     });
   }

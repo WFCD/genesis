@@ -11,7 +11,7 @@ const worldStateURLs = {
 };
 
 class WorldStateCache extends EventEmitter {
-  constructor(platform, timeout) {
+  constructor(platform, timeout, logger = console) {
     super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;
@@ -20,6 +20,7 @@ class WorldStateCache extends EventEmitter {
     this.updating = null;
     this.platform = platform;
     this.updateInterval = setInterval(() => this.update(), timeout);
+    this.logger = logger;
     this.update();
   }
 
@@ -39,7 +40,7 @@ class WorldStateCache extends EventEmitter {
       return this.currentData;
     }).catch((err) => {
       this.updating = null;
-      throw err;
+      this.logger.error(err);
     });
     return this.updating;
   }
