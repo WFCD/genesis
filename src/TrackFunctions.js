@@ -1,10 +1,9 @@
 'use strict';
 
-const eventTypes = require('./resources/trackables.json').eventTypes;
-const rewardTypes = require('./resources/trackables.json').rewardTypes;
+const { eventTypes, rewardTypes } = require('./resources/trackables.json');
 
 const fissures = ['fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4'];
-const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian'];
+const syndicates = ['syndicate.arbiters', 'syndicate.suda', 'syndicate.loka', 'syndicate.perrin', 'syndicate.veil', 'syndicate.meridian', 'syndicate.ostrons', 'syndicate.assassins'];
 const conclave = ['conclave.weeklies', 'conclave.dailies'];
 const deals = ['deals.featured', 'deals.popular'];
 const clantech = ['mutagen', 'fieldron', 'detonite'];

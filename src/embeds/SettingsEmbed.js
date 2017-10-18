@@ -10,22 +10,10 @@ class SettingsEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Channel} channel - The channel for which to send settings
    * @param {Array.<strings>} tokens -  The settngs to to display
-   * @param {number} pageNumber - Whether or not this is a 'tracked' embed
    */
-  constructor(bot, channel, tokens, pageNumber) {
+  constructor(bot, channel, tokens) {
     super();
-    switch (pageNumber) {
-      case 1:
-        this.color = 0x3366ff;
-        break;
-      case 2:
-        this.color = 0x6666cc;
-        break;
-      case 3:
-      default:
-        this.color = 0x77dd77;
-        break;
-    }
+    this.color = 0x77dd77;
     this.url = 'https://wfcd.github.io/genesis';
     if (channel.type === 'text') {
       this.title = `Settings for ${channel.name}`;
@@ -37,7 +25,6 @@ class SettingsEmbed extends BaseEmbed {
     tokens.forEach((tokenGroup) => {
       this.fields.push({ name: '_ _', value: tokenGroup.join('\n') });
     });
-    this.footer.text = `Part ${pageNumber}`;
   }
 }
 

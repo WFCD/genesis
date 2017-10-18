@@ -198,23 +198,32 @@ class MessaageManager {
   async deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
     if (call && call.channel) {
       const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond') === '1';
-      const deleteResponseAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_response' === '1');
       if (deleteAfterRespond && deleteCall && call.deletable) {
         call.delete(10000);
       }
-      if (deleteResponseAfterRespond && deleteResponse && response.deletable) {
-        response.delete(30000);
-      }
+    }
+    const deleteResponseAfterRespond = await this.settings.getChannelSetting(response.channel, 'delete_response') === '1';
+    if (deleteResponseAfterRespond && deleteResponse && response.deletable) {
+      response.delete(30000);
     }
   }
 
-  async webhook(ctx, { text = '_ _', embed = undefined }) {
+  async webhook(ctx, { text, embed = undefined }) {
     if (ctx.webhook.id && ctx.webhook.token) {
       const client = new this.discord.WebhookClient(ctx.webhook.id, ctx.webhook.token);
       try {
-        return client.send(text, embed);
+        const msg = await client.send(text, embed);
+        if (msg.deletable && ctx.deleteAfterDuration > 0) {
+          const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
+          if (deleteExpired) {
+            msg.delete(ctx.deleteAfterDuration);
+          }
+        }
+        return msg;
       } catch (e) {
-        this.logger.error(`Something went wrong sending webhook: ${JSON.stringify(embed)} | ${text}`);
+        this.logger.error(e);
+        await this.settings.deleteWebhooksForChannel(ctx.channel.id);
+        return this.webhook(ctx, { text, embed });
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);

@@ -18,7 +18,7 @@ class Settings extends Command {
     this.requiresAuth = true;
   }
 
-  async composeChannelSettings(channel, message, lastIndex) {
+  async composeChannelSettings(channel, message) {
     let tokens = [
       `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
       `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
@@ -59,20 +59,18 @@ class Settings extends Command {
     tokenGroups.forEach((tokenGroup) => {
       const embed = new SettingsEmbed(
         this.bot, channel,
-        createGroupedArray(tokenGroup, 3), lastIndex,
+        createGroupedArray(tokenGroup, 3),
       );
       this.messageManager.embed(message, embed);
     });
   }
 
   async run(message) {
-    let lastIndex = 0;
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = this.getChannels(channelParam.trim(), message);
     const channelsResults = [];
     for (const channel of channels) {
-      lastIndex += 1;
-      channelsResults.push(this.composeChannelSettings(channel, message, lastIndex));
+      channelsResults.push(this.composeChannelSettings(channel, message));
     }
     Promise.all(channelsResults);
 
@@ -112,10 +110,9 @@ class Settings extends Command {
       tokenGroups.forEach((tokenGroup) => {
         const embed = new SettingsEmbed(
           this.bot, message.channel,
-          createGroupedArray(tokenGroup, 15), lastIndex + 1,
+          createGroupedArray(tokenGroup, 15),
         );
         this.messageManager.embed(message, embed);
-        lastIndex += 1;
       });
     }
     return this.messageManager.statuses.SUCCESS;
