@@ -40,12 +40,15 @@ class SyndicateEmbed extends BaseEmbed {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
           this.footer.text = `${this.footer.text} | \n\nExpires in ${syndMissions[0].eta}`;
         }
+        
         this.fields = syndMissions.map(m => (
-          {
+          const jobs = m.jobs.length ? `${m.jobs.map(job => `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)} ` +
+                `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\nExpires in ${m.eta}`}` : '';
+          const nodes = m.nodes.length ? `${m.nodes.join('\n')}` : '';
+          const value = jobs.length ? jobs : (nodes.length ? nodes : 'No Nodes or Jobs Available');
+          return {
             name: syndMissions.length < 2 ? '_ _' : m.syndicate,
-            value: m.jobs.length ? `${m.jobs.map(job => `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)} ` +
-                `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\nExpires in ${m.eta}`}`
-              : `${m.nodes.join('\n')}`,
+            value,
             inline: true,
           }));
       }
