@@ -43,8 +43,8 @@ class SyndicateEmbed extends BaseEmbed {
         
         this.fields = syndMissions.map((m) => {
           const jobs = m.jobs.length ? `${m.jobs.map(job => `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)} ` +
-                `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\nExpires in ${m.eta}`}` : '';
-          const nodes = m.nodes.length ? `${m.nodes.join('\n')}` : '';
+                `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${m.eta}**`}` : '';
+          const nodes = m.nodes.length ? `${m.nodes.join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${m.eta}**`}` : '';
           const value = jobs.length ? jobs : (nodes.length ? nodes : 'No Nodes or Jobs Available');
           return {
             name: syndMissions.length < 2 ? '_ _' : m.syndicate,
