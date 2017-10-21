@@ -41,7 +41,7 @@ class SyndicateEmbed extends BaseEmbed {
           this.footer.text = `${this.footer.text} | \n\nExpires in ${syndMissions[0].eta}`;
         }
         
-        this.fields = syndMissions.map(m => (
+        this.fields = syndMissions.map((m) => {
           const jobs = m.jobs.length ? `${m.jobs.map(job => `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)} ` +
                 `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\nExpires in ${m.eta}`}` : '';
           const nodes = m.nodes.length ? `${m.nodes.join('\n')}` : '';
@@ -50,7 +50,8 @@ class SyndicateEmbed extends BaseEmbed {
             name: syndMissions.length < 2 ? '_ _' : m.syndicate,
             value,
             inline: true,
-          }));
+          };
+        });
       }
     }
   }
