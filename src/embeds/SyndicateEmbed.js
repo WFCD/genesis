@@ -49,7 +49,7 @@ class SyndicateEmbed extends BaseEmbed {
           return {
             name: syndMissions.length < 2 ? '_ _' : m.syndicate,
             value,
-            inline: true,
+            inline: m.jobs.length,
           };
         });
       }
