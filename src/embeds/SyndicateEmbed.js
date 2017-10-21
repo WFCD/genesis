@@ -17,6 +17,17 @@ class SyndicateEmbed extends BaseEmbed {
   constructor(bot, missions, syndicate, platform) {
     super();
 
+    // Set default fields
+    this.color = 0xff0000;
+    this.fields = [{
+      name: 'No such Syndicate',
+      value: `Valid values: ${values.join(', ')}`,
+    }];
+    this.url = 'https://warframe.com';
+    this.thumbnail = {
+      url: 'https://i.imgur.com/I8CjF9d.png',
+    };
+    
     const foundSyndicate = missions.length && values.find(v => syndicate &&
       v.toLowerCase() === syndicate.toLowerCase());
     if (foundSyndicate) {
@@ -37,25 +48,8 @@ class SyndicateEmbed extends BaseEmbed {
               : `${m.nodes.join('\n')}`,
             inline: true,
           }));
-      } else {
-        this.color = 0xff0000;
-        this.fields = [{
-          name: 'No such Syndicate',
-          value: `Valid values: ${values.join(', ')}`,
-        }];
       }
-    } else {
-      this.color = 0xff0000;
-      this.fields = [{
-        name: 'No such Syndicate',
-        value: `Valid values: ${values.join(', ')}`,
-      }];
     }
-
-    this.url = 'https://warframe.com';
-    this.thumbnail = {
-      url: 'https://i.imgur.com/I8CjF9d.png',
-    };
   }
 }
 
