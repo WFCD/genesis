@@ -49,9 +49,10 @@ class PriceCheck extends Command {
     }
     const messageWithTime = await inProgressMesage.edit('', { embed: embedWithTime });
     const profile = await this.bot.nexusFetcher.get(`/warframe/v1/players/${username}/profile`);
-    if (profile.name || (profile.error === `${username} could not be found.`
+    const profileIsOk = profile && (profile.name || (profile.error === `${username} could not be found.`
                          && (messageWithTime.embeds.length > 0
-                             && messageWithTime.embeds[0].title !== offlineMessage))) {
+                             && messageWithTime.embeds[0].title !== offlineMessage)));
+    if (profileIsOk) {
       await messageWithTime.edit('', { embed: new ProfileEmbed(this.bot, profile.name ? profile : {}) });
       return this.messageManager.statuses.SUCCESS;
     }
