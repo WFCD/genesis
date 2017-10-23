@@ -337,56 +337,56 @@ class Notifier {
 
   async sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
     }
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
     }
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
     }
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
     }
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
     }
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
     }
   }
 
   async sendSyndicateOstrons(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Ostrons', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.ostrons', null, fromNow(newSyndicates[0].expiry));
     }
   }
 
   async sendSyndicateAssassins(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Assassins', platform);
-    if (embed.fields.length > 0 || embed.fields[0].name === 'No such Syndicate') {
+    if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcast(embed, platform, 'syndicate.assassins', null, 86400000);
     }
   }
