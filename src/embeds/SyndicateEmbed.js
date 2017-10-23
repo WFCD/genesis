@@ -27,7 +27,7 @@ class SyndicateEmbed extends BaseEmbed {
     this.thumbnail = {
       url: 'https://i.imgur.com/I8CjF9d.png',
     };
-    
+
     const foundSyndicate = missions.length && values.find(v => syndicate &&
       v.toLowerCase() === syndicate.toLowerCase());
     if (foundSyndicate) {
@@ -35,17 +35,21 @@ class SyndicateEmbed extends BaseEmbed {
       if (syndMissions.length) {
         this.title = `[${platform.toUpperCase()}] Syndicates`;
         this.color = 0x00ff00;
-        const syndMissions = missions.filter(m => m.syndicate === foundSyndicate || foundSyndicate === 'all');
         if (syndMissions.length < 2) {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
           this.footer.text = `${this.footer.text} | \n\nExpires in ${syndMissions[0].eta}`;
         }
-        
+
         this.fields = syndMissions.map((m) => {
           const jobs = m.jobs.length ? `${m.jobs.map(job => `<:standing:369875864004984832> ${job.standingStages.reduce((a, b) => a + b, 0)} ` +
                 `- ${job.type} (${job.enemyLevels.join(' - ')})`).join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${m.eta}**`}` : '';
           const nodes = m.nodes.length ? `${m.nodes.join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${m.eta}**`}` : '';
-          const value = jobs.length ? jobs : (nodes.length ? nodes : 'No Nodes or Jobs Available');
+          let value = 'No Nodes or Jobs Available';
+          if (jobs.length) {
+            value = jobs;
+          } else if (nodes.length) {
+            value = nodes;
+          }
           return {
             name: syndMissions.length < 2 ? '_ _' : m.syndicate,
             value,
