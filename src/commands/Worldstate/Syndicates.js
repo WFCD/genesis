@@ -3,7 +3,7 @@
 const Command = require('../../Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
 
-const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil', 'Ostrons', 'Assassins'];
+const values = ['all', 'arbiters of hexis', 'perrin sequence', 'cephalon suda', 'steel meridian', 'new loka', 'red veil', 'ostrons', 'assassins'];
 
 /**
  * Displays the currently active Invasions
@@ -15,7 +15,7 @@ class Syndicates extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.');
-    this.regex = new RegExp(`^${this.call}s?(?:(${values.join('|')}))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:(${values.join('|')}))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
     this.usages = [
       {
         description: 'Display syndicate nodes for a syndicate.',
