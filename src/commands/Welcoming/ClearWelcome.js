@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 
 class ClearWelcome extends Command {
   constructor(bot) {
-    super(bot, 'settings.clearwelcomemessage', 'clear welcome message', 'Clears all pings for the server');
+    super(bot, 'settings.clearwelcomemessage', 'clear welcome message', 'Clears all messages (non-DM) for this guild.');
     this.requiresAuth = true;
     this.allowDM = false;
   }
