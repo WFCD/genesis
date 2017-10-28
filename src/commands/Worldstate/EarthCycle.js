@@ -14,6 +14,16 @@ class EarthCycle extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.cycle', 'cycle', 'Current and remaining time in cycle of Earth or Cetus rotations.');
     this.regex = new RegExp(`^${this.call}\\s?(earth)?`, 'i');
+    this.usages = [
+      {
+        description: 'Display Cetus\'s current cycle progress',
+        parameters: [],
+      },
+      {
+        description: 'Display Earth\'s current cycle progress',
+        parameters: ['earth'],
+      },
+    ];
   }
 
   /**
