@@ -24,9 +24,9 @@ class EarthCycle extends Command {
    */
   async run(message) {
     let cycleData;
-    const matches = message.content.match(this.regex);
+    const earth = (/earth/ig).test(message.strippedContent);
     const ws = await this.bot.caches.pc.getDataJson();
-    if (matches ? matches[1] : false) {
+    if (earth) {
       cycleData = ws.earthCycle;
     } else {
       cycleData = ws.cetusCycle;
