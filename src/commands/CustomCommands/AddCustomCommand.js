@@ -8,7 +8,7 @@ class AddCustomCommand extends Command {
     this.usages = [
       { description: 'Add a custom command', parameters: ['command call', 'comamnd response'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s+(\\w+)?\\s?(.*)$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s+(\\w+)?\\s?([\\s\\S]*)`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

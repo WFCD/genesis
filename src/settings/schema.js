@@ -84,7 +84,7 @@ module.exports = [
     command_id VARCHAR(255) NOT NULL,
     guild_id BIGINT UNSIGNED NOT NULL,
     command VARCHAR(20) NOT NULL,
-    response VARCHAR(255) NOT NULL,
+    response TEXT NOT NULL,
     creator_id BIGINT UNSIGNED NOT NULL,
     creation_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (command_id)
