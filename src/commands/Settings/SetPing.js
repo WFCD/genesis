@@ -21,7 +21,7 @@ class SetPing extends Command {
     this.logger.debug('Executing set ping');
     const regex = new RegExp(`(${callables.join('|')})(.+)?`, 'i');
     const match = message.content.match(regex);
-    this.logger.debug(`Matches: ${JSON.stringify(match));
+    this.logger.debug(`Matches: ${JSON.stringify(match)}`);
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
