@@ -4,20 +4,24 @@ const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
 const { eventTypes, rewardTypes } = require('../../resources/trackables.json');
 
+const callables = eventTypes.concat(rewardTypes).concat(["all","events","items","fissures","syndicates","conclave","resources","deals","clantech"]);
+
 class SetPing extends Command {
   constructor(bot) {
     super(bot, 'settings.setping', 'set ping');
     this.usages = [
       { description: 'Set ping for an event or item', parameters: ['event or reward', '@role or user mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s+?((${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|resources|deals|clantech)(.+)?)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s+?((${callables.join('|')})(.+)?)?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
 
   async run(message) {
-    const regex = new RegExp(`(${eventTypes.join('|')}|${rewardTypes.join('|')}|all|events|items|fissures|syndicates|conclave|resources|deals|clantech)(.+)?`, 'i');
+    this.logger.debug('Executing set ping');
+    const regex = new RegExp(`(${callables.join('|')})(.+)?`, 'i');
     const match = message.content.match(regex);
+    this.logger.debug(`Matches: ${JSON.stringify(match));
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
@@ -51,7 +55,7 @@ class SetPing extends Command {
       return this.messageManager.statuses.SUCCESS;
     }
     const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
-    this.messageManager.embed(message, trackFunctions
+    await this.messageManager.embed(message, trackFunctions
       .getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;
   }
