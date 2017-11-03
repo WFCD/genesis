@@ -4,7 +4,7 @@ const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
 const { eventTypes, rewardTypes } = require('../../resources/trackables.json');
 
-const callables = eventTypes.concat(rewardTypes).concat(['all','events','items','fissures','syndicates','conclave','resources','deals','clantech']);
+const callables = eventTypes.concat(rewardTypes).concat(['all', 'events', 'items', 'fissures', 'syndicates', 'conclave', 'resources', 'deals', 'clantech']);
 
 class SetPing extends Command {
   constructor(bot) {
