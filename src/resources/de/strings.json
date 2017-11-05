@@ -1,0 +1,21 @@
+{
+  "languages": {
+    "en-US": {
+      "damage_reply": "Operator $author, the damage flowchart, at your request.",
+      "override_enabled": "Operator, die Außerkraftsetzung ist jetzt aktiviert.",
+      "override_disabled": "Operator, die Außerkraftsetzung ist jetzt deaktiviert.",
+      "override_toggle_error": "Ein Fehler ist beim Umschalten der Funktion \"Außerkraftsetzung\" aufgetreten.",
+      "command_not_blacklistable": "\"$command\" kann nicht auf die Blacklist gesetzt werden.",
+      "cannot_reply": "Keine Antwort auf den Befehl, \"$command\" möglich.",
+      "command_added_blacklist": "\"$command\" wurde der Blacklist hinzugefügt.",
+      "all_command_added_blacklist": "Alle Befehle wurden zur Blacklist hinzugefügt",
+      "command_removed_blacklist": "\"$command\" wurde von der Blacklist entfernt.",
+      "all_command_removed_blacklist": "Alle Befehle wurden von der Blacklist entfernt",
+      "response_enabled": "Operator, reagieren auf Änderungen der Einstellungen ist jetzt aktiviert.",
+      "response_disabled": "Operator, reagieren auf Änderungen der Einstellungen ist jetzt deaktiviert.",
+      "response_toggle_error": "Ein Fehler ist beim Umschalten der Funktion \"Reagieren\" aufgetreten.",
+      "language_set": "Die Sprache wurde auf `$language` festgelegt.",
+      "language_not_set": "Sprache wurde nicht auf \"$language\" gesetzt. Die Sprache ist entweder ungültig oder war bereits gesetzt."
+    }
+  }
+}

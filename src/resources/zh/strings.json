@@ -1,0 +1,21 @@
+{
+  "languages": {
+    "en-US": {
+      "damage_reply": "$author 指揮官，這是傷害流程圖。",
+      "override_enabled": "指揮官,\"覆蓋\"功能已啟用。",
+      "override_disabled": "指揮官,\"覆蓋\"功能已停用。",
+      "override_toggle_error": "在切換 '覆蓋' 時出錯。",
+      "command_not_blacklistable": "'$command' 是不能夠被列入黑名單的。",
+      "cannot_reply": "無法執行指令，'$command'。",
+      "command_added_blacklist": "將'$command' 指令添加到黑名單中。",
+      "all_command_added_blacklist": "已將所有指令加入黑名單中",
+      "command_removed_blacklist": "將'$command' 指令從黑名單中移除。",
+      "all_command_removed_blacklist": "所有指令已從黑名單中移除",
+      "response_enabled": "指揮官, 在通知設定功能已啟用。",
+      "response_disabled": "指揮官, 在通知設定功能已停用。",
+      "response_toggle_error": "在切換 '回應' 時出錯。",
+      "language_set": "語言切換至 '$language'。",
+      "language_not_set": "語言無法切換至 '$language'。您所選擇的語言是沒有此選項或已設置。"
+    }
+  }
+}

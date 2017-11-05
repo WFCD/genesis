@@ -1,0 +1,21 @@
+{
+  "languages": {
+    "en-US": {
+      "damage_reply": "Operador $author, el diagrama de flujo de daño, a tu pedido.",
+      "override_enabled": "Operador, la sobreescritura está habilitada.",
+      "override_disabled": "Operador, la sobreescritura está deshabilitada.",
+      "override_toggle_error": "Ha ocurrido un error al alternar la `sobreescritura`.",
+      "command_not_blacklistable": "`$command` no puede ser añadido a la lista negra.",
+      "cannot_reply": "No pude responder al comando, `$command`.",
+      "command_added_blacklist": "`$command` añadido a la lista negra.",
+      "all_command_added_blacklist": "Todos los comandos fueron añadidos a la lista negra",
+      "command_removed_blacklist": "`$command` removido de la lista negra.",
+      "all_command_removed_blacklist": "Todos los comandos fueron removidos de la lista negra",
+      "response_enabled": "Operador, la respuesta a los cambios de los ajustes está habilitada.",
+      "response_disabled": "Operador, la respuesta a los cambios de los ajustes está deshabilitada.",
+      "response_toggle_error": "Ha ocurrido un error al alternar la `respuesta`.",
+      "language_set": "Lenguaje establecido a `$language`.",
+      "language_not_set": "Lenguaje no establecido a `$language`. El lenguaje proporcionado es inválido o ya fue establecido."
+    }
+  }
+}

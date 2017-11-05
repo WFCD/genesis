@@ -1,0 +1,21 @@
+{
+  "languages": {
+    "en-US": {
+      "damage_reply": "Operador $author, aqui está o fluxograma dos tipos de dano, como pedido.",
+      "override_enabled": "Operador, a substituição agora está ativada.",
+      "override_disabled": "Operador, a substituição agora está desativada.",
+      "override_toggle_error": "Um erro ocorreu ao ativar `substituição`.",
+      "command_not_blacklistable": "O comando `$command` não pode ser proibido.",
+      "cannot_reply": "Não é possível responder ao comando '$command'.",
+      "command_added_blacklist": "`$command` adicionado à lista de comandos proibidos.",
+      "all_command_added_blacklist": "Todos os comandos foram adicionados à lista de comandos proibidos",
+      "command_removed_blacklist": "`$command` removido da lista de comandos proibidos.",
+      "all_command_removed_blacklist": "Todos os comandos foram removidos da lista de comandos proibidos",
+      "response_enabled": "Operador, a alteração para ‘responder às configurações’ agora está ativada.",
+      "response_disabled": "Operador, a alteração para ‘responder às configurações’ agora está desativada.",
+      "response_toggle_error": "Um erro ocorreu ao ativar `resposta`.",
+      "language_set": "Idioma definido para `$language`.",
+      "language_not_set": "Idioma não definido para `$language`. O idioma providenciado é inválido, ou já está ativo."
+    }
+  }
+}
