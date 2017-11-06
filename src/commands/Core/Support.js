@@ -8,7 +8,6 @@ const Command = require('../../Command.js');
 class Untrack extends Command {
   constructor(bot) {
     super(bot, 'core.support', 'support', 'Support info about the bot');
-    this.requiresAuth = true;
   }
 
   /**
