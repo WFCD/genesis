@@ -23,18 +23,14 @@ class Untrack extends Command {
         {
           name: '_ _',
           value: 'Genesis is an open-source and freely provided bot and service,' +
-            '\nbut any help towards subsidizing development and server costs helps out.,' +
-            '\nand come support Genesis, if you\'re interested, [on patreon](https://patreon.com/cephalongenesis).' +
-            '\nWe also love and support direct [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2SHK99GUPGRFS) and [Bitcoin](bitcoin:1HU6BtbsJu3ttbc2qKGFGR2hQpou9JSkjB) support, because we one way doesn\'t fit all.',
+            '\nbut any help towards subsidizing development and server costs helps out.' +
+            '\nCome support Genesis [on patreon](https://patreon.com/cephalongenesis) if you\'re interested.' +
+            '\nWe also love and welcome direct [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2SHK99GUPGRFS) and [Bitcoin](bitcoin:1HU6BtbsJu3ttbc2qKGFGR2hQpou9JSkjB) support, because we one way doesn\'t fit all.',
           inline: true,
         },
         {
           name: 'Authors',
           value: 'Tobiah/[aliasfalse](https://github.com/aliasfalse) and [nspace](https://github.com/nspacestd)',
-        },
-        {
-          name: 'About',
-          value: 'Cephalon Genesis exists to help Discord Tenno find all the information they need about Warframe that you might',
         },
       ],
       footer: {
