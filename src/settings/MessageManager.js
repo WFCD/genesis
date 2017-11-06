@@ -140,15 +140,7 @@ class MessaageManager {
    * @returns {Promise<Message>}
    */
   async sendDirectMessageToUser(user, content, deleteResponse) {
-    let msg;
-    if (user.user.dmChannel) {
-      await user.user.deleteDM();
-      const dmChannel = await user.user.createDM();
-      msg = await dmChannel.send(content);
-    } else {
-      msg = await user.send(content);
-    }
-    return this.deleteCallAndResponse(user, msg, false, deleteResponse);
+    return await user.send(content);
   }
 
   /**
