@@ -67,7 +67,7 @@ class FrameEmbed extends BaseEmbed {
         },
         {
           name: 'Aura',
-          value: `${frame.aura.length > 0 || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
+          value: `${frame.aura || 'No Aura'}${frame.prime_aura ? ` (${frame.prime_aura})` : ''}`,
           inline: true,
         },
         {
