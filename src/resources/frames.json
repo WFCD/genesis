@@ -197,13 +197,13 @@
   "shield": "100/300",
   "armor": "125",
   "power": "150/225",
-  "speed": "115",
-  "polarities": ["2x <:madurai:319586146499690496>"],
+  "speed": "1.15",
+  "polarities": ["<:madurai:319586146499690496>", "<:madurai:319586146499690496>"],
   "aura": "<:vazarin:319586146269003778>",
-  "description": "This is Gara, the deadly Warrior.\nManipulator of glass, she can fracture her enemies.\nTread Lightly.\n_Lotus_",
+  "description": "This is Gara, the unbreakable warrior. Manipulator of glass, she fractures the resolve of her enemies.\nThe shattered remains of her enemies are all that Gara leaves behind. Tread lightly.\n_Lotus_",
   "info": "http://warframe.wikia.com/wiki/Gara",
   "thumbnail": "https://vignette.wikia.nocookie.net/warframe/images/d/df/Gara.png/revision/latest/scale-to-width-down/314?cb=20171003225824",
-  "location": "Quest - ???",
+  "location": "Quest - Saya's vigil",
   "color": 6895427
 },{
   "regex": "harrow",
