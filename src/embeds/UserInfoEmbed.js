@@ -45,7 +45,7 @@ class UserInfoEmbed extends BaseEmbed {
     ];
     this.footer = {
       icon_url: user.defaultAvatarURL,
-      text: `${new Date().toLocaleString()} | ${user.username} is ${user.bot ? '' : 'not'} a bot`,
+      text: `${user.username} is ${user.bot ? '' : 'not'} a bot`,
     };
 
     if (member) {
