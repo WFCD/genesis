@@ -52,7 +52,7 @@ class RaidStatEmbed extends BaseEmbed {
       },
     ];
 
-    this.footer.text = 'Data evaluated by Cephalon Genesis, Warframe Community Developers | Source: trials.wf';
+    this.footer.text = 'Evaluated by Cephalon Genesis, WFCD | Source: trials.wf';
   }
 }
 
