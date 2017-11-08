@@ -42,7 +42,7 @@ class InvasionEmbed extends BaseEmbed {
       this.fields = [
         { name: 'Location', value: i.node, inline: true },
       ];
-      this.footer.text = `${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining | ${new Date().toLocaleString()}`;
+      this.footer.text = `${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining`;
     }
 
     this.thumbnail = {
