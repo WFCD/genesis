@@ -21,10 +21,11 @@ class EarthCycleEmbed extends BaseEmbed {
     this.fields = [
       {
         name: '_ _',
-        value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${state.timeLeft}\n` +
-          `${state.isDay ? 'Night' : 'Day'} starts at ${new Date(state.expiry).toLocaleString()}${state.bountyExpireStr || ''}`,
+        value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${state.timeLeft}${state.bountyExpireStr || ''}`,
       },
     ];
+    this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts at`;
+    this.timestamp = new Date(state.expiry);
   }
 }
 

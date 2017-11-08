@@ -43,7 +43,7 @@ class AlertEmbed extends BaseEmbed {
       if (this.title.indexOf('cr') === -1) {
         this.fields.push({ name: '_ _', value: `**Credits:** ${a.mission.reward.credits}cr`, inline: true });
       }
-      this.footer.text = `${a.eta} remaining | ${new Date().toLocaleString()}`;
+      this.footer.text = `${a.eta} remaining`;
     }
   }
 }
