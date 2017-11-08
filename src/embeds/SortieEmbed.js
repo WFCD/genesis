@@ -21,7 +21,7 @@ class SortieEmbed extends BaseEmbed {
         value: v.modifier,
       }));
       this.description = `Currently in-progress sortie: **${sortie.boss}**`;
-      this.footer.text = `${sortie.eta} remaining | ${new Date().toLocaleString()}`;
+      this.footer.text = `${sortie.eta} remaining`;
     }
 
     this.title = `[${platform.toUpperCase()}] Worldstate - Sortie`;
