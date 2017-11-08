@@ -6,7 +6,7 @@ const WhatsinEmbed = require('../../embeds/WhatsinEmbed.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', color: 0xff6961 };
-const relicBase = 'http://drops.warframestat.us/data/relics';
+const relicBase = 'https://drops.warframestat.us/data/relics';
 
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
