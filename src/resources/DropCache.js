@@ -2,7 +2,7 @@
 
 const FetchCache = require('json-fetch-cache');
 
-const allDataCache = new FetchCache('http://drops.warframestat.us/data/all.json', 7200000);
+const allDataCache = new FetchCache('https://drops.warframestat.us/data/all.json', 7200000);
 
 /**
  * Copy of #formatData from https://github.com/WFCD/warframe-drop-data/blob/gh-pages/index.html
