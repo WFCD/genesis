@@ -37,7 +37,7 @@ class SyndicateEmbed extends BaseEmbed {
         this.color = 0x00ff00;
         if (syndMissions.length < 2) {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
-          this.footer.text = `${this.footer.text} | \n\nExpires in ${syndMissions[0].eta}`;
+          this.footer.text = `Expires in ${syndMissions[0].eta}`;
         }
 
         this.fields = syndMissions.map((m) => {
