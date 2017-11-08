@@ -47,7 +47,7 @@ a:link, a:hover, a:visited, a:active {
   margin-right: 0;
   padding: 0;
   border:0;
-  margin-bottom: 25px;
+  margin-bottom: 60px;
 }
 
 code, .commands td:first-child {
@@ -90,7 +90,7 @@ footer {
    position:fixed;
    left:0px;
    bottom:0px;
-   height:50px;
+   height:40px;
    width:100%;
    margin-top: -10px;
    text-align: center;
