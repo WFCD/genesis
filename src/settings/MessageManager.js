@@ -178,7 +178,7 @@ class MessaageManager {
    */
   async notifySettingsChange(message, deleteOriginal, deleteResponse) {
     await message.react('\u2705');
-    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings' === '1');
+    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings') === '1';
 
     if (respondToSettings) {
       const msg = await message.reply('Settings updated');
