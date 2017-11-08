@@ -22,7 +22,7 @@ class EarthCycleEmbed extends BaseEmbed {
       {
         name: '_ _',
         value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${state.timeLeft}\n` +
-          `{state.bountyExpireStr || ''}`,
+          `${state.bountyExpireStr || ''}`,
       },
     ];
     this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts at`;
