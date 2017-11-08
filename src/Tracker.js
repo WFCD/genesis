@@ -46,10 +46,10 @@ class Tracker {
     if (config.carbon.token && this.shardId === 0) {
       setInterval(() => this.updateCarbonitex(this.shardUtil), config.updateInterval);
     }
-    if (config.botsDiscordPw.token && config.botsDiscordPw.user) {
+    if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
       setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), config.updateInterval);
     }
-    if (config.botsDiscordOrg.token && config.botsDiscordOrg.token) {
+    if (config.botsDiscordOrg.token && config.botsDiscordOrg.id) {
       setInterval(() => this.updateDiscordBotsOrg(this.client.guilds.size), config.updateInterval);
     }
     if (config.cachet.host && config.cachet.token && config.cachet.metricId) {
