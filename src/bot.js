@@ -282,7 +282,7 @@ class Genesis {
       status: 'online',
       afk: false,
       game: {
-        name: `@${this.client.user.username} help (${this.shardId + 1}/${this.shardCount})`,
+        name: `@${this.client.user.username} help`,
         url: 'https://warframe.com',
       },
     });
