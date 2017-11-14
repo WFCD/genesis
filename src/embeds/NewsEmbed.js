@@ -36,7 +36,7 @@ class NewsEmbed extends BaseEmbed {
     }
     this.fields = [{ name: '_ _', value }];
     this.image = { url: news[0] ? news[0].imageLink : '' };
-    this.footer.text += ` | ${platform.toUpperCase()}`;
+    this.footer.text = platform.toUpperCase();
   }
 }
 
