@@ -88,7 +88,7 @@ class Notifier {
     const fissuresToNotify = newData.fissures
       .filter(f => !ids.includes(f.id) && !f.expired);
     const newsToNotify = newData.news
-      .filter(n => !ids.includes(n.id) 
+      .filter(n => !ids.includes(n.id)
               && !n.primeAccess && !n.update && !n.stream && n.translations.en);
     const popularDealsToNotify = newData.flashSales
       .filter(d => !ids.includes(d.id) && d.isPopular);
