@@ -3,7 +3,7 @@
 const BaseEmbed = require('./BaseEmbed.js');
 
 // eslint-disable-next-line no-unused-vars
-const createGroupedArray(arr, chunkSize) => {
+const createGroupedArray = (arr, chunkSize) => {
   const groups = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
     groups.push(arr.slice(i, i + chunkSize));
