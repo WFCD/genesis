@@ -2,6 +2,14 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+function createGroupedArray(arr, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    groups.push(arr.slice(i, i + chunkSize));
+  }
+  return groups;
+}
+
 /**
  * Generates news embeds
  */
@@ -24,17 +32,17 @@ class NewsEmbed extends BaseEmbed {
     });
 
     this.color = news.length > 0 ? 0x779ecb : 0xff6961;
-    let value = news.map(n => n.asString).join('\n');
+    let value = createGrouped(news.map(n => n.asString), 15);
     if (type) {
       if (type === 'update') {
-        value = value.length > 0 ? value : 'No Update News Currently';
+        value = value.length > 0 ? value : ['No Update News Currently'];
       } else {
-        value = value.length > 0 ? value : 'No Prime Access Currently';
+        value = value.length > 0 ? value : ['No Prime Access Currently'];
       }
     } else {
-      value = value.length > 0 ? value : 'No News Currently';
+      value = value.length > 0 ? value : ['No News Currently'];
     }
-    this.fields = [{ name: '_ _', value }];
+    this.fields = value.map(val => ({ name: '_ _', value: val.join('\n') }));
     this.image = { url: news[0] ? news[0].imageLink : '' };
     this.footer.text = platform.toUpperCase();
   }
