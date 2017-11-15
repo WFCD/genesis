@@ -32,7 +32,7 @@ class NewsEmbed extends BaseEmbed {
     });
 
     this.color = news.length > 0 ? 0x779ecb : 0xff6961;
-    let value = createGrouped(news.map(n => n.asString), 15);
+    let value = createGroupedArray(news.map(n => n.asString), 15);
     if (type) {
       if (type === 'update') {
         value = value.length > 0 ? value : ['No Update News Currently'];
