@@ -88,16 +88,17 @@ class Notifier {
     const fissuresToNotify = newData.fissures
       .filter(f => !ids.includes(f.id) && !f.expired);
     const newsToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && !n.primeAccess && !n.update && !n.stream && n.translations.en);
+      .filter(n => !ids.includes(n.id) 
+              && !n.primeAccess && !n.update && !n.stream && n.translations.en);
     const popularDealsToNotify = newData.flashSales
-      .filter(d => !ids.includes(d.id) && d.isPopular && n.translations.en);
+      .filter(d => !ids.includes(d.id) && d.isPopular);
     const primeAccessToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
     const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
         && !newData.sortie.expired ? newData.sortie : undefined;
     const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
     const updatesToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.update && !n.stream);
+      .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
