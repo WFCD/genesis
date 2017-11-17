@@ -5,11 +5,12 @@
 
 # Contribute
 
-[![Stories in Ready](https://badge.waffle.io/wfcd/genesis.png?label=ready&title=Ready)](http://waffle.io/wfcd/genesis)
-
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord)
-
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade)
+[![Stories in Ready](https://badge.waffle.io/wfcd/genesis.png?label=ready&title=Ready)](http://waffle.io/wfcd/genesis) 
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord) 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade) 
+[![Discord Bots](https://discordbots.org/api/widget/status/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
+[![Discord Bots](https://discordbots.org/api/widget/servers/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
+[![Discord Bots](https://discordbots.org/api/widget/lib/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
 
 Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
 
@@ -69,36 +70,7 @@ RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/**
 
 ## Commands
 
-Command | Listener ID | Description
---- | --- | ---
-`genesis settings` |  | Returns settings in a direct message
-`genesis alerts` |  | Displays active alerts
-`genesis baro` |  | Displays current Baro Ki'Teer status/inventory
-`genesis darvo` |  | Displays current Darvo Daily Deal
-`genesis invasions` |  | Displays current Invasions
-`genesis news` |   | Displays news
-`genesis platform <platform>` |  | Changes the platform
-`genesis platform` |  | Displays usage
-`genesis simaris` |  | Get Synthesis target tracking
-`genesis update` |  | Display current update
-`genesis primeaccess` |  | Display current Prime Access news
-`genesis damage` |  | Display link to Damage 2.0 infographic
-`genesis armor`  |  | Display instructions for calculating armor
-`genesis armor <current armor>` |  | Display current damage resistance and amount of corrosive procs required to strip it
-`genesis armor <base armor> <base level> <current level>` | |  Display the current armor, damage resistance, and necessary corrosive procs to strip armor.
-`genesis shield`  |  | Display instructions for calculating armor
-`genesis shield <base shield> <base level> <current level>` | |  Display the current shields.
-`genesis conclave` |  | Display usage for conclave command
-`genesis conclave all` |  | Display all conclave challenges
-`genesis conclave daily` |  | Display active daily conclave challenges
-`genesis conclave weekly` |  | Display active weekly conclave challenges
-`genesis enemies` |  | Display list of active persistent enemies where they were last found
-
-## Sample Interaction
-
-```
-... to come later, want to finish more of the functionality
-```
+Honestly too many to put here
 
 
 ## Throughput
