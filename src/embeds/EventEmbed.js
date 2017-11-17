@@ -34,7 +34,6 @@ class EventEmbed extends BaseEmbed {
       if (event.maximumScore) {
         this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
       }
-
       if (event.affiliatedWith) {
         const jobString = event.jobs.map((job) => {
           const rewards = job.rewardPool.length > 0 ? job.rewardPool.map(reward => `* ${reward}`).join('\n') : 'No Clear Reward';
