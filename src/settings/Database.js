@@ -48,7 +48,7 @@ class Database {
       prefix: '/',
       respond_to_settings: true,
       platform: 'pc',
-      language: 'en-us',
+      language: 'en',
       delete_after_respond: true,
       delete_response: true,
       createPrivateChannel: false,
