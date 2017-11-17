@@ -43,7 +43,7 @@ class EventEmbed extends BaseEmbed {
             `Granting ${event.standingStages.join(' ,')} standing per stage (without modification).${job.rewardPool.length > 0 ? rewards : ''}`;
           return desc;
         }).join('\n');
-        this.fields.push({ name: `Jobs from ${event.affiliatedWith`, value: jobString });
+        this.fields.push({ name: `Jobs from ${event.affiliatedWith}`, value: jobString });
       }
 
       if (event.health) {
