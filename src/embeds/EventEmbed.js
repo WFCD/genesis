@@ -41,9 +41,9 @@ class EventEmbed extends BaseEmbed {
           const rewardsFmtd = `\nWith \`\`\`${rewards}\`\`\` as reward${job.rewardPool.length > 1 ? 's' : ''}.`;
           const desc = `**${job.type}}**\nEnemies lvls ${job.enemyLevels[0]} - ${job.enemyLevels[1]}\n` + 
             `Granting ${event.standingStages.join(' ,')} standing per stage (without modification).${job.rewardPool.length > 0 ? rewards : ''}`;
-          return ;
+          return desc;
         }).join('\n');
-        this.fields.push({ name: `Jobs from ${event.affiliatedWith`, value: `` });
+        this.fields.push({ name: `Jobs from ${event.affiliatedWith`, value: jobString });
       }
 
       if (event.health) {
