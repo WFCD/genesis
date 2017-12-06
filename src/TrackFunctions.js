@@ -22,6 +22,16 @@ const deals = ['deals.featured', 'deals.popular'];
 const clantech = ['mutagen', 'fieldron', 'detonite'];
 const resources = ['neuralSensors', 'orokinCell', 'alloyPlate', 'circuits', 'controlModule', 'ferrite', 'gallium', 'morphics', 'nanoSpores', 'oxium', 'rubedo', 'salvage', 'plastids', 'polymerBundle', 'argonCrystal', 'cryotic', 'tellurium'];
 
+function createGroupedArray(arr, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
+    groups.push(arr.slice(i, i + (chunkSize || 10)));
+  }
+  return groups;
+}
+
+const groupedEvents = createGroupedArray(eventTypes, 35);
+
 function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
 
@@ -144,23 +154,26 @@ function getTrackInstructionEmbed(message, prefix, call) {
         value: '_ _',
         inline: false,
       },
-      {
-        name: '**Events:**',
-        value: eventTypes.join(' '),
-        inline: true,
-      },
-      {
-        name: '**Rewards:**',
-        value: rewardTypes.join(' '),
-        inline: true,
-      },
-      {
-        name: "Optional Groups:",
-        value: opts.join(' '),
-        inline: true,
-      },
     ],
   };
+  groupedEvents.forEach((group, index) =>
+    embed.fields.push({
+        name: '**Events${index > 0 ? ' ctd.': ''}**',
+        value: group.join(' '),
+        inline: true,
+      });
+
+
+  embed.fields.push({
+    name: '**Rewards:**',
+    value: rewardTypes.join(' '),
+    inline: true,
+  });
+  embed.fields.push({
+    name: "Optional Groups:",
+    value: opts.join(' '),
+    inline: true,
+  });
 
   switch (call) {
     case 'track':
@@ -183,4 +196,4 @@ function getTrackInstructionEmbed(message, prefix, call) {
   return embed;
 }
 
-module.exports = { trackablesFromParameters, getTrackInstructionEmbed };
+module.exports = { trackablesFromParameters, getTrackInstructionEmbed, createGroupedArray };
