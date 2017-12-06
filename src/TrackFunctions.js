@@ -158,6 +158,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
         name: "Optional Groups:",
         value: opts.join(' '),
         inline: true,
+      },
     ],
   };
 
