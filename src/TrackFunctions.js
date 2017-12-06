@@ -30,7 +30,6 @@ function createGroupedArray(arr, chunkSize) {
   return groups;
 }
 
-const groupedEvents = createGroupedArray(eventTypes, 35);
 
 function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
@@ -156,8 +155,8 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
     ],
   };
-  groupedEvents.forEach((group, index) => embed.fields.push({
-    name: '**Events${index > 0 ? ' ctd.': ''}**',
+  createGroupedArray(eventTypes, 35).forEach((group, index) => embed.fields.push({
+    name: `**Events${index > 0 ? ' ctd.': ''}**`,
     value: group.join(' '),
     inline: true
   }));
