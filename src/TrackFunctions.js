@@ -41,8 +41,6 @@ function trackablesFromParameters(paramString) {
         trackables.items = trackables.items.concat(rewardTypes);
       } else if (i === 'events') {
         trackables.events = trackables.events.concat(eventTypes);
-      } else if (i === 'fissures') {
-        trackables.events = trackables.events.concat(fissures);
       } else if (i === 'fissures.t1') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('fissures.t1')));
@@ -109,6 +107,8 @@ function trackablesFromParameters(paramString) {
       } else if (i === 'fissures.evacuation') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('evacuation')));
+      } else if (i === 'fissures') {
+        trackables.events = trackables.events.concat(fissures);
       } else if (i === 'syndicates') {
         trackables.events = trackables.events.concat(syndicates);
       } else if (i === 'conclave') {
