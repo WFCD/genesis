@@ -139,5 +139,13 @@
     "fissures.t4.hijack",
     "fissures.t4.assault",
     "fissures.t4.evacuation"
+  ],
+  "opts": [
+    "all", "events", "items", "fissures", "syndicates", "conclave", "clantech", "deals", "resources",
+    "fissures.t1", "fissures.t2", "fissures.t3", "fissures.t4",
+    "fissures.excavation", "fissures.sabotage", "fissures.mobiledefense", "fissures.assassination",
+    "fissures.extermination", "fissures.hive", "fissures.defense", "fissures.interception", "fissures.rathuum",
+    "fissures.conclave", "fissures.rescue", "fissures.spy", "fissures.survival", "fissures.capture",
+    "fissures.darksector", "fissures.hijack", "fissures.assault", "fissures.evacuation"
   ]
 }
