@@ -156,13 +156,11 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
     ],
   };
-  groupedEvents.forEach((group, index) =>
-    embed.fields.push({
-        name: '**Events${index > 0 ? ' ctd.': ''}**',
-        value: group.join(' '),
-        inline: true,
-      });
-
+  groupedEvents.forEach((group, index) => embed.fields.push({
+    name: '**Events${index > 0 ? ' ctd.': ''}**',
+    value: group.join(' '),
+    inline: true
+  }));
 
   embed.fields.push({
     name: '**Rewards:**',
