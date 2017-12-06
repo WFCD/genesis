@@ -1,6 +1,6 @@
 'use strict';
 
-const { eventTypes, rewardTypes } = require('./resources/trackables.json');
+const { eventTypes, rewardTypes, opts } = require('./resources/trackables.json');
 
 const fissures = ['fissures.t1.excavation', 'fissures.t1.sabotage', 'fissures.t1.mobiledefense', 'fissures.t1.assassination', 'fissures.t1.extermination',
   'fissures.t1.hive', 'fissures.t1.defense', 'fissures.t1.interception', 'fissures.t1.rathuum', 'fissures.t1.conclave', 'fissures.t1.rescue',
@@ -146,14 +146,18 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: '**Events:**',
-        value: `${eventTypes.concat(['all', 'events', 'fissures', 'fissures.t1', 'fissures.t2', 'fissures.t3', 'fissures.t4', 'syndicates', 'conclave', 'deals']).join('\n')}`,
+        value: eventTypes.join(' '),
         inline: true,
       },
       {
         name: '**Rewards:**',
-        value: `${rewardTypes.concat(['all', 'items', 'clantech', 'resources']).join('\n')}`,
+        value: rewardTypes.join(' '),
         inline: true,
       },
+      {
+        name: "Optional Groups:",
+        value: opts.join(' '),
+        inline: true,
     ],
   };
 
