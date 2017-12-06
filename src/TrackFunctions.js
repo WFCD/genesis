@@ -156,7 +156,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
     ],
   };
   createGroupedArray(eventTypes, 35).forEach((group, index) => embed.fields.push({
-    name: `**Events${index > 0 ? ' cont\'d.': ''}**`,
+    name: `**Events${index > 0 ? ' cont\'d.': ''}:**`,
     value: group.join(' '),
     inline: true
   }));
@@ -167,7 +167,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
     inline: true,
   });
   embed.fields.push({
-    name: "Optional Groups:",
+    name: 'Optional Groups:',
     value: opts.join(' '),
     inline: true,
   });
