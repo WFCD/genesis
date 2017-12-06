@@ -38,7 +38,7 @@ Promise.each(queries, (query, index) => db.query(query)
     results[0].forEach(result => fissures[index].push(result.channel_id));
   }))
   .then(() => {
-    console.log('Starting inserts...');
+    process.stdout.write('Starting inserts...');
     return Promise.each(fissures, (fissureGroup, index) => Promise.each(fissureGroup, (channel) => {
       process.stdout.write(`Inserting fissures for ${channel} for tier ${index + 1}...`);
       const genTypes = types.map(type => `fissures.t${index + 1}.${type}`);
@@ -52,11 +52,11 @@ Promise.each(queries, (query, index) => db.query(query)
             (${channel}, ${genTypes[15]}), (${channel}, ${genTypes[16]}), (${channel}, ${genTypes[17]});`;
       return db.query(q)
         .then(() => process.stdout.write('✔️\n'))
-        .catch(console.error);
+        .catch(console.error);// eslint-disable-line
     }));
   })
   .then(() => process.exit(0))
   .catch((e) => {
-    console.error(e);
+    console.error(e);// eslint-disable-line
     process.exit(1);
   });
