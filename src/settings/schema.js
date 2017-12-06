@@ -12,7 +12,7 @@ module.exports = [
   );`,
   `CREATE TABLE IF NOT EXISTS type_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
-    type VARCHAR(20) NOT NULL,
+    type VARCHAR(255) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (channel_id, type),
     FOREIGN KEY (channel_id)
