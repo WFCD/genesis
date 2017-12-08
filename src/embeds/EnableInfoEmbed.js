@@ -1,14 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-
-function createGroupedArray(arr, chunkSize) {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
-    groups.push(arr.slice(i, i + (chunkSize || 10)));
-  }
-  return groups;
-}
+const { createGroupedArray } = require('../TrackFunctions.js');
 
 /**
  * Utility class for making rich embeds

@@ -2,14 +2,7 @@
 
 const Command = require('../../Command.js');
 const rpad = require('right-pad');
-
-function createGroupedArray(arr, chunkSize) {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
-    groups.push(arr.slice(i, i + (chunkSize || 10)));
-  }
-  return groups;
-}
+const { createGroupedArray } = require('../../TrackFunctions.js');
 
 /**
  * Add a joinable role

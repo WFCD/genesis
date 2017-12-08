@@ -281,7 +281,9 @@ class Notifier {
   }
 
   async sendFissures(newFissures, platform) {
-    await Promise.all(newFissures.map(f => this.broadcast(new FissureEmbed(this.bot, [f], platform), platform, `fissures.t${f.tierNum}`, null, fromNow(f.expiry))));
+    await Promise.all(newFissures
+      .map(f => this.broadcast(new FissureEmbed(this.bot, [f], platform), platform,
+        `fissures.t${f.tierNum}.${f.missionType.toLowerCase()}`, null, fromNow(f.expiry))));
   }
 
   async sendInvasions(newInvasions, platform) {
