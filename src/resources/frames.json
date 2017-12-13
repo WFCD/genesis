@@ -376,8 +376,8 @@
   "location": "Mutalist Alad V",
   "color": 13344533
 }, {
-  "regex": "mirage",
-  "name": "Mirage",
+  "regex": "mirage(\\sprime)?",
+  "name": "Mirage (Prime)",
   "url": "https://youtu.be/3U8mcBd6yE0",
   "mr": "0",
   "health": "80/240",
@@ -392,7 +392,16 @@
   "info": "http://warframe.wikia.com/wiki/Mirage",
   "thumbnail": "https://vignette1.wikia.nocookie.net/warframe/images/3/31/MirageNewLook.png/revision/latest?cb=20141124023203",
   "location": "Hidden Messages",
-  "color": 7682369
+  "color": 7682369,
+  "prime_mr": "8",
+  "prime_health": "",
+  "prime_shield": "110/330",
+  "prime_armor": "130",
+  "prime_power": "",
+  "prime_speed": "",
+  "prime_conclave": "",
+  "prime_polarities": ["<:vazarin:319586146269003778>", "<:vazarin:319586146269003778>", "<:madurai:319586146499690496>", "<:naramon:319586146478850048>"],
+  "prime_aura": ""
 }, {
   "regex": "nekros(\\sprime)?",
   "name": "Nekros(Prime)",
