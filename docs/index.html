@@ -106,6 +106,10 @@
                      <td>Leave a specific role <span class="permissions" >{Bot Requires "Manage Roles"}</span><br /> - <span class="example">Example <code>leave Nitain</code></span></td>
                   </tr>
                   <tr>
+                     <td>roleids</td>
+                     <td>Shows ids for all the roles in the guild.</td>
+                  </tr>
+                  <tr>
                      <td>track</td>
                      <td>Show list of trackable events and/or items</td>
                   </tr>
@@ -131,7 +135,11 @@
                   </tr>
                   <tr>
                      <td>clear pings</td>
-                     <td>Remove all set pings for the guild.</code></span></td>
+                     <td>Remove all set pings for the guild.</td>
+                  </tr>
+                  <tr>
+                     <td>clear permissions</td>
+                     <td>Remove all set permissions for this channel.</td>
                   </tr>
                </table>
             </div>
@@ -153,6 +161,10 @@
                      <td>Change if the bot to delete commands and/or responses after responding in this channel. Whatever is selected will be marked as available to be deleted.<br /> - <span class="example">Example <code>delete after respond all</code></span></td>
                   </tr>
                   <tr>
+                     <td>delete expired &lt;on or off&gt;</td>
+                     <td>Delete expired alerts <code>(Inconsistent, not recommended, due to api limitations)</code></td>
+                  </tr>
+                  <tr>
                      <td>enable &lt;command id&gt; in &lt;channel&gt; for &lt;role|user&gt;</td>
                      <td>Enable a command for a role in a channel or channels</td>
                   </tr>
@@ -166,7 +178,7 @@
                   </tr>
                   <tr>
                      <td>language &lt;language&gt;</td>
-                     <td>Change this channel's language</td>
+                     <td>Change this channel's language <code>(doesn't do anything right now)</code></td>
                   </tr>
                   <tr>
                      <td>prefix &lt;prefix (up to 3 characters)&gt;</td>
@@ -192,17 +204,25 @@
                      <td>delete expired &lt;on or off&gt;</td>
                      <td>Change if expired alerts will be automatically deleted on expiration. This doesn't apply to webhook messages.</td>
                   </tr>
+                  <tr>
+                     <td>add cc &lt;command&gt; &lt;message&gt;</td>
+                     <td>Adds custom command with a single word (no spaces) command,<br />such as <code>/lfg</code><br /> and responding with the <code>message.</code> </td>
+                  </tr>
+                  <tr>
+                     <td>delete cc &lt;command&gt;</td>
+                     <td>Deletes custom command in this server with provided <code>command</code>.</td>
+                  </tr>
                </table>
             </div>
             <div id="welcoming" class="tabcontent">
               <table id="welcoming" class="commands">
                 <tr>
                    <td>set welcome message &lt;welcome message&gt;</td>
-                   <td>Sets the welcome message for the current guild (not the direct message). If one exists, the message, but not the channel will be updated.</td>
+                   <td>Sets the welcome message for the current guild (not the direct message). If one exists, a new message will be added to send.</td>
                 </tr>
                 <tr>
                    <td>set welcome dm &lt;welcome message&gt;</td>
-                   <td>Sets the welcome message for the current guild (not the message). If one exists, the message will be updated.</td>
+                   <td>Adds a welcome message for the current guild (not the message). If one exists, a new one will be added.</td>
                 </tr>
                 <tr>
                    <td>clear welcome message</td>
@@ -218,22 +238,19 @@
                <table id="ondemand" class="commands">
                   <th colspan="2">
                      <h4>On-Demand Commands</h4>
+                     <br/><span>To see the output for a specific platform add <code>on platform</code> to the end of the command,<br />such as <code>/acolye on pc</code></span>
                   </th>
                   <tr>
-                     <td>alerts</td>
-                     <td>Display the currently active alerts</td>
-                  </tr>
-                   <tr>
-                     <td>arcane</td>
-                     <td>Display Arcane Enhancements available to get information on</td>
+                     <td>acolyte</td>
+                     <td>Display any currently active acolyte-style enemies.<br /></td>
                   </tr>
                   <tr>
-                     <td>arcane &lt;enhancement name&gt;</td>
-                     <td>Display information for a particular arcane enhancement</td>
+                     <td>alerts</td>
+                     <td>Display the currently active alerts.</td>
                   </tr>
                   <tr>
                      <td>baro</td>
-                     <td>Display the current status of the Void Trader</td>
+                     <td>Display the current status of the Void Trader.</td>
                   </tr>
                   <tr>
                      <td>conclave &lt;conclave category&gt;</td>
@@ -241,35 +258,39 @@
                   </tr>
                   <tr>
                      <td>darvo</td>
-                     <td>Displays today's Darvo deal</td>
+                     <td>Displays today's Darvo deal.</td>
                   </tr>
                   <tr>
-                     <td>acolyte</td>
-                     <td>Display any currently active acolyte-style enemies.</td>
+                     <td>events</td>
+                     <td>Display ongoing events.</td>
+                  </tr>
+                  <tr>
+                     <td>construction</td>
+                     <td>Display construction progress for Fomorian Fleets and Razorback Armadas.</td>
                   </tr>
                   <tr>
                      <td>featureddeal</td>
-                     <td>Displays current featured deals</td>
+                     <td>Displays current featured deals.</td>
                   </tr>
                   <tr>
                      <td>fissures</td>
-                     <td>Get the current list of Void Fissure Missions</td>
+                     <td>Get the current list of Void Fissure Missions.</td>
                   </tr>
                   <tr>
                      <td>invasion</td>
-                     <td>Display the currently active Invasions</td>
+                     <td>Display the currently active Invasions.</td>
                   </tr>
                   <tr>
                      <td>news</td>
-                     <td>Display the currently active news</td>
+                     <td>Display the currently active news.</td>
                   </tr>
                   <tr>
                      <td>populardeals</td>
-                     <td>Displays current featured deals</td>
+                     <td>Displays current featured deals.</td>
                   </tr>
                   <tr>
                      <td>primeaccess</td>
-                     <td>Display the currently active prime access news</td>
+                     <td>Display the currently active prime access news.</td>
                   </tr>
                   <tr>
                      <td>simaris</td>
@@ -277,7 +298,7 @@
                   </tr>
                   <tr>
                      <td>sortie</td>
-                     <td>Display the currently active sorties</td>
+                     <td>Display the currently active sorties.</td>
                   </tr>
                   <tr>
                      <td>syndicate &lt;syndicate&gt;</td>
@@ -285,7 +306,7 @@
                   </tr>
                   <tr>
                      <td>updates</td>
-                     <td>Display the currently active update news</td>
+                     <td>Display the currently active update news.</td>
                   </tr>
                </table>
             </div>
@@ -294,6 +315,14 @@
                  <th colspan="2">
                     <h4>Warframe Commands - Utility</h4>
                  </th>
+                 <tr>
+                    <td>arcane</td>
+                    <td>Display Arcane Enhancements available to get information on</td>
+                 </tr>
+                 <tr>
+                    <td>arcane &lt;enhancement name&gt;</td>
+                    <td>Display information for a particular arcane enhancement</td>
+                 </tr>
                  <tr>
                     <td>armor</td>
                     <td>Display instructions for calculating armor</td>
@@ -307,12 +336,24 @@
                     <td>Display the current armor, damage resistance, and necessary corrosive procs to strip armor.</td>
                  </tr>
                  <tr>
+                    <td>buildchart</td>
+                    <td>Displays the Weapond Build Flowchart chart</td>
+                 </tr>
+                 <tr>
+                    <td>cycle</td>
+                    <td>Current and remaining time in cycle of Cetus' rotation.</td>
+                 </tr>
+                 <tr>
+                    <td>cycle earth</td>
+                    <td>Current and remaining time in cycle of Earth's rotation.</td>
+                 </tr>
+                 <tr>
                     <td>damage</td>
                     <td>Display Damage 2.0 chart</td>
                  </tr>
                  <tr>
-                    <td>cycle</td>
-                    <td>Current and remaining time in cycle of Earth rotation.</td>
+                    <td>efficiency</td>
+                    <td>Display the Efficiency/Duration balance chart</td>
                  </tr>
                  <tr>
                     <td>mod</td>
@@ -323,7 +364,7 @@
                     <td>Display an items worth from nexus-stats.com</td>
                  </tr>
                  <tr>
-                    <td>frame profile &lt;warframe&gt;</td>
+                    <td>frame &lt;warframe&gt;</td>
                     <td>Get a Warframe's profile video</td>
                  </tr>
                  <tr>
@@ -340,6 +381,10 @@
                  <tr>
                     <td>tutorial &lt;subject&gt;</td>
                     <td>Get a Warframe Tutorial Video</td>
+                 </tr>
+                 <tr>
+                    <td>weapon &lt;weapon search&gt;</td>
+                    <td>Get a Warframe weapon's information <code>(incomplete)</code></td>
                  </tr>
                  <tr>
                     <td>whereis &lt;item&gt;</td>
@@ -382,15 +427,15 @@
                  </th>
                  <tr>
                     <td>bug &lt;bug report&gt;</td>
-                    <td>Send a bug report to bot owner
+                    <td>Send a bug report to bot owner</td>
                  </tr>
                  <tr>
                     <td>bug &lt;subject&gt; | &lt;body&gt; | &lt;(optional) screenshot link&gt;</td>
-                    <td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.
+                    <td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.</td>
                  </tr>
                  <tr>
                     <td>bug &lt;subject&gt; | &lt;body&gt; | &lt;attached image&gt;</td>
-                    <td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.
+                    <td>Send a bug report to bot owner with subject, message, and optional screenshot. The | are important.</td>
                  </tr>
                  <tr>
                     <td>invite</td>
@@ -404,9 +449,13 @@
                     <td>help</td>
                     <td>Displays a link to this page.</td>
                  </tr>
-                  <tr>
+                 <tr>
                     <td>help &lt;query&gt;</td>
                     <td>Searches the commands available to you for something matching that query.</td>
+                 </tr>
+                 <tr>
+                    <td>support</td>
+                    <td>Displays information about supporting Genesis' development.</td>
                  </tr>
               </table>
             </div>
@@ -417,15 +466,27 @@
                  </th>
                  <tr>
                     <td>userinfo &lt;mention|id&gt;</td>
-                    <td>Get info about a user sepcified, or the current user if no user is specified
+                    <td>Get info about a user sepcified, or the current user if no user is specified.</td>
                  </tr>
                  <tr>
                     <td>serverinfo</td>
-                    <td>Get info about the current server.
+                    <td>Get info about the current server.</td>
                  </tr>
                  <tr>
                     <td>create &lt;room|raid|team&gt; &lt;@users to invite&gt; </td>
-                    <td>Create a private room and invite mentioned users to it. (Mentions optional) <br /> - <span class="example">Example <code>create room @Tobiah#8452 @Sphirical#4837</code><span>
+                    <td>Create a private room and invite mentioned users to it. (Mentions optional) <br /> - <span class="example">Example <code>create room @Tobiah#8452 @Sphirical#4837</code><span></td>
+                 </tr>
+                 <tr>
+                    <td>info</td>
+                    <td>Displays general information about Genesis.</td>
+                 </tr>
+                 <tr>
+                    <td>poll:</td>
+                    <td><code>This is an inline command.</code><br />Creates a poll (essentially just adds 3 reactions to the original message).</td>
+                 </tr>
+                 <tr>
+                    <td>[Query]</td>
+                    <td><code>This is an inline command.</code><br />Queries weapons, warframes, and arcanes for the searched query and displays it formattted (or smaller if it has to pull it from the wikia).</td>
                  </tr>
               </table>
             </div>
@@ -436,7 +497,15 @@
                  </th>
                  <tr>
                     <td>hug</td>
-                    <td>Hug Genesis
+                    <td>Hug Genesis</td>
+                 </tr>
+                 <tr>
+                    <td>joke</td>
+                    <td>Genesis tells a joke</td>
+                 </tr>
+                 <tr>
+                    <td>corgi</td>
+                    <td>Genesis gets a corgi picture <code>(Service from <a href="https://github.com/ryands/hubot-corgi" target="_blank">here</a>)</code></td>
                  </tr>
               </table>
             </div>
