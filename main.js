@@ -51,9 +51,9 @@ const nexusFetcher = new NexusFetcher(nexusOptions.nexusKey
 const nexusQuerier = new Nexus(nexusFetcher);
 
 const caches = {
-  pc: new Cache('https://ws.warframestat.us/pc', 600000),
-  xb1: new Cache('https://ws.warframestat.us/xb1', 600000),
-  ps4: new Cache('https://ws.warframestat.us/ps4', 600000),
+  pc: new Cache('https://api.warframestat.us/pc', 600000),
+  xb1: new Cache('https://api.warframestat.us/xb1', 600000),
+  ps4: new Cache('https://api.warframestat.us/ps4', 600000),
   dropCache: new DataCache(logger),
 };
 

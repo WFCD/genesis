@@ -32,18 +32,18 @@ class FrameStats extends Command {
   async run(message) {
     let frame = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://ws.warframestat.us/warframes',
+      uri: 'https://api.warframestat.us/warframes',
       json: true,
     };
     if (frame) {
       frame = frame.trim().toLowerCase();
-      options.uri = `https://ws.warframestat.us/warframes?search=${frame}`;
+      options.uri = `https://api.warframestat.us/warframes?search=${frame}`;
       const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
-      options.uri = 'https://ws.warframestat.us/warframes';
+      options.uri = 'https://api.warframestat.us/warframes';
       const frames = await request(options);
       this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
       return this.messageManager.statuses.FAILURE;

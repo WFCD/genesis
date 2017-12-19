@@ -31,12 +31,12 @@ class FrameProfile extends Command {
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://ws.warframestat.us/tutorials',
+      uri: 'https://api.warframestat.us/tutorials',
       json: true,
     };
     if (query) {
       query = query.trim().toLowerCase();
-      options.uri = `https://ws.warframestat.us/tutorials?search=${query}`;
+      options.uri = `https://api.warframestat.us/tutorials?search=${query}`;
       const results = await request(options);
       if (results.length > 0) {
         results.forEach((tutorial) => {
@@ -45,7 +45,7 @@ class FrameProfile extends Command {
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = 'https://ws.warframestat.us/tutorials';
+    options.uri = 'https://api.warframestat.us/tutorials';
     const tutorials = await request(options);
     this.messageManager.embed(message, {
       title: 'Available Tutorials',

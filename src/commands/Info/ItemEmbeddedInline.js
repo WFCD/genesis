@@ -31,7 +31,7 @@ class FrameStatsInline extends Command {
   async evalQuery(message, query) {
     const strippedQuery = query.replace(/\[|\]/ig, '').trim().toLowerCase();
     const options = {
-      uri: `https://ws.warframestat.us/warframes?search=${strippedQuery}`,
+      uri: `https://api.warframestat.us/warframes?search=${strippedQuery}`,
       json: true,
     };
     let results = await request(options);
@@ -39,7 +39,7 @@ class FrameStatsInline extends Command {
       this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), false, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    options.uri = `https://ws.warframestat.us/weapons?search=${strippedQuery}`;
+    options.uri = `https://api.warframestat.us/weapons?search=${strippedQuery}`;
     results = await request(options);
     if (results.length > 0) {
       this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), false, true);

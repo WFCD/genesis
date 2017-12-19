@@ -32,19 +32,19 @@ class Arcane extends Command {
   async run(message) {
     let arcane = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://ws.warframestat.us/arcanes',
+      uri: 'https://api.warframestat.us/arcanes',
       json: true,
     };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      options.uri = `https://ws.warframestat.us/arcanes?search=${arcane}`;
+      options.uri = `https://api.warframestat.us/arcanes?search=${arcane}`;
       const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = 'https://ws.warframestat.us/arcanes';
+    options.uri = 'https://api.warframestat.us/arcanes';
     const enhancements = await request(options);
     this.messageManager.embed(
       message,

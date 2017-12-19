@@ -34,7 +34,7 @@ class WeaponStats extends Command {
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       const options = {
-        uri: `https://ws.warframestat.us/weapons?search=${weapon}`,
+        uri: `https://api.warframestat.us/weapons?search=${weapon}`,
         json: true,
       };
       const results = await request(options);

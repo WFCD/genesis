@@ -21,7 +21,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
 
     const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
-    this.url = 'https://ws.warframestat.us/';
+    this.url = 'https://api.warframestat.us/';
     if (categoryInValues) {
       this.fields = challenges
         .filter(c => compareCCategory(c, category))
