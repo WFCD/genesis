@@ -15,7 +15,6 @@ class EventEmbed extends BaseEmbed {
     super();
 
     this.color = 0xfdec96;
-    this.url = 'https://ws.warframestat.us/';
     if (event) {
       this.title = `[${platform.toUpperCase()}] ${event.description}`;
       this.fields = [];
@@ -27,9 +26,12 @@ class EventEmbed extends BaseEmbed {
           value: `Defend ${event.victimNode} by attacking the ${event.faction} at ${event.node}.`,
         });
       }
-      if (event.rewards.length > 0) {
-        this.fields.push({ name: 'Rewards', value: event.rewards ? event
-                          .rewards.map(reward => reward.asString).join('; ') : 'No Rewards' });
+      if (event.rewards && event.rewards.length > 0) {
+        this.fields.push({
+          name: 'Rewards',
+          value: event.rewards ? event
+            .rewards.map(reward => reward.asString).join('; ') : 'No Rewards',
+        });
       }
       if (event.maximumScore) {
         this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });

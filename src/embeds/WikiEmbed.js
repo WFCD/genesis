@@ -19,11 +19,11 @@ class WikiEmbed extends BaseEmbed {
     this.url = details.basepath + item.url;
 
     const imgThing = {
-      url: item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : '_ _',
+      url: item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined,
     };
     if (thumbnail) {
       this.thumbnail = imgThing;
-    } else {
+    } else if (imgThing.url) {
       this.image = imgThing;
     }
     this.description = item.abstract;

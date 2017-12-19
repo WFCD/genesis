@@ -1,7 +1,6 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const frames = require('../resources/frames.json');
 
 /**
  * Generates enemy embeds
@@ -9,9 +8,10 @@ const frames = require('../resources/frames.json');
 class FrameEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
-   * @param {Enhancement} frame - The enhancement to send info on
+   * @param {Warframe} frame - The enhancement to send info on
+   * @param {Array.<Warframe>} frames - List of available warframes
    */
-  constructor(bot, frame) {
+  constructor(bot, frame, frames) {
     super();
 
     this.thumbnail = {

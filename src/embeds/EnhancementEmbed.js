@@ -1,7 +1,6 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const arcanes = require('../resources/arcanes.json');
 
 const colors = {
   common: 0x443B25,
@@ -16,8 +15,9 @@ class EnhancementEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Enhancement} enhancement - The enhancement to send info on
+   * @param {Array.<Enhancement>} enhancements - The enhancement to send info on
    */
-  constructor(bot, enhancement) {
+  constructor(bot, enhancement, enhancements) {
     super();
 
     this.thumbnail = {
@@ -48,7 +48,7 @@ class EnhancementEmbed extends BaseEmbed {
       ];
     } else {
       this.title = 'Available Enhancements';
-      this.fields = [{ name: '_ _', value: arcanes.map(profile => profile.name).join('\n') }];
+      this.fields = [{ name: '_ _', value: enhancements.map(profile => profile.name).join('\n') }];
     }
   }
 }

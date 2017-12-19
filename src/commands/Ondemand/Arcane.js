@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 const EnhancementEmbed = require('../../embeds/EnhancementEmbed.js');
-const arcanes = require('../../resources/arcanes.json');
+const request = require('request-promise');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -31,17 +31,25 @@ class Arcane extends Command {
    */
   async run(message) {
     let arcane = message.strippedContent.match(this.regex)[1];
+    const options = {
+      uri: 'https://ws.warframestat.us/arcanes',
+      json: true,
+    };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      const results = arcanes.filter(enhancement => new RegExp(enhancement.regex, 'ig').test(arcane));
+      options.uri = `https://ws.warframestat.us/arcanes?search=${arcane}`;
+      const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
-      this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
-      return this.messageManager.statuses.FAILURE;
     }
-    this.messageManager.embed(message, new EnhancementEmbed(this.bot, undefined), true, false);
+    options.uri = 'https://ws.warframestat.us/arcanes';
+    const enhancements = await request(options);
+    this.messageManager.embed(
+      message,
+      new EnhancementEmbed(this.bot, undefined, enhancements), true, false,
+    );
     return this.messageManager.statuses.FAILURE;
   }
 }

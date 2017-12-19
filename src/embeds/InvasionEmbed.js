@@ -15,7 +15,6 @@ class InvasionEmbed extends BaseEmbed {
     super();
 
     this.color = 0x3498db;
-    this.url = 'https://ws.warframestat.us/';
     if (invasions.length > 1) {
       this.fields = invasions.map((i) => {
         let rewards = i.defenderReward.asString;
