@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
-const weapons = require('../../resources/weapons.json');
+const request = require('request-promise');
 
 /**
  * Displays the stats for a warframe
@@ -33,7 +33,11 @@ class WeaponStats extends Command {
     let weapon = message.strippedContent.match(this.regex)[1];
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
-      const results = weapons.filter(entry => new RegExp(entry.regex, 'ig').test(weapon));
+      const options = {
+        uri: `https://ws.warframestat.us/weapons?search=${weapon}`,
+        json: true,
+      };
+      const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;

@@ -5,9 +5,9 @@ const https = require('https');
 const EventEmitter = require('events');
 
 const worldStateURLs = {
-  pc: 'https://ws.warframestat.us/pc',
-  ps4: 'https://ws.warframestat.us/ps4',
-  xb1: 'https://ws.warframestat.us/xb1',
+  pc: 'https://api.warframestat.us/pc',
+  ps4: 'https://api.warframestat.us/ps4',
+  xb1: 'https://api.warframestat.us/xb1',
 };
 
 class WorldStateCache extends EventEmitter {

@@ -5,6 +5,7 @@
  */
 class BaseEmbed {
   constructor() {
+    this.url = 'https://warframestat.us/';
     this.footer = {
       icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
     };

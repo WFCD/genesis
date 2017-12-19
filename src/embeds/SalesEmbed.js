@@ -16,7 +16,6 @@ class SalesEmbed extends BaseEmbed {
 
     this.color = 0x0000ff;
     this.title = sales[0].isPopular ? `[${platform.toUpperCase()}] Popular Sales ` : `[${platform.toUpperCase()}] Featured Deal`;
-    this.url = 'https://ws.warframestat.us/';
     this.thumbnail = {
       url: 'http://i.imgur.com/i9IXX7P.png',
     };

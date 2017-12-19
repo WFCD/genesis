@@ -1,7 +1,8 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const tutorials = require('../../resources/tutorials.json');
+const request = require('request-promise');
+
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
  */
@@ -12,7 +13,7 @@ class FrameProfile extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.tutorial', 'tutorial', 'Get a Warframe Tutorial Video');
-    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^${this.call}s?\\s?(.+)?`, 'i');
     this.usages = [
       {
         description: 'Get a Warframe Tutorial Video',
@@ -29,16 +30,23 @@ class FrameProfile extends Command {
    */
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
+    const options = {
+      uri: 'https://ws.warframestat.us/tutorials',
+      json: true,
+    };
     if (query) {
       query = query.trim().toLowerCase();
-      JSON.stringify(query);
-      tutorials.forEach((tutorial) => {
-        if (new RegExp(tutorial.regex, 'ig').test(query)) {
-          this.messageManager.reply(message, `Warfame Tutorial | ${tutorial.name} : ${tutorial.url}`, true, true);
-        }
-      });
-      return this.messageManager.statuses.SUCCESS;
+      options.uri = `https://ws.warframestat.us/tutorials?search=${query}`;
+      const results = await request(options);
+      if (results.length > 0) {
+        results.forEach((tutorial) => {
+          this.messageManager.reply(message, `Warfame Tutorial | ${tutorial.name}: ${tutorial.url}`, true, true);
+        });
+        return this.messageManager.statuses.SUCCESS;
+      }
     }
+    options.uri = 'https://ws.warframestat.us/tutorials';
+    const tutorials = await request(options);
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
       fields: [{ name: '_ _', value: tutorials.map(tutorial => tutorial.name).join('\n') }],

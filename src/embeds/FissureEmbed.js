@@ -20,7 +20,6 @@ class FissureEmbed extends BaseEmbed {
     this.thumbnail = {
       url: 'http://i.imgur.com/EfIRu6v.png',
     };
-    this.url = 'https://ws.warframestat.us/';
     if (fissures.length > 1) {
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 

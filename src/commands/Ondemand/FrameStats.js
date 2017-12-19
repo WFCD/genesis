@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
-const frames = require('../../resources/frames.json');
+const request = require('request-promise');
 
 /**
  * Displays the stats for a warframe
@@ -31,17 +31,25 @@ class FrameStats extends Command {
    */
   async run(message) {
     let frame = message.strippedContent.match(this.regex)[1];
+    const options = {
+      uri: 'https://ws.warframestat.us/warframes',
+      json: true,
+    };
     if (frame) {
       frame = frame.trim().toLowerCase();
-      const results = frames.filter(entry => new RegExp(entry.regex, 'ig').test(frame));
+      options.uri = `https://ws.warframestat.us/warframes?search=${frame}`;
+      const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
-      this.messageManager.embed(message, new FrameEmbed(this.bot, undefined), true, false);
+      options.uri = 'https://ws.warframestat.us/warframes';
+      const frames = await request(options);
+      this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    this.messageManager.embed(message, new FrameEmbed(this.bot, undefined), true, false);
+    const frames = await request(options);
+    this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
     return this.messageManager.statuses.FAILURE;
   }
 }
