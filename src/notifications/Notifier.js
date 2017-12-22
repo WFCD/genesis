@@ -71,7 +71,7 @@ class Notifier {
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
-      .filter(e => !ids.includes(e.id) && e.isDiscovered);
+      .filter(e => !ids.includes(e.pid) && e.isDiscovered);
     const alertsToNotify = newData.alerts
       .filter(a => !ids.includes(a.id) && a.rewardTypes.length && !a.expired);
     const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
@@ -282,8 +282,10 @@ class Notifier {
 
   async sendFissures(newFissures, platform) {
     await Promise.all(newFissures
-      .map(f => this.broadcast(new FissureEmbed(this.bot, [f], platform), platform,
-        `fissures.t${f.tierNum}.${f.missionType.toLowerCase()}`, null, fromNow(f.expiry))));
+      .map(f => this.broadcast(
+        new FissureEmbed(this.bot, [f], platform), platform,
+        `fissures.t${f.tierNum}.${f.missionType.toLowerCase()}`, null, fromNow(f.expiry),
+      )));
   }
 
   async sendInvasions(newInvasions, platform) {
