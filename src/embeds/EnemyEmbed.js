@@ -29,9 +29,9 @@ class EnemyEmbed extends BaseEmbed {
     } else if (enemies.length === 1) {
       const e = enemies[0];
       this.title = `[${platform.toUpperCase()}] ${e.agentType}`;
-      this.description = `Enemy ${e.discovered ? 'Discovered' : 'Hiding'}!`;
+      this.description = `Enemy ${e.isDiscovered ? 'Discovered' : 'Hiding'}!`;
       this.color = 0xaf5b4b;
-      this.fields = [{ name: '_ _', value: `**${e.discovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
+      this.fields = [{ name: '_ _', value: `**${e.isDiscovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
         { name: '_ _', value: `**Health Remaining:** ${(100 * Number(e.healthPercent)).toFixed(2)}%` },
         { name: '_ _', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!` }];
     } else {

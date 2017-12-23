@@ -112,7 +112,7 @@ class Notifier {
       .concat(newData.flashSales.map(d => d.id))
       .concat(newData.invasions.map(i => i.id))
       .concat(newData.news.map(n => n.id))
-      .concat(newData.persistentEnemies.map(p => p.id))
+      .concat(newData.persistentEnemies.map(p => p.pid))
       .concat(newData.sortie ? [newData.sortie.id] : [])
       .concat(newData.syndicateMissions.map(m => m.id))
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
