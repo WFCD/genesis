@@ -22,6 +22,27 @@ const deals = ['deals.featured', 'deals.popular'];
 const clantech = ['mutagen', 'fieldron', 'detonite'];
 const resources = ['neuralSensors', 'orokinCell', 'alloyPlate', 'circuits', 'controlModule', 'ferrite', 'gallium', 'morphics', 'nanoSpores', 'oxium', 'rubedo', 'salvage', 'plastids', 'polymerBundle', 'argonCrystal', 'cryotic', 'tellurium'];
 
+const emoji = {
+  vazarin: '<:vazarin:319586146269003778>',
+  madurai: '<:madurai:319586146499690496>',
+  naramon: '<:naramon:319586146478850048>',
+  electricity: '<:electricity:321463957212626944>',
+  cold: '<:cold:321463957019951105>',
+  heat: '<:heat:321463957061763083>',
+  toxin: '<:toxin:321463957325873153>',
+  radiation: '<:radiation:321463957221277706>',
+  viral: '<:viral:321463957292580864>',
+  gas: '<:gas:363136257045561344>',
+  impact: '<:impact:363136256781189120>',
+  puncture: '<:puncture:363136257129185280>',
+  slash: '<:slash:363136256755892225>',
+  koneski: '<:koneski:319586146483044352>',
+  unairu: '<:unairu:319586146453553162>',
+  blast: '<:blast:363136256907149312>',
+  corrosive: '<:corrosive:363136257288568832>',
+  magnetic: '<:magnetic:363136420602445824>',
+};
+
 function createGroupedArray(arr, chunkSize) {
   const groups = [];
   for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
@@ -193,4 +214,14 @@ function getTrackInstructionEmbed(message, prefix, call) {
   return embed;
 }
 
-module.exports = { trackablesFromParameters, getTrackInstructionEmbed, createGroupedArray };
+
+function getEmoji(identifier) {
+  return emoji[identifier] || '';
+}
+
+module.exports = {
+  trackablesFromParameters,
+  getTrackInstructionEmbed,
+  createGroupedArray,
+  getEmoji,
+};
