@@ -20,8 +20,9 @@ class Construction extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings
       .getChannelSetting(message.channel, 'platform');
+    const language = await this.bot.settings.getChannelSetting(message.channel, 'language');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
-    const embed = new EventEmbed(this.bot, ws.constructionProgress, platform.toUpperCase());
+    const embed = new EventEmbed(this.bot, ws.constructionProgress, { platform, language });
     await this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

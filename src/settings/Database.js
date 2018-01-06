@@ -358,6 +358,14 @@ class Database {
     return false;
   }
 
+  async getNotifChannelContext(channelId) {
+    const fakeChannel = { id: channelId };
+    return {
+      language: await this.getChannelSetting(fakeChannel, 'language'),
+      channelId,
+    };
+  }
+
   /**
    * Returns all the channels that should get a notification for the items in the list
    * @param {string} type The type of the event
@@ -379,7 +387,11 @@ class Database {
           AND settings.setting = "platform"  AND settings.val = ${platform || 'pc'} `)
         .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return this.db.query(query);
+      let results = (await this.db.query(query))[0];
+      results = await Promise
+        .all(results
+          .map(result => this.getNotifChannelContext(result.channelId)));
+      return results;
     } catch (e) {
       this.logger.error(e);
       return [];

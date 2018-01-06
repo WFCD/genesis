@@ -1,6 +1,8 @@
 'use strict';
 
-const strings = require('../resources/strings.json');
+const fs = require('fs');
+const path = require('path');
+
 
 class StringManager {
   /**
@@ -16,8 +18,28 @@ class StringManager {
    * @param {Logger} logger something to log with
    */
   constructor(settings, logger = console) {
-    this.settings = settings;
-    this.logger = logger;
+    try {
+      this.settings = settings;
+      this.logger = logger;
+      this.strings = {};
+      this.logger.debug('Building strings...');
+      const stringsDir = path.join(__dirname, '../l10n');
+      const files = fs.readdirSync(stringsDir).filter(f => f.indexOf('.json') > -1);
+      if (files) {
+        files.forEach((file) => {
+          if (file) {
+            logger.debug(file);
+            // eslint-disable-next-line import/no-dynamic-require, global-require
+            this.strings[file.replace(/\.json/ig, '')] = require(path.join(stringsDir, file));
+          }
+        });
+        this.logger.debug(`Files set: ${Object.keys(this.strings).length}`);
+        this.logger.debug(`Build strings for languages: ${Object.keys(this.strings)
+          .map(language => `${language}: ${Object.keys(this.strings[language]).length} `).join(', ')}`);
+      }
+    } catch (e) {
+      logger.error(e);
+    }
   }
 
   /**
@@ -27,23 +49,31 @@ class StringManager {
    *                          as well as for fetching settings
    * @returns {string} String promise with the corresponding string
    */
-  async getString(stringId, message, { command = '' } = {}) {
-    const language = this.settings.getChannelSetting(message.channel, 'language');
-    const lang = language !== null ? language : 'en_US';
-    let resStr = strings.languages[`${lang}`][`${stringId}`];
-    if (typeof resStr !== 'undefined') {
-      if (message !== null) {
-        resStr = resStr.replace(/\$author/i, message.author.toString())
-          .replace(/\$message/i, message.cleanContent)
-          .replace(/\$channel/i, message.channel.name)
-          .replace(/\$ch_mntn/i, message.channel.toString());
+  getString(stringId, message, { command = '', replacements = undefined, language = 'en' } = {}) {
+    try {
+      let resStr = this.strings[`${language}`][`${stringId}`] || stringId;
+      if (typeof resStr !== 'undefined') {
+        if (typeof message !== 'undefined') {
+          resStr = resStr.replace(/\$author/i, message.author.toString())
+            .replace(/\$message/i, message.cleanContent)
+            .replace(/\$channel/i, message.channel.name)
+            .replace(/\$ch_mntn/i, message.channel.toString());
+        }
+        if (replacements) {
+          Object.keys(replacements).forEach((replacement) => {
+            resStr = resStr.replace(new RegExp(`\\$${replacement}`, 'ig'), replacements[`${replacement}`]);
+          });
+        }
+        if (typeof command !== 'undefined' && command !== '') {
+          resStr = resStr.replace(/\$command/i, command);
+        }
+        return resStr;
       }
-      if (command !== '') {
-        resStr = resStr.replace(/\$command/i, command);
-      }
-      return resStr;
+      this.logger.error(`Couldn't find string ${stringId}`);
+      return '';
+    } catch (e) {
+      this.logger.error(e);
     }
-    this.logger.error(`Couldn't find string ${stringId}`);
     return '';
   }
 }

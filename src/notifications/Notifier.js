@@ -79,44 +79,44 @@ class Notifier {
     const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
       !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
     const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
-    const eventsToNotify = newData.events
-      .filter(e => !ids.includes(e.id) && !e.expired);
-    const invasionsToNotify = newData.invasions
-      .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
-    const featuredDealsToNotify = newData.flashSales
-      .filter(d => !ids.includes(d.id) && d.isFeatured);
-    const fissuresToNotify = newData.fissures
-      .filter(f => !ids.includes(f.id) && !f.expired);
-    const newsToNotify = newData.news
-      .filter(n => !ids.includes(n.id)
-              && !n.primeAccess && !n.update && !n.stream && n.translations.en);
-    const popularDealsToNotify = newData.flashSales
-      .filter(d => !ids.includes(d.id) && d.isPopular);
-    const primeAccessToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
-    const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
-        && !newData.sortie.expired ? newData.sortie : undefined;
-    const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
-    const updatesToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
-    const streamsToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-    const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
+    // const eventsToNotify = newData.events
+    //   .filter(e => !ids.includes(e.id) && !e.expired);
+    // const invasionsToNotify = newData.invasions
+    //   .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
+    // const featuredDealsToNotify = newData.flashSales
+    //   .filter(d => !ids.includes(d.id) && d.isFeatured);
+    // const fissuresToNotify = newData.fissures
+    //   .filter(f => !ids.includes(f.id) && !f.expired);
+    // const newsToNotify = newData.news
+    //   .filter(n => !ids.includes(n.id)
+    //           && !n.primeAccess && !n.update && !n.stream && n.translations.en);
+    // const popularDealsToNotify = newData.flashSales
+    //   .filter(d => !ids.includes(d.id) && d.isPopular);
+    // const primeAccessToNotify = newData.news
+    //   .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
+    // const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
+    //     && !newData.sortie.expired ? newData.sortie : undefined;
+    // const syndicateToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
+    // const updatesToNotify = newData.news
+    //   .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
+    // const streamsToNotify = newData.news
+    //   .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
+    // const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
     // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
       .concat(newData.conclaveChallenges.map(c => c.id))
       .concat(newData.dailyDeals.map(d => d.id))
-      .concat(newData.events.map(e => e.id))
-      .concat(newData.fissures.map(f => f.id))
-      .concat(newData.flashSales.map(d => d.id))
-      .concat(newData.invasions.map(i => i.id))
-      .concat(newData.news.map(n => n.id))
+      // .concat(newData.events.map(e => e.id))
+      // .concat(newData.fissures.map(f => f.id))
+      // .concat(newData.flashSales.map(d => d.id))
+      // .concat(newData.invasions.map(i => i.id))
+      // .concat(newData.news.map(n => n.id))
       .concat(newData.persistentEnemies.map(p => p.pid))
-      .concat(newData.sortie ? [newData.sortie.id] : [])
-      .concat(newData.syndicateMissions.map(m => m.id))
-      .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
-      .concat([newData.cetusCycle.id]);
+      // .concat(newData.sortie ? [newData.sortie.id] : [])
+      // .concat(newData.syndicateMissions.map(m => m.id))
+      .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : []);
+    // .concat([newData.cetusCycle.id]);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -126,61 +126,64 @@ class Notifier {
       this.sendBaro(baroToNotify, platform);
     }
     if (conclaveToNotify && conclaveToNotify.length > 0) {
-      this.sendConclaveDailies(conclaveToNotify, platform);
-      this.sendConclaveWeeklies(conclaveToNotify, platform);
+      this.sendConclaveDailies(conclaveToNotify.filter(c => c.category === 'day'), platform);
+      this.sendConclaveWeeklies(conclaveToNotify.filter(c => c.category === 'week'), platform);
     }
     this.sendDarvo(dailyDealsToNotify, platform);
-    this.sendEvent(eventsToNotify, platform);
-    this.sendFeaturedDeals(featuredDealsToNotify, platform);
-    this.sendFissures(fissuresToNotify, platform);
-    this.sendNews(newsToNotify, platform);
-    this.sendStreams(streamsToNotify, platform);
-    this.sendPopularDeals(popularDealsToNotify, platform);
-    this.sendPrimeAccess(primeAccessToNotify, platform);
-    this.sendInvasions(invasionsToNotify, platform);
-    if (sortieToNotify) {
-      this.sendSortie(sortieToNotify, platform);
-    }
-    if (syndicateToNotify && syndicateToNotify.length > 0) {
-      this.sendSyndicateArbiters(syndicateToNotify, platform);
-      this.sendSyndicatePerrin(syndicateToNotify, platform);
-      this.sendSyndicateSuda(syndicateToNotify, platform);
-      this.sendSyndicateMeridian(syndicateToNotify, platform);
-      this.sendSyndicateLoka(syndicateToNotify, platform);
-      this.sendSyndicateVeil(syndicateToNotify, platform);
-      this.sendSyndicateOstrons(syndicateToNotify, platform);
-      this.sendSyndicateAssassins(syndicateToNotify, platform);
-    }
-    if (cetusCycleChange) {
-      this.sendCetusCycle(newData.cetusCycle, platform);
-    }
-    await this.sendUpdates(updatesToNotify, platform);
+    // this.sendEvent(eventsToNotify, platform);
+    // this.sendFeaturedDeals(featuredDealsToNotify, platform);
+    // this.sendFissures(fissuresToNotify, platform);
+    // this.sendNews(newsToNotify, platform);
+    // this.sendStreams(streamsToNotify, platform);
+    // this.sendPopularDeals(popularDealsToNotify, platform);
+    // this.sendPrimeAccess(primeAccessToNotify, platform);
+    // this.sendInvasions(invasionsToNotify, platform);
+    // if (sortieToNotify) {
+    //   this.sendSortie(sortieToNotify, platform);
+    // }
+    // if (syndicateToNotify && syndicateToNotify.length > 0) {
+    //   this.sendSyndicateArbiters(syndicateToNotify, platform);
+    //   this.sendSyndicatePerrin(syndicateToNotify, platform);
+    //   this.sendSyndicateSuda(syndicateToNotify, platform);
+    //   this.sendSyndicateMeridian(syndicateToNotify, platform);
+    //   this.sendSyndicateLoka(syndicateToNotify, platform);
+    //   this.sendSyndicateVeil(syndicateToNotify, platform);
+    //   this.sendSyndicateOstrons(syndicateToNotify, platform);
+    //   this.sendSyndicateAssassins(syndicateToNotify, platform);
+    // }
+    // if (cetusCycleChange) {
+    //   this.sendCetusCycle(newData.cetusCycle, platform);
+    // }
+    // await this.sendUpdates(updatesToNotify, platform);
   }
 
   /**
   * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
+   * @param  {Object} embeds      Mapped embeds to send to a channel
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
    * @param  {Array}  [items=[]] Items to broadcast
    * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
    */
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
-    const channels = await this.bot.settings.getNotifications(type, platform, items);
-    const results = [];
-    channels.forEach((channelResults) => {
-      channelResults.forEach((result) => {
+  async broadcast(embeds, platform, type, items = [], deleteAfter = 0) {
+    if (embeds && Object.keys(embeds).length) {
+      const channels = await this.bot.settings.getNotifications(type, platform, items);
+      const results = [];
+      channels.forEach((result) => {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
-            results.push(this.sendWithPrepend(channel, embed, type, items, deleteAfter));
+            results.push(this.sendWithPrepend(
+              channel,
+              embeds[result.language], type, items, deleteAfter,
+            ));
           } else if (channel.type === 'dm') {
-            results.push(this.messageManager.embedToChannel(channel, embed, '', deleteAfter));
+            results.push(this.messageManager.embedToChannel(channel, embeds[result.language], '', deleteAfter));
           }
         }
       });
-    });
-    await Promise.all(results);
+      await Promise.all(results);
+    }
   }
 
   async sendWithoutPrepend(channel, embed, deleteAfter) {
@@ -221,55 +224,65 @@ class Notifier {
     await this.settings.setNotifiedIds(platform, this.bot.shardId, ids);
   }
 
-  async sendAcolytes(newAcolytes, platform) {
-    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(
-      this.bot,
-      [a], platform,
-    ), platform, 'enemies', null, 3600000)));
-  }
-
-  async sendAlerts(newAlerts, platform) {
-    if (newAlerts.length) {
-      this.logger.debug(`New Alerts! ${newAlerts.length}`);
-    }
-    await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
-  }
-
-  async sendAlert(a, platform) {
-    const embed = new AlertEmbed(this.bot, [a], platform);
+  async embedForLang(platform, language, a, Embed) {
+    const embed = new Embed(this.bot, a, { platform, language });
     try {
-      const thumb = await getThumbnailForItem(a.mission.reward.itemString);
-      if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
-        embed.thumbnail.url = thumb;
+      if (a.mission && a.rewardTypes && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
+        const thumb = await getThumbnailForItem(a.mission.reward.itemString);
+        embed.thumbnail.url = thumb || embed.thumbnail.url;
       }
     } catch (e) {
       this.logger.error(e);
-    } finally {
-      await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
     }
+    return { language, embed };
+  }
+
+  async sendNotificationForArrayItem(item, platform, group, rewards, deleteAfter, Embed) {
+    const embeds = {};
+    (await Promise.all(Object.keys(this.bot.stringManager.strings)
+      .map(language => this.embedForLang(platform, language, [item], Embed))))
+      .forEach((result) => {
+        embeds[result.language] = result.embed;
+      });
+    return this.broadcast(embeds, platform, group, rewards, deleteAfter);
+  }
+
+  async sendNotificationForItem(item, platform, group, rewards, deleteAfter, Embed) {
+    const embeds = {};
+    (await Promise.all(Object.keys(this.bot.stringManager.strings)
+      .map(language => this.embedForLang(platform, language, item, Embed))))
+      .forEach((result) => {
+        embeds[result.language] = result.embed;
+      });
+    return this.broadcast(embeds, platform, group, rewards, deleteAfter);
+  }
+
+  async sendAcolytes(newAcolytes, platform) {
+    await Promise.all(newAcolytes.map(a => this.sendNotificationForArrayItem(a, platform, 'enemies', null, 3600000, EnemyEmbed)));
+  }
+
+  async sendAlerts(newAlerts, platform) {
+    await Promise.all(newAlerts.map(a => this.sendNotificationForArrayItem(a, platform, 'alerts', a.rewardTypes, fromNow(a.expiry), AlertEmbed)));
   }
 
   async sendBaro(newBaro, platform) {
-    const embed = new VoidTraderEmbed(this.bot, newBaro, platform);
-    await this.broadcast(embed, platform, 'baro', null);
+    await this.sendNotificationForItem(newBaro, platform, 'baro', null, null, VoidTraderEmbed);
   }
 
   async sendConclaveDailies(newDailies, platform) {
-    if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day', platform);
-      await this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
+    if (newDailies.length > 0) {
+      await this.sendNotificationForItem(newDailies, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry), ConclaveChallengeEmbed);
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
-    if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week', platform);
-      await this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
+    if (newWeeklies.length > 0) {
+      await this.sendNotificationForItem(newWeeklies, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry), ConclaveChallengeEmbed);
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map(d => this.broadcast(new DarvoEmbed(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
+    await Promise.all(newDarvoDeals.map(d => this.sendNotificationForItem(d, platform, 'darvo', null, fromNow(d.expiry), DarvoEmbed)));
   }
 
   async sendEvent(newEvents, platform) {

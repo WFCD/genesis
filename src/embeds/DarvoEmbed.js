@@ -11,18 +11,34 @@ class DarvoEmbed extends BaseEmbed {
    * @param {DailyDeal} deal - The deal to be included in the embed
    * @param {string} platform - platform
    */
-  constructor(bot, deal, platform) {
+  constructor(bot, deal, { platform = 'pc', language = 'en' }) {
     super();
 
     this.color = 0x0000ff;
-    this.title = `[${platform.toUpperCase()}] Darvo Deal`;
+    this.title = bot.stringManager.getString('darvo_title', undefined, {
+      language, replacements: { platform: platform.toUpperCase() },
+    });
     this.thumbnail = {
       url: 'http://i.imgur.com/UotylUm.png',
     };
     this.fields = [
       {
-        name: `${deal.item}, ${deal.salePrice}p - ${deal.total - deal.sold}/${deal.total} left`,
-        value: `Original price: ${deal.originalPrice}p, expires in ${deal.eta}`,
+        name: bot.stringManager.getString('darvo_remaining', undefined, {
+          language,
+          replacements: {
+            item: deal.item,
+            sale: deal.salePrice,
+            remaining: deal.total - deal.sold,
+            total: deal.total,
+          },
+        }),
+        value: bot.stringManager.getString('darvo_original_expires', undefined, {
+          language,
+          replacements: {
+            original: deal.originalPrice,
+            eta: deal.eta,
+          },
+        }),
       },
     ];
   }

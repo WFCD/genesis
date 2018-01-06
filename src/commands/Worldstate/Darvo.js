@@ -19,9 +19,13 @@ class Darvo extends Command {
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const language = await this.bot.settings.getChannelSetting(message.channel, 'language');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const deal = ws.dailyDeals[0];
-    await this.messageManager.embed(message, new DarvoEmbed(this.bot, deal, platform), true, false);
+    await this.messageManager.embed(
+      message,
+      new DarvoEmbed(this.bot, deal, { platform, language }), true, false,
+    );
     return this.messageManager.statuses.SUCCESS;
   }
 }

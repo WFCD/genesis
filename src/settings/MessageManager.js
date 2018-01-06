@@ -139,8 +139,9 @@ class MessaageManager {
    * @param {boolean} deleteResponse True to delete the sent message after time
    * @returns {Promise<Message>}
    */
-  async sendDirectMessageToUser(user, content, deleteResponse) {
-    return await user.send(content);
+  async sendDirectMessageToUser(user, content) {
+    this.logger.debug(`Direct message ${content} to user ${user}`);
+    return user.send(content);
   }
 
   /**

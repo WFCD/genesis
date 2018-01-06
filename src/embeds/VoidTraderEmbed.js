@@ -11,7 +11,7 @@ class VoidTraderEmbed extends BaseEmbed {
    * @param {VoidTrader} voidTrader - The current state of the Void Trader
    * @param {string} platform - platform
    */
-  constructor(bot, voidTrader, platform) {
+  constructor(bot, voidTrader, { platform = 'pc', language = 'en' }) {
     super();
 
     this.color = voidTrader.active ? 0x0EC9FF : 0xff6961;
@@ -26,10 +26,19 @@ class VoidTraderEmbed extends BaseEmbed {
       this.fields = [];
     }
     this.fields.push({
-      name: `Time until ${voidTrader.active ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
-      value: `${voidTrader.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
+      name: bot.stringManager.getString('void_trader_time', undefined, {
+        language,
+        replacements: {
+          action: voidTrader.active ?
+            bot.stringManager.getString('void_trader_departure', undefined, { language }) :
+            bot.stringManager.getString('void_trader_arrival', undefined, { language }),
+          location: voidTrader.location,
+        },
+      }),
+      value: `${voidTrader.active ? voidTrader.endString : voidTrader.startString}`
+        || bot.stringManager.getString('datapending', undefined, { language }),
     });
-    this.title = `[${platform.toUpperCase()}] Worldstate - Void Trader`;
+    this.title = bot.stringManager.getString('void_trader_title', undefined, { language, replacements: { platform: platform.toUpperCase() } });
     this.thumbnail = {
       url: 'http://i.imgur.com/z0wU29P.png',
     };

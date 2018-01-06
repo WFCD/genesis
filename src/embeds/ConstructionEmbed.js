@@ -11,15 +11,23 @@ class ConstructionEmbed extends BaseEmbed {
    * @param {Construction} constructionProgress - The current construction information
    * @param {string} platform - The platform the event is for
    */
-  constructor(bot, constructionProgress, platform) {
+  constructor(bot, constructionProgress, { platform = 'pc', language = 'en' }) {
     super();
 
     this.color = 0xff6961;
     this.fields = [{
-      name: `[${platform.toUpperCase()}] Construction Status:`,
-      value: `\`Razorback: ${constructionProgress.razorbackProgress}\`\n` +
-      `\`Fomorian:  ${constructionProgress.fomorianProgress}\`\n` +
-      `\`Unknown:   ${constructionProgress.unknownProgress}\``,
+      name: bot.stringManager.getString(
+        'construction_title', undefined,
+        { language, replacements: { platform: platform.toUpperCase() } },
+      ),
+      value: bot.stringManager.getString('construction_value', undefined, {
+        language,
+        replacements: {
+          razerback: constructionProgress.razorbackProgress,
+          fomorian: constructionProgress.fomorianProgress,
+          unknown: constructionProgress.unknownProgress,
+        },
+      }),
     }];
   }
 }

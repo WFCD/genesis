@@ -16,18 +16,20 @@ class ConclaveChallengeEmbed extends BaseEmbed {
    * @param {string} category - The category of the challenges in the embed
    * @param {string} platform - The platform for the information
    */
-  constructor(bot, challenges, category, platform) {
+  constructor(bot, challenges, { platform = 'pc', language = 'en', category }) {
     super();
-
-    const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
+    const useableCategory = category || challenges[0] ? challenges[0].category.trim() : 'all';
+    const categoryInValues = typeof useableCategory !== 'undefined' && values.indexOf(useableCategory.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
-    this.url = 'https://api.warframestat.us/';
     if (categoryInValues) {
       this.fields = challenges
-        .filter(c => compareCCategory(c, category))
+        .filter(c => compareCCategory(c, useableCategory))
         .map(c => ({
           name: c.mode,
-          value: `${c.description} expires in ${c.endString}`,
+          value: bot.stringManager.getString('desc_w_expire', undefined, {
+            language,
+            replacements: { 0: c.description, 1: c.endString },
+          }),
         }));
     } else {
       this.fields = [{
@@ -35,7 +37,10 @@ class ConclaveChallengeEmbed extends BaseEmbed {
         value: `Valid values: ${values.join(', ')}`,
       }];
     }
-    this.title = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
+    this.title = bot.stringManager.getString('conclave_title', undefined, {
+      language,
+      replacements: { platform: platform ? `[${platform.toUpperCase()}] ` : '', category: useableCategory || 'none' },
+    });
     this.thumbnail = {
       url: 'http://i.imgur.com/KDzKPYA.png',
     };

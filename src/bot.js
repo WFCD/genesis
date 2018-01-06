@@ -8,6 +8,7 @@ const Database = require('./settings/Database.js');
 const Tracker = require('./Tracker.js');
 const MessageManager = require('./settings/MessageManager.js');
 const Notifier = require('./notifications/Notifier.js');
+const StringManager = require('./settings/StringManager.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -192,6 +193,8 @@ class Genesis {
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB || 'genesis',
     }, this);
+
+    this.stringManager = new StringManager(this.settings, logger);
 
     /**
      * Objects holding worldState data, one for each platform
