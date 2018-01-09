@@ -37,9 +37,9 @@ class MessaageManager {
    * @param {boolean} deleteResponse True to delete the sent message after time
    */
   async sendMessage(message, content, deleteOriginal, deleteResponse) {
-    if ((message.channel.type === 'text' &&
+    if (message.channel && ((message.channel.type === 'text' &&
         message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
-        || message.channel.type === 'dm') {
+        || message.channel.type === 'dm')) {
       const msg = await message.channel.send(`${this.zSWC}${content}`);
       await this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
     }
