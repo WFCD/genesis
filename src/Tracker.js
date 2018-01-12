@@ -77,6 +77,7 @@ class Tracker {
           shardcount: parseInt(this.shardCount, 10),
         },
         json: true,
+        rejectUnauthorized: false,
       };
       try {
         const parsedBody = await request(requestBody);
@@ -108,6 +109,7 @@ class Tracker {
           server_count: parseInt(guildsLen, 10),
         },
         json: true,
+        rejectUnauthorized: false,
       };
       try {
         const parsedBody = await request(requestBody);
@@ -139,6 +141,7 @@ class Tracker {
           server_count: parseInt(guildsLen, 10),
         },
         json: true,
+        rejectUnauthorized: false,
       };
       try {
         const parsedBody = await request(requestBody);
@@ -173,6 +176,7 @@ class Tracker {
         value: 1,
       },
       json: true,
+      rejectUnauthorized: false,
     };
     const parsedBody = await request(requestBody);
     this.logger.debug(parsedBody);
