@@ -36,6 +36,7 @@ class WeaponStats extends Command {
       const options = {
         uri: `https://api.warframestat.us/weapons?search=${weapon}`,
         json: true,
+        rejectUnauthorized: false,
       };
       const results = await request(options);
       if (results.length > 0) {
