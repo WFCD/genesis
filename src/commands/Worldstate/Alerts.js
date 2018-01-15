@@ -27,19 +27,19 @@ class Alerts extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    
+
     const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const alerts = ws.alerts.filter(a => !a.expired);
-    
+
     if (compact) {
       await this.messageManager
-      .embed(message, new AlertEmbed(this.bot, alerts, platform), true, false);
+        .embed(message, new AlertEmbed(this.bot, alerts, platform), true, false);
     } else {
       await Promise.all(alerts.map(alert => this.messageManager
-      .embed(message, new AlertEmbed(this.bot, [alert], platform), true, false)));
+        .embed(message, new AlertEmbed(this.bot, [alert], platform), true, false)));
     }
-    
+
     return this.messageManager.statuses.SUCCESS;
   }
 }
