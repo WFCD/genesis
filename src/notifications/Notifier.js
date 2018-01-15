@@ -73,7 +73,7 @@ class Notifier {
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.pid) && e.isDiscovered);
     const alertsToNotify = newData.alerts
-      .filter(a => !ids.includes(a.id) && !a.expired);
+      .filter(a => !ids.includes(a.id) && a.rewardTypes.length && !a.expired);
     const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
       newData.voidTrader : undefined;
     const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
@@ -245,7 +245,7 @@ class Notifier {
     } catch (e) {
       this.logger.error(e);
     } finally {
-      await this.broadcast(embed, platform, 'alerts', a.rewardTypes || ['a.credits'], fromNow(a.expiry));
+      await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
     }
   }
 
