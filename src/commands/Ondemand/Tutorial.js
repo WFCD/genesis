@@ -33,7 +33,6 @@ class FrameProfile extends Command {
     const options = {
       uri: 'https://api.warframestat.us/tutorials',
       json: true,
-      rejectUnauthorized: false,
     };
     if (query) {
       query = query.trim().toLowerCase();
