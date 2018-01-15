@@ -245,7 +245,7 @@ class Notifier {
     } catch (e) {
       this.logger.error(e);
     } finally {
-      await this.broadcast(embed, platform, 'alerts', a.rewardTypes || ['a.credits'], fromNow(a.expiry));
+      await this.broadcast(embed, platform, 'alerts', a.rewardTypes || ['credits'], fromNow(a.expiry));
     }
   }
 
