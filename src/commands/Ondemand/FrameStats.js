@@ -34,7 +34,6 @@ class FrameStats extends Command {
     const options = {
       uri: 'https://api.warframestat.us/warframes',
       json: true,
-      rejectUnauthorized: false,
     };
     if (frame) {
       frame = frame.trim().toLowerCase();
