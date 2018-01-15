@@ -41,8 +41,7 @@
     "kavatGene",
     "kubrowEgg",
     "traces",
-    "other",
-    "credits"
+    "other"
   ],
   "eventTypes": [
     "alerts",
