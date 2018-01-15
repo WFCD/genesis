@@ -500,7 +500,7 @@ class Database {
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
     const res = await this.db.query(query);
-    if (!res || res[0].length === 0) {
+    if (res[0].length === 0) {
       return 'none';
     }
     return res.rows[0].allowed;
@@ -518,7 +518,7 @@ class Database {
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
     const res = await this.db.query(query);
-    if (!res || res[0].length === 0) {
+    if (res[0].length === 0) {
       return 'none';
     }
     return res.rows[0].allowed === 1;
