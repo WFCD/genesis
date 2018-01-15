@@ -33,7 +33,6 @@ class FrameStatsInline extends Command {
     const options = {
       uri: `https://api.warframestat.us/warframes?search=${strippedQuery}`,
       json: true,
-      rejectUnauthorized: false,
     };
     let results = await request(options);
     if (results.length > 0) {
