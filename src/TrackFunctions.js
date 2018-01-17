@@ -51,7 +51,6 @@ function createGroupedArray(arr, chunkSize) {
   return groups;
 }
 
-
 function trackablesFromParameters(paramString) {
   let items = paramString.split(' ');
 
@@ -214,14 +213,55 @@ function getTrackInstructionEmbed(message, prefix, call) {
   return embed;
 }
 
-
 function getEmoji(identifier) {
   return emoji[identifier] || '';
 }
+
+/**
+ * @param   {number} millis The number of milliseconds in the time delta
+ * @returns {string}
+ */
+const timeDeltaToString = (millis) => {
+  if (typeof millis !== 'number') {
+    throw new TypeError('millis should be a number');
+  }
+  const timePieces = [];
+  const prefix = millis < 0 ? '-' : '';
+  let seconds = Math.abs(millis / 1000);
+
+  // Seconds in a day
+  if (seconds >= 86400) {
+    timePieces.push(`${Math.floor(seconds / 86400)}d`);
+    seconds = Math.floor(seconds) % 86400;
+  }
+  // Seconds in an hour
+  if (seconds >= 3600) {
+    timePieces.push(`${Math.floor(seconds / 3600)}h`);
+    seconds = Math.floor(seconds) % 3600;
+  }
+  if (seconds >= 60) {
+    timePieces.push(`${Math.floor(seconds / 60)}m`);
+    seconds = Math.floor(seconds) % 60;
+  }
+  if (seconds >= 0) {
+    timePieces.push(`${Math.floor(seconds)}s`);
+  }
+  return `${prefix}${timePieces.join(' ')}`;
+};
+
+/**
+ * Returns the number of milliseconds between now and a given date
+ * @param   {Date} d         The date from which the current time will be subtracted
+ * @param   {function} [now] A function that returns the current UNIX time in milliseconds
+ * @returns {number}
+ */
+const fromNow = (d, now = Date.now) => d.getTime() - now();
 
 module.exports = {
   trackablesFromParameters,
   getTrackInstructionEmbed,
   createGroupedArray,
   getEmoji,
+  timeDeltaToString,
+  fromNow,
 };

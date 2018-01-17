@@ -29,10 +29,13 @@ function fromNow(d, now = Date.now) {
 }
 
 async function getThumbnailForItem(query) {
-  const articles = await warframe.getSearchList({ query, limit: 1 });
-  const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-  const item = Object.values(details.items)[0];
-  return item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+  if (query) {
+    const articles = await warframe.getSearchList({ query, limit: 1 });
+    const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+    const item = Object.values(details.items)[0];
+    return item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+  }
+  return undefined;
 }
 
 /**
@@ -152,7 +155,10 @@ class Notifier {
       this.sendSyndicateAssassins(syndicateToNotify, platform);
     }
     if (cetusCycleChange) {
-      this.sendCetusCycle(newData.cetusCycle, platform);
+      this.sendCetusCycle(
+        newData.cetusCycle, platform,
+        newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0].expiry,
+      );
     }
     await this.sendUpdates(updatesToNotify, platform);
   }
@@ -396,7 +402,8 @@ class Notifier {
     }
   }
 
-  async sendCetusCycle(newCetusCycle, platform) {
+  async sendCetusCycle(newCetusCycle, platform, bountyExpiry) {
+    newCetusCycle.bountyExpiry = bountyExpiry; // eslint-disable-line no-param-reassign
     await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle), platform, 'cetus', null, fromNow(newCetusCycle.expiry));
   }
 }

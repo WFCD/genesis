@@ -40,7 +40,7 @@ class EarthCycle extends Command {
       cycleData = ws.earthCycle;
     } else {
       cycleData = ws.cetusCycle;
-      cycleData.bountyExpireStr = `\nBounties expire in ${ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0].eta}`;
+      cycleData.bountyExpiry = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0].expiry;
     }
     const embed = new EarthCycleEmbed(this.bot, cycleData);
     await this.messageManager.embed(message, embed, true, true);
