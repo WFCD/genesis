@@ -1,6 +1,5 @@
 ### Genesis Issue
 ---
----
 
 **Summary (short):**
 
