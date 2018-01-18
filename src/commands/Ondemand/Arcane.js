@@ -34,6 +34,7 @@ class Arcane extends Command {
     const options = {
       uri: 'https://api.warframestat.us/arcanes',
       json: true,
+      rejectUnauthorized: false,
     };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();

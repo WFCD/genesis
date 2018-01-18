@@ -2,6 +2,8 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+const { timeDeltaToString, fromNow } = require('../TrackFunctions.js');
+
 /**
  * Generates Earth cycle embeds
  */
@@ -21,10 +23,11 @@ class EarthCycleEmbed extends BaseEmbed {
     this.fields = [
       {
         name: '_ _',
-        value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${state.timeLeft}${state.bountyExpireStr || ''}`,
+        value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}` +
+          `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.expiry)))}` : ''}`,
       },
     ];
-    this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts at`;
+    this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts `;
     this.timestamp = new Date(state.expiry);
   }
 }

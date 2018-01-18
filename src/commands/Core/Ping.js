@@ -2,38 +2,7 @@
 
 const ping = require('ping').promise;
 const Command = require('../../Command.js');
-
-/**
- * @param   {number} millis The number of milliseconds in the time delta
- * @returns {string}
- */
-function timeDeltaToString(millis) {
-  if (typeof millis !== 'number') {
-    throw new TypeError('millis should be a number');
-  }
-  const timePieces = [];
-  const prefix = millis < 0 ? '-' : '';
-  let seconds = Math.abs(millis / 1000);
-
-  // Seconds in a day
-  if (seconds >= 86400) {
-    timePieces.push(`${Math.floor(seconds / 86400)}d`);
-    seconds = Math.floor(seconds) % 86400;
-  }
-  // Seconds in an hour
-  if (seconds >= 3600) {
-    timePieces.push(`${Math.floor(seconds / 3600)}h`);
-    seconds = Math.floor(seconds) % 3600;
-  }
-  if (seconds >= 60) {
-    timePieces.push(`${Math.floor(seconds / 60)}m`);
-    seconds = Math.floor(seconds) % 60;
-  }
-  if (seconds >= 0) {
-    timePieces.push(`${Math.floor(seconds)}s`);
-  }
-  return `${prefix}${timePieces.join(' ')}`;
-}
+const { timeDeltaToString } = require('../../TrackFunctions.js');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
