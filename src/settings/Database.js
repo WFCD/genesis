@@ -784,6 +784,10 @@ class Database {
         voiceChannel: this.bot.client.channels.get(value.voice_id),
         category: this.bot.client.channels.get(value.category_id),
         createdAt: value.crt_sec,
+        guildId: value.guild_id,
+        textId: value.guild_id,
+        voiceId: value.guild_id,
+        categoryId: value.guild_id,
       }));
     }
     return [];

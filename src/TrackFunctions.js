@@ -148,6 +148,9 @@ function trackablesFromParameters(paramString) {
         trackables.items = trackables.items.concat(clantech);
       } else if (i === 'resources') {
         trackables.items = trackables.items.concat(resources);
+      } else if (i === 'cetus') {
+        trackables.events.push('cetus.day');
+        trackables.events.push('cetus.night');
       } else if (rewardTypes.includes(item.trim())) {
         trackables.items.push(item.trim());
       } else if (eventTypes.includes(item.trim())) {

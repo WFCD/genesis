@@ -59,6 +59,14 @@ async function checkPrivateRooms(self, shardId) {
             .deletePrivateRoom(room);
         }
       }
+    } else if (room && !(room.voiceChannel || room.textChannel || room.category)) {
+      self.settings
+        .deletePrivateRoom({
+          textChannel: { id: room.textId },
+          voiceChannel: { id: room.voiceId },
+          category: { id: room.categoryId },
+          guild: { id: room.guildId },
+        });
     }
   });
 }
