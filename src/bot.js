@@ -50,7 +50,7 @@ async function checkPrivateRooms(self, shardId) {
           self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
           await room.voiceChannel.delete();
         }
-        if (room.voiceChannel.category) {
+        if (room.category.deletable) {
           self.logger.debug(`Deleting category... ${room.category.id}`);
           await room.category.delete();
         }
