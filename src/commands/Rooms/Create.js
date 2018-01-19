@@ -90,13 +90,26 @@ class Create extends Command {
           const users = getUsersForCall(message);
           const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
           if (users.length < 11 && !message.guild.channels.find('name', name)) {
-            const textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text');
-            const voiceChannel = await message.guild.createChannel(name, 'voice');
-            // set up listener to delete channels if inactive for more than 5 minutes
-            // set up overwrites
-            this.setOverwrites(textChannel, voiceChannel, users, message.guild.id, message.author);
+            const overwrites = this.createOverwrites(
+              users,
+              message.guild.defaultRole.id, message.author,
+            );
+            const category = await message.guild
+              .createChannel(name, 'category', overwrites);
+            let textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
+            textChannel = await textChannel.setParent(category);
+            let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
+            voiceChannel = await voiceChannel.setParent(category);
+
+            // manually add overwrites for "everyone"
+            await category.overwritePermissions(message.guild.defaultRole.id, {
+              CONNECT: false,
+              VIEW_CHANNEL: false,
+            });
+
             // add channel to listenedChannels
-            await this.bot.settings.addPrivateRoom(message.guild, textChannel, voiceChannel);
+            await this.bot.settings
+              .addPrivateRoom(message.guild, textChannel, voiceChannel, category);
             // send users invite link to new rooms
             this.sendInvites(voiceChannel, users, message.author);
             // set room limits
@@ -150,73 +163,37 @@ class Create extends Command {
   }
 
   /**
-   * Set up overwrites for the text channel and voice channel
-   * for the list of users as the team, barring everyone else from joining
-   * @param {TextChannel} textChannel   Text channel to set permissions for
-   * @param {VoiceChannel} voiceChannel Voice channel to set permissions for
+   * Create an array of permissions overwrites for the channel
    * @param {Array.<User>} users        Array of users for whom to allow into channels
    * @param {string} everyoneId         Snowflake id for the everyone role
    * @param {User} author               User object for creator of room
+   * @returns {Array.<PermissionsOVerwrites>}
    */
-  setOverwrites(textChannel, voiceChannel, users, everyoneId, author) {
+  createOverwrites(users, everyoneId, author) {
     // create overwrites
-    const overwritePromises = [];
-    // create text channel perms
-    overwritePromises.push(textChannel.overwritePermissions(everyoneId, {
-      VIEW_CHANNEL: false,
-    }));
-    // create voice channel perms
-    overwritePromises.push(voiceChannel.overwritePermissions(everyoneId, {
-      CONNECT: false,
-      VIEW_CHANNEL: false,
-    }));
-
-    // allow bot to manage channels
-    overwritePromises.push(textChannel.overwritePermissions(this.bot.client.user.id, {
-      VIEW_CHANNEL: true,
-      SEND_MESSAGES: true,
-    }));
-    overwritePromises.push(voiceChannel.overwritePermissions(this.bot.client.user.id, {
-      VIEW_CHANNEL: true,
-      CREATE_INSTANT_INVITE: true,
-      CONNECT: true,
-      SPEAK: true,
-      MUTE_MEMBERS: true,
-      DEAFEN_MEMBERS: true,
-      MOVE_MEMBERS: true,
-      USE_VAD: true,
-      MANAGE_ROLES: true,
-      MANAGE_CHANNELS: true,
-    }));
-
+    const overwrites = [];
+    // this still doesn't work, need to figure out why
+    overwrites.push({
+      id: everyoneId,
+      deny: ['VIEW_CHANNEL', 'CONNECT'],
+    });
+    overwrites.push({
+      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
+      id: this.bot.client.user.id,
+    });
     // set up overwrites per-user
     users.forEach((user) => {
-      overwritePromises.push(textChannel.overwritePermissions(user.id, {
-        VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
-      }));
-      overwritePromises.push(voiceChannel.overwritePermissions(user.id, {
-        VIEW_CHANNEL: true,
-        CONNECT: true,
-        SPEAK: true,
-        USE_VAD: true,
-      }));
+      overwrites.push({
+        id: user.id,
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
+      });
+    });
+    overwrites.push({
+      id: author.id,
+      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS'],
     });
 
-    overwritePromises.push(textChannel.overwritePermissions(author.id, {
-      VIEW_CHANNEL: true,
-      SEND_MESSAGES: true,
-      MANAGE_CHANNELS: true,
-    }));
-    overwritePromises.push(voiceChannel.overwritePermissions(author.id, {
-      VIEW_CHANNEL: true,
-      CONNECT: true,
-      SPEAK: true,
-      USE_VAD: true,
-      MANAGE_CHANNELS: true,
-    }));
-
-    overwritePromises.forEach(promise => promise.catch(this.logger.error));
+    return overwrites;
   }
 
   async setLimits(voiceChannel, type) {
