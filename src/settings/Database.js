@@ -761,25 +761,33 @@ class Database {
     return [];
   }
 
-  async addPrivateRoom(guild, textChannel, voiceChannel) {
-    const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id})`;
+  async addPrivateRoom(guild, textChannel, voiceChannel, category) {
+    const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id}, ${category.id})`;
     return this.db.query(query);
   }
 
-  async deletePrivateRoom(guild, textChannel, voiceChannel) {
-    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id}`;
+  async deletePrivateRoom(room) {
+    const {
+      guild, textChannel, voiceChannel, category,
+    } = room;
+    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id} AND category_id= ${category.id}`;
     return this.db.query(query);
   }
 
   async getPrivateRooms() {
-    const query = SQL`SELECT guild_id, text_id, voice_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
+    const query = SQL`SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0].map(value => ({
         guild: this.bot.client.guilds.get(value.guild_id),
         textChannel: this.bot.client.channels.get(value.text_id),
         voiceChannel: this.bot.client.channels.get(value.voice_id),
+        category: this.bot.client.channels.get(value.category_id),
         createdAt: value.crt_sec,
+        guildId: value.guild_id,
+        textId: value.guild_id,
+        voiceId: value.guild_id,
+        categoryId: value.guild_id,
       }));
     }
     return [];

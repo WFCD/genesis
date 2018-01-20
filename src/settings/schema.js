@@ -77,6 +77,7 @@ module.exports = [
     guild_id BIGINT UNSIGNED NOT NULL,
     text_id BIGINT UNSIGNED NOT NULL,
     voice_id BIGINT UNSIGNED NOT NULL,
+    category_id BIGINT UNSIGNED NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (guild_id, text_id, voice_id)
   );`,

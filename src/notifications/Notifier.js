@@ -155,9 +155,10 @@ class Notifier {
       this.sendSyndicateAssassins(syndicateToNotify, platform);
     }
     if (cetusCycleChange) {
+      const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
       this.sendCetusCycle(
         newData.cetusCycle, platform,
-        newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0].expiry,
+        ostron ? ostron.expiry : undefined,
       );
     }
     await this.sendUpdates(updatesToNotify, platform);
@@ -404,7 +405,7 @@ class Notifier {
 
   async sendCetusCycle(newCetusCycle, platform, bountyExpiry) {
     newCetusCycle.bountyExpiry = bountyExpiry; // eslint-disable-line no-param-reassign
-    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle), platform, 'cetus', null, fromNow(newCetusCycle.expiry));
+    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle), platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry));
   }
 }
 
