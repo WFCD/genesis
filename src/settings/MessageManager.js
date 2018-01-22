@@ -160,12 +160,12 @@ class MessaageManager {
   }
 
   async sendFileToAuthor(message, file, fileName, deleteCall) {
-    const msg = await message.author.send('', { file: { attachment: file, name: fileName } });
+    const msg = await message.author.send('', { files: [{ attachment: file, name: fileName }] });
     return this.deleteCallAndResponse(message, msg, deleteCall, false);
   }
 
   async sendFile(message, prepend, file, fileName, deleteCall) {
-    const msg = await message.channel.send(prepend || '', { file: { attachment: file, name: fileName } });
+    const msg = await message.channel.send(prepend || '', { files: [{ attachment: file, name: fileName }] });
     return this.deleteCallAndResponse(message, msg, deleteCall, false);
   }
 
