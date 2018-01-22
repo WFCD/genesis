@@ -149,6 +149,6 @@
     "fissures.excavation", "fissures.sabotage", "fissures.mobiledefense", "fissures.assassination",
     "fissures.extermination", "fissures.hive", "fissures.defense", "fissures.interception", "fissures.rathuum",
     "fissures.conclave", "fissures.rescue", "fissures.spy", "fissures.survival", "fissures.capture",
-    "fissures.darksector", "fissures.hijack", "fissures.assault", "fissures.evacuation", "fissures"
+    "fissures.darksector", "fissures.hijack", "fissures.assault", "fissures.evacuation", "fissures", "cetus"
   ]
 }
