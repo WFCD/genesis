@@ -92,7 +92,7 @@ class Create extends Command {
           if (users.length < 11 && !message.guild.channels.find('name', name)) {
             const overwrites = this.createOverwrites(
               users,
-              message.guild.defaultRole.id, message.author,
+              message.guild.defaultRole, message.author,
             );
             const category = await message.guild
               .createChannel(name, 'category', overwrites);
@@ -100,12 +100,6 @@ class Create extends Command {
             textChannel = await textChannel.setParent(category);
             let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
             voiceChannel = await voiceChannel.setParent(category);
-
-            // manually add overwrites for "everyone"
-            await category.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-              VIEW_CHANNEL: false,
-            });
 
             // add channel to listenedChannels
             await this.bot.settings
@@ -164,17 +158,17 @@ class Create extends Command {
 
   /**
    * Create an array of permissions overwrites for the channel
-   * @param {Array.<User>} users        Array of users for whom to allow into channels
-   * @param {string} everyoneId         Snowflake id for the everyone role
-   * @param {User} author               User object for creator of room
+   * @param {Array.<User>} users            Array of users for whom to allow into channels
+   * @param {RoleResolvable} everyoneRole   RoleResolvable for the @everyone role
+   * @param {User} author                   User object for creator of room
    * @returns {Array.<PermissionsOVerwrites>}
    */
-  createOverwrites(users, everyoneId, author) {
+  createOverwrites(users, everyoneRole, author) {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
     overwrites.push({
-      id: everyoneId,
+      id: everyoneRole,
       deny: ['VIEW_CHANNEL', 'CONNECT'],
     });
     overwrites.push({
