@@ -190,7 +190,7 @@ class Create extends Command {
     });
     overwrites.push({
       id: author.id,
-      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS'],
+      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
     });
 
     return overwrites;
