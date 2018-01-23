@@ -149,14 +149,18 @@ class Database {
   }
 
   async getGuildSetting(guild, setting) {
-    const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
-    const res = await this.db.query(query);
-    if (res[0].length === 0) {
-      await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
+    if (guild) {
+      const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
+      const res = await this.db.query(query);
+      if (res[0].length === 0) {
+        await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
+        return this.defaults[`${setting}`];
+      }
+      await this.setGuildSetting(guild, setting, res[0][0].val);
+      return res[0][0].val;
+    } else {
       return this.defaults[`${setting}`];
     }
-    await this.setGuildSetting(guild, setting, res[0][0].val);
-    return res[0][0].val;
   }
 
   async checkWebhookAndReturn(channel, setting) {
