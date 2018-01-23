@@ -28,7 +28,7 @@ class Roles extends Command {
    */
   async run(message) {
     const roles = await this.bot.settings.getRolesForGuild(message.guild);
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     if (roles.length > 0) {
       const longest = roles.map(role => role.name)
         .reduce((a, b) => (a.length > b.length ? a : b));

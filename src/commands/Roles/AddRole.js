@@ -95,7 +95,7 @@ class AddRole extends Command {
   }
 
   async sendInstructionEmbed(message) {
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(message, {
       title: 'Usage',
       type: 'rich',

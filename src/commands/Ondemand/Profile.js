@@ -60,7 +60,7 @@ class PriceCheck extends Command {
   }
 
   async sendUsageEmbed(message) {
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     const embed = {
       type: 'rich',
       color: 0x0000ff,

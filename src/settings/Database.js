@@ -103,16 +103,6 @@ class Database {
   }
 
   /**
-   * Deletes a guild from the database
-   * @param {Guild} guild A Discord guild (server)
-   * @returns {Promise}
-   */
-  deleteGuild(guild) {
-    const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id};`;
-    return this.db.query(query);
-  }
-
-  /**
    * Gets the current count of guilds and channels
    * @returns {Promise}
    */
@@ -158,6 +148,17 @@ class Database {
     return this.db.query(query);
   }
 
+  async getGuildSetting(guild, setting) {
+    const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
+      return this.defaults[`${setting}`];
+    }
+    await this.setGuildSetting(guild, setting, res[0][0].val);
+    return res[0][0].val;
+  }
+
   async checkWebhookAndReturn(channel, setting) {
     if (!/webhook/.test(setting)) {
       await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
@@ -173,14 +174,14 @@ class Database {
    * @returns {Promise} setting
    */
   async getChannelSetting(channel, setting) {
-    const query = SQL`SELECT val FROM settings WHERE channel_id=${channel.id} and setting=${setting};`;
+    const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
-        return this.checkWebhookAndReturn(channel, setting);
+      } else {
+        await this.addDMChannel(channel);
       }
-      await this.addDMChannel(channel);
       return this.checkWebhookAndReturn(channel, setting);
     }
     return res[0][0].val;
@@ -321,16 +322,6 @@ class Database {
       .map(result => result.text).join(', ');
   }
 
-  /**
-   * Clear all pings for a guild
-   * @param {Guild} guild The guild
-   * @returns {Promise}
-   */
-  async clearPingsForGuild(guild) {
-    const query = SQL`DELETE FROM pings WHERE guild_id=${guild.id}`;
-    return this.db.query(query);
-  }
-
   async getPingsForGuild(guild) {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
@@ -406,16 +397,6 @@ class Database {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
     const res = await this.db.query(query);
     return res[0].map(r => r.type);
-  }
-
-  async deleteChannelPermissions(channel) {
-    const query = SQL`DELETE FROM channel_permissions WHERE channel_id = ${channel.id}`;
-    return this.db.query(query);
-  }
-
-  async deleteGuildPermissions(guild) {
-    const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guild.id}`;
-    return this.db.query(query);
   }
 
   /**
@@ -530,7 +511,7 @@ class Database {
    * @param {Channel} channel - A Discord channel
    * @param {User} user - A Discord user
    * @param {string} commandId - A command id for designating
-   *                           a command to check permisions for
+   *                           a command to check permissions for
    * @returns {Promise}
    */
   async getChannelPermissionForUserRoles(channel, user, commandId) {
@@ -604,16 +585,27 @@ class Database {
    * @returns {Promise.<string>} status of removal
    */
   async removeGuild(guild) {
+    await this.db.query(SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`);
     const channelIds = guild.channels.keyArray();
     const results = [];
     channelIds.forEach((channelId) => {
       results.push(this.removeChannelPermissions(channelId));
       results.push(this.removeItemNotifications(channelId));
+      results.push(this.removeSettings(channelId));
     });
+    results.push(this.removePrivateChannels(guild.id));
     results.push(this.removeGuildPermissions(guild.id));
     results.push(this.removePings(guild.id));
-    await Promise.all(results);
-    const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id})`;
+    return Promise.all(results);
+  }
+
+  async removeSettings(channelId) {
+    const query = SQL`DELETE FROM settings WHERE settings.channel_id=${channelId};`;
+    return this.db.query(query);
+  }
+
+  async removePrivateChannels(guild) {
+    const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
     return this.db.query(query);
   }
 
@@ -633,7 +625,7 @@ class Database {
    * @returns {Promise.<string>} status of removal
    */
   async removeChannelPermissions(channelId) {
-    const query = SQL`DELETE FROM channel_permisions WHERE channel_id = ${channelId}`;
+    const query = SQL`DELETE FROM channel_permissions WHERE channel_id = ${channelId}`;
     return this.db.query(query);
   }
 
@@ -794,7 +786,7 @@ class Database {
   }
 
   async getCommandContext(channel) {
-    const prefix = await this.getChannelSetting(channel, 'prefix');
+    const prefix = await this.getGuildSetting(channel.guild, 'prefix');
     const allowCustom = await this.getChannelSetting(channel, 'allowCustom') === '1';
     const allowInline = await this.getChannelSetting(channel, 'allowInline') === '1';
     const webhook = {

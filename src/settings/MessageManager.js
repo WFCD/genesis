@@ -139,8 +139,13 @@ class MessaageManager {
    * @param {boolean} deleteResponse True to delete the sent message after time
    * @returns {Promise<Message>}
    */
-  async sendDirectMessageToUser(user, content, deleteResponse) {
-    return await user.send(content);
+  async sendDirectMessageToUser(user, content) {
+    try {
+      return user.send(content);
+    } catch (e) {
+      this.logger.error(e.message);
+      return undefined;
+    }
   }
 
   /**
@@ -222,7 +227,7 @@ class MessaageManager {
       } catch (e) {
         this.logger.error(e);
         await this.settings.deleteWebhooksForChannel(ctx.channel.id);
-        this.logger.error('Could not send webhook for ${ctx.channel.id} attempting after wiping context.');
+        this.logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
         ctx.webhook = undefined;
         return this.webhook(ctx, { text, embed });
       }

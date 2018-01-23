@@ -340,7 +340,7 @@ class Genesis {
     if (!guild.available) {
       return;
     }
-    await this.settings.deleteGuild(guild);
+    await this.settings.removeGuild(guild);
     this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
   }
 
