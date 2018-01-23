@@ -114,7 +114,7 @@ class JoinRole extends Command {
         },
       ],
     };
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.bot.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.map(role => role.name).join('; ');

@@ -50,7 +50,7 @@ class Track extends Command {
   }
 
   async failure(message) {
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(
       message,
       trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,

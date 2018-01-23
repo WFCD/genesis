@@ -29,7 +29,7 @@ class SetPing extends Command {
       const pingString = match[2] ? match[2].trim() : undefined;
 
       if (!eventsAndItems.length) {
-        const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+        const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
         this.messageManager.embed(
           message,
           trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
@@ -52,7 +52,7 @@ class SetPing extends Command {
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     await this.messageManager.embed(message, trackFunctions
       .getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;

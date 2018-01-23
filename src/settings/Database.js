@@ -158,6 +158,17 @@ class Database {
     return this.db.query(query);
   }
 
+  async getGuildSetting(guild, setting) {
+    const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
+      return this.defaults[`${setting}`];
+    }
+    await this.setGuildSetting(guild, setting, res[0][0].val);
+    return res[0][0].val;
+  }
+
   async checkWebhookAndReturn(channel, setting) {
     if (!/webhook/.test(setting)) {
       await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
@@ -173,14 +184,14 @@ class Database {
    * @returns {Promise} setting
    */
   async getChannelSetting(channel, setting) {
-    const query = SQL`SELECT val FROM settings WHERE channel_id=${channel.id} and setting=${setting};`;
+    const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
-        return this.checkWebhookAndReturn(channel, setting);
+      } else {
+        await this.addDMChannel(channel);
       }
-      await this.addDMChannel(channel);
       return this.checkWebhookAndReturn(channel, setting);
     }
     return res[0][0].val;
@@ -794,7 +805,7 @@ class Database {
   }
 
   async getCommandContext(channel) {
-    const prefix = await this.getChannelSetting(channel, 'prefix');
+    const prefix = await this.getGuildSetting(channel.guild, 'prefix');
     const allowCustom = await this.getChannelSetting(channel, 'allowCustom') === '1';
     const allowInline = await this.getChannelSetting(channel, 'allowInline') === '1';
     const webhook = {

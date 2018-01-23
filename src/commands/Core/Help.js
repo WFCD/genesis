@@ -56,7 +56,7 @@ class Help extends Command {
         await this.messageManager.reply(message, this.helpReplyMsg, true, true);
       }
       const config = {
-        prefix: await this.bot.settings.getChannelSetting(message.channel, 'prefix'),
+        prefix: await this.bot.settings.getGuildSetting(message.guild, 'prefix'),
         isOwner: message.author.id === this.bot.owner,
         hasAuth: message.channel.type === 'dm' || message.channel
           .permissionsFor(message.author)

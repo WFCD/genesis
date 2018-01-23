@@ -22,7 +22,7 @@ class Settings extends Command {
     let tokens = [
       `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
       `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
-      `**Prefix:** ${await this.bot.settings.getChannelSetting(channel, 'prefix')}`,
+      `**Prefix:** ${await this.bot.settings.getGuildSetting(message.guild, 'prefix')}`,
       `**Respond to Settings:** ${(await this.bot.settings.getChannelSetting(channel, 'respond_to_settings')) === '1' ? 'yes' : 'no'}`,
       `**Delete Message After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_after_respond')) === '1' ? 'yes' : 'no'}`,
       `**Delete Message Response After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_response')) === '1' ? 'yes' : 'no'}`,
