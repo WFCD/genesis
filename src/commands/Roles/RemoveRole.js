@@ -95,7 +95,7 @@ class RemoveRole extends Command {
   }
 
   async sendInstructionEmbed(message) {
-    const prefix = await this.bot.settings.getChannelSetting(message.channel, 'prefix');
+    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     await this.messageManager.embed(message, {
       title: 'Usage',
       type: 'rich',

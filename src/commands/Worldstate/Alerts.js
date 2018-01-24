@@ -34,10 +34,13 @@ class Alerts extends Command {
 
     if (compact) {
       await this.messageManager
-        .embed(message, new AlertEmbed(this.bot, alerts, platform), true, false);
+        .embed(message, new AlertEmbed(this.bot, alerts, platform), true, true);
     } else {
       await Promise.all(alerts.map(alert => this.messageManager
-        .embed(message, new AlertEmbed(this.bot, [alert], platform), true, false)));
+        .embed(message, new AlertEmbed(this.bot, [alert], platform), false, false)));
+      if (parseInt(await this.bot.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+        message.delete(10000);
+      }
     }
 
     return this.messageManager.statuses.SUCCESS;
