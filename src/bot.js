@@ -110,11 +110,6 @@ class Genesis {
       },
       shardId,
       shardCount,
-      disabledEvents: [
-        'GUILD_BAN_ADD', 'GUILD_BAN_REMOVE', 'CHANNEL_PINS_UPDATE', 'MESSAGE_UPDATE', 'MESSAGE_DELETE_BULK',
-        'MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE', 'MESSAGE_REACTION_REMOVE_ALL', 'USER_NOTE_UPDATE',
-        'TYPING_START',
-      ],
     });
 
     this.shardId = shardId;
