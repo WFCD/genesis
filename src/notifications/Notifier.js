@@ -104,7 +104,7 @@ class Notifier {
       .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-    const cetusCycleChange = !ids.includes(newData.cetusCycle.id);
+    const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.id !== 'cetusCycle0';
     // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
