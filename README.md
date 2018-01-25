@@ -25,9 +25,6 @@ If you do not agree to letting Genesis, Oratoris, or any other bot there do so, 
 
 [![Try Genesis on Discord!](https://discordapp.com/api/guilds/146691885363232769/embed.png?style=banner2)](https://discord.gg/DuFunUv "Try Genesis on Discord!")
 
-[![Get Genesis on Discord](src/resources/ceph-gen-banner.png)](https://bot.discord.io/genesis "Add Cephalon Genesis to your Server!")
-
-
 ## Installation
 
 1. Clone this repo
