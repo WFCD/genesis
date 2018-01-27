@@ -5,7 +5,10 @@
   "main": "main.js",
   "scripts": {
     "test": "npm i",
-    "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c jsdoc.conf -R README.md -r main.js src/. -d docs"
+    "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c jsdoc.conf -R README.md -r main.js src/. -d docs",
+    "start": "pm2 start genesis.json && pm2 logs genesis",
+    "preinstall": "npm i -g pm2",
+    "restart": "pm2 delete genesis && pm2 start genesis.json && pm2 logs genesis"
   },
   "repository": {
     "type": "git",
@@ -31,6 +34,7 @@
     "discord.js": "^11.3.0",
     "json-fetch-cache": "0.0.5",
     "json-query": "^2.2.2",
+    "mysql-cache": "^2.1.2",
     "mysql2": "^1.5.1",
     "nexus-stats-api": "^0.2.4",
     "node-md-config": "^2.0.1",
