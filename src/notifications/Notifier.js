@@ -176,6 +176,7 @@ class Notifier {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
     const results = [];
     channels.forEach((channelResults) => {
+      this.logger.debug(channelResults);
       channelResults.forEach((result) => {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {

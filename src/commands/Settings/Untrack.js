@@ -40,11 +40,11 @@ class Untrack extends Command {
     const channel = this.getChannel(channelParam, message);
 
     const results = [];
-    for (const event of trackables.events) {
-      results.push(this.bot.settings.untrackEventType(channel, event));
+    if (trackables.events.length) {
+      results.push(this.bot.settings.untrackEventTypes(channel, trackables.events));
     }
-    for (const item of trackables.items) {
-      results.push(this.bot.settings.untrackItem(channel, item));
+    if (trackables.items.length) {
+      results.push(this.bot.settings.untrackItems(channel, trackables.items));
     }
     Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);

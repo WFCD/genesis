@@ -33,7 +33,7 @@ levels.forEach((level) => {
       console.log(`[${level}] ${message}`);
     }
 
-    if (level.toLowerCase() === 'fatal') {
+    if (level.toLowerCase() === 'fatal' && this.ravenClient) {
       this.ravenClient.captureMessage(message, {
         level: 'fatal',
       });

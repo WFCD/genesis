@@ -239,7 +239,7 @@ class Genesis {
   }
 
   setupHandlers() {
-    this.client.on('ready', () => this.onReady());
+    this.client.on('ready', async () => this.onReady());
     this.client.on('message', message => this.onMessage(message));
 
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
@@ -250,7 +250,7 @@ class Genesis {
     // kill on disconnect so a new instance can be spawned
     this.client.on('disconnect', (event) => {
       this.logger.debug(`Disconnected with close event: ${event.code}`);
-      // process.exit(4);
+      process.exit(4);
     });
 
     // send welcome_messages
@@ -269,21 +269,22 @@ class Genesis {
     await this.commandHandler.loadCommands();
 
     this.setupHandlers();
+    const t = await this.client.login(this.token);
+    this.logger.debug(`Logged in with token ${t}`);
+
     try {
-      const t = await this.client.login(this.token);
-      this.logger.debug(`Logged in with token ${t}`);
       await this.notifier.start();
     } catch (err) {
-      this.logger.error(err.message);
+      this.logger.error(err);
       this.logger.fatal(err);
-      process.exit(1);
+      process.exit(0);
     }
   }
 
   /**
    * Perform actions when the bot is ready
    */
-  onReady() {
+  async onReady() {
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
     this.client.user.setPresence({
@@ -294,7 +295,7 @@ class Genesis {
         url: 'https://warframe.com',
       },
     });
-    this.settings.ensureData(this.client);
+    await this.settings.ensureData(this.client);
     this.readyToExecute = true;
 
     const self = this;
