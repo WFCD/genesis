@@ -30,7 +30,7 @@ const queryDB = async (query, db, refresh) => {
   // eslint-disable-next-line no-param-reassign
   query.params = query.values;
   if (refresh) {
-    return db.asyncQuery({sql: query, refreshCache: true });
+    return db.queryAsync({sql: query, refreshCache: true });
   }
   return db.queryAsync(query);
 };
