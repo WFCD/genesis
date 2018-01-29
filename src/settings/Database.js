@@ -26,9 +26,12 @@ const makeId = () => {
   return tokens.join('');
 };
 
-const queryDB = async (query, db) => {
+const queryDB = async (query, db, refresh) => {
   // eslint-disable-next-line no-param-reassign
   query.params = query.values;
+  if (refresh) {
+    return db.asyncQuery({sql: query, refreshCache: true });
+  }
   return db.queryAsync(query);
 };
 
@@ -738,7 +741,7 @@ class Database {
     const query = SQL`INSERT INTO notified_ids VALUES
       (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
-    return queryDB(query, this.db);
+    return queryDB(query, this.db, true);
   }
 
   /**
