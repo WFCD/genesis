@@ -26,15 +26,6 @@ const makeId = () => {
   return tokens.join('');
 };
 
-const queryDB = async (query, db, refresh) => {
-  // eslint-disable-next-line no-param-reassign
-  query.params = query.values;
-  if (refresh) {
-    return db.queryAsync({sql: query, refreshCache: true });
-  }
-  return db.queryAsync(query);
-};
-
 /**
  * Persistent storage for the bot
  */
@@ -102,6 +93,20 @@ class Database {
     await Promise.all(promises);
   }
 
+  async queryDB(query, db, refresh) {
+    // eslint-disable-next-line no-param-reassign
+    query.params = query.values;
+    if (refresh) {
+      db.flush((error) => {
+        if (error) {
+          this.logger.error(error);
+        }
+      });
+      return db.queryAsync(query);
+    }
+    return db.queryAsync(query);
+  }
+
   /**
    * Adds a new guild to the database
    * @param {Guild} guild A Discord guild (server)
@@ -114,7 +119,7 @@ class Database {
       query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
     });
 
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -123,7 +128,7 @@ class Database {
    */
   async getChannelAndGuildCounts() {
     const query = 'select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;';
-    const res = queryDB(query, this.db);
+    const res = this.queryDB(query, this.db);
     if (res[0]) {
       return {
         channels: res[0].countChannels,
@@ -140,7 +145,7 @@ class Database {
    */
   async addGuildTextChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES (${channel.id}, ${channel.guild.id});`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -150,7 +155,7 @@ class Database {
    */
   async addDMChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id) VALUES (${channel.id});`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -160,13 +165,13 @@ class Database {
    */
   async deleteChannel(channel) {
     const query = SQL`DELETE FROM channels WHERE id = ${channel.id};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async getGuildSetting(guild, setting) {
     if (guild) {
       const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
-      const res = await queryDB(query, this.db);
+      const res = await this.queryDB(query, this.db);
       if (res[0].length === 0) {
         await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
         return this.defaults[`${setting}`];
@@ -193,7 +198,7 @@ class Database {
    */
   async getChannelSetting(channel, setting) {
     const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0].length === 0) {
       if (channel.type === 'text') {
         await this.addGuildTextChannel(channel);
@@ -223,7 +228,7 @@ class Database {
    */
   async setChannelSetting(channel, setting, value) {
     const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db, true);
   }
 
   /**
@@ -249,7 +254,7 @@ class Database {
    */
   async trackItem(channel, item) {
     const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id},${item});`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -263,7 +268,7 @@ class Database {
     items.forEach((item, index) => {
       query.append(SQL`(${channel.id}, ${item})`).append(index !== (items.length - 1) ? ',' : ';');
     });
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -274,7 +279,7 @@ class Database {
    */
   async untrackItem(channel, item) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND item = ${item};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -289,7 +294,7 @@ class Database {
       query.append(index > 0 ? '  OR ' : '').append(SQL`item = ${item}`);
     });
     query.append(SQL`);`);
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -300,7 +305,7 @@ class Database {
    */
   async trackEventType(channel, type) {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id},${type});`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -314,7 +319,7 @@ class Database {
     types.forEach((type, index) => {
       query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
     });
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -325,7 +330,7 @@ class Database {
    */
   async untrackEventType(channel, type) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND type = ${type};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -340,7 +345,7 @@ class Database {
       query.append(index > 0 ? '  OR ' : '').append(SQL`type = ${type}`);
     });
     query.append(SQL`);`);
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -353,7 +358,7 @@ class Database {
   async setItemPing(channel, item, enabled) {
     const query = SQL`UPDATE item_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND item = ${item};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -366,7 +371,7 @@ class Database {
   async setEventTypePing(channel, type, enabled) {
     const query = SQL`UPDATE type_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND type = ${type};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -379,7 +384,7 @@ class Database {
   async setPing(guild, itemOrType, text) {
     const query = SQL`INSERT INTO pings VALUES (${guild.id}, ${itemOrType}, ${text})
       ON DUPLICATE KEY UPDATE text = ${text};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -390,7 +395,7 @@ class Database {
    */
   async getPing(guild, itemsOrTypes) {
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0].length === 0) {
       return '';
     }
@@ -401,7 +406,7 @@ class Database {
   async getPingsForGuild(guild) {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
-      const res = await queryDB(query, this.db);
+      const res = await this.queryDB(query, this.db);
 
       if (res[0].length === 0) {
         return [];
@@ -421,7 +426,7 @@ class Database {
   async removePing(guild, itemOrType) {
     if (guild) {
       const query = SQL`DELETE FROM pings WHERE guild_id = ${guild.id} AND item_or_type = ${itemOrType};`;
-      return queryDB(query, this.db);
+      return this.queryDB(query, this.db);
     }
     return false;
   }
@@ -447,7 +452,7 @@ class Database {
           AND settings.setting = "platform"  AND settings.val = ${platform || 'pc'} `)
         .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return queryDB(query, this.db);
+      return this.queryDB(query, this.db, true);
     } catch (e) {
       this.logger.error(e);
       return [];
@@ -461,7 +466,7 @@ class Database {
    */
   async getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db, true);
     return res[0].map(r => r.item);
   }
 
@@ -472,7 +477,7 @@ class Database {
    */
   async getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db, true);
 
     return res[0].map(r => r.type);
   }
@@ -489,7 +494,7 @@ class Database {
     const query = SQL`INSERT INTO channel_permissions VALUES
       (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -504,7 +509,7 @@ class Database {
     const query = SQL`INSERT INTO channel_permissions VALUES
       (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -519,7 +524,7 @@ class Database {
     const query = SQL`INSERT INTO guild_permissions VALUES
       (${guild.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -534,7 +539,7 @@ class Database {
     const query = SQL`INSERT INTO guild_permissions VALUES
       (${guild.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
       ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -544,7 +549,7 @@ class Database {
    */
   async stopTracking(channel) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -558,7 +563,7 @@ class Database {
     const query = SQL`SELECT allowed FROM channel_permissions
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
 
     if (!res || res[0].length === 0) {
       return 'none';
@@ -577,7 +582,7 @@ class Database {
     const query = SQL`SELECT allowed FROM channel_permissions
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
 
     if (!res || res[0].length === 0) {
       return 'none';
@@ -614,7 +619,7 @@ class Database {
         WHERE channel_permissions.target_id IS NULL
           AND channels.id = ${channel.id}
           AND guild_permissions.target_id IN (${userRoleIds});`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0].length === 0) {
       return 'none';
     }
@@ -632,7 +637,7 @@ class Database {
     const query = SQL`SELECT allowed FROM guild_permissions
     WHERE channel_id = ${guild.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res.rows.length === 0) {
       throw new Error(`The guild permissions for the guild ${guild.id}
          for member ${memberId} was not found in the database`);
@@ -651,7 +656,7 @@ class Database {
     const query = SQL`SELECT allowed FROM guild_permissions
     WHERE channel_id = ${guild.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res.rows.length === 0) {
       throw new Error(`The guild permissions for the guild ${guild.id}
          for member ${role.id} was not found in the database`);
@@ -666,7 +671,7 @@ class Database {
    */
   async removeGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
-    await queryDB(query, this.db);
+    await this.queryDB(query, this.db);
     const channelIds = guild.channels.keyArray();
     const results = [];
     channelIds.forEach((channelId) => {
@@ -682,12 +687,12 @@ class Database {
 
   async removeSettings(channelId) {
     const query = SQL`DELETE FROM settings WHERE settings.channel_id=${channelId};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async removePrivateChannels(guild) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -697,7 +702,7 @@ class Database {
    */
   async removeGuildPermissions(guildId) {
     const query = SQL`DELETE FROM guild_permissions WHERE guild_id = ${guildId}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -707,7 +712,7 @@ class Database {
    */
   async removeChannelPermissions(channelId) {
     const query = SQL`DELETE FROM channel_permissions WHERE channel_id = ${channelId}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -717,7 +722,7 @@ class Database {
    */
   async removeItemNotifications(channelId) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -727,7 +732,7 @@ class Database {
    */
   async removePings(guildId) {
     const query = SQL`DELETE FROM pings WHERE guild_id = ${guildId}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -741,7 +746,7 @@ class Database {
     const query = SQL`INSERT INTO notified_ids VALUES
       (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
-    return queryDB(query, this.db, true);
+    return this.queryDB(query, this.db, true);
   }
 
   /**
@@ -754,7 +759,7 @@ class Database {
     const query = SQL`SELECT id_list
       FROM notified_ids
       WHERE shard_id=${shardId} AND platform=${platform};`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0].length === 0) {
       return [];
     }
@@ -771,7 +776,7 @@ class Database {
     const query = SQL`INSERT INTO guild_joinable_roles VALUES
       (${guild.id}, JSON_ARRAY(${roles}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles});`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -783,7 +788,7 @@ class Database {
     const query = SQL`SELECT id_list
       FROM guild_joinable_roles
       WHERE guild_id=${guild.id}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0][0]) {
       const validListIds = res[0][0].id_list
         .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined');
@@ -801,7 +806,7 @@ class Database {
    */
   async permissionsForGuild(guild) {
     const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0]) {
       return res[0].map(value => ({
         level: 'guild',
@@ -821,7 +826,7 @@ class Database {
    */
   async permissionsForChannel(channel) {
     const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0]) {
       return res[0].map(value => ({
         level: 'channel',
@@ -836,7 +841,7 @@ class Database {
 
   async addPrivateRoom(guild, textChannel, voiceChannel, category) {
     const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id}, ${category.id})`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async deletePrivateRoom(room) {
@@ -844,12 +849,12 @@ class Database {
       guild, textChannel, voiceChannel, category,
     } = room;
     const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id} AND category_id= ${category.id}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async getPrivateRooms() {
     const query = SQL`SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0]) {
       return res[0].map(value => ({
         guild: this.bot.client.guilds.get(value.guild_id),
@@ -884,7 +889,7 @@ class Database {
   async getCustomCommands() {
     this.logger.debug(`Shards: ${this.bot.shardCount}, this shard's id: ${this.bot.shardId}`);
     const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardCount} = ${this.bot.shardId}`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0]) {
       return res[0].map(value =>
         new CustomCommand(this.bot, value.command, value.response, value.guild_id));
@@ -896,13 +901,13 @@ class Database {
     const id = `${call}${message.guild.id}`;
     const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
       VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async deleteCustomCommand(message, call) {
     const id = `${call}${message.guild.id}`;
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -913,7 +918,7 @@ class Database {
    */
   async clearWelcomeForGuild(guild, isDm) {
     const query = SQL`DELETE FROM welcome_messages WHERE guild_id=${guild.id} && is_dm=${isDm}`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   /**
@@ -926,13 +931,13 @@ class Database {
   async setWelcome(message, isDm, text) {
     const query = SQL`INSERT INTO welcome_messages (guild_id, is_dm, channel_id, message) VALUES (${message.guild.id}, ${isDm}, ${message.channel.id}, ${text})
       ON DUPLICATE KEY UPDATE message = ${text};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async getWelcomes(guild) {
     if (guild) {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
-      const res = await queryDB(query, this.db);
+      const res = await this.queryDB(query, this.db);
       if (res[0]) {
         return res[0].map(value =>
           ({
@@ -950,7 +955,7 @@ class Database {
     const buildId = makeId();
     const query = SQL`INSERT INTO builds VALUES (${buildId}, ${title}, ${body}, ${image}, ${owner.id})
       ON DUPLICATE KEY UPDATE title=${title}, body=${body}, image=${image};`;
-    await queryDB(query, this.db);
+    await this.queryDB(query, this.db);
     return {
       id: buildId, title, body, url: image, owner,
     };
@@ -959,7 +964,7 @@ class Database {
   async getBuild(buildId) {
     if (buildId) {
       const query = SQL`SELECT * FROM builds WHERE build_id=${buildId};`;
-      const res = await queryDB(query, this.db);
+      const res = await this.queryDB(query, this.db);
       if (res[0] && res[0][0]) {
         const result = res[0][0];
         return {
@@ -983,12 +988,12 @@ class Database {
 
   async deleteBuild(buildId) {
     const query = SQL`DELETE FROM builds WHERE build_id=${buildId};`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 
   async getBuilds(owner, author) {
     const query = SQL`SELECT * FROM builds WHERE owner_id LIKE ${owner ? '%' : author.id};`;
-    const res = await queryDB(query, this.db);
+    const res = await this.queryDB(query, this.db);
     if (res[0]) {
       return res[0].map(build => ({
         id: build.build_id,
@@ -1012,14 +1017,14 @@ class Database {
     }
     if (setTokens.length > 0) {
       const query = `UPDATE builds SET ${setTokens.join(', ')} WHERE build_id='${buildId}';`;
-      return queryDB(query, this.db);
+      return this.queryDB(query, this.db);
     }
     return false;
   }
 
   async deleteWebhooksForChannel(channelId) {
     const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting like "webhook%";`;
-    return queryDB(query, this.db);
+    return this.queryDB(query, this.db);
   }
 }
 

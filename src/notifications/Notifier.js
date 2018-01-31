@@ -156,6 +156,7 @@ class Notifier {
     }
     if (cetusCycleChange) {
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+      this.logger.debug(`Cetus Cycle: ${newData.cetusCycle}`);
       this.sendCetusCycle(
         newData.cetusCycle, platform,
         ostron ? ostron.expiry : undefined,

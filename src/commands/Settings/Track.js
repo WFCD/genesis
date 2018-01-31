@@ -39,10 +39,10 @@ class Track extends Command {
     const channel = this.getChannel(channelParam, message);
     const results = [];
     if (trackables.events.length) {
-      results.push(this.bot.settings.untrackEventTypes(channel, trackables.events));
+      results.push(this.bot.settings.trackEventTypes(channel, trackables.events));
     }
     if (trackables.items.length) {
-      results.push(this.bot.settings.untrackItems(channel, trackables.items));
+      results.push(this.bot.settings.trackItems(channel, trackables.items));
     }
     Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);
