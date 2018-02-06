@@ -156,7 +156,6 @@ class Notifier {
     }
     if (cetusCycleChange) {
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      this.logger.debug(`Cetus Cycle: ${newData.cetusCycle}`);
       this.sendCetusCycle(
         newData.cetusCycle, platform,
         ostron ? ostron.expiry : undefined,
@@ -177,7 +176,6 @@ class Notifier {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
     const results = [];
     channels.forEach((channelResults) => {
-      this.logger.debug(channelResults);
       channelResults.forEach((result) => {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
@@ -238,9 +236,6 @@ class Notifier {
   }
 
   async sendAlerts(newAlerts, platform) {
-    if (newAlerts.length) {
-      this.logger.debug(`New Alerts! ${newAlerts.length}`);
-    }
     await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 

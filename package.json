@@ -25,28 +25,24 @@
   ],
   "author": "warframe-community-developers",
   "contributors": [
-    "aliasfalse <tobiah@protonmail.com> (https://github.com/aliasfalse)",
+    "tobitenno <tobiah@protonmail.com> (https://github.com/tobitenno)",
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
     "bluebird": "^3.5.0",
-    "decache": "^4.3.0",
+    "decache": "^4.4.0",
     "discord.js": "^11.3.0",
     "json-fetch-cache": "0.0.5",
     "json-query": "^2.2.2",
-    "mysql-cache": "^2.1.2",
-    "mysql2": "^1.5.1",
-    "nexus-stats-api": "^0.2.4",
+    "mysql2": "^1.5.2",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
     "ping": "^0.2.2",
-    "raven": "^2.3.0",
+    "raven": "^2.4.0",
     "request-promise": "^4.2.2",
     "right-pad": "^1.0.1",
-    "sql-template-strings": "^2.2.2",
-    "warframe-location-query": "0.0.3",
-    "warframe-nexus-query": "^1.3.5"
+    "sql-template-strings": "^2.2.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",

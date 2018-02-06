@@ -83,9 +83,7 @@ class Genesis {
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
-   * @param  {WarframeNexusQuery} [options.nexusQuerier] API for querying nexus-stats' warframe api
    * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
-   * @param {NexusFetcher}      [options.nexusFetcher] Nexus Stats direct api
    */
   constructor(discordToken, logger, {
     shardId = 0,
@@ -93,9 +91,7 @@ class Genesis {
     prefix = process.env.PREFIX,
     mdConfig = md,
     owner = null,
-    nexusQuerier = {},
     caches = {},
-    nexusFetcher,
   } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -123,8 +119,6 @@ class Genesis {
     this.token = discordToken;
 
     this.caches = caches;
-
-    this.nexusFetcher = nexusFetcher;
 
     this.channelTimeout = 300000;
 
@@ -234,8 +228,6 @@ class Genesis {
 
     // Notification emitter
     this.notifier = new Notifier(this);
-
-    this.nexusQuerier = nexusQuerier;
   }
 
   setupHandlers() {
