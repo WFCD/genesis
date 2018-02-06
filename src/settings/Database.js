@@ -863,7 +863,7 @@ class Database {
         }
       });
       if (!context.prefix) {
-        context.prefix = this.defaults.prefix,
+        context.prefix = this.defaults.prefix;
       }
       if (typeof context.allowCustom === 'undefined') {
         context.allowCustom = this.defaults.allowCustom ? '1' : '0';
