@@ -845,7 +845,7 @@ class Database {
   }
 
   async getCommandContext(channel) {
-    const query = SQL`SELECT setting, val FROM warframe.settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
