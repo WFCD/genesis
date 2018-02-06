@@ -862,6 +862,15 @@ class Database {
           context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
         }
       });
+      if (!context.prefix) {
+        context.prefix = this.defaults.prefix,
+      }
+      if (typeof context.allowCustom === 'undefined') {
+        context.allowCustom = this.defaults.allowCustom ? '1' : '0';
+      }
+      if (typeof context.allowInline === 'undefined') {
+        context.allowInline = this.defaults.allowInline ? '1' : '0';
+      }
     } else {
       context = {
         prefix: this.defaults.prefix,
