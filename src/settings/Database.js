@@ -855,7 +855,7 @@ class Database {
         setting: row.setting,
         value: row.val,
       })).forEach((row) => {
-        if (row.setting.indexOf === -1) {
+        if (row.setting.indexOf('webhook') === -1) {
           context[`${row.setting}`] = row.value;
         } else {
           context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
