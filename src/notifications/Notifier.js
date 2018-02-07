@@ -280,7 +280,7 @@ class Notifier {
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents.map(e => this.broadcast(new EventEmbed(this.bot, [e], platform), platform, 'operations', null, fromNow(e.expiry))));
+    await Promise.all(newEvents.map(e => this.broadcast(new EventEmbed(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
