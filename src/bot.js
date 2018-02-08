@@ -83,7 +83,9 @@ class Genesis {
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
+   * @param  {WarframeNexusQuery} [options.nexusQuerier] API for querying nexus-stats' warframe api
    * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
+   * @param {NexusFetcher}      [options.nexusFetcher] Nexus Stats direct api
    */
   constructor(discordToken, logger, {
     shardId = 0,
@@ -91,7 +93,9 @@ class Genesis {
     prefix = process.env.PREFIX,
     mdConfig = md,
     owner = null,
+    nexusQuerier = {},
     caches = {},
+    nexusFetcher,
   } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -119,6 +123,8 @@ class Genesis {
     this.token = discordToken;
 
     this.caches = caches;
+
+    this.nexusFetcher = nexusFetcher;
 
     this.channelTimeout = 300000;
 
@@ -228,10 +234,12 @@ class Genesis {
 
     // Notification emitter
     this.notifier = new Notifier(this);
+
+    this.nexusQuerier = nexusQuerier;
   }
 
   setupHandlers() {
-    this.client.on('ready', async () => this.onReady());
+    this.client.on('ready', () => this.onReady());
     this.client.on('message', message => this.onMessage(message));
 
     this.client.on('guildCreate', guild => this.onGuildCreate(guild));
@@ -242,7 +250,7 @@ class Genesis {
     // kill on disconnect so a new instance can be spawned
     this.client.on('disconnect', (event) => {
       this.logger.debug(`Disconnected with close event: ${event.code}`);
-      process.exit(4);
+      // process.exit(4);
     });
 
     // send welcome_messages
@@ -261,22 +269,21 @@ class Genesis {
     await this.commandHandler.loadCommands();
 
     this.setupHandlers();
-    const t = await this.client.login(this.token);
-    this.logger.debug(`Logged in with token ${t}`);
-
     try {
+      const t = await this.client.login(this.token);
+      this.logger.debug(`Logged in with token ${t}`);
       await this.notifier.start();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(err.message);
       this.logger.fatal(err);
-      process.exit(0);
+      process.exit(1);
     }
   }
 
   /**
    * Perform actions when the bot is ready
    */
-  async onReady() {
+  onReady() {
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
     this.client.user.setPresence({
@@ -287,7 +294,7 @@ class Genesis {
         url: 'https://warframe.com',
       },
     });
-    await this.settings.ensureData(this.client);
+    this.settings.ensureData(this.client);
     this.readyToExecute = true;
 
     const self = this;

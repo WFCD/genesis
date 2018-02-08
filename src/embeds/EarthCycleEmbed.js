@@ -24,7 +24,7 @@ class EarthCycleEmbed extends BaseEmbed {
       {
         name: '_ _',
         value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}` +
-          `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.bountyExpiry)))}` : ''}`,
+          `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.expiry)))}` : ''}`,
       },
     ];
     this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts `;

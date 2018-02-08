@@ -38,11 +38,11 @@ class Track extends Command {
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
     const results = [];
-    if (trackables.events.length) {
-      results.push(this.bot.settings.trackEventTypes(channel, trackables.events));
+    for (const event of trackables.events) {
+      results.push(this.bot.settings.trackEventType(channel, event));
     }
-    if (trackables.items.length) {
-      results.push(this.bot.settings.trackItems(channel, trackables.items));
+    for (const item of trackables.items) {
+      results.push(this.bot.settings.trackItem(channel, item));
     }
     Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);
