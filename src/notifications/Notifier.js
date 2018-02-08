@@ -236,6 +236,9 @@ class Notifier {
   }
 
   async sendAlerts(newAlerts, platform) {
+    if (newAlerts.length) {
+      this.logger.debug(`New Alerts! ${newAlerts.length}`);
+    }
     await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 
