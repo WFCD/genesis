@@ -1,7 +1,7 @@
 'use strict';
 
-const mysql = require('mysql2/promise');
 const SQL = require('sql-template-strings');
+const mysql = require('mysql2/promise');
 const Promise = require('bluebird');
 const schema = require('./schema.js');
 const CustomCommand = require('../CustomCommand.js');
@@ -34,6 +34,9 @@ class Database {
    * @param {Genesis} bot Bot to load the settings for
    */
   constructor(dbOptions, bot) {
+    this.bot = bot;
+    this.logger = bot.logger;
+
     const opts = {
       supportBigNumbers: true,
       bigNumberStrings: true,
@@ -41,8 +44,6 @@ class Database {
     };
     Object.assign(opts, dbOptions);
     this.db = mysql.createPool(opts);
-    this.bot = bot;
-    this.logger = bot.logger;
 
     this.defaults = {
       prefix: '/',
@@ -70,21 +71,14 @@ class Database {
   * Initialize data for guilds in channels for existing guilds
   * @param {Client} client for pulling guild information
   */
-  ensureData(client) {
+  async ensureData(client) {
     const promises = [];
     client.guilds.array().forEach((guild) => {
       if (guild.channels.array().length) {
         promises.push(this.addGuild(guild));
       }
     });
-    Promise.all(promises.map(x => x.reflect()))
-      .then((results) => {
-        results.forEach((result) => {
-          if (result && !result.isFulfilled()) {
-            this.logger.error(result.reason());
-          }
-        });
-      });
+    await Promise.all(promises);
   }
 
   /**
@@ -108,7 +102,7 @@ class Database {
    */
   async getChannelAndGuildCounts() {
     const query = 'select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;';
-    const res = await this.db.query(query);
+    const res = this.db.query(query);
     if (res[0]) {
       return {
         channels: res[0].countChannels,
@@ -158,9 +152,8 @@ class Database {
       }
       await this.setGuildSetting(guild, setting, res[0][0].val);
       return res[0][0].val;
-    } else {
-      return this.defaults[`${setting}`];
     }
+    return this.defaults[`${setting}`];
   }
 
   async checkWebhookAndReturn(channel, setting) {
@@ -239,6 +232,20 @@ class Database {
   }
 
   /**
+   * Enables notifications for items in a channel
+   * @param {Channel} channel The channel where to enable notifications
+   * @param {string} items The items to track
+   * @returns {Promise}
+   */
+  async trackItems(channel, items) {
+    const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES `;
+    items.forEach((item, index) => {
+      query.append(SQL`(${channel.id}, ${item})`).append(index !== (items.length - 1) ? ',' : ';');
+    });
+    return this.db.query(query);
+  }
+
+  /**
    * Disables notifications for an item in a channel
    * @param {Channel} channel The channel where to enable notifications
    * @param {string} item The item to track
@@ -246,6 +253,21 @@ class Database {
    */
   async untrackItem(channel, item) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND item = ${item};`;
+    return this.db.query(query);
+  }
+
+  /**
+   * Disables notifications for items in a channel
+   * @param {Channel} channel The channel where to enable notifications
+   * @param {string} items The items to untrack
+   * @returns {Promise}
+   */
+  async untrackItems(channel, items) {
+    const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND (`;
+    items.forEach((item, index) => {
+      query.append(index > 0 ? '  OR ' : '').append(SQL`item = ${item}`);
+    });
+    query.append(SQL`);`);
     return this.db.query(query);
   }
 
@@ -261,6 +283,20 @@ class Database {
   }
 
   /**
+   * Enables notifications for items in a channel
+   * @param {Channel} channel The channel where to enable notifications
+   * @param {string} types The types to track
+   * @returns {Promise}
+   */
+  async trackEventTypes(channel, types) {
+    const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
+    types.forEach((type, index) => {
+      query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
+    });
+    return this.db.query(query);
+  }
+
+  /**
    * Disables notifications for an event type in a channel
    * @param {Channel} channel The channel where to enable notifications
    * @param {string} type The item to track
@@ -268,6 +304,21 @@ class Database {
    */
   async untrackEventType(channel, type) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND type = ${type};`;
+    return this.db.query(query);
+  }
+
+  /**
+   * Disables notifications for event types in a channel
+   * @param {Channel} channel The channel where to enable notifications
+   * @param {string} types The types to untrack
+   * @returns {Promise}
+   */
+  async untrackEventTypes(channel, types) {
+    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND (`;
+    types.forEach((type, index) => {
+      query.append(index > 0 ? '  OR ' : '').append(SQL`type = ${type}`);
+    });
+    query.append(SQL`);`);
     return this.db.query(query);
   }
 
@@ -330,6 +381,7 @@ class Database {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
       const res = await this.db.query(query);
+
       if (res[0].length === 0) {
         return [];
       }
@@ -485,6 +537,7 @@ class Database {
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = true AND target_id = ${memberId}`;
     const res = await this.db.query(query);
+
     if (!res || res[0].length === 0) {
       return 'none';
     }
@@ -503,6 +556,7 @@ class Database {
     WHERE channel_id = ${channel.id} AND command_id = ${commandId}
     AND is_user = false AND target_id = ${role.id}`;
     const res = await this.db.query(query);
+
     if (!res || res[0].length === 0) {
       return 'none';
     }
@@ -589,7 +643,8 @@ class Database {
    * @returns {Promise.<string>} status of removal
    */
   async removeGuild(guild) {
-    await this.db.query(SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`);
+    const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
+    await this.db.query(query);
     const channelIds = guild.channels.keyArray();
     const results = [];
     channelIds.forEach((channelId) => {
@@ -790,22 +845,45 @@ class Database {
   }
 
   async getCommandContext(channel) {
-    const prefix = await this.getGuildSetting(channel.guild, 'prefix');
-    const allowCustom = await this.getChannelSetting(channel, 'allowCustom') === '1';
-    const allowInline = await this.getChannelSetting(channel, 'allowInline') === '1';
-    const webhook = {
-      id: await this.getChannelSetting(channel, 'webhookId'),
-      token: await this.getChannelSetting(channel, 'webhookToken'),
-      name: await this.getChannelSetting(channel, 'webhookName'),
-      avatar: await this.getChannelSetting(channel, 'webhookAvatar'),
+    this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
+    const res = await this.db.query(query);
+    let context = {
+      webhook: {},
     };
-    return {
-      prefix, allowCustom, allowInline, webhook, channel,
-    };
+    if (res[0]) {
+      res[0].map(row => ({
+        setting: row.setting,
+        value: row.val,
+      })).forEach((row) => {
+        if (row.setting.indexOf('webhook') === -1) {
+          context[`${row.setting}`] = row.value;
+        } else {
+          context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
+        }
+      });
+      if (!context.prefix) {
+        context.prefix = this.defaults.prefix;
+      }
+      if (typeof context.allowCustom === 'undefined') {
+        context.allowCustom = this.defaults.allowCustom ? '1' : '0';
+      }
+      if (typeof context.allowInline === 'undefined') {
+        context.allowInline = this.defaults.allowInline ? '1' : '0';
+      }
+    } else {
+      context = {
+        prefix: this.defaults.prefix,
+        allowCustom: this.defaults.allowCustom ? '1' : '0',
+        allowInline: this.defaults.allowInline ? '1' : '0',
+      };
+    }
+    return context;
   }
 
   async getCustomCommands() {
-    const query = SQL`SELECT * FROM custom_commands WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
+    this.logger.debug(`Shards: ${this.bot.shardCount}, this shard's id: ${this.bot.shardId}`);
+    const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardCount} = ${this.bot.shardId}`;
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0].map(value =>
