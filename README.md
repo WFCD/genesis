@@ -30,7 +30,11 @@ If you do not agree to letting Genesis, Oratoris, or any other bot there do so, 
 1. Clone this repo
 
     ```
-    git clone git@github.warframe-community-developers/genesis.git
+    # For SSH
+    git clone git@github.wfcd/genesis.git
+    
+    # For HTTPS
+    git clone https://github.com/WFCD/genesis.git
     ```
 1. Install mysql server and configure a database to store settings and data
 
