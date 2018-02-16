@@ -903,7 +903,7 @@ class Database {
       } else {
         context.allowInline = context.allowInline === '1';
       }
-      
+
       if (!(context.webhook.id && context.webhook.token)) {
         context.webhook = undefined;
       }
