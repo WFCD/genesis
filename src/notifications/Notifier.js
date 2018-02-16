@@ -157,6 +157,7 @@ class Notifier {
     if (cetusCycleChange) {
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
       if (ostron) {
+        //eslint-disable-next-line no-param-reassign
         newData.cetusCycle.bountyExpiry = ostron.expiry;
       }
       await this.sendCetusCycle(newData.cetusCycle, platform);
@@ -174,8 +175,8 @@ class Notifier {
    */
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
-    for (let channelResults of channels) {
-      for (let result of channelResults) {
+    for (const channelResults of channels) {
+      for (const result of channelResults) {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
