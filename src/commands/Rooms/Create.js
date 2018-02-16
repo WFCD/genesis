@@ -100,8 +100,8 @@ class Create extends Command {
             textChannel = await textChannel.setParent(category);
             let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
             voiceChannel = await voiceChannel.setParent(category);
-            
-            // manually add overwrites for "everyone"		
+
+            // manually add overwrites for "everyone"
             await category.overwritePermissions(message.guild.defaultRole.id, {
               CONNECT: false,
               VIEW_CHANNEL: false,
