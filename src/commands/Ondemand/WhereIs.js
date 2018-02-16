@@ -72,8 +72,7 @@ class Whereis extends Command {
         rejectUnauthorized: false,
       };
       query = query.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/drops/search/${query}`;
-      const data = await this.bot.caches.dropCache.getData();
+      options.uri = `https://api.warframestat.us/drops/search/${encodeURIComponent(query)}`;
       const results = await request(options);
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
