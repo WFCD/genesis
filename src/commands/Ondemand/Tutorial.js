@@ -37,7 +37,7 @@ class FrameProfile extends Command {
     };
     if (query) {
       query = query.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/tutorials?search=${query}`;
+      options.uri = `https://api.warframestat.us/tutorials/search/${query}`;
       const results = await request(options);
       if (results.length > 0) {
         results.forEach((tutorial) => {

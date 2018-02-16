@@ -2,6 +2,7 @@
 
 const Command = require('../../Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
+const request = require('request-promise');
 
 const inProgressEmbed = { title: 'Processing search...' };
 
@@ -35,7 +36,12 @@ class PriceCheck extends Command {
     try {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
-      const result = await this.bot.nexusQuerier.priceCheckQueryAttachment(item);
+      const options = {
+        uri: `https://api.warframestat.us/pricecheck/attachment/${item}`,
+        json: true,
+        rejectUnauthorized: false,
+      };
+      const result = await request(options);
       const embed = new PriceCheckEmbed(this.bot, result, item);
       sentMessage.edit('', { embed });
       return embed.color === 0xff55ff ?

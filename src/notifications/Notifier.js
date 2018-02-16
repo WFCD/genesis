@@ -124,42 +124,43 @@ class Notifier {
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
     await this.sendAcolytes(acolytesToNotify, platform);
-    this.sendAlerts(alertsToNotify, platform);
+    await this.sendAlerts(alertsToNotify, platform);
     if (baroToNotify) {
-      this.sendBaro(baroToNotify, platform);
+      await this.sendBaro(baroToNotify, platform);
     }
     if (conclaveToNotify && conclaveToNotify.length > 0) {
-      this.sendConclaveDailies(conclaveToNotify, platform);
-      this.sendConclaveWeeklies(conclaveToNotify, platform);
+      await this.sendConclaveDailies(conclaveToNotify, platform);
+      await this.sendConclaveWeeklies(conclaveToNotify, platform);
     }
-    this.sendDarvo(dailyDealsToNotify, platform);
-    this.sendEvent(eventsToNotify, platform);
-    this.sendFeaturedDeals(featuredDealsToNotify, platform);
-    this.sendFissures(fissuresToNotify, platform);
-    this.sendNews(newsToNotify, platform);
-    this.sendStreams(streamsToNotify, platform);
-    this.sendPopularDeals(popularDealsToNotify, platform);
-    this.sendPrimeAccess(primeAccessToNotify, platform);
-    this.sendInvasions(invasionsToNotify, platform);
+    await this.sendDarvo(dailyDealsToNotify, platform);
+    await this.sendEvent(eventsToNotify, platform);
+    await this.sendFeaturedDeals(featuredDealsToNotify, platform);
+    await this.sendFissures(fissuresToNotify, platform);
+    await this.sendNews(newsToNotify, platform);
+    await this.sendStreams(streamsToNotify, platform);
+    await this.sendPopularDeals(popularDealsToNotify, platform);
+    await this.sendPrimeAccess(primeAccessToNotify, platform);
+    await this.sendInvasions(invasionsToNotify, platform);
     if (sortieToNotify) {
-      this.sendSortie(sortieToNotify, platform);
+      await this.sendSortie(sortieToNotify, platform);
     }
     if (syndicateToNotify && syndicateToNotify.length > 0) {
-      this.sendSyndicateArbiters(syndicateToNotify, platform);
-      this.sendSyndicatePerrin(syndicateToNotify, platform);
-      this.sendSyndicateSuda(syndicateToNotify, platform);
-      this.sendSyndicateMeridian(syndicateToNotify, platform);
-      this.sendSyndicateLoka(syndicateToNotify, platform);
-      this.sendSyndicateVeil(syndicateToNotify, platform);
-      this.sendSyndicateOstrons(syndicateToNotify, platform);
-      this.sendSyndicateAssassins(syndicateToNotify, platform);
+      await this.sendSyndicateArbiters(syndicateToNotify, platform);
+      await this.sendSyndicatePerrin(syndicateToNotify, platform);
+      await this.sendSyndicateSuda(syndicateToNotify, platform);
+      await this.sendSyndicateMeridian(syndicateToNotify, platform);
+      await this.sendSyndicateLoka(syndicateToNotify, platform);
+      await this.sendSyndicateVeil(syndicateToNotify, platform);
+      await this.sendSyndicateOstrons(syndicateToNotify, platform);
+      await this.sendSyndicateAssassins(syndicateToNotify, platform);
     }
     if (cetusCycleChange) {
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      this.sendCetusCycle(
-        newData.cetusCycle, platform,
-        ostron ? ostron.expiry : undefined,
-      );
+      if (ostron) {
+        //eslint-disable-next-line no-param-reassign
+        newData.cetusCycle.bountyExpiry = ostron.expiry;
+      }
+      await this.sendCetusCycle(newData.cetusCycle, platform);
     }
     await this.sendUpdates(updatesToNotify, platform);
   }
@@ -174,20 +175,18 @@ class Notifier {
    */
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
-    const results = [];
-    channels.forEach((channelResults) => {
-      channelResults.forEach((result) => {
+    for (const channelResults of channels) {
+      for (const result of channelResults) {
         const channel = this.client.channels.get(result.channelId);
         if (channel) {
           if (channel.type === 'text') {
-            results.push(this.sendWithPrepend(channel, embed, type, items, deleteAfter));
+            await this.sendWithPrepend(channel, embed, type, items, deleteAfter);
           } else if (channel.type === 'dm') {
-            results.push(this.messageManager.embedToChannel(channel, embed, '', deleteAfter));
+            await this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
           }
         }
-      });
-    });
-    await Promise.all(results);
+      }
+    }
   }
 
   async sendWithoutPrepend(channel, embed, deleteAfter) {
@@ -236,9 +235,6 @@ class Notifier {
   }
 
   async sendAlerts(newAlerts, platform) {
-    if (newAlerts.length) {
-      this.logger.debug(`New Alerts! ${newAlerts.length}`);
-    }
     await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 
@@ -403,9 +399,9 @@ class Notifier {
     }
   }
 
-  async sendCetusCycle(newCetusCycle, platform, bountyExpiry) {
-    newCetusCycle.bountyExpiry = bountyExpiry; // eslint-disable-line no-param-reassign
-    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle), platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry));
+  async sendCetusCycle(newCetusCycle, platform) {
+    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle),
+      platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry));
   }
 }
 
