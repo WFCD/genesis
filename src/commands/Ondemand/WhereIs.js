@@ -75,16 +75,6 @@ class Whereis extends Command {
       const results = data
         .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
         .sort(itemSort);
-      results.forEach((result) => {
-        result.place = result.place.replace('Derelict/', '') // eslint-disable-line no-param-reassign
-          .replace('Assassinate (Assassination)', 'Assassinate')
-          .replace('Defense (Defense)', 'Defense')
-          .replace('Survival (Survival)', 'Survival')
-          .replace('(Special)', 'Capture')
-          .replace('The Law Of Retribution C', 'Law Of Retribution')
-          .replace('The Jordas Verdict', 'Jordas Verdict')
-          .replace('The Law Of Retribution (Nightmare) C', 'Law Of (Nightmare)');
-      });
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
