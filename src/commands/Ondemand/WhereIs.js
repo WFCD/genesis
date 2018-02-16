@@ -79,14 +79,18 @@ class Whereis extends Command {
         result.place = result.place.replace('Derelict/', '') // eslint-disable-line no-param-reassign
           .replace('Assassinate (Assassination)', 'Assassinate')
           .replace('Defense (Defense)', 'Defense')
-          .replace('Survival (Survival)', 'Survival');
+          .replace('Survival (Survival)', 'Survival')
+          .replace('(Special)', 'Capture')
+          .replace('The Law Of Retribution C', 'Law Of Retribution')
+          .replace('The Jordas Verdict', 'Jordas Verdict')
+          .replace('The Law Of Retribution (Nightmare) C', 'Law Of (Nightmare)');
       });
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
-      createGroupedArray(results, 55).forEach((group, index) => {
+      createGroupedArray(results, 50).forEach((group, index) => {
         const embed = new WhereisEmbed(
           this.bot, createGroupedArray(group, 4),
           query, longestName.length, longestRelic.length,
