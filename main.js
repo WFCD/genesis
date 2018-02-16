@@ -4,7 +4,6 @@ const cluster = require('cluster');
 const Cache = require('json-fetch-cache');
 const Raven = require('raven');
 
-const DataCache = require('./src/resources/DropCache.js');
 const Genesis = require('./src/bot.js');
 const ClusterManager = require('./src/ClusterManager.js');
 
@@ -40,7 +39,6 @@ const caches = {
   pc: new Cache('https://api.warframestat.us/pc', 600000),
   xb1: new Cache('https://api.warframestat.us/xb1', 600000),
   ps4: new Cache('https://api.warframestat.us/ps4', 600000),
-  dropCache: new DataCache(logger),
 };
 
 if (cluster.isMaster) {
