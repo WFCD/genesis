@@ -2,17 +2,12 @@
 
 const Command = require('../../Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
+const { createGroupedArray } = require('../../TrackFunctions.js');
+
+const request = require('request-promise');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', description: 'This is either due to the item being vaulted or an invalid search. Sorry.', color: 0xff6961 };
-
-function createGroupedArray(arr, chunkSize) {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    groups.push(arr.slice(i, i + chunkSize));
-  }
-  return groups;
-}
 
 function placeSort(a, b) {
   if (a.place < b.place) {
@@ -71,10 +66,14 @@ class Whereis extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     try {
-      const data = await this.bot.caches.dropCache.getData();
-      const results = data
-        .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
-        .sort(itemSort);
+      const options = {
+        uri: 'https://api.warframestat.us/drops/',
+        json: true,
+        rejectUnauthorized: false,
+      };
+      query = query.trim().toLowerCase();
+      options.uri = `https://api.warframestat.us/drops/search/${encodeURIComponent(query)}`;
+      const results = await request(options);
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
