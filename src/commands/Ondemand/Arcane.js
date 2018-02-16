@@ -38,7 +38,7 @@ class Arcane extends Command {
     };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/arcanes?search=${arcane}`;
+      options.uri = `https://api.warframestat.us/arcanes/search/${arcane}`;
       const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);

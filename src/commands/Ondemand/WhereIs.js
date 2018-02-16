@@ -75,12 +75,18 @@ class Whereis extends Command {
       const results = data
         .filter(entry => entry.item.toLowerCase().indexOf(query.toLowerCase()) > -1)
         .sort(itemSort);
+      results.forEach((result) => {
+        result.place = result.place.replace('Derelict/', '') // eslint-disable-line no-param-reassign
+          .replace('Assassinate (Assassination)', 'Assassinate')
+          .replace('Defense (Defense)', 'Defense')
+          .replace('Survival (Survival)', 'Survival');
+      });
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
-      createGroupedArray(results, 60).forEach((group, index) => {
+      createGroupedArray(results, 55).forEach((group, index) => {
         const embed = new WhereisEmbed(
           this.bot, createGroupedArray(group, 4),
           query, longestName.length, longestRelic.length,

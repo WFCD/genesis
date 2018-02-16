@@ -213,7 +213,7 @@ class MessaageManager {
   }
 
   async webhook(ctx, { text, embed = undefined }) {
-    if (ctx.webhook.id && ctx.webhook.token) {
+    if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
       const client = new this.discord.WebhookClient(ctx.webhook.id, ctx.webhook.token);
       try {
         const msg = await client.send(text, embed);
@@ -233,11 +233,11 @@ class MessaageManager {
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
-    if (channelWebhook.token && channelWebhook.id) {
+    if (channelWebhook && channelWebhook.token && channelWebhook.id) {
       // eslint-disable-next-line no-param-reassign
       ctx.webhook = channelWebhook;
       return this.webhook(ctx, { text, embed });
-    } else if (ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
+    } else if (ctx.channel && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
       const webhooks = await ctx.channel.fetchWebhooks();
       let webhook;
       if (webhooks.array().length > 0) {
@@ -245,12 +245,13 @@ class MessaageManager {
       } else {
         webhook = await ctx.channel.createWebhook(this.client.user.username);
       }
+      this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
       await this.settings.setChannelSetting(ctx.channel, 'webhookId', String(webhook.id));
       await this.settings.setChannelSetting(ctx.channel, 'webhookToken', String(webhook.token));
       await this.settings.setChannelSetting(ctx.channel, 'webhookName', this.client.user.username);
       await this.settings.setChannelSetting(ctx.channel, 'webhookAvatar', this.client.user.avatarURL.replace('?size=2048', ''));
       // eslint-disable-next-line no-param-reassign
-      ctx.webhook = webhook;
+      // ctx.webhook = webhook; // disabling to try letting it fetch from settings instead
       return this.webhook(ctx, { text, embed });
     }
     if (ctx.message) {
@@ -266,16 +267,16 @@ class MessaageManager {
 
   webhookWrapEmbed(embed, ctx) {
     return {
-      username: ctx.webhook.name || this.client.user.username,
-      avatarURL: ctx.webhook.avatar || this.client.user.avatarURL,
+      username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar ? ctx.webhook.avatar : this.client.user.avatarURL,
       embeds: [embed],
     };
   }
 
   webhookWrapEmbeds(embeds, ctx) {
     return {
-      username: ctx.webhook.name || this.client.user.username,
-      avatarURL: ctx.webhook.avatar || this.client.user.avatarURL,
+      username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar ? ctx.webhook.avatar : this.client.user.avatarURL,
       embeds,
     };
   }

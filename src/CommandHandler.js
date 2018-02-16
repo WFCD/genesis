@@ -92,7 +92,7 @@ class CommandHandler {
    * @param {Message} message Message whose command should be checked and handled
    */
   async handleCommand(message) {
-    let content = message.content;
+    let { content } = message;
     const botping = `@${message.guild ?
       message.guild.members.get(this.bot.client.user.id).displayName :
       this.bot.client.user.username}`;
@@ -134,8 +134,10 @@ class CommandHandler {
     let done = false;
     commands.forEach(async (command) => {
       if (command.regex.test(content) && !done) {
-        const canAct = await this.checkCanAct(command, messageWithStrippedContent,
-          ctx.allowCustom, ctx.allowInline);
+        const canAct = await this.checkCanAct(
+          command, messageWithStrippedContent,
+          ctx.allowCustom, ctx.allowInline,
+        );
         if (canAct) {
           this.logger.debug(`Matched ${command.id}`);
           ctx.message = messageWithStrippedContent;
@@ -186,8 +188,10 @@ class CommandHandler {
             .getChannelPermissionForMember(message.channel, message.author.id, command.id);
           if (memberHasPermForRequiredAuthCommand === 'none') {
             const roleHasPermForRequiredAuthCommand = await this.bot.settings
-              .getChannelPermissionForUserRoles(message.channel,
-                message.author.id, command.id);
+              .getChannelPermissionForUserRoles(
+                message.channel,
+                message.author.id, command.id,
+              );
             return roleHasPermForRequiredAuthCommand;
           }
           return memberHasPermForRequiredAuthCommand;

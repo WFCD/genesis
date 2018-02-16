@@ -34,17 +34,24 @@ class WeaponStats extends Command {
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       const options = {
-        uri: `https://api.warframestat.us/weapons?search=${weapon}`,
+        uri: `https://api.warframestat.us/weapons/search/${weapon}`,
         json: true,
         rejectUnauthorized: false,
       };
-      const results = await request(options);
-      if (results.length > 0) {
-        this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), true, false);
-        return this.messageManager.statuses.SUCCESS;
+      try {
+        const results = await request(options);
+
+        if (results.length > 0) {
+          this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), true, false);
+          return this.messageManager.statuses.SUCCESS;
+        }
+        this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
+        return this.messageManager.statuses.FAILURE;
+      } catch (e) {
+        this.logger.error(e);
+        this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
+        return this.messageManager.statuses.FAILURE;
       }
-      this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
-      return this.messageManager.statuses.FAILURE;
     }
     this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
     return this.messageManager.statuses.FAILURE;

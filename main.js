@@ -1,9 +1,7 @@
 'use strict';
 
 const cluster = require('cluster');
-const Nexus = require('warframe-nexus-query');
 const Cache = require('json-fetch-cache');
-const NexusFetcher = require('nexus-stats-api');
 const Raven = require('raven');
 
 const DataCache = require('./src/resources/DropCache.js');
@@ -37,18 +35,6 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
-const nexusOptions = {
-  user_key: process.env.NEXUSSTATS_USER_KEY || undefined,
-  user_secret: process.env.NEXUSSTATS_USER_SECRET || undefined,
-  api_url: process.env.NEXUS_API_OVERRIDE || undefined,
-  auth_url: process.env.NEXUS_AUTH_OVERRIDE || undefined,
-  ignore_limiter: true,
-};
-
-const nexusFetcher = new NexusFetcher(nexusOptions.nexusKey
-    && nexusOptions.nexusSecret ? nexusOptions : {});
-
-const nexusQuerier = new Nexus(nexusFetcher);
 
 const caches = {
   pc: new Cache('https://api.warframestat.us/pc', 600000),
@@ -71,9 +57,7 @@ if (cluster.isMaster) {
     prefix: process.env.PREFIX,
     logger,
     owner: process.env.OWNER,
-    nexusQuerier,
     caches,
-    nexusFetcher,
   });
   shard.start();
 }

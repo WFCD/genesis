@@ -53,11 +53,11 @@ class JoinRole extends Command {
     const roles = await this.bot.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     const roleAddable = filteredRoles.length > 0
-               && !message.member.roles.get(role.id)
-               && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
+                 && !message.member.roles.get(role.id)
+                 && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
     const userHasRole = filteredRoles.length > 0
-               && message.member.roles.get(role.id)
-               && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
+                 && message.member.roles.get(role.id)
+                 && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES_OR_PERMISSIONS');
     if (roleAddable) {
       await message.member.addRole(role.id);
       await this.sendJoined(message, role);
@@ -117,7 +117,7 @@ class JoinRole extends Command {
     const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.bot.settings.getRolesForGuild(message.guild);
-    embed.fields[1].value = roles.map(role => role.name).join('; ');
+    embed.fields[1].value = roles.length ? roles.map(role => role.name).join('; ') : 'No possible roles';
     this.messageManager.embed(message, embed, true, false);
   }
 }
