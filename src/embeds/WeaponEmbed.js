@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { replaceIdentifiersForEmojiInString } = require('../../TrackFunctions.js');
 
 const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚫\\⚫\\⚫\\⚫\\⚪', '\\⚫\\⚫\\⚫\\⚪\\⚪', '\\⚫\\⚫\\⚪\\⚪\\⚪', '\\⚫\\⚪\\⚪\\⚪\\⚪', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
 
@@ -19,7 +20,7 @@ class WeaponEmbed extends BaseEmbed {
       this.url = weapon.url || '';
       this.thumbnail = { url: weapon.thumbnail || '' };
       this.description = `${weapon.type} ${weapon.subtype ? `| ${weapon.subtype}` : ''}`;
-      this.footer = { text: `Drops from: ${weapon.location}` };
+      this.footer = { text: weapon.location ? `Drops from: ${weapon.location}` : undefined };
       this.color = weapon.color;
       this.fields = [];
 
@@ -37,10 +38,10 @@ class WeaponEmbed extends BaseEmbed {
           `**Noise:** ${weapon.primary.noise}\n` +
           `**Accuracy:** ${weapon.primary.accuracy}\n` +
           `**Reload:** ${weapon.primary.reload}\n` +
-          `**Damage:** ${weapon.primary.damage}\n` +
-          `**Impact:** ${weapon.primary.impact}\n` +
-          `**Puncture:** ${weapon.primary.puncture}\n` +
-          `**Slash:** ${weapon.primary.slash}\n` +
+          `**Damage:** ${replaceIdentifiersForEmojiInString(weapon.primary.damage)}\n` +
+          `**Impact:** ${replaceIdentifiersForEmojiInString(weapon.primary.impact)}\n` +
+          `**Puncture:** ${replaceIdentifiersForEmojiInString(weapon.primary.puncture)}\n` +
+          `**Slash:** ${replaceIdentifiersForEmojiInString(weapon.primary.slash)}\n` +
           `**Critical Chance:** ${weapon.primary.crit_chance}\n` +
           `**Critical Multiplier:** ${weapon.primary.crit_mult}\n` +
           `**Status Chance:** ${weapon.primary.status_chance}`,
@@ -54,7 +55,7 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Damage',
-          value: weapon.damage,
+          value: replaceIdentifiersForEmojiInString(weapon.damage),
           inline: true,
         },
         {
@@ -74,7 +75,7 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Polarities',
-          value: weapon.polarities,
+          value: replaceIdentifiersForEmojiInString(weapon.polarities),
           inline: true,
         }];
         this.fields.push(...things);
@@ -90,10 +91,10 @@ class WeaponEmbed extends BaseEmbed {
           `**Noise:** ${weapon.secondary.noise}\n` +
           `**Accuracy:** ${weapon.secondary.accuracy}\n` +
           `**Reload:** ${weapon.secondary.reload}\n` +
-          `**Damage:** ${weapon.secondary.damage}\n` +
-          `**Impact:** ${weapon.secondary.impact}\n` +
-          `**Puncture:** ${weapon.secondary.puncture}\n` +
-          `**Slash:** ${weapon.secondary.slash}\n` +
+          `**Damage:** ${replaceIdentifiersForEmojiInString(weapon.secondary.damage)}\n` +
+          `**Impact:** ${replaceIdentifiersForEmojiInString(weapon.secondary.impact)}\n` +
+          `**Puncture:** ${replaceIdentifiersForEmojiInString(weapon.secondary.puncture)}\n` +
+          `**Slash:** ${replaceIdentifiersForEmojiInString(weapon.secondary.slash)}\n` +
           `**Critical Chance:** ${weapon.secondary.crit_chance}\n` +
           `**Critical Multiplier:** ${weapon.secondary.crit_mult}\n` +
           `**Status Chance:** ${weapon.secondary.status_chance}`,
@@ -126,21 +127,21 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.impact) {
         this.fields.push({
           name: 'Impact',
-          value: weapon.impact,
+          value: replaceIdentifiersForEmojiInString(weapon.impact),
           inline: true,
         });
       }
       if (weapon.puncture) {
         this.fields.push({
           name: 'Puncture',
-          value: weapon.puncture,
+          value: replaceIdentifiersForEmojiInString(weapon.puncture),
           inline: true,
         });
       }
       if (weapon.slash) {
         this.fields.push({
           name: 'Slash',
-          value: weapon.slash,
+          value: replaceIdentifiersForEmojiInString(weapon.slash),
           inline: true,
         });
       }
