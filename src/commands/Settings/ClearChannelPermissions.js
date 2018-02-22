@@ -16,7 +16,7 @@ class ClearChannelPermissions extends Command {
     if (channels.length) {
       const results = [];
       for (const channel of channels) {
-        results.push(this.bot.settings.removeChannelPermissions(channel));
+        results.push(this.bot.settings.removeChannelPermissions(channel.id));
       }
       await Promise.all(results);
     } else {
