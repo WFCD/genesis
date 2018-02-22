@@ -216,7 +216,15 @@ function getTrackInstructionEmbed(message, prefix, call) {
   return embed;
 }
 
-function getEmoji(identifier) {
+const replaceIdentifiersForEmojiInString = (stringWithoutEmoji) => {
+  let stringWithEmoji = stringWithoutEmoji;
+  Object.keys(emoji).forEach((identifier) => {
+    stringWithEmoji = stringWithEmoji.replace(new RegExp(`${identifier}`, ig), ` ${emoji[identifier]}`);
+  });
+  return stringWithEmoji;
+}
+
+const getEmoji = (identifier) => {
   return emoji[identifier] || '';
 }
 
@@ -265,6 +273,7 @@ module.exports = {
   getTrackInstructionEmbed,
   createGroupedArray,
   getEmoji,
+  replaceIdentifiersForEmojiInString,
   timeDeltaToString,
   fromNow,
 };
