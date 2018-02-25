@@ -77,7 +77,8 @@ class Help extends Command {
         }
         return command.call.toLowerCase().includes(query)
           || command.id.toLowerCase().includes(query)
-          || command.usages.filter(usage => usage.description ? usage.description.toLowerCase().includes(query) : false
+          || command.usages.filter(usage =>
+            (usage.description ? usage.description.toLowerCase().includes(query) : false)
           || usage.parameters.join(' ').toLowerCase().includes(query)).length > 0;
       });
 

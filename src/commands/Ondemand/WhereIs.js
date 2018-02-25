@@ -9,24 +9,6 @@ const request = require('request-promise');
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', description: 'This is either due to the item being vaulted or an invalid search. Sorry.', color: 0xff6961 };
 
-function placeSort(a, b) {
-  if (a.place < b.place) {
-    return -1;
-  } else if (a.place > b.place) {
-    return 1;
-  }
-  return 0;
-}
-
-function itemSort(a, b) {
-  if (a.item < b.item) {
-    return -1;
-  } else if (a.item > b.item) {
-    return 1;
-  }
-  return placeSort(a, b);
-}
-
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
