@@ -47,6 +47,7 @@ levels.forEach((level) => {
       this.ravenClient.captureMessage(message, {
         level: 'fatal',
       });
+      process.exit(4);
     }
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
