@@ -22,7 +22,7 @@ function timeToSeconds(time) {
  * @returns {number|?} Either the passed value or 0
  */
 function safeNumber(value) {
-  return isNaN(value) ? 0 : value;
+  return Number.isNaN(value) ? 0 : value;
 }
 
 /**
@@ -137,10 +137,10 @@ class RaidStat {
   makeTotals(lor, lornm, jv) {
     this.successes = lor.successes + lornm.successes + jv.successes;
     this.completed = lor.completed + lornm.completed + jv.completed;
-    this.best = getBestTime(
-      [timeToSeconds(lor.best), timeToSeconds(lornm.best), timeToSeconds(jv.best)]);
-    this.average = getAverageTime(
-      [timeToSeconds(lor.average), timeToSeconds(lornm.average), timeToSeconds(jv.average)]);
+    this.best = getBestTime([timeToSeconds(lor.best),
+      timeToSeconds(lornm.best), timeToSeconds(jv.best)]);
+    this.average = getAverageTime([timeToSeconds(lor.average),
+      timeToSeconds(lornm.average), timeToSeconds(jv.average)]);
     this.successTimes = [].concat(lor.successTimes)
       .concat(lornm.successTimes).concat(jv.successTimes);
     this.uniqueMems = [];

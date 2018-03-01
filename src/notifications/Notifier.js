@@ -124,23 +124,22 @@ class Notifier {
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
     await this.sendAcolytes(acolytesToNotify, platform);
-    await this.sendAlerts(alertsToNotify, platform);
     if (baroToNotify) {
-      await this.sendBaro(baroToNotify, platform);
+      this.sendBaro(baroToNotify, platform);
     }
     if (conclaveToNotify && conclaveToNotify.length > 0) {
-      await this.sendConclaveDailies(conclaveToNotify, platform);
+      this.sendConclaveDailies(conclaveToNotify, platform);
       await this.sendConclaveWeeklies(conclaveToNotify, platform);
     }
-    await this.sendDarvo(dailyDealsToNotify, platform);
-    await this.sendEvent(eventsToNotify, platform);
-    await this.sendFeaturedDeals(featuredDealsToNotify, platform);
-    await this.sendFissures(fissuresToNotify, platform);
-    await this.sendNews(newsToNotify, platform);
-    await this.sendStreams(streamsToNotify, platform);
-    await this.sendPopularDeals(popularDealsToNotify, platform);
-    await this.sendPrimeAccess(primeAccessToNotify, platform);
-    await this.sendInvasions(invasionsToNotify, platform);
+    this.sendDarvo(dailyDealsToNotify, platform);
+    this.sendEvent(eventsToNotify, platform);
+    this.sendFeaturedDeals(featuredDealsToNotify, platform);
+    this.sendFissures(fissuresToNotify, platform);
+    this.sendNews(newsToNotify, platform);
+    this.sendStreams(streamsToNotify, platform);
+    this.sendPopularDeals(popularDealsToNotify, platform);
+    this.sendPrimeAccess(primeAccessToNotify, platform);
+    this.sendInvasions(invasionsToNotify, platform);
     if (sortieToNotify) {
       await this.sendSortie(sortieToNotify, platform);
     }
@@ -157,12 +156,13 @@ class Notifier {
     if (cetusCycleChange) {
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
       if (ostron) {
-        //eslint-disable-next-line no-param-reassign
+        // eslint-disable-next-line no-param-reassign
         newData.cetusCycle.bountyExpiry = ostron.expiry;
       }
       await this.sendCetusCycle(newData.cetusCycle, platform);
     }
-    await this.sendUpdates(updatesToNotify, platform);
+    this.sendUpdates(updatesToNotify, platform);
+    await this.sendAlerts(alertsToNotify, platform);
   }
 
   /**
@@ -235,7 +235,10 @@ class Notifier {
   }
 
   async sendAlerts(newAlerts, platform) {
-    await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
+    for (const alert of newAlerts) {
+      await this.sendAlert(alert, platform);
+    }
+    // await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
   }
 
   async sendAlert(a, platform) {
@@ -400,8 +403,10 @@ class Notifier {
   }
 
   async sendCetusCycle(newCetusCycle, platform) {
-    await this.broadcast(new EarthCycleEmbed(this.bot, newCetusCycle),
-      platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry));
+    await this.broadcast(
+      new EarthCycleEmbed(this.bot, newCetusCycle),
+      platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry),
+    );
   }
 }
 

@@ -268,7 +268,8 @@ class MessaageManager {
   webhookWrapEmbed(embed, ctx) {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar ? ctx.webhook.avatar : this.client.user.avatarURL,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar ?
+        ctx.webhook.avatar : this.client.user.avatarURL,
       embeds: [embed],
     };
   }
@@ -276,7 +277,8 @@ class MessaageManager {
   webhookWrapEmbeds(embeds, ctx) {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar ? ctx.webhook.avatar : this.client.user.avatarURL,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar ?
+        ctx.webhook.avatar : this.client.user.avatarURL,
       embeds,
     };
   }

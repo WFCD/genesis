@@ -116,7 +116,7 @@ class CommandHandler {
     } else if (ctx.allowCustom) {
       commands = this.commands.concat(this.customCommands);
     } else {
-      commands = this.commands;
+      ({ commands } = this);
     }
 
     if (content.startsWith(ctx.prefix)) {
