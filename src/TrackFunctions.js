@@ -219,14 +219,12 @@ function getTrackInstructionEmbed(message, prefix, call) {
 const replaceIdentifiersForEmojiInString = (stringWithoutEmoji) => {
   let stringWithEmoji = stringWithoutEmoji;
   Object.keys(emoji).forEach((identifier) => {
-    stringWithEmoji = stringWithEmoji.replace(new RegExp(`${identifier}`, ig), ` ${emoji[identifier]}`);
+    stringWithEmoji = stringWithEmoji.replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]}`);
   });
   return stringWithEmoji;
-}
+};
 
-const getEmoji = (identifier) => {
-  return emoji[identifier] || '';
-}
+const getEmoji = identifier => emoji[identifier] || '';
 
 /**
  * @param   {number} millis The number of milliseconds in the time delta
