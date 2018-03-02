@@ -19,7 +19,6 @@ class WeaponEmbed extends BaseEmbed {
       this.url = weapon.url || '';
       this.thumbnail = { url: weapon.thumbnail || '' };
       this.description = `${weapon.type} ${weapon.subtype ? `| ${weapon.subtype}` : ''}`;
-      this.footer = { text: `Drops from: ${weapon.location}` };
       this.color = weapon.color;
       this.fields = [];
 
