@@ -27,7 +27,6 @@ class EnhancementEmbed extends BaseEmbed {
       this.title = enhancement.name;
       this.url = enhancement.info;
       this.thumbnail.url = enhancement.thumbnail;
-      this.description = enhancement.location;
       this.color = colors[enhancement.rarity.toLowerCase()];
       this.fields = [
         {
