@@ -246,12 +246,12 @@ class MessaageManager {
         webhook = await ctx.channel.createWebhook(this.client.user.username);
       }
       this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
-      await this.settings.setChannelSetting(ctx.channel, 'webhookId', String(webhook.id));
-      await this.settings.setChannelSetting(ctx.channel, 'webhookToken', String(webhook.token));
-      await this.settings.setChannelSetting(ctx.channel, 'webhookName', this.client.user.username);
-      await this.settings.setChannelSetting(ctx.channel, 'webhookAvatar', this.client.user.avatarURL.replace('?size=2048', ''));
+      webhook.name = this.client.user.username;
+      webhook.avatar = this.client.user.avatarURL.replace('?size=2048', '');
+      // Make this one query
+      await this.settings.setChannelWebhook(ctx.channel, webhook);
       // eslint-disable-next-line no-param-reassign
-      // ctx.webhook = webhook; // disabling to try letting it fetch from settings instead
+      ctx.webhook = webhook;
       return this.webhook(ctx, { text, embed });
     }
     if (ctx.message) {

@@ -175,15 +175,13 @@ class Notifier {
    */
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
-    for (const channelResults of channels) {
-      for (const result of channelResults) {
-        const channel = this.client.channels.get(result.channelId);
-        if (channel) {
-          if (channel.type === 'text') {
-            await this.sendWithPrepend(channel, embed, type, items, deleteAfter);
-          } else if (channel.type === 'dm') {
-            await this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
-          }
+    for (const result of channels) {
+      const channel = this.client.channels.get(result.channelId);
+      if (channel) {
+        if (channel.type === 'text') {
+          await this.sendWithPrepend(channel, embed, type, items, deleteAfter);
+        } else if (channel.type === 'dm') {
+          await this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
         }
       }
     }
@@ -251,6 +249,7 @@ class Notifier {
     } catch (e) {
       this.logger.error(e);
     } finally {
+      // Broadcast even if the thumbnail fails to fetch
       await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
     }
   }

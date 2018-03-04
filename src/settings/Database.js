@@ -192,6 +192,18 @@ class Database {
     return undefined;
   }
 
+  async setChannelWebhook(channel, webhook) {
+    const query = SQL`INSERT INTO settings (channel_id, setting, val)
+    VALUES (${channel.id}, 'webhookId', ${webhook.id}),
+    (${channel.id}, 'webhookToken', ${webhook.token}),
+    (${channel.id}, 'webhookName', ${webhook.name}),
+    (${channel.id}, 'webhookAvatar', ${webhook.avatar})
+    ON DUPLICATE KEY UPDATE
+      val = Values(val)`;
+
+    return this.db.query(query);
+  }
+
   async getChannelWebhook(channel) {
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
     const res = await this.db.query(query);
@@ -454,7 +466,7 @@ class Database {
           AND settings.setting = "platform"  AND settings.val = ${platform || 'pc'} `)
         .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return this.db.query(query);
+      return (await this.db.query(query))[0];
     } catch (e) {
       this.logger.error(e);
       return [];
