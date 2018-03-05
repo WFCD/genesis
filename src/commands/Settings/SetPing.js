@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const trackFunctions = require('../../TrackFunctions.js');
+const CommonFunctions = require('../../CommonFunctions.js');
 const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
 
 const callables = eventTypes.concat(rewardTypes).concat(opts);
@@ -24,7 +24,7 @@ class SetPing extends Command {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
     } else if (match) {
-      const trackables = trackFunctions.trackablesFromParameters(match[1].trim().split(' '));
+      const trackables = CommonFunctions.trackablesFromParameters(match[1].trim().split(' '));
       const eventsAndItems = [].concat(trackables.events).concat(trackables.items);
       const pingString = match[2] ? match[2].trim() : undefined;
 
@@ -32,7 +32,7 @@ class SetPing extends Command {
         const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
         this.messageManager.embed(
           message,
-          trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+          CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
         );
         return this.messageManager.statuses.FAILURE;
       }
@@ -53,7 +53,7 @@ class SetPing extends Command {
       return this.messageManager.statuses.SUCCESS;
     }
     const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
-    await this.messageManager.embed(message, trackFunctions
+    await this.messageManager.embed(message, CommonFunctions
       .getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;
   }

@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const trackFunctions = require('../../TrackFunctions.js');
+const CommonFunctions = require('../../CommonFunctions.js');
 const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
 
 /**
@@ -19,13 +19,13 @@ class Untrack extends Command {
   }
 
   async run(message) {
-    const unsplitItems = trackFunctions.getEventsOrItems(message);
+    const unsplitItems = CommonFunctions.getEventsOrItems(message);
     const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
 
     if (unsplitItems.length === 0) {
       return this.failure(message);
     }
-    const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
+    const trackables = CommonFunctions.trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
       return this.failure(message);
     }
@@ -35,7 +35,7 @@ class Untrack extends Command {
       .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
-    const channel = this.getChannel(channelParam, message);
+    const channel = CommonFunctions.getChannel(channelParam, message, message.guild.channels);
     const results = [];
     if (trackables.events.length) {
       results.push(this.bot.settings.untrackEventTypes(channel, trackables.events));
@@ -52,29 +52,9 @@ class Untrack extends Command {
     const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(
       message,
-      trackFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+      CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
     );
     return this.messageManager.statuses.FAILURE;
-  }
-
-  /**
-   * Get the list of channels to enable commands in based on the parameters
-   * @param {string|Array<Channel>} channelsParam parameter for determining channels
-   * @param {Message} message Discord message to get information on channels
-   * @returns {Array<string>} channel ids to enable commands in
-   */
-  getChannel(channelsParam, message) {
-    let { channel } = message;
-    if (typeof channelsParam === 'string') {
-      // handle it for strings
-      if (channelsParam !== 'here') {
-        channel = this.bot.client.channels.get(channelsParam.trim());
-      } else if (channelsParam === 'here') {
-        // eslint-disable-next-line prefer-destructuring
-        channel = message.channel;
-      }
-    }
-    return channel;
   }
 }
 

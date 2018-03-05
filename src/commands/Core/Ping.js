@@ -2,7 +2,7 @@
 
 const ping = require('ping').promise;
 const Command = require('../../Command.js');
-const { timeDeltaToString } = require('../../TrackFunctions.js');
+const { timeDeltaToString } = require('../../CommonFunctions.js');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up

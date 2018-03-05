@@ -273,6 +273,84 @@ const timeDeltaToString = (millis) => {
  */
 const fromNow = (d, now = Date.now) => d.getTime() - now();
 
+/**
+ * Get the list of channels to enable commands in based on the parameters
+ * @param {string|Array<Channel>} channelsParam parameter for determining channels
+ * @param {Message} message Discord message to get information on channels
+ * @param {Collection.<Channel>} channels Channels allowed to be searched through
+ * @returns {Array<string>} channel ids to enable commands in
+ */
+const getChannel = (channelsParam, message, channels) => {
+  let { channel } = message;
+  if (typeof channelsParam === 'string') {
+    // handle it for strings
+    if (channelsParam !== 'here') {
+      channel = (channels || message.guild.channels).get(channelsParam.trim());
+    } else if (channelsParam === 'here') {
+      // eslint-disable-next-line prefer-destructuring
+      channel = message.channel;
+    }
+  }
+  return channel;
+};
+
+/**
+ * Get the list of channels to enable commands in based on the parameters
+ * @param {string|Array<Channel>} channelsParam parameter for determining channels
+ * @param {Message} message Discord message to get information on channels
+ * @returns {Array<string>} channel ids to enable commands in
+ */
+const getChannels = (channelsParam, message) => {
+  let channels = [];
+  // handle it for strings
+  if (channelsParam !== 'all' && channelsParam !== 'current') {
+    channels.push(message.guild.channels.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
+  } else if (channelsParam === 'all') {
+    channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
+  } else if (channelsParam === 'current') {
+    channels.push(message.channel);
+  }
+  return channels;
+};
+
+/**
+ * Get the target role or user from the parameter string
+ *    or role mentions or user mentions, preferring the latter 2.
+ * @param {string} targetParam string from the command to determine the user or role
+ * @param {Array<Role>} roleMentions role mentions from the command
+ * @param {Array<User>} userMentions user mentions from the command
+ * @param {Message} message message to get information on users and roles
+ * @returns {Role|User} target or user to disable commands for
+ */
+const getTarget = (targetParam, roleMentions, userMentions, message) => {
+  let target;
+  const roleMention = roleMentions.first();
+  const userMention = userMentions.first();
+  if (roleMentions.array().length > 0) {
+    target = roleMention;
+    target.type = 'Role';
+  } else if (userMentions.array().length > 0) {
+    target = userMention;
+    target.type = 'User';
+  } else {
+    const userTarget = this.bot.client.users.get(targetParam);
+    const roleTarget = message.guild.roles.get(targetParam);
+    if (targetParam === '*') {
+      target = message.guild.roles.find('name', '@everyone');
+      target.type = 'Role';
+    } else if (roleTarget) {
+      target = roleTarget;
+      target.type = 'Role';
+    } else if (userTarget) {
+      target = userTarget;
+      target.type = 'User';
+    } else {
+      target = '';
+    }
+  }
+  return target;
+};
+
 module.exports = {
   trackablesFromParameters,
   getTrackInstructionEmbed,
@@ -281,4 +359,7 @@ module.exports = {
   timeDeltaToString,
   fromNow,
   getEventsOrItems,
+  getChannel,
+  getChannels,
+  getTarget,
 };

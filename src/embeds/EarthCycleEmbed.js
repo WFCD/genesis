@@ -2,7 +2,7 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-const { timeDeltaToString, fromNow } = require('../TrackFunctions.js');
+const { timeDeltaToString, fromNow } = require('../CommonFunctions.js');
 
 /**
  * Generates Earth cycle embeds

@@ -1,7 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const { createGroupedArray } = require('../TrackFunctions.js');
+const { createGroupedArray } = require('../CommonFunctions.js');
 
 /**
  * Utility class for making rich embeds
