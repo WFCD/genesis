@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
+const { getChannel } = require('../../CommonFunctions.js');
 
 class RespondToSettings extends Command {
   constructor(bot) {
@@ -59,7 +60,7 @@ class RespondToSettings extends Command {
     if (!doNothing) {
       const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
       const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
-      const channel = this.getChannel(channelParam, message);
+      const channel = getChannel(channelParam, message);
       await this.bot.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
       await this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse);
       this.messageManager.notifySettingsChange(message, true, true);
@@ -67,26 +68,6 @@ class RespondToSettings extends Command {
     }
     this.messageManager.embed(message, usageEmbed, true, true);
     return this.messageManager.statuses.FAILURE;
-  }
-
-  /**
-   * Get the list of channels to enable commands in based on the parameters
-   * @param {string|Array<Channel>} channelsParam parameter for determining channels
-   * @param {Message} message Discord message to get information on channels
-   * @returns {Array<string>} channel ids to enable commands in
-   */
-  getChannel(channelsParam, message) {
-    let { channel } = message;
-    if (typeof channelsParam === 'string') {
-      // handle it for strings
-      if (channelsParam !== 'here') {
-        channel = this.bot.client.channels.get(channelsParam.trim());
-      } else if (channelsParam === 'here') {
-        // eslint-disable-next-line prefer-destructuring
-        channel = message.channel;
-      }
-    }
-    return channel;
   }
 }
 

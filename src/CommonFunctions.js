@@ -52,113 +52,126 @@ function createGroupedArray(arr, chunkSize) {
 }
 
 function trackablesFromParameters(paramString) {
-  let items = paramString.split(' ');
+  let items = paramString;
+  const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
 
   const trackables = {
     events: [],
     items: [],
   };
 
+  if (items.length > 0) {
+    items = items.map(item => item.toLowerCase().trim()).filter(item => item.length > 0);
+  } else {
+    return trackables;
+  }
+
   if (items[0].toLowerCase() === 'all') {
     trackables.events = trackables.events.concat(eventTypes);
     trackables.items = trackables.items.concat(rewardTypes);
   } else {
-    items = items.map(item => item.trim());
     items.forEach((item) => {
-      const i = item.toLowerCase().trim();
-      if (i === 'items') {
+      if (cetusCustomTimeRegex.test(item)) {
+        trackables.events.push(item);
+      } else if (item === 'items') {
         trackables.items = trackables.items.concat(rewardTypes);
-      } else if (i === 'events') {
+      } else if (item === 'events') {
         trackables.events = trackables.events.concat(eventTypes);
-      } else if (i === 'fissures.t1') {
+      } else if (item === 'fissures.t1') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('fissures.t1')));
-      } else if (i === 'fissures.t2') {
+      } else if (item === 'fissures.t2') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('fissures.t2')));
-      } else if (i === 'fissures.t3') {
+      } else if (item === 'fissures.t3') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('fissures.t3')));
-      } else if (i === 'fissures.t4') {
+      } else if (item === 'fissures.t4') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('fissures.t4')));
-      } else if (i === 'fissures.excavation') {
+      } else if (item === 'fissures.excavation') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('excavation')));
-      } else if (i === 'fissures.sabotage') {
+      } else if (item === 'fissures.sabotage') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('sabotage')));
-      } else if (i === 'fissures.mobiledefense') {
+      } else if (item === 'fissures.mobiledefense') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('mobiledefense')));
-      } else if (i === 'fissures.assassination') {
+      } else if (item === 'fissures.assassination') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('assassination')));
-      } else if (i === 'fissures.extermination') {
+      } else if (item === 'fissures.extermination') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('extermination')));
-      } else if (i === 'fissures.hive') {
+      } else if (item === 'fissures.hive') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('hive')));
-      } else if (i === 'fissures.defense') {
+      } else if (item === 'fissures.defense') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('defense')));
-      } else if (i === 'fissures.interception') {
+      } else if (item === 'fissures.interception') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('interception')));
-      } else if (i === 'fissures.rathuum') {
+      } else if (item === 'fissures.rathuum') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('rathuum')));
-      } else if (i === 'fissures.conclave') {
+      } else if (item === 'fissures.conclave') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('conclave')));
-      } else if (i === 'fissures.rescue') {
+      } else if (item === 'fissures.rescue') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('rescue')));
-      } else if (i === 'fissures.spy') {
+      } else if (item === 'fissures.spy') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('spy')));
-      } else if (i === 'fissures.survival') {
+      } else if (item === 'fissures.survival') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('survival')));
-      } else if (i === 'fissures.capture') {
+      } else if (item === 'fissures.capture') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('capture')));
-      } else if (i === 'fissures.darksector') {
+      } else if (item === 'fissures.darksector') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('darksector')));
-      } else if (i === 'fissures.hijack') {
+      } else if (item === 'fissures.hijack') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('hijack')));
-      } else if (i === 'fissures.assault') {
+      } else if (item === 'fissures.assault') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('assault')));
-      } else if (i === 'fissures.evacuation') {
+      } else if (item === 'fissures.evacuation') {
         trackables.events = trackables.events
           .concat(fissures.filter(fissure => fissure.includes('evacuation')));
-      } else if (i === 'fissures') {
+      } else if (item === 'fissures') {
         trackables.events = trackables.events.concat(fissures);
-      } else if (i === 'syndicates') {
+      } else if (item === 'syndicates') {
         trackables.events = trackables.events.concat(syndicates);
-      } else if (i === 'conclave') {
+      } else if (item === 'conclave') {
         trackables.events = trackables.events.concat(conclave);
-      } else if (i === 'deals') {
+      } else if (item === 'deals') {
         trackables.events = trackables.events.concat(deals);
-      } else if (i === 'clantech') {
+      } else if (item === 'clantech') {
         trackables.items = trackables.items.concat(clantech);
-      } else if (i === 'resources') {
+      } else if (item === 'resources') {
         trackables.items = trackables.items.concat(resources);
-      } else if (i === 'cetus') {
+      } else if (item === 'cetus') {
         trackables.events.push('cetus.day');
         trackables.events.push('cetus.night');
-      } else if (rewardTypes.includes(item.trim())) {
-        trackables.items.push(item.trim());
-      } else if (eventTypes.includes(item.trim())) {
-        trackables.events.push(item.trim());
+      } else if (rewardTypes.includes(item)) {
+        trackables.items.push(item);
+      } else if (eventTypes.includes(item)) {
+        trackables.events.push(item);
       }
     });
   }
   return trackables;
+}
+const eventsOrItems = new RegExp(`cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
+
+function getEventsOrItems(message) {
+  const matches = message.strippedContent.match(eventsOrItems);
+  return matches || [];
 }
 
 function getTrackInstructionEmbed(message, prefix, call) {
@@ -260,6 +273,84 @@ const timeDeltaToString = (millis) => {
  */
 const fromNow = (d, now = Date.now) => d.getTime() - now();
 
+/**
+ * Get the list of channels to enable commands in based on the parameters
+ * @param {string|Array<Channel>} channelsParam parameter for determining channels
+ * @param {Message} message Discord message to get information on channels
+ * @param {Collection.<Channel>} channels Channels allowed to be searched through
+ * @returns {Array<string>} channel ids to enable commands in
+ */
+const getChannel = (channelsParam, message, channels) => {
+  let { channel } = message;
+  if (typeof channelsParam === 'string') {
+    // handle it for strings
+    if (channelsParam !== 'here') {
+      channel = (channels || message.guild.channels).get(channelsParam.trim());
+    } else if (channelsParam === 'here') {
+      // eslint-disable-next-line prefer-destructuring
+      channel = message.channel;
+    }
+  }
+  return channel;
+};
+
+/**
+ * Get the list of channels to enable commands in based on the parameters
+ * @param {string|Array<Channel>} channelsParam parameter for determining channels
+ * @param {Message} message Discord message to get information on channels
+ * @returns {Array<string>} channel ids to enable commands in
+ */
+const getChannels = (channelsParam, message) => {
+  let channels = [];
+  // handle it for strings
+  if (channelsParam !== 'all' && channelsParam !== 'current') {
+    channels.push(message.guild.channels.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
+  } else if (channelsParam === 'all') {
+    channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
+  } else if (channelsParam === 'current') {
+    channels.push(message.channel);
+  }
+  return channels;
+};
+
+/**
+ * Get the target role or user from the parameter string
+ *    or role mentions or user mentions, preferring the latter 2.
+ * @param {string} targetParam string from the command to determine the user or role
+ * @param {Array<Role>} roleMentions role mentions from the command
+ * @param {Array<User>} userMentions user mentions from the command
+ * @param {Message} message message to get information on users and roles
+ * @returns {Role|User} target or user to disable commands for
+ */
+const getTarget = (targetParam, roleMentions, userMentions, message) => {
+  let target;
+  const roleMention = roleMentions.first();
+  const userMention = userMentions.first();
+  if (roleMentions.array().length > 0) {
+    target = roleMention;
+    target.type = 'Role';
+  } else if (userMentions.array().length > 0) {
+    target = userMention;
+    target.type = 'User';
+  } else {
+    const userTarget = this.bot.client.users.get(targetParam);
+    const roleTarget = message.guild.roles.get(targetParam);
+    if (targetParam === '*') {
+      target = message.guild.roles.find('name', '@everyone');
+      target.type = 'Role';
+    } else if (roleTarget) {
+      target = roleTarget;
+      target.type = 'Role';
+    } else if (userTarget) {
+      target = userTarget;
+      target.type = 'User';
+    } else {
+      target = '';
+    }
+  }
+  return target;
+};
+
 module.exports = {
   trackablesFromParameters,
   getTrackInstructionEmbed,
@@ -267,4 +358,8 @@ module.exports = {
   getEmoji,
   timeDeltaToString,
   fromNow,
+  getEventsOrItems,
+  getChannel,
+  getChannels,
+  getTarget,
 };
