@@ -729,12 +729,22 @@ class Database {
   }
 
   /**
-   * Remove permissions corresponding to the channel id
+   * Remove item notifications corresponding to the channel id
    * @param  {snowflake} channelId channel identifier for removal
    * @returns {Promise.<string>} status of removal
    */
   async removeItemNotifications(channelId) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
+    return this.db.query(query);
+  }
+
+  /**
+   * Remove type notifications corresponding to the channel id
+   * @param  {snowflake} channelId channel identifier for removal
+   * @returns {Promise.<string>} status of removal
+   */
+  async removeTypeNotifications(channelId) {
+    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channelId}`;
     return this.db.query(query);
   }
 

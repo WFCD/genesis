@@ -2,7 +2,6 @@
 
 const Command = require('../../Command.js');
 const trackFunctions = require('../../TrackFunctions.js');
-
 const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
 
 /**
@@ -15,16 +14,15 @@ class Untrack extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*(${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*(cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message) {
-    const eventsOrItems = new RegExp(`${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
+    const unsplitItems = trackFunctions.getEventsOrItems(message);
     const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
 
-    const unsplitItems = message.strippedContent.match(eventsOrItems) ? message.strippedContent.match(eventsOrItems).join(' ') : undefined;
-    if (!unsplitItems) {
+    if (unsplitItems.length === 0) {
       return this.failure(message);
     }
     const trackables = trackFunctions.trackablesFromParameters(unsplitItems);
@@ -38,7 +36,6 @@ class Untrack extends Command {
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = this.getChannel(channelParam, message);
-
     const results = [];
     if (trackables.events.length) {
       results.push(this.bot.settings.untrackEventTypes(channel, trackables.events));

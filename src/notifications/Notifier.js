@@ -153,14 +153,12 @@ class Notifier {
       await this.sendSyndicateOstrons(syndicateToNotify, platform);
       await this.sendSyndicateAssassins(syndicateToNotify, platform);
     }
-    if (cetusCycleChange) {
-      const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      if (ostron) {
-        // eslint-disable-next-line no-param-reassign
-        newData.cetusCycle.bountyExpiry = ostron.expiry;
-      }
-      await this.sendCetusCycle(newData.cetusCycle, platform);
+    const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+    if (ostron) {
+      // eslint-disable-next-line no-param-reassign
+      newData.cetusCycle.bountyExpiry = ostron.expiry;
     }
+    await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
     this.sendUpdates(updatesToNotify, platform);
     await this.sendAlerts(alertsToNotify, platform);
   }
@@ -401,10 +399,12 @@ class Notifier {
     }
   }
 
-  async sendCetusCycle(newCetusCycle, platform) {
+  async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
+    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
+    const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     await this.broadcast(
       new EarthCycleEmbed(this.bot, newCetusCycle),
-      platform, `cetus.${newCetusCycle.isDay ? 'day' : 'night'}`, null, fromNow(newCetusCycle.expiry),
+      platform, type, null, fromNow(newCetusCycle.expiry),
     );
   }
 }
