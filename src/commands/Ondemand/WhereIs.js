@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
-const { createGroupedArray } = require('../../TrackFunctions.js');
+const { createGroupedArray } = require('../../CommonFunctions.js');
 
 const request = require('request-promise');
 

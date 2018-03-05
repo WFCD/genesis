@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const { createGroupedArray } = require('../../TrackFunctions.js');
+const { createGroupedArray } = require('../../CommonFunctions.js');
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)

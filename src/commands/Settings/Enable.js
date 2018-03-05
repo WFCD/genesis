@@ -3,6 +3,7 @@
 const Command = require('../../Command.js');
 const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
+const { getTarget, getChannels } = require('../../CommonFunctions.js');
 
 class Enable extends Command {
   constructor(bot) {
@@ -30,7 +31,7 @@ class Enable extends Command {
     let channels = [];
 
     if (params[1]) {
-      channels = this.getChannels(message.mentions.channels.length > 0
+      channels = getChannels(message.mentions.channels.length > 0
         ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
     } else {
       channels = [message.channel];
@@ -39,7 +40,7 @@ class Enable extends Command {
     let target = {};
     if (params[2] ||
         message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
-      target = this.getTarget(
+      target = getTarget(
         params[2], message.mentions ? message.mentions.roles : [],
         message.mentions ? message.mentions.users : [], message,
       );
@@ -87,67 +88,6 @@ class Enable extends Command {
       }
     });
     return commandsToEnable;
-  }
-
-  /**
-   * Get the list of channels to enable commands in based on the parameters
-   * @param {string|Array<Channel>} channelsParam parameter for determining channels
-   * @param {Message} message Discord message to get information on channels
-   * @returns {Array<string>} channel ids to enable commands in
-   */
-  getChannels(channelsParam, message) {
-    let channels = [];
-    if (typeof channelsParam === 'string') {
-      // handle it for strings
-      if (channelsParam !== '*' && channelsParam !== 'here') {
-        channels.push(this.bot.client.channels.get(channelsParam.trim()));
-      } else if (channelsParam === '*') {
-        channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
-      } else if (channelsParam === 'here') {
-        channels.push(message.channel);
-      }
-    } else {
-      channels.concat(channelsParam);
-    }
-    return channels;
-  }
-
-  /**
-   * Get the target role or user from the parameter string
-   *    or role mentions or user mentions, preferring the latter 2.
-   * @param {string} targetParam string from the command to determine the user or role
-   * @param {Array<Role>} roleMentions role mentions from the command
-   * @param {Array<User>} userMentions user mentions from the command
-   * @param {Message} message message to get information on users and roles
-   * @returns {Role|User} target or user to disable commands for
-   */
-  getTarget(targetParam, roleMentions, userMentions, message) {
-    let target;
-    const roleMention = roleMentions.first();
-    const userMention = userMentions.first();
-    if (roleMentions.array().length > 0) {
-      target = roleMention;
-      target.type = 'Role';
-    } else if (userMentions.array().length > 0) {
-      target = userMention;
-      target.type = 'User';
-    } else {
-      const userTarget = this.bot.client.users.get(targetParam);
-      const roleTarget = message.guild.roles.get(targetParam);
-      if (targetParam === '*') {
-        target = message.guild.roles.find('name', '@everyone');
-        target.type = 'Role';
-      } else if (roleTarget) {
-        target = roleTarget;
-        target.type = 'Role';
-      } else if (userTarget) {
-        target = userTarget;
-        target.type = 'User';
-      } else {
-        target = '';
-      }
-    }
-    return target;
   }
 }
 

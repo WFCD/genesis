@@ -2,14 +2,7 @@
 
 const Command = require('../../Command.js');
 const SettingsEmbed = require('../../embeds/SettingsEmbed.js');
-
-function createGroupedArray(arr, chunkSize) {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    groups.push(arr.slice(i, i + chunkSize));
-  }
-  return groups;
-}
+const { createGroupedArray, getChannels } = require('../../CommonFunctions');
 
 class Settings extends Command {
   constructor(bot) {
@@ -67,7 +60,7 @@ class Settings extends Command {
 
   async run(message) {
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
-    const channels = this.getChannels(channelParam.trim(), message);
+    const channels = getChannels(channelParam.trim(), message);
     const channelsResults = [];
     for (const channel of channels) {
       channelsResults.push(this.composeChannelSettings(channel, message));
@@ -126,29 +119,6 @@ class Settings extends Command {
       return 'everyone';
     }
     return this.bot.client.users.get(id);
-  }
-
-  /**
-   * Get the list of channels to enable commands in based on the parameters
-   * @param {string|Array<Channel>} channelsParam parameter for determining channels
-   * @param {Message} message Discord message to get information on channels
-   * @returns {Array<string>} channel ids to enable commands in
-   */
-  getChannels(channelsParam, message) {
-    let channels = [];
-    if (typeof channelsParam === 'string') {
-      // handle it for strings
-      if (channelsParam !== 'all' && channelsParam !== 'current') {
-        channels.push(this.bot.client.channels.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
-      } else if (channelsParam === 'all') {
-        channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
-      } else if (channelsParam === 'current') {
-        channels.push(message.channel);
-      }
-    } else {
-      channels.concat(channelsParam);
-    }
-    return channels;
   }
 }
 

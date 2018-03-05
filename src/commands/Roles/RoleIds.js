@@ -2,7 +2,7 @@
 
 const Command = require('../../Command.js');
 const rpad = require('right-pad');
-const { createGroupedArray } = require('../../TrackFunctions.js');
+const { createGroupedArray } = require('../../CommonFunctions.js');
 
 /**
  * Add a joinable role
