@@ -73,7 +73,7 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Polarities',
-          value: weapon.polarities || '-',
+          value: weapon.polarities ? weapon.polarities.join(' ') : '-',
           inline: true,
         }];
         this.fields.push(...things);
