@@ -35,7 +35,7 @@ levels.forEach((level) => {
         console.log(logMsg);
       }
       if (level.toLowerCase() === 'debug') {
-        const verboseMsg = `[${level}] ${JSON.stringify(message, undefined, 2)}`;
+        const verboseMsg = `[${level}] ${message}`;
         if (`[${level}] "${message}"` !== verboseMsg) {
           // eslint-disable-next-line no-console
           console.log(verboseMsg);
@@ -51,7 +51,7 @@ levels.forEach((level) => {
     }
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
-      console.error(`[${level}] ${JSON.stringify(message, undefined, 2)}`);
+      console.error(`[${level}] ${message}`);
       if (this && this.ravenClient) {
         this.ravenClient.captureException(message);
       }
