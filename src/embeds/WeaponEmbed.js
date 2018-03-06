@@ -31,49 +31,49 @@ class WeaponEmbed extends BaseEmbed {
           name: 'Primary Fire',
           value: `**Trigger:** ${weapon.primary.trigger}\n` +
           `**Projectile:** ${weapon.primary.projectile}\n` +
-          `**Rate:** ${weapon.primary.rate}\n` +
-          `**Flight:**: ${weapon.primary.flight || '-'}\n` +
-          `**Noise:** ${weapon.primary.noise}\n` +
-          `**Accuracy:** ${weapon.primary.accuracy}\n` +
-          `**Reload:** ${weapon.primary.reload}\n` +
-          `**Damage:** ${weapon.primary.damage}\n` +
-          `**Impact:** ${weapon.primary.impact}\n` +
-          `**Puncture:** ${weapon.primary.puncture}\n` +
-          `**Slash:** ${weapon.primary.slash}\n` +
-          `**Critical Chance:** ${weapon.primary.crit_chance}\n` +
-          `**Critical Multiplier:** ${weapon.primary.crit_mult}\n` +
-          `**Status Chance:** ${weapon.primary.status_chance}`,
+          `**Rate:** ${weapon.primary.rate} ammo\\s\n` +
+          `**Flight:**: ${weapon.primary.flight || '-'} m\s\n` +
+          `**Noise:** ${weapon.primary.noise || '-'}\n` +
+          `**Accuracy:** ${weapon.primary.accuracy || '-'}\n` +
+          `**Reload:** ${weapon.primary.reload || '-'}s\n` +
+          `**Damage:** ${weapon.primary.damage || '-'}\n` +
+          `**Impact:** ${weapon.primary.impact || '-'}\n` +
+          `**Puncture:** ${weapon.primary.puncture || '-'}\n` +
+          `**Slash:** ${weapon.primary.slash || '-'}\n` +
+          `**Critical Chance:** ${weapon.primary.crit_chance || '-'}\n` +
+          `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}\n` +
+          `**Status Chance:** ${weapon.primary.status_chance || '-'}`,
           inline: true,
         });
       } else {
         const things = [{
           name: 'Rate',
-          value: String(weapon.rate || '--'),
+          value: `${String(weapon.rate || '-')} unit\s`,
           inline: true,
         },
         {
           name: 'Damage',
-          value: weapon.damage || '--',
+          value: weapon.damage || '-',
           inline: true,
         },
         {
           name: 'Critical Chance',
-          value: weapon.crit_chance || '--',
+          value: `${weapon.crit_chance || '-'}%`,
           inline: true,
         },
         {
           name: 'Critical Multiplier',
-          value: weapon.crit_mult || '--',
+          value: `${weapon.crit_mult || '-'}x`,
           inline: true,
         },
         {
           name: 'Status Chance',
-          value: weapon.status_chance || '--',
+          value: `${weapon.status_chance || '-'}%`,
           inline: true,
         },
         {
           name: 'Polarities',
-          value: weapon.polarities || '--',
+          value: weapon.polarities || '-',
           inline: true,
         }];
         this.fields.push(...things);
@@ -82,20 +82,20 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.secondary) {
         this.fields.push({
           name: 'Secondary Fire',
-          value: `**Trigger:** ${weapon.secondary.trigger}\n` +
+          value: `**Trigger:** ${weapon.secondary.trigger || '-'}\n` +
           `**Projectile:** ${weapon.secondary.projectile}\n` +
-          `**Rate:** ${weapon.secondary.rate}\n` +
+          `**Rate:** ${weapon.secondary.rate || '-'}\n` +
           `**Flight:**: ${weapon.secondary.flight || '-'}\n` +
-          `**Noise:** ${weapon.secondary.noise}\n` +
+          `**Noise:** ${weapon.secondary.noise || '-'}\n` +
           `**Accuracy:** ${weapon.secondary.accuracy}\n` +
-          `**Reload:** ${weapon.secondary.reload}\n` +
-          `**Damage:** ${weapon.secondary.damage}\n` +
-          `**Impact:** ${weapon.secondary.impact}\n` +
-          `**Puncture:** ${weapon.secondary.puncture}\n` +
-          `**Slash:** ${weapon.secondary.slash}\n` +
-          `**Critical Chance:** ${weapon.secondary.crit_chance}\n` +
-          `**Critical Multiplier:** ${weapon.secondary.crit_mult}\n` +
-          `**Status Chance:** ${weapon.secondary.status_chance}`,
+          `**Reload:** ${weapon.secondary.reload || '-'}\n` +
+          `**Damage:** ${weapon.secondary.damage || '-'}\n` +
+          `**Impact:** ${weapon.secondary.impact || '-'}\n` +
+          `**Puncture:** ${weapon.secondary.puncture || '-'}\n` +
+          `**Slash:** ${weapon.secondary.slash || '-'}\n` +
+          `**Critical Chance:** ${weapon.secondary.crit_chance || '-'}%\n` +
+          `**Critical Multiplier:** ${weapon.secondary.crit_mult || '-'}x\n` +
+          `**Status Chance:** ${weapon.secondary.status_chance || '-'}%`,
           inline: true,
         });
       }
@@ -174,7 +174,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.reload) {
         this.fields.push({
           name: 'Reload Speed',
-          value: weapon.reload || '-',
+          value: `${weapon.reload || '-'}s`,
           inline: true,
         });
       }
