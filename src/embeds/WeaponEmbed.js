@@ -48,32 +48,32 @@ class WeaponEmbed extends BaseEmbed {
       } else {
         const things = [{
           name: 'Rate',
-          value: String(weapon.rate),
+          value: String(weapon.rate || '--'),
           inline: true,
         },
         {
           name: 'Damage',
-          value: weapon.damage,
+          value: weapon.damage || '--',
           inline: true,
         },
         {
           name: 'Critical Chance',
-          value: weapon.crit_chance,
+          value: weapon.crit_chance || '--',
           inline: true,
         },
         {
           name: 'Critical Multiplier',
-          value: weapon.crit_mult,
+          value: weapon.crit_mult || '--',
           inline: true,
         },
         {
           name: 'Status Chance',
-          value: weapon.status_chance,
+          value: weapon.status_chance || '--',
           inline: true,
         },
         {
           name: 'Polarities',
-          value: weapon.polarities,
+          value: weapon.polarities || '--',
           inline: true,
         }];
         this.fields.push(...things);
@@ -125,7 +125,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.impact) {
         this.fields.push({
           name: 'Impact',
-          value: weapon.impact,
+          value: weapon.impact || '--',
           inline: true,
         });
       }
