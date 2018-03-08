@@ -75,7 +75,12 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Polarities',
-          value: emojify(weapon.polarities ? weapon.polarities.join(' ') : '-'),
+          value: emojify(weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
+          inline: true,
+        },
+        {
+          name: 'Stance Polarity',
+          value: emojify(weapon.stancePolarity || '-'),
           inline: true,
         }];
         this.fields.push(...things);
@@ -124,27 +129,13 @@ class WeaponEmbed extends BaseEmbed {
           inline: true,
         });
       }
-      if (weapon.impact) {
-        this.fields.push({
-          name: 'Impact',
-          value: emojify(String(weapon.impact || '--')),
-          inline: true,
-        });
-      }
-      if (weapon.puncture) {
-        this.fields.push({
-          name: 'Puncture',
-          value: emojify(String(weapon.puncture)),
-          inline: true,
-        });
-      }
-      if (weapon.slash) {
-        this.fields.push({
-          name: 'Slash',
-          value: emojify(String(weapon.slash)),
-          inline: true,
-        });
-      }
+
+      this.fields.push({
+        name: 'IPS Damage Distribution',
+        value: emojify(`impact ${String(weapon.impact || '-')}\npuncture ${String(weapon.puncture || '-')}\nslash ${String(weapon.slash || '-')}`),
+        inline: true,
+      });
+
       if (weapon.flight) {
         this.fields.push({
           name: 'Flight Speed',
