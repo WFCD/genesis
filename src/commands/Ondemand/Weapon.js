@@ -31,6 +31,7 @@ class WeaponStats extends Command {
    */
   async run(message) {
     let weapon = message.strippedContent.match(this.regex)[1];
+    this.logger.debug(weapon);
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       const options = {

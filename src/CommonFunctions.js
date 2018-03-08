@@ -61,12 +61,12 @@ function trackablesFromParameters(paramString) {
   };
 
   if (items.length > 0) {
-    items = items.map(item => item.toLowerCase().trim()).filter(item => item.length > 0);
+    items = items.map(item => item.trim()).filter(item => item.length > 0);
   } else {
     return trackables;
   }
 
-  if (items[0].toLowerCase() === 'all') {
+  if (items[0] === 'all') {
     trackables.events = trackables.events.concat(eventTypes);
     trackables.items = trackables.items.concat(rewardTypes);
   } else {
@@ -229,9 +229,15 @@ function getTrackInstructionEmbed(message, prefix, call) {
   return embed;
 }
 
-function getEmoji(identifier) {
-  return emoji[identifier] || '';
-}
+const emojify = (stringWithoutEmoji) => {
+  let stringWithEmoji = stringWithoutEmoji;
+  Object.keys(emoji).forEach((identifier) => {
+    stringWithEmoji = stringWithEmoji.replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]}`);
+  });
+  return stringWithEmoji;
+};
+
+const getEmoji = identifier => emoji[identifier] || '';
 
 /**
  * @param   {number} millis The number of milliseconds in the time delta
@@ -362,4 +368,5 @@ module.exports = {
   getChannel,
   getChannels,
   getTarget,
+  emojify,
 };

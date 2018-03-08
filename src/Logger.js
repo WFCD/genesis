@@ -29,11 +29,6 @@ const levels = [
 levels.forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     if ((levels.indexOf(level) >= levels.indexOf(logLevel)) && levels.indexOf(level) < 3) {
-      const logMsg = `[${level}] ${message}`;
-      if (logMsg.indexOf('[object Object]') === -1 && logMsg.indexOf('[]') === -1 && message) {
-        // eslint-disable-next-line no-console
-        console.log(logMsg);
-      }
       if (level.toLowerCase() === 'debug') {
         const verboseMsg = `[${level}] ${message}`;
         if (`[${level}] "${message}"` !== verboseMsg) {

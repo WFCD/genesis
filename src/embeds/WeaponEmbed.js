@@ -2,6 +2,8 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+const { emojify } = require('../CommonFunctions.js');
+
 const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚫\\⚫\\⚫\\⚫\\⚪', '\\⚫\\⚫\\⚫\\⚪\\⚪', '\\⚫\\⚫\\⚪\\⚪\\⚪', '\\⚫\\⚪\\⚪\\⚪\\⚪', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
 
 /**
@@ -32,28 +34,28 @@ class WeaponEmbed extends BaseEmbed {
           value: `**Trigger:** ${weapon.primary.trigger}\n` +
           `**Projectile:** ${weapon.primary.projectile}\n` +
           `**Rate:** ${weapon.primary.rate} ammo\\s\n` +
-          `**Flight:**: ${weapon.primary.flight || '-'} m\s\n` +
+          `**Flight:**: ${weapon.primary.flight || '-'} m\\s\n` +
           `**Noise:** ${weapon.primary.noise || '-'}\n` +
           `**Accuracy:** ${weapon.primary.accuracy || '-'}\n` +
           `**Reload:** ${weapon.primary.reload || '-'}s\n` +
-          `**Damage:** ${weapon.primary.damage || '-'}\n` +
-          `**Impact:** ${weapon.primary.impact || '-'}\n` +
-          `**Puncture:** ${weapon.primary.puncture || '-'}\n` +
-          `**Slash:** ${weapon.primary.slash || '-'}\n` +
-          `**Critical Chance:** ${weapon.primary.crit_chance || '-'}\n` +
-          `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}\n` +
-          `**Status Chance:** ${weapon.primary.status_chance || '-'}`,
+          `**Damage:** ${emojify(weapon.primary.damage) || '-'}\n` +
+          `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n` +
+          `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n` +
+          `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n` +
+          `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n` +
+          `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n` +
+          `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
           inline: true,
         });
       } else {
         const things = [{
           name: 'Rate',
-          value: `${String(weapon.rate || '-')} unit\s`,
+          value: `${String(weapon.rate || '-')} unit\\s`,
           inline: true,
         },
         {
           name: 'Damage',
-          value: weapon.damage || '-',
+          value: emojify(weapon.damage || '-'),
           inline: true,
         },
         {
@@ -73,7 +75,7 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Polarities',
-          value: weapon.polarities ? weapon.polarities.join(' ') : '-',
+          value: emojify(weapon.polarities ? weapon.polarities.join(' ') : '-'),
           inline: true,
         }];
         this.fields.push(...things);
@@ -85,7 +87,7 @@ class WeaponEmbed extends BaseEmbed {
           value: `**Trigger:** ${weapon.secondary.trigger || '-'}\n` +
           `**Projectile:** ${weapon.secondary.projectile}\n` +
           `**Rate:** ${weapon.secondary.rate || '-'}\n` +
-          `**Flight:**: ${weapon.secondary.flight || '-'}\n` +
+          `**Flight:**: ${weapon.secondary.flight || '-'}m\\s\n` +
           `**Noise:** ${weapon.secondary.noise || '-'}\n` +
           `**Accuracy:** ${weapon.secondary.accuracy}\n` +
           `**Reload:** ${weapon.secondary.reload || '-'}\n` +
@@ -103,7 +105,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.noise) {
         this.fields.push({
           name: 'Noise Level',
-          value: weapon.noise,
+          value: String(weapon.noise),
           inline: true,
         });
       }
@@ -111,7 +113,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.projectile) {
         this.fields.push({
           name: 'Projectile',
-          value: weapon.projectile,
+          value: String(weapon.projectile),
           inline: true,
         });
       }
@@ -125,28 +127,28 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.impact) {
         this.fields.push({
           name: 'Impact',
-          value: weapon.impact || '--',
+          value: emojify(String(weapon.impact || '--')),
           inline: true,
         });
       }
       if (weapon.puncture) {
         this.fields.push({
           name: 'Puncture',
-          value: weapon.puncture,
+          value: emojify(String(weapon.puncture)),
           inline: true,
         });
       }
       if (weapon.slash) {
         this.fields.push({
           name: 'Slash',
-          value: weapon.slash,
+          value: emojify(String(weapon.slash)),
           inline: true,
         });
       }
       if (weapon.flight) {
         this.fields.push({
           name: 'Flight Speed',
-          value: weapon.flight,
+          value: `${weapon.flight || '0'}m\\s`,
           inline: true,
         });
       }
@@ -160,7 +162,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.ammo) {
         this.fields.push({
           name: 'Ammo Max',
-          value: weapon.ammo,
+          value: String(weapon.ammo),
           inline: true,
         });
       }
