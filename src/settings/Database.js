@@ -331,7 +331,9 @@ class Database {
   async trackEventTypes(channel, types) {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
     types.forEach((type, index) => {
-      query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
+      if (channel && channel.id) {
+        query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
+      }
     });
     return this.db.query(query);
   }
