@@ -163,26 +163,26 @@ class Notifier {
     await this.sendAlerts(alertsToNotify, platform);
   }
 
-  /**
-  * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
-   * @param  {string} platform   Platform of worldstate
-   * @param  {string} type       Type of new data to notify
-   * @param  {Array}  [items=[]] Items to broadcast
-   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
-   */
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
+  /**                                                                                
+   * Broadcast embed to all channels for a platform and type                          
+   * @param  {Object} embed      Embed to send to a channel                          
+   * @param  {string} platform   Platform of worldstate                              
+   * @param  {string} type       Type of new data to notify                          
+   * @param  {Array}  [items=[]] Items to broadcast                                  
+   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after        
+   */                                                                                
+  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {              
     const channels = await this.bot.settings.getNotifications(type, platform, items);
-    for (const result of channels) {
+    return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
       if (channel) {
         if (channel.type === 'text') {
-          await this.sendWithPrepend(channel, embed, type, items, deleteAfter);
+          return this.sendWithPrepend(channel, embed, type, items, deleteAfter);
         } else if (channel.type === 'dm') {
-          await this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
+          return this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
         }
       }
-    }
+    }));
   }
 
   async sendWithoutPrepend(channel, embed, deleteAfter) {
