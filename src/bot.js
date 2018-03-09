@@ -42,7 +42,7 @@ async function checkPrivateRooms(self, shardId) {
       if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt >
           self.channelTimeout) &&
         room.voiceChannel.members.size === 0) {
-        if (room.textChannel.deletable) {
+        if (room.textChannel && room.textChannel.deletable) {
           self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
           await room.textChannel.delete();
         }
@@ -54,7 +54,7 @@ async function checkPrivateRooms(self, shardId) {
           self.logger.debug(`Deleting category... ${room.category.id}`);
           await room.category.delete();
         }
-        if (room.textChannel.deletable && room.voiceChannel.deletable) {
+        if (room.voiceChannel.deletable) {
           self.settings
             .deletePrivateRoom(room);
         }
@@ -62,7 +62,7 @@ async function checkPrivateRooms(self, shardId) {
     } else if (room && !(room.voiceChannel || room.textChannel || room.category)) {
       self.settings
         .deletePrivateRoom({
-          textChannel: { id: room.textId },
+          textChannel: room.textId ? { id: room.textId } : undefined,
           voiceChannel: { id: room.voiceId },
           category: { id: room.categoryId },
           guild: { id: room.guildId },

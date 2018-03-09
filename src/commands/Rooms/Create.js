@@ -2,16 +2,42 @@
 
 const Command = require('../../Command.js');
 
-const useable = ['room', 'raid', 'team'];
+/**
+ * Array of useable channel values
+ * @type {Array.<String>}
+ */
+const useable = ['room', 'raid', 'team', 'chat'];
 
-const vulgar = ['n[i!1]gg[e3]r', 'n[i!1]gg[ua]', 'h[i!1]tl[e3]r', 'n[a@]z[i!1]', '[©ck]un[t7]', 'fu[©c]k', '[©c]umm', 'f[a@4]g', 'd[i!1]ck', 'c[o0]ck', 'boner', 'sperm', 'gay', 'gooch', 'jizz', 'pussy', 'penis', 'r[i!1]mjob', 'schlong', 'slut', 'wank', 'whore', 'sh[i!1]t', 'sex', 'fuk', 'heil', 'porn', 'suck', 'rape', 'scrotum'];
+/**
+ * String array of disallowed words
+ * @type {Array.<String>}
+ */
+const vulgar = ['n[i!1]gg[e3]r', 'n[i!1]gg[ua]', 'h[i!1]tl[e3]r', 'n[a@]z[i!1]', '[©ck]un[t7]', 'fu[©c]k', '[©c]umm',
+  'f[a@4]g', 'd[i!1]ck', 'c[o0]ck', 'boner', 'sperm', 'gay', 'gooch', 'jizz', 'pussy', 'penis', 'r[i!1]mjob', 'schlong',
+  'slut', 'wank', 'whore', 'sh[i!1]t', 'sex', 'fuk', 'heil', 'porn', 'suck', 'rape', 'scrotum'];
+
+/**
+ * Regex describing custom channel names
+ * @type {RegExp}
+ */
+const channelNameRegex = new RegExp('-n\\s+(.+)', 'ig');
+/**
+ * Regex describing no text being desired
+ * @type {RegExp}
+ */
+const noTextRegex = new RegExp('--no-text', 'ig');
+/**
+ * Regex describing a public channel
+ * @type {RegExp}
+ */
+const publicRegex = new RegExp('--public', 'ig');
 
 /**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
  * @returns {Array.<User>} Array of users to send message
  */
-function getUsersForCall(message) {
+const getUsersForCall = (message) => {
   const users = [];
   if (message.mentions.roles) {
     message.mentions.roles.forEach(role =>
@@ -35,7 +61,8 @@ function getUsersForCall(message) {
     users.push(message.author);
   }
   return users;
-}
+};
+
 /**
  * Create temporary voice/text channels (can be expanded in the future)
  */
@@ -46,7 +73,7 @@ class Create extends Command {
    */
   constructor(bot) {
     super(bot, 'rooms.create', 'create', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team)?(\\w|-)?(?:-n(.+))?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team|chat)?(\\w|-)?(?:-n(.+))?(--no-text)?(--public)?`, 'i');
 
     this.usages = [
       { description: 'Display instructions for creating temporary rooms', parameters: [] },
@@ -62,6 +89,14 @@ class Create extends Command {
         description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with a custom name',
         parameters: ['room | raid | team', 'users and/or role', '-n name'],
       },
+      {
+        description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with no text chat',
+        parameters: ['room | raid | team', 'users and/or role', '--no-text'],
+      },
+      {
+        description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with no join restrictions',
+        parameters: ['room | raid | team', 'users and/or role', '--public'],
+      },
     ];
 
     this.allowDM = false;
@@ -74,11 +109,12 @@ class Create extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const channelNameRegex = new RegExp('-n\\s+(.+)', 'ig');
+    const isPublic = publicRegex.test(message.strippedContent);
+    const useText = !noTextRegex.test(message.strippedContent);
     const type = message.strippedContent.match(this.regex)[1];
     const namingResults = message.strippedContent.match(channelNameRegex);
     let optName = (namingResults ? namingResults[0] : '')
-      .replace('-n ', '');
+      .replace('-n ', '').replace('--public', '').replace('--no-text', '').trim();
     if (vulgar.length) {
       optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); // remove vulgar
     }
@@ -86,34 +122,42 @@ class Create extends Command {
     if (createPrivateChannelAllowed) {
       if (type) {
         const roomType = type.trim();
-        if (roomType === 'room' || roomType === 'raid' || roomType === 'team') {
+        if (useable.includes(roomType)) {
           const users = getUsersForCall(message);
           const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
           if (users.length < 11 && !message.guild.channels.find('name', name)) {
             const overwrites = this.createOverwrites(
               users,
-              message.guild.defaultRole, message.author,
+              message.guild.defaultRole, message.author, isPublic, useText,
             );
             const category = await message.guild
               .createChannel(name, 'category', overwrites);
-            let textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
-            textChannel = await textChannel.setParent(category);
+            let textChannel;
+            if (useText) {
+              textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
+              textChannel = await textChannel.setParent(category);
+            }
+
             let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
             voiceChannel = await voiceChannel.setParent(category);
 
-            // manually add overwrites for "everyone"
-            await category.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-              VIEW_CHANNEL: false,
-            });
-            await textChannel.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-              VIEW_CHANNEL: false,
-            });
-            await voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-              VIEW_CHANNEL: false,
-            });
+            if (!isPublic) {
+              // manually add overwrites for "everyone"
+              await category.overwritePermissions(message.guild.defaultRole.id, {
+                CONNECT: false,
+                VIEW_CHANNEL: false,
+              });
+              if (useText) {
+                await textChannel.overwritePermissions(message.guild.defaultRole.id, {
+                  CONNECT: false,
+                  VIEW_CHANNEL: false,
+                });
+              }
+              await voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
+                CONNECT: false,
+                VIEW_CHANNEL: false,
+              });
+            }
 
             // add channel to listenedChannels
             await this.bot.settings
@@ -126,8 +170,8 @@ class Create extends Command {
               title: 'Channels created',
               fields: [{
                 name: '_ _',
-                value: `Voice Channel: ${voiceChannel.name}\n` +
-                  `Text Channel: ${textChannel}`,
+                value: `Voice Channel: ${voiceChannel.name}${
+                  textChannel ? `\nText Channel: ${textChannel}` : ''}`,
               }],
             }, false, false);
             return this.messageManager.statuses.SUCCESS;
@@ -175,37 +219,44 @@ class Create extends Command {
    * @param {Array.<User>} users            Array of users for whom to allow into channels
    * @param {RoleResolvable} everyoneRole   RoleResolvable for the @everyone role
    * @param {User} author                   User object for creator of room
+   * @param {boolean} isPublic              Whether or not this channel will be public
    * @returns {Array.<PermissionsOVerwrites>}
    */
-  createOverwrites(users, everyoneRole, author) {
+  createOverwrites(users, everyoneRole, author, isPublic) {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
-    overwrites.push({
-      id: everyoneRole,
-      deny: ['VIEW_CHANNEL', 'CONNECT'],
-    });
-    overwrites.push({
-      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
-      id: this.bot.client.user.id,
-    });
-    // set up overwrites per-user
-    users.forEach((user) => {
+    if (!isPublic) {
       overwrites.push({
-        id: user.id,
-        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
+        id: everyoneRole,
+        deny: ['VIEW_CHANNEL', 'CONNECT'],
       });
-    });
-    overwrites.push({
-      id: author.id,
-      allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
-    });
-
+      overwrites.push({
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
+        id: this.bot.client.user.id,
+      });
+      // set up overwrites per-user
+      users.forEach((user) => {
+        overwrites.push({
+          id: user.id,
+          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
+        });
+      });
+      overwrites.push({
+        id: author.id,
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
+      });
+    } else {
+      overwrites.push({
+        id: everyoneRole,
+        allow: ['VIEW_CHANNEL', 'CONNECT'],
+      });
+    }
     return overwrites;
   }
 
   async setLimits(voiceChannel, type) {
-    let limit = 99;
+    let limit;
     switch (type) {
       case 'team':
         limit = 4;
@@ -213,12 +264,15 @@ class Create extends Command {
       case 'raid':
         limit = 8;
         break;
+      case 'chat':
       case 'room':
       default:
         break;
     }
-    const vc = await voiceChannel.setUserLimit(limit);
-    this.logger.debug(`User limit set to ${limit} for ${vc.name}`);
+    if (limit) {
+      await voiceChannel.setUserLimit(limit);
+    }
+    this.logger.debug(`User limit set to ${limit || 'none'} for ${voiceChannel.name}`);
   }
 }
 

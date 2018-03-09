@@ -863,7 +863,12 @@ class Database {
   }
 
   async addPrivateRoom(guild, textChannel, voiceChannel, category) {
-    const query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id}, ${category.id})`;
+    let query;
+    if (textChannel) {
+      query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id) VALUES (${guild.id}, ${textChannel.id}, ${voiceChannel.id}, ${category.id})`;
+    } else {
+      query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id) VALUES (${guild.id}, 0, ${voiceChannel.id}, ${category.id})`;
+    }
     return this.db.query(query);
   }
 
@@ -871,7 +876,13 @@ class Database {
     const {
       guild, textChannel, voiceChannel, category,
     } = room;
-    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id} AND category_id= ${category.id}`;
+    let query;
+    if (textChannel) {
+      query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND text_id = ${textChannel.id} AND voice_id = ${voiceChannel.id} AND category_id= ${category.id}`;
+    } else {
+      query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${voiceChannel.id} AND category_id= ${category.id}`;
+    }
+
     return this.db.query(query);
   }
 
@@ -881,14 +892,14 @@ class Database {
     if (res[0]) {
       return res[0].map(value => ({
         guild: this.bot.client.guilds.get(value.guild_id),
-        textChannel: this.bot.client.channels.get(value.text_id),
+        textChannel: value.text_id ? this.bot.client.channels.get(value.text_id) : undefined,
         voiceChannel: this.bot.client.channels.get(value.voice_id),
         category: this.bot.client.channels.get(value.category_id),
         createdAt: value.crt_sec,
         guildId: value.guild_id,
-        textId: value.guild_id,
-        voiceId: value.guild_id,
-        categoryId: value.guild_id,
+        textId: value.text_id || undefined,
+        voiceId: value.voice_id,
+        categoryId: value.category_id,
       }));
     }
     return [];

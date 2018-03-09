@@ -75,11 +75,11 @@ module.exports = [
   );`,
   `CREATE TABLE IF NOT EXISTS private_channels (
     guild_id BIGINT UNSIGNED NOT NULL,
-    text_id BIGINT UNSIGNED NOT NULL,
+    text_id BIGINT UNSIGNED DEFAULT 0,
     voice_id BIGINT UNSIGNED NOT NULL,
     category_id BIGINT UNSIGNED NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (guild_id, text_id, voice_id)
+    PRIMARY KEY (guild_id, voice_id)
   );`,
   `CREATE TABLE IF NOT EXISTS custom_commands (
     command_id VARCHAR(255) NOT NULL,
