@@ -59,7 +59,7 @@ async function checkPrivateRooms(self, shardId) {
             .deletePrivateRoom(room);
         }
       }
-    } else if (room && !(room.voiceChannel || room.textChannel || room.category)) {
+    } else if (room) {
       await self.settings.deletePrivateRoom({
         textChannel: room.textId ? { id: room.textId } : undefined,
         voiceChannel: { id: room.voiceId },
