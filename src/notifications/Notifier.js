@@ -163,15 +163,16 @@ class Notifier {
     await this.sendAlerts(alertsToNotify, platform);
   }
 
-  /**                                                                                
-   * Broadcast embed to all channels for a platform and type                          
-   * @param  {Object} embed      Embed to send to a channel                          
-   * @param  {string} platform   Platform of worldstate                              
-   * @param  {string} type       Type of new data to notify                          
-   * @param  {Array}  [items=[]] Items to broadcast                                  
-   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after        
-   */                                                                                
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {              
+  /**
+   * Broadcast embed to all channels for a platform and type
+   * @param  {Object} embed      Embed to send to a channel
+   * @param  {string} platform   Platform of worldstate
+   * @param  {string} type       Type of new data to notify
+   * @param  {Array}  [items=[]] Items to broadcast
+   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
+   * @returns {Array.<Object>} values for successes
+   */
+  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.bot.settings.getNotifications(type, platform, items);
     return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
@@ -182,6 +183,7 @@ class Notifier {
           return this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
         }
       }
+      return undefined;
     }));
   }
 
