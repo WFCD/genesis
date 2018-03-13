@@ -33,6 +33,18 @@ const noTextRegex = new RegExp('--no-text', 'ig');
 const publicRegex = new RegExp('--public', 'ig');
 
 /**
+ * Regex describing a locked channel
+ * @type {RegExp}
+ */
+const lockedRegex = new RegExp('--locked', 'ig');
+
+/**
+ * Regex describing text being desired
+ * @type {RegExp}
+ */
+const textRegex = new RegExp('--text', 'ig');
+
+/**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
  * @returns {Array.<User>} Array of users to send message
@@ -87,15 +99,7 @@ class Create extends Command {
       },
       {
         description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with a custom name',
-        parameters: ['room | raid | team', 'users and/or role', '-n name'],
-      },
-      {
-        description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with no text chat',
-        parameters: ['room | raid | team', 'users and/or role', '--no-text'],
-      },
-      {
-        description: 'Create temporary text and voice channels for the calling user and any mentioned users/roles, with no join restrictions',
-        parameters: ['room | raid | team', 'users and/or role', '--public'],
+        parameters: ['room | raid | team', 'users and/or role', '-n name', '--no-text', '--public', '--text', '--locked'],
       },
     ];
 
@@ -106,21 +110,46 @@ class Create extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {Object} ctx Command context for calling commands
    * @returns {string} success status
    */
-  async run(message) {
-    const isPublic = publicRegex.test(message.strippedContent);
-    const useText = !noTextRegex.test(message.strippedContent);
+  async run(message, ctx) {
+    let isPublic;
+    if (lockedRegex.test(message.strippedContent)) {
+      isPublic = false;
+    } else if (publicRegex.test(message.strippedContent)) {
+      isPublic = true;
+    } else {
+      isPublic = !ctx.defaultRoomsLocked;
+    }
+
+    let useText;
+    if (textRegex.test(message.strippedContent)) {
+      useText = true;
+    } else if (noTextRegex.test(message.strippedContent)) {
+      useText = false;
+    } else {
+      useText = !ctx.defaultNoText;
+    }
+
     const type = message.strippedContent.match(this.regex)[1];
     const namingResults = message.strippedContent.match(channelNameRegex);
+    const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+
     let optName = (namingResults ? namingResults[0] : '')
-      .replace('-n ', '').replace('--public', '').replace('--no-text', '').trim();
+      .replace('-n ', '').replace('--public', '')
+      .replace('--locked', '').replace('--no-text', '')
+      .replace('--text', '')
+      .trim();
     if (vulgar.length) {
       optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); // remove vulgar
     }
-    const createPrivateChannelAllowed = parseInt(await this.bot.settings.getChannelSetting(message.channel, 'createPrivateChannel'), 10);
-    if (createPrivateChannelAllowed) {
-      if (type) {
+
+    if (ctx.createPrivateChannel) {
+      if (userHasRoom) {
+        await this.messageManager.reply(message, `you already have a private room registered. If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`, true, true);
+        return this.messageManager.statuses.FAILURE;
+      } else if (type) {
         const roomType = type.trim();
         if (useable.includes(roomType)) {
           const users = getUsersForCall(message);
@@ -161,7 +190,7 @@ class Create extends Command {
 
             // add channel to listenedChannels
             await this.bot.settings
-              .addPrivateRoom(message.guild, textChannel, voiceChannel, category);
+              .addPrivateRoom(message.guild, textChannel, voiceChannel, category, message.member);
             // send users invite link to new rooms
             this.sendInvites(voiceChannel, users, message.author);
             // set room limits
@@ -183,11 +212,11 @@ class Create extends Command {
           } else {
             msg = 'that room already exists.';
           }
-          this.messageManager.reply(message, msg, true, true);
+          await this.messageManager.reply(message, msg, true, true);
           return this.messageManager.statuses.FAILURE;
         }
       } else {
-        this.messageManager.reply(
+        await this.messageManager.reply(
           message, '```haskell\n' +
           'Sorry, you need to specify what you want to create. Right now these are available to create:' +
           `\n* ${useable.join('\n* ')}\n\`\`\``
@@ -244,7 +273,7 @@ class Create extends Command {
       });
       overwrites.push({
         id: author.id,
-        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
       });
     } else {
       overwrites.push({

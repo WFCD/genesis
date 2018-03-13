@@ -2,6 +2,8 @@
 
 const { eventTypes, rewardTypes, opts } = require('./resources/trackables.json');
 
+const { Collection } = require('discord.js');
+
 const fissures = ['fissures.t1.excavation', 'fissures.t1.sabotage', 'fissures.t1.mobiledefense', 'fissures.t1.assassination', 'fissures.t1.extermination',
   'fissures.t1.hive', 'fissures.t1.defense', 'fissures.t1.interception', 'fissures.t1.rathuum', 'fissures.t1.conclave', 'fissures.t1.rescue',
   'fissures.t1.spy', 'fissures.t1.survival', 'fissures.t1.capture', 'fissures.t1.darksector', 'fissures.t1.hijack', 'fissures.t1.assault',
@@ -288,10 +290,18 @@ const fromNow = (d, now = Date.now) => d.getTime() - now();
  */
 const getChannel = (channelsParam, message, channels) => {
   let { channel } = message;
+  let channelsColl;
+  if (message.guild) {
+    channelsColl = message.guild.channels;
+  } else {
+    channelsColl = new Collection();
+    channelsColl.set(message.channel.id, message.channel);
+  }
+
   if (typeof channelsParam === 'string') {
     // handle it for strings
     if (channelsParam !== 'here') {
-      channel = (channels || message.guild.channels).get(channelsParam.trim());
+      channel = (channels || channelsColl).get(channelsParam.trim());
     } else if (channelsParam === 'here') {
       // eslint-disable-next-line prefer-destructuring
       channel = message.channel;
