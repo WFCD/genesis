@@ -116,7 +116,7 @@ class Genesis {
 
     this.caches = caches;
 
-    this.channelTimeout = 300000;
+    this.channelTimeout = 60000;
 
     /**
      * Discord.js API
