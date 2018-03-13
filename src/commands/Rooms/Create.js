@@ -244,7 +244,7 @@ class Create extends Command {
       });
       overwrites.push({
         id: author.id,
-        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
+        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES'],
       });
     } else {
       overwrites.push({
