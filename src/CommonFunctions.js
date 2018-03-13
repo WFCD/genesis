@@ -367,16 +367,48 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
   return target;
 };
 
+/**
+ * Gets the list of users from the mentions in the call
+ * @param {Message} message Channel message
+ * @returns {Array.<User>} Array of users to send message
+ */
+const getUsersForCall = (message) => {
+  const users = [];
+  if (message.mentions.roles) {
+    message.mentions.roles.forEach(role =>
+      role.members.forEach(member =>
+        users.push(member.user)));
+  }
+  if (message.mentions.users) {
+    message.mentions.users.forEach((user) => {
+      if (users.indexOf(user) === -1) {
+        users.push(user);
+      }
+    });
+  }
+  let authorIncluded = false;
+  users.forEach((user) => {
+    if (user.id === message.author.id) {
+      authorIncluded = true;
+    }
+  });
+  if (!authorIncluded) {
+    users.push(message.author);
+  }
+  return users;
+};
+
 module.exports = {
-  trackablesFromParameters,
-  getTrackInstructionEmbed,
   createGroupedArray,
-  getEmoji,
-  timeDeltaToString,
+  emojify,
   fromNow,
-  getEventsOrItems,
   getChannel,
   getChannels,
+  getEmoji,
+  getEventsOrItems,
   getTarget,
-  emojify,
+  getTrackInstructionEmbed,
+  getUsersForCall,
+  timeDeltaToString,
+  trackablesFromParameters,
 };

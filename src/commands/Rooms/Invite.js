@@ -1,37 +1,7 @@
 'use strict';
 
 const Command = require('../../Command.js');
-
-/**
- * Gets the list of users from the mentions in the call
- * @param {Message} message Channel message
- * @returns {Array.<User>} Array of users to send message
- */
-const getUsersForCall = (message) => {
-  const users = [];
-  if (message.mentions.roles) {
-    message.mentions.roles.forEach(role =>
-      role.members.forEach(member =>
-        users.push(member.user)));
-  }
-  if (message.mentions.users) {
-    message.mentions.users.forEach((user) => {
-      if (users.indexOf(user) === -1) {
-        users.push(user);
-      }
-    });
-  }
-  let authorIncluded = false;
-  users.forEach((user) => {
-    if (user.id === message.author.id) {
-      authorIncluded = true;
-    }
-  });
-  if (!authorIncluded) {
-    users.push(message.author);
-  }
-  return users;
-};
+const { getUsersForCall } = require('../../CommonFunctions');
 
 /**
  * Invite people to temp voice/text/category
@@ -44,9 +14,7 @@ class Invite extends Command {
   constructor(bot) {
     super(bot, 'rooms.invite', 'invite', 'Invite user to temp room');
     this.regex = new RegExp(`^${this.call}`, 'i');
-
     this.usages = [];
-
     this.allowDM = false;
   }
 
