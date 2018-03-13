@@ -880,7 +880,7 @@ class Database {
     const {
       guild, voiceChannel, voiceId,
     } = room;
-    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${voiceChannel ? voiceChannel.id || voiceId}`;
+    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${voiceChannel ? voiceChannel.id : voiceId}`;
     return this.db.query(query);
   }
 
