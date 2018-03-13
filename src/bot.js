@@ -46,18 +46,15 @@ async function checkPrivateRooms(self, shardId) {
           self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
           await room.textChannel.delete();
         }
-        if (room.voiceChannel.deletable) {
+        if (room.voiceChannel && room.voiceChannel.deletable) {
           self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
           await room.voiceChannel.delete();
         }
-        if (room.category.deletable) {
+        if (room.category && room.category.deletable) {
           self.logger.debug(`Deleting category... ${room.category.id}`);
           await room.category.delete();
         }
-        if (room.voiceChannel.deletable) {
-          self.settings
-            .deletePrivateRoom(room);
-        }
+        self.settings.deletePrivateRoom(room);
       }
     } else if (room) {
       await self.settings.deletePrivateRoom({
