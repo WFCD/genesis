@@ -54,7 +54,7 @@ class EventEmbed extends BaseEmbed {
         this.fields.push({ name: `Jobs from ${event.affiliatedWith}`, value: jobString });
       }
 
-      if (event.health !== '0.00') {
+      if (event.health && event.health !== '0.00') {
         this.footer.text = `${event.health}% Remaining`;
       }
     } else {
