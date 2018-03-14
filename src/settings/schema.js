@@ -102,8 +102,8 @@ module.exports = [
   `CREATE TABLE IF NOT EXISTS builds (
     build_id VARCHAR(8) NOT NULL,
     title VARCHAR(255) NOT NULL default 'My Build',
-    body TEXT NOT NULL default 'My Build Body',
-    image TEXT NOT NULL default 'https://i.imgur.com/2ZJiRKC.png',
+    body TEXT NOT NULL,
+    image TEXT NOT NULL,
     owner_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (build_id)
   );`,
