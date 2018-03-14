@@ -3,15 +3,16 @@
 const Command = require('../../Command.js');
 
 /**
- * Displays the response time for the bot and checks Warframe's servers to see if they are up
+ * Sends the user an OAuth or other URL for inviting the bot (User configurable env: INVITE_URL)
  */
-class Invite extends Command {
+class Invitation extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.invite', 'invite', 'Send Invitation Link to Authorize Bot to Join a Server');
+    super(bot, 'core.invitation', 'invitation', 'Send Invitation Link to Authorize Bot to Join a Server');
+    this.regex = new RegExp(`^${this.call}$`, 'ig');
   }
 
   /**
@@ -26,4 +27,4 @@ class Invite extends Command {
   }
 }
 
-module.exports = Invite;
+module.exports = Invitation;

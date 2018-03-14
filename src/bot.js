@@ -37,36 +37,32 @@ async function checkPrivateRooms(self, shardId) {
   const privateRooms = await self.settings.getPrivateRooms();
   self.logger.debug(`Private rooms... ${privateRooms.length}`);
   privateRooms.forEach(async (room) => {
-    if (room && room.voiceChannel && room.textChannel && room.category) {
+    if (room && (room.textChannel || room.category || room.voiceChannel)) {
       const now = new Date();
       if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt >
           self.channelTimeout) &&
-        room.voiceChannel.members.size === 0) {
+        (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
         if (room.textChannel && room.textChannel.deletable) {
           self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
           await room.textChannel.delete();
         }
-        if (room.voiceChannel.deletable) {
+        if (room.voiceChannel && room.voiceChannel.deletable) {
           self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
           await room.voiceChannel.delete();
         }
-        if (room.category.deletable) {
+        if (room.category && room.category.deletable) {
           self.logger.debug(`Deleting category... ${room.category.id}`);
           await room.category.delete();
         }
-        if (room.voiceChannel.deletable) {
-          self.settings
-            .deletePrivateRoom(room);
-        }
+        self.settings.deletePrivateRoom(room);
       }
-    } else if (room && !(room.voiceChannel || room.textChannel || room.category)) {
-      self.settings
-        .deletePrivateRoom({
-          textChannel: room.textId ? { id: room.textId } : undefined,
-          voiceChannel: { id: room.voiceId },
-          category: { id: room.categoryId },
-          guild: { id: room.guildId },
-        });
+    } else if (room) {
+      await self.settings.deletePrivateRoom({
+        textChannel: room.textId ? { id: room.textId } : undefined,
+        voiceChannel: { id: room.voiceId },
+        category: { id: room.categoryId },
+        guild: { id: room.guildId },
+      });
     }
   });
 }
@@ -120,7 +116,7 @@ class Genesis {
 
     this.caches = caches;
 
-    this.channelTimeout = 300000;
+    this.channelTimeout = 60000;
 
     /**
      * Discord.js API

@@ -79,6 +79,7 @@ module.exports = [
     voice_id BIGINT UNSIGNED NOT NULL,
     category_id BIGINT UNSIGNED NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by BIGINT UNSIGNED DEFAULT 0,
     PRIMARY KEY (guild_id, voice_id)
   );`,
   `CREATE TABLE IF NOT EXISTS custom_commands (
