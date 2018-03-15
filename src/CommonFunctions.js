@@ -45,6 +45,34 @@ const emoji = {
   magnetic: '<:magnetic:363136420602445824>',
 };
 
+const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©c]umm|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
+
+const welcomes = [
+  '<:join:349556772412981269> $usermention just joined the server - glhf!',
+  '<:join:349556772412981269> $usermention just joined. Everyone, look busy!',
+  '<:join:349556772412981269> $usermention just joined. Can I get a heal?',
+  '<:join:349556772412981269> $usermention joined your party.',
+  '<:join:349556772412981269> $usermention joined. You must construct additional pylons.',
+  '<:join:349556772412981269> Ermagherd. $usermention is here.',
+  '<:join:349556772412981269> Welcome, $usermention. Stay awhile and listen.',
+  '<:join:349556772412981269> Welcome, $usermention. We were expecting you ( ͡° ͜ʖ ͡°)',
+  '<:join:349556772412981269> Welcome, $usermention. We hope you brought pizza.',
+  '<:join:349556772412981269> Welcome $usermention. Leave your weapons by the door.',
+  '<:join:349556772412981269> A wild $usermention appeared.',
+  '<:join:349556772412981269> Swoooosh. $usermention just landed.',
+  '<:join:349556772412981269> Brace yourselves. $usermention just joined the server.',
+  '<:join:349556772412981269> $usermention just joined. Hide your bananas.',
+  '<:join:349556772412981269> $usermention just arrived. Seems OP - please nerf.',
+  '<:join:349556772412981269> $usermention just slid into the server.',
+  '<:join:349556772412981269> A $usermention has spawned in the server.',
+  '<:join:349556772412981269> Big $usermention showed up!',
+  '<:join:349556772412981269> Where’s $usermention? In the server!',
+  '<:join:349556772412981269> $usermention hopped into the server. Kangaroo!!',
+  '<:join:349556772412981269> $usermention just showed up. Hold my beer.',
+];
+
+const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
+
 function createGroupedArray(arr, chunkSize) {
   const groups = [];
   for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
@@ -411,4 +439,6 @@ module.exports = {
   getUsersForCall,
   timeDeltaToString,
   trackablesFromParameters,
+  isVulgarCheck,
+  getRandomWelcome,
 };

@@ -1,21 +1,13 @@
 'use strict';
 
 const Command = require('../../Command.js');
-const { getUsersForCall } = require('../../CommonFunctions');
+const { getUsersForCall, isVulgarCheck } = require('../../CommonFunctions');
 
 /**
  * Array of useable channel values
  * @type {Array.<String>}
  */
 const useable = ['room', 'raid', 'team', 'chat'];
-
-/**
- * String array of disallowed words
- * @type {Array.<String>}
- */
-const vulgar = ['n[i!1]gg[e3]r', 'n[i!1]gg[ua]', 'h[i!1]tl[e3]r', 'n[a@]z[i!1]', '[©ck]un[t7]', 'fu[©c]k', '[©c]umm',
-  'f[a@4]g', 'd[i!1]ck', 'c[o0]ck', 'boner', 'sperm', 'gay', 'gooch', 'jizz', 'pussy', 'penis', 'r[i!1]mjob', 'schlong',
-  'slut', 'wank', 'whore', 'sh[i!1]t', 'sex', 'fuk', 'heil', 'porn', 'suck', 'rape', 'scrotum'];
 
 /**
  * Regex describing custom channel names
@@ -112,9 +104,7 @@ class Create extends Command {
       .replace('--locked', '').replace('--no-text', '')
       .replace('--text', '')
       .trim();
-    if (vulgar.length) {
-      optName = optName.replace(new RegExp(`(${vulgar.join('|')})`, 'ig'), ''); // remove vulgar
-    }
+    optName = optName.replace(isVulgarCheck, ''); // remove vulgar
 
     if (ctx.createPrivateChannel) {
       if (userHasRoom) {

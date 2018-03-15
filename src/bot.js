@@ -8,6 +8,7 @@ const Database = require('./settings/Database.js');
 const Tracker = require('./Tracker.js');
 const MessageManager = require('./settings/MessageManager.js');
 const Notifier = require('./notifications/Notifier.js');
+const { isVulgarCheck, getRandomWelcome } = require('./CommonFunctions.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -363,24 +364,31 @@ class Genesis {
   }
 
   async onGuildMemberAdd(guildMember) {
-    const welcomes = await this.settings.getWelcomes(guildMember.guild);
-    welcomes.forEach((welcome) => {
-      if (welcome.isDm === '1') {
-        this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
-          .replace(/\$username/ig, guildMember.displayName)
-          .replace(/\$usermention/ig, guildMember)
-          .replace(/\$timestamp/ig, new Date().toLocaleString()));
-      } else {
-        this.messageManager
-          .sendMessage(
-            { channel: welcome.channel }, welcome.message
-              .replace(/\$username/ig, guildMember.displayName)
-              .replace(/\$usermention/ig, guildMember)
-              .replace(/\$timestamp/ig, new Date().toLocaleString()),
-            false, false,
-          );
-      }
-    });
+    const isVulgar = isVulgarCheck.test(guildMember.displayName)
+      || isVulgarCheck.test(guildMember.user.username);
+    if (!isVulgar) {
+      const welcomes = await this.settings.getWelcomes(guildMember.guild);
+      welcomes.forEach((welcome) => {
+        if (welcome.message.trim() === 'random') {
+          welcome.message = getRandomWelcome(); // eslint-disable-line no-param-reassign
+        }
+        if (welcome.isDm === '1') {
+          this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
+            .replace(/\$username/ig, guildMember.displayName)
+            .replace(/\$usermention/ig, guildMember)
+            .replace(/\$timestamp/ig, new Date().toLocaleString()));
+        } else {
+          this.messageManager
+            .sendMessage(
+              { channel: welcome.channel }, welcome.message
+                .replace(/\$username/ig, guildMember.displayName)
+                .replace(/\$usermention/ig, guildMember)
+                .replace(/\$timestamp/ig, new Date().toLocaleString()),
+              false, false,
+            );
+        }
+      });
+    }
   }
 }
 
