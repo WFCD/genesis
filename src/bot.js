@@ -69,6 +69,24 @@ async function checkPrivateRooms(self, shardId) {
 }
 
 /**
+ * Update the presence of the bot to the current cetus cycle time remaining
+ * @param self the bot
+ */
+async updatePresence(self) {
+  const cetusState = (await self.caches.pc.getDataJson()).cetusCycle;
+  if (cetusState) {
+    self.client.user.setPresence({
+      status: 'online',
+      afk: false,
+      game: {
+        name: `${cetusState.shortString}\n@${self.client.user.username} help`,
+        url: 'https://genesis.warframestat.us',
+      },
+    });
+  }
+}
+
+/**
  * Class describing Genesis bot
  */
 class Genesis {
@@ -289,7 +307,7 @@ class Genesis {
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
     
-    setInterval(this.updatePresence, 60000, this);
+    setInterval(this.updatePresence, 60000, self);
   }
 
   /**
@@ -389,20 +407,6 @@ class Genesis {
               false, false,
             );
         }
-      });
-    }
-  }
-  
-  async updatePresence(this) {
-    const cetusState = (await this.caches.pc.getDataJson()).cetusCycle;
-    if (cetusState) {
-      this.client.user.setPresence({
-        status: 'online',
-        afk: false,
-        game: {
-          name: `${cetusState.shortString}\n@${this.client.user.username} help`,
-          url: 'https://genesis.warframestat.us',
-        },
       });
     }
   }
