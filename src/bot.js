@@ -72,7 +72,7 @@ async function checkPrivateRooms(self, shardId) {
  * Update the presence of the bot to the current cetus cycle time remaining
  * @param self the bot
  */
-async updatePresence(self) {
+async function updatePresence(self) {
   const cetusState = (await self.caches.pc.getDataJson()).cetusCycle;
   if (cetusState) {
     self.client.user.setPresence({
