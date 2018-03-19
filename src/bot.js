@@ -289,7 +289,7 @@ class Genesis {
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
     
-    setInterval(this.updatePresence, 60000);
+    setInterval(this.updatePresence, 60000, this);
   }
 
   /**
@@ -393,8 +393,8 @@ class Genesis {
     }
   }
   
-  async updatePresence() {
-    const cetusState = (await this.caches['pc'].getDataJson()).cetusCycle;
+  async updatePresence(this) {
+    const cetusState = (await this.caches.pc.getDataJson()).cetusCycle;
     if (cetusState) {
       this.client.user.setPresence({
         status: 'online',
