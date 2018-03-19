@@ -280,7 +280,7 @@ class Genesis {
       afk: false,
       game: {
         name: `@${this.client.user.username} help`,
-        url: 'https://warframe.com',
+        url: 'https://genesis.warframestat.us',
       },
     });
     await this.settings.ensureData(this.client);
@@ -288,6 +288,8 @@ class Genesis {
 
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
+    
+    setInterval(this.updatePresence, 60000);
   }
 
   /**
@@ -387,6 +389,20 @@ class Genesis {
               false, false,
             );
         }
+      });
+    }
+  }
+  
+  async updatePresence() {
+    const cetusState = (await this.bot.caches[platform.toLowerCase()].getDataJson()).cetusCycle;
+    if (cetusState) {
+      this.client.user.setPresence({
+        status: 'online',
+        afk: false,
+        game: {
+          name: `${cetusState.shortString}\n@${this.client.user.username} help`,
+          url: 'https://genesis.warframestat.us',
+        },
       });
     }
   }
