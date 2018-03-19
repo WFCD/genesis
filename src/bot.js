@@ -307,7 +307,7 @@ class Genesis {
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
     
-    setInterval(this.updatePresence, 60000, self);
+    setInterval(updatePresence, 60000, self);
   }
 
   /**
