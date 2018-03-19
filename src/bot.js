@@ -79,7 +79,7 @@ async function updatePresence(self) {
       status: 'online',
       afk: false,
       game: {
-        name: `${cetusState.shortString}\n@${self.client.user.username} help`,
+        name: `${cetusState.shortString} | @${self.client.user.username} help`,
         url: 'https://genesis.warframestat.us',
       },
     });
