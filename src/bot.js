@@ -394,7 +394,7 @@ class Genesis {
   }
   
   async updatePresence() {
-    const cetusState = (await this.bot.caches[platform.toLowerCase()].getDataJson()).cetusCycle;
+    const cetusState = (await this.caches['pc'].getDataJson()).cetusCycle;
     if (cetusState) {
       this.client.user.setPresence({
         status: 'online',
