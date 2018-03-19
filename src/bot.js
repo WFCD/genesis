@@ -80,7 +80,7 @@ async function updatePresence(self) {
       afk: false,
       game: {
         name: `${cetusState.shortString} | @${self.client.user.username} help`,
-        url: 'https://genesis.warframestat.us',
+        type: 'WATCHING',
       },
     });
   }
