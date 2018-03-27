@@ -69,6 +69,20 @@ const welcomes = [
   '<:join:349556772412981269> Where’s **$username**? In the server!',
   '<:join:349556772412981269> **$username** hopped into the server. Kangaroo!!',
   '<:join:349556772412981269> **$username** just showed up. Hold my beer.',
+  '<:join:349556772412981269> Relax, $usermention, it\'s a party.',
+  '<:join:349556772412981269> Behold before you, the courageous, the charismatic, fashionable...\n$usermention.',
+  '<:join:349556772412981269> Oh $usermention, you\'re here! Good to see you weren\'t discouraged by fashion frame.',
+  '<:join:349556772412981269> The Tenno $usermention has appeared.',
+  '<:join:349556772412981269> $usermention has consigned to the Lotus.',
+  '<:join:349556772412981269> $usermention has joined the fight against the Grineer!',
+  '<:join:349556772412981269> $usermention has started praising Space Mom.',
+  '<:join:349556772412981269> $usermention is ready to save us from Alad V',
+  '<:join:349556772412981269> Vay Hek thinks he\'s won, but $usermention has joined',
+  '<:join:349556772412981269> $usermention has Drunk the Kuva',
+  '<:join:349556772412981269> $usermention saved the Ostrons once again!',
+  '<:join:349556772412981269> $usermention just arrived at the Community Discord Relay',
+  '<:join:349556772412981269> Without $usermention we would\'ve lost the Relays',
+  '<:join:349556772412981269> $usermention is a trained ninja at heart',
 ];
 
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
@@ -398,9 +412,10 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
 /**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
+ * @param {boolean} excludeAuthor whether or not to exclude the author in the list
  * @returns {Array.<User>} Array of users to send message
  */
-const getUsersForCall = (message) => {
+const getUsersForCall = (message, excludeAuthor) => {
   const users = [];
   if (message.mentions.roles) {
     message.mentions.roles.forEach(role =>
@@ -414,14 +429,16 @@ const getUsersForCall = (message) => {
       }
     });
   }
-  let authorIncluded = false;
-  users.forEach((user) => {
-    if (user.id === message.author.id) {
-      authorIncluded = true;
+  if (excludeAuthor) {
+    let authorIncluded = false;
+    users.forEach((user) => {
+      if (user.id === message.author.id) {
+        authorIncluded = true;
+      }
+    });
+    if (!authorIncluded) {
+      users.push(message.author);
     }
-  });
-  if (!authorIncluded) {
-    users.push(message.author);
   }
   return users;
 };

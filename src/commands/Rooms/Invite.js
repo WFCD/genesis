@@ -30,7 +30,7 @@ class Invite extends Command {
       const userHasRoom = await this.bot.settings.userHasRoom(message.member);
       if (userHasRoom) {
         const room = await this.bot.settings.getUsersRoom(message.member);
-        const users = getUsersForCall(message);
+        const users = getUsersForCall(message, true);
         const permOverwrite = {
           VIEW_CHANNEL: true,
           SEND_MESSAGES: true,
