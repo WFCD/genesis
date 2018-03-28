@@ -6,7 +6,7 @@ class SetDefaultCategory extends Command {
   constructor(bot) {
     super(bot, 'settings.defaultcategory', 'set rooms category', 'Set whether or not to the bot should default rooms to being unlocked (public).');
     this.usages = [
-      { description: 'Change if the bot should create unlocked channels by default (defaults to off)', parameters: ['private rooms defaulted'] },
+      { description: 'Change the bot\'s default category for temp rooms. Defaults to none.', parameters: ['temp room default'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(\\d+)?$`, 'i');
     this.requiresAuth = true;
