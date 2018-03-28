@@ -95,6 +95,10 @@ class Create extends Command {
       useText = !ctx.defaultNoText;
     }
 
+    if (ctx.tempCategory) {
+      useText = false;
+    }
+
     const type = message.strippedContent.match(this.regex)[1];
     const namingResults = message.strippedContent.match(channelNameRegex);
     const userHasRoom = await this.bot.settings.userHasRoom(message.member);
@@ -120,8 +124,14 @@ class Create extends Command {
               users,
               message.guild.defaultRole, message.author, isPublic, useText,
             );
-            const category = await message.guild
-              .createChannel(name, 'category', overwrites);
+            let category;
+            if (!ctx.tempCategory) {
+              category = await message.guild
+                .createChannel(name, 'category', overwrites);
+            } else {
+              category = ctx.tempCategory;
+            }
+
             let textChannel;
             if (useText) {
               textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
@@ -151,7 +161,10 @@ class Create extends Command {
 
             // add channel to listenedChannels
             await this.bot.settings
-              .addPrivateRoom(message.guild, textChannel, voiceChannel, category, message.member);
+              .addPrivateRoom(
+                message.guild, textChannel, voiceChannel,
+                category === ctx.tempCategory ? { id: 0 } : category, message.member,
+              );
             // send users invite link to new rooms
             this.sendInvites(voiceChannel, users, message.author);
             // set room limits

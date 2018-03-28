@@ -58,6 +58,7 @@ class Database {
       allowInline: false,
       defaultRoomsLocked: true,
       defaultNoText: false,
+      tempCategory: false,
     };
   }
 
@@ -931,7 +932,7 @@ class Database {
 
   async getCommandContext(channel) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
-    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'createPrivateChannel');`;
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'createPrivateChannel', 'tempCategory');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -981,6 +982,10 @@ class Database {
 
       if (!(context.webhook.id && context.webhook.token)) {
         context.webhook = undefined;
+      }
+
+      if (context.tempCategory) {
+        context.tempCategory = this.bot.client.channels.get(context.tempCategory);
       }
     } else {
       context = {

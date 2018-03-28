@@ -25,6 +25,7 @@ class Settings extends Command {
       `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === '1' ? 'yes' : 'no'}`,
       `**Default Locked Channel:** ${(await this.bot.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
       `**Default No Text Channel:** ${(await this.bot.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
+      `**Temp Channel Category:** ${this.bot.client.channels.get(await this.bot.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,
     ];
     const items = await this.bot.settings.getTrackedItems(channel);
     if (items.length > 0) {
