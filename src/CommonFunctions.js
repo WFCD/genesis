@@ -84,6 +84,8 @@ const welcomes = [
   '<:join:349556772412981269> Without **$username** we would\'ve lost the Relays',
   '<:join:349556772412981269> **$username** is a trained ninja at heart',
   '<:join:349556772412981269> **$username** is here, as the prophecy foretold.',
+  '<:join:349556772412981269> Swaz-do-lah, **$username**!',
+  '<:join:349556772412981269> **$username** has arrived, early lunch for Konzu!',
 ];
 
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
