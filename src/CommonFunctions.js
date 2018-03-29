@@ -78,7 +78,7 @@ const welcomes = [
   '<:join:349556772412981269> **$username** has started praising Space Mom.',
   '<:join:349556772412981269> **$username** is ready to save us from Alad V',
   '<:join:349556772412981269> Vay Hek thinks he\'s won, but **$username** has joined',
-  '<:join:349556772412981269> **$username** has Drunk the Kuva',
+  '<:join:349556772412981269> **$username** has drunk the Kuva',
   '<:join:349556772412981269> **$username** saved the Ostrons once again!',
   '<:join:349556772412981269> **$username** just arrived at the Community Discord Relay',
   '<:join:349556772412981269> Without **$username** we would\'ve lost the Relays',
@@ -86,6 +86,16 @@ const welcomes = [
   '<:join:349556772412981269> **$username** is here, as the prophecy foretold.',
   '<:join:349556772412981269> Swaz-do-lah, **$username**!',
   '<:join:349556772412981269> **$username** has arrived, early lunch for Konzu!',
+  '<:join:349556772412981269> **$username**? **$username**?! Ooh, is it my birth interval?',
+  '<:join:349556772412981269> I\'m Cephalon Genesis Primary. We have and shall have a long association,  **$username**.\nI know this conversation well.',
+  '<:join:349556772412981269> Consequence to consequence brings you to us, **$username**',
+  '<:join:349556772412981269> **$username**, you were anticipated. Our interaction begins.',
+  '<:join:349556772412981269> Drop a stone, a ripple. Drop a grain, nothing of consequence.\nCome to me with stones, **$username**. Instruments of tested power, and I will accept.',
+  '<:join:349556772412981269> Oh how I\'ve been looking all over for you, **$username**. Come, come! Let me show you my new venture. I think you\'ll be a perfect fit.',
+  '<:join:349556772412981269> It is time. Utter the name, **$username**',
+  '<:join:349556772412981269> Yes, the name I have always known, **$username**',
+  '<:join:349556772412981269> I\'m detecting a large security force heading your way. It\'s the Gri... No wait, it\'s **$username**. Definitely  **$username**',
+  '<:join:349556772412981269> They brought reinforcements... A **$username**',
 ];
 
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
