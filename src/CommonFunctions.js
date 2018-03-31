@@ -442,7 +442,7 @@ const getUsersForCall = (message, excludeAuthor) => {
       }
     });
   }
-  if (excludeAuthor) {
+  if (!excludeAuthor) {
     let authorIncluded = false;
     users.forEach((user) => {
       if (user.id === message.author.id) {
