@@ -407,7 +407,7 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
     const userTarget = this.bot.client.users.get(targetParam);
     const roleTarget = message.guild.roles.get(targetParam);
     if (targetParam === '*') {
-      target = message.guild.roles.find('name', '@everyone');
+      target = message.guild.defaultRole;
       target.type = 'Role';
     } else if (roleTarget) {
       target = roleTarget;
