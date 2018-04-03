@@ -16,7 +16,7 @@ class RollInline extends Command {
     this.usages = [
       {
         description: 'roll between rivens',
-        parameters: ['poll statement'],
+        parameters: ['riven link to vote about rolling'],
       },
     ];
   }
