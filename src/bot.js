@@ -70,7 +70,7 @@ async function checkPrivateRooms(self, shardId) {
 
 /**
  * Update the presence of the bot to the current cetus cycle time remaining
- * @param self the bot
+ * @param {Bot} self  the bot
  */
 async function updatePresence(self) {
   const cetusState = (await self.caches.pc.getDataJson()).cetusCycle;
@@ -306,7 +306,7 @@ class Genesis {
 
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
-    
+
     setInterval(updatePresence, 60000, self);
   }
 
