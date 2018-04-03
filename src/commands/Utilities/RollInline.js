@@ -12,7 +12,7 @@ class RollInline extends Command {
    */
   constructor(bot) {
     super(bot, 'roll', 'roll?', 'Roll between 2 rivens');
-    this.regex = new RegExp('roll\?', 'ig');
+    this.regex = new RegExp('roll\\?', 'ig');
     this.usages = [
       {
         description: 'roll between rivens',
