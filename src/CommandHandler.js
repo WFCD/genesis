@@ -93,9 +93,15 @@ class CommandHandler {
    */
   async handleCommand(message) {
     let { content } = message;
-    const botping = `@${message.guild ?
-      message.guild.members.get(this.bot.client.user.id).displayName :
-      this.bot.client.user.username}`;
+    let botping;
+    if (message.guild) {
+      if (message.guild.members.has(this.bot.client.user.id)) {
+        botping = `@${message.guild.members.get(this.bot.client.user.id).displayName}`;
+      }
+    }
+    if (typeof botping === 'undefined') {
+      botping = `a${this.bot.client.user.username}`;
+    }
     const botPingId = `<@${this.bot.client.user.id}>`;
     const ctx = await this.bot.settings
       .getCommandContext(message.channel);
