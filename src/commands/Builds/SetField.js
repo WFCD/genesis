@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
 
 /**
@@ -30,7 +30,7 @@ class AddBuild extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const buildId = (params[0] || '').trim();
-    const build = await this.bot.settings.getBuild(buildId);
+    const build = await this.settings.getBuild(buildId);
     let title;
     let body;
     let image;
@@ -51,11 +51,11 @@ class AddBuild extends Command {
     }
 
     // save params based on order
-    const status = await this.bot.settings.setBuildFields(buildId, { title, body, image });
+    const status = await this.settings.setBuildFields(buildId, { title, body, image });
     if (status) {
       this.messageManager.embed(message, new BuildEmbed(
         this.bot,
-        await this.bot.settings.getBuild(buildId),
+        await this.settings.getBuild(buildId),
       ), true, true);
       return this.messageManager.statuses.SUCCESS;
     }

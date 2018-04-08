@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const EnemyEmbed = require('../../embeds/EnemyEmbed.js');
 
 /**
@@ -18,7 +18,7 @@ class Enemies extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     await this.messageManager.embed(
       message,

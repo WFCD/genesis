@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getChannel } = require('../../CommonFunctions');
 
 class RespondToSettings extends Command {
@@ -37,7 +37,7 @@ class RespondToSettings extends Command {
     if (enable === 'on') {
       enableResponse = true;
     }
-    await this.bot.settings.setChannelSetting(channel, 'respond_to_settings', enableResponse);
+    await this.settings.setChannelSetting(channel, 'respond_to_settings', enableResponse);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

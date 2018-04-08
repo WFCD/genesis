@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
 
 /**
@@ -26,7 +26,7 @@ class GetBuild extends Command {
       // let them know it's not a valid build id
       return this.messageManager.statuses.FAILURE;
     }
-    const build = await this.bot.settings.getBuild(buildId);
+    const build = await this.settings.getBuild(buildId);
     const embed = new BuildEmbed(this.bot, build);
     this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;

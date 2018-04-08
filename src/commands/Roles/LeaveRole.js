@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Get a role from the matching string
@@ -50,7 +50,7 @@ class LeaveRole extends Command {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
-    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     const roleRemoveable = filteredRoles.length > 0
           && message.member.roles.get(role.id)
@@ -113,9 +113,9 @@ class LeaveRole extends Command {
         },
       ],
     };
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
-    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const roles = await this.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.map(role => role.name).join('; ') || 'No roles.';
     this.messageManager.embed(message, embed, true, false);
   }

@@ -115,6 +115,12 @@ class Command {
      */
     this.messageManager = bot.messageManager;
 
+    /**
+     * Settings object interface
+     * @type {Database}
+     */
+    this.settings = bot.settings;
+
     this.platforms = ['pc', 'ps4', 'xb1'];
   }
 

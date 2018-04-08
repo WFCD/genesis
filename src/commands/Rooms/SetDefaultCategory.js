@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class SetDefaultCategory extends Command {
   constructor(bot) {
@@ -17,29 +17,18 @@ class SetDefaultCategory extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
    * @returns {string} success status
    */
-  async run(message, ctx) {
+  async run(message) {
     const category = message.strippedContent.match(this.regex)[1];
     if (category && this.bot.client.channels.has(category.trim())) {
-      await this.bot.settings.setGuildSetting(message.guild, 'tempCategory', category);
+      await this.settings.setGuildSetting(message.guild, 'tempCategory', category);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    const embed = {
-      title: 'Usage',
-      type: 'rich',
-      color: 0x0000ff,
-      fields: [
-        {
-          name: `${ctx.prefix}${this.call} <category id>`,
-          value: '_ _',
-        },
-      ],
-    };
-    this.messageManager.embed(message, embed, true, true);
-    return this.messageManager.statuses.FAILURE;
+    await this.settings.deleteGuildSetting(message.guild, 'tempCategory');
+    this.messageManager.notifySettingsChange(message, true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

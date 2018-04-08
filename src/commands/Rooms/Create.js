@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getUsersForCall, isVulgarCheck } = require('../../CommonFunctions');
 
 /**
@@ -37,6 +37,17 @@ const lockedRegex = new RegExp('--locked', 'ig');
  */
 const textRegex = new RegExp('--text', 'ig');
 
+/**
+ * Regex describing channels being hidden
+ * @type {RegExp}
+ */
+const hiddenRegex = new RegExp('--hidden', 'ig');
+
+/**
+ * Regex describing channels being shown
+ * @type {RegExp}
+ */
+const shownRegex = new RegExp('--shown', 'ig');
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)
@@ -48,7 +59,7 @@ class Create extends Command {
    */
   constructor(bot) {
     super(bot, 'rooms.create', 'create', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team|chat)?(\\w|-)?(?:-n(.+))?(--no-text)?(--public)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(room|raid|team|chat)?(\\w|-)?(?:-n(.+))?(--no-text)?(--public)?(--text)?(--hidden)?(--shown)?`, 'i');
 
     this.usages = [
       { description: 'Display instructions for creating temporary rooms', parameters: [] },
@@ -95,18 +106,29 @@ class Create extends Command {
       useText = !ctx.defaultNoText;
     }
 
+    let shown;
+    if (shownRegex.test(message.strippedContent)) {
+      shown = true;
+    } else if (hiddenRegex.test(message.strippedContent)) {
+      shown = false;
+    } else {
+      shown = !ctx.defaultShown;
+    }
+
     if (ctx.tempCategory) {
       useText = false;
     }
 
     const type = message.strippedContent.match(this.regex)[1];
     const namingResults = message.strippedContent.match(channelNameRegex);
-    const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+    const userHasRoom = await this.settings.userHasRoom(message.member);
 
     let optName = (namingResults ? namingResults[0] : '')
       .replace('-n ', '').replace('--public', '')
       .replace('--locked', '').replace('--no-text', '')
       .replace('--text', '')
+      .replace('--shown', '')
+      .replace('--hidden', '')
       .trim();
     optName = optName.replace(isVulgarCheck, ''); // remove vulgar
 
@@ -145,22 +167,22 @@ class Create extends Command {
               // manually add overwrites for "everyone"
               await category.overwritePermissions(message.guild.defaultRole.id, {
                 CONNECT: false,
-                VIEW_CHANNEL: false,
+                VIEW_CHANNEL: shown,
               });
               if (useText) {
                 await textChannel.overwritePermissions(message.guild.defaultRole.id, {
                   CONNECT: false,
-                  VIEW_CHANNEL: false,
+                  VIEW_CHANNEL: shown,
                 });
               }
               await voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
                 CONNECT: false,
-                VIEW_CHANNEL: false,
+                VIEW_CHANNEL: shown,
               });
             }
 
             // add channel to listenedChannels
-            await this.bot.settings
+            await this.settings
               .addPrivateRoom(
                 message.guild, textChannel, voiceChannel,
                 category === ctx.tempCategory ? { id: 0 } : category, message.member,
@@ -223,16 +245,23 @@ class Create extends Command {
    * @param {RoleResolvable} everyoneRole   RoleResolvable for the @everyone role
    * @param {User} author                   User object for creator of room
    * @param {boolean} isPublic              Whether or not this channel will be public
+   * @param {boolean} shown                 Whether or not this channel will be visible
    * @returns {Array.<PermissionsOVerwrites>}
    */
-  createOverwrites(users, everyoneRole, author, isPublic) {
+  createOverwrites(users, everyoneRole, author, isPublic, shown) {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
     if (!isPublic) {
+      if (!shown) {
+        overwrites.push({
+          id: everyoneRole,
+          deny: ['VIEW_CHANNEL', 'CONNECT'],
+        });
+      }
       overwrites.push({
         id: everyoneRole,
-        deny: ['VIEW_CHANNEL', 'CONNECT'],
+        deny: ['CONNECT'],
       });
       overwrites.push({
         allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],

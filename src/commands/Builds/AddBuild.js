@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
 
 /**
@@ -33,7 +33,7 @@ class AddBuild extends Command {
     const title = params[0] || 'My Build';
     const body = params[1] || 'My Build Body';
     const image = params[2] || 'https://i.imgur.com/31xCos6.png';
-    const build = await this.bot.settings.addNewBuild(title, body, image, message.author);
+    const build = await this.settings.addNewBuild(title, body, image, message.author);
     const embed = new BuildEmbed(this.bot, build);
     this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;

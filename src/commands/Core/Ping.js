@@ -1,7 +1,7 @@
 'use strict';
 
 const ping = require('ping').promise;
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { timeDeltaToString } = require('../../CommonFunctions.js');
 
 /**

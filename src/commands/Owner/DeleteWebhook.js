@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Sets the avatar for the bot
@@ -25,7 +25,7 @@ class DeleteWebhook extends Command {
   async run(message) {
     const channelId = message.strippedContent.match(this.regex)[1];
     try {
-      await this.bot.settings.deleteWebhooksForChannel(channelId.trim());
+      await this.settings.deleteWebhooksForChannel(channelId.trim());
       this.messageManager.reply(message, 'Done. ', true, true);
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {

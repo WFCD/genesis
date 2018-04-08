@@ -1,7 +1,7 @@
 'use strict';
 
 const Fetcher = require('../../resources/Fetcher.js');
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const WhatsinEmbed = require('../../embeds/WhatsinEmbed.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };

@@ -1,14 +1,14 @@
 'use strict';
 
 const CommandHandler = require('./CommandHandler.js');
-const Discord = require('discord.js');
-const md = require('node-md-config');
-const WorldStateCache = require('./WorldStateCache.js');
 const Database = require('./settings/Database.js');
-const Tracker = require('./Tracker.js');
+const Discord = require('discord.js');
+const EventHandler = require('./EventHandler');
+const md = require('node-md-config');
 const MessageManager = require('./settings/MessageManager.js');
 const Notifier = require('./notifications/Notifier.js');
-const { isVulgarCheck, getRandomWelcome } = require('./CommonFunctions.js');
+const Tracker = require('./Tracker.js');
+const WorldStateCache = require('./WorldStateCache.js');
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -26,65 +26,6 @@ const { isVulgarCheck, getRandomWelcome } = require('./CommonFunctions.js');
  * @property {string} codeLine     - String for denoting in-line code
  * @property {string} codeBlock    - String for denoting multi-line code blocks
  */
-
-/**
- * Check if private rooms have expired and are empty. If not, do nothing.
- * If so, delete the corresponding channels.
- * @param  {Genesis} self    Bot instance
- * @param  {number} shardId shard identifier
- */
-async function checkPrivateRooms(self, shardId) {
-  self.logger.debug(`Checking private rooms... Shard ${shardId}`);
-  const privateRooms = await self.settings.getPrivateRooms();
-  self.logger.debug(`Private rooms... ${privateRooms.length}`);
-  privateRooms.forEach(async (room) => {
-    if (room && (room.textChannel || room.category || room.voiceChannel)) {
-      const now = new Date();
-      if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt >
-          self.channelTimeout) &&
-        (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
-        if (room.textChannel && room.textChannel.deletable) {
-          self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
-          await room.textChannel.delete();
-        }
-        if (room.voiceChannel && room.voiceChannel.deletable) {
-          self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
-          await room.voiceChannel.delete();
-        }
-        if (room.category && room.category.deletable) {
-          self.logger.debug(`Deleting category... ${room.category.id}`);
-          await room.category.delete();
-        }
-        self.settings.deletePrivateRoom(room);
-      }
-    } else if (room) {
-      await self.settings.deletePrivateRoom({
-        textChannel: room.textId ? { id: room.textId } : undefined,
-        voiceChannel: { id: room.voiceId },
-        category: { id: room.categoryId },
-        guild: { id: room.guildId },
-      });
-    }
-  });
-}
-
-/**
- * Update the presence of the bot to the current cetus cycle time remaining
- * @param {Bot} self  the bot
- */
-async function updatePresence(self) {
-  const cetusState = (await self.caches.pc.getDataJson()).cetusCycle;
-  if (cetusState) {
-    self.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      game: {
-        name: `${cetusState.shortString} | @${self.client.user.username} help`,
-        type: 'WATCHING',
-      },
-    });
-  }
-}
 
 /**
  * Class describing Genesis bot
@@ -134,8 +75,6 @@ class Genesis {
     this.token = discordToken;
 
     this.caches = caches;
-
-    this.channelTimeout = 60000;
 
     /**
      * Discord.js API
@@ -197,7 +136,6 @@ class Genesis {
      */
     this.commandHandler = new CommandHandler(this);
 
-
     /**
      * Persistent storage for settings
      * @type {Database}
@@ -241,27 +179,35 @@ class Genesis {
 
     this.messageManager = new MessageManager(this);
 
+    /**
+     * Handles events, such as member joins, bans, delets, etc.
+     * @type {EventHandler}
+     */
+    this.eventHandler = new EventHandler(this);
+
     // Notification emitter
     this.notifier = new Notifier(this);
   }
 
-  setupHandlers() {
-    this.client.on('ready', () => this.onReady());
+  async setupHandlers() {
+    this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'onReady', args: [] }));
     this.client.on('message', message => this.onMessage(message));
 
-    this.client.on('guildCreate', guild => this.onGuildCreate(guild));
-    this.client.on('guildDelete', guild => this.onGuildDelete(guild));
-    this.client.on('channelCreate', channel => this.onChannelCreate(channel));
-    this.client.on('channelDelete', channel => this.onChannelDelete(channel));
+    this.client.on('guildCreate', async guild => this.eventHandler.handleEvent({ event: 'guildCreate', args: [guild] }));
+    this.client.on('guildDelete', async guild => this.eventHandler.handleEvent({ event: 'guildDelete', args: [guild] }));
+    this.client.on('channelCreate', async channel => this.eventHandler.handleEvent({ event: 'channelCreate', args: [channel] }));
+    this.client.on('channelDelete', async channel => this.eventHandler.handleEvent({ event: 'channelDelete', args: [channel] }));
 
-    // kill on disconnect so a new instance can be spawned
-    this.client.on('disconnect', (event) => {
-      this.logger.fatal(`Disconnected with close event: ${event.code}`);
-    });
+    this.client.on('messageDelete', async message => this.eventHandler.handleEvent({ event: 'messageDelete', args: [message] }));
+    this.client.on('messageDeleteBulk', async messages => this.eventHandler.handleEvent({ event: 'messageDeleteBulk', args: [messages] }));
 
-    // send welcome_messages
-    this.client.on('guildMemberAdd', guildMember => this.onGuildMemberAdd(guildMember));
+    this.client.on('guildMemberAdd', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberAdd', args: [guildMember] }));
+    this.client.on('guildMemberRemove', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberRemove', args: [guildMember] }));
+    this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
+    this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
 
+
+    this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
     this.client.on('error', error => this.logger.error(error));
     this.client.on('warn', warning => this.logger.warning(warning));
   }
@@ -273,6 +219,7 @@ class Genesis {
     await this.settings.createSchema(this.client);
     this.logger.debug('Schema created');
     await this.commandHandler.loadCommands();
+    await this.eventHandler.loadHandles();
 
     this.setupHandlers();
     const t = await this.client.login(this.token);
@@ -288,29 +235,6 @@ class Genesis {
   }
 
   /**
-   * Perform actions when the bot is ready
-   */
-  async onReady() {
-    this.logger.debug(`${this.client.user.username} ready!`);
-    this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
-    this.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      game: {
-        name: `@${this.client.user.username} help`,
-        url: 'https://genesis.warframestat.us',
-      },
-    });
-    await this.settings.ensureData(this.client);
-    this.readyToExecute = true;
-
-    const self = this;
-    setInterval(checkPrivateRooms, self.channelTimeout, self, self.shardId);
-
-    setInterval(updatePresence, 60000, self);
-  }
-
-  /**
    * Handle message
    * @param {Message} message to handle
    */
@@ -318,96 +242,6 @@ class Genesis {
     if (this.readyToExecute &&
       message.author.id !== this.client.user.id && !message.author.bot) {
       this.commandHandler.handleCommand(message);
-    }
-  }
-
-  /**
-   * Handle guild creation
-   * @param {Guild} guild The guild that was created
-   */
-  async onGuildCreate(guild) {
-    if (!guild.available) {
-      return;
-    }
-    await this.settings.addGuild(guild);
-    this.logger.debug(`Joined guild ${guild} (${guild.id}`);
-    guild.owner.send(`**${this.client.user.username.toUpperCase()} has been added ` +
-                     `to ${guild.name} and is ready\n Type ` +
-                     `\`${this.prefix}help\` for help**`);
-  }
-
-  /**
-   * Handle deleting or leaving a guild
-   * @param {Guild} guild The guild that was deleted/left
-   */
-  async onGuildDelete(guild) {
-    if (!guild.available) {
-      return;
-    }
-    await this.settings.removeGuild(guild);
-    this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
-  }
-
-  /**
-   * Handle channel creation
-   * @param {Channel} channel The channel that was created
-   */
-  async onChannelCreate(channel) {
-    if (channel.type === 'voice') {
-      return;
-    }
-    if (channel.type === 'text') {
-      try {
-        await this.settings.addGuildTextChannel(channel);
-        this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild ` +
-          `${channel.guild.name} (${channel.guild.id})`);
-      } catch (err) {
-        await this.settings.addGuild(channel.guild);
-        this.settings.addGuildTextChannel(channel);
-      }
-    } else {
-      await this.settings.addDMChannel(channel);
-      this.logger.debug(`DM channel with id ${channel.id} created`);
-    }
-  }
-
-  /**
-   * Handle channel deletion
-   * @param {Channel} channel The channel that was deleted
-   */
-  async onChannelDelete(channel) {
-    if (channel.type === 'voice') {
-      return;
-    }
-    await this.settings.deleteChannel(channel);
-    this.logger.debug(`Channel with id ${channel.id} deleted`);
-  }
-
-  async onGuildMemberAdd(guildMember) {
-    const isVulgar = isVulgarCheck.test(guildMember.displayName)
-      || isVulgarCheck.test(guildMember.user.username);
-    if (!isVulgar) {
-      const welcomes = await this.settings.getWelcomes(guildMember.guild);
-      welcomes.forEach((welcome) => {
-        if (welcome.message.trim() === 'random') {
-          welcome.message = getRandomWelcome(); // eslint-disable-line no-param-reassign
-        }
-        if (welcome.isDm === '1') {
-          this.messageManager.sendDirectMessageToUser(guildMember, welcome.message
-            .replace(/\$username/ig, guildMember.displayName)
-            .replace(/\$usermention/ig, guildMember)
-            .replace(/\$timestamp/ig, new Date().toLocaleString()));
-        } else {
-          this.messageManager
-            .sendMessage(
-              { channel: welcome.channel }, welcome.message
-                .replace(/\$username/ig, guildMember.displayName)
-                .replace(/\$usermention/ig, guildMember)
-                .replace(/\$timestamp/ig, new Date().toLocaleString()),
-              false, false,
-            );
-        }
-      });
     }
   }
 }

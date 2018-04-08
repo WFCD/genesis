@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Resize temp channel
@@ -26,30 +26,27 @@ class Lock extends Command {
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+      const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.bot.settings.getUsersRoom(message.member);
+        const room = await this.settings.getUsersRoom(message.member);
         try {
           if (room.category) {
             await room.category.overwritePermissions(message.guild.defaultRole.id, {
               CONNECT: false,
-              VIEW_CHANNEL: false,
             });
           }
           if (room.textChannel) {
             await room.textChannel.overwritePermissions(message.guild.defaultRole.id, {
               CONNECT: false,
-              VIEW_CHANNEL: false,
             });
           }
           await room.voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
             CONNECT: false,
-            VIEW_CHANNEL: false,
           });
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to lock the channel. Please either try again or review your invitations to ensure they are valid users.', true, true);
+          await this.messageManager.reply(message, 'unable to lock the channel. Please either try again or review your command to ensure it is valid.', true, true);
           return this.messageManager.statuses.FAILURE;
         }
       }

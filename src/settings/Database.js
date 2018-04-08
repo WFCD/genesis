@@ -4,7 +4,7 @@ const SQL = require('sql-template-strings');
 const mysql = require('mysql2/promise');
 const Promise = require('bluebird');
 const schema = require('./schema.js');
-const CustomCommand = require('../CustomCommand.js');
+const CustomCommand = require('../models/CustomCommand.js');
 
 /**
  * Connection options for the database
@@ -58,6 +58,7 @@ class Database {
       allowInline: false,
       defaultRoomsLocked: true,
       defaultNoText: false,
+      defaultShown: false,
       tempCategory: false,
     };
   }
@@ -248,6 +249,11 @@ class Database {
     return this.db.query(query);
   }
 
+  async deleteChannelSetting(channel, setting) {
+    const query = SQL`DELETE FROM settings where channel_id = ${channel.id} and setting=${setting};`;
+    return this.db.query(query);
+  }
+
   /**
    * Resets the custom prefix for this guild to the bot's globally configured prefix
    * @param {Guild} guild The Discord guild for which to set the response setting
@@ -259,6 +265,20 @@ class Database {
     const promises = [];
     guild.channels.array().forEach((channel) => {
       promises.push(this.setChannelSetting(channel, setting, val));
+    });
+    return Promise.all(promises);
+  }
+
+  /**
+   * Delete a guild setting
+   * @param  {Discord.Guild}  guild   guild to delete for
+   * @param  {strimg}  setting string key
+   * @returns {Promise}         resolution of deletion
+   */
+  async deleteGuildSetting(guild, setting) {
+    const promises = [];
+    guild.channels.array().forEach((channel) => {
+      promises.push(this.deleteChannelSetting(channel, setting));
     });
     return Promise.all(promises);
   }
@@ -932,7 +952,7 @@ class Database {
 
   async getCommandContext(channel) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
-    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'createPrivateChannel', 'tempCategory');`;
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory', 'lfgChannel');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -974,6 +994,12 @@ class Database {
         context.defaultNoText = context.defaultNoText === '1';
       }
 
+      if (typeof context.defaultShown === 'undefined') {
+        context.defaultShown = this.defaults.defaultShown === '1';
+      } else {
+        context.defaultShown = context.defaultShown === '1';
+      }
+
       if (typeof context.createPrivateChannel === 'undefined') {
         context.createPrivateChannel = this.defaults.createPrivateChannel === '1';
       } else {
@@ -986,6 +1012,10 @@ class Database {
 
       if (context.tempCategory) {
         context.tempCategory = this.bot.client.channels.get(context.tempCategory);
+      }
+
+      if (context.lfgChannel && this.bot.client.channels.has(context.lfgChannel)) {
+        context.lfgChannel = this.bot.client.channels.get(context.lfgChannel);
       }
     } else {
       context = {

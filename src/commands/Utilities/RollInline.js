@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../InlineCommand.js');
+const Command = require('../../models/InlineCommand.js');
 
 /**
  * Make a simple roll
@@ -30,6 +30,7 @@ class RollInline extends Command {
     if (message.channel.permissionsFor(this.bot.client.user.id)
       .has(['USE_EXTERNAL_EMOJIS', 'ADD_REACTIONS'])) {
       await message.react('⬅');
+      await message.react('🔃');
       await message.react('➡');
     }
   }

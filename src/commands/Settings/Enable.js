@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
 const { getTarget, getChannels } = require('../../CommonFunctions.js');
@@ -52,10 +52,10 @@ class Enable extends Command {
     for (const command of commands) {
       for (const channel of channels) {
         if (target.type === 'Role') {
-          results.push(this.bot.settings
+          results.push(this.settings
             .setChannelPermissionForRole(channel, target, command, 1));
         } else {
-          results.push(this.bot.settings
+          results.push(this.settings
             .setChannelPermissionForMember(channel, target, command, 1));
         }
       }
@@ -63,7 +63,7 @@ class Enable extends Command {
     await Promise.all(results);
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
-    const respondToSettings = await this.bot.settings
+    const respondToSettings = await this.settings
       .getChannelSetting(message.channel, 'respond_to_settings');
     if (respondToSettings) {
       this.messageManager.embed(message, infoEmbed, true, false);

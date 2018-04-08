@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
 
 const values = ['all', 'arbiters of hexis', 'perrin sequence', 'cephalon suda', 'steel meridian', 'new loka', 'red veil', 'ostrons', 'assassins'];
@@ -35,7 +35,7 @@ class Syndicates extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     await this.messageManager.embed(message, new SyndicateEmbed(
       this.bot,

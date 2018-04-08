@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 const buildChart = 'https://vignette3.wikia.nocookie.net/warframe/images/6/66/Ww.jpg/revision/latest';
 

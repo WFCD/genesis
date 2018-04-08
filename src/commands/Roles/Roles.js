@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const RolesEmbed = require('../../embeds/RolesEmbed.js');
 
 function createGroupedArray(arr, chunkSize) {
@@ -27,8 +27,8 @@ class Roles extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const roles = await this.bot.settings.getRolesForGuild(message.guild);
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const roles = await this.settings.getRolesForGuild(message.guild);
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     if (roles.length > 0) {
       const longest = roles.map(role => role.name)
         .reduce((a, b) => (a.length > b.length ? a : b));

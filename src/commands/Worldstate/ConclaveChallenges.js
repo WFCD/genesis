@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const ConclaveChallengeEmbed = require('../../embeds/ConclaveChallengeEmbed.js');
 
 const values = ['all', 'day', 'week'];
@@ -37,7 +37,7 @@ class ConclaveChallenges extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.worldStates[platform].getData();
     const { conclaveChallenges } = ws;
     const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category, platform);

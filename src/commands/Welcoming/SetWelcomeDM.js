@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class SetWelcomeDM extends Command {
   constructor(bot) {
@@ -16,7 +16,7 @@ class SetWelcomeDM extends Command {
   async run(message) {
     const match = message.strippedContent.match(this.regex)[1];
     if (match) {
-      await this.bot.settings.setWelcome(message, true, match.trim());
+      await this.settings.setWelcome(message, true, match.trim());
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }

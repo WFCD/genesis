@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getChannels } = require('../../CommonFunctions.js');
 
 class ClearChannelPermissions extends Command {
@@ -17,11 +17,11 @@ class ClearChannelPermissions extends Command {
     if (channels.length) {
       const results = [];
       for (const channel of channels) {
-        results.push(this.bot.settings.removeChannelPermissions(channel.id));
+        results.push(this.settings.removeChannelPermissions(channel.id));
       }
       await Promise.all(results);
     } else {
-      await this.bot.settings.removeGuildPermissions(message.guild);
+      await this.settings.removeGuildPermissions(message.guild);
     }
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

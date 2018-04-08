@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class AddCustomCommand extends Command {
   constructor(bot) {
@@ -27,7 +27,7 @@ class AddCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    await this.bot.settings.addCustomCommand(message, params[1], params[2]);
+    await this.settings.addCustomCommand(message, params[1], params[2]);
     await this.commandHandler.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

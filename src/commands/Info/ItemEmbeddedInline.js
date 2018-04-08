@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../InlineCommand.js');
+const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const WikiEmbed = require('../../embeds/WikiEmbed.js');

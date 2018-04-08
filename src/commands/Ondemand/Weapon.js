@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const request = require('request-promise');
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class ClearPings extends Command {
   constructor(bot) {
@@ -10,7 +10,7 @@ class ClearPings extends Command {
   }
 
   async run(message) {
-    await this.bot.settings.removePings(message.guild.id);
+    await this.settings.removePings(message.guild.id);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

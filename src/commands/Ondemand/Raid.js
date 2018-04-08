@@ -2,7 +2,7 @@
 
 const Fetcher = require('../../resources/Fetcher.js');
 const RaidEmbed = require('../../embeds/RaidEmbed.js');
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Returns search results from the Warframe wiki
@@ -37,7 +37,7 @@ class Raid extends Command {
     }
     this.logger.debug(`Searched for query: ${query}`);
 
-    const platform = await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = await this.settings.getChannelSetting(message.channel, 'platform');
     const url = encodeURI(`https://api.trials.wf/api/player/${platform.toLowerCase()}/${query}/completed`);
     const data = await (new Fetcher(url)).httpGet();
     this.messageManager.embed(message, new RaidEmbed(

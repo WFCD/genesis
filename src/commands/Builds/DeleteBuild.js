@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)
@@ -25,11 +25,11 @@ class DeleteBuild extends Command {
       // let them know it's not a valid build id
       return this.messageManager.statuses.FAILURE;
     }
-    const build = await this.bot.settings.getBuild(buildId);
+    const build = await this.settings.getBuild(buildId);
     const owner = typeof build.owner === 'object' ? build.owner.id : build.owner;
     if (owner === message.author.id || owner === this.bot.owner) {
       this.logger.debug('owner matched author');
-      await this.bot.settings.deleteBuild(buildId);
+      await this.settings.deleteBuild(buildId);
       this.messageManager.embed(message, { title: `Build ${buildId} deleted.`, color: 0xcda2a3 }, true, true);
       return this.messageManager.statuses.SUCCESS;
     }

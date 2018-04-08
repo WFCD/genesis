@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../InlineCommand.js');
+const Command = require('../../models/InlineCommand.js');
 
 /**
  * Make a simple poll
