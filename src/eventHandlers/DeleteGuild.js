@@ -19,6 +19,8 @@ class DeleteGuild extends Handler {
    * @param {Discord.Guild} guild channel to delete from the database
    */
   async execute(...[guild]) {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     if (!guild.available) {
       return;
     }

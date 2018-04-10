@@ -1,6 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
+const LogEmbed = require('../embeds/LogEmbed');
 
 /**
  * Describes a handler
@@ -21,32 +22,41 @@ class LogMessageDelete extends Handler {
    * @param {Discord.Message} message member to add roles to
    */
   async execute(...[message]) {
-    let logChannel = this.settings.getGuildSetting(message.guild, 'msgDeleteLog');
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
+    let logChannel = await this.settings.getGuildSetting(message.guild, 'msgDeleteLog');
     if (message.guild.channels.has(logChannel)) {
       logChannel = message.guild.channels.get(logChannel);
     } else {
       logChannel = undefined;
     }
-    this.logger.debug(`Message to delete: ${message}\n\nLogged in: ${logChannel}`);
     if (logChannel && logChannel.type === 'text') {
-      logChannel.send({
-        embed: {
-          title: 'Message Delete',
-          color: 0xFF5A36,
-          fields: [
-            {
-              name: 'Channel',
-              value: message.channel,
-            },
-            {
-              name: '_ _',
-              value: message.cleanContent.length > 1024 ?
-                `${message.cleanContent.slice(1020, message.cleanContent.length)}...` :
-                message.cleanContent,
-            },
-          ],
-        },
+      let msg;
+      if (message.content.length > 1024) {
+        msg = `${message.content.slice(1020, message.content.length)}...`;
+      } else {
+        msg = message.content;
+      }
+      const log = new LogEmbed(this.bot, {
+        color: 0xFF5A36,
+        title: 'Message Delete',
+        fields: [
+          {
+            name: 'Channel',
+            value: `${message.channel} • ${message.channel.id}`,
+          },
+          {
+            name: 'Author',
+            value: `${message.author} • ${message.author.id}`,
+          },
+          {
+            name: '_ _',
+            value: msg.length ? `\`\`\`${msg.replace(/`/g, '\\`')}\`\`\`` : '```diff\n- Message was either empty or an embed```',
+          },
+        ],
+        footer: message.id,
       });
+      await logChannel.send({ embed: log });
     }
   }
 }

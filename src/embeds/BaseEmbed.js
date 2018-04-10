@@ -7,7 +7,7 @@ class BaseEmbed {
   constructor() {
     this.url = 'https://warframestat.us/';
     this.footer = {
-      icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+      icon_url: 'https://warframestat.us/wfcd_logo_color.png',
     };
     this.timestamp = new Date();
   }

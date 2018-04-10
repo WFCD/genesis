@@ -81,6 +81,8 @@ class OnReadyHandle extends Handler {
    * Run the ready handle
    */
   async execute() {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     this.logger.debug(`${this.client.user.username} ready!`);
     this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
     this.client.user.setPresence({

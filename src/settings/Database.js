@@ -153,7 +153,7 @@ class Database {
 
   async getGuildSetting(guild, setting) {
     if (guild) {
-      const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting =${setting}`;
+      const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting=${setting}`;
       const res = await this.db.query(query);
       if (res[0].length === 0) {
         await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
@@ -952,7 +952,7 @@ class Database {
 
   async getCommandContext(channel) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
-    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory', 'lfgChannel');`;
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory', 'lfgChannel');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -968,6 +968,10 @@ class Database {
           context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
         }
       });
+      if (!context.platform) {
+        context.platform = this.defaults.platform;
+      }
+
       if (!context.prefix) {
         context.prefix = this.defaults.prefix;
       }
@@ -1010,15 +1014,18 @@ class Database {
         context.webhook = undefined;
       }
 
-      if (context.tempCategory) {
-        context.tempCategory = this.bot.client.channels.get(context.tempCategory);
+      if (context.tempCategory && channel.guild.channels.has(context.tempCategory.trim())) {
+        context.tempCategory = channel.guild.channels.get(context.tempCategory.trim());
       }
 
-      if (context.lfgChannel && this.bot.client.channels.has(context.lfgChannel)) {
-        context.lfgChannel = this.bot.client.channels.get(context.lfgChannel);
+      if (context.lfgChannel && channel.guild.channels.has(context.lfgChannel.trim())) {
+        context.lfgChannel = channel.guild.channels.get(context.lfgChannel.trim());
+      } else {
+        context.lfgChannel = undefined;
       }
     } else {
       context = {
+        platform: this.defaults.platform,
         prefix: this.defaults.prefix,
         allowCustom: this.defaults.allowCustom === '1',
         allowInline: this.defaults.allowInline === '1',

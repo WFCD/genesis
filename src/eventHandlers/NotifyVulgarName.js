@@ -19,6 +19,8 @@ class VulgarNameHandle extends Handler {
    * @param {GuildMember} member guildMember to welcome
    */
   async execute(...[member]) {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     this.logger.debug(`Handling 'vulgarCheck' for ${member.id} on ${member.guild.name}`);
 
     const isVulgar = isVulgarCheck.test(member.displayName)

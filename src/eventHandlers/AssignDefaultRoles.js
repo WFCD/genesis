@@ -21,6 +21,8 @@ class AssignDefaultRolesHandle extends Handler {
    * @param {Discord.member} member member to add roles to
    */
   async execute(...[member]) {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     const defaultRoles = JSON.parse(await this.settings.getGuildSetting(member.guild, 'defaultRoles') || '[]')
       .map(roleId => member.guild.roles.get(roleId));
     if (defaultRoles.length) {

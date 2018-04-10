@@ -22,6 +22,8 @@ class AddGuildToDatabase extends Handler {
    * @param {Discord.Guild} guild guild to add to the database
    */
   async execute(...[guild]) {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     if (!guild.available) {
       return;
     }

@@ -21,6 +21,8 @@ class AddChannelToDatabase extends Handler {
    * @param {Discord.Channel} channel channel to add to the database
    */
   async execute(...[channel]) {
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
+
     if (channel.type === 'voice') {
       return;
     }

@@ -6,7 +6,7 @@ class AddDefaultRole extends Command {
   constructor(bot) {
     super(bot, 'settings.addDefaultRole', 'add default role');
     this.usages = [
-      { description: 'Add a new default role for persons joining the server.', parameters: ['message'] },
+      { description: 'Add a new default role for persons joining the server.', parameters: ['role id'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(\\d+)?$`, 'i');
     this.requiresAuth = true;
