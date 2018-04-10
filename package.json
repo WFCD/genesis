@@ -62,7 +62,7 @@
     "sinon": "^1.17.6",
     "sinon-chai": "^2.13.0"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=8.9.2"
   }
