@@ -422,6 +422,29 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
   return target;
 };
 
+const resolveRoles = ({ mentions = undefined, content = '', guild = undefined }) => {
+  let roles = [];
+  if (mentions && mentions.roles) {
+    roles = roles.concat(mentions.roles.array());
+  }
+  const roleRegex = /(\d{16,19})/g;
+  let matches = content.match(roleRegex);
+  if (matches && matches.length) {
+    matches.slice(0, 1);
+    matches = matches.map((match) => {
+      if (guild.roles.has(match)) {
+        return guild.roles.get(match);
+      }
+      return undefined;
+    }).filter(match => typeof match !== 'undefined');
+  }
+
+  if (matches) {
+    roles = [...roles, ...matches];
+  }
+  return roles;
+};
+
 /**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
@@ -471,4 +494,5 @@ module.exports = {
   trackablesFromParameters,
   isVulgarCheck,
   getRandomWelcome,
+  resolveRoles,
 };
