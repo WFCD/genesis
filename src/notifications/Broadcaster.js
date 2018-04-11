@@ -10,25 +10,24 @@ const makePingsMentionable = async (ping, { guild, client }) => {
       if (!role.mentionable) {
         await role.setMentionable(true, `${role.name} set pingable`);
         alteredRoles.push(role);
-        return true;
       }
-      return false;
     }));
     return alteredRoles;
   }
-  return 0;
+
+  return [];
 };
 
 const makePingsUnmentionable = async (roles) => {
-  let unmadePingable = 0;
-  await Promise.all(roles.map(async (role) => {
-    if (role && role.mentionable) {
-      await role.setMentionable(false, `${role.name} set unpingable`);
-      unmadePingable += 1;
-      return true;
-    }
-    return false;
-  }));
+  const unmadePingable = [];
+  if (roles.map) {
+    await Promise.all(roles.map(async (role) => {
+      if (role && role.mentionable) {
+        await role.setMentionable(false, `${role.name} set unpingable`);
+        unmadePingable.push(role);
+      }
+    }));
+  }
   return unmadePingable;
 };
 
@@ -90,13 +89,11 @@ class Broadcaster {
     ctx.deleteAfterDuration = deleteAfter;
     let roles = [];
     if (prepend && prepend.length) {
-      this.logger.debug(resolveRoles(prepend));
       roles.unshift(await makePingsMentionable(
         prepend,
         { client: this.client, guild: channel.guild },
       ));
-      roles = roles.filter(role => typeof role !== 'undefined');
-      this.logger.debug(`Roles.length: ${roles.length} | Roles made mentionable: ${roles.map(role => role.name).join(', ')}`);
+      roles = roles[0].filter(role => typeof role !== 'undefined');
     }
 
     await this.messageManager.webhook(
@@ -105,8 +102,7 @@ class Broadcaster {
     );
 
     if (prepend && prepend.length && roles.length) {
-      this.logger.debug(`Roles.length: ${roles.length} | Roles being made unmentionable: ${roles.map(role => role.name).join(', ')}`);
-      await makePingsUnmentionable({ roles });
+      await makePingsUnmentionable(roles);
     }
     return true;
   }
