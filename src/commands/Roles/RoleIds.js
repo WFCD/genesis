@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const rpad = require('right-pad');
 const { createGroupedArray } = require('../../CommonFunctions.js');
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const EventEmbed = require('../../embeds/ConstructionEmbed.js');
 
 /**
@@ -18,7 +18,7 @@ class Construction extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings
+    const platform = platformParam || await this.settings
       .getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const embed = new EventEmbed(this.bot, ws.constructionProgress, platform.toUpperCase());

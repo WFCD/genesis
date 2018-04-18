@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Sends the user an OAuth or other URL for inviting the bot (User configurable env: INVITE_URL)

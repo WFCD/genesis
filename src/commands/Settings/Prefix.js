@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Sets the current guild's custom prefix
@@ -36,14 +36,14 @@ class Prefix extends Command {
       return this.messageManager.statuses.FAILURE;
     } else if (prefix === 'reset') {
       if (message.channel.type === 'text') {
-        await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
+        await this.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
       } else {
-        await this.bot.settings.setChannelSetting(message.channel, 'prefix', this.bot.prefix);
+        await this.settings.setChannelSetting(message.channel, 'prefix', this.bot.prefix);
       }
     } else if (message.channel.type === 'text') {
-      await this.bot.settings.setGuildSetting(message.channel.guild, 'prefix', prefix);
+      await this.settings.setGuildSetting(message.channel.guild, 'prefix', prefix);
     } else {
-      await this.bot.settings.setChannelSetting(message.channel, 'prefix', prefix);
+      await this.settings.setChannelSetting(message.channel, 'prefix', prefix);
     }
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

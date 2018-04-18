@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getChannel } = require('../../CommonFunctions');
 
 const languages = ['en-us'];
@@ -34,7 +34,7 @@ class Language extends Command {
     }
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message);
-    await this.bot.settings.setChannelSetting(channel, 'language', language.toLowerCase());
+    await this.settings.setChannelSetting(channel, 'language', language.toLowerCase());
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

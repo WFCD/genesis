@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class DeleteCustomCommand extends Command {
   constructor(bot) {
@@ -22,7 +22,7 @@ class DeleteCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    await this.bot.settings.deleteCustomCommand(message, params[1]);
+    await this.settings.deleteCustomCommand(message, params[1]);
     await this.commandHandler.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const CommonFunctions = require('../../CommonFunctions.js');
 const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
 
@@ -29,7 +29,7 @@ class SetPing extends Command {
       const pingString = match[2] ? match[2].trim() : undefined;
 
       if (!eventsAndItems.length) {
-        const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+        const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
         this.messageManager.embed(
           message,
           CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
@@ -41,10 +41,10 @@ class SetPing extends Command {
         if (eventOrItem) {
           if (!pingString) {
             this.logger.debug('No ping string.');
-            results.push(this.bot.settings.removePing(message.guild, eventOrItem));
+            results.push(this.settings.removePing(message.guild, eventOrItem));
           } else {
             this.logger.debug(`${pingString} to be set for ${eventOrItem}`);
-            results.push(this.bot.settings.setPing(message.guild, eventOrItem, pingString));
+            results.push(this.settings.setPing(message.guild, eventOrItem, pingString));
           }
         }
       });
@@ -52,7 +52,7 @@ class SetPing extends Command {
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     await this.messageManager.embed(message, CommonFunctions
       .getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;

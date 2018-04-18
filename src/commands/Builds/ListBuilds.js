@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { createGroupedArray } = require('../../CommonFunctions.js');
 
 /**
@@ -22,7 +22,7 @@ class ListBuilds extends Command {
 
   async run(message) {
     const useAll = message.strippedContent.match(this.regex)[1] === 'all' && this.bot.owner === message.author.id;
-    const builds = await this.bot.settings.getBuilds(useAll, message.author);
+    const builds = await this.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
       const buildGroups = createGroupedArray(builds, 15);
       const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));

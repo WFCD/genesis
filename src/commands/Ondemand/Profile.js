@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const ProfileEmbed = require('../../embeds/ProfileEmbed.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
@@ -60,7 +60,7 @@ class PriceCheck extends Command {
   }
 
   async sendUsageEmbed(message) {
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     const embed = {
       type: 'rich',
       color: 0x0000ff,

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 const { getChannel } = require('../../CommonFunctions.js');
 
@@ -22,8 +22,8 @@ class Untrack extends Command {
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message, message.guild.channels);
 
-    this.bot.settings.removeTypeNotifications(channel.id);
-    this.bot.settings.removeItemNotifications(channel.id);
+    this.settings.removeTypeNotifications(channel.id);
+    this.settings.removeItemNotifications(channel.id);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

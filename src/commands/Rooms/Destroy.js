@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Rename user's temp room
@@ -26,9 +26,9 @@ class Destroy extends Command {
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+      const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.bot.settings.getUsersRoom(message.member);
+        const room = await this.settings.getUsersRoom(message.member);
         if (room.textChannel && room.textChannel.deletable) {
           this.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
           await room.textChannel.delete();
@@ -41,7 +41,7 @@ class Destroy extends Command {
           this.logger.debug(`Deleting category... ${room.category.id}`);
           await room.category.delete();
         }
-        await this.bot.settings.deletePrivateRoom(room);
+        await this.settings.deletePrivateRoom(room);
         await this.messageManager.reply(message, 'done.', true, true);
         return this.messageManager.statuses.SUCCESS;
       }

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getChannel } = require('../../CommonFunctions.js');
 
 
@@ -39,7 +39,7 @@ class AllowInlineCommands extends Command {
     if (enable === 'on') {
       allowInline = true;
     }
-    await this.bot.settings.setChannelSetting(channel, 'allowInline', allowInline);
+    await this.settings.setChannelSetting(channel, 'allowInline', allowInline);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

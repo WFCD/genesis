@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const DarvoEmbed = require('../../embeds/DarvoEmbed.js');
 
 /**
@@ -18,7 +18,7 @@ class Darvo extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const deal = ws.dailyDeals[0];
     await this.messageManager.embed(message, new DarvoEmbed(this.bot, deal, platform), true, false);

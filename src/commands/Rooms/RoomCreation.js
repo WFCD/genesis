@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class AllowPrivateRoom extends Command {
   constructor(bot) {
@@ -37,7 +37,7 @@ class AllowPrivateRoom extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     enable = enable.trim();
-    await this.bot.settings.setGuildSetting(message.guild, 'createPrivateChannel', enable === 'on');
+    await this.settings.setGuildSetting(message.guild, 'createPrivateChannel', enable === 'on');
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

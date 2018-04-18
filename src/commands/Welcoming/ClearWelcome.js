@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class ClearWelcome extends Command {
   constructor(bot) {
@@ -10,7 +10,7 @@ class ClearWelcome extends Command {
   }
 
   async run(message) {
-    await this.bot.settings.clearWelcomeForGuild(message.guild, false);
+    await this.settings.clearWelcomeForGuild(message.guild, false);
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

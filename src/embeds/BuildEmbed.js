@@ -3,9 +3,9 @@
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
- * Generates alert embeds
+ * Generates build embeds
  */
-class AlertEmbed extends BaseEmbed {
+class BuildEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Build} build - The alerts to be included in the embed
@@ -20,4 +20,4 @@ class AlertEmbed extends BaseEmbed {
   }
 }
 
-module.exports = AlertEmbed;
+module.exports = BuildEmbed;

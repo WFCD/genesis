@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class ResetGuild extends Command {
   constructor(bot) {
@@ -12,8 +12,8 @@ class ResetGuild extends Command {
   async run(message) {
     try {
       const { guild } = message;
-      await this.bot.settings.removeGuild(guild);
-      await Promise.all(guild.channels.map(channel => this.bot.settings.stopTracking(channel)));
+      await this.settings.removeGuild(guild);
+      await Promise.all(guild.channels.map(channel => this.settings.stopTracking(channel)));
     } catch (e) {
       this.logger.error(e.message);
       return this.messageManager.statuses.FAILURE;

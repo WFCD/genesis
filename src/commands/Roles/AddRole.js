@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 /**
  * Get a role from the matching string
@@ -51,7 +51,7 @@ class AddRole extends Command {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
-    const roles = await this.bot.settings.getRolesForGuild(message.guild);
+    const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     if (filteredRoles.length > 0) {
       await this.sendAlreadyAddedEmbed(message);
@@ -64,7 +64,7 @@ class AddRole extends Command {
   }
 
   async addAndCommitRole(message, roles, newRole) {
-    await this.bot.settings.setRolesForGuild(message.guild, roles);
+    await this.settings.setRolesForGuild(message.guild, roles);
     await this.messageManager.embed(message, {
       title: 'Added role to joinable list',
       type: 'rich',
@@ -95,7 +95,7 @@ class AddRole extends Command {
   }
 
   async sendInstructionEmbed(message) {
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(message, {
       title: 'Usage',
       type: 'rich',

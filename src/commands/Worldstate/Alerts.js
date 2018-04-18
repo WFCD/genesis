@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const AlertEmbed = require('../../embeds/AlertEmbed.js');
 
 /**
@@ -28,7 +28,7 @@ class Alerts extends Command {
       platformParam = param1;
     }
 
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const alerts = ws.alerts.filter(a => !a.expired);
 
@@ -38,7 +38,7 @@ class Alerts extends Command {
     } else {
       await Promise.all(alerts.map(alert => this.messageManager
         .embed(message, new AlertEmbed(this.bot, [alert], platform), false, false)));
-      if (parseInt(await this.bot.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
         message.delete(10000);
       }
     }

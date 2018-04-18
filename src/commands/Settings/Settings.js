@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const SettingsEmbed = require('../../embeds/SettingsEmbed.js');
 const { createGroupedArray, getChannels } = require('../../CommonFunctions');
 
@@ -12,22 +12,34 @@ class Settings extends Command {
   }
 
   async composeChannelSettings(channel, message) {
+    const defaultRoles = JSON.parse(await this.settings.getGuildSetting(message.guild, 'defaultRoles') || '[]')
+      .map(roleId => channel.guild.roles.get(roleId));
     let tokens = [
-      `**Language:** ${await this.bot.settings.getChannelSetting(channel, 'language')}`,
-      `**Platform:** ${await this.bot.settings.getChannelSetting(channel, 'platform')}`,
-      `**Prefix:** ${await this.bot.settings.getGuildSetting(message.guild, 'prefix')}`,
-      `**Respond to Settings:** ${(await this.bot.settings.getChannelSetting(channel, 'respond_to_settings')) === '1' ? 'yes' : 'no'}`,
-      `**Delete Message After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_after_respond')) === '1' ? 'yes' : 'no'}`,
-      `**Delete Message Response After Responding:** ${(await this.bot.settings.getChannelSetting(channel, 'delete_response')) === '1' ? 'yes' : 'no'}`,
-      `**Allow creation of private channels:** ${(await this.bot.settings.getChannelSetting(channel, 'createPrivateChannel')) === '1' ? 'yes' : 'no'}`,
-      `**Deleted Expired Notifications (not all):** ${(await this.bot.settings.getChannelSetting(channel, 'deleteExpired')) === '1' ? 'yes' : 'no'}`,
-      `**Allow Inline Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowInline')) === '1' ? 'yes' : 'no'}`,
-      `**Allow Custom Commands:** ${(await this.bot.settings.getChannelSetting(channel, 'allowCustom')) === '1' ? 'yes' : 'no'}`,
-      `**Default Locked Channel:** ${(await this.bot.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
-      `**Default No Text Channel:** ${(await this.bot.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
-      `**Temp Channel Category:** ${this.bot.client.channels.get(await this.bot.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,
+      `**Language:** ${await this.settings.getChannelSetting(channel, 'language')}`,
+      `**Platform:** ${await this.settings.getChannelSetting(channel, 'platform')}`,
+      `**Prefix:** ${await this.settings.getGuildSetting(message.guild, 'prefix')}`,
+      `**Respond to Settings:** ${(await this.settings.getChannelSetting(channel, 'respond_to_settings')) === '1' ? 'yes' : 'no'}`,
+      `**Delete Message After Responding:** ${(await this.settings.getChannelSetting(channel, 'delete_after_respond')) === '1' ? 'yes' : 'no'}`,
+      `**Delete Message Response After Responding:** ${(await this.settings.getChannelSetting(channel, 'delete_response')) === '1' ? 'yes' : 'no'}`,
+      `**Allow creation of private channels:** ${(await this.settings.getChannelSetting(channel, 'createPrivateChannel')) === '1' ? 'yes' : 'no'}`,
+      `**Deleted Expired Notifications (not all):** ${(await this.settings.getChannelSetting(channel, 'deleteExpired')) === '1' ? 'yes' : 'no'}`,
+      `**Allow Inline Commands:** ${(await this.settings.getChannelSetting(channel, 'allowInline')) === '1' ? 'yes' : 'no'}`,
+      `**Allow Custom Commands:** ${(await this.settings.getChannelSetting(channel, 'allowCustom')) === '1' ? 'yes' : 'no'}`,
+      `**Default Locked Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
+      `**Default No Text Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
+      `**Default Hidden Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultShown')) === '1' ? 'yes' : 'no'}`,
+      `**Temp Channel Category:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,
+      `**LFG Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'lfgChannel')) || 'none defined'}`,
+      `**Default Roles:** ${defaultRoles.length ? defaultRoles : 'none defined'}`,
+      `**Vulgar Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'vulgarLog')) || 'none defined'}`,
+      `**Message Delete Log Channel:** ${this.bot.client.channels.get(await this.settings.getGuildSetting(message.guild, 'msgDeleteLog')) || 'none defined'}`,
+      `**Member Remove Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'memberRemoveLog')) || 'none defined'}`,
+      `**Ban Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'banLog')) || 'none defined'}`,
+      `**Unban Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'unbanLog')) || 'none defined'}`,
+
+      `**Mod Role:** ${channel.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole')) || 'none defined'}`,
     ];
-    const items = await this.bot.settings.getTrackedItems(channel);
+    const items = await this.settings.getTrackedItems(channel);
     if (items.length > 0) {
       tokens.push('\n**Tracked Items:**');
       const itemsGroups = createGroupedArray(items, 15);
@@ -35,7 +47,7 @@ class Settings extends Command {
     } else {
       tokens.push('**Tracked Items:** No Tracked Items');
     }
-    const events = await this.bot.settings.getTrackedEventTypes(channel);
+    const events = await this.settings.getTrackedEventTypes(channel);
     if (events.length > 0) {
       tokens.push('**Tracked Events:**');
       const eventGroups = createGroupedArray(events, 15);
@@ -43,7 +55,7 @@ class Settings extends Command {
     } else {
       tokens.push('**Tracked Events:** No Tracked Events');
     }
-    const permissions = await this.bot.settings.permissionsForChannel(channel);
+    const permissions = await this.settings.permissionsForChannel(channel);
     const channelParts = permissions
       .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
     const channelSections = createGroupedArray(channelParts, 5);
@@ -71,13 +83,13 @@ class Settings extends Command {
     Promise.all(channelsResults);
 
     if (message.channel.guild) {
-      let guildTokens = await this.bot.settings.getWelcomes(message.guild);
+      let guildTokens = await this.settings.getWelcomes(message.guild);
 
       // Welcomes
       guildTokens = guildTokens.map(welcome => `**Welcome${welcome.isDm === '1' ? ' Direct ' : ' Message'}**\n${welcome.isDm === '1' ? '' : `\nChannel: ${welcome.channel}`} \nMessage: \`\`\`${welcome.message.replace(/`/ig, '\'')}\`\`\``);
 
       // Guild Pings
-      const guildPings = await this.bot.settings.getPingsForGuild(message.guild);
+      const guildPings = await this.settings.getPingsForGuild(message.guild);
       const pingParts = guildPings
         .filter(obj => obj.thing && obj.text)
         .map(obj => `**${obj.thing}**: ${obj.text}`);
@@ -90,7 +102,7 @@ class Settings extends Command {
       }
 
       // Guild Permissions
-      const guildPermissions = await this.bot.settings.permissionsForGuild(message.guild);
+      const guildPermissions = await this.settings.permissionsForGuild(message.guild);
       const guildParts = guildPermissions
         .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`);
 

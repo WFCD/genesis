@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const CommonFunctions = require('../../CommonFunctions.js');
 const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
 
@@ -38,10 +38,10 @@ class Track extends Command {
     const channel = CommonFunctions.getChannel(channelParam, message);
     const results = [];
     if (trackables.events.length) {
-      results.push(this.bot.settings.trackEventTypes(channel, trackables.events));
+      results.push(this.settings.trackEventTypes(channel, trackables.events));
     }
     if (trackables.items.length) {
-      results.push(this.bot.settings.trackItems(channel, trackables.items));
+      results.push(this.settings.trackItems(channel, trackables.items));
     }
     Promise.all(results);
     this.messageManager.notifySettingsChange(message, true, true);
@@ -49,7 +49,7 @@ class Track extends Command {
   }
 
   async failure(message) {
-    const prefix = await this.bot.settings.getGuildSetting(message.guild, 'prefix');
+    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(
       message,
       CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,

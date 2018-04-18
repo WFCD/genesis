@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const ServerInfoEmbed = require('../../embeds/ServerInfoEmbed');
 /**
  * Get a list of all servers

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getUsersForCall } = require('../../CommonFunctions');
 
 /**
@@ -27,9 +27,9 @@ class Invite extends Command {
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+      const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.bot.settings.getUsersRoom(message.member);
+        const room = await this.settings.getUsersRoom(message.member);
         const users = getUsersForCall(message, true);
         const permOverwrite = {
           VIEW_CHANNEL: true,

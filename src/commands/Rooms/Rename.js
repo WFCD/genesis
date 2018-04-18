@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { isVulgarCheck } = require('../../CommonFunctions');
 
 /**
@@ -27,9 +27,9 @@ class Rename extends Command {
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.bot.settings.userHasRoom(message.member);
+      const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.bot.settings.getUsersRoom(message.member);
+        const room = await this.settings.getUsersRoom(message.member);
         const newName = message.strippedContent.replace(this.call, '').replace(isVulgarCheck, '').trim(); // remove vulgar
         if (newName.length) {
           if (room.textChannel) {

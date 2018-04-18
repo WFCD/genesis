@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 const jokes = ['Saryn. Want some STD?',
   "Mesa. Ya'll bow down to the cowgirl.",

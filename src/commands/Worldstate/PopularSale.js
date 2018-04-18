@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const SalesEmbed = require('../../embeds/SalesEmbed.js');
 
 /**
@@ -18,7 +18,7 @@ class PopularDeal extends Command {
 
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.bot.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
     await this.messageManager.embed(

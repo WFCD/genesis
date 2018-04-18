@@ -2,19 +2,20 @@
 
 const Wikia = require('node-wikia');
 
-const AlertEmbed = require('../embeds/AlertEmbed.js');
-const ConclaveChallengeEmbed = require('../embeds/ConclaveChallengeEmbed.js');
-const DarvoEmbed = require('../embeds/DarvoEmbed.js');
-const EnemyEmbed = require('../embeds/EnemyEmbed.js');
-const EventEmbed = require('../embeds/EventEmbed.js');
-const FissureEmbed = require('../embeds/FissureEmbed.js');
-const InvasionEmbed = require('../embeds/InvasionEmbed.js');
-const NewsEmbed = require('../embeds/NewsEmbed.js');
-const SalesEmbed = require('../embeds/SalesEmbed.js');
-const SortieEmbed = require('../embeds/SortieEmbed.js');
-const SyndicateEmbed = require('../embeds/SyndicateEmbed.js');
-const VoidTraderEmbed = require('../embeds/VoidTraderEmbed.js');
-const EarthCycleEmbed = require('../embeds/EarthCycleEmbed.js');
+const AlertEmbed = require('../embeds/AlertEmbed');
+const Broadcaster = require('./Broadcaster');
+const ConclaveChallengeEmbed = require('../embeds/ConclaveChallengeEmbed');
+const DarvoEmbed = require('../embeds/DarvoEmbed');
+const EnemyEmbed = require('../embeds/EnemyEmbed');
+const EventEmbed = require('../embeds/EventEmbed');
+const FissureEmbed = require('../embeds/FissureEmbed');
+const InvasionEmbed = require('../embeds/InvasionEmbed');
+const NewsEmbed = require('../embeds/NewsEmbed');
+const SalesEmbed = require('../embeds/SalesEmbed');
+const SortieEmbed = require('../embeds/SortieEmbed');
+const SyndicateEmbed = require('../embeds/SyndicateEmbed');
+const VoidTraderEmbed = require('../embeds/VoidTraderEmbed');
+const EarthCycleEmbed = require('../embeds/EarthCycleEmbed');
 
 const warframe = new Wikia('warframe');
 
@@ -45,10 +46,14 @@ class Notifier {
   constructor(bot) {
     this.bot = bot;
     this.logger = bot.logger;
-    this.ids = {};
-    this.messageManager = bot.messageManager;
     this.settings = bot.settings;
     this.client = bot.client;
+    this.broadcaster = new Broadcaster({
+      client: bot.client,
+      settings: this.settings,
+      messageManager: bot.messageManager,
+      logger: bot.logger,
+    });
     this.logger.debug(`Shard ${this.bot.shardId} Notifier ready`);
   }
 
@@ -164,50 +169,6 @@ class Notifier {
   }
 
   /**
-   * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
-   * @param  {string} platform   Platform of worldstate
-   * @param  {string} type       Type of new data to notify
-   * @param  {Array}  [items=[]] Items to broadcast
-   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
-   * @returns {Array.<Object>} values for successes
-   */
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
-    const channels = await this.bot.settings.getNotifications(type, platform, items);
-    return Promise.all(channels.map(async (result) => {
-      const channel = this.client.channels.get(result.channelId);
-      if (channel) {
-        if (channel.type === 'text') {
-          return this.sendWithPrepend(channel, embed, type, items, deleteAfter);
-        } else if (channel.type === 'dm') {
-          return this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
-        }
-      }
-      return undefined;
-    }));
-  }
-
-  async sendWithoutPrepend(channel, embed, deleteAfter) {
-    const ctx = await this.settings.getCommandContext(channel);
-    ctx.deleteAfterDuration = deleteAfter;
-    return this.messageManager.webhook(
-      ctx,
-      { embed: this.messageManager.webhookWrapEmbed(embed) },
-    );
-  }
-
-  async sendWithPrepend(channel, embed, type, items, deleteAfter) {
-    const prepend = await this.settings
-      .getPing(channel.guild, (items || []).concat([type]));
-    const ctx = await this.settings.getCommandContext(channel);
-    ctx.deleteAfterDuration = deleteAfter;
-    return this.messageManager.webhook(
-      ctx,
-      { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
-    );
-  }
-
-  /**
    * Get the list of notified ids
    * @param  {string} platform Platform to get notified ids for
    * @returns {Array}
@@ -226,17 +187,14 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    await Promise.all(newAcolytes.map(a => this.broadcast(new EnemyEmbed(
+    await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new EnemyEmbed(
       this.bot,
       [a], platform,
     ), platform, 'enemies', null, 3600000)));
   }
 
   async sendAlerts(newAlerts, platform) {
-    for (const alert of newAlerts) {
-      await this.sendAlert(alert, platform);
-    }
-    // await Promise.all(newAlerts.map(a => this.sendAlert(a, platform)));
+    await Promise.all(newAlerts.map(async a => this.sendAlert(a, platform)));
   }
 
   async sendAlert(a, platform) {
@@ -250,44 +208,44 @@ class Notifier {
       this.logger.error(e);
     } finally {
       // Broadcast even if the thumbnail fails to fetch
-      await this.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
+      await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
     }
   }
 
   async sendBaro(newBaro, platform) {
     const embed = new VoidTraderEmbed(this.bot, newBaro, platform);
-    await this.broadcast(embed, platform, 'baro', null);
+    await this.broadcaster.broadcast(embed, platform, 'baro', null);
   }
 
   async sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
       const embed = new ConclaveChallengeEmbed(this.bot, newDailies, 'day', platform);
-      await this.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
+      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
       const embed = new ConclaveChallengeEmbed(this.bot, newWeeklies, 'week', platform);
-      await this.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
+      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map(d => this.broadcast(new DarvoEmbed(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
+    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new DarvoEmbed(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents.map(e => this.broadcast(new EventEmbed(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
+    await Promise.all(newEvents.map(e => this.broadcaster.broadcast(new EventEmbed(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    await Promise.all(newFeaturedDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
+    await Promise.all(newFeaturedDeals.map(d => this.broadcaster.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
   }
 
   async sendFissures(newFissures, platform) {
     await Promise.all(newFissures
-      .map(f => this.broadcast(
+      .map(f => this.broadcaster.broadcast(
         new FissureEmbed(this.bot, [f], platform), platform,
         `fissures.t${f.tierNum}.${f.missionType.toLowerCase()}`, null, fromNow(f.expiry),
       )));
@@ -307,28 +265,28 @@ class Notifier {
     } catch (e) {
       // do nothing, it happens
     } finally {
-      await this.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
     }
   }
 
   async sendNews(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'news')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'news')));
   }
 
   async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map(i => this.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'streams')));
+    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new NewsEmbed(this.bot, [i], undefined, platform), platform, 'streams')));
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    await Promise.all(newPopularDeals.map(d => this.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
+    await Promise.all(newPopularDeals.map(d => this.broadcaster.broadcast(new SalesEmbed(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new NewsEmbed(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
   async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcast(new NewsEmbed(this.bot, [i], 'updates', platform), platform, 'updates')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new NewsEmbed(this.bot, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendSortie(newSortie, platform) {
@@ -341,70 +299,70 @@ class Notifier {
     } catch (e) {
       this.logger.error(`${e.exception.code}: ${e.exception.message}`);
     } finally {
-      await this.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
+      await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
   }
 
   async sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
     }
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
     }
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
     }
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
     }
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
     }
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
     }
   }
 
   async sendSyndicateOstrons(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Ostrons', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.ostrons', null, fromNow(newSyndicates[0].expiry));
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.ostrons', null, fromNow(newSyndicates[0].expiry));
     }
   }
 
   async sendSyndicateAssassins(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Assassins', platform);
     if (embed.fields.length > 0 && embed.fields[0].name !== 'No such Syndicate') {
-      await this.broadcast(embed, platform, 'syndicate.assassins', null, 86400000);
+      await this.broadcaster.broadcast(embed, platform, 'syndicate.assassins', null, 86400000);
     }
   }
 
   async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
     const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
     const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    await this.broadcast(
+    await this.broadcaster.broadcast(
       new EarthCycleEmbed(this.bot, newCetusCycle),
       platform, type, null, fromNow(newCetusCycle.expiry),
     );

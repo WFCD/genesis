@@ -1,7 +1,7 @@
 'use strict';
 
 const ping = require('ping').promise;
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { timeDeltaToString } = require('../../CommonFunctions.js');
 
 /**
@@ -32,7 +32,7 @@ class Ping extends Command {
           results.push({
             name: host,
             value: `${result.alive ? '<:check:314349398811475968>' : '<:empty:314349398723264512>'} ` +
-              `${typeof result.time !== 'undefined' ? result.time : '<:xmark:314349398824058880>'}ms`,
+              `${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '<:xmark:314349398824058880>'}ms`,
           });
         });
     });

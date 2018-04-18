@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 
 class RoomUnlockedDefault extends Command {
   constructor(bot) {
@@ -38,7 +38,7 @@ class RoomUnlockedDefault extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     enable = enable.trim();
-    await this.bot.settings.setGuildSetting(message.guild, 'defaultRoomsLocked', enable !== 'on');
+    await this.settings.setGuildSetting(message.guild, 'defaultRoomsLocked', enable !== 'on');
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

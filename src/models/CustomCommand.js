@@ -18,6 +18,7 @@ class CustomCommand extends Command {
     this.isCustomCommand = true;
     this.response = response;
     this.guildId = guildId;
+    this.regex = new RegExp(`^${this.call}`, 'i');
   }
 
   /**
@@ -26,7 +27,8 @@ class CustomCommand extends Command {
    *                          or perform an action based on parameters.
    */
   run(message) {
-    this.messageManager.reply(message, this.response);
+    const format = `${message.mentions.members.size > 0 ? message.mentions.members.first() : message.member}, ${this.response}`;
+    this.messageManager.sendMessage(message, format, false, false);
   }
 }
 

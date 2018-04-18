@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../Command.js');
+const Command = require('../../models/Command.js');
 const { getChannel } = require('../../CommonFunctions.js');
 
 class RespondToSettings extends Command {
@@ -61,8 +61,8 @@ class RespondToSettings extends Command {
       const dirtyChannelParam = message.strippedContent.match(this.regex)[2];
       const channelParam = dirtyChannelParam ? dirtyChannelParam.trim().replace(/<|>|#/ig, '') : undefined;
       const channel = getChannel(channelParam, message);
-      await this.bot.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
-      await this.bot.settings.setChannelSetting(channel, 'delete_response', delResponse);
+      await this.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
+      await this.settings.setChannelSetting(channel, 'delete_response', delResponse);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
