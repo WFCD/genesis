@@ -289,7 +289,10 @@ function getTrackInstructionEmbed(message, prefix, call) {
 const emojify = (stringWithoutEmoji) => {
   let stringWithEmoji = stringWithoutEmoji;
   Object.keys(emoji).forEach((identifier) => {
-    stringWithEmoji = stringWithEmoji.replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]}`);
+    if (typeof stringWithEmoji === 'string') {
+      stringWithEmoji = stringWithEmoji
+        .replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]}`);
+    }
   });
   return stringWithEmoji;
 };
