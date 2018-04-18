@@ -89,20 +89,20 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.secondary) {
         this.fields.push({
           name: 'Secondary Fire',
-          value: `**Trigger:** ${weapon.secondary.trigger || '-'}\n` +
-          `**Projectile:** ${weapon.secondary.projectile}\n` +
-          `**Rate:** ${weapon.secondary.rate || '-'}\n` +
-          `**Flight:**: ${weapon.secondary.flight || '-'}m\\s\n` +
-          `**Noise:** ${weapon.secondary.noise || '-'}\n` +
-          `**Accuracy:** ${weapon.secondary.accuracy}\n` +
-          `**Reload:** ${weapon.secondary.reload || '-'}\n` +
-          `**Damage:** ${weapon.secondary.damage || '-'}\n` +
-          `**Impact:** ${weapon.secondary.impact || '-'}\n` +
-          `**Puncture:** ${weapon.secondary.puncture || '-'}\n` +
-          `**Slash:** ${weapon.secondary.slash || '-'}\n` +
-          `**Critical Chance:** ${weapon.secondary.crit_chance || '-'}%\n` +
-          `**Critical Multiplier:** ${weapon.secondary.crit_mult || '-'}x\n` +
-          `**Status Chance:** ${weapon.secondary.status_chance || '-'}%`,
+          value: (weapon.secondary.trigger ? `**Trigger:** ${weapon.secondary.trigger || '-'}\n` : '' +
+          weapon.secondary.pellet ? `**Projectile:** ${weapon.secondary.pellet.name}\n` : '' +
+          weapon.secondary.rate ? `**Rate:** ${weapon.secondary.rate}\n` : '' +
+          weapon.secondary.flight ? `**Flight:**: ${weapon.secondary.flight}m\\s\n` : '' +
+          weapon.secondary.noise ? `**Noise:** ${weapon.secondary.noise}\n` : '' +
+          weapon.secondary.accuracy ? `**Accuracy:** ${weapon.secondary.accuracy}\n` : '' +
+          weapon.secondary.reload ? `**Reload:** ${weapon.secondary.reload}\n` : '' +
+          weapon.secondary.damage ? `**Damage:** ${emojify(weapon.secondary.damage || '-')}\n` : '' +
+          weapon.secondary.impact ? `**Impact:** ${weapon.secondary.impact}\n` : '' +
+          weapon.secondary.puncture ? `**Puncture:** ${weapon.secondary.puncture}\n` : '' +
+          weapon.secondary.slash ? `**Slash:** ${weapon.secondary.slash}\n` : '' +
+          weapon.secondary.crit_chance ? `**Critical Chance:** ${weapon.secondary.crit_chance}%\n` : '' +
+          weapon.secondary.crit_mult ? `**Critical Multiplier:** ${weapon.secondary.crit_mult}x\n` : '' +
+          weapon.secondary.status_chance ? `**Status Chance:** ${weapon.secondary.status_chance}%` : '') || '-',
           inline: true,
         });
       }
