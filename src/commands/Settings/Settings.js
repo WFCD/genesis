@@ -41,7 +41,7 @@ class Settings extends Command {
         `**Ban Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'banLog')) || 'none defined'}`,
         `**Unban Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'unbanLog')) || 'none defined'}`,
         `**Mod Role:** ${message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole')) || 'none defined'}`,
-      ]);                              ]
+      ]);
     }
     const items = await this.settings.getTrackedItems(channel);
     if (items.length > 0) {
