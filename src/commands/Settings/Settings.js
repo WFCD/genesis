@@ -28,16 +28,16 @@ class Settings extends Command {
       `**Default Locked Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
       `**Default No Text Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
       `**Default Hidden Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultShown')) === '1' ? 'yes' : 'no'}`,
-      `**Temp Channel Category:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,
-      `**LFG Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'lfgChannel')) || 'none defined'}`,
+      `**Temp Channel Category:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,
+      `**LFG Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'lfgChannel')) || 'none defined'}`,
       `**Default Roles:** ${defaultRoles.length ? defaultRoles : 'none defined'}`,
-      `**Vulgar Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'vulgarLog')) || 'none defined'}`,
+      `**Vulgar Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'vulgarLog')) || 'none defined'}`,
       `**Message Delete Log Channel:** ${this.bot.client.channels.get(await this.settings.getGuildSetting(message.guild, 'msgDeleteLog')) || 'none defined'}`,
-      `**Member Remove Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'memberRemoveLog')) || 'none defined'}`,
-      `**Ban Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'banLog')) || 'none defined'}`,
-      `**Unban Log Channel:** ${channel.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'unbanLog')) || 'none defined'}`,
+      `**Member Remove Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'memberRemoveLog')) || 'none defined'}`,
+      `**Ban Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'banLog')) || 'none defined'}`,
+      `**Unban Log Channel:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'unbanLog')) || 'none defined'}`,
 
-      `**Mod Role:** ${channel.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole')) || 'none defined'}`,
+      `**Mod Role:** ${message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole')) || 'none defined'}`,
     ];
     const items = await this.settings.getTrackedItems(channel);
     if (items.length > 0) {
