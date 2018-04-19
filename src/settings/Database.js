@@ -1016,6 +1016,8 @@ class Database {
 
       if (context.tempCategory && channel.guild.channels.has(context.tempCategory.trim())) {
         context.tempCategory = channel.guild.channels.get(context.tempCategory.trim());
+      } else {
+        context.tempCategory = undefined;
       }
 
       if (context.lfgChannel && channel.guild.channels.has(context.lfgChannel.trim())) {
