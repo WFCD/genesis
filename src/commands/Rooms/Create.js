@@ -147,7 +147,7 @@ class Create extends Command {
               message.guild.defaultRole, message.author, isPublic, useText,
             );
             let category;
-            if (!ctx.tempCategory) {
+            if (!ctx.tempCategory || !(message.guild && message.guild.channels.has(ctx.tempCategory))) {
               category = await message.guild
                 .createChannel(name, 'category', overwrites);
             } else {
