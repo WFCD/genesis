@@ -253,9 +253,9 @@ class Create extends Command {
     const overwrites = [];
     // this still doesn't work, need to figure out why
     if (!isPublic) {
-      const evOverwrites = ['CONNECT']
+      const evOverwrites = ['CONNECT'];
       if (!shown) {
-        evOverwrites.push('VIEW_CHANNEL'];
+        evOverwrites.push('VIEW_CHANNEL');
       }
       overwrites.push({
         id: everyoneRole,
