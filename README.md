@@ -1,5 +1,7 @@
 # Project Genesis <img src="src/resources/genesis-vector-cyan.png" height="25" width="25" alt="Genesis Avatar"/>
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/WFCD/genesis.svg)](https://greenkeeper.io/)
+
 [![Supported by Warframe Community Developers](https://warframestat.us/wfcd.png)](https://github.com/WFCD "Supported by Warframe Community Developers")
 ### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more. 
 
