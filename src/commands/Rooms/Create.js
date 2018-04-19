@@ -115,7 +115,7 @@ class Create extends Command {
       shown = !ctx.defaultShown;
     }
 
-    if (ctx.tempCategory || !(message.guild && message.guild.channels.has(ctx.tempCategory))) {
+    if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {
       useText = false;
     }
 
