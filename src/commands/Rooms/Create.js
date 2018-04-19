@@ -253,15 +253,13 @@ class Create extends Command {
     const overwrites = [];
     // this still doesn't work, need to figure out why
     if (!isPublic) {
+      const evOverwrites = ['CONNECT']
       if (!shown) {
-        overwrites.push({
-          id: everyoneRole,
-          deny: ['VIEW_CHANNEL', 'CONNECT'],
-        });
+        evOverwrites.push('VIEW_CHANNEL'];
       }
       overwrites.push({
         id: everyoneRole,
-        deny: ['CONNECT'],
+        deny: evOverwrites,
       });
       overwrites.push({
         allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
