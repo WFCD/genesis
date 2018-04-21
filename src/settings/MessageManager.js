@@ -228,8 +228,7 @@ class MessaageManager {
         this.logger.error(e);
         await this.settings.deleteWebhooksForChannel(ctx.channel.id);
         this.logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
-        ctx.webhook = undefined;
-        return this.webhook(ctx, { text, embed });
+        return false;
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
