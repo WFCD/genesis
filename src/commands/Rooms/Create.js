@@ -106,12 +106,12 @@ class Create extends Command {
       useText = !ctx.defaultNoText;
     }
 
-    let shown;
+    let shown = false;
     if (shownRegex.test(message.strippedContent)) {
       shown = true;
     } else if (hiddenRegex.test(message.strippedContent)) {
       shown = false;
-    } else {
+    } else if (typeof ctx.defaultShown !== 'undefined') {
       shown = !ctx.defaultShown;
     }
 
@@ -147,7 +147,8 @@ class Create extends Command {
               message.guild.defaultRole, message.author, isPublic, useText,
             );
             let category;
-            if (!ctx.tempCategory || !(message.guild && message.guild.channels.has(ctx.tempCategory))) {
+            if (!ctx.tempCategory ||
+                !(message.guild && message.guild.channels.has(ctx.tempCategory))) {
               category = await message.guild
                 .createChannel(name, 'category', overwrites);
             } else {
