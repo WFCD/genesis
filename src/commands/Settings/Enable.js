@@ -12,7 +12,7 @@ class Enable extends Command {
       { description: 'Enable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
     this.regex = new RegExp(
-      `^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*)(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?)?`,
+      `^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))?(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?`,
       'i',
     );
     this.requiresAuth = true;
@@ -39,13 +39,16 @@ class Enable extends Command {
 
     let target = {};
     if (params[2] ||
-        message.mentions.roles.array().length > 0 || message.mentions.users.array().length > 0) {
+        message.mentions.roles.size > 0 || message.mentions.users.size > 0) {
       target = getTarget(
         params[2], message.mentions ? message.mentions.roles : [],
         message.mentions ? message.mentions.users : [], message,
       );
     } else {
-      target = message.guild.roles.find('name', '@everyone');
+      target = getTarget(
+        params[1], { first: () => undefined },
+        { first: () => undefined }, message,
+      ) || message.guild.defaultRole;
     }
     const results = [];
     // set the stuff

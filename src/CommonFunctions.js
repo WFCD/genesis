@@ -400,14 +400,14 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
   let target;
   const roleMention = roleMentions.first();
   const userMention = userMentions.first();
-  if (roleMentions.array().length > 0) {
+  if (roleMentions.size > 0) {
     target = roleMention;
     target.type = 'Role';
-  } else if (userMentions.array().length > 0) {
+  } else if (userMentions.size > 0) {
     target = userMention;
     target.type = 'User';
   } else {
-    const userTarget = this.bot.client.users.get(targetParam);
+    const userTarget = message.guild.members.get(targetParam);
     const roleTarget = message.guild.roles.get(targetParam);
     if (targetParam === '*') {
       target = message.guild.defaultRole;

@@ -111,8 +111,8 @@ class Create extends Command {
       shown = true;
     } else if (hiddenRegex.test(message.strippedContent)) {
       shown = false;
-    } else if (typeof ctx.defaultShown !== 'undefined') {
-      shown = !ctx.defaultShown;
+    } else {
+      shown = ctx.defaultShown;
     }
 
     if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {

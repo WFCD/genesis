@@ -4,6 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const decache = require('decache');
 
+const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
+  if ((command.isCustom && allowCustom) || (command.isInline && allowInline)) {
+    return hasAuth;
+  } else if (!command.isCustom && !command.isInline) {
+    return hasAuth;
+  }
+  return false;
+};
+
+
 /**
  * Describes a CommandHandler for a bot.
  */
@@ -100,7 +110,7 @@ class CommandHandler {
       }
     }
     if (typeof botping === 'undefined') {
-      botping = `a${this.bot.client.user.username}`;
+      botping = `@${this.bot.client.user.username}`;
     }
     const botPingId = `<@${this.bot.client.user.id}>`;
     const ctx = await this.bot.settings
@@ -140,11 +150,8 @@ class CommandHandler {
     let done = false;
     commands.forEach(async (command) => {
       if (command.regex.test(content) && !done) {
-        const canAct = await this.checkCanAct(
-          command, messageWithStrippedContent,
-          ctx.allowCustom, ctx.allowInline,
-        );
-        if (canAct) {
+        const canAct = await this.checkCanAct(command, messageWithStrippedContent);
+        if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {
           this.logger.debug(`Matched ${command.id}`);
           ctx.message = messageWithStrippedContent;
           const status = await command.run(messageWithStrippedContent, ctx);
@@ -180,12 +187,16 @@ class CommandHandler {
    * @param   {boolean} allowInline Whether or not to allow inline commands
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
-  async checkCanAct(command, message, allowCustom, allowInline) {
+  async checkCanAct(command, message) {
+    /*
     if (command.isCustomCommand && allowCustom) {
       return command.isInline ? allowInline : true;
     } else if (command.isInline && allowInline) {
       return true;
-    } else if (command.ownerOnly && message.author.id !== this.bot.owner) {
+    } else
+    */
+
+    if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
     } else if (message.channel.type === 'text') {
       if (command.requiresAuth) {
