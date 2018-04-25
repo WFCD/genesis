@@ -87,7 +87,7 @@ const welcomes = [
   '<:join:349556772412981269> Swaz-do-lah, **$username**!',
   '<:join:349556772412981269> **$username** has arrived, early lunch for Konzu!',
   '<:join:349556772412981269> **$username**? **$username**?! Ooh, is it my birth interval?',
-  '<:join:349556772412981269> I\'m Cephalon Genesis Primary. We have and shall have a long association,  **$username**.\nI know this conversation well.',
+  '<:join:349556772412981269> I\'m Cephalon Genesis Primary. We have and shall have a long association, **$username**.\nI know this conversation well.',
   '<:join:349556772412981269> Consequence to consequence brings you to us, **$username**',
   '<:join:349556772412981269> **$username**, you were anticipated. Our interaction begins.',
   '<:join:349556772412981269> Drop a stone, a ripple. Drop a grain, nothing of consequence.\nCome to me with stones, **$username**. Instruments of tested power, and I will accept.',
