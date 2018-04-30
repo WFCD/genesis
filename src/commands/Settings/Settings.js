@@ -28,8 +28,9 @@ class Settings extends Command {
       `**Default Locked Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
       `**Default No Text Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
       `**Default Hidden Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultShown')) === '1' ? 'yes' : 'no'}`,
+      `**Custom commands Ping:** ${(await this.settings.getChannelSetting(channel, 'settings.cc.ping')) === '1' ? 'yes' : 'no'}`,
     ];
-    
+
     if (message.guild) {
       tokens = tokens.concat([
         `**Temp Channel Category:** ${message.guild.channels.get(await this.settings.getGuildSetting(message.guild, 'tempCategory')) || 'none defined'}`,

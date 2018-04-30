@@ -60,6 +60,7 @@ class Database {
       defaultNoText: false,
       defaultShown: false,
       tempCategory: false,
+      'settings.cc.ping': true,
     };
   }
 
@@ -952,7 +953,11 @@ class Database {
 
   async getCommandContext(channel) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
-    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory', 'lfgChannel');`;
+    const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} 
+      and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
+        'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
+        'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
+        'lfgChannel', 'settings.cc.ping');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -1003,6 +1008,12 @@ class Database {
       } else {
         context.defaultShown = context.defaultShown === '1';
       }
+      
+      if (typeof context['settings.cc.ping'] === 'undefined') {
+        context['settings.cc.ping'] = this.defaults['settings.cc.ping'] === '1';
+      } else {
+        context['settings.cc.ping'] = context['settings.cc.ping'] === '1';
+      }
 
       if (typeof context.createPrivateChannel === 'undefined') {
         context.createPrivateChannel = this.defaults.createPrivateChannel === '1';
@@ -1034,6 +1045,7 @@ class Database {
         defaultRoomsLocked: this.defaults.defaultRoomsLocked === '1',
         defaultNoText: this.defaults.defaultNoText === '1',
         createPrivateChannel: this.defaults.createPrivateChannel === '1',
+        'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
       };
     }
     context.channel = channel;
