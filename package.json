@@ -60,7 +60,7 @@
     "jsdoc": "^3.5.5",
     "mocha": "^5.1.1",
     "rewire": "^4.0.0",
-    "sinon": "^4.5.0",
+    "sinon": "^5.0.1",
     "sinon-chai": "^3.0.0"
   },
   "license": "Apache-2.0",
