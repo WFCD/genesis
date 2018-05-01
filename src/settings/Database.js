@@ -1062,6 +1062,16 @@ class Database {
     }
     return [];
   }
+  
+  async getCustomCommandsForGuild(guild) {
+    const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
+    const res = await this.db.query(query);
+    if (res[0]) {
+      return res[0].map(value =>
+        new CustomCommand(this.bot, value.command, value.response, value.guild_id));
+    }
+    return [];
+  }
 
   async addCustomCommand(message, call, response) {
     const id = `${call}${message.guild.id}`;

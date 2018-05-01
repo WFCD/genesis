@@ -7,9 +7,9 @@ class PingCustomCommand extends Command {
   constructor(bot) {
     super(bot, 'settings.cc.ping', 'ping cc', 'Toggle whether or not custom commands mention either the user or the mentioned person.');
     this.usages = [
-      { description: 'Change if this channel can use custom commands', parameters: ['custom commands enabled'] },
+      { description: 'Change if this channel\'s use custom commands will ping', parameters: ['custom commands enabled'] },
     ];
-    this.regex = new RegExp('^allow\\s?custom(?:\\s?commands)?\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
