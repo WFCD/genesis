@@ -721,6 +721,7 @@ class Database {
     results.push(this.removePrivateChannels(guild.id));
     results.push(this.removeGuildPermissions(guild.id));
     results.push(this.removePings(guild.id));
+    results.push(this.removeGuildCustomCommands(guild.id));
     return Promise.all(results);
   }
 
@@ -1083,6 +1084,11 @@ class Database {
   async deleteCustomCommand(message, call) {
     const id = `${call}${message.guild.id}`;
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
+    return this.db.query(query);
+  }
+  
+  async removeGuildCustomCommands(guildId) {
+    const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
     return this.db.query(query);
   }
 
