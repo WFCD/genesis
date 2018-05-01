@@ -21,7 +21,7 @@ class Help extends Command {
 
     this.helpEmbed = null;
 
-    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s?(.*)?)?`, 'i');
 
     this.usages = [
       {
