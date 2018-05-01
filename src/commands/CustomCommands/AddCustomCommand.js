@@ -14,7 +14,7 @@ class AddCustomCommand extends Command {
   }
 
   async run(message) {
-    const params = message.strippedContent.match(this.regex);
+    const params = message.content.match(this.regex);
     if (!params[1] || !params[2]) {
       this.messageManager.embed(message, {
         title: 'Adding Custom Commands',
@@ -27,7 +27,7 @@ class AddCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    await this.settings.addCustomCommand(message, params[1], params[2]);
+    await this.settings.addCustomCommand(message, params[1], encodeURIComponent(params[2]));
     await this.commandHandler.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
