@@ -133,6 +133,28 @@ class Command {
     const msg = await message.reply('This is a basic Command');
     this.logger.debug(`Sent ${msg}`);
   }
+
+  /**
+   * Send Usage for a toggle command
+   * @param {Discord.Message} message message to respond to
+   * @param {Array.<string>} options optional replacement for args
+   * @returns {string} failure status.
+   */
+  async sendToggleUsage(message, options = ['on', 'off']) {
+    const embed = {
+      title: 'Usage',
+      type: 'rich',
+      color: 0x0000ff,
+      fields: [
+        {
+          name: `${this.bot.prefix}${this.call} <${options.join(' | ')}>`,
+          value: '_ _',
+        },
+      ],
+    };
+    this.messageManager.embed(message, embed, true, true);
+    return this.messageManager.statuses.FAILURE;
+  }
 }
 
 module.exports = Command;

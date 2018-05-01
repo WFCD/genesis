@@ -25,9 +25,18 @@ class CustomCommand extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @parm {Object} ctx command context
    */
-  run(message) {
-    const format = `${message.mentions.members.size > 0 ? message.mentions.members.first() : message.member}, ${this.response}`;
+  async run(message, ctx) {
+    let format;
+    if (ctx['settings.cc.ping']) {
+      const mention = message.mentions.members.size > 0 ?
+        message.mentions.members.first() :
+        message.member;
+      format = `${mention}, ${decodeURIComponent(this.response)}`;
+    } else {
+      format = decodeURIComponent(this.response);
+    }
     this.messageManager.sendMessage(message, format, false, false);
   }
 }

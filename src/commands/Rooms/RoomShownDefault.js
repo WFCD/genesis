@@ -23,19 +23,7 @@ class RoomShownDefault extends Command {
   async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${ctx.prefix}${this.call} <on|off>`,
-            value: '_ _',
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message);
     }
     enable = enable.trim();
     await this.settings.setGuildSetting(message.guild, 'defaultShown', enable !== 'on');
