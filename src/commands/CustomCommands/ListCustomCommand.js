@@ -19,7 +19,7 @@ class ListCustomCommand extends Command {
       
     const longest = ccs.map(cc => cc.call)
       .reduce((a, b) => (a.length > b.length ? a : b)).length;
-    const subGroupCCs = createGroupedArray(ccs.map(cc => `\`${rpad(cc.call, longest, ' ')} ${cc.response}\``), 5);
+    const subGroupCCs = createGroupedArray(ccs.map(cc => `\`${rpad(cc.call, longest, ' ')} | ${decodeURIComponent(cc.response)}\``), 5);
     const metaGroups = createGroupedArray(subGroupCCs, 4);
     metaGroups.forEach((metaGroup) => {
       this.messageManager.embed(message, {
