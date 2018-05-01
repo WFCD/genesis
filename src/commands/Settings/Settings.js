@@ -25,10 +25,10 @@ class Settings extends Command {
       `**Deleted Expired Notifications (not all):** ${(await this.settings.getChannelSetting(channel, 'deleteExpired')) === '1' ? 'yes' : 'no'}`,
       `**Allow Inline Commands:** ${(await this.settings.getChannelSetting(channel, 'allowInline')) === '1' ? 'yes' : 'no'}`,
       `**Allow Custom Commands:** ${(await this.settings.getChannelSetting(channel, 'allowCustom')) === '1' ? 'yes' : 'no'}`,
+      `**Custom Commands Ping:** ${(await this.settings.getChannelSetting(channel, 'settings.cc.ping')) === '1' ? 'yes' : 'no'}`,
       `**Default Locked Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultRoomsLocked')) === '1' ? 'yes' : 'no'}`,
       `**Default No Text Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultNoText')) === '1' ? 'yes' : 'no'}`,
       `**Default Hidden Channel:** ${(await this.settings.getChannelSetting(channel, 'defaultShown')) === '1' ? 'yes' : 'no'}`,
-      `**Custom commands Ping:** ${(await this.settings.getChannelSetting(channel, 'settings.cc.ping')) === '1' ? 'yes' : 'no'}`,
     ];
 
     if (message.guild) {
@@ -67,7 +67,7 @@ class Settings extends Command {
     const things = channelSections.map((item, index) => `${index > 0 ? '' : '\n**Channel Permissions:** \n'}${item.length > 0 ? `\t${item.join('\n\t')}` : 'No Configured Channel Permission'}`);
     tokens = tokens.concat(things);
 
-    const tokenGroups = createGroupedArray(tokens, 6);
+    const tokenGroups = createGroupedArray(tokens, 10);
     // eslint-disable-next-line no-loop-func
     tokenGroups.forEach((tokenGroup) => {
       const embed = new SettingsEmbed(
