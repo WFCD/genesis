@@ -1063,7 +1063,7 @@ class Database {
     }
     return [];
   }
-  
+
   async getCustomCommandsForGuild(guild) {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
     const res = await this.db.query(query);

@@ -16,19 +16,7 @@ class DeleteExpired extends Command {
   async run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <on|off>`,
-            value: '_ _',
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message);
     }
     enable = enable.trim();
     let enableResponse = false;

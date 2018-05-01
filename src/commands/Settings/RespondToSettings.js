@@ -18,19 +18,7 @@ class RespondToSettings extends Command {
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message);
     if (!enable) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <on|off>`,
-            value: '_ _',
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message);
     }
     enable = enable.trim();
     let enableResponse = false;
