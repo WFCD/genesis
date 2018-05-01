@@ -982,42 +982,42 @@ class Database {
         context.prefix = this.defaults.prefix;
       }
       if (typeof context.allowCustom === 'undefined') {
-        context.allowCustom = this.defaults.allowCustom === '1';
+        context.allowCustom = this.defaults.allowCustom;
       } else {
         context.allowCustom = context.allowCustom === '1';
       }
       if (typeof context.allowInline === 'undefined') {
-        context.allowInline = this.defaults.allowInline === '1';
+        context.allowInline = this.defaults.allowInline;
       } else {
         context.allowInline = context.allowInline === '1';
       }
 
       if (typeof context.defaultRoomsLocked === 'undefined') {
-        context.defaultRoomsLocked = this.defaults.defaultRoomsLocked === '1';
+        context.defaultRoomsLocked = this.defaults.defaultRoomsLocked;
       } else {
         context.defaultRoomsLocked = context.defaultRoomsLocked === '1';
       }
 
       if (typeof context.defaultNoText === 'undefined') {
-        context.defaultNoText = this.defaults.defaultNoText === '1';
+        context.defaultNoText = this.defaults.defaultNoText;
       } else {
         context.defaultNoText = context.defaultNoText === '1';
       }
 
       if (typeof context.defaultShown === 'undefined') {
-        context.defaultShown = this.defaults.defaultShown === '1';
+        context.defaultShown = this.defaults.defaultShown;
       } else {
         context.defaultShown = context.defaultShown === '1';
       }
       
       if (typeof context['settings.cc.ping'] === 'undefined') {
-        context['settings.cc.ping'] = this.defaults['settings.cc.ping'] === '1';
+        context['settings.cc.ping'] = this.defaults['settings.cc.ping'];
       } else {
         context['settings.cc.ping'] = context['settings.cc.ping'] === '1';
       }
 
       if (typeof context.createPrivateChannel === 'undefined') {
-        context.createPrivateChannel = this.defaults.createPrivateChannel === '1';
+        context.createPrivateChannel = this.defaults.createPrivateChannel;
       } else {
         context.createPrivateChannel = context.createPrivateChannel === '1';
       }
