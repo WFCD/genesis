@@ -1086,7 +1086,7 @@ class Database {
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
     return this.db.query(query);
   }
-  
+
   async removeGuildCustomCommands(guildId) {
     const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
     return this.db.query(query);
