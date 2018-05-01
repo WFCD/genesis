@@ -13,9 +13,7 @@ class ListCustomCommand extends Command {
 
   async run(message) {
     const ccs = (await this.settings.getCustomCommandsForGuild(message.guild))
-      .map((cc) => {
-        return { call: cc.call, response: cc.response };
-      });
+      .map(cc => ({ call: cc.call, response: cc.response }));
       
     const longest = ccs.map(cc => cc.call)
       .reduce((a, b) => (a.length > b.length ? a : b)).length;
@@ -29,7 +27,7 @@ class ListCustomCommand extends Command {
         })),
       }, true, false);
     });
-    
+
     return this.messageManager.statuses.SUCCESS;
   }
 }

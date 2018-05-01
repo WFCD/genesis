@@ -30,8 +30,10 @@ class CustomCommand extends Command {
   async run(message, ctx) {
     let format;
     if (ctx['settings.cc.ping']) {
-          const mention = message.mentions.members.size > 0 ?message.mentions.members.first() : message.member;
-          format = `${mention}, ${decodeURIComponent(this.response)}`;
+      const mention = message.mentions.members.size > 0 ?
+        message.mentions.members.first() :
+        message.member;
+      format = `${mention}, ${decodeURIComponent(this.response)}`;
     } else {
       format = decodeURIComponent(this.response);
     }

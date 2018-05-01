@@ -1009,7 +1009,7 @@ class Database {
       } else {
         context.defaultShown = context.defaultShown === '1';
       }
-      
+
       if (typeof context['settings.cc.ping'] === 'undefined') {
         context['settings.cc.ping'] = this.defaults['settings.cc.ping'];
       } else {
