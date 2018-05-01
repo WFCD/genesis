@@ -14,7 +14,7 @@ class AddCustomCommand extends Command {
   }
 
   async run(message) {
-    const params = message.content.match(this.regex);
+    const params = message.strippedContent.match(this.regex);
     if (!params[1] || !params[2]) {
       this.messageManager.embed(message, {
         title: 'Adding Custom Commands',
