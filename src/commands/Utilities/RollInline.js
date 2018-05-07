@@ -3,7 +3,7 @@
 const Command = require('../../models/InlineCommand.js');
 
 /**
- * Make a simple roll
+ * Post a quesiton of left or right
  */
 class RollInline extends Command {
   /**
@@ -12,7 +12,7 @@ class RollInline extends Command {
    */
   constructor(bot) {
     super(bot, 'roll', 'roll?', 'Roll between 2 rivens');
-    this.regex = new RegExp('left or right:', 'ig');
+    this.regex = new RegExp('left or right[:\\?]', 'ig');
     this.usages = [
       {
         description: 'roll between rivens',
