@@ -148,7 +148,7 @@ class Create extends Command {
             );
             let category;
             if (!ctx.tempCategory ||
-                !(message.guild && message.guild.channels.has(ctx.tempCategory))) {
+                !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
               category = await message.guild
                 .createChannel(name, 'category', overwrites);
             } else {
@@ -158,11 +158,11 @@ class Create extends Command {
             let textChannel;
             if (useText) {
               textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
-              textChannel = await textChannel.setParent(category);
+              textChannel = await textChannel.setParent(category.id);
             }
 
             let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
-            voiceChannel = await voiceChannel.setParent(category);
+            voiceChannel = await voiceChannel.setParent(category.id);
 
             if (!isPublic) {
               // manually add overwrites for "everyone"
