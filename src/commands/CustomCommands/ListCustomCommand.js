@@ -12,20 +12,19 @@ class ListCustomCommand extends Command {
   }
 
   async run(message) {
-    const ccs = (await this.settings.getCustomCommandsForGuild(message.guild))
-      .map(cc => ({ call: cc.call, response: cc.response }));
-
-    const longest = ccs.map(cc => cc.call)
-      .reduce((a, b) => (a.length > b.length ? a : b)).length;
-    const subGroupCCs = createGroupedArray(ccs.map(cc => `\`${rpad(cc.call, longest, ' ')} | ${decodeURIComponent(cc.response)}\``), 5);
-    const metaGroups = createGroupedArray(subGroupCCs, 4);
+    const ccs = [];
+    const gcc = await this.settings.getCustomCommandsForGuild(message.guild);
+    gcc.forEach((cc) => {
+      if (cc.response.length > 1024) {
+        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response.substring(0, 1020))});
+        ccs.push({ name: '_ _', value: decodeURIComponent(cc.response.substring(1021))});
+      } else {
+        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response)});
+      }
+    });
+    const metaGroups = createGroupedArray(ccs, 10);
     metaGroups.forEach((metaGroup) => {
-      this.messageManager.embed(message, {
-        fields: metaGroup.map(ccGroup => ({
-          name: '_ _',
-          value: ccGroup.join('\n'),
-        })),
-      }, true, false);
+      this.messageManager.embed(message, { color: 0x301934, fields: metaGroup }, true, false);
     });
 
     return this.messageManager.statuses.SUCCESS;
