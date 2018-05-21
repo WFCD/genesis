@@ -2,7 +2,6 @@
 
 const Command = require('../../models/Command.js');
 const { createGroupedArray } = require('../../CommonFunctions.js');
-const rpad = require('right-pad');
 
 class ListCustomCommand extends Command {
   constructor(bot) {
@@ -16,10 +15,10 @@ class ListCustomCommand extends Command {
     const gcc = await this.settings.getCustomCommandsForGuild(message.guild);
     gcc.forEach((cc) => {
       if (cc.response.length > 1024) {
-        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response.substring(0, 1020))});
-        ccs.push({ name: '_ _', value: decodeURIComponent(cc.response.substring(1021))});
+        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response.substring(0, 1020)) });
+        ccs.push({ name: '_ _', value: decodeURIComponent(cc.response.substring(1021)) });
       } else {
-        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response)});
+        ccs.push({ name: cc.call, value: decodeURIComponent(cc.response) });
       }
     });
     const metaGroups = createGroupedArray(ccs, 10);
