@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { createGroupedArray } = require('../../CommonFunctions.js');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)
@@ -27,14 +27,17 @@ class ListBuilds extends Command {
       const buildGroups = createGroupedArray(builds, 15);
       const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
       const tokenGroups = createGroupedArray(tokens, 5);
-      await Promise.all(tokenGroups.map((tokenGroup) => {
+      const embeds = [];
+      tokenGroups.forEach((tokenGroup) => {
         const fields = tokenGroup;
         fields[0].value = `\`Build ID | Title | Owner\`\n${tokenGroup[0].value}`;
-        return this.messageManager.embed(message, {
+        embeds.push({
           color: 0xcda2a3,
           fields,
-        }, true, true);
-      }));
+        });
+      });
+      const msg = await this.messageManager.embed(message, embeds[0], true, false);
+      await createPageCollector(msg, embeds, message.author);
       return this.messageManager.statuses.SUCCESS;
     }
     await this.messageManager.embed(message, { color: 0xcda2a3, title: 'No builds for user' }, true, true);

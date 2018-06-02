@@ -96,7 +96,8 @@ class MessaageManager {
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
       const msg = await message.channel.send(content || '', { embed });
-      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
     }
     return null;
   }
