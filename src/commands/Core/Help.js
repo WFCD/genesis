@@ -104,13 +104,13 @@ class Help extends Command {
     }
     const lines = searchableCommands.map(command => command.usages.map(u => ({
       name: `${config.prefix}${command.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
-      value: u.description,
+      value: u.description || 'No description',
       inline: false,
     })));
-    const groups = createGroupedArray(lines, 5);
+    const groups = createGroupedArray(lines, 9);
     const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
     const msg = await this.messageManager.embed(message, embeds[0], false, false);
-    await createGroupedArray(msg, embeds, message.author);
+    await createPageCollector(msg, embeds, message.author);
     return this.messageManager.statuses.SUCCESS;
   }
 
