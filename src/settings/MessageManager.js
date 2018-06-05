@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * MessageManager for
+ * MessageManager for.... sending messages and deleting them and stuff
  */
 class MessaageManager {
   /**
@@ -95,7 +95,13 @@ class MessaageManager {
       message.channel.permissionsFor(this.client.user.id)
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      const msg = await message.channel.send(content || '', { embed });
+        let msg;
+        if (content) {
+          msg = await message.channel.send(content, { embed });
+        } else {
+          msg = await message.channel.send({ embed });
+        }
+      
       this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
       return msg;
     }
