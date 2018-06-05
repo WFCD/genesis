@@ -20,9 +20,12 @@ class WeaponEmbed extends BaseEmbed {
       this.title = weapon.name;
       this.url = weapon.url || '';
       this.thumbnail = { url: weapon.thumbnail || '' };
-      this.description = `${weapon.type} ${weapon.subtype ? `| ${weapon.subtype}` : ''}`;
+      this.description = `${weapon.type} ${weapon.subtype ? `• ${weapon.subtype}` : ''}`;
       this.color = weapon.color;
       this.fields = [];
+      this.footer = {
+        text: `MR ${weapon.mr} minimum  • ${this.footer.text}`,
+      };
 
       if (weapon.color) {
         this.color = weapon.color;
