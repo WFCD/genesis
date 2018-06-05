@@ -224,6 +224,7 @@ function trackablesFromParameters(paramString) {
   }
   return trackables;
 }
+
 const eventsOrItems = new RegExp(`cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
 
 function getEventsOrItems(message) {
@@ -482,6 +483,90 @@ const getUsersForCall = (message, excludeAuthor) => {
   return users;
 };
 
+const resolvePool = async (message, settings,
+  {
+    explicitOnly = false,
+    skipManages = false,
+    pool = undefined,
+    checkRestriction = false,
+    allowMultiple = false,
+  } = { explicitOnly: false, skipManages: false }) => {
+  let poolId = pool;
+  if (!skipManages && !await settings.userManagesPool(message.author, poolId)) {
+    poolId = undefined;
+  } else {
+    return poolId;
+  }
+  const explicitPoolMatches = message.strippedContent.match(/(?:--pool\s+([a-zA-Z0-9-]*))/i);
+
+  if (!poolId && explicitPoolMatches && explicitPoolMatches.length > 1) {
+    [, poolId] = explicitPoolMatches;
+    if (!skipManages && !(await settings.userManagesPool(message.author, poolId))) {
+      poolId = undefined;
+    }
+  } else if (!explicitOnly) {
+    let pools = (await settings.getPoolsUserManages(message.author))
+      .map(poolRow => poolRow.pool_id);
+    if (pools.length > 1 && allowMultiple) {
+      return pools;
+    }
+    if (pools.length === 1) {
+      [poolId] = pools;
+    } else if (pools.length === 0) {
+      poolId = undefined;
+    } else if (await settings.getGuildsPool(message.guild).length) {
+      pools = await settings.getGuildsPool(message.guild);
+      if (pools.length === 1
+        && (skipManages || await settings.userManagesPool(message.author, pools[0]))) {
+        [poolId] = pools;
+      }
+    } else {
+      poolId = undefined;
+    }
+  }
+
+  if (poolId && checkRestriction && await settings.isPoolRestricted(poolId)) {
+    poolId = undefined;
+  }
+  return poolId;
+};
+
+const createPageCollector = async (msg, pages, author) => {
+  let page = 1;
+  await msg.react('◀');
+  await msg.react('▶');
+  const collector = msg.createReactionCollector((reaction, user) => ((reaction.emoji.name === '◀' || reaction.emoji.name === '▶') && user.id === author.id), { time: 120000 });
+
+  collector.on('collect', async (reaction) => {
+    if (reaction.emoji.name === '◀') {
+      if (page > 1) page -= 1;
+    } else if (reaction.emoji.name === '▶') {
+      if (page <= pages.length) page += 1;
+    }
+    await reaction.remove(author.id);
+    if (page <= pages.length && page > 0) {
+      const newPage = pages[page - 1];
+      const pageInd = `Page ${page}/${pages.length}`;
+      if (newPage.footer) {
+        if (newPage.footer.text) {
+          if (newPage.footer.text.indexOf('Page') === -1) {
+            newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
+          }
+        } else {
+          newPage.footer.text = pageInd;
+        }
+      } else {
+        newPage.footer = { text: pageInd };
+      }
+      msg.edit({ embed: newPage });
+    } else if (page < 1) {
+      page = 1;
+    } else if (page >= pages.length) {
+      page = pages.length;
+    }
+  });
+};
+
 module.exports = {
   createGroupedArray,
   emojify,
@@ -498,4 +583,6 @@ module.exports = {
   isVulgarCheck,
   getRandomWelcome,
   resolveRoles,
+  resolvePool,
+  createPageCollector,
 };

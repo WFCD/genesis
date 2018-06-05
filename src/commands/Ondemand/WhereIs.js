@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
-const { createGroupedArray } = require('../../CommonFunctions.js');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
 
 const request = require('request-promise');
 
@@ -61,17 +61,18 @@ class Whereis extends Command {
       const longestRelic = results.length ? results.map(result => result.place)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
-      createGroupedArray(results, 50).forEach((group, index) => {
+      const embeds = [];
+      createGroupedArray(results, 28).forEach((group, index) => {
         const embed = new WhereisEmbed(
           this.bot, createGroupedArray(group, 4),
           query, longestName.length, longestRelic.length,
         );
+        embeds.push(embed);
         if (index === 0) {
-          sentMessage.edit('', { embed });
-        } else {
-          this.messageManager.embed(sentMessage, embed, false, false);
+          sentMessage.edit({ embed });
         }
       });
+      await createPageCollector(sentMessage, embeds, message.author);
       if (results.length > 0) {
         return this.messageManager.statuses.SUCCESS;
       }

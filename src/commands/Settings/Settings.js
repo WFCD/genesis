@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const SettingsEmbed = require('../../embeds/SettingsEmbed.js');
-const { createGroupedArray, getChannels } = require('../../CommonFunctions');
+const { createGroupedArray, getChannels, createPageCollector } = require('../../CommonFunctions');
 
 class Settings extends Command {
   constructor(bot) {
@@ -68,22 +68,25 @@ class Settings extends Command {
     tokens = tokens.concat(things);
 
     const tokenGroups = createGroupedArray(tokens, 10);
+    const pages = [];
     // eslint-disable-next-line no-loop-func
     tokenGroups.forEach((tokenGroup) => {
       const embed = new SettingsEmbed(
         this.bot, channel,
         createGroupedArray(tokenGroup, 3),
       );
-      this.messageManager.embed(message, embed);
+      pages.push(embed);
     });
+    return pages;
   }
 
   async run(message) {
     const channelParam = message.strippedContent.match(this.regex)[1] || 'current';
     const channels = getChannels(channelParam.trim(), message);
     const channelsResults = [];
+    let pages = [];
     for (const channel of channels) {
-      channelsResults.push(this.composeChannelSettings(channel, message));
+      pages = pages.concat(this.composeChannelSettings(channel, message));
     }
     Promise.all(channelsResults);
 
@@ -121,12 +124,21 @@ class Settings extends Command {
       const tokenGroups = createGroupedArray(guildTokens, 30);
       // eslint-disable-next-line no-loop-func
       tokenGroups.forEach((tokenGroup) => {
+        
         const embed = new SettingsEmbed(
           this.bot, message.channel,
           createGroupedArray(tokenGroup, 15),
         );
-        this.messageManager.embed(message, embed);
+        pages.push(embed);
       });
+
+      if (pages.length) {
+        const msg = await this.messageManager.embed(message, pages[0], false, false);
+        await createPageCollector(msg, pages, message.author);
+      }
+      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+        message.delete(10000);
+      }
     }
     return this.messageManager.statuses.SUCCESS;
   }

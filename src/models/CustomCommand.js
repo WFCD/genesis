@@ -25,7 +25,7 @@ class CustomCommand extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @parm {Object} ctx command context
+   * @param {Object} ctx command context
    */
   async run(message, ctx) {
     let format;

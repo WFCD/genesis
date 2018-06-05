@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>genesis Source: src/settings/MessageManager.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">genesis</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="AddBuild.html">AddBuild</a></li><li><a href="AddChannelToDatabase.html">AddChannelToDatabase</a></li><li><a href="AddGuildToDatabase.html">AddGuildToDatabase</a></li><li><a href="AddLFG.html">AddLFG</a></li><li><a href="AddRole.html">AddRole</a></li><li><a href="AlertEmbed.html">AlertEmbed</a></li><li><a href="Alerts.html">Alerts</a></li><li><a href="Arcane.html">Arcane</a></li><li><a href="Armor.html">Armor</a></li><li><a href="AssignDefaultRolesHandle.html">AssignDefaultRolesHandle</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="Baro.html">Baro</a></li><li><a href="BaseEmbed.html">BaseEmbed</a></li><li><a href="BaseEventHandler.html">BaseEventHandler</a></li><li><a href="Broadcaster.html">Broadcaster</a></li><li><a href="BugReport.html">BugReport</a></li><li><a href="BuildChart.html">BuildChart</a></li><li><a href="BuildEmbed.html">BuildEmbed</a></li><li><a href="Command.html">Command</a></li><li><a href="CommandHandler.html">CommandHandler</a></li><li><a href="ConclaveChallengeEmbed.html">ConclaveChallengeEmbed</a></li><li><a href="ConclaveChallenges.html">ConclaveChallenges</a></li><li><a href="Construction.html">Construction</a></li><li><a href="ConstructionEmbed.html">ConstructionEmbed</a></li><li><a href="Corgi.html">Corgi</a></li><li><a href="Create.html">Create</a></li><li><a href="CreatePool.html">CreatePool</a></li><li><a href="CustomCommand.html">CustomCommand</a></li><li><a href="Damage.html">Damage</a></li><li><a href="Darvo.html">Darvo</a></li><li><a href="DarvoEmbed.html">DarvoEmbed</a></li><li><a href="Database.html">Database</a></li><li><a href="DeleteBuild.html">DeleteBuild</a></li><li><a href="DeleteChannel.html">DeleteChannel</a></li><li><a href="DeleteGuild.html">DeleteGuild</a></li><li><a href="DeleteWebhook.html">DeleteWebhook</a></li><li><a href="Destroy.html">Destroy</a></li><li><a href="EarthCycle.html">EarthCycle</a></li><li><a href="EarthCycleEmbed.html">EarthCycleEmbed</a></li><li><a href="Echo.html">Echo</a></li><li><a href="Efficiency.html">Efficiency</a></li><li><a href="EnableInfoEmbed.html">EnableInfoEmbed</a></li><li><a href="EnableUsageEmbed.html">EnableUsageEmbed</a></li><li><a href="Enemies.html">Enemies</a></li><li><a href="EnemyEmbed.html">EnemyEmbed</a></li><li><a href="EnhancementEmbed.html">EnhancementEmbed</a></li><li><a href="Event.html">Event</a></li><li><a href="EventEmbed.html">EventEmbed</a></li><li><a href="EventHandler.html">EventHandler</a></li><li><a href="FeaturedDeal.html">FeaturedDeal</a></li><li><a href="FissureEmbed.html">FissureEmbed</a></li><li><a href="Fissures.html">Fissures</a></li><li><a href="FrameEmbed.html">FrameEmbed</a></li><li><a href="FrameProfile.html">FrameProfile</a></li><li><a href="FrameStats.html">FrameStats</a></li><li><a href="FrameStatsInline.html">FrameStatsInline</a></li><li><a href="Genesis.html">Genesis</a></li><li><a href="GetBuild.html">GetBuild</a></li><li><a href="GetCommandIds.html">GetCommandIds</a></li><li><a href="Help.html">Help</a></li><li><a href="Hide.html">Hide</a></li><li><a href="Hug.html">Hug</a></li><li><a href="InvasionEmbed.html">InvasionEmbed</a></li><li><a href="Invasions.html">Invasions</a></li><li><a href="Invitation.html">Invitation</a></li><li><a href="Invite.html">Invite</a></li><li><a href="JoinRole.html">JoinRole</a></li><li><a href="Jokes.html">Jokes</a></li><li><a href="LeaveRole.html">LeaveRole</a></li><li><a href="LeaveServer.html">LeaveServer</a></li><li><a href="LFGEmbed.html">LFGEmbed</a></li><li><a href="ListBuilds.html">ListBuilds</a></li><li><a href="Lock.html">Lock</a></li><li><a href="LogEmbed.html">LogEmbed</a></li><li><a href="global.html#Logger">Logger</a></li><li><a href="LogMemberBan.html">LogMemberBan</a></li><li><a href="LogMemberRemove.html">LogMemberRemove</a></li><li><a href="LogMemberUnban.html">LogMemberUnban</a></li><li><a href="LogMessageDelete.html">LogMessageDelete</a></li><li><a href="MessaageManager.html">MessaageManager</a></li><li><a href="Mod.html">Mod</a></li><li><a href="News.html">News</a></li><li><a href="NewsEmbed.html">NewsEmbed</a></li><li><a href="Notifier.html">Notifier</a></li><li><a href="OnReadyHandle.html">OnReadyHandle</a></li><li><a href="Ping.html">Ping</a></li><li><a href="PollInline.html">PollInline</a></li><li><a href="PopularDeal.html">PopularDeal</a></li><li><a href="Prefix.html">Prefix</a></li><li><a href="PriceCheck.html">PriceCheck</a></li><li><a href="PriceCheckEmbed.html">PriceCheckEmbed</a></li><li><a href="PrimeAccess.html">PrimeAccess</a></li><li><a href="ProfileEmbed.html">ProfileEmbed</a></li><li><a href="Progression.html">Progression</a></li><li><a href="Raid.html">Raid</a></li><li><a href="RaidStatEmbed.html">RaidStatEmbed</a></li><li><a href="Reload.html">Reload</a></li><li><a href="RemoveRole.html">RemoveRole</a></li><li><a href="Rename.html">Rename</a></li><li><a href="Resize.html">Resize</a></li><li><a href="Roles.html">Roles</a></li><li><a href="RolesEmbed.html">RolesEmbed</a></li><li><a href="RollInline.html">RollInline</a></li><li><a href="SalesEmbed.html">SalesEmbed</a></li><li><a href="ServerInfo.html">ServerInfo</a></li><li><a href="ServerInfoEmbed.html">ServerInfoEmbed</a></li><li><a href="Servers.html">Servers</a></li><li><a href="SettingsEmbed.html">SettingsEmbed</a></li><li><a href="ShieldEmbed.html">ShieldEmbed</a></li><li><a href="Shields.html">Shields</a></li><li><a href="Show.html">Show</a></li><li><a href="Simaris.html">Simaris</a></li><li><a href="SimarisEmbed.html">SimarisEmbed</a></li><li><a href="SortieEmbed.html">SortieEmbed</a></li><li><a href="Sorties.html">Sorties</a></li><li><a href="StringManager.html">StringManager</a></li><li><a href="SyndicateEmbed.html">SyndicateEmbed</a></li><li><a href="Syndicates.html">Syndicates</a></li><li><a href="Track.html">Track</a></li><li><a href="Tracker.html">Tracker</a></li><li><a href="Unlock.html">Unlock</a></li><li><a href="Untrack.html">Untrack</a></li><li><a href="Updates.html">Updates</a></li><li><a href="UserInfo.html">UserInfo</a></li><li><a href="UserInfoEmbed.html">UserInfoEmbed</a></li><li><a href="Username.html">Username</a></li><li><a href="VoidTraderEmbed.html">VoidTraderEmbed</a></li><li><a href="VulgarNameHandle.html">VulgarNameHandle</a></li><li><a href="WeaponEmbed.html">WeaponEmbed</a></li><li><a href="WeaponStats.html">WeaponStats</a></li><li><a href="WelcomeHandler.html">WelcomeHandler</a></li><li><a href="Whatsin.html">Whatsin</a></li><li><a href="WhatsinEmbed.html">WhatsinEmbed</a></li><li><a href="Whereis.html">Whereis</a></li><li><a href="WhereisEmbed.html">WhereisEmbed</a></li><li><a href="Wiki.html">Wiki</a></li><li><a href="WikiEmbed.html">WikiEmbed</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#armorAtLevel">armorAtLevel</a></li><li><a href="global.html#armorStrip">armorStrip</a></li><li><a href="global.html#channelNameRegex">channelNameRegex</a></li><li><a href="global.html#checkPrivateRooms">checkPrivateRooms</a></li><li><a href="global.html#client">client</a></li><li><a href="global.html#damageReduction">damageReduction</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#fromNow">fromNow</a></li><li><a href="global.html#getAverageTime">getAverageTime</a></li><li><a href="global.html#getBestTime">getBestTime</a></li><li><a href="global.html#getChannel">getChannel</a></li><li><a href="global.html#getChannels">getChannels</a></li><li><a href="global.html#getRoleForString">getRoleForString</a></li><li><a href="global.html#getTarget">getTarget</a></li><li><a href="global.html#getUsersForCall">getUsersForCall</a></li><li><a href="global.html#hiddenRegex">hiddenRegex</a></li><li><a href="global.html#lockedRegex">lockedRegex</a></li><li><a href="global.html#noTextRegex">noTextRegex</a></li><li><a href="global.html#publicRegex">publicRegex</a></li><li><a href="global.html#safeNumber">safeNumber</a></li><li><a href="global.html#shownRegex">shownRegex</a></li><li><a href="global.html#sortNumber">sortNumber</a></li><li><a href="global.html#textRegex">textRegex</a></li><li><a href="global.html#timeDeltaToString">timeDeltaToString</a></li><li><a href="global.html#timeToSeconds">timeToSeconds</a></li><li><a href="global.html#updatePresence">updatePresence</a></li><li><a href="global.html#useable">useable</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: src/settings/MessageManager.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">'use strict';
+
+/**
+ * MessageManager for
+ */
+class MessaageManager {
+  /**
+   * Construct a message manager for sending and managing messages
+   * @param {Genesis} bot bot containing necessary settings
+   */
+  constructor(bot) {
+    this.client = bot.client;
+    this.logger = bot.logger;
+    this.settings = bot.settings;
+    this.owner = bot.owner;
+    this.discord = bot.discord;
+
+    /**
+     * Zero space whitespace character to prepend to any messages sent
+     * to prevent a command from inadvertantly being triggered.
+     * @type {string}
+     */
+    this.zSWC = '\u200B';
+
+    this.statuses = {
+      SUCCESS: 'SUCCESS',
+      FAILURE: 'FAILURE',
+      NO_ACCESS: 'NO ACCESS',
+    };
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteOriginal True to delete the original message
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   */
+  async sendMessage(message, content, deleteOriginal, deleteResponse) {
+    if (message.channel &amp;&amp; ((message.channel.type === 'text' &amp;&amp;
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+        || message.channel.type === 'dm')) {
+      const msg = await message.channel.send(`${this.zSWC}${content}`);
+      await this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+    }
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteOriginal True to delete the original message
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {null|Promise&lt;Message>}
+   */
+  async replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
+    if ((message.channel.type === 'text' &amp;&amp;
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+        || message.channel.type === 'dm') {
+      const msg = await message.channel.send(`${this.zSWC}${content}`);
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+    }
+    return null;
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteOriginal True to delete the original message
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {null|Promise&lt;Message>}
+   */
+  async reply(message, content, deleteOriginal, deleteResponse) {
+    if ((message.channel &amp;&amp; message.channel.type === 'text' &amp;&amp;
+        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+        || message.channel.type === 'dm') {
+      const msg = await message.reply(`${this.zSWC}${content}`);
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+    }
+    return null;
+  }
+
+  /**
+   * Send an embed, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {Object} embed Embed object to send
+   * @param {boolean} deleteOriginal True to delete the original message
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @param {content} content Content of the embed, prepended to the embed.
+   * @returns {null|Promise&lt;Message>}
+   */
+  async embed(message, embed, deleteOriginal, deleteResponse, content) {
+    if ((message.channel.type === 'text' &amp;&amp;
+      message.channel.permissionsFor(this.client.user.id)
+        .has(['SEND_MESSAGES', 'EMBED_LINKS']))
+      || message.channel.type === 'dm') {
+      const msg = await message.channel.send(content || '', { embed });
+      this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
+    }
+    return null;
+  }
+
+  /**
+   * Send an embed
+   * @param {Channel} channel channel to send message to
+   * @param {Object} embed Embed object to send
+   * @param {string} prepend String to prepend to the embed
+   * @param {nunber} deleteAfter delete after a specified time
+   */
+  async embedToChannel(channel, embed, prepend, deleteAfter) {
+    if (channel &amp;&amp; ((channel.type === 'text' &amp;&amp; channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
+      const msg = await channel.send(prepend, { embed });
+      if (msg.deletable &amp;&amp; deleteAfter > 0) {
+        const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
+        if (deleteExpired) {
+          msg.delete(deleteAfter);
+        }
+      }
+    }
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise&lt;Message>}
+   */
+  async sendDirectMessageToAuthor(message, content, deleteResponse) {
+    const msg = await message.author.send(content);
+    return this.deleteCallAndResponse(message, msg, false, deleteResponse);
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {TextChannel} user user being sent a message
+   * @param {string} content String to send to a channel
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise&lt;Message>}
+   */
+  async sendDirectMessageToUser(user, content) {
+    try {
+      return user.send(content);
+    } catch (e) {
+      this.logger.error(e.message);
+      return undefined;
+    }
+  }
+
+  /**
+   * Send a message, with options to delete messages after calling
+   * @param {Message} message original message being responded to
+   * @param {Object} embed Embed object to send
+   * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Promise&lt;Message>}
+   */
+  async sendDirectEmbedToAuthor(message, embed, deleteResponse) {
+    const msg = await message.author.send('', { embed });
+    return this.deleteCallAndResponse(message, msg, false, deleteResponse);
+  }
+
+  async sendDirectEmbedToOwner(embed) {
+    return this.client.users.get(this.owner).send('', { embed });
+  }
+
+  async sendFileToAuthor(message, file, fileName, deleteCall) {
+    const msg = await message.author.send('', { files: [{ attachment: file, name: fileName }] });
+    return this.deleteCallAndResponse(message, msg, deleteCall, false);
+  }
+
+  async sendFile(message, prepend, file, fileName, deleteCall) {
+    const msg = await message.channel.send(prepend || '', { files: [{ attachment: file, name: fileName }] });
+    return this.deleteCallAndResponse(message, msg, deleteCall, false);
+  }
+
+  /**
+   * Notify channel of settings change if enabled
+   * @param {Message} message Message to reply to and fetch channel settings from
+   * @param {boolean} deleteOriginal whether or not to delete the original message
+   * @param {boolean} deleteResponse whether or not to delete the response message
+   * @returns {null|Promise&lt;Message>}
+   */
+  async notifySettingsChange(message, deleteOriginal, deleteResponse) {
+    await message.react('\u2705');
+    const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings') === '1';
+
+    if (respondToSettings) {
+      const msg = await message.reply('Settings updated');
+      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+    }
+    return null;
+  }
+
+  /**
+   * Delete call and response for a command, depending on settings
+   * @param  {Message} call           calling command
+   * @param  {Message} response       response message
+   * @param  {boolean} deleteCall     whether or not to delete the calling message
+   * @param  {boolean} deleteResponse whether or not to delete the message response
+   */
+  async deleteCallAndResponse(call, response, deleteCall, deleteResponse) {
+    if (call &amp;&amp; call.channel) {
+      const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond') === '1';
+      if (deleteAfterRespond &amp;&amp; deleteCall &amp;&amp; call.deletable) {
+        call.delete(10000);
+      }
+    }
+    const deleteResponseAfterRespond = await this.settings.getChannelSetting(response.channel, 'delete_response') === '1';
+    if (deleteResponseAfterRespond &amp;&amp; deleteResponse &amp;&amp; response.deletable) {
+      response.delete(30000);
+    }
+  }
+
+  async webhook(ctx, { text, embed = undefined }) {
+    if (ctx.webhook &amp;&amp; ctx.webhook.id &amp;&amp; ctx.webhook.token) {
+      const client = new this.discord.WebhookClient(ctx.webhook.id, ctx.webhook.token);
+      try {
+        const msg = await client.send(text, embed);
+        if (msg.deletable &amp;&amp; ctx.deleteAfterDuration > 0) {
+          const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
+          if (deleteExpired) {
+            msg.delete(ctx.deleteAfterDuration);
+          }
+        }
+        return msg;
+      } catch (e) {
+        this.logger.error(e);
+        await this.settings.deleteWebhooksForChannel(ctx.channel.id);
+        this.logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
+        return false;
+      }
+    }
+    const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
+    if (channelWebhook &amp;&amp; channelWebhook.token &amp;&amp; channelWebhook.id) {
+      // eslint-disable-next-line no-param-reassign
+      ctx.webhook = channelWebhook;
+      return this.webhook(ctx, { text, embed });
+    } else if (ctx.channel &amp;&amp; ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
+      const webhooks = await ctx.channel.fetchWebhooks();
+      let webhook;
+      if (webhooks.array().length > 0) {
+        [webhook] = webhooks.array();
+      } else {
+        webhook = await ctx.channel.createWebhook(this.client.user.username);
+      }
+      this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
+      webhook.name = this.client.user.username;
+      webhook.avatar = this.client.user.avatarURL.replace('?size=2048', '');
+      // Make this one query
+      await this.settings.setChannelWebhook(ctx.channel, webhook);
+      // eslint-disable-next-line no-param-reassign
+      ctx.webhook = webhook;
+      return this.webhook(ctx, { text, embed });
+    }
+    if (ctx.message) {
+      if (embed) {
+        return Promise.all(embed.embeds.map(subEmbed =>
+          this.embed(ctx.message, subEmbed, ctx.deleteCall, ctx.deleteResponse)));
+      }
+      return this.reply(ctx.message, text, ctx.deleteCall, ctx.deleteResponse);
+    }
+    return Promise.all(embed.embeds.map(subEmbed =>
+      this.embedToChannel(ctx.channel, subEmbed, text, ctx.deleteAfterDuration)));
+  }
+
+  webhookWrapEmbed(embed, ctx) {
+    return {
+      username: ctx.webhoook &amp;&amp; ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
+      avatarURL: ctx.webhoook &amp;&amp; ctx.webhook.avatar ?
+        ctx.webhook.avatar : this.client.user.avatarURL,
+      embeds: [embed],
+    };
+  }
+
+  webhookWrapEmbeds(embeds, ctx) {
+    return {
+      username: ctx.webhoook &amp;&amp; ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
+      avatarURL: ctx.webhoook &amp;&amp; ctx.webhook.avatar ?
+        ctx.webhook.avatar : this.client.user.avatarURL,
+      embeds,
+    };
+  }
+}
+
+module.exports = MessaageManager;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Sunday, June 3rd 2018, 01:04:05
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
