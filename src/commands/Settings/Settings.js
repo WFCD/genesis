@@ -131,6 +131,7 @@ class Settings extends Command {
         );
         pages.push(embed);
       });
+
       if (pages.length) {
         const msg = await this.messageManager.embed(message, pages[0], false, false);
         await createPageCollector(msg, pages, message.author);

@@ -95,10 +95,12 @@ class Help extends Command {
       });
 
       if (matchingCommands.length < 1) {
-        await this.messageManager.sendDirectEmbedToAuthor(message, invalidResultsEmbed, false);
+        await this.messageManager.embed(message, invalidResultsEmbed, false);
         return this.messageManager.statuses.FAILURE;
       }
-      matchingCommands = matchingCommands.slice(0, 10);
+      if(matchingCommands.length > 10) {
+        matchingCommands = matchingCommands.slice(0, 10);
+      }
       await this.sendEmbedForCommands(message, matchingCommands, 'Help!', 0x4068BD);
       return this.messageManager.statuses.SUCCESS;
     }
