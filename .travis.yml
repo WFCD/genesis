@@ -18,3 +18,4 @@ after_success:
 after_failure:
   - chmod +x fail.sh
   - ./fail.sh
+install: npm install
