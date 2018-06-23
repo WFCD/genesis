@@ -1,8 +1,10 @@
 'use strict';
 
+const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
-const request = require('request-promise');
+const { createPageCollector, apiBase } = require('../../CommonFunctions');
+
 
 /**
  * Displays the stats for a warframe
@@ -34,7 +36,7 @@ class WeaponStats extends Command {
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       const options = {
-        uri: `https://api.warframestat.us/weapons/search/${weapon}`,
+        uri: `${apiBase}/weapons/search/${weapon}`,
         json: true,
         rejectUnauthorized: false,
       };
@@ -42,7 +44,9 @@ class WeaponStats extends Command {
         const results = await request(options);
 
         if (results.length > 0) {
-          this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), true, false);
+          const pages = results.map(result => new WeaponEmbed(this.bot, result));
+          const msg = await this.messageManager.embed(message, pages[0], true, false);
+          await createPageCollector(msg, pages, message.author);
           return this.messageManager.statuses.SUCCESS;
         }
         this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);

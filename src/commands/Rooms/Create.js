@@ -136,7 +136,8 @@ class Create extends Command {
       if (userHasRoom) {
         await this.messageManager.reply(message, `you already have a private room registered. If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`, true, true);
         return this.messageManager.statuses.FAILURE;
-      } else if (type) {
+      }
+      if (type) {
         const roomType = type.trim();
         if (useable.includes(roomType)) {
           const users = getUsersForCall(message);
@@ -147,8 +148,8 @@ class Create extends Command {
               message.guild.defaultRole, message.author, isPublic, useText,
             );
             let category;
-            if (!ctx.tempCategory ||
-                !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
+            if (!ctx.tempCategory
+              || !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
               category = await message.guild
                 .createChannel(name, 'category', overwrites);
             } else {
@@ -214,10 +215,10 @@ class Create extends Command {
         }
       } else {
         await this.messageManager.reply(
-          message, '```haskell\n' +
-          'Sorry, you need to specify what you want to create. Right now these are available to create:' +
-          `\n* ${useable.join('\n* ')}\n\`\`\``
-          , true, false,
+          message, '```haskell\n'
+            + 'Sorry, you need to specify what you want to create. Right now these are available to create:'
+            + `\n* ${useable.join('\n* ')}\n\`\`\``,
+          true, false,
         );
         return this.messageManager.statuses.FAILURE;
       }

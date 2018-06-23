@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>genesis Class: FrameEmbed</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">genesis</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="AddBuild.html">AddBuild</a></li><li><a href="AddChannelToDatabase.html">AddChannelToDatabase</a></li><li><a href="AddGuildToDatabase.html">AddGuildToDatabase</a></li><li><a href="AddLFG.html">AddLFG</a></li><li><a href="AddRole.html">AddRole</a></li><li><a href="AlertEmbed.html">AlertEmbed</a></li><li><a href="Alerts.html">Alerts</a></li><li><a href="Arcane.html">Arcane</a></li><li><a href="Armor.html">Armor</a></li><li><a href="AssignDefaultRolesHandle.html">AssignDefaultRolesHandle</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="Baro.html">Baro</a></li><li><a href="BaseEmbed.html">BaseEmbed</a></li><li><a href="BaseEventHandler.html">BaseEventHandler</a></li><li><a href="Broadcaster.html">Broadcaster</a></li><li><a href="BugReport.html">BugReport</a></li><li><a href="BuildChart.html">BuildChart</a></li><li><a href="BuildEmbed.html">BuildEmbed</a></li><li><a href="Command.html">Command</a></li><li><a href="CommandHandler.html">CommandHandler</a></li><li><a href="ConclaveChallengeEmbed.html">ConclaveChallengeEmbed</a></li><li><a href="ConclaveChallenges.html">ConclaveChallenges</a></li><li><a href="Construction.html">Construction</a></li><li><a href="ConstructionEmbed.html">ConstructionEmbed</a></li><li><a href="Corgi.html">Corgi</a></li><li><a href="Create.html">Create</a></li><li><a href="CreatePool.html">CreatePool</a></li><li><a href="CustomCommand.html">CustomCommand</a></li><li><a href="Damage.html">Damage</a></li><li><a href="Darvo.html">Darvo</a></li><li><a href="DarvoEmbed.html">DarvoEmbed</a></li><li><a href="Database.html">Database</a></li><li><a href="DeleteBuild.html">DeleteBuild</a></li><li><a href="DeleteChannel.html">DeleteChannel</a></li><li><a href="DeleteGuild.html">DeleteGuild</a></li><li><a href="DeleteWebhook.html">DeleteWebhook</a></li><li><a href="Destroy.html">Destroy</a></li><li><a href="EarthCycle.html">EarthCycle</a></li><li><a href="EarthCycleEmbed.html">EarthCycleEmbed</a></li><li><a href="Echo.html">Echo</a></li><li><a href="Efficiency.html">Efficiency</a></li><li><a href="EnableInfoEmbed.html">EnableInfoEmbed</a></li><li><a href="EnableUsageEmbed.html">EnableUsageEmbed</a></li><li><a href="Enemies.html">Enemies</a></li><li><a href="EnemyEmbed.html">EnemyEmbed</a></li><li><a href="EnhancementEmbed.html">EnhancementEmbed</a></li><li><a href="Event.html">Event</a></li><li><a href="EventEmbed.html">EventEmbed</a></li><li><a href="EventHandler.html">EventHandler</a></li><li><a href="FeaturedDeal.html">FeaturedDeal</a></li><li><a href="FissureEmbed.html">FissureEmbed</a></li><li><a href="Fissures.html">Fissures</a></li><li><a href="FrameEmbed.html">FrameEmbed</a></li><li><a href="FrameProfile.html">FrameProfile</a></li><li><a href="FrameStats.html">FrameStats</a></li><li><a href="FrameStatsInline.html">FrameStatsInline</a></li><li><a href="Genesis.html">Genesis</a></li><li><a href="GetBuild.html">GetBuild</a></li><li><a href="GetCommandIds.html">GetCommandIds</a></li><li><a href="Help.html">Help</a></li><li><a href="Hide.html">Hide</a></li><li><a href="Hug.html">Hug</a></li><li><a href="InvasionEmbed.html">InvasionEmbed</a></li><li><a href="Invasions.html">Invasions</a></li><li><a href="Invitation.html">Invitation</a></li><li><a href="Invite.html">Invite</a></li><li><a href="JoinRole.html">JoinRole</a></li><li><a href="Jokes.html">Jokes</a></li><li><a href="LeaveRole.html">LeaveRole</a></li><li><a href="LeaveServer.html">LeaveServer</a></li><li><a href="LFGEmbed.html">LFGEmbed</a></li><li><a href="ListBuilds.html">ListBuilds</a></li><li><a href="Lock.html">Lock</a></li><li><a href="LogEmbed.html">LogEmbed</a></li><li><a href="global.html#Logger">Logger</a></li><li><a href="LogMemberBan.html">LogMemberBan</a></li><li><a href="LogMemberRemove.html">LogMemberRemove</a></li><li><a href="LogMemberUnban.html">LogMemberUnban</a></li><li><a href="LogMessageDelete.html">LogMessageDelete</a></li><li><a href="MessaageManager.html">MessaageManager</a></li><li><a href="Mod.html">Mod</a></li><li><a href="News.html">News</a></li><li><a href="NewsEmbed.html">NewsEmbed</a></li><li><a href="Notifier.html">Notifier</a></li><li><a href="OnReadyHandle.html">OnReadyHandle</a></li><li><a href="Ping.html">Ping</a></li><li><a href="PollInline.html">PollInline</a></li><li><a href="PopularDeal.html">PopularDeal</a></li><li><a href="Prefix.html">Prefix</a></li><li><a href="PriceCheck.html">PriceCheck</a></li><li><a href="PriceCheckEmbed.html">PriceCheckEmbed</a></li><li><a href="PrimeAccess.html">PrimeAccess</a></li><li><a href="ProfileEmbed.html">ProfileEmbed</a></li><li><a href="Progression.html">Progression</a></li><li><a href="Raid.html">Raid</a></li><li><a href="RaidStatEmbed.html">RaidStatEmbed</a></li><li><a href="Reload.html">Reload</a></li><li><a href="RemoveRole.html">RemoveRole</a></li><li><a href="Rename.html">Rename</a></li><li><a href="Resize.html">Resize</a></li><li><a href="Roles.html">Roles</a></li><li><a href="RolesEmbed.html">RolesEmbed</a></li><li><a href="RollInline.html">RollInline</a></li><li><a href="SalesEmbed.html">SalesEmbed</a></li><li><a href="ServerInfo.html">ServerInfo</a></li><li><a href="ServerInfoEmbed.html">ServerInfoEmbed</a></li><li><a href="Servers.html">Servers</a></li><li><a href="SettingsEmbed.html">SettingsEmbed</a></li><li><a href="ShieldEmbed.html">ShieldEmbed</a></li><li><a href="Shields.html">Shields</a></li><li><a href="Show.html">Show</a></li><li><a href="Simaris.html">Simaris</a></li><li><a href="SimarisEmbed.html">SimarisEmbed</a></li><li><a href="SortieEmbed.html">SortieEmbed</a></li><li><a href="Sorties.html">Sorties</a></li><li><a href="StringManager.html">StringManager</a></li><li><a href="SyndicateEmbed.html">SyndicateEmbed</a></li><li><a href="Syndicates.html">Syndicates</a></li><li><a href="Track.html">Track</a></li><li><a href="Tracker.html">Tracker</a></li><li><a href="Unlock.html">Unlock</a></li><li><a href="Untrack.html">Untrack</a></li><li><a href="Updates.html">Updates</a></li><li><a href="UserInfo.html">UserInfo</a></li><li><a href="UserInfoEmbed.html">UserInfoEmbed</a></li><li><a href="Username.html">Username</a></li><li><a href="VoidTraderEmbed.html">VoidTraderEmbed</a></li><li><a href="VulgarNameHandle.html">VulgarNameHandle</a></li><li><a href="WeaponEmbed.html">WeaponEmbed</a></li><li><a href="WeaponStats.html">WeaponStats</a></li><li><a href="WelcomeHandler.html">WelcomeHandler</a></li><li><a href="Whatsin.html">Whatsin</a></li><li><a href="WhatsinEmbed.html">WhatsinEmbed</a></li><li><a href="Whereis.html">Whereis</a></li><li><a href="WhereisEmbed.html">WhereisEmbed</a></li><li><a href="Wiki.html">Wiki</a></li><li><a href="WikiEmbed.html">WikiEmbed</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#armorAtLevel">armorAtLevel</a></li><li><a href="global.html#armorStrip">armorStrip</a></li><li><a href="global.html#channelNameRegex">channelNameRegex</a></li><li><a href="global.html#checkPrivateRooms">checkPrivateRooms</a></li><li><a href="global.html#client">client</a></li><li><a href="global.html#damageReduction">damageReduction</a></li><li><a href="global.html#formatTime">formatTime</a></li><li><a href="global.html#fromNow">fromNow</a></li><li><a href="global.html#getAverageTime">getAverageTime</a></li><li><a href="global.html#getBestTime">getBestTime</a></li><li><a href="global.html#getChannel">getChannel</a></li><li><a href="global.html#getChannels">getChannels</a></li><li><a href="global.html#getRoleForString">getRoleForString</a></li><li><a href="global.html#getTarget">getTarget</a></li><li><a href="global.html#getUsersForCall">getUsersForCall</a></li><li><a href="global.html#hiddenRegex">hiddenRegex</a></li><li><a href="global.html#lockedRegex">lockedRegex</a></li><li><a href="global.html#noTextRegex">noTextRegex</a></li><li><a href="global.html#publicRegex">publicRegex</a></li><li><a href="global.html#safeNumber">safeNumber</a></li><li><a href="global.html#shownRegex">shownRegex</a></li><li><a href="global.html#sortNumber">sortNumber</a></li><li><a href="global.html#textRegex">textRegex</a></li><li><a href="global.html#timeDeltaToString">timeDeltaToString</a></li><li><a href="global.html#timeToSeconds">timeToSeconds</a></li><li><a href="global.html#updatePresence">updatePresence</a></li><li><a href="global.html#useable">useable</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: FrameEmbed</h1>
+<section>
+
+<header>
+    
+        <h2>
+        FrameEmbed
+        </h2>
+        
+            <div class="class-description">Generates enemy embeds</div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="FrameEmbed"><span class="type-signature"></span>new FrameEmbed(bot, frame, frames)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Genesis.html">Genesis</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">An instance of Genesis</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>frame</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Warframe</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The enhancement to send info on</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>frames</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Warframe></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">List of available warframes</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="src_embeds_FrameEmbed.js.html">src/embeds/FrameEmbed.js</a>,
+				 <a href="src_embeds_FrameEmbed.js.html#sunlight-1-line-8">line 8</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Sunday, June 3rd 2018, 01:04:07
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

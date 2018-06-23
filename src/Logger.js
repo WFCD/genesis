@@ -50,6 +50,8 @@ levels.forEach((level) => {
       if (this && this.ravenClient) {
         this.ravenClient.captureException(message);
       }
+      // eslint-disable-next-line no-console
+      this.debug(message.stack);
     }
   };
 });

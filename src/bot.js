@@ -1,10 +1,10 @@
 'use strict';
 
+const Discord = require('discord.js');
+const md = require('node-md-config');
 const CommandHandler = require('./CommandHandler.js');
 const Database = require('./settings/Database.js');
-const Discord = require('discord.js');
 const EventHandler = require('./EventHandler');
-const md = require('node-md-config');
 const MessageManager = require('./settings/MessageManager.js');
 const Notifier = require('./notifications/Notifier.js');
 const Tracker = require('./Tracker.js');
@@ -239,8 +239,9 @@ class Genesis {
    * @param {Message} message to handle
    */
   onMessage(message) {
-    if (this.readyToExecute &&
-      message.author.id !== this.client.user.id && !message.author.bot) {
+    if (this.readyToExecute
+      && message.author.id !== this.client.user.id
+      && !message.author.bot) {
       this.commandHandler.handleCommand(message);
     }
   }

@@ -1,13 +1,82 @@
 'use strict';
 
+const Wikia = require('node-wikia');
+const request = require('request-promise');
+
 const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const WikiEmbed = require('../../embeds/WikiEmbed.js');
-const Wikia = require('node-wikia');
-const request = require('request-promise');
+const { apiBase } = require('../../CommonFunctions');
+
 
 const warframe = new Wikia('warframe');
+
+const checkFrames = async (prompt) => {
+  const options = {
+    uri: `${apiBase}/warframes/search/${prompt}`,
+    json: true,
+    rejectUnauthorized: false,
+  };
+  const results = await request(options);
+  if (results.length > 0) {
+    return new FrameEmbed(this.bot, results[0]);
+  }
+  return undefined;
+};
+
+const checkWeapons = async (prompt) => {
+  const options = {
+    uri: `${apiBase}/weapons/search/${prompt}`,
+    json: true,
+    rejectUnauthorized: false,
+  };
+  const results = await request(options);
+  if (results.length > 0) {
+    return new WeaponEmbed(this.bot, results[0]);
+  }
+  return undefined;
+};
+
+const checkWikia = async (prompt) => {
+  try {
+    const articles = await warframe.getSearchList({
+      query: prompt,
+      limit: 1,
+    });
+    const details = await warframe.getArticleDetails({
+      ids: articles.items.map(i => i.id),
+    });
+    return new WikiEmbed(this.bot, details, true);
+  } catch (e) {
+    return undefined;
+  }
+};
+
+const checkMods = async (prompt) => {
+  const searchJson = await warframe.getSearchList({ query: prompt, limit: 1 });
+  const [{ id }] = searchJson.items;
+  const detailsJson = await warframe.getArticleDetails({ ids: [id] });
+  let thumbUrl = detailsJson.items[`${id}`].thumbnail;
+  thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
+
+  const list = await warframe.getArticlesList({ category: 'Mods', limit: 1000 });
+  let result;
+  list.items.forEach((item) => {
+    if (item.id === id) {
+      result = {
+        title: detailsJson.items[id].title,
+        url: detailsJson.basepath + detailsJson.items[id].url,
+        color: 0xC0C0C0,
+        description: `Mod result for ${prompt}`,
+        image: {
+          url: thumbUrl,
+        },
+      };
+    }
+  });
+  return result;
+};
 
 /**
  * Displays the stats for a warframe
@@ -30,38 +99,36 @@ class FrameStatsInline extends Command {
 
   async evalQuery(message, query) {
     const strippedQuery = query.replace(/\[|\]/ig, '').trim().toLowerCase();
-    const options = {
-      uri: `https://api.warframestat.us/warframes/search/${strippedQuery}`,
-      json: true,
-      rejectUnauthorized: false,
-    };
-    let results = await request(options);
-    if (results.length > 0) {
-      this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), false, true);
+    const modResult = await checkMods(query);
+    const frameResult = await checkFrames(strippedQuery);
+    const weaponResult = await checkWeapons(strippedQuery);
+    const wikiResult = await checkWikia(query);
+
+    if (modResult && modResult.title.toLowerCase() === strippedQuery.toLowerCase()) {
+      this.messageManager.embed(message, modResult, false, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    options.uri = `https://api.warframestat.us/weapons/search/${strippedQuery}`;
-    results = await request(options);
-    if (results.length > 0) {
-      this.messageManager.embed(message, new WeaponEmbed(this.bot, results[0]), false, true);
+
+    if (frameResult) {
+      this.messageManager.embed(message, frameResult, false, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    warframe.getSearchList({
-      query: strippedQuery,
-      limit: 1,
-    })
-      .then(articles => warframe.getArticleDetails({
-        ids: articles.items.map(i => i.id),
-      }))
-      .then((details) => {
-        this.messageManager.embed(message, new WikiEmbed(this.bot, details, true), false, true);
-      })
-      .catch(e => this.logger.error(e));
-    return this.messageManager.statuses.SUCCESS;
+
+    if (weaponResult) {
+      this.messageManager.embed(message, weaponResult, false, true);
+      return this.messageManager.statuses.SUCCESS;
+    }
+
+    if (wikiResult) {
+      this.messageManager.embed(message, wikiResult, false, true);
+      return this.messageManager.statuses.SUCCESS;
+    }
+
+    return this.messageManager.statuses.FAILURE;
   }
 
   /**
-   * Run the command
+   * Run the commandW
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    * @returns {string} success status

@@ -4,8 +4,9 @@ const cluster = require('cluster');
 const Cache = require('json-fetch-cache');
 const Raven = require('raven');
 
-const Genesis = require('./src/bot.js');
-const ClusterManager = require('./src/ClusterManager.js');
+const Genesis = require('./src/bot');
+const ClusterManager = require('./src/ClusterManager');
+const { apiBase } = require('./src/CommonFunctions');
 
 /**
  * Raven client instance for logging errors and debugging events
@@ -22,7 +23,7 @@ const Logger = require('./src/Logger.js');
 
 client.install();
 client.on('error', (error) => {
-  //  eslint-disable-next-line no-console
+  // eslint-disable-next-line no-console
   console.error(`Could not report the following error to Sentry: ${error.message}`);
 });
 
@@ -36,9 +37,9 @@ process.on('unhandledRejection', (err) => {
 
 
 const caches = {
-  pc: new Cache('https://api.warframestat.us/pc', 60000),
-  xb1: new Cache('https://api.warframestat.us/xb1', 60000),
-  ps4: new Cache('https://api.warframestat.us/ps4', 60000),
+  pc: new Cache(`${apiBase}/pc`, 60000),
+  xb1: new Cache(`${apiBase}/xb1`, 60000),
+  ps4: new Cache(`${apiBase}/ps4`, 60000),
 };
 
 if (cluster.isMaster) {

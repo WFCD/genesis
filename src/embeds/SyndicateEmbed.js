@@ -13,9 +13,10 @@ class SyndicateEmbed extends BaseEmbed {
    * @param {Array.<SyndicateMission>} missions - The missions to be included in the embed
    * @param {string} syndicate - The syndicate to display the missions for
    * @param {string} platform - Platform
+   * @param {boolean} skipCheck - True if skipping syndicate validity check.
    */
-  constructor(bot, missions, syndicate, platform) {
-    super();
+  constructor(bot, missions, syndicate, platform, skipCheck) {
+    super(bot);
 
     // Set default fields
     this.color = 0xff0000;
@@ -30,8 +31,13 @@ class SyndicateEmbed extends BaseEmbed {
 
     const foundSyndicate = missions.length && values.find(v => syndicate &&
       v.toLowerCase() === syndicate.toLowerCase());
-    if (foundSyndicate) {
-      const syndMissions = missions.filter(m => m.syndicate === foundSyndicate || foundSyndicate === 'all');
+    if (foundSyndicate || skipCheck) {
+      let syndMissions;
+      if (!skipCheck) {
+        syndMissions = missions.filter(m => m.syndicate === foundSyndicate || foundSyndicate === 'all');
+      } else {
+        syndMissions = missions;
+      }
       if (syndMissions.length) {
         this.title = `[${platform.toUpperCase()}] Syndicates`;
         this.color = 0x00ff00;
@@ -58,6 +64,7 @@ class SyndicateEmbed extends BaseEmbed {
         });
       }
     }
+    this.bot = undefined;
   }
 }
 

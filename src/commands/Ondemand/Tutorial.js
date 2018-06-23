@@ -1,7 +1,8 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
 const request = require('request-promise');
+const Command = require('../../models/Command.js');
+const { apiBase } = require('../../CommonFunctions');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -31,13 +32,13 @@ class FrameProfile extends Command {
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://api.warframestat.us/tutorials',
+      uri: `${apiBase}/tutorials`,
       json: true,
       rejectUnauthorized: false,
     };
     if (query) {
       query = query.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/tutorials/search/${query}`;
+      options.uri = `${apiBase}/tutorials/search/${query}`;
       const results = await request(options);
       if (results.length > 0) {
         results.forEach((tutorial) => {
@@ -46,13 +47,13 @@ class FrameProfile extends Command {
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = 'https://api.warframestat.us/tutorials';
+    options.uri = `${apiBase}/tutorials`;
     const tutorials = await request(options);
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
       fields: [{ name: '_ _', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
       footer: {
-        icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+        icon_url: 'https://warframestat.us/wfcd_logo_color.png',
         text: 'Data evaluated by Warframe Community Developers',
       },
     }, true, false);

@@ -20,7 +20,7 @@ class RoomShownDefault extends Command {
    * @param {Object} ctx Command context for calling commands
    * @returns {string} success status
    */
-  async run(message, ctx) {
+  async run(message) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
       return this.sendToggleUsage(message);

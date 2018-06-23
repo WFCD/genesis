@@ -1,8 +1,10 @@
 'use strict';
 
+const request = require('request-promise');
+
 const Command = require('../../models/Command.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
-const request = require('request-promise');
+const { apiBase } = require('../../CommonFunctions');
 
 /**
  * Displays the stats for a warframe
@@ -32,19 +34,19 @@ class FrameStats extends Command {
   async run(message) {
     let frame = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://api.warframestat.us/warframes',
+      uri: `${apiBase}/warframes`,
       json: true,
       rejectUnauthorized: false,
     };
     if (frame) {
       frame = frame.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/warframes/search/${frame}`;
+      options.uri = `${apiBase}/warframes/search/${frame}`;
       const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new FrameEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
-      options.uri = 'https://api.warframestat.us/warframes';
+      options.uri = `${apiBase}/warframes`;
       const frames = await request(options);
       this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
       return this.messageManager.statuses.FAILURE;

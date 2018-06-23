@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * MessageManager for
+ * MessageManager for.... sending messages and deleting them and stuff
  */
 class MessaageManager {
   /**
@@ -35,6 +35,7 @@ class MessaageManager {
    * @param {string} content String to send to a channel
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Message} sent message
    */
   async sendMessage(message, content, deleteOriginal, deleteResponse) {
     if (message.channel && ((message.channel.type === 'text' &&
@@ -42,7 +43,9 @@ class MessaageManager {
         || message.channel.type === 'dm')) {
       const msg = await message.channel.send(`${this.zSWC}${content}`);
       await this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
     }
+    return undefined;
   }
 
   /**
@@ -95,8 +98,15 @@ class MessaageManager {
       message.channel.permissionsFor(this.client.user.id)
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      const msg = await message.channel.send(content || '', { embed });
-      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      let msg;
+      if (content) {
+        msg = await message.channel.send(content, { embed });
+      } else {
+        msg = await message.channel.send({ embed });
+      }
+
+      this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
     }
     return null;
   }
@@ -109,7 +119,8 @@ class MessaageManager {
    * @param {nunber} deleteAfter delete after a specified time
    */
   async embedToChannel(channel, embed, prepend, deleteAfter) {
-    if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
+    if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id)
+      .has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
       const msg = await channel.send(prepend, { embed });
       if (msg.deletable && deleteAfter > 0) {
         const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';

@@ -1,10 +1,10 @@
 'use strict';
 
+const request = require('request-promise');
+
 const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
-const { createGroupedArray } = require('../../CommonFunctions.js');
-
-const request = require('request-promise');
+const { createGroupedArray, createPageCollector, apiBase } = require('../../CommonFunctions.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', description: 'This is either due to the item being vaulted or an invalid search. Sorry.', color: 0xff6961 };
@@ -12,7 +12,6 @@ const noResultsEmbed = { title: 'No results for that query. Please refine your s
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
-
 
 /**
  * Looks up locations of items
@@ -49,29 +48,30 @@ class Whereis extends Command {
     }
     try {
       const options = {
-        uri: 'https://api.warframestat.us/drops/',
+        uri: `${apiBase}/drops/`,
         json: true,
         rejectUnauthorized: false,
       };
       query = query.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/drops/search/${encodeURIComponent(query)}`;
+      options.uri = `${apiBase}/drops/search/${encodeURIComponent(query)}`;
       const results = await request(options);
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
-      createGroupedArray(results, 50).forEach((group, index) => {
+      const embeds = [];
+      createGroupedArray(results, 28).forEach((group, index) => {
         const embed = new WhereisEmbed(
           this.bot, createGroupedArray(group, 4),
           query, longestName.length, longestRelic.length,
         );
+        embeds.push(embed);
         if (index === 0) {
-          sentMessage.edit('', { embed });
-        } else {
-          this.messageManager.embed(sentMessage, embed, false, false);
+          sentMessage.edit({ embed });
         }
       });
+      await createPageCollector(sentMessage, embeds, message.author);
       if (results.length > 0) {
         return this.messageManager.statuses.SUCCESS;
       }

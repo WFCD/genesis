@@ -34,7 +34,8 @@ class Prefix extends Command {
         ],
       }, true, false);
       return this.messageManager.statuses.FAILURE;
-    } else if (prefix === 'reset') {
+    }
+    if (prefix === 'reset') {
       if (message.channel.type === 'text') {
         await this.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
       } else {

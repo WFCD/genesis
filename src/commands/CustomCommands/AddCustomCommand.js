@@ -20,9 +20,9 @@ class AddCustomCommand extends Command {
         title: 'Adding Custom Commands',
         fields: [{
           name: '_ _',
-          value: `**${this.call}**\n` +
-            '**command call**: command trigger\n' +
-            '**comamnd response**: response to the trigger',
+          value: `**${this.call}**\n`
+            + '**command call**: command trigger\n'
+            + '**comamnd response**: response to the trigger',
         }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;

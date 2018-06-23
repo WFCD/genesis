@@ -122,6 +122,9 @@ class Command {
     this.settings = bot.settings;
 
     this.platforms = ['pc', 'ps4', 'xb1'];
+
+    this.delimBegin = '<';
+    this.delimEnd = '>';
   }
 
   /**

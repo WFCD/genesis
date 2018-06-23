@@ -25,9 +25,10 @@ class CustomCommand extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @parm {Object} ctx command context
+   * @param {Object} ctx command context
    */
   async run(message, ctx) {
+    if (!message.guild || message.guild.id !== this.guildId) return;
     let format;
     if (ctx['settings.cc.ping']) {
       const mention = message.mentions.members.size > 0 ?
