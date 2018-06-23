@@ -101,8 +101,8 @@ class PingsQueries {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-        .append(items && items.length > 0 ?
-          SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
+        .append(items && items.length > 0
+          ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
         .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
         .append(SQL`

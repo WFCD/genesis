@@ -28,8 +28,8 @@ class EnableUsageEmbed extends BaseEmbed {
       },
       {
         name: '<user or role>',
-        value: `Id of user or role to ${enable === 1 ? 'enable' : 'disable'} commands for. Will accept mentions in the future.\n` +
-          'Other accepted replacements: `*` for enabling for all users.',
+        value: `Id of user or role to ${enable === 1 ? 'enable' : 'disable'} commands for. Will accept mentions in the future.\n`
+          + 'Other accepted replacements: `*` for enabling for all users.',
       },
     ];
 

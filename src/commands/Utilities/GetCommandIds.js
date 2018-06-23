@@ -26,11 +26,12 @@ class GetCommandIds extends Command {
     const longestCall = commands.length ? commands.map(result => result.call).reduce((a, b) => (a.length > b.length ? a : b)) : '';
     const longestId = commands.length ? commands.map(result => result.id)
       .reduce((a, b) => (a.length > b.length ? a : b)) : '';
+
     commands = commands
-      .filter(command =>
-        !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly))
-      .map(command => `\`${rpad(command.call, longestCall.length, ' ')} ` +
-        `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}\``);
+      .filter(command => !command.ownerOnly
+        || (message.author.id === this.bot.owner && command.ownerOnly))
+      .map(command => `\`${rpad(command.call, longestCall.length, ' ')} `
+        + `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}\``);
 
     const pages = [];
     createGroupedArray(commands, 12).forEach((group) => {

@@ -3,8 +3,8 @@
 const BaseEmbed = require('./BaseEmbed.js');
 
 function shieldCalc(baseShields, baseLevel, currentLevel) {
-  return (parseFloat(baseShields) +
-    (((parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2)
+  return (parseFloat(baseShields)
+    + (((parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2)
     * 0.0075 * parseFloat(baseShields))).toFixed(2);
 }
 

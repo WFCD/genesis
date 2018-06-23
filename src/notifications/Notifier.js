@@ -82,10 +82,10 @@ class Notifier {
       .filter(e => !ids.includes(e.pid) && e.isDiscovered);
     const alertsToNotify = newData.alerts
       .filter(a => !ids.includes(a.id) && !a.expired);
-    const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId) ?
-      newData.voidTrader : undefined;
-    const conclaveToNotify = newData.conclaveChallenges.filter(cc =>
-      !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
+    const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId)
+      ? newData.voidTrader : undefined;
+    const conclaveToNotify = newData.conclaveChallenges
+      .filter(cc => !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
     const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
     const eventsToNotify = newData.events
       .filter(e => !ids.includes(e.id) && !e.expired);

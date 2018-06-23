@@ -1,7 +1,7 @@
 'use strict';
 
-const BaseEmbed = require('./BaseEmbed.js');
 const rpad = require('right-pad');
+const BaseEmbed = require('./BaseEmbed.js');
 
 /**
  * Generates enemy embeds
@@ -19,8 +19,8 @@ class WhereisEmbed extends BaseEmbed {
     this.fields = [];
 
     resultsGroups.forEach((results) => {
-      const mappedResults = results.map(result => `\`${rpad(result.item, nameWidth, ' ')} ` +
-      `| ${rpad(result.place, relicWidth, ' ')} | ${result.rarity.charAt(0)}@${parseFloat(result.chance).toFixed(2)}%\``);
+      const mappedResults = results.map(result => `\`${rpad(result.item, nameWidth, ' ')} `
+      + `| ${rpad(result.place, relicWidth, ' ')} | ${result.rarity.charAt(0)}@${parseFloat(result.chance).toFixed(2)}%\``);
       this.fields.push({ name: '_ _', value: mappedResults.join('\n') });
     });
 

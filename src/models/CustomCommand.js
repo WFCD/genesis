@@ -31,9 +31,9 @@ class CustomCommand extends Command {
     if (!message.guild || message.guild.id !== this.guildId) return;
     let format;
     if (ctx['settings.cc.ping']) {
-      const mention = message.mentions.members.size > 0 ?
-        message.mentions.members.first() :
-        message.member;
+      const mention = message.mentions.members.size > 0
+        ? message.mentions.members.first()
+        : message.member;
       format = `${mention}, ${decodeURIComponent(this.response)}`;
     } else {
       format = decodeURIComponent(this.response);

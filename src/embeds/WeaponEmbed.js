@@ -31,20 +31,20 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.primary) {
         this.fields.push({
           name: 'Primary Fire',
-          value: `**Trigger:** ${weapon.primary.trigger}\n` +
-          `**Projectile:** ${weapon.primary.projectile}\n` +
-          `**Rate:** ${weapon.primary.rate} ammo\\s\n` +
-          `**Flight:**: ${weapon.primary.flight || '-'} m\\s\n` +
-          `**Noise:** ${weapon.primary.noise || '-'}\n` +
-          `**Accuracy:** ${weapon.primary.accuracy || '-'}\n` +
-          `**Reload:** ${weapon.primary.reload || '-'}s\n` +
-          `**Damage:** ${emojify(weapon.primary.damage) || '-'}\n` +
-          `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n` +
-          `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n` +
-          `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n` +
-          `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n` +
-          `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n` +
-          `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
+          value: `**Trigger:** ${weapon.primary.trigger}\n`
+          + `**Projectile:** ${weapon.primary.projectile}\n`
+          + `**Rate:** ${weapon.primary.rate} ammo\\s\n`
+          + `**Flight:**: ${weapon.primary.flight || '-'} m\\s\n`
+          + `**Noise:** ${weapon.primary.noise || '-'}\n`
+          + `**Accuracy:** ${weapon.primary.accuracy || '-'}\n`
+          + `**Reload:** ${weapon.primary.reload || '-'}s\n`
+          + `**Damage:** ${emojify(weapon.primary.damage) || '-'}\n`
+          + `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n`
+          + `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n`
+          + `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n`
+          + `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n`
+          + `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n`
+          + `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
           inline: true,
         });
       } else {

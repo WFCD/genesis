@@ -16,9 +16,9 @@ async function checkPrivateRooms(self, shardId) {
   privateRooms.forEach(async (room) => {
     if (room && (room.textChannel || room.category || room.voiceChannel)) {
       const now = new Date();
-      if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt >
-          self.channelTimeout) &&
-        (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
+      if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
+          > self.channelTimeout)
+        && (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
         if (room.textChannel && room.textChannel.deletable) {
           self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
           await room.textChannel.delete();

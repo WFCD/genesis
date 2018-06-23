@@ -23,10 +23,9 @@ const props = (obj) => {
       if (p.indexOf(op[i]) === -1) { p.push(op[i]); }
     }
   }
-  return p.filter(thing =>
-    !['db', 'constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__',
-      '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'valueOf', '__proto__',
-      'toLocaleString'].includes(thing));
+  return p.filter(thing => !['db', 'constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__',
+    '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'valueOf', '__proto__',
+    'toLocaleString'].includes(thing));
 };
 
 /**

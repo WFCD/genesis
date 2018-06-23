@@ -36,12 +36,11 @@ class WelcomeQueries {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
       const res = await this.db.query(query);
       if (res[0]) {
-        return res[0].map(value =>
-          ({
-            isDm: value.is_dm,
-            message: value.message,
-            channel: this.bot.client.channels.get(value.channel_id),
-          }));
+        return res[0].map(value => ({
+          isDm: value.is_dm,
+          message: value.message,
+          channel: this.bot.client.channels.get(value.channel_id),
+        }));
       }
       return [];
     }

@@ -65,7 +65,8 @@ class Broadcaster {
       if (channel) {
         if (channel.type === 'text') {
           return this.sendWithPrepend(channel, embed, type, items, deleteAfter);
-        } else if (channel.type === 'dm') {
+        }
+        if (channel.type === 'dm') {
           return this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
         }
       }

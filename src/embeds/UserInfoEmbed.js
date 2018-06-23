@@ -77,12 +77,12 @@ class UserInfoEmbed extends BaseEmbed {
         },
         {
           name: 'Current State:',
-          value: `**Deafened:** ${member.deaf ? 'yes' : 'no'}\n` +
-                  `**Kickable (by the bot):** ${member.kickable ? 'yes' : 'no'}\n` +
-                  `**Muted:** ${member.mute ? 'yes' : 'no'}\n` +
-                  `**Speaking:** ${member.speaking ? 'yes' : 'no'}\n` +
-                  `**Guild Muted:** ${member.serverMute ? 'yes' : 'no'}\n` +
-                  `**Guild Deafened:** ${member.serverDeaf ? 'yes' : 'no'}`,
+          value: `**Deafened:** ${member.deaf ? 'yes' : 'no'}\n`
+                  + `**Kickable (by the bot):** ${member.kickable ? 'yes' : 'no'}\n`
+                  + `**Muted:** ${member.mute ? 'yes' : 'no'}\n`
+                  + `**Speaking:** ${member.speaking ? 'yes' : 'no'}\n`
+                  + `**Guild Muted:** ${member.serverMute ? 'yes' : 'no'}\n`
+                  + `**Guild Deafened:** ${member.serverDeaf ? 'yes' : 'no'}`,
           inline: true,
         },
         {
