@@ -29,8 +29,8 @@ class ListPools extends Command {
         color: 0xd30000,
         fields: poolGroup.map(group => ({
           name: '_ _',
-          value: group.map(pool => `\`${rpad(pool.pool_id, longestName.length, ' ')} `
-            + `| ${rpad(pool.name, longestId.length, ' ')} | ${pool.len}\``).join('\n'),
+          value: group.map(pool => `\`${rpad(pool.pool_id, longestId.length, ' ')} `
+            + `| ${rpad(pool.name, longestName.length, ' ')} | ${pool.len}\``).join('\n'),
         })),
       };
       pages.push(embed);
