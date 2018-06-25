@@ -20,7 +20,7 @@ class WeaponEmbed extends BaseEmbed {
       this.title = weapon.name;
       this.url = weapon.url || '';
       this.thumbnail = { url: weapon.thumbnail || '' };
-      this.description = `${weapon.type} ${weapon.subtype ? `| ${weapon.subtype}` : ''}`;
+      this.description = `${weapon.type} ${weapon.subtype ? `• ${weapon.subtype} • MR ${weapon.mr}` : ''}`;
       this.color = weapon.color;
       this.fields = [];
 
@@ -31,20 +31,20 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.primary) {
         this.fields.push({
           name: 'Primary Fire',
-          value: `**Trigger:** ${weapon.primary.trigger}\n` +
-          `**Projectile:** ${weapon.primary.projectile}\n` +
-          `**Rate:** ${weapon.primary.rate} ammo\\s\n` +
-          `**Flight:**: ${weapon.primary.flight || '-'} m\\s\n` +
-          `**Noise:** ${weapon.primary.noise || '-'}\n` +
-          `**Accuracy:** ${weapon.primary.accuracy || '-'}\n` +
-          `**Reload:** ${weapon.primary.reload || '-'}s\n` +
-          `**Damage:** ${emojify(weapon.primary.damage) || '-'}\n` +
-          `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n` +
-          `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n` +
-          `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n` +
-          `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n` +
-          `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n` +
-          `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
+          value: `**Trigger:** ${weapon.primary.trigger}\n`
+          + `**Projectile:** ${weapon.primary.projectile}\n`
+          + `**Rate:** ${weapon.primary.rate} ammo\\s\n`
+          + `**Flight:**: ${weapon.primary.flight || '-'} m\\s\n`
+          + `**Noise:** ${weapon.primary.noise || '-'}\n`
+          + `**Accuracy:** ${weapon.primary.accuracy || '-'}\n`
+          + `**Reload:** ${weapon.primary.reload || '-'}s\n`
+          + `**Damage:** ${emojify(weapon.primary.damage) || '-'}\n`
+          + `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n`
+          + `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n`
+          + `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n`
+          + `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n`
+          + `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n`
+          + `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
           inline: true,
         });
       } else {
@@ -87,22 +87,26 @@ class WeaponEmbed extends BaseEmbed {
       }
 
       if (weapon.secondary) {
+        const values = [];
+        values.push(`**Trigger:** ${weapon.secondary.trigger || '-'}`);
+        values.push(`**Projectile:** ${weapon.secondary.pellet.name}`);
+        values.push(`**Rate:** ${weapon.secondary.rate}`);
+        values.push(`**Flight:**: ${weapon.secondary.flight}m\\s`);
+        values.push(`**Noise:** ${weapon.secondary.noise}`);
+        values.push(`**Accuracy:** ${weapon.secondary.accuracy}`);
+        values.push(`**Reload:** ${weapon.secondary.reload}`);
+        values.push(`**Damage:** ${emojify(weapon.secondary.damage || '-')}`);
+        values.push(`**Impact:** ${weapon.secondary.impact}`);
+        values.push(`**Puncture:** ${weapon.secondary.puncture}`);
+        values.push(`**Slash:** ${weapon.secondary.slash}`);
+        values.push(`**Critical Chance:** ${weapon.secondary.crit_chance}%`);
+        values.push(`**Critical Multiplier:** ${weapon.secondary.crit_mult}x`);
+        values.push(`**Status Chance:** ${weapon.secondary.status_chance}%`);
+
+
         this.fields.push({
           name: 'Secondary Fire',
-          value: (weapon.secondary.trigger ? `**Trigger:** ${weapon.secondary.trigger || '-'}\n` : `${
-            weapon.secondary.pellet}` ? `**Projectile:** ${weapon.secondary.pellet.name}\n` : `${
-              weapon.secondary.rate}` ? `**Rate:** ${weapon.secondary.rate}\n` : `${
-                weapon.secondary.flight}` ? `**Flight:**: ${weapon.secondary.flight}m\\s\n` : `${
-                  weapon.secondary.noise}` ? `**Noise:** ${weapon.secondary.noise}\n` : `${
-                    weapon.secondary.accuracy}` ? `**Accuracy:** ${weapon.secondary.accuracy}\n` : `${
-                      weapon.secondary.reload}` ? `**Reload:** ${weapon.secondary.reload}\n` : `${
-                        weapon.secondary.damage}` ? `**Damage:** ${emojify(weapon.secondary.damage || '-')}\n` : `${
-                          weapon.secondary.impact}` ? `**Impact:** ${weapon.secondary.impact}\n` : `${
-                            weapon.secondary.puncture}` ? `**Puncture:** ${weapon.secondary.puncture}\n` : `${
-                              weapon.secondary.slash}` ? `**Slash:** ${weapon.secondary.slash}\n` : `${
-                                weapon.secondary.crit_chance}` ? `**Critical Chance:** ${weapon.secondary.crit_chance}%\n` : `${
-                                  weapon.secondary.crit_mult}` ? `**Critical Multiplier:** ${weapon.secondary.crit_mult}x\n` : `${
-                                    weapon.secondary.status_chance}` ? `**Status Chance:** ${weapon.secondary.status_chance}%` : '') || '-',
+          value: values.join('\n') || '--',
           inline: true,
         });
       }

@@ -47,13 +47,13 @@ class Armor extends Command {
     this.usages = [
       { description: 'Display instructions for calculating armor', parameters: [] },
       {
-        description: 'Display current damage resistance and amount of corrosive procs ' +
-          'required to strip it.',
+        description: 'Display current damage resistance and amount of corrosive procs '
+          + 'required to strip it.',
         parameters: ['current armor'],
       },
       {
-        description: 'Display the current armor, damage resistance, and necessary ' +
-          'corrosive procs to strip armor.',
+        description: 'Display the current armor, damage resistance, and necessary '
+          + 'corrosive procs to strip armor.',
         parameters: ['base armor', 'base level', 'current level'],
       },
     ];
@@ -96,7 +96,7 @@ class Armor extends Command {
           },
         ],
         footer: {
-          icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+          icon_url: 'https://warframestat.us/wfcd_logo_color.png',
         },
       };
       this.messageManager.embed(message, embed, true, false);
@@ -120,12 +120,12 @@ class Armor extends Command {
       fields: [
         {
           name: 'Possible uses include:',
-          value: `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.${this.md.lineEnd}` +
-          `${this.bot.prefix}armor (Current Armor) Calculate damage resistance.`,
+          value: `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.${this.md.lineEnd}`
+            + `${this.bot.prefix}armor (Current Armor) Calculate damage resistance.`,
         },
       ],
       footer: {
-        icon_url: 'https://avatars1.githubusercontent.com/u/24436369',
+        icon_url: 'https://warframestat.us/wfcd_logo_color.png',
       },
     };
 
@@ -154,12 +154,11 @@ class Armor extends Command {
    * @returns {string}
    */
   armorSimple(armor) {
-    return this.md.codeMulti +
-      [
+    return this.md.codeMulti
+      + [
         `${(damageReduction(armor) * 100).toFixed(2)}% damage reduction`,
         `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
-      ].join(this.md.lineEnd) +
-      this.md.blockEnd;
+      ].join(this.md.lineEnd) + this.md.blockEnd;
   }
 }
 

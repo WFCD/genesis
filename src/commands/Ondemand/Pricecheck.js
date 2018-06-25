@@ -1,8 +1,9 @@
 'use strict';
 
+const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
-const request = require('request-promise');
+const { apiBase } = require('../../CommonFunctions');
 
 const inProgressEmbed = { title: 'Processing search...' };
 
@@ -37,15 +38,15 @@ class PriceCheck extends Command {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
       const options = {
-        uri: `https://api.warframestat.us/pricecheck/attachment/${item}`,
+        uri: `${apiBase}/pricecheck/attachment/${item}`,
         json: true,
         rejectUnauthorized: false,
       };
       const result = await request(options);
       const embed = new PriceCheckEmbed(this.bot, result, item);
-      sentMessage.edit('', { embed });
-      return embed.color === 0xff55ff ?
-        this.messageManager.statuses.FAILURE : this.messageManager.statuses.SUCCESS;
+      sentMessage.edit({ embed });
+      return embed.color === 0xff55ff
+        ? this.messageManager.statuses.FAILURE : this.messageManager.statuses.SUCCESS;
     } catch (error) {
       this.logger.error(error);
       return this.messageManager.statuses.FAILURE;

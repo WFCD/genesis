@@ -2,6 +2,8 @@
 
 const Command = require('../../models/Command.js');
 const SalesEmbed = require('../../embeds/SalesEmbed.js');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+
 
 /**
  * Displays current featured deals
@@ -21,10 +23,10 @@ class FeaturedDeal extends Command {
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
-    await this.messageManager.embed(
-      message,
-      new SalesEmbed(this.bot, sales, platform), true, false,
-    );
+    const salesGroups = createGroupedArray(sales, 10);
+    const pages = salesGroups.map(group => new SalesEmbed(this.bot, group, platform));
+    const msg = await this.messageManager.embed(message, pages[0], true, false);
+    await createPageCollector(msg, pages, message.author);
     return this.messageManager.statuses.SUCCESS;
   }
 }

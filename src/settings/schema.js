@@ -107,4 +107,37 @@ module.exports = [
     owner_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (build_id)
   );`,
+  `CREATE TABLE IF NOT EXISTS code_pool (
+    pool_id VARCHAR(255) NOT NULL PRIMARY KEY,
+    pool_name TEXT NOT NULL,
+    pool_owner BIGINT(20) UNSIGNED NOT NULL,
+    pool_type VARCHAR(10) NOT NULL default 'glyph',
+    pool_default_guild BIGINT(20) UNSIGNED NOT NULL,
+    pool_public BOOLEAN NOT NULL DEFAULT FALSE,
+    pool_restricted BOOLEAN NOT NULL DEFAULT TRUE,
+    pool_password VARCHAR(255),
+    UNIQUE (pool_id)
+  );`,
+  `CREATE TABLE IF NOT EXISTS code_pool_member (
+    pool_id VARCHAR(255) NOT NULL,
+    platform VARCHAR(3) NOT NULL DEFAULT 'pc',
+    added_by BIGINT(20) UNSIGNED NOT NULL,
+    added_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    granted_to BIGINT(20) UNSIGNED,
+    granted_by BIGINT(20) UNSIGNED,
+    granted_on TIMESTAMP NULL DEFAULT NULL,
+    code CHAR(19) NOT NULL,
+    CONSTRAINT UC_Code UNIQUE (pool_id,platform,code),
+    FOREIGN KEY (pool_id)
+      REFERENCES code_pool(pool_id)
+      ON DELETE CASCADE
+  );`,
+  `CREATE TABLE IF NOT EXISTS code_pool_manager (
+    pool_id VARCHAR(255) NOT NULL,
+    pool_manager BIGINT(20) UNSIGNED NOT NULL,
+    PRIMARY KEY (pool_id, pool_manager),
+    FOREIGN KEY (pool_id)
+      REFERENCES code_pool(pool_id)
+      ON DELETE CASCADE
+  );`,
 ];

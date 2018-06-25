@@ -29,8 +29,8 @@ class AddChannelToDatabase extends Handler {
     if (channel.type === 'text') {
       try {
         await this.settings.addGuildTextChannel(channel);
-        this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild ` +
-          `${channel.guild.name} (${channel.guild.id})`);
+        this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild `
+          + `${channel.guild.name} (${channel.guild.id})`);
       } catch (err) {
         await this.settings.addGuild(channel.guild);
         this.settings.addGuildTextChannel(channel);

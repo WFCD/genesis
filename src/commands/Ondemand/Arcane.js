@@ -1,8 +1,10 @@
 'use strict';
 
+const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const EnhancementEmbed = require('../../embeds/EnhancementEmbed.js');
-const request = require('request-promise');
+const { apiBase } = require('../../CommonFunctions');
+
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -32,20 +34,20 @@ class Arcane extends Command {
   async run(message) {
     let arcane = message.strippedContent.match(this.regex)[1];
     const options = {
-      uri: 'https://api.warframestat.us/arcanes',
+      uri: `${apiBase}/arcanes`,
       json: true,
       rejectUnauthorized: false,
     };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      options.uri = `https://api.warframestat.us/arcanes/search/${arcane}`;
+      options.uri = `${apiBase}/arcanes/search/${arcane}`;
       const results = await request(options);
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = 'https://api.warframestat.us/arcanes';
+    options.uri = `${apiBase}/arcanes`;
     const enhancements = await request(options);
     this.messageManager.embed(
       message,

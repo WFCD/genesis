@@ -23,7 +23,16 @@ class Ping extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const hosts = ['content.warframe.com', 'forums.warframe.com', 'trials.wf', 'store.warframe.com', 'nexus-stats.com', 'warframe.market'];
+    const hosts = [
+      'content.warframe.com',
+      'forums.warframe.com',
+      'store.warframe.com',
+      'nexus-stats.com',
+      'warframe.market',
+      'warframestat.us',
+      'hub.warframestat.us',
+      'drops.warframestat.us',
+    ];
     const results = [];
 
     hosts.forEach((host) => {
@@ -31,41 +40,35 @@ class Ping extends Command {
         .then((result) => {
           results.push({
             name: host,
-            value: `${result.alive ? '<:check:314349398811475968>' : '<:empty:314349398723264512>'} ` +
-              `${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '<:xmark:314349398824058880>'}ms`,
+            value: `${result.alive ? ':ballot_box_with_check:' : ':black_square_button:'} `
+              + `${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : ':x: '}ms`,
           });
         });
     });
 
     const now = Date.now();
-    message.reply('Testing Ping')
-      .then((msg) => {
-        const afterSend = Date.now();
-        return msg.edit({
-          embed: {
-            title: 'PONG',
-            type: 'rich',
-            fields: [
-              {
-                name: `Response time (shard ${this.bot.shardId + 1} of ${this.bot.shardCount})`,
-                value: `${afterSend - now}ms`,
-              },
-              ...results,
-            ],
-            footer: {
-              thumbnail_url: '_ _',
-              text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
-            },
-          },
-        });
-      })
-      .then((editedMessage) => {
-        editedMessage.delete(100000);
-        if (message.deletable) {
-          message.delete(10000);
-        }
-      })
-      .catch(this.logger.error);
+    let msg = await message.reply('Testing Ping');
+    const afterSend = Date.now();
+    msg = await msg.edit({
+      embed: {
+        title: 'PONG',
+        type: 'rich',
+        fields: [{
+          name: `Response time (shard ${this.bot.shardId + 1} of ${this.bot.shardCount})`,
+          value: `${afterSend - now}ms`,
+        },
+        ...results,
+        ],
+        footer: {
+          thumbnail_url: '_ _',
+          text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
+        },
+      },
+    });
+    await msg.delete(100000);
+    if (message.deletable) {
+      message.delete(10000);
+    }
     return this.messageManager.statuses.SUCCESS;
   }
 }

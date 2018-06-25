@@ -22,10 +22,11 @@ class Untrack extends Command {
       fields: [
         {
           name: '_ _',
-          value: 'Genesis is an open-source and freely provided bot and service,' +
-            '\nbut any help towards subsidizing development and server costs helps out.' +
-            '\nCome support Genesis [on patreon](https://patreon.com/cephalongenesis) if you\'re interested.' +
-            '\nWe also love and welcome direct [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2SHK99GUPGRFS) and [Bitcoin](bitcoin:1HU6BtbsJu3ttbc2qKGFGR2hQpou9JSkjB) support,\nbecause we know one way doesn\'t fit all.',
+          value: 'Genesis is an open-source and freely provided bot and service,'
+            + '\nbut any help towards subsidizing development and server costs helps out.'
+            + '\nCome support Genesis [on patreon](https://patreon.com/cephalongenesis) if you\'re interested.'
+            + '\nWe also love and welcome direct [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2SHK99GUPGRFS)'
+            + ' and [Bitcoin](bitcoin:1HU6BtbsJu3ttbc2qKGFGR2hQpou9JSkjB) support,\nbecause we know one way doesn\'t fit all.',
           inline: true,
         },
         {

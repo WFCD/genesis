@@ -1,8 +1,8 @@
 'use strict';
 
+const Wikia = require('node-wikia');
 const Command = require('../../models/Command.js');
 const SortieEmbed = require('../../embeds/SortieEmbed.js');
-const Wikia = require('node-wikia');
 
 const warframe = new Wikia('warframe');
 

@@ -22,9 +22,9 @@ class EnemyEmbed extends BaseEmbed {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
       this.fields = enemies.map(e => ({
         name: e.agentType,
-        value: `Last discovered at ${e.lastDiscoveredAt}.\n` +
-          `It has ${(100 * Number(e.healthPercent)).toFixed(2)}% health remaining ` +
-          `and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
+        value: `Last discovered at ${e.lastDiscoveredAt}.\n`
+          + `It has ${(100 * Number(e.healthPercent)).toFixed(2)}% health remaining `
+          + `and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
       }));
     } else if (enemies.length === 1) {
       const e = enemies[0];

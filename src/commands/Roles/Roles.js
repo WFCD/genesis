@@ -2,14 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const RolesEmbed = require('../../embeds/RolesEmbed.js');
-
-function createGroupedArray(arr, chunkSize) {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    groups.push(arr.slice(i, i + chunkSize));
-  }
-  return groups;
-}
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
 
 /**
  * Add a joinable role
@@ -34,13 +27,12 @@ class Roles extends Command {
         .reduce((a, b) => (a.length > b.length ? a : b));
       const groupedRoles = createGroupedArray(roles, 20);
       const metaGroups = createGroupedArray(groupedRoles, 4);
+      const embeds = [];
       metaGroups.forEach((metaGroup) => {
-        this.messageManager.embed(
-          message,
-          new RolesEmbed(this.bot, metaGroup, prefix, longest.length),
-          true, true,
-        );
+        embeds.push(new RolesEmbed(this.bot, metaGroup, prefix, longest.length));
       });
+      const msg = await this.messageManager.embed(message, embeds[0], true, false);
+      await createPageCollector(msg, embeds, message.author);
       return this.messageManager.statuses.SUCCESS;
     }
     await this.messageManager.embed(

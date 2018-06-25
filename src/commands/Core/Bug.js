@@ -20,7 +20,7 @@ class BugReport extends Command {
       },
       {
         description: 'Send a bug report to bot owner with subject, message, and optional screenshot. The `|` are important.',
-        parameters: ['subject', 'body', '(optional) screenshot'],
+        parameters: ['subject', 'body', '* screenshot'],
         separator: ' | ',
       },
       {

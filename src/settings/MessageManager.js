@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * MessageManager for
+ * MessageManager for.... sending messages and deleting them and stuff
  */
 class MessaageManager {
   /**
@@ -35,14 +35,17 @@ class MessaageManager {
    * @param {string} content String to send to a channel
    * @param {boolean} deleteOriginal True to delete the original message
    * @param {boolean} deleteResponse True to delete the sent message after time
+   * @returns {Message} sent message
    */
   async sendMessage(message, content, deleteOriginal, deleteResponse) {
-    if (message.channel && ((message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+    if (message.channel && ((message.channel.type === 'text'
+        && message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm')) {
       const msg = await message.channel.send(`${this.zSWC}${content}`);
       await this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
     }
+    return undefined;
   }
 
   /**
@@ -54,8 +57,8 @@ class MessaageManager {
    * @returns {null|Promise<Message>}
    */
   async replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
-    if ((message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+    if ((message.channel.type === 'text'
+        && message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       const msg = await message.channel.send(`${this.zSWC}${content}`);
       return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
@@ -72,8 +75,8 @@ class MessaageManager {
    * @returns {null|Promise<Message>}
    */
   async reply(message, content, deleteOriginal, deleteResponse) {
-    if ((message.channel && message.channel.type === 'text' &&
-        message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
+    if ((message.channel && message.channel.type === 'text'
+        && message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
         || message.channel.type === 'dm') {
       const msg = await message.reply(`${this.zSWC}${content}`);
       return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
@@ -91,12 +94,19 @@ class MessaageManager {
    * @returns {null|Promise<Message>}
    */
   async embed(message, embed, deleteOriginal, deleteResponse, content) {
-    if ((message.channel.type === 'text' &&
-      message.channel.permissionsFor(this.client.user.id)
+    if ((message.channel.type === 'text'
+      && message.channel.permissionsFor(this.client.user.id)
         .has(['SEND_MESSAGES', 'EMBED_LINKS']))
       || message.channel.type === 'dm') {
-      const msg = await message.channel.send(content || '', { embed });
-      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      let msg;
+      if (content) {
+        msg = await message.channel.send(content, { embed });
+      } else {
+        msg = await message.channel.send({ embed });
+      }
+
+      this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
+      return msg;
     }
     return null;
   }
@@ -109,7 +119,8 @@ class MessaageManager {
    * @param {nunber} deleteAfter delete after a specified time
    */
   async embedToChannel(channel, embed, prepend, deleteAfter) {
-    if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id).has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
+    if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id)
+      .has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
       const msg = await channel.send(prepend, { embed });
       if (msg.deletable && deleteAfter > 0) {
         const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
@@ -236,7 +247,8 @@ class MessaageManager {
       // eslint-disable-next-line no-param-reassign
       ctx.webhook = channelWebhook;
       return this.webhook(ctx, { text, embed });
-    } else if (ctx.channel && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
+    }
+    if (ctx.channel && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
       const webhooks = await ctx.channel.fetchWebhooks();
       let webhook;
       if (webhooks.array().length > 0) {
@@ -255,20 +267,20 @@ class MessaageManager {
     }
     if (ctx.message) {
       if (embed) {
-        return Promise.all(embed.embeds.map(subEmbed =>
-          this.embed(ctx.message, subEmbed, ctx.deleteCall, ctx.deleteResponse)));
+        return Promise.all(embed.embeds
+          .map(subEmbed => this.embed(ctx.message, subEmbed, ctx.deleteCall, ctx.deleteResponse)));
       }
       return this.reply(ctx.message, text, ctx.deleteCall, ctx.deleteResponse);
     }
-    return Promise.all(embed.embeds.map(subEmbed =>
-      this.embedToChannel(ctx.channel, subEmbed, text, ctx.deleteAfterDuration)));
+    return Promise.all(embed.embeds
+      .map(subEmbed => this.embedToChannel(ctx.channel, subEmbed, text, ctx.deleteAfterDuration)));
   }
 
   webhookWrapEmbed(embed, ctx) {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar ?
-        ctx.webhook.avatar : this.client.user.avatarURL,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar
+        ? ctx.webhook.avatar : this.client.user.avatarURL,
       embeds: [embed],
     };
   }
@@ -276,8 +288,8 @@ class MessaageManager {
   webhookWrapEmbeds(embeds, ctx) {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar ?
-        ctx.webhook.avatar : this.client.user.avatarURL,
+      avatarURL: ctx.webhoook && ctx.webhook.avatar
+        ? ctx.webhook.avatar : this.client.user.avatarURL,
       embeds,
     };
   }

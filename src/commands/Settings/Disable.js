@@ -27,21 +27,22 @@ class Disable extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     params.splice(0, 1);
-    const commands = this.getCommandsToEnable(params[0]);
+    const commands = this.getCommandsToEnable(params[0]).filter(command => typeof command !== 'undefined' && command !== null);
     let channels = [];
 
     if (params[1]) {
       channels = getChannels(message.mentions.channels.length > 0
         ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
-    } else {
+    }
+    channels = channels.filter(channel => typeof channel !== 'undefined' && channel !== null);
+    if (!channels.length) {
       channels = [message.channel];
     }
 
     // targets
     let target = {};
 
-    if (params[2] ||
-        message.mentions.roles.size > 0 || message.mentions.users.size > 0) {
+    if (params[2] || message.mentions.roles.size > 0 || message.mentions.users.size > 0) {
       target = getTarget(
         params[2], message.mentions ? message.mentions.roles : [],
         message.mentions ? message.mentions.users : [], message,
@@ -55,17 +56,22 @@ class Disable extends Command {
 
     const results = [];
     // set the stuff
-    for (const command of commands) {
-      for (const channel of channels) {
-        if (target.type === 'Role') {
-          results.push(this.settings
-            .setChannelPermissionForRole(channel, target, command, 0));
-        } else {
-          results.push(this.settings
-            .setChannelPermissionForMember(channel, target, command, 0));
+    commands.forEach((command) => {
+      channels.forEach((channel) => {
+        if (!channel) return;
+        try {
+          if (target.type === 'Role') {
+            results.push(this.settings
+              .setChannelPermissionForRole(channel, target, command, 0));
+          } else {
+            results.push(this.settings
+              .setChannelPermissionForMember(channel, target, command, 0));
+          }
+        } catch (error) {
+          this.logger.error(error);
         }
-      }
-    }
+      });
+    });
     await Promise.all(results);
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 0, [commands, channels, target.toString()]);

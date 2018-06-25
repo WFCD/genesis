@@ -1,7 +1,7 @@
 'use strict';
 
-const BaseEmbed = require('./BaseEmbed.js');
 const rpad = require('right-pad');
+const BaseEmbed = require('./BaseEmbed.js');
 
 /**
  * Generates enemy embeds

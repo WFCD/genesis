@@ -23,7 +23,8 @@ class SetPing extends Command {
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
-    } else if (match) {
+    }
+    if (match) {
       const trackables = CommonFunctions.trackablesFromParameters(match[1].trim().split(' '));
       const eventsAndItems = [].concat(trackables.events).concat(trackables.items);
       const pingString = match[2] ? match[2].trim() : undefined;

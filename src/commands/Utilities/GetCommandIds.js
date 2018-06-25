@@ -1,6 +1,9 @@
 'use strict';
 
+const rpad = require('right-pad');
 const Command = require('../../models/Command.js');
+const CommandIdEmbed = require('../../embeds/CommandIdEmbed');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
 
 /**
  * Get a list of all servers
@@ -16,21 +19,27 @@ class GetCommandIds extends Command {
   }
 
   async run(message) {
-    const fileContents = [];
-    const commands = this.bot.commandHandler.commands
+    let commands = this.bot.commandHandler.commands
       .concat(this.bot.commandHandler.inlineCommands || [])
-      .concat(this.bot.commandHandler.customCommands || []);
-    commands
-      .filter(command =>
-        !command.ownerOnly || (message.author.id === this.bot.owner && command.ownerOnly))
-      .forEach((command) => {
-        fileContents.push(`"${command.call}","${command.id}","${command.blacklistable ? 'blacklistable' : 'not blacklistable'}"`);
-      });
+      .concat((this.bot.commandHandler.customCommands || [])
+        .filter(cc => message.guild && cc.guildId === message.guild.id));
+    const longestCall = commands.length ? commands.map(result => result.call).reduce((a, b) => (a.length > b.length ? a : b)) : '';
+    const longestId = commands.length ? commands.map(result => result.id)
+      .reduce((a, b) => (a.length > b.length ? a : b)) : '';
 
-    if (message.channel.type !== 'dm') {
-      this.messageManager.reply(message, 'Check your direct messages for more information.', true, true);
-    }
-    this.messageManager.sendFileToAuthor(message, Buffer.from(fileContents.join('\n'), 'ascii'), 'command_ids.csv', true);
+    commands = commands
+      .filter(command => !command.ownerOnly
+        || (message.author.id === this.bot.owner && command.ownerOnly))
+      .map(command => `\`${rpad(command.call, longestCall.length, ' ')} `
+        + `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}\``);
+
+    const pages = [];
+    createGroupedArray(commands, 12).forEach((group) => {
+      const embed = new CommandIdEmbed(this.bot, createGroupedArray(group, 4));
+      pages.push(embed);
+    });
+    const msg = await this.messageManager.embed(message, pages[0], true, true);
+    await createPageCollector(msg, pages, message.author);
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -22,8 +22,8 @@ class AlertEmbed extends BaseEmbed {
     if (alerts.length > 1) {
       this.fields = alerts.map(a => ({
         name: `${a.mission.reward.asString} | ${a.eta} left`,
-        value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n` +
-        `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
+        value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n`
+        + `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
       }));
       this.title = `[${platform.toUpperCase()}] Worldstate - Alerts`;
     } else { // divided
@@ -46,11 +46,10 @@ class AlertEmbed extends BaseEmbed {
       if (this.title.indexOf('Cr') === -1) {
         this.fields.push({ name: '_ _', value: `**Credits:** ${a.mission.reward.credits}`, inline: true });
       }
-      this.footer.text = `${a.eta} remaining | Expires `;
+      this.footer.text = `${a.eta} remaining • Expires `;
       this.timestamp = a.expiry;
     }
   }
 }
 
 module.exports = AlertEmbed;
-

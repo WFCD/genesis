@@ -44,7 +44,7 @@ class BaseEventHandler {
 
     /**
      * Database settings wrapper
-     * @type {[type]}
+     * @type {Database}
      */
     this.settings = bot.settings;
 

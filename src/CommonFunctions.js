@@ -1,8 +1,9 @@
 'use strict';
 
+const { Collection } = require('discord.js');
 const { eventTypes, rewardTypes, opts } = require('./resources/trackables.json');
 
-const { Collection } = require('discord.js');
+const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
 
 const fissures = ['fissures.t1.excavation', 'fissures.t1.sabotage', 'fissures.t1.mobiledefense', 'fissures.t1.assassination', 'fissures.t1.exterminate',
   'fissures.t1.hive', 'fissures.t1.defense', 'fissures.t1.interception', 'fissures.t1.rathuum', 'fissures.t1.conclave', 'fissures.t1.rescue',
@@ -28,6 +29,7 @@ const emoji = {
   vazarin: '<:vazarin:319586146269003778>',
   madurai: '<:madurai:319586146499690496>',
   naramon: '<:naramon:319586146478850048>',
+  zenurik: '<:zenurik:319586146197700610>',
   electricity: '<:electricity:321463957212626944>',
   cold: '<:cold:321463957019951105>',
   heat: '<:heat:321463957061763083>',
@@ -43,6 +45,7 @@ const emoji = {
   blast: '<:blast:363136256907149312>',
   corrosive: '<:corrosive:363136257288568832>',
   magnetic: '<:magnetic:363136420602445824>',
+  umbra: '<:umbra:459116667255914496:>',
 };
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©c]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
@@ -224,6 +227,7 @@ function trackablesFromParameters(paramString) {
   }
   return trackables;
 }
+
 const eventsOrItems = new RegExp(`cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
 
 function getEventsOrItems(message) {
@@ -377,9 +381,9 @@ const getChannel = (channelsParam, message, channels) => {
 const getChannels = (channelsParam, message) => {
   let channels = [];
   // handle it for strings
-  if (channelsParam !== 'all' && channelsParam !== 'current') {
+  if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
     channels.push(message.guild.channels.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
-  } else if (channelsParam === 'all') {
+  } else if (channelsParam === 'all' || channelsParam === '*') {
     channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
@@ -457,9 +461,7 @@ const resolveRoles = ({ mentions = undefined, content = '', guild = undefined })
 const getUsersForCall = (message, excludeAuthor) => {
   const users = [];
   if (message.mentions.roles) {
-    message.mentions.roles.forEach(role =>
-      role.members.forEach(member =>
-        users.push(member.user)));
+    message.mentions.roles.forEach(role => role.members.forEach(member => users.push(member.user)));
   }
   if (message.mentions.users) {
     message.mentions.users.forEach((user) => {
@@ -482,6 +484,116 @@ const getUsersForCall = (message, excludeAuthor) => {
   return users;
 };
 
+const resolvePool = async (message, settings,
+  {
+    explicitOnly = false,
+    skipManages = false,
+    pool = undefined,
+    checkRestriction = false,
+    allowMultiple = false,
+  } = { explicitOnly: false, skipManages: false }) => {
+  let poolId = pool;
+  if (!skipManages && !await settings.userManagesPool(message.author, poolId)) {
+    poolId = undefined;
+  } else {
+    return poolId;
+  }
+  const explicitPoolMatches = message.strippedContent.match(/(?:--pool\s+([a-zA-Z0-9-]*))/i);
+
+  if (!poolId && explicitPoolMatches && explicitPoolMatches.length > 1) {
+    [, poolId] = explicitPoolMatches;
+    if (!skipManages && !(await settings.userManagesPool(message.author, poolId))) {
+      poolId = undefined;
+    }
+  } else if (!explicitOnly) {
+    let pools = (await settings.getPoolsUserManages(message.author))
+      .map(poolRow => poolRow.pool_id);
+    if (pools.length > 1 && allowMultiple) {
+      return pools;
+    }
+    if (pools.length === 1) {
+      [poolId] = pools;
+    } else if (pools.length === 0) {
+      poolId = undefined;
+    } else if (await settings.getGuildsPool(message.guild).length) {
+      pools = await settings.getGuildsPool(message.guild);
+      if (pools.length === 1
+        && (skipManages || await settings.userManagesPool(message.author, pools[0]))) {
+        [poolId] = pools;
+      }
+    } else {
+      poolId = undefined;
+    }
+  }
+
+  if (poolId && checkRestriction && await settings.isPoolRestricted(poolId)) {
+    poolId = undefined;
+  }
+  return poolId;
+};
+
+const createPageCollector = async (msg, pages, author) => {
+  if (pages.length <= 1) return;
+
+  let page = 1;
+  await msg.react('◀');
+  await msg.react('▶');
+  const collector = msg.createReactionCollector((reaction, user) => ((reaction.emoji.name === '◀' || reaction.emoji.name === '▶') && user.id === author.id), { time: 600000 });
+
+  collector.on('collect', async (reaction) => {
+    if (reaction.emoji.name === '◀') {
+      if (page > 1) page -= 1;
+    } else if (reaction.emoji.name === '▶') {
+      if (page <= pages.length) page += 1;
+    }
+    await reaction.remove(author.id);
+    if (page <= pages.length && page > 0) {
+      const newPage = pages[page - 1];
+      const pageInd = `Page ${page}/${pages.length}`;
+      if (newPage.footer) {
+        if (newPage.footer.text) {
+          if (newPage.footer.text.indexOf('Page') === -1) {
+            newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
+          }
+        } else {
+          newPage.footer.text = pageInd;
+        }
+      } else {
+        newPage.footer = { text: pageInd };
+      }
+      msg.edit({ embed: newPage });
+    } else if (page < 1) {
+      page = 1;
+    } else if (page >= pages.length) {
+      page = pages.length;
+    }
+  });
+};
+
+const safeGetEntry = (entry) => {
+  if (entry === null || typeof entry === 'undefined' || entry === 'null') {
+    return null;
+  }
+  return entry.replace(/"/g, '');
+};
+
+const csvToCodes = (csv) => {
+  const lines = csv.replace(/\r/g, '').split('\n');
+  return lines.map((line) => {
+    const entries = line.split(',');
+    return {
+      id: safeGetEntry(entries[0]),
+      platform: safeGetEntry(entries[1]),
+      addedBy: safeGetEntry(entries[2]),
+      addedOn: safeGetEntry(entries[3]),
+      grantedTo: safeGetEntry(entries[4]),
+      grantedBy: safeGetEntry(entries[5]),
+      grantedOn: safeGetEntry(entries[6]),
+      code: safeGetEntry(entries[7]),
+    };
+  }).filter(code => code.code !== null);
+};
+
 module.exports = {
   createGroupedArray,
   emojify,
@@ -498,4 +610,8 @@ module.exports = {
   isVulgarCheck,
   getRandomWelcome,
   resolveRoles,
+  resolvePool,
+  createPageCollector,
+  csvToCodes,
+  apiBase,
 };

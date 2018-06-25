@@ -1,12 +1,39 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
 
 const invalidResultsEmbed = {
   color: 0x00CCFF,
   title: 'No results, please refine query.',
 };
 
+const createEmbedsForCommands = (commandFields, title, color) => ({
+  title,
+  fields: [].concat(...commandFields),
+  color,
+  type: 'rich',
+  footer: {
+    text: '* Denotes Optionional Parameters',
+    icon_url: 'https://warframestat.us/wfcd_logo_color.png',
+  },
+});
+
+const mapCommands = (commands, prefix) => commands.map(command => command.usages.map(u => ({
+  name: `${prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
+  value: u.description || 'No description',
+  inline: false,
+})));
+
+const commandSort = (a, b) => {
+  if (a.call < b.call) {
+    return -1;
+  }
+  if (a.call > b.call) {
+    return 1;
+  }
+  return 0;
+};
 
 /**
  * Describes the Help command
@@ -50,67 +77,65 @@ class Help extends Command {
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
 
+    const config = {
+      prefix: await this.settings.getGuildSetting(message.guild, 'prefix'),
+      isOwner: message.author.id === this.bot.owner,
+      hasAuth: message.channel.type === 'dm' || message.channel
+        .permissionsFor(message.author)
+        .has('MANAGE_ROLES_OR_PERMISSIONS'),
+    };
+
+    const searchableCommands = this.commandHandler.commands.filter((command) => {
+      if ((command.ownerOnly && !config.isOwner) || (command.requiresAuth && !config.hasAuth)) {
+        return false;
+      }
+      return true;
+    });
+
     if (query) {
       query = query.toLowerCase();
-      if (message.channel.type !== 'dm') {
-        await this.messageManager.reply(message, this.helpReplyMsg, true, true);
-      }
-      const config = {
-        prefix: await this.settings.getGuildSetting(message.guild, 'prefix'),
-        isOwner: message.author.id === this.bot.owner,
-        hasAuth: message.channel.type === 'dm' || message.channel
-          .permissionsFor(message.author)
-          .has('MANAGE_ROLES_OR_PERMISSIONS'),
-      };
 
-      const searchableCommands = this.commandHandler.commands.filter((command) => {
-        if ((command.ownerOnly && !config.isOwner) || (command.requiresAuth && !config.hasAuth)) {
-          return false;
-        }
-        return true;
-      });
-
-        // filter commands
-      let matchingCommands = searchableCommands.filter((command) => {
+      // filter commands
+      const matchingCommands = searchableCommands.filter((command) => {
         if (query.length < 3) {
           return false;
         }
         return command.call.toLowerCase().includes(query)
           || command.id.toLowerCase().includes(query)
-          || command.usages.filter(usage =>
-            (usage.description ? usage.description.toLowerCase().includes(query) : false)
-          || usage.parameters.join(' ').toLowerCase().includes(query)).length > 0;
+          || command.usages.filter((usage) => {
+            const descIncluded = usage.description
+              ? usage.description.toLowerCase().includes(query) : false;
+            const paramIncluded = usage.parameters.join(' ').toLowerCase().includes(query);
+            return descIncluded || paramIncluded;
+          }).length > 0;
       });
 
       if (matchingCommands.length < 1) {
-        await this.messageManager.sendDirectEmbedToAuthor(message, invalidResultsEmbed, false);
+        await this.messageManager.embed(message, invalidResultsEmbed, false);
         return this.messageManager.statuses.FAILURE;
       }
-      matchingCommands = matchingCommands.slice(0, 10).map(command => command.usages.map(u => ({
-        name: `${config.prefix}${command.call} ${u.parameters.map(p => `<${p}>`).join(u.separator ? u.separator : ' ')}`,
-        value: u.description,
-        inline: false,
-      })));
-      await this.sendEmbedForCommands(message, matchingCommands, 'Help!', 0x4068BD);
+      matchingCommands.sort(commandSort);
+      const lines = mapCommands(matchingCommands, config.prefix);
+      const groups = createGroupedArray(lines, 9);
+      const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
+      const msg = await this.messageManager.embed(message, embeds[0], false, false);
+      await createPageCollector(msg, embeds, message.author);
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.reply(message, `Visit ${process.env.HELP_URL || 'http://genesis.warframestat.us'} for all the commands and usages!`, true, true);
+    searchableCommands.sort(commandSort);
+
+    const lines = mapCommands(searchableCommands, config.prefix);
+    const groups = createGroupedArray(lines, 9);
+    const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
+    const msg = await this.messageManager.embed(message, embeds[0], false, false);
+    await createPageCollector(msg, embeds, message.author);
     return this.messageManager.statuses.SUCCESS;
   }
 
   async sendEmbedForCommands(message, commands, title, color) {
-    const embed = {
-      title,
-      fields: [].concat(...commands),
-      color,
-      type: 'rich',
-      footer: {
-        text: commands.length === 10 ? 'Search results limited to 10. If you believe more are available, please refine your search.' : undefined,
-        icon_url: 'https://raw.githubusercontent.com/WFCD/genesis/master/src/resources/genesis-vector-cyan.png',
-      },
-    };
+    const embed = createEmbedsForCommands(commands, title, color);
     if (commands.length > 0) {
-      await this.messageManager.sendDirectEmbedToAuthor(message, embed, false);
+      await this.messageManager.embed(message, embed, true, false);
     }
   }
 }

@@ -126,12 +126,12 @@ class RaidStat {
   }
 
   toString() {
-    return `**Cleared:** ${this.successes}/${this.completed}\n` +
-    `**Best Time:** ${this.best}\n` +
-    `**Average Time:** ${this.average}\n` +
-    `**Unique Party Members:** ${this.uniqueMems.length}\n` +
-    `**Cleared (30d):** ${this.thirty_successes}/${this.thirty_completed}\n` +
-    `**Average Time (30d):** ${this.thirty_average}`;
+    return `**Cleared:** ${this.successes}/${this.completed}\n`
+    + `**Best Time:** ${this.best}\n`
+    + `**Average Time:** ${this.average}\n`
+    + `**Unique Party Members:** ${this.uniqueMems.length}\n`
+    + `**Cleared (30d):** ${this.thirty_successes}/${this.thirty_completed}\n`
+    + `**Average Time (30d):** ${this.thirty_average}`;
   }
 
   makeTotals(lor, lornm, jv) {

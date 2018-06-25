@@ -2,6 +2,8 @@
 
 const Command = require('../../models/Command.js');
 const EventEmbed = require('../../embeds/EventEmbed.js');
+const { createPageCollector } = require('../../CommonFunctions');
+
 
 /**
  * Displays the current event statuses
@@ -22,14 +24,11 @@ class Event extends Command {
       .getChannelSetting(message.channel, 'platform')).toLowerCase();
     const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
     if (ws.events.length > 0) {
-      const results = [];
-      ws.events.forEach((event) => {
-        results.push(this.messageManager.embed(
-          message,
-          new EventEmbed(this.bot, event, platform.toUpperCase()), true, true,
-        ));
-      });
-      await Promise.all(results);
+      const pages = ws.events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
+      const msg = await this.messageManager.embed(message, pages[0], true, false);
+      if (pages.length > 1) {
+        await createPageCollector(msg, pages, message.author);
+      }
       return this.messageManager.statuses.SUCCESS;
     }
     await this.messageManager.embed(message, new EventEmbed(

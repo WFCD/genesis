@@ -47,8 +47,8 @@ class EventEmbed extends BaseEmbed {
         const jobString = event.jobs.map((job) => {
           const rewards = job.rewardPool.length > 0 ? job.rewardPool.map(reward => `* ${reward}`).join('\n') : 'No Clear Reward';
           const rewardsFmtd = `\nWith \`\`\`haskell\n${rewards}\`\`\` as reward${job.rewardPool.length > 1 ? 's' : ''}.`;
-          const desc = `**${job.type}**\nEnemies lvls ${job.enemyLevels[0]} - ${job.enemyLevels[1]}\n` +
-            `Granting ${job.standingStages.join(', ')} base standing per stage.${job.rewardPool.length > 0 ? rewardsFmtd : ''}`;
+          const desc = `**${job.type}**\nEnemies lvls ${job.enemyLevels[0]} - ${job.enemyLevels[1]}\n`
+            + `Granting ${job.standingStages.join(', ')} base standing per stage.${job.rewardPool.length > 0 ? rewardsFmtd : ''}`;
           return desc;
         }).join('\n');
         this.fields.push({ name: `Jobs from ${event.affiliatedWith}`, value: jobString });

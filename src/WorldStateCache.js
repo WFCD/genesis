@@ -1,13 +1,16 @@
 'use strict';
 
 const https = require('https');
+const http = require('http');
 
 const EventEmitter = require('events');
+const { apiBase } = require('./CommonFunctions.js');
+
 
 const worldStateURLs = {
-  pc: 'https://api.warframestat.us/pc',
-  ps4: 'https://api.warframestat.us/ps4',
-  xb1: 'https://api.warframestat.us/xb1',
+  pc: `${apiBase}/pc`,
+  ps4: `${apiBase}/ps4`,
+  xb1: `${apiBase}/xb1`,
 };
 
 class WorldStateCache extends EventEmitter {
@@ -47,7 +50,8 @@ class WorldStateCache extends EventEmitter {
 
   httpGet() {
     return new Promise((resolve, reject) => {
-      const request = https.get(this.url, (response) => {
+      const protocol = this.url.startsWith('https') ? https : http;
+      const request = protocol.get(this.url, (response) => {
         if (response.statusCode < 200 || response.statusCode > 299) {
           reject(new Error(`Failed to load page, status code: ${response.statusCode}`));
         }

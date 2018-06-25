@@ -7,7 +7,8 @@ const decache = require('decache');
 const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
   if ((command.isCustom && allowCustom) || (command.isInline && allowInline)) {
     return hasAuth;
-  } else if (!command.isCustom && !command.isInline) {
+  }
+  if (!command.isCustom && !command.isInline) {
     return hasAuth;
   }
   return false;
@@ -155,8 +156,8 @@ class CommandHandler {
           this.logger.debug(`Matched ${command.id}`);
           ctx.message = messageWithStrippedContent;
           const status = await command.run(messageWithStrippedContent, ctx);
-          const canReact = (message.channel.type === 'dm' ||
-              (message.channel.permissionsFor(this.bot.client.user.id)
+          const canReact = (message.channel.type === 'dm'
+              || (message.channel.permissionsFor(this.bot.client.user.id)
                 .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
           switch (status) {
             case this.statuses.SUCCESS:
@@ -198,7 +199,8 @@ class CommandHandler {
 
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
-    } else if (message.channel.type === 'text') {
+    }
+    if (message.channel.type === 'text') {
       if (command.requiresAuth) {
         if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
           const memberHasPermForRequiredAuthCommand = await this.bot.settings
@@ -223,7 +225,8 @@ class CommandHandler {
         return roleHasPermForNonAuthCommand;
       }
       return memberHasPermForNonAuthCommand;
-    } else if (message.channel.type === 'dm' && command.allowDM) {
+    }
+    if (message.channel.type === 'dm' && command.allowDM) {
       return true;
     }
     return false;

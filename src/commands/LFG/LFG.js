@@ -16,7 +16,7 @@ class AddLFG extends Command {
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
 
     this.usages = [
-      { description: 'Submit an LFG request to this guild\'s LFG channel', parameters: ['place', 'time', 'for', 'platform (optional)'], separator: ' | ' },
+      { description: 'Submit an LFG request to this guild\'s LFG channel', parameters: ['place', 'time', 'for', 'platform *'], separator: ' | ' },
     ];
 
     this.allowDM = false;
