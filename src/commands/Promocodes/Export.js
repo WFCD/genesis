@@ -16,6 +16,7 @@ class ExportPromocodes extends Command {
     ];
     this.requiresAuth = true;
     this.allowDM = true;
+    this.regex = new RegExp(`^${this.call}\\s?(.*)`);
   }
 
   async run(message) {
@@ -23,8 +24,8 @@ class ExportPromocodes extends Command {
     if (typeof pools === 'string') {
       pools = [pools];
     }
-    if (pools.length === 0) {
-      this.messageManager.reply(message, '**[Denied]** You manage no pools.');
+    if (!pools || pools.length === 0) {
+      this.messageManager.reply(message, '**[Denied]** You manage no pools or need to specify because there are multiple.');
       return this.messageManager.statuses.FAILURE;
     }
     const codes = await this.settings.getCodesInPools(pools);
