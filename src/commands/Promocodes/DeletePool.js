@@ -28,7 +28,7 @@ class RemovePool extends Command {
     }
     await this.settings.deletePool(pool);
     await this.messageManager.reply(message, `Deleted pool \`${pool}\`.`);
-    return this.messageManager.statuses.FAILURE;
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
