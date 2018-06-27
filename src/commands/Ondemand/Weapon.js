@@ -3,7 +3,9 @@
 const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
-const { createPageCollector, apiBase } = require('../../CommonFunctions');
+const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
+const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
+const { createPageCollector, apiBase, createGroupedArray } = require('../../CommonFunctions');
 
 
 /**
@@ -42,9 +44,21 @@ class WeaponStats extends Command {
       };
       try {
         const results = await request(options);
-
         if (results.length > 0) {
-          const pages = results.map(result => new WeaponEmbed(this.bot, result));
+          const pages = [];
+
+          results.forEach((result) => {
+            pages.push(new WeaponEmbed(this.bot, result));
+            if (result.components && result.components.length) {
+              pages.push(new ComponentEmbed(this.bot, result.components));
+            }
+            if (result.patchlogs && result.patchlogs.length) {
+              createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
+                pages.push(new PatchnotesEmbed(this.bot, patchGroup));
+              });
+            }
+          });
+
           const msg = await this.messageManager.embed(message, pages[0], true, false);
           await createPageCollector(msg, pages, message.author);
           return this.messageManager.statuses.SUCCESS;

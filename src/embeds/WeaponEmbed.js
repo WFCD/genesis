@@ -18,10 +18,10 @@ class WeaponEmbed extends BaseEmbed {
     super();
     if (weapon && typeof weapon !== 'undefined') {
       this.title = weapon.name;
-      this.url = weapon.url || '';
-      this.thumbnail = { url: weapon.thumbnail || '' };
-      this.description = `${weapon.type} ${weapon.subtype ? `• ${weapon.subtype} • MR ${weapon.mr}` : ''}`;
-      this.color = weapon.color;
+      this.url = weapon.wikiaUrl || '';
+      this.thumbnail = { url: weapon.wikiaThumbnail || '' };
+      this.description = `${weapon.type} ${`• MR ${weapon.masteryReq}`}`;
+      this.color = weapon.color || 0x7C0A02;
       this.fields = [];
 
       if (weapon.color) {
@@ -50,7 +50,7 @@ class WeaponEmbed extends BaseEmbed {
       } else {
         const things = [{
           name: 'Rate',
-          value: `${String(weapon.rate || '-')} unit\\s`,
+          value: `${String((weapon.fireRate).toFixed(0) || '-')} unit\\s`,
           inline: true,
         },
         {
@@ -60,30 +60,32 @@ class WeaponEmbed extends BaseEmbed {
         },
         {
           name: 'Critical Chance',
-          value: `${weapon.crit_chance || '-'}%`,
+          value: `${((weapon.criticalChance) * 100).toFixed(2) || '-'}%`,
           inline: true,
         },
         {
           name: 'Critical Multiplier',
-          value: `${weapon.crit_mult || '-'}x`,
+          value: `${(weapon.criticalMultiplier || 0).toFixed(2) || '-'}x`,
           inline: true,
         },
         {
           name: 'Status Chance',
-          value: `${weapon.status_chance || '-'}%`,
+          value: `${((weapon.procChance || 0) * 100).toFixed(2) || '-'}%`,
           inline: true,
         },
         {
           name: 'Polarities',
-          value: emojify(weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
-          inline: true,
-        },
-        {
-          name: 'Stance Polarity',
-          value: emojify(weapon.stancePolarity || '-'),
+          value: emojify(weapon.polarities && weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
           inline: true,
         }];
         this.fields.push(...things);
+        if (weapon.stancePolarity) {
+          this.fields.push({
+            name: 'Stance Polarity',
+            value: emojify(weapon.stancePolarity || '-'),
+            inline: true,
+          });
+        }
       }
 
       if (weapon.secondary) {
@@ -102,7 +104,6 @@ class WeaponEmbed extends BaseEmbed {
         values.push(`**Critical Chance:** ${weapon.secondary.crit_chance}%`);
         values.push(`**Critical Multiplier:** ${weapon.secondary.crit_mult}x`);
         values.push(`**Status Chance:** ${weapon.secondary.status_chance}%`);
-
 
         this.fields.push({
           name: 'Secondary Fire',
@@ -134,11 +135,13 @@ class WeaponEmbed extends BaseEmbed {
         });
       }
 
-      this.fields.push({
-        name: 'IPS Damage Distribution',
-        value: emojify(`impact ${String(weapon.impact || '-')}\npuncture ${String(weapon.puncture || '-')}\nslash ${String(weapon.slash || '-')}`),
-        inline: true,
-      });
+      if (weapon.damageTypes) {
+        this.fields.push({
+          name: 'IPS Damage Distribution',
+          value: emojify(`impact ${String(weapon.damageTypes.impact || '-')}\npuncture ${String(weapon.damageTypes.puncture || '-')}\nslash ${String(weapon.damageTypes.slash || '-')}`),
+          inline: true,
+        });
+      }
 
       if (weapon.flight) {
         this.fields.push({
@@ -147,10 +150,10 @@ class WeaponEmbed extends BaseEmbed {
           inline: true,
         });
       }
-      if (weapon.magazine) {
+      if (weapon.magazineSize) {
         this.fields.push({
           name: 'Magazine Size',
-          value: String(weapon.magazine),
+          value: String(weapon.magazineSize),
           inline: true,
         });
       }
@@ -171,14 +174,14 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.reload) {
         this.fields.push({
           name: 'Reload Speed',
-          value: `${weapon.reload || '-'}s`,
+          value: `${(weapon.reloadTime || 0).toFixed(1) || '-'}s`,
           inline: true,
         });
       }
-      if (weapon.riven_disposition) {
+      if (weapon.disposition) {
         this.fields.push({
           name: 'Riven Disposition',
-          value: dispositions[weapon.riven_disposition],
+          value: dispositions[weapon.disposition],
           inline: true,
         });
       }
