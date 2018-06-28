@@ -45,7 +45,7 @@ const emoji = {
   blast: '<:blast:363136256907149312>',
   corrosive: '<:corrosive:363136257288568832>',
   magnetic: '<:magnetic:363136420602445824>',
-  umbra: '<:umbra:459116667255914496:>',
+  umbra: '<:umbra:459116667255914496>',
 };
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
@@ -536,16 +536,30 @@ const createPageCollector = async (msg, pages, author) => {
   if (pages.length <= 1) return;
 
   let page = 1;
+  await msg.react('⏮');
   await msg.react('◀');
   await msg.react('▶');
-  const collector = msg.createReactionCollector((reaction, user) => ((reaction.emoji.name === '◀' || reaction.emoji.name === '▶') && user.id === author.id), { time: 600000 });
+  await msg.react('⏭');
+  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
 
   collector.on('collect', async (reaction) => {
-    if (reaction.emoji.name === '◀') {
-      if (page > 1) page -= 1;
-    } else if (reaction.emoji.name === '▶') {
-      if (page <= pages.length) page += 1;
+    switch (reaction.emoji.name) {
+      case '◀':
+        if (page > 1) page -= 1;
+        break;
+      case '▶':
+        if (page <= pages.length) page += 1;
+        break;
+      case '⏮':
+        page = 1;
+        break;
+      case '⏭':
+        page = pages.length;
+        break;
+      default:
+        break;
     }
+
     await reaction.remove(author.id);
     if (page <= pages.length && page > 0) {
       const newPage = pages[page - 1];
@@ -564,7 +578,7 @@ const createPageCollector = async (msg, pages, author) => {
       msg.edit({ embed: newPage });
     } else if (page < 1) {
       page = 1;
-    } else if (page >= pages.length) {
+    } else if (page > pages.length) {
       page = pages.length;
     }
   });

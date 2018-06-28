@@ -11,8 +11,16 @@ const cbEnd = '```';
 
 const appendIfResponse = async (respondTo, response, messageManager, content) => {
   let newResponse;
+  if (content.length > 2000) {
+    // eslint-disable-next-line no-param-reassign
+    content = `${content.substring(0, 1990)}[...]`;
+  }
   if (response) {
-    newResponse = await response.edit(`${response ? `${response.content}\n============\n\n` : ''}${content}`);
+    if (`${response ? `${response.content}\n============\n\n` : ''}${content}`.length > 1990) {
+      newResponse = await messageManager.sendMessage(respondTo, content);
+    } else {
+      newResponse = await response.edit(`${response ? `${response.content}\n============\n\n` : ''}${content}`);
+    }
   } else {
     newResponse = await messageManager.sendMessage(respondTo, content);
   }
@@ -109,11 +117,14 @@ class AddPromocode extends Command {
       }
     });
 
-    response = await appendIfResponse(
-      message, response, this.messageManager,
-      `\\❌ The following pools will not be modified because you do not manage them: ${mdDiff}${unAllowedPools.map(pool => `- ${pool}`).join('\n')}${cbEnd}`,
-    );
-    codes = codes.filter(code => !unAllowedPools.includes(code.id));
+    if (unAllowedPools.length) {
+      response = await appendIfResponse(
+        message, response, this.messageManager,
+        `\\❌ The following pools will not be modified because you do not manage them: ${mdDiff}${unAllowedPools.map(pool => `- ${pool}`).join('\n')}${cbEnd}`,
+      );
+      codes = codes.filter(code => !unAllowedPools.includes(code.id));
+    }
+
     const longestName = codes.map(pool => pool.id)
       .reduce((a, b) => (a.length > b.length ? a : b)).length;
     const addedCodeLines = codes.map(code => `+ ${rpad(code.id, Number(longestName + 1), ' ')}| ${rpad(String(code.platform.toUpperCase()), 4, ' ')}| ${code.code}`);
