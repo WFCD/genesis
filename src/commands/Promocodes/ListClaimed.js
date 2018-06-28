@@ -16,19 +16,20 @@ class ListClaimed extends Command {
     }
     const codes = await this.settings.getUserCodes(message.author);
     const groupCodes = createGroupedArray(codes, 27);
-    const metaCodes = createGroupedArray(groupCodes, 4);
     const pages = [];
-
-    metaCodes.forEach((codeGroup) => {
+    groupCodes.forEach((codeGroup) => {
       const embed = {
         title: 'Claimed Codes',
         color: 0xd30000,
-        fields: codes.length === 0
+        fields: codeGroup.length === 0
           ? [{ name: '_ _', value: 'No claimed codes' }]
-          : codeGroup.map(code => ({
-            name: `${code.pool_name} • ${code.platform.toUpperCase()}`,
-            value: `\`\`\`\n${code.code}\`\`\`\n[Claim](https://warframe.com/promocodes?code=${code.code})`,
-          })),
+          : codeGroup.map(code => {
+                this.logger.error(JSON.stringify(code));
+              return {
+                name: `${code.pool_name} • ${(code.platform || 'pc').toUpperCase()}`,
+                value: `\`${code.code}\`\n[Claim](https://warframe.com/promocode?code=${code.code})`,
+             };
+        }),
       };
       pages.push(embed);
     });
