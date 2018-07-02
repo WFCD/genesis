@@ -43,17 +43,18 @@ class NewsEmbed extends BaseEmbed {
     } else {
       value = value.length > 0 ? value : ['No News Currently'];
     }
+    const first = news[0];
     if (news.length === 1) {
-      this.title = `[${platform.toUpperCase()}] ${news.message}`;
+      this.title = `[${platform.toUpperCase()}] ${first.message}`;
       this.fields = undefined;
       this.footer.text = 'Published ';
-      this.timestamp = new Date(news.date);
-      this.url = news.link;
+      this.timestamp = new Date(first.date);
+      this.url = first.link;
     } else {
       this.fields = value.map(val => ({ name: '_ _', value: val.join('\n') }));
       this.footer.text = platform.toUpperCase();
     }
-    this.image = { url: news[0] ? news[0].imageLink : '' };
+    this.image = { url: first ? first.imageLink : '' };
   }
 }
 
