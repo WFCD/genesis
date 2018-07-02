@@ -36,7 +36,8 @@ class FissureEmbed extends BaseEmbed {
       const f = fissures[0];
       this.title = `[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
       this.description = `${f.node} against ${f.enemy}`;
-      this.footer.text = `${f.eta} remaining`;
+      this.footer.text = `${f.eta} remaining • Ends at `;
+      this.timestamp = new Date(f.expiry);
       this.thumbnail.url = 'https://i.imgur.com/EfIRu6v.png';
     }
 
