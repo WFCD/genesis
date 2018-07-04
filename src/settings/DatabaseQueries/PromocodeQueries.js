@@ -233,7 +233,7 @@ class PromocodeQueries {
   async getUserCodes(user) {
     const query = SQL`SELECT p.pool_name, m.platform, m.code
       FROM code_pool_member as m, code_pool as p
-      WHERE m.granted_to = ${user.id};`;
+      WHERE m.granted_to = ${user.id} and m.pool_id = p.pool_id;`;
     return (await this.db.query(query))[0];
   }
 }
