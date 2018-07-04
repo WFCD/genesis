@@ -30,7 +30,9 @@ const appendIfResponse = async (respondTo, response, messageManager, content) =>
 class AddPromocode extends Command {
   constructor(bot) {
     super(bot, 'glyphs.addCode', 'glyphs add', 'Add a code.');
-    this.ownerOnly = true;
+    this.ownerOnly = false;
+    this.requiresAuth = true;
+    this.allowDM = true;
     this.regex = new RegExp(`^${this.call}\\s*(?:--pool\\s(.*))?\\s?(pc|ps4|xb1)?(.*)?`, 'i');
     this.usages = [
       {
@@ -128,7 +130,7 @@ class AddPromocode extends Command {
     const longestName = codes.map(pool => pool.id)
       .reduce((a, b) => (a.length > b.length ? a : b)).length;
     const addedCodeLines = codes.map(code => `+ ${rpad(code.id, Number(longestName + 1), ' ')}| ${rpad(String(code.platform.toUpperCase()), 4, ' ')}| ${code.code}`);
-    response = await appendIfResponse(message, response, this.messageManager, `\\✅ Importing ${mdDiff}${addedCodeLines.join('\n')}${cbEnd}`);
+    response = await appendIfResponse(message, response, this.messageManager, `\\✅ Importing ${addedCodeLines.length}`);
     codes.forEach((code) => {
       code.adder = message.author.id; // eslint-disable-line no-param-reassign
     });

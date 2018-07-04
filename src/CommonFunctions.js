@@ -139,7 +139,6 @@ const trackablesFromParameters = (params) => {
 
 const eventsOrItems = new RegExp(`cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
 
-
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
 
 const createGroupedArray = (arr, chunkSize) => {
