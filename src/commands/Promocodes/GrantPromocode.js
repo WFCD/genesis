@@ -40,7 +40,7 @@ class GrantPromocode extends Command {
     // eslint-disable-next-line camelcase
     if (grantedTo === null) {
       await this.settings.grantCode(code, user, message.author.id, platform);
-      this.messageManager.reply(message, `Code \`${code}\` granted to <@${user}> from ${pool} on ${platform}`);
+      this.messageManager.reply(message, `Code granted to <@${user}> from ${pool} on ${platform}`);
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.SUCCESS;
