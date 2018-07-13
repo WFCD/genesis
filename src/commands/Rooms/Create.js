@@ -114,6 +114,9 @@ class Create extends Command {
     } else {
       shown = ctx.defaultShown;
     }
+    
+    const modRole = this.message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
+    const useModRole = modRole.id ? this.message.guild.roles.has(modRole.id) : false;
 
     if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {
       useText = false;
@@ -143,10 +146,15 @@ class Create extends Command {
           const users = getUsersForCall(message);
           const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
           if (users.length < 11 && !message.guild.channels.find('name', name)) {
-            const overwrites = this.createOverwrites(
+            const overwrites = this.createOverwrites({
               users,
-              message.guild.defaultRole, message.author, isPublic, useText,
-            );
+              everyone: message.guild.defaultRole,
+              author: message.author,
+              isPublic,
+              useText,
+              useModRole,
+              modRole,
+            });
             let category;
             if (!ctx.tempCategory
               || !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
@@ -244,13 +252,15 @@ class Create extends Command {
   /**
    * Create an array of permissions overwrites for the channel
    * @param {Array.<User>} users            Array of users for whom to allow into channels
-   * @param {RoleResolvable} everyoneRole   RoleResolvable for the @everyone role
+   * @param {RoleResolvable} everyone   RoleResolvable for the @everyone role
    * @param {User} author                   User object for creator of room
    * @param {boolean} isPublic              Whether or not this channel will be public
    * @param {boolean} shown                 Whether or not this channel will be visible
+   * @param {boolean} useModRole            Whether or not to leverage the mod role
+   * @param {boolean} modRole               Moderator role that can manage the channel
    * @returns {Array.<PermissionsOVerwrites>}
    */
-  createOverwrites(users, everyoneRole, author, isPublic, shown) {
+  createOverwrites({users, everyone, author, isPublic, shown, useModRole, modRole}) {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
@@ -260,7 +270,7 @@ class Create extends Command {
         evOverwrites.push('VIEW_CHANNEL');
       }
       overwrites.push({
-        id: everyoneRole,
+        id: everyone,
         deny: evOverwrites,
       });
       overwrites.push({
@@ -278,9 +288,16 @@ class Create extends Command {
         id: author.id,
         allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES'],
       });
+      // Add mod role overwrites if one is present
+      if (useModRole) {
+        overwrites.push({
+          id: modRole,
+          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS']
+      });
+      }
     } else {
       overwrites.push({
-        id: everyoneRole,
+        id: everyone,
         allow: ['VIEW_CHANNEL', 'CONNECT'],
       });
     }
