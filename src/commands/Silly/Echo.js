@@ -19,13 +19,14 @@ class Echo extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {Object} ctx command call context
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     if (message.deleteable) {
       await message.delete();
     }
-    await this.messageManager.sendMessage(message, message.cleanContent.replace(this.call, '').trim(), false, false);
+    await this.messageManager.sendMessage(message, message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim(), false, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }
