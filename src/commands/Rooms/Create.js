@@ -115,7 +115,7 @@ class Create extends Command {
       shown = ctx.defaultShown;
     }
     
-    const modRole = this.message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
+    const modRole = message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
     const useModRole = modRole.id ? this.message.guild.roles.has(modRole.id) : false;
 
     if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {
