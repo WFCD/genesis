@@ -116,7 +116,7 @@ class Create extends Command {
     }
     
     const modRole = message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
-    const useModRole = modRole.id ? this.message.guild.roles.has(modRole.id) : false;
+    const useModRole = modRole.id ? message.guild.roles.has(modRole.id) : false;
 
     if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {
       useText = false;
