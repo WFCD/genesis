@@ -114,7 +114,7 @@ class Create extends Command {
     } else {
       shown = ctx.defaultShown;
     }
-    
+
     const modRole = message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
     const useModRole = modRole.id ? message.guild.roles.has(modRole.id) : false;
 
@@ -260,7 +260,9 @@ class Create extends Command {
    * @param {boolean} modRole               Moderator role that can manage the channel
    * @returns {Array.<PermissionsOVerwrites>}
    */
-  createOverwrites({users, everyone, author, isPublic, shown, useModRole, modRole}) {
+  createOverwrites({
+    users, everyone, author, isPublic, shown, useModRole, modRole,
+  }) {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
@@ -292,8 +294,8 @@ class Create extends Command {
       if (useModRole) {
         overwrites.push({
           id: modRole,
-          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS']
-      });
+          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS'],
+        });
       }
     } else {
       overwrites.push({
