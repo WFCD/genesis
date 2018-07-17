@@ -29,7 +29,7 @@ const appendIfResponse = async (respondTo, response, messageManager, content) =>
 
 class AddPromocode extends Command {
   constructor(bot) {
-    super(bot, 'glyphs.addCode', 'glyphs add', 'Add a code.');
+    super(bot, 'glyphs.addCode', 'glyphs import', 'Add a code.');
     this.ownerOnly = false;
     this.requiresAuth = true;
     this.allowDM = true;
