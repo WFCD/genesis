@@ -2,8 +2,9 @@
 
 const request = require('request-promise');
 const Command = require('../../models/Command.js');
+
 const options = {
-  uri: `https://dog.ceo/api/breed/corgi/cardigan/images/random`,
+  uri: 'https://dog.ceo/api/breed/corgi/cardigan/images/random',
   json: true,
 };
 /**
