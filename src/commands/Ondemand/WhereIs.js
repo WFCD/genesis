@@ -53,7 +53,7 @@ class Whereis extends Command {
         rejectUnauthorized: false,
       };
       query = query.trim().toLowerCase();
-      const queryWReplaces = query.replace(/prime/ig, 'pr').replace(/blueprint/ig, 'bp');
+      const queryWReplaces = query.replace(/prime/ig, 'p.').replace(/blueprint/ig, 'bp');
       options.uri = `${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`;
       const results = await request(options);
       const longestName = results.length ? results.map(result => result.item)
