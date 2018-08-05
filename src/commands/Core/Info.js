@@ -23,7 +23,7 @@ class Untrack extends Command {
         {
           name: '_ _',
           value: 'Feel free to check out [Genesis here](https://bots.discord.pw/bots/123591822579597315),'
-            + '\nAs well as on the [help page](https://wfcd.github.io/genesis),'
+            + '\nAs well as on the [help page](https://genesis.warframestat.us),'
             + '\nand come support Genesis, if you\'re interested, [on patreon](https://patreon.com/cephalongenesis).',
           inline: true,
         },
@@ -34,7 +34,7 @@ class Untrack extends Command {
         },
         {
           name: 'Authors',
-          value: 'Tobiah/[aliasfalse](https://github.com/aliasfalse) and [nspace](https://github.com/nspacestd)',
+          value: 'Tobiah/[TobiTenno](https://github.com/tobitenno) and [nspace](https://github.com/nspacestd)',
         },
         {
           name: 'About',
@@ -43,7 +43,7 @@ class Untrack extends Command {
       ],
       footer: {
         icon_url: 'https://cdn.discordapp.com/avatars/123591822579597315/f95aad1bc1eefcf7514649209fde9d97.png',
-        text: 'Cephalon Genesis, now on more than 6300 guilds!',
+        text: 'Cephalon Genesis, now on more than 23,000 guilds!',
       },
     }, true, false);
     return this.messageManager.statuses.SUCCESS;

@@ -8,7 +8,7 @@ const Command = require('../../models/Command.js');
  * @param  {Message} message    originating message
  * @returns {Role|null}         Role
  */
-function getRoleForString(string, message) {
+const getRoleForString = (string, message) => {
   const trimmedString = string.trim();
   const roleFromId = message.guild.roles.get(trimmedString);
   let roleFromName;
@@ -17,7 +17,17 @@ function getRoleForString(string, message) {
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;
-}
+};
+
+const determineDescription = (userHasRole, hasMinimumRole) => {
+  if (userHasRole) {
+    return 'You already have that role.';
+  }
+  if (!hasMinimumRole) {
+    return 'You don\'t have the required role for that.';
+  }
+  return 'You can\'t join that role.';
+};
 
 /**
  * Add a joinable role
@@ -45,56 +55,66 @@ class JoinRole extends Command {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
+
     const role = getRoleForString(stringRole, message);
     if (!role) {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
+
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-    const roleAddable = filteredRoles.length > 0
-                 && !message.member.roles.get(role.id)
-                 && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
+
+    const botIsHigher = message.guild.members.get(this.bot.client.user.id)
+      .highestRole.comparePositionTo(message.guild.roles.get(role.id));
+
     const userHasRole = filteredRoles.length > 0
-                 && message.member.roles.get(role.id)
-                 && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
+                   && message.member.roles.get(role.id)
+                   && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
+
+    const hasMinimumRole = (filteredRoles[0] && filteredRoles[0].requiredRole
+      ? message.member.roles.has(filteredRoles[0].requiredRole)
+      : true);
+    const roleAddable = !userHasRole && botIsHigher && hasMinimumRole;
+
+    if (!botIsHigher) {
+      await this.sendBotRoleLow(message);
+      return this.messageManager.statuses.FAILURE;
+    }
     if (roleAddable) {
       await message.member.addRole(role.id);
       await this.sendJoined(message, role);
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.sendCantJoin(message, userHasRole);
+    await this.sendCantJoin(message, userHasRole, hasMinimumRole);
     return this.messageManager.statuses.FAILURE;
   }
 
   async sendJoined(message, role) {
     await this.messageManager.embed(message, {
       title: 'Joined Role',
+      description: role.name,
       type: 'rich',
       color: 0x779ECB,
-      fields: [
-        {
-          name: '_ _',
-          value: role.name,
-          inline: true,
-        },
-      ],
     }, true, true);
   }
 
 
-  async sendCantJoin(message, userHasRole) {
+  async sendCantJoin(message, userHasRole, hasMinimumRole) {
     await this.messageManager.embed(message, {
       title: 'Can\'t Join',
+      description: determineDescription(userHasRole, hasMinimumRole),
       type: 'rich',
       color: 0x779ECB,
-      fields: [
-        {
-          name: '_ _',
-          value: userHasRole ? 'You already have that role.' : 'You can\'t join that role.',
-          inline: true,
-        },
-      ],
+    }, true, true);
+  }
+
+  async sendBotRoleLow(message) {
+    await this.messageManager.embed(message, {
+      title: 'Can\'t Assign Role',
+      description: 'Bot\'s role is too low.\nEnsure it is above role to be added.',
+      type: 'rich',
+      color: 0x779ECB,
     }, true, true);
   }
 
@@ -117,7 +137,7 @@ class JoinRole extends Command {
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.settings.getRolesForGuild(message.guild);
-    embed.fields[1].value = roles.length ? roles.map(role => role.name).join('; ') : 'No possible roles';
+    embed.fields[1].value = roles.length ? roles.map(role => role.guildRole.name).join('; ') : 'No possible roles';
     this.messageManager.embed(message, embed, true, false);
   }
 }

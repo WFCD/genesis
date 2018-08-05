@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const JoinableRole = require('../../models/JoinableRole.js');
 
 /**
  * Get a role from the matching string
@@ -19,6 +20,11 @@ function getRoleForString(string, message) {
   return roleFromId || roleFromName || null;
 }
 
+const createRegex = new RegExp('--create', 'ig');
+const mentionableRegex = new RegExp('--mentionable', 'ig');
+const leaveableRegex = new RegExp('--leaveable (on|off)', 'ig');
+const reqRoleRegex = new RegExp('--requires (?:<@&)?(\\d{15,20})(>)?', 'ig');
+
 /**
  * Add a joinable role
  */
@@ -27,9 +33,9 @@ class AddRole extends Command {
     super(bot, 'settings.addRole', 'add role');
     this.usages = [
       { description: 'Show instructions for adding joinable roles', parameters: [] },
-      { description: 'Add a role', parameters: ['Role/Role id to add'] },
+      { description: 'Add a role', parameters: ['Role/Role id to add', '--create', '--mentionable', '--leavable (on | off)', '--requires @Role Mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(.*)?\\s?(--create)?\\s?(--mentionable)?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
@@ -41,41 +47,68 @@ class AddRole extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const stringRole = message.strippedContent.replace(`${this.call} `, '');
+    const create = createRegex.test(message.strippedContent);
+    const mentionable = mentionableRegex.test(message.strippedContent);
+    const stringRole = message.strippedContent
+      .replace(`${this.call} `, '')
+      .replace('--create', '')
+      .replace('--mentionable', '')
+      .replace(leaveableRegex, '')
+      .replace(reqRoleRegex, '')
+      .trim();
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
-    const role = getRoleForString(stringRole, message);
-    if (!role) {
+    let role = getRoleForString(stringRole, message);
+    if (create && message.guild.members
+      .get(this.bot.client.user.id).hasPermission('MANAGE_ROLES')) {
+      role = await message.guild.createRole({
+        name: stringRole,
+        permissions: 0,
+        mentionable,
+      }, 'Add Role Command with create flag');
+    } else if (!role) {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
+
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
+
     if (filteredRoles.length > 0) {
       await this.sendAlreadyAddedEmbed(message);
       return this.messageManager.statuses.FAILURE;
     }
-    const rolesToCommit = roles.map(innerRole => innerRole.id);
-    rolesToCommit.push(role.id);
+
+    const rolesToCommit = roles.map(innerRole => innerRole);
+    const newRole = new JoinableRole(role);
+
+    if (reqRoleRegex.test(message.strippedContent)) {
+      const reqRoleRes = message.strippedContent.match(reqRoleRegex)[0]
+        .replace('--requires ', '').replace('<@&', '').replace('>', '').trim();
+
+      newRole.requiredRole = reqRoleRes ? message.guild.roles.get(reqRoleRes) : undefined;
+    }
+
+    if (leaveableRegex.test(message.strippedContent)
+      && message.strippedContent.match(leaveableRegex).length) {
+      const isLeaveable = message.strippedContent.match(leaveableRegex)[0].trim() === 'on';
+      newRole.isLeaveable = isLeaveable;
+    }
+    rolesToCommit.push(newRole.getSimple());
     await this.addAndCommitRole(message, rolesToCommit, role.name);
     return this.messageManager.statuses.SUCCESS;
   }
 
   async addAndCommitRole(message, roles, newRole) {
-    await this.settings.setRolesForGuild(message.guild, roles);
+    await this.settings.setRolesForGuild(message.guild,
+      roles.map(role => JSON.stringify(role)));
     await this.messageManager.embed(message, {
       title: 'Added role to joinable list',
       type: 'rich',
       color: 0x779ECB,
-      fields: [
-        {
-          name: '_ _',
-          value: newRole,
-          inline: true,
-        },
-      ],
+      description: newRole,
     }, true, true);
   }
 
@@ -84,13 +117,7 @@ class AddRole extends Command {
       title: 'Invalid Role',
       type: 'rich',
       color: 0x779ECB,
-      fields: [
-        {
-          name: '_ _',
-          value: 'That role is already joinable.',
-          inline: true,
-        },
-      ],
+      description: 'That role is already joinable.',
     }, true, true);
   }
 

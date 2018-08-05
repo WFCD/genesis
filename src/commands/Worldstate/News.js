@@ -20,7 +20,7 @@ class News extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
     const language = await this.settings.getChannelSetting(message.channel, 'language');
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const news = ws.news.filter(n => !n.update && !n.primeAccess && n.translations[language]);
     await this.messageManager.embed(
       message,

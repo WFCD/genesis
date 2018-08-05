@@ -479,8 +479,12 @@ const createPageCollector = async (msg, pages, author) => {
       default:
         break;
     }
+    try {
+      await reaction.remove(author.id);
+    } catch (e) {
+      // can't remove
+    }
 
-    await reaction.remove(author.id);
     if (page <= pages.length && page > 0) {
       const newPage = pages[page - 1];
       const pageInd = `Page ${page}/${pages.length}`;

@@ -19,6 +19,8 @@ function getRoleForString(string, message) {
   return roleFromId || roleFromName || null;
 }
 
+const deleteRegex = new RegExp('--delete', 'ig');
+
 /**
  * Remove a joinable role
  */
@@ -27,7 +29,7 @@ class RemoveRole extends Command {
     super(bot, 'settings.removeRole', 'remove role');
     this.usages = [
       { description: 'Show instructions for removing joinable roles', parameters: [] },
-      { description: 'Remove a role', parameters: ['Role/Role id to add'] },
+      { description: 'Remove a role', parameters: ['Role/Role id to add', '--delete'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.requiresAuth = true;
@@ -41,7 +43,7 @@ class RemoveRole extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const stringRole = message.strippedContent.replace(`${this.call} `, '');
+    const stringRole = message.strippedContent.replace(`${this.call} `, '').replace('--delete', '').trim();
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
       return this.messageManager.statuses.FAILURE;
@@ -52,11 +54,16 @@ class RemoveRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const roles = await this.settings.getRolesForGuild(message.guild);
+    this.logger.debug(`roles: ${JSON.stringify(roles.map(somerole => somerole.getSimple()))}`);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     if (filteredRoles.length > 0) {
+      const deleteRole = deleteRegex.test(message.strippedContent);
       this.removeAndCommitRoles(message, roles
         .filter(storedRole => filteredRoles[0].id !== storedRole.id)
         .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
+      if (deleteRole) {
+        message.guild.roles.get(filteredRoles[0].id).delete('Deleting role from role remove');
+      }
       return this.messageManager.statuses.SUCCESS;
     }
     await this.sendRoleNotAvailable(message);
@@ -69,13 +76,7 @@ class RemoveRole extends Command {
       title: 'Removed role from joinable list',
       type: 'rich',
       color: 0x779ECB,
-      fields: [
-        {
-          name: '_ _',
-          value: newRole.name,
-          inline: true,
-        },
-      ],
+      description: newRole.guildRole.name,
     }, true, false);
   }
 
@@ -84,13 +85,7 @@ class RemoveRole extends Command {
       title: 'Invalid Role',
       type: 'rich',
       color: 0x0000ff,
-      fields: [
-        {
-          name: '_ _',
-          value: 'That role is unavailable to be removed.',
-          inline: true,
-        },
-      ],
+      description: 'That role is unavailable to be removed.',
     }, true, false);
   }
 

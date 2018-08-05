@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "node"
   - "lts/*"
-  
+
 before_install:
 - npm install -g npm
 - npm install -g greenkeeper-lockfile@1
@@ -13,9 +13,9 @@ before_script:
 after_script: greenkeeper-lockfile-upload
 
 after_success:
-  - chmod +x success.sh
-  - ./success.sh
+  - chmod +x .github/travis/success.sh
+  - ./.github/travis/success.sh
 after_failure:
-  - chmod +x fail.sh
-  - ./fail.sh
+  - chmod +x .github/travis/fail.sh
+  - ./.github/travis/fail.sh
 install: npm install

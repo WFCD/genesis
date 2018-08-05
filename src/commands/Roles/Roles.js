@@ -20,10 +20,13 @@ class Roles extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const roles = await this.settings.getRolesForGuild(message.guild);
+    const roles = (await this.settings.getRolesForGuild(message.guild))
+      .filter(role => (role && role.requiredRoleId
+        ? message.member.roles.has(role.requiredRoleId)
+        : true));
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     if (roles.length > 0) {
-      const longest = roles.map(role => role.name)
+      const longest = roles.map(role => role.guildRole.name)
         .reduce((a, b) => (a.length > b.length ? a : b));
       const groupedRoles = createGroupedArray(roles, 20);
       const metaGroups = createGroupedArray(groupedRoles, 4);

@@ -1,12 +1,10 @@
 'use strict';
 
 const cluster = require('cluster');
-const Cache = require('json-fetch-cache');
 const Raven = require('raven');
 
 const Genesis = require('./src/bot');
 const ClusterManager = require('./src/ClusterManager');
-const { apiBase } = require('./src/CommonFunctions');
 
 /**
  * Raven client instance for logging errors and debugging events
@@ -35,13 +33,6 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
-
-const caches = {
-  pc: new Cache(`${apiBase}/pc`, 60000),
-  xb1: new Cache(`${apiBase}/xb1`, 60000),
-  ps4: new Cache(`${apiBase}/ps4`, 60000),
-};
-
 if (cluster.isMaster) {
   const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
   const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
@@ -56,7 +47,6 @@ if (cluster.isMaster) {
     prefix: process.env.PREFIX,
     logger,
     owner: process.env.OWNER,
-    caches,
   });
   shard.start();
 }

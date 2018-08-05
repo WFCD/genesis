@@ -1,6 +1,7 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+const JoinableRole = require('../../models/JoinableRole');
 
 class PrivateRoomQueries {
   constructor(db) {
@@ -36,10 +37,35 @@ class PrivateRoomQueries {
       WHERE guild_id=${guild.id}`;
     const res = await this.db.query(query);
     if (res[0][0]) {
-      const validListIds = res[0][0].id_list
-        .filter(id => typeof this.bot.client.guilds.get(guild.id).roles.get(id) !== 'undefined');
-      const validList = validListIds
-        .map(id => this.bot.client.guilds.get(guild.id).roles.get(id));
+      const validList = res[0][0].id_list
+        .filter((role) => {
+          if (!role) {
+            return undefined;
+          }
+          const parsed = JSON.parse(role);
+          if (typeof parsed === 'object') {
+            return typeof guild.roles.has(parsed.id);
+          } if (typeof parsed === 'number') {
+            return guild.roles.has(String(parsed));
+          }
+          return undefined;
+        }).map((role) => {
+          const parsed = JSON.parse(role);
+          if (typeof parsed === 'object') {
+            const joinable = new JoinableRole(guild.roles.get(parsed.id));
+            if (typeof parsed.requiredRole !== 'undefined') {
+              joinable.requiredRole = guild.roles.has(parsed.requiredRole)
+                ? guild.roles.get(parsed.requiredRole)
+                : undefined;
+            }
+            joinable.isLeaveable = typeof parsed.leaveable !== 'undefined' ? parsed.leavable : true;
+            return joinable;
+          } if (typeof parsed === 'string') {
+            return new JoinableRole(guild.roles.get(parsed));
+          }
+          return undefined;
+        })
+        .filter(role => role);
       return validList;
     }
     return [];
