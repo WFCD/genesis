@@ -102,8 +102,10 @@ class AddRole extends Command {
   }
 
   async addAndCommitRole(message, roles, newRole) {
-    await this.settings.setRolesForGuild(message.guild,
-      roles.map(role => JSON.stringify(role)));
+    await this.settings.setRolesForGuild(
+      message.guild,
+      roles.map(role => JSON.stringify(role)),
+    );
     await this.messageManager.embed(message, {
       title: 'Added role to joinable list',
       type: 'rich',

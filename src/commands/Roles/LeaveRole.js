@@ -87,9 +87,11 @@ class LeaveRole extends Command {
       await this.sendLeft(message, role);
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.sendCantLeave(message,
+    await this.sendCantLeave(
+      message,
       userDoesntHaveRole,
-      filteredRoles[0] && filteredRoles[0].leaveable);
+      filteredRoles[0] && filteredRoles[0].leaveable,
+    );
     return this.messageManager.statuses.FAILURE;
   }
 
