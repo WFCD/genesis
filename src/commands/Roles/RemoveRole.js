@@ -60,7 +60,7 @@ class RemoveRole extends Command {
       const deleteRole = deleteRegex.test(message.strippedContent);
       this.removeAndCommitRoles(message, roles
         .filter(storedRole => filteredRoles[0].id !== storedRole.id)
-        .map(unSelectedRole => unSelectedRole.id), filteredRoles[0]);
+        .map(unSelectedRole => unSelectedRole.getSimple()), filteredRoles[0]);
       if (deleteRole) {
         message.guild.roles.get(filteredRoles[0].id).delete('Deleting role from role remove');
       }
@@ -71,7 +71,7 @@ class RemoveRole extends Command {
   }
 
   async removeAndCommitRoles(message, roles, newRole) {
-    await this.settings.setRolesForGuild(message.guild, roles);
+    await this.settings.setRolesForGuild(message.guild, roles.map(role => JSON.stringify(role));
     await this.messageManager.embed(message, {
       title: 'Removed role from joinable list',
       type: 'rich',
