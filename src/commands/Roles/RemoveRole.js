@@ -71,7 +71,7 @@ class RemoveRole extends Command {
   }
 
   async removeAndCommitRoles(message, roles, newRole) {
-    await this.settings.setRolesForGuild(message.guild, roles.map(role => JSON.stringify(role));
+    await this.settings.setRolesForGuild(message.guild, roles.map(role => JSON.stringify(role)));
     await this.messageManager.embed(message, {
       title: 'Removed role from joinable list',
       type: 'rich',
