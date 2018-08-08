@@ -18,10 +18,9 @@ class Event extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = (platformParam || await this.settings
-      .getChannelSetting(message.channel, 'platform')).toLowerCase();
+    const platform = (platformParam || ctx.platform).toLowerCase();
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     if (ws.events.length > 0) {
       const pages = ws.events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
