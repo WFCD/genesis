@@ -16,9 +16,9 @@ class News extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam ||ctx.platform;
     const language = await this.settings.getChannelSetting(message.channel, 'language');
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const news = ws.news.filter(n => !n.update && !n.primeAccess && n.translations[language]);
