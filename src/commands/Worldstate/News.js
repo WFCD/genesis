@@ -18,7 +18,7 @@ class News extends Command {
 
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam ||ctx.platform;
+    const platform = platformParam || ctx.platform;
     const language = await this.settings.getChannelSetting(message.channel, 'language');
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const news = ws.news.filter(n => !n.update && !n.primeAccess && n.translations[language]);
