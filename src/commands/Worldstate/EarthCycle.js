@@ -32,10 +32,10 @@ class EarthCycle extends Command {
    *                          or perform an action based on parameters.
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     let cycleData;
     const earth = (/earth/ig).test(message.strippedContent);
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
+    const ws = await this.bot.worldStates[ctx.platform.toLowerCase()].getData();
     if (earth) {
       cycleData = ws.earthCycle;
     } else {
