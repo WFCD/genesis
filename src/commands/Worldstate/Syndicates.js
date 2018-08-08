@@ -25,7 +25,7 @@ class Syndicates extends Command {
     ];
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
     const param2 = (matches[2] || '').toLowerCase();
@@ -36,7 +36,7 @@ class Syndicates extends Command {
     } else if (this.platforms.indexOf(param1) > -1) {
       platformParam = param1;
     }
-    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const pages = [];
     const matching = ws.syndicateMissions.filter(m => m.syndicate.toLowerCase() === syndicate || syndicate === 'all');
