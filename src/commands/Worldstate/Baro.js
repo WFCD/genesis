@@ -16,9 +16,9 @@ class Baro extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     await this.messageManager
       .embed(message, new VoidTraderEmbed(this.bot, ws.voidTrader, platform), true, false);
