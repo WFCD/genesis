@@ -35,7 +35,7 @@ class EarthCycle extends Command {
   async run(message) {
     let cycleData;
     const earth = (/earth/ig).test(message.strippedContent);
-    const ws = JSON.parse(await this.bot.worldStates.pc.getData());
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     if (earth) {
       cycleData = ws.earthCycle;
     } else {
