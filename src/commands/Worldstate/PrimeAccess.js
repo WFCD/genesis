@@ -16,9 +16,9 @@ class PrimeAccess extends Command {
     this.regex = new RegExp('^prime\\s?access(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
-    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const news = ws.news.filter(n => n.primeAccess);
     await this.messageManager.embed(message, new PrimeAccessEmbed(this.bot, news, 'primeaccess', platform), true, false);
