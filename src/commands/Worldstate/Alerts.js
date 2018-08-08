@@ -17,7 +17,7 @@ class Alerts extends Command {
     this.regex = new RegExp(`^${this.call}s?\\s?(?:(compact))?(?:on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const matches = message.strippedContent.match(this.regex);
     const param1 = (matches[1] || '').toLowerCase();
     const param2 = (matches[2] || '').toLowerCase();
@@ -29,7 +29,7 @@ class Alerts extends Command {
       platformParam = param1;
     }
 
-    const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
+    const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const alerts = ws.alerts.filter(a => !a.expired);
 
