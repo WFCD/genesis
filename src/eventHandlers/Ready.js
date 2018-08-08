@@ -49,16 +49,20 @@ async function checkPrivateRooms(self, shardId) {
  * @param {Bot} self  the bot
  */
 async function updatePresence(self) {
-  const cetusState = (await self.bot.caches.pc.getDataJson()).cetusCycle;
-  if (cetusState) {
-    self.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      game: {
-        name: `${cetusState.shortString} | @${self.client.user.username} help`,
-        type: 'WATCHING',
-      },
-    });
+  try {
+    const cetusState = (await self.bot.worldStates.pc.getData()).cetusCycle;
+    if (cetusState) {
+      self.client.user.setPresence({
+        status: 'online',
+        afk: false,
+        game: {
+          name: `${cetusState.shortString} | @${self.client.user.username} help`,
+          type: 'WATCHING',
+        },
+      });
+    }
+  } catch (error) {
+    // swallow, it's not an important error
   }
 }
 

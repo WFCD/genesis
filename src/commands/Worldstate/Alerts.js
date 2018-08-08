@@ -30,7 +30,7 @@ class Alerts extends Command {
     }
 
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const alerts = ws.alerts.filter(a => !a.expired);
 
     if (compact) {

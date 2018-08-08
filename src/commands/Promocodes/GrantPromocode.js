@@ -19,7 +19,7 @@ class GrantPromocode extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const pool = await resolvePool(message, this.settings);
     const platform = message.strippedContent.match(/(pc|ps4|xb1)/i)[0] || 'pc';
     const user = message.strippedContent.match(/([0-9]{16,20})/i)[0];
@@ -41,9 +41,12 @@ class GrantPromocode extends Command {
     if (grantedTo === null) {
       await this.settings.grantCode(code, user, message.author.id, platform);
       this.messageManager.reply(message, `Code granted to <@${user}> from ${pool} on ${platform}`);
+      this.messageManager.sendDirectMessageToUser(user, `You've been granted a code for ${pool} on ${platform}.
+        \nUse \`${ctx.prefix}glyphs list claimed\` in this direct message to see your new code.
+        \n**If you are receiving this in error, or the code is for the wrong platform,** contact ${message.member} immediately with the code so it can be revoked and a new code granted.`);
       return this.messageManager.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

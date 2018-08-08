@@ -23,7 +23,7 @@ class Sorties extends Command {
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const { sortie } = ws;
     if (sortie.expired) {
       await this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);

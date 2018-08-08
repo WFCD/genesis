@@ -37,7 +37,7 @@ class Syndicates extends Command {
       platformParam = param1;
     }
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const pages = [];
     const matching = ws.syndicateMissions.filter(m => m.syndicate.toLowerCase() === syndicate || syndicate === 'all');
     if (matching.length) {

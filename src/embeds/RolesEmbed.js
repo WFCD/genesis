@@ -22,7 +22,7 @@ class RolesEmbed extends BaseEmbed {
     roleGroups.forEach((roleGroup) => {
       this.fields.push({
         name: '_ _',
-        value: `${roleGroup.map(role => `\`${rpad(role.name, Number(longest + 2), ' ')}${rpad(String(role.members.size), 4, ' ')} members\``).join(' \n')}`,
+        value: `\`\`\`${roleGroup.map(role => `${rpad(role.guildRole.name, Number(longest + 2), ' ')}${rpad(String(role.guildRole.members.size), 4, ' ')} members`).join(' \n')}\`\`\``,
       });
     });
 

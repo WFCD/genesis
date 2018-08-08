@@ -22,7 +22,7 @@ class Event extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = (platformParam || await this.settings
       .getChannelSetting(message.channel, 'platform')).toLowerCase();
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     if (ws.events.length > 0) {
       const pages = ws.events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
       const msg = await this.messageManager.embed(message, pages[0], true, false);

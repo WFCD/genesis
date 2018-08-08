@@ -19,7 +19,7 @@ class PopularDeal extends Command {
   async run(message) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || await this.settings.getChannelSetting(message.channel, 'platform');
-    const ws = await this.bot.caches[platform.toLowerCase()].getDataJson();
+    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const sales = ws.flashSales.filter(popularItem => popularItem.isPopular);
     await this.messageManager.embed(
       message,

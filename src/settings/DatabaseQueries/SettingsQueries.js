@@ -107,11 +107,13 @@ class SettingsQueries {
    * @returns {Promise} setting
    */
   async setChannelSetting(channel, setting, value) {
+    if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
     const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
     return this.db.query(query);
   }
 
   async deleteChannelSetting(channel, setting) {
+    if (typeof setting === 'undefined') return false;
     const query = SQL`DELETE FROM settings where channel_id = ${channel.id} and setting=${setting};`;
     return this.db.query(query);
   }
@@ -124,6 +126,7 @@ class SettingsQueries {
    * @returns {Promise}
    */
   async setGuildSetting(guild, setting, val) {
+    if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
     const promises = [];
     guild.channels.array().forEach((channel) => {
       promises.push(this.setChannelSetting(channel, setting, val));

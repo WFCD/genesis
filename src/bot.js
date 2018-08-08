@@ -39,7 +39,6 @@ class Genesis {
    * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
-   * @param  {Object}           [options.caches]     json-fetch-cache for each Warframe worldstate
    */
   constructor(discordToken, logger, {
     shardId = 0,
@@ -47,7 +46,6 @@ class Genesis {
     prefix = process.env.PREFIX,
     mdConfig = md,
     owner = null,
-    caches = {},
   } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -55,7 +53,7 @@ class Genesis {
      * @private
      */
     this.client = new Discord.Client({
-      fetchAllMembers: true,
+      fetchAllMembers: false,
       ws: {
         compress: true,
         large_threshold: 1000,
@@ -73,8 +71,6 @@ class Genesis {
      * @private
      */
     this.token = discordToken;
-
-    this.caches = caches;
 
     /**
      * Discord.js API
