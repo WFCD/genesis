@@ -61,7 +61,10 @@ class PrivateRoomQueries {
             joinable.isLeaveable = typeof parsed.leaveable !== 'undefined' ? parsed.leavable : true;
             return joinable;
           } if (typeof parsed === 'string') {
-            return new JoinableRole(guild.roles.get(parsed));
+            const joinable = new JoinableRole(guild.roles.get(parsed));
+            joinable.requiredRole = undefined;
+            joinable.isLeaveable = true;
+            return joinable;
           }
           return undefined;
         })
