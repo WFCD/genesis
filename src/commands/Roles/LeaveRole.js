@@ -73,11 +73,11 @@ class LeaveRole extends Command {
     const roleRemoveable = filteredRoles.length > 0
           && message.member.roles.get(role.id)
           && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES')
-          && botIsHigher;
+          && botIsHigher
+          && filteredRoles[0].leaveable;
     const userDoesntHaveRole = filteredRoles.length > 0
           && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES')
           && !message.member.roles.get(role.id);
-
     if (!botIsHigher) {
       await this.sendBotRoleLow(message);
       return this.messageManager.statuses.FAILURE;

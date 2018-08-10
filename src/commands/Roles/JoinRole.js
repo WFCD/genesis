@@ -68,14 +68,15 @@ class JoinRole extends Command {
     const botIsHigher = message.guild.members.get(this.bot.client.user.id)
       .highestRole.comparePositionTo(message.guild.roles.get(role.id));
 
-    const userHasRole = filteredRoles.length > 0
-                   && message.member.roles.get(role.id)
-                   && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
+    const botHasPerm = message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
 
-    const hasMinimumRole = (filteredRoles[0] && filteredRoles[0].requiredRole
+    const userHasRole = message.member.roles.get(role.id);
+
+    const userHasMinimumRole = (filteredRoles[0] && filteredRoles[0].requiredRole
       ? message.member.roles.has(filteredRoles[0].requiredRole)
       : true);
-    const roleAddable = !userHasRole && botIsHigher && hasMinimumRole;
+    const roleAddable = !userHasRole && botIsHigher
+      && botHasPerm && userHasMinimumRole && filteredRoles.length > 0;
 
     if (!botIsHigher) {
       await this.sendBotRoleLow(message);
@@ -86,7 +87,7 @@ class JoinRole extends Command {
       await this.sendJoined(message, role);
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.sendCantJoin(message, userHasRole, hasMinimumRole);
+    await this.sendCantJoin(message, userHasRole, userHasMinimumRole);
     return this.messageManager.statuses.FAILURE;
   }
 
