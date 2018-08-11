@@ -49,7 +49,7 @@ class PrivateRoomQueries {
             return guild.roles.has(String(parsed));
           }
           return undefined;
-        }).map((role) => {
+        }).filter(role => role).map((role) => {
           const parsed = JSON.parse(role);
           if (typeof parsed === 'object') {
             const joinable = new JoinableRole(guild.roles.get(parsed.id));
