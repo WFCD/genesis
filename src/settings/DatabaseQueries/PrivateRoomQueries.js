@@ -51,7 +51,7 @@ class PrivateRoomQueries {
           return undefined;
         }).filter(role => role).map((role) => {
           const parsed = JSON.parse(role);
-          if (typeof parsed === 'object') {
+          if (typeof parsed === 'object' && guild.roles.has(parsed.id)) {
             const joinable = new JoinableRole(guild.roles.get(parsed.id));
             if (typeof parsed.requiredRole !== 'undefined') {
               joinable.requiredRole = guild.roles.has(parsed.requiredRole)
@@ -60,7 +60,7 @@ class PrivateRoomQueries {
             }
             joinable.isLeaveable = typeof parsed.leaveable !== 'undefined' ? parsed.leavable : true;
             return joinable;
-          } if (typeof parsed === 'string') {
+          } if (typeof parsed === 'string' && guild.roles.has(parsed)) {
             const joinable = new JoinableRole(guild.roles.get(parsed));
             joinable.requiredRole = undefined;
             joinable.isLeaveable = true;
