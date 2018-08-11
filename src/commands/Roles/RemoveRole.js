@@ -54,7 +54,6 @@ class RemoveRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const roles = await this.settings.getRolesForGuild(message.guild);
-    this.logger.debug(`roles: ${JSON.stringify(roles.map(somerole => somerole.getSimple()))}`);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
     if (filteredRoles.length > 0) {
       const deleteRole = deleteRegex.test(message.strippedContent);

@@ -81,7 +81,7 @@ class AddRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
 
-    const rolesToCommit = roles.map(innerRole => innerRole);
+    const rolesToCommit = roles.map(innerRole => innerRole.getSimple());
     const newRole = new JoinableRole(role);
 
     if (reqRoleRegex.test(message.strippedContent)) {
