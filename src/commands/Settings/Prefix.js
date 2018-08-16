@@ -18,17 +18,16 @@ class Prefix extends Command {
     this.requiresAuth = true;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const prefix = message.strippedContent.match(this.regex)[1];
     if (!prefix) {
-      const configuredPrefix = this.settings.getChannelPrefix(message.channel);
       this.messageManager.embed(message, {
         title: 'Usage',
         type: 'rich',
         color: 0x0000ff,
         fields: [
           {
-            name: `${configuredPrefix}${this.call} <prefix>`,
+            name: `${ctx.prefix}${this.call} <prefix>`,
             value: 'Set the channel\'s custom prefix',
           },
         ],

@@ -54,6 +54,7 @@
       "deals.featured",
       "deals.popular",
       "enemies",
+      "enemies.departed",
       "conclave.weeklies",
       "conclave.dailies",
       "syndicate.arbiters",
@@ -67,6 +68,8 @@
       "streams",
       "cetus.day",
       "cetus.night",
+      "earth.day",
+      "earth.night",
       "syndicate.ostrons",
       "syndicate.assassins",
       "operations",
@@ -175,7 +178,8 @@
       "fissures.assault",
       "fissures.evacuation",
       "fissures",
-      "cetus"
+      "cetus",
+      "earth"
    ],
    "fissures":[
       "fissures.t1.excavation",

@@ -79,7 +79,7 @@ class Notifier {
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
-      .filter(e => !ids.includes(e.pid) && e.isDiscovered);
+      .filter(e => !ids.includes(e.pid));
     const alertsToNotify = newData.alerts
       .filter(a => !ids.includes(a.id) && !a.expired);
     const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId)
@@ -110,6 +110,7 @@ class Notifier {
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
+    const earthCycleChange = !ids.includes(`earthCycle${new Date(newData.earthCycle).getTime()}`) && newData.earthCycle.expiry;
     // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
@@ -124,7 +125,8 @@ class Notifier {
       .concat(newData.sortie ? [newData.sortie.id] : [])
       .concat(newData.syndicateMissions.map(m => m.id))
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
-      .concat([newData.cetusCycle.id]);
+      .concat([newData.cetusCycle.id])
+      .concat([`earthCycle${new Date(newData.earthCycle).getTime()}`]);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -164,6 +166,7 @@ class Notifier {
       newData.cetusCycle.bountyExpiry = ostron.expiry;
     }
     await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
+    await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
     this.sendUpdates(updatesToNotify, platform);
     await this.sendAlerts(alertsToNotify, platform);
   }
@@ -190,7 +193,7 @@ class Notifier {
     await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new EnemyEmbed(
       this.bot,
       [a], platform,
-    ), platform, 'enemies', null, 3600000)));
+    ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`, null, 3600000)));
   }
 
   async sendAlerts(newAlerts, platform) {
@@ -365,6 +368,15 @@ class Notifier {
     await this.broadcaster.broadcast(
       new EarthCycleEmbed(this.bot, newCetusCycle),
       platform, type, null, fromNow(newCetusCycle.expiry),
+    );
+  }
+
+  async sendEarthCycle(newEarthCycle, platform, cetusCycleChange) {
+    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
+    const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    await this.broadcaster.broadcast(
+      new EarthCycleEmbed(this.bot, newEarthCycle),
+      platform, type, null, fromNow(newEarthCycle.expiry),
     );
   }
 }

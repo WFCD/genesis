@@ -20,13 +20,8 @@ class EarthCycleEmbed extends BaseEmbed {
     this.thumbnail = {
       url: state.isCetus ? 'https://i.imgur.com/Ph337PR.png' : 'https://i.imgur.com/oR6Sskf.png',
     };
-    this.fields = [
-      {
-        name: '_ _',
-        value: `Time remaining until ${state.isDay ? 'night' : 'day'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`
-          + `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.bountyExpiry)))}` : ''}`,
-      },
-    ];
+    this.description = `Time remaining until ${state.isDay ? 'night' : 'day'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`
+      + `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.bountyExpiry)))}` : ''}`;
     this.footer.text = `${state.isDay ? 'Night' : 'Day'} starts `;
     this.timestamp = new Date(state.expiry);
   }

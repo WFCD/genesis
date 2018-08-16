@@ -49,6 +49,7 @@ const trackableEvents = {
   conclave,
   deals,
   cetus: ['cetus.day', 'cetus.night'],
+  earth: ['earth.day', 'earth.night'],
 };
 
 const trackableItems = {
@@ -64,12 +65,13 @@ const trackableItems = {
  */
 const termToTrackable = (term) => {
   const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
+  const earthCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
   const trackable = {
     events: [],
     items: [],
   };
 
-  if (cetusCustomTimeRegex.test(term)) {
+  if (cetusCustomTimeRegex.test(term) || earthCustomTimeRegex.test(term)) {
     trackable.events = term;
     return trackable;
   }
@@ -137,7 +139,7 @@ const trackablesFromParameters = (params) => {
   return trackables;
 };
 
-const eventsOrItems = new RegExp(`cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
+const eventsOrItems = new RegExp(`earth\\.day\\.[0-1]?[0-9]?[0-9]|earth\\.night\\.[0-1]?[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
 
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
 

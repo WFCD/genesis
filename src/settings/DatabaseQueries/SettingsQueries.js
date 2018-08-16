@@ -122,14 +122,14 @@ class SettingsQueries {
    * Resets the custom prefix for this guild to the bot's globally configured prefix
    * @param {Guild} guild The Discord guild for which to set the response setting
    * @param {string} setting Name of the setting to set
-   * @param {string|boolean} val value of the setting to be set
+   * @param {string|boolean} value value of the setting to be set
    * @returns {Promise}
    */
-  async setGuildSetting(guild, setting, val) {
+  async setGuildSetting(guild, setting, value) {
     if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
     const promises = [];
-    guild.channels.array().forEach((channel) => {
-      promises.push(this.setChannelSetting(channel, setting, val));
+    guild.channels.forEach((channel) => {
+      promises.push(this.setChannelSetting(channel, setting, value));
     });
     return Promise.all(promises);
   }
@@ -142,7 +142,7 @@ class SettingsQueries {
    */
   async deleteGuildSetting(guild, setting) {
     const promises = [];
-    guild.channels.array().forEach((channel) => {
+    guild.channels.forEach((channel) => {
       promises.push(this.deleteChannelSetting(channel, setting));
     });
     return Promise.all(promises);
