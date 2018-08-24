@@ -39,7 +39,7 @@ class WhatsinEmbed extends BaseEmbed {
         const wrappedQuality = lpad(`${quality.toFixed(2)}`, 6, ' ').substring(0, 5);
         qualities.push(wrappedQuality);
       });
-      tokens.push(`\`${rpad(rewardName, longest.length + 1, ' ')} ${qualities.join('/')}%\``);
+      tokens.push(`${rpad(rewardName, longest.length + 1, ' ')} ${qualities.join('/')}%`);
     });
 
 
@@ -49,7 +49,7 @@ class WhatsinEmbed extends BaseEmbed {
     this.fields = [
       {
         name: '_ _',
-        value: tokens.join('\n'),
+        value: `\`\`\`tokens.join('\n')\`\`\``,
       },
     ];
   }
