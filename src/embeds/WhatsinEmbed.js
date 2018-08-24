@@ -49,7 +49,7 @@ class WhatsinEmbed extends BaseEmbed {
     this.fields = [
       {
         name: '_ _',
-        value: `\`\`\`tokens.join('\n')\`\`\``,
+        value: `\`\`\`${tokens.join('\n')}\`\`\``,
       },
     ];
   }
