@@ -20,12 +20,6 @@ class WhatsinEmbed extends BaseEmbed {
     const rewards = [details.rewards.Intact, details.rewards.Exceptional,
       details.rewards.Flawless, details.rewards.Radiant];
     rewards
-      .map(rewardTier => {
-        return rewardTier.map(reward => {
-          reward.itemName = reward.itemName.replace(/prime/ig, 'P.').replace(/blueprint/ig, 'BP');
-          return reward;
-        });
-      })
       .forEach((rewardTier) => {
       rewardTier.forEach((reward) => {
         if (!transformedRewards[reward.itemName]) {
