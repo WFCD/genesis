@@ -51,7 +51,11 @@ class NewsEmbed extends BaseEmbed {
       this.timestamp = new Date(first.date);
       this.url = first.link;
     } else {
-      this.fields = value.map(val => ({ name: '_ _', value: val.join('\n') }));
+      if (Array.isArray(value[0])) {
+        this.fields = value.map(val => ({ name: '_ _', value: val.join('\n') }));
+      } else {
+        [this.description] = value;
+      }
       this.footer.text = platform.toUpperCase();
     }
     this.image = { url: first ? first.imageLink : '' };
