@@ -11,8 +11,8 @@ class Untrack extends Command {
   constructor(bot) {
     super(bot, 'settings.untrack', 'untrack');
     this.usages = [
-      { description: 'Show tracking command for tracking events', parameters: [] },
-      { description: 'Track an event or events', parameters: ['event(s) to track'] },
+      { description: 'Show tracking command for untracking events', parameters: [] },
+      { description: 'Untrack an event or events', parameters: ['event(s) to untrack'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s*(cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
     this.requiresAuth = true;
