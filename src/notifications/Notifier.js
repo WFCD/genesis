@@ -110,7 +110,7 @@ class Notifier {
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
-    const earthCycleChange = !ids.includes(`earthCycle${new Date(newData.earthCycle).getTime()}`) && newData.earthCycle.expiry;
+    const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
