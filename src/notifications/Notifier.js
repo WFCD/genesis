@@ -126,7 +126,7 @@ class Notifier {
       .concat(newData.syndicateMissions.map(m => m.id))
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
       .concat([newData.cetusCycle.id])
-      .concat([`earthCycle${new Date(newData.earthCycle).getTime()}`]);
+      .concat([newData.earthCycle.id]);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
