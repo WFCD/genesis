@@ -47,7 +47,7 @@ class EnhancementEmbed extends BaseEmbed {
       ];
     } else {
       this.title = 'Available Enhancements';
-      this.fields = [{ name: '_ _', value: enhancements.map(profile => profile.name).join('\n') }];
+      this.fields = [{ name: '\u200B', value: enhancements.map(profile => profile.name).join('\n') }];
     }
   }
 }

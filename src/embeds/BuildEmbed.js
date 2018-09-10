@@ -14,7 +14,7 @@ class BuildEmbed extends BaseEmbed {
     super();
     this.color = 0xF1C40F;
     this.title = build.title;
-    this.fields = [].concat(build.body.split(';').map(section => ({ name: '_ _', value: section })));
+    this.fields = [].concat(build.body.split(';').map(section => ({ name: '\u200B', value: section })));
     this.image = { url: build.url };
     this.footer.text = `${build.id} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
   }

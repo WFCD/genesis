@@ -129,12 +129,12 @@ class LeaveRole extends Command {
       color: 0x779ECB,
       fields: [
         {
-          name: '_ _',
+          name: '\u200B',
           value: 'Role or role id to join.',
         },
         {
           name: 'Possible role values:',
-          value: '_ _',
+          value: '\u200B',
         },
       ],
     };

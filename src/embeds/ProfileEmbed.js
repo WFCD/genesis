@@ -126,7 +126,7 @@ class ProfileEmbed extends BaseEmbed {
       );
       this.footer.text = `Last Updated ${new Date(player.updatedAt).toLocaleString()} UTC | Data provided by Nexus-Stats.com`;
     } else {
-      this.fields = [{ name: '_ _', value: 'No Such Player' }];
+      this.fields = [{ name: '\u200B', value: 'No Such Player' }];
     }
   }
 }

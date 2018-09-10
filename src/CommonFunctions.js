@@ -168,7 +168,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: 'Possible values:',
-        value: '_ _',
+        value: '\u200B',
         inline: false,
       },
     ],

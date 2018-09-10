@@ -37,7 +37,10 @@
         "MYSQL_DB":"genesis",
         "LOG_LEVEL": "ERROR",
         "WORLDSTATE_TIMEOUT": 60000,
-        "INVITE_URL" : "https://github.com/Warframe-Community-Developers/genesis"
+        "INVITE_URL" : "https://github.com/wfcd/genesis",
+        "CONTROL_WEBHOOK_TOKEN": "webhook token for control channel goes here",
+        "CONTROL_WEBHOOK_ID": "webhook id for control channel goes here",
+        "NODE_ENV": "development"
       }
     }
   ]

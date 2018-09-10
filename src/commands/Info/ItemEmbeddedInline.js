@@ -54,28 +54,31 @@ const checkWikia = async (prompt) => {
 };
 
 const checkMods = async (prompt) => {
-  const searchJson = await warframe.getSearchList({ query: prompt, limit: 1 });
-  const [{ id }] = searchJson.items;
-  const detailsJson = await warframe.getArticleDetails({ ids: [id] });
-  let thumbUrl = detailsJson.items[`${id}`].thumbnail;
-  thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
-
-  const list = await warframe.getArticlesList({ category: 'Mods', limit: 1000 });
-  let result;
-  list.items.forEach((item) => {
-    if (item.id === id) {
-      result = {
-        title: detailsJson.items[id].title,
-        url: detailsJson.basepath + detailsJson.items[id].url,
-        color: 0xC0C0C0,
-        description: `Mod result for ${prompt}`,
-        image: {
-          url: thumbUrl,
-        },
-      };
-    }
-  });
-  return result;
+  try {
+    const searchJson = await warframe.getSearchList({ query: prompt, limit: 1 });
+    const [{ id }] = searchJson.items;
+    const detailsJson = await warframe.getArticleDetails({ ids: [id] });
+    let thumbUrl = detailsJson.items[`${id}`].thumbnail;
+    thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
+    const list = await warframe.getArticlesList({ category: 'Mods', limit: 1000 });
+    let result;
+    list.items.forEach((item) => {
+      if (item.id === id) {
+        result = {
+          title: detailsJson.items[id].title,
+          url: detailsJson.basepath + detailsJson.items[id].url,
+          color: 0xC0C0C0,
+          description: `Mod result for ${prompt}`,
+          image: {
+            url: thumbUrl,
+          },
+        };
+      }
+    });
+    return result;
+  } catch (e) {
+    return undefined;
+  }
 };
 
 /**
@@ -99,29 +102,39 @@ class FrameStatsInline extends Command {
 
   async evalQuery(message, query) {
     const strippedQuery = query.replace(/\[|\]/ig, '').trim().toLowerCase();
-    const modResult = await checkMods(query);
-    const frameResult = await checkFrames(strippedQuery);
-    const weaponResult = await checkWeapons(strippedQuery);
-    const wikiResult = await checkWikia(query);
 
-    if (modResult && modResult.title.toLowerCase() === strippedQuery.toLowerCase()) {
-      this.messageManager.embed(message, modResult, false, true);
-      return this.messageManager.statuses.SUCCESS;
-    }
+    try {
+      this.logger.debug(`Checking ${strippedQuery} for mod`);
+      const modResult = await checkMods(query);
+      this.logger.debug(`Checking ${strippedQuery} for frame`);
+      const frameResult = await checkFrames(strippedQuery);
+      this.logger.debug(`Checking ${strippedQuery} for weapon`);
+      const weaponResult = await checkWeapons(strippedQuery);
+      this.logger.debug(`Checking ${strippedQuery} from wiki`);
+      const wikiResult = await checkWikia(query);
 
-    if (frameResult) {
-      this.messageManager.embed(message, frameResult, false, true);
-      return this.messageManager.statuses.SUCCESS;
-    }
+      if (modResult && modResult.title.toLowerCase() === strippedQuery.toLowerCase()) {
+        this.messageManager.embed(message, modResult, false, true);
+        return this.messageManager.statuses.SUCCESS;
+      }
 
-    if (weaponResult) {
-      this.messageManager.embed(message, weaponResult, false, true);
-      return this.messageManager.statuses.SUCCESS;
-    }
+      if (frameResult) {
+        this.messageManager.embed(message, frameResult, false, true);
+        return this.messageManager.statuses.SUCCESS;
+      }
 
-    if (wikiResult) {
-      this.messageManager.embed(message, wikiResult, false, true);
-      return this.messageManager.statuses.SUCCESS;
+      if (weaponResult) {
+        this.messageManager.embed(message, weaponResult, false, true);
+        return this.messageManager.statuses.SUCCESS;
+      }
+
+      if (wikiResult) {
+        this.messageManager.embed(message, wikiResult, false, true);
+        return this.messageManager.statuses.SUCCESS;
+      }
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+      this.logger.error(error);
     }
 
     return this.messageManager.statuses.FAILURE;

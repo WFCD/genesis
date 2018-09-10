@@ -23,7 +23,7 @@ class SettingsEmbed extends BaseEmbed {
 
     this.fields = [];
     tokens.forEach((tokenGroup) => {
-      this.fields.push({ name: '_ _', value: tokenGroup.join('\n') });
+      this.fields.push({ name: '\u200B', value: tokenGroup.join('\n') });
     });
   }
 }

@@ -22,7 +22,7 @@ class ListClaimed extends Command {
         title: 'Claimed Codes',
         color: 0xd30000,
         fields: codeGroup.length === 0
-          ? [{ name: '_ _', value: 'No claimed codes' }]
+          ? [{ name: '\u200B', value: 'No claimed codes' }]
           : codeGroup.map(code => ({
             name: `${code.pool_name} • ${(code.platform || 'pc').toUpperCase()}`,
             value: `\`${code.code}\`\n[Claim](https://warframe.com/promocode?code=${code.code})`,

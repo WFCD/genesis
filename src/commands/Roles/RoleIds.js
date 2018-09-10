@@ -40,7 +40,7 @@ class Roles extends Command {
         title: 'Role Ids',
         color: 0xFFD700,
         fields: metaGroup.map(roleGroup => ({
-          name: '_ _',
+          name: '\u200B',
           value: roleGroup.join('\n'),
         })),
       });

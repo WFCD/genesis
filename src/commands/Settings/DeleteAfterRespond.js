@@ -22,7 +22,7 @@ class RespondToSettings extends Command {
       color: 0x779ECB,
       fields: [
         {
-          name: '_ _',
+          name: '\u200B',
           value: `${this.bot.prefix}${this.call} < all | command | respond | none > `,
         },
       ],

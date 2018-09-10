@@ -91,9 +91,9 @@ class Enable extends Command {
   getCommandsToEnable(commandIdParam) {
     const commandsToEnable = [];
     const commandRegex = new RegExp(commandIdParam.replace('.', '\\.').replace('*', '.*'), 'ig');
-    const commands = this.bot.commandHandler.commands
-      .concat(this.bot.commandHandler.inlineCommands || [])
-      .concat(this.bot.commandHandler.customCommands || []);
+    const commands = this.commandManager.commands
+      .concat(this.commandManager.inlineCommands || [])
+      .concat(this.commandManager.customCommands || []);
     commands.forEach((command) => {
       if (commandRegex.test(command.id) && command.blacklistable) {
         commandsToEnable.push(command.id);

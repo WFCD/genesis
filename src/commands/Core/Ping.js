@@ -60,7 +60,7 @@ class Ping extends Command {
         ...results,
         ],
         footer: {
-          thumbnail_url: '_ _',
+          thumbnail_url: '\u200B',
           text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
         },
       },

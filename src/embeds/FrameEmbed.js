@@ -80,7 +80,7 @@ class FrameEmbed extends BaseEmbed {
       ];
     } else {
       this.title = 'Available Warframes';
-      this.fields = [{ name: '_ _', value: frames.map(stat => stat.name).join('\n') }];
+      this.fields = [{ name: '\u200B', value: frames.map(stat => stat.name).join('\n') }];
     }
   }
 }

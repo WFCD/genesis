@@ -25,7 +25,7 @@ class ListBuilds extends Command {
     const builds = await this.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
       const buildGroups = createGroupedArray(builds, 15);
-      const tokens = buildGroups.map(buildGroup => ({ name: '_ _', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
+      const tokens = buildGroups.map(buildGroup => ({ name: '\u200B', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
       const tokenGroups = createGroupedArray(tokens, 5);
       const embeds = [];
       tokenGroups.forEach((tokenGroup) => {

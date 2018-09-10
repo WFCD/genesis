@@ -28,7 +28,7 @@ class ListPools extends Command {
         title: 'Managed Pools',
         color: 0xd30000,
         fields: poolGroup.map(group => ({
-          name: '_ _',
+          name: '\u200B',
           value: group.map(pool => `\`${rpad(pool.pool_id, longestId.length, ' ')} `
             + `| ${rpad(pool.name, longestName.length, ' ')} | ${pool.len}\``).join('\n'),
         })),

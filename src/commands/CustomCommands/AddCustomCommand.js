@@ -19,7 +19,7 @@ class AddCustomCommand extends Command {
       this.messageManager.embed(message, {
         title: 'Adding Custom Commands',
         fields: [{
-          name: '_ _',
+          name: '\u200B',
           value: `**${this.call}**\n`
             + '**command call**: command trigger\n'
             + '**comamnd response**: response to the trigger',

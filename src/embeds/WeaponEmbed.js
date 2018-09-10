@@ -90,23 +90,51 @@ class WeaponEmbed extends BaseEmbed {
 
       if (weapon.secondary) {
         const values = [];
-        values.push(`**Trigger:** ${weapon.secondary.trigger || '-'}`);
-        values.push(`**Projectile:** ${weapon.secondary.pellet.name}`);
-        values.push(`**Rate:** ${weapon.secondary.rate}`);
-        values.push(`**Flight:**: ${weapon.secondary.flight}m\\s`);
-        values.push(`**Noise:** ${weapon.secondary.noise}`);
-        values.push(`**Accuracy:** ${weapon.secondary.accuracy}`);
-        values.push(`**Reload:** ${weapon.secondary.reload}`);
-        values.push(`**Damage:** ${emojify(weapon.secondary.damage || '-')}`);
-        values.push(`**Impact:** ${weapon.secondary.impact}`);
-        values.push(`**Puncture:** ${weapon.secondary.puncture}`);
-        values.push(`**Slash:** ${weapon.secondary.slash}`);
-        values.push(`**Critical Chance:** ${weapon.secondary.crit_chance}%`);
-        values.push(`**Critical Multiplier:** ${weapon.secondary.crit_mult}x`);
-        values.push(`**Status Chance:** ${weapon.secondary.status_chance}%`);
+        if (weapon.secondary.trigger) {
+          values.push(`**Trigger:** ${weapon.secondary.trigger || '-'}`);
+        }
+        if (weapon.secondary.shot_type) {
+          values.push(`**Projectile:** ${weapon.secondary.shot_type}`);
+        }
+        if (weapon.secondary.rate) {
+          values.push(`**Rate:** ${weapon.secondary.rate}`);
+        }
+        if (weapon.secondary.flight) {
+          values.push(`**Flight:**: ${weapon.secondary.flight}m\\s`);
+        }
+        if (weapon.secondary.noise) {
+          values.push(`**Noise:** ${weapon.secondary.noise}`);
+        }
+        if (weapon.secondary.accuracy) {
+          values.push(`**Accuracy:** ${weapon.secondary.accuracy}`);
+        }
+        if (weapon.secondary.reload) {
+          values.push(`**Reload:** ${weapon.secondary.reload}`);
+        }
+        if (weapon.secondary.damage) {
+          values.push(`**Damage:** ${emojify(weapon.secondary.damage || '-')}`);
+        }
+        if (weapon.secondary.impact) {
+          values.push(`**Impact:** ${weapon.secondary.impact}`);
+        }
+        if (weapon.secondary.puncture) {
+          values.push(`**Puncture:** ${weapon.secondary.puncture}`);
+        }
+        if (weapon.secondary.slash) {
+          values.push(`**Slash:** ${weapon.secondary.slash}`);
+        }
+        if (weapon.secondary.crit_chance) {
+          values.push(`**Critical Chance:** ${weapon.secondary.crit_chance}%`);
+        }
+        if (weapon.secondary.crit_mult) {
+          values.push(`**Critical Multiplier:** ${weapon.secondary.crit_mult}x`);
+        }
+        if (weapon.secondary.status_chance) {
+          values.push(`**Status Chance:** ${weapon.secondary.status_chance}%`);
+        }
 
         this.fields.push({
-          name: 'Secondary Fire',
+          name: weapon.secondary.name || 'Secondary Fire',
           value: values.join('\n') || '--',
           inline: true,
         });

@@ -29,6 +29,21 @@ const props = (obj) => {
 };
 
 /**
+ * Copy funcitonns from class to this class... theoretically
+ * @param {Object} queriesClass class instance
+ * @returns {undefined} doesn't return anything
+ */
+const copyChildrenQueries = (queriesClass) => {
+  const keys = props(queriesClass);
+  keys.forEach((key) => {
+    if (key !== 'db') {
+      // eslint-disable-next-line no-use-before-define
+      Database.prototype[key] = queriesClass[key];
+    }
+  });
+};
+
+/**
  * Connection options for the database
  * @typedef {Object} DbConnectionOptions
  * @property {string} [host=localhost] - The hostname of the database
@@ -90,23 +105,8 @@ class Database {
     ];
 
     queryClasses.forEach((queryClass) => {
-      this.copyChildrenQueries(queryClass);
+      copyChildrenQueries(queryClass);
     });
-  }
-
-  /**
-   * Copy funcitonns from class to this class... theoretically
-   * @param {Object} queriesClass class instance
-   * @returns {undefined} doesn't return anything
-   */
-  copyChildrenQueries(queriesClass) {
-    const keys = props(queriesClass);
-    keys.forEach((key) => {
-      if (key !== 'db') {
-        Database.prototype[key] = queriesClass[key];
-      }
-    });
-    this.logger.debug(`Imported Functions: ${props(this).length}`);
   }
 
   /**
