@@ -25,14 +25,13 @@ class Disable extends Command {
   }
 
   async run(message) {
-    const params = message.strippedContent.match(this.regex);
-
     const commandIdResults = message.strippedContent.match(commandIdRegex)
       .filter(str => str && !(str === this.call) && str.trim().length);
     const commandIdResult = commandIdResults.length ? commandIdResults[0] : undefined;
-    const channelResult = (message.strippedContent.match(locationRegex) || ['', 'here'])[1];
-    const targetResult = (message.strippedContent.match(appliesToRegex) || ['', message.guild.defaultRole.id])[1];
-    this.logger.debug(`params: ${commandIdResult} | ${channelResult} | ${targetResult}`);
+    const channelResult = (message.strippedContent.match(locationRegex) || ['', 'here'])[0].replace('in', '').replace(/<#/g, '').replace(/>/g, '').trim();
+    const t = message.strippedContent.match(appliesToRegex).filter(str => str.length);
+    const targetResult = (t.length ? t : [message.guild.defaultRole.id])[0]
+      .replace(/<@&?/g, '').replace(/>/g, '').replace('for', '').trim();
     const commands = this.getCommandsToEnable(commandIdResult).filter(command => command);
     let channels = [];
 
@@ -45,20 +44,17 @@ class Disable extends Command {
 
     // targets
     let target = {};
-    if (targetResult || message.mentions.roles.size > 0 || message.mentions.users.size > 0) {
-      target = getTarget(
-        params[2], message.mentions ? message.mentions.roles : [],
-        message.mentions ? message.mentions.users : [], message,
-      );
-    } else {
-      target = getTarget(
-        params[1], { first: () => undefined },
-        { first: () => undefined }, message,
-      ) || message.guild.defaultRole;
-    }
+    target = getTarget(
+      targetResult, message.mentions ? message.mentions.roles : [],
+      message.mentions ? message.mentions.users : [], message,
+    );
 
     if (!commands.length) {
-      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, params, 0), true, false);
+      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
+        commandIdResult,
+        channelResult,
+        targetResult,
+      ], 0), true, false);
       return this.messageManager.statuses.FAILURE;
     }
 
