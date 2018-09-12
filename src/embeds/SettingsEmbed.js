@@ -14,7 +14,6 @@ class SettingsEmbed extends BaseEmbed {
   constructor(bot, channel, tokens) {
     super();
     this.color = 0x77dd77;
-    this.url = 'https://wfcd.github.io/genesis';
     if (channel.type === 'text') {
       this.title = `Settings for ${channel.name}`;
     } else {

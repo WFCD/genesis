@@ -10,6 +10,7 @@ class BaseEmbed {
       text: 'Sent',
       icon_url: 'https://warframestat.us/wfcd_logo_color.png',
     };
+    this.fields = [];
     this.timestamp = new Date();
     if (bot) {
       this.bot = bot;
