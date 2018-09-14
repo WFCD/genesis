@@ -44,7 +44,7 @@ class AlertEmbed extends BaseEmbed {
       this.fields.push({ name: 'Archwing Required', value: a.mission.archwingRequired ? 'Yes' : 'No', inline: true });
 
       if (this.title.indexOf('Cr') === -1) {
-        this.fields.push({ name: '_ _', value: `**Credits:** ${a.mission.reward.credits}`, inline: true });
+        this.fields.push({ name: '\u200B', value: `**Credits:** ${a.mission.reward.credits}`, inline: true });
       }
       this.footer.text = `${a.eta} remaining • Expires `;
       this.timestamp = a.expiry;

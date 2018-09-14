@@ -18,7 +18,7 @@ class DeleteCustomCommand extends Command {
     if (!params[1]) {
       this.messageManager.embed(message, {
         title: 'Delete Custom Command',
-        fields: [{ name: '_ _', value: `**${this.call}**\n**command call**: command trigger to delete` }],
+        fields: [{ name: '\u200B', value: `**${this.call}**\n**command call**: command trigger to delete` }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }

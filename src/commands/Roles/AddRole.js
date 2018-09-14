@@ -136,7 +136,7 @@ class AddRole extends Command {
         },
         {
           name: 'Possible values:',
-          value: '_ _',
+          value: '\u200B',
         },
         {
           name: '**Roles:**',

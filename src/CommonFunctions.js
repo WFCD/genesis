@@ -1,6 +1,6 @@
 'use strict';
 
-const { Collection } = require('discord.js');
+const { Collection, RichEmbed } = require('discord.js');
 const emoji = require('./resources/emoji.json');
 const welcomes = require('./resources/welcomes.json');
 
@@ -168,7 +168,7 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
       {
         name: 'Possible values:',
-        value: '_ _',
+        value: '\u200B',
         inline: false,
       },
     ],
@@ -463,6 +463,7 @@ const createPageCollector = async (msg, pages, author) => {
   await msg.react('▶');
   await msg.react('⏭');
   const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+  setTimeout(() => { msg.clearReactions(); }, 601000);
 
   collector.on('collect', async (reaction) => {
     switch (reaction.emoji.name) {
@@ -491,7 +492,11 @@ const createPageCollector = async (msg, pages, author) => {
       const newPage = pages[page - 1];
       const pageInd = `Page ${page}/${pages.length}`;
       if (newPage.footer) {
-        if (newPage.footer.text) {
+        if (newPage instanceof RichEmbed) {
+          if (newPage.footer.text.indexOf('Page') === -1) {
+            newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.icon_url);
+          }
+        } else if (newPage.footer.text) {
           if (newPage.footer.text.indexOf('Page') === -1) {
             newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
           }

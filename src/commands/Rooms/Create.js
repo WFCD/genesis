@@ -204,7 +204,7 @@ class Create extends Command {
             this.messageManager.embed(message, {
               title: 'Channels created',
               fields: [{
-                name: '_ _',
+                name: '\u200B',
                 value: `Voice Channel: ${voiceChannel.name}${
                   textChannel ? `\nText Channel: ${textChannel}` : ''}`,
               }],

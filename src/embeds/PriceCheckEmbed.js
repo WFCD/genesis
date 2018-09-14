@@ -19,7 +19,7 @@ class PriceCheckEmbed extends BaseEmbed {
       this.url = 'http://nexus-stats.com';
       this.fields = [
         {
-          name: '_ _',
+          name: '\u200B',
           value: result[0],
           inline: true,
         },
@@ -41,7 +41,7 @@ class PriceCheckEmbed extends BaseEmbed {
     if (/.*riven.*/ig.test(query)) {
       this.fields = [
         {
-          name: '_ _',
+          name: '\u200B',
           value: 'Due to the complexity of Riven mod generation and unveiling, price checks are not guaranteed or reliably provided.',
           inline: true,
         },

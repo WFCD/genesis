@@ -57,7 +57,7 @@ class SyndicateEmbed extends BaseEmbed {
             value = nodes;
           }
           return {
-            name: syndMissions.length < 2 ? '_ _' : m.syndicate,
+            name: syndMissions.length < 2 ? '\u200B' : m.syndicate,
             value,
             inline: !(m.jobs.length > 0),
           };

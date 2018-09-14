@@ -8,7 +8,7 @@ class SetBanLog extends Command {
     this.usages = [
       { description: 'Set the ban log channel', parameters: ['channel id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(\\d+)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)(\\d+)(?:>))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

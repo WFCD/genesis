@@ -50,7 +50,7 @@ class LogMessageDelete extends Handler {
             value: `${message.author} • ${message.author.id}`,
           },
           {
-            name: '_ _',
+            name: '\u200B',
             value: msg.length ? `\`\`\`${msg.replace(/`/g, '\\`')}\`\`\`` : '```diff\n- Message was either empty or an embed```',
           },
         ],

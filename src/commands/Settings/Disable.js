@@ -5,6 +5,10 @@ const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
 const { getChannels, getTarget } = require('../../CommonFunctions');
 
+const commandIdRegex = new RegExp('(\\w*\\.*\\w*\\.*\\w*\\*?)', 'ig');
+const locationRegex = new RegExp('(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))', 'ig');
+const appliesToRegex = new RegExp('(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?', 'ig');
+
 class Disable extends Command {
   constructor(bot) {
     super(bot, 'settings.disable', 'disable', 'Disable a command.');
@@ -12,7 +16,7 @@ class Disable extends Command {
       { description: 'Disable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
     this.regex = new RegExp(
-      `^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))?(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?`,
+      `^${this.call}`,
       'i',
     );
     this.blacklistable = false;
@@ -21,19 +25,18 @@ class Disable extends Command {
   }
 
   async run(message) {
-    const params = message.strippedContent.match(this.regex);
-    if (!params[1]) {
-      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, params, 0), true, false);
-      return this.messageManager.statuses.FAILURE;
-    }
-    params.splice(0, 1);
-    const commands = this.getCommandsToEnable(params[0]).filter(command => typeof command !== 'undefined' && command !== null);
+    const commandIdResults = message.strippedContent.match(commandIdRegex)
+      .filter(str => str && !(str === this.call) && str.trim().length);
+    const commandIdResult = commandIdResults.length ? commandIdResults[0] : undefined;
+    const channelResult = (message.strippedContent.match(locationRegex) || ['', 'here'])[0].replace('in', '').replace(/<#/g, '').replace(/>/g, '').trim();
+    const t = message.strippedContent.match(appliesToRegex).filter(str => str.length);
+    const targetResult = (t.length ? t : [message.guild.defaultRole.id])[0]
+      .replace(/<@&?/g, '').replace(/>/g, '').replace('for', '').trim();
+    const commands = this.getCommandsToEnable(commandIdResult).filter(command => command);
     let channels = [];
 
-    if (params[1]) {
-      channels = getChannels(message.mentions.channels.length > 0
-        ? message.mentions.channels : params[1].trim().replace(/<|>|#/ig, ''), message);
-    }
+    channels = getChannels(message.mentions.channels.length > 0
+      ? message.mentions.channels : channelResult, message);
     channels = channels.filter(channel => typeof channel !== 'undefined' && channel !== null);
     if (!channels.length) {
       channels = [message.channel];
@@ -41,17 +44,18 @@ class Disable extends Command {
 
     // targets
     let target = {};
+    target = getTarget(
+      targetResult, message.mentions ? message.mentions.roles : [],
+      message.mentions ? message.mentions.users : [], message,
+    );
 
-    if (params[2] || message.mentions.roles.size > 0 || message.mentions.users.size > 0) {
-      target = getTarget(
-        params[2], message.mentions ? message.mentions.roles : [],
-        message.mentions ? message.mentions.users : [], message,
-      );
-    } else {
-      target = getTarget(
-        params[1], { first: () => undefined },
-        { first: () => undefined }, message,
-      ) || message.guild.defaultRole;
+    if (!commands.length) {
+      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
+        commandIdResult,
+        channelResult,
+        targetResult,
+      ], 0), true, false);
+      return this.messageManager.statuses.FAILURE;
     }
 
     const results = [];
@@ -91,9 +95,9 @@ class Disable extends Command {
   getCommandsToEnable(commandIdParam) {
     const commandsToEnable = [];
     const commandRegex = new RegExp(commandIdParam.replace('.', '\\.').replace('*', '.*'), 'ig');
-    const commands = this.bot.commandHandler.commands
-      .concat(this.bot.commandHandler.inlineCommands || [])
-      .concat(this.bot.commandHandler.customCommands || []);
+    const commands = this.commandManager.commands
+      .concat(this.commandManager.inlineCommands || [])
+      .concat(this.commandManager.customCommands || []);
     commands.forEach((command) => {
       if (commandRegex.test(command.id) && command.blacklistable) {
         commandsToEnable.push(command.id);

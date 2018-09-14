@@ -23,9 +23,9 @@ class Reload extends Command {
    */
   async run(message) {
     this.logger.debug('Reloading modules');
-    const commandsBefore = this.commandHandler.commands.map(c => c.id);
-    this.commandHandler.loadCommands();
-    const commandsAfter = this.commandHandler.commands.map(c => c.id);
+    const commandsBefore = this.commandManager.commands.map(c => c.id);
+    this.commandManager.loadCommands();
+    const commandsAfter = this.commandManager.commands.map(c => c.id);
 
     const commandsAdded = commandsAfter.filter(command => !commandsBefore.includes(command));
     const commandsRemoved = commandsBefore.filter(command => !commandsAfter.includes(command));

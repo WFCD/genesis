@@ -29,7 +29,7 @@ class EventEmbed extends BaseEmbed {
           vicDef += ` at ${event.node}`;
         }
         this.fields.push({
-          name: '_ _',
+          name: '\u200B',
           value: `Defend ${event.victimNode}${vicDef}.`,
         });
       }

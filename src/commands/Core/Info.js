@@ -21,14 +21,14 @@ class Untrack extends Command {
       title: 'Cephalon Genesis',
       fields: [
         {
-          name: '_ _',
+          name: '\u200B',
           value: 'Feel free to check out [Genesis here](https://bots.discord.pw/bots/123591822579597315),'
             + '\nAs well as on the [help page](https://genesis.warframestat.us),'
             + '\nand come support Genesis, if you\'re interested, [on patreon](https://patreon.com/cephalongenesis).',
           inline: true,
         },
         {
-          name: '_ _',
+          name: '\u200B',
           value: 'For help information, type `/help`',
           inline: false,
         },

@@ -21,7 +21,7 @@ class WhereisEmbed extends BaseEmbed {
     resultsGroups.forEach((results) => {
       const mappedResults = results.map(result => `\`${rpad(result.item, nameWidth, ' ')} `
       + `| ${rpad(result.place, relicWidth, ' ')} | ${result.rarity.charAt(0)}@${parseFloat(result.chance).toFixed(2)}%\``);
-      this.fields.push({ name: '_ _', value: mappedResults.join('\n') });
+      this.fields.push({ name: '\u200B', value: mappedResults.join('\n') });
     });
 
     this.title = `${query}`;

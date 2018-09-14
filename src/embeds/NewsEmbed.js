@@ -52,7 +52,7 @@ class NewsEmbed extends BaseEmbed {
       this.url = first.link;
     } else {
       if (Array.isArray(value[0])) {
-        this.fields = value.map(val => ({ name: '_ _', value: val.join('\n') }));
+        this.fields = value.map(val => ({ name: '\u200B', value: val.join('\n') }));
       } else {
         [this.description] = value;
       }

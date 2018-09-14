@@ -82,10 +82,10 @@ class Help extends Command {
       isOwner: message.author.id === this.bot.owner,
       hasAuth: message.channel.type === 'dm' || message.channel
         .permissionsFor(message.author)
-        .has('MANAGE_ROLES_OR_PERMISSIONS'),
+        .has('MANAGE_ROLES'),
     };
 
-    const searchableCommands = this.commandHandler.commands.filter((command) => {
+    const searchableCommands = this.bot.commandManager.commands.filter((command) => {
       if ((command.ownerOnly && !config.isOwner) || (command.requiresAuth && !config.hasAuth)) {
         return false;
       }
@@ -93,7 +93,7 @@ class Help extends Command {
     });
 
     if (query) {
-      query = query.toLowerCase();
+      query = String(query).toLowerCase();
 
       // filter commands
       const matchingCommands = searchableCommands.filter((command) => {
@@ -115,6 +115,7 @@ class Help extends Command {
         return this.messageManager.statuses.FAILURE;
       }
       matchingCommands.sort(commandSort);
+
       const lines = mapCommands(matchingCommands, config.prefix);
       const groups = createGroupedArray(lines, 9);
       const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
@@ -123,7 +124,6 @@ class Help extends Command {
       return this.messageManager.statuses.SUCCESS;
     }
     searchableCommands.sort(commandSort);
-
     const lines = mapCommands(searchableCommands, config.prefix);
     const groups = createGroupedArray(lines, 9);
     const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));

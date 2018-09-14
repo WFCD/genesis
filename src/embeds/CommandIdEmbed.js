@@ -14,7 +14,7 @@ class CommandIdEmbed extends BaseEmbed {
     super();
     this.fields = [];
     commands.forEach((group) => {
-      this.fields.push({ name: '_ _', value: group.join('\n') });
+      this.fields.push({ name: '\u200B', value: group.map(line => `\`${line}\``).join('\n') });
     });
     this.title = 'Accessible Command Ids';
     this.color = 0x3498db;

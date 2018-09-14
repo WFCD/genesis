@@ -46,7 +46,6 @@ class WeaponStats extends Command {
         const results = await request(options);
         if (results.length > 0) {
           const pages = [];
-
           results.forEach((result) => {
             pages.push(new WeaponEmbed(this.bot, result));
             if (result.components && result.components.length) {

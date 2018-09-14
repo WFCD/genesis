@@ -4,7 +4,15 @@ const cluster = require('cluster');
 const Raven = require('raven');
 
 const Genesis = require('./src/bot');
-const ClusterManager = require('./src/ClusterManager');
+
+let controlHook;
+if (process.env.CONTROL_WH_ID) {
+  // eslint-disable-next-line global-require
+  const { WebhookClient } = require('discord.js');
+
+  controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+}
+
 
 /**
  * Raven client instance for logging errors and debugging events
@@ -33,10 +41,16 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
+if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line global-require
+  require('./src/tools/generateManifest.js')();
+}
+
 if (cluster.isMaster) {
   const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
   const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
-
+  // eslint-disable-next-line global-require
+  const ClusterManager = require('./src/ClusterManager');
   const clusterManager = new ClusterManager(cluster, logger, localShards, shardOffset);
   clusterManager.start();
 } else {
@@ -47,6 +61,9 @@ if (cluster.isMaster) {
     prefix: process.env.PREFIX,
     logger,
     owner: process.env.OWNER,
+    controlHook,
+    // eslint-disable-next-line global-require
+    commandManifest: require('./commands.json'),
   });
   shard.start();
 }

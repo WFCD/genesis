@@ -19,7 +19,7 @@ class SimarisEmbed extends BaseEmbed {
     };
     this.title = `[${platform.toUpperCase()}] Worldstate - Sanctuary`;
     this.color = simaris.isTargetActive > 2 ? 0x00ff00 : 0xff0000;
-    this.fields = [{ name: simaris.asString, value: '_ _' }];
+    this.fields = [{ name: simaris.asString, value: '\u200B' }];
   }
 }
 

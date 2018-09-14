@@ -51,7 +51,7 @@ class FrameProfile extends Command {
     const tutorials = await request(options);
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
-      fields: [{ name: '_ _', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
+      fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
       footer: {
         icon_url: 'https://warframestat.us/wfcd_logo_color.png',
         text: 'Data evaluated by Warframe Community Developers',

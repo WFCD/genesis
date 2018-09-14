@@ -13,7 +13,7 @@ const promoCodeEmbed = {
   title: 'Promocodes',
   color: 7506394,
   fields: createGroupedArray(promocodes.map(code => `[${code}](https://warframe.com/promocode?code=${code})`), 10).map(group => ({
-    name: '_ _',
+    name: '\u200B',
     value: group.join(divider),
   })),
 };

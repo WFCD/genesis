@@ -30,7 +30,7 @@ class ShieldEmbed extends BaseEmbed {
     };
     this.fields = [
       {
-        name: '_ _',
+        name: '\u200B',
         value: '',
       },
     ];

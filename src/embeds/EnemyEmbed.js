@@ -31,12 +31,12 @@ class EnemyEmbed extends BaseEmbed {
       this.title = `[${platform.toUpperCase()}] ${e.agentType}`;
       this.description = `Enemy ${e.isDiscovered ? 'Discovered' : 'Hiding'}!`;
       this.color = 0xaf5b4b;
-      this.fields = [{ name: '_ _', value: `**${e.isDiscovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
-        { name: '_ _', value: `**Health Remaining:** ${(100 * Number(e.healthPercent)).toFixed(2)}%` },
-        { name: '_ _', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!` }];
+      this.fields = [{ name: '\u200B', value: `**${e.isDiscovered ? '' : 'Last '}Discovered At:** ${e.lastDiscoveredAt}` },
+        { name: '\u200B', value: `**Health Remaining:** ${(100 * Number(e.healthPercent)).toFixed(2)}%` },
+        { name: '\u200B', value: `Will flee after ${e.fleeDamage} damage.\nGet after the Acolyte, Tenno!` }];
     } else {
       this.color = 0xaf5b4b;
-      this.fields = [{ name: 'There are currently no enemies to combat', value: '_ _' }];
+      this.fields = [{ name: 'There are currently no enemies to combat', value: '\u200B' }];
     }
   }
 }

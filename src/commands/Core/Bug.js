@@ -53,7 +53,7 @@ class BugReport extends Command {
         };
 
         if (params.length < 2) {
-          embed.fields = [{ name: '_ _', value: bugReport }];
+          embed.fields = [{ name: '\u200B', value: bugReport }];
         } else {
           embed.fields[0] = {
             name: params[0].trim(),
@@ -79,7 +79,7 @@ class BugReport extends Command {
           name: `${message.author.username}#${message.author.discriminator}`,
         },
         title: `Bug Report | ${message.author}`,
-        fields: [{ name: '_ _', value: 'Need to provide a bug report, see `/help` for syntax.' }],
+        fields: [{ name: '\u200B', value: 'Need to provide a bug report, see `/help` for syntax.' }],
         footer: { text: 'Add Tobiah#8452 as a friend so he can respond to your bug report' },
       };
       this.messageManager.embed(message, embed, true, false);

@@ -30,7 +30,7 @@ class FissureEmbed extends BaseEmbed {
     } else if (fissures.length === 0) {
       this.fields = {
         name: 'Currently no fissures',
-        value: '_ _',
+        value: '\u200B',
       };
     } else {
       const f = fissures[0];

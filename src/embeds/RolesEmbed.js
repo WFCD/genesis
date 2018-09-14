@@ -21,17 +21,17 @@ class RolesEmbed extends BaseEmbed {
     this.fields = [];
     roleGroups.forEach((roleGroup) => {
       this.fields.push({
-        name: '_ _',
+        name: '\u200B',
         value: `\`\`\`${roleGroup.map(role => `${rpad(role.guildRole.name, Number(longest + 2), ' ')}${rpad(String(role.guildRole.members.size), 4, ' ')} members`).join(' \n')}\`\`\``,
       });
     });
 
     if (roleGroups.length === 0) {
-      this.fields.push({ name: '_ _', value: 'No joinable Roles' });
+      this.fields.push({ name: '\u200B', value: 'No joinable Roles' });
     }
 
     this.fields.push({
-      name: '_ _',
+      name: '\u200B',
       value: roleGroups.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
     });
   }

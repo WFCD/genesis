@@ -1,8 +1,6 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const decache = require('decache');
+const Handler = require('../models/BaseEventHandler');
 
 const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
   if ((command.isCustom && allowCustom) || (command.isInline && allowInline)) {
@@ -14,95 +12,35 @@ const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
   return false;
 };
 
-
 /**
- * Describes a CommandHandler for a bot.
+ * Describes a handler
  */
-class CommandHandler {
+class CommandHandler extends Handler {
   /**
-   * Constructs CommandHandler
-   * @param {Genesis} bot    Bot to derive prefix for commands from
+   * Base class for bot commands
+   * @param {Genesis} bot  The bot object
+   * @param {string}  id   The command's unique id
+   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    this.bot = bot;
-    this.logger = bot.logger;
-
-    /**
-     * Array of command objects that can be called
-     * @type {Array<Command>}
-     * @private
-     */
-    this.commands = [];
-
-    /**
-     * Array of custom comamnd objects that can be called
-     * @type {Array<Command>}
-     * @private
-     */
-    this.customCommands = [];
-  }
-
-  /**
-   * Loads the commands from disk into this.commands
-   */
-  async loadCommands() {
-    const commandDir = path.join(__dirname, 'commands');
-    let files = fs.readdirSync(commandDir);
-
-    const categories = files.filter(f => f.indexOf('.js') === -1);
-    files = files.filter(f => f.indexOf('.js') > -1);
-
-    categories.forEach((category) => {
-      files = files.concat(fs.readdirSync(path.join(commandDir, category))
-        .map(f => path.join(category, f)));
-    });
-
-    if (this.commands.length !== 0) {
-      this.logger.debug('Decaching commands');
-      files.forEach((f) => {
-        decache(path.join(commandDir, f));
-      });
-    }
-
-    this.logger.debug(`Loading commands: ${files}`);
-
-    const commands = files.map((f) => {
-      try {
-        // eslint-disable-next-line import/no-dynamic-require, global-require
-        const Cmd = require(path.join(commandDir, f));
-        if (Object.prototype.toString.call(Cmd) === '[object Function]') {
-          const command = new Cmd(this.bot);
-
-          this.logger.debug(`Adding ${command.id}`);
-          return command;
-        }
-        return null;
-      } catch (err) {
-        this.logger.error(err);
-        return null;
-      }
-    })
-      .filter(c => c !== null);
-
-    this.commands = commands.filter(c => !c.isInline);
-
-    this.inlineCommands = commands.filter(c => c.isInline);
+    super(bot, 'handlers.command', 'message');
 
     this.statuses = this.bot.messageManager.statuses;
-
-    await this.loadCustomCommands();
-  }
-
-  async loadCustomCommands() {
-    const customCommands = await this.bot.settings.getCustomCommands();
-    this.customCommands = customCommands;
+    this.commandManager = this.bot.commandManager;
   }
 
   /**
-   * Handle the command contained in the message contents, if any.
-   * @param {Message} message Message whose command should be checked and handled
+   * Handle a message for commands
+   * @param {Message} message message to check for commands
    */
-  async handleCommand(message) {
+  async execute(...[message]) {
+    const passesInitial = this.bot.readyToExecute
+      && message.author.id !== this.bot.client.user.id
+      && !message.author.bot;
+
+    if (!passesInitial) {
+      return;
+    }
     let { content } = message;
     let botping;
     if (message.guild) {
@@ -118,9 +56,9 @@ class CommandHandler {
       .getCommandContext(message.channel);
     let checkOnlyInlines = false;
     const notStartWithPrefix = !content.startsWith(ctx.prefix)
-      && !content.startsWith(botping) && !content.startsWith(botPingId);
+        && !content.startsWith(botping) && !content.startsWith(botPingId);
     if (notStartWithPrefix) {
-      if (ctx.allowInline && this.inlineCommands.length > 0) {
+      if (ctx.allowInline && this.commandManager.inlineCommands.length > 0) {
         checkOnlyInlines = true;
       } else {
         return;
@@ -129,11 +67,11 @@ class CommandHandler {
 
     let commands = [];
     if (checkOnlyInlines) {
-      commands = this.inlineCommands;
+      commands = this.commandManager.inlineCommands;
     } else if (ctx.allowCustom) {
-      commands = this.commands.concat(this.customCommands);
+      commands = this.commandManager.commands.concat(this.customCommands);
     } else {
-      ({ commands } = this);
+      ({ commands } = this.commandManager);
     }
 
     if (content.startsWith(ctx.prefix)) {
@@ -155,10 +93,11 @@ class CommandHandler {
         if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {
           this.logger.debug(`Matched ${command.id}`);
           ctx.message = messageWithStrippedContent;
-          const status = await command.run(messageWithStrippedContent, ctx);
+          const cmd = await this.bot.commandManager.loadCommand(command);
+          const status = await cmd.run(messageWithStrippedContent, ctx);
           const canReact = (message.channel.type === 'dm'
-              || (message.channel.permissionsFor(this.bot.client.user.id)
-                .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+                || (message.channel.permissionsFor(this.bot.client.user.id)
+                  .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
           switch (status) {
             case this.statuses.SUCCESS:
               if (canReact) {
@@ -180,6 +119,7 @@ class CommandHandler {
     });
   }
 
+
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
@@ -189,14 +129,6 @@ class CommandHandler {
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
   async checkCanAct(command, message) {
-    /*
-    if (command.isCustomCommand && allowCustom) {
-      return command.isInline ? allowInline : true;
-    } else if (command.isInline && allowInline) {
-      return true;
-    } else
-    */
-
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
     }

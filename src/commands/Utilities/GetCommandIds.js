@@ -19,9 +19,9 @@ class GetCommandIds extends Command {
   }
 
   async run(message) {
-    let commands = this.bot.commandHandler.commands
-      .concat(this.bot.commandHandler.inlineCommands || [])
-      .concat((this.bot.commandHandler.customCommands || [])
+    let commands = this.commandManager.commands
+      .concat(this.commandManager.inlineCommands || [])
+      .concat((this.commandManager.customCommands || [])
         .filter(cc => message.guild && cc.guildId === message.guild.id));
     const longestCall = commands.length ? commands.map(result => result.call).reduce((a, b) => (a.length > b.length ? a : b)) : '';
     const longestId = commands.length ? commands.map(result => result.id)
@@ -30,8 +30,8 @@ class GetCommandIds extends Command {
     commands = commands
       .filter(command => !command.ownerOnly
         || (message.author.id === this.bot.owner && command.ownerOnly))
-      .map(command => `\`${rpad(command.call, longestCall.length, ' ')} `
-        + `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}\``);
+      .map(command => `${rpad(command.call, longestCall.length, ' ')} `
+        + `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}`);
 
     const pages = [];
     createGroupedArray(commands, 12).forEach((group) => {

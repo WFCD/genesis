@@ -8,7 +8,7 @@ class SetModRole extends Command {
     this.usages = [
       { description: 'Change the configured mod role', parameters: ['mod role id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(\\d+)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)(\\d+)(?:>))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

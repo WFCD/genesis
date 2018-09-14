@@ -2,7 +2,7 @@
 
 const Discord = require('discord.js');
 const md = require('node-md-config');
-const CommandHandler = require('./CommandHandler.js');
+const CommandManager = require('./CommandManager.js');
 const Database = require('./settings/Database.js');
 const EventHandler = require('./EventHandler');
 const MessageManager = require('./settings/MessageManager.js');
@@ -46,6 +46,8 @@ class Genesis {
     prefix = process.env.PREFIX,
     mdConfig = md,
     owner = null,
+    controlHook = null,
+    commandManifest = null,
   } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
@@ -126,13 +128,6 @@ class Genesis {
     this.shardClient = new Discord.ShardClientUtil(this.client);
 
     /**
-     * Command handler for this Bot
-     * @type {CommandHandler}
-     * @private
-     */
-    this.commandHandler = new CommandHandler(this);
-
-    /**
      * Persistent storage for settings
      * @type {Database}
      */
@@ -176,6 +171,17 @@ class Genesis {
     this.messageManager = new MessageManager(this);
 
     /**
+     * Command handler for this Bot
+     * @type {CommandManager}
+     * @private
+     */
+    this.commandManager = new CommandManager(this, commandManifest.map((cmd) => {
+      // eslint-disable-next-line no-param-reassign
+      cmd.regex = new RegExp(cmd.regex.body, cmd.regex.flags);
+      return cmd;
+    }));
+
+    /**
      * Handles events, such as member joins, bans, delets, etc.
      * @type {EventHandler}
      */
@@ -183,11 +189,13 @@ class Genesis {
 
     // Notification emitter
     this.notifier = new Notifier(this);
+
+    this.controlHook = controlHook;
   }
 
   async setupHandlers() {
     this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'onReady', args: [] }));
-    this.client.on('message', message => this.onMessage(message));
+    this.client.on('message', async message => this.eventHandler.handleEvent({ event: 'message', args: [message] }));
 
     this.client.on('guildCreate', async guild => this.eventHandler.handleEvent({ event: 'guildCreate', args: [guild] }));
     this.client.on('guildDelete', async guild => this.eventHandler.handleEvent({ event: 'guildDelete', args: [guild] }));
@@ -202,7 +210,6 @@ class Genesis {
     this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
     this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
 
-
     this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
     this.client.on('error', error => this.logger.error(error));
     this.client.on('warn', warning => this.logger.warning(warning));
@@ -214,7 +221,7 @@ class Genesis {
   async start() {
     await this.settings.createSchema(this.client);
     this.logger.debug('Schema created');
-    await this.commandHandler.loadCommands();
+    await this.commandManager.loadCommands();
     await this.eventHandler.loadHandles();
 
     this.setupHandlers();
@@ -227,18 +234,6 @@ class Genesis {
       this.logger.error(err);
       this.logger.fatal(err);
       process.exit(0);
-    }
-  }
-
-  /**
-   * Handle message
-   * @param {Message} message to handle
-   */
-  onMessage(message) {
-    if (this.readyToExecute
-      && message.author.id !== this.client.user.id
-      && !message.author.bot) {
-      this.commandHandler.handleCommand(message);
     }
   }
 }

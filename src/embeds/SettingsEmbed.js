@@ -14,7 +14,6 @@ class SettingsEmbed extends BaseEmbed {
   constructor(bot, channel, tokens) {
     super();
     this.color = 0x77dd77;
-    this.url = 'https://wfcd.github.io/genesis';
     if (channel.type === 'text') {
       this.title = `Settings for ${channel.name}`;
     } else {
@@ -23,7 +22,7 @@ class SettingsEmbed extends BaseEmbed {
 
     this.fields = [];
     tokens.forEach((tokenGroup) => {
-      this.fields.push({ name: '_ _', value: tokenGroup.join('\n') });
+      this.fields.push({ name: '\u200B', value: tokenGroup.join('\n') });
     });
   }
 }

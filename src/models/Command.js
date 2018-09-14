@@ -68,10 +68,10 @@ class Command {
     this.zSWC = '\u200B';
 
     /**
-     * The command handler for processing commands
-     * @type {CommandHandler}
+     * The command manager for processing commands
+     * @type {CommandManager}
      */
-    this.commandHandler = bot.commandHandler;
+    this.commandManager = bot.commandManager;
 
     /**
      * True if the command may only be executed by the owner of the bot
@@ -125,6 +125,10 @@ class Command {
 
     this.delimBegin = '<';
     this.delimEnd = '>';
+
+    if (bot.path) {
+      this.path = bot.path;
+    }
   }
 
   /**
@@ -151,12 +155,36 @@ class Command {
       fields: [
         {
           name: `${this.bot.prefix}${this.call} <${options.join(' | ')}>`,
-          value: '_ _',
+          value: '\u200B',
         },
       ],
     };
     this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.FAILURE;
+  }
+
+  manifest() {
+    return {
+      id: this.id,
+      call: this.call,
+      delimiters: {
+        begin: this.delimBegin,
+        end: this.delimEnd,
+      },
+      isCustomCommand: this.isCustomCommand,
+      isInline: this.isInline,
+      ownerOnly: this.ownerOnly,
+      allowInline: this.allowInline,
+      allowDM: this.allowDM,
+      requiresAuth: this.requiresAuth,
+      regex: {
+        flags: this.regex.flags,
+        body: this.regex.toString().replace(new RegExp(`/${this.regex.flags}$`, 'ig'), '').replace(new RegExp('^/', 'ig'), ''),
+      },
+      path: this.path,
+      usages: this.usages,
+      blacklistable: this.blacklistable,
+    };
   }
 }
 

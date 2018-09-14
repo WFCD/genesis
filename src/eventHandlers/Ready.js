@@ -86,9 +86,18 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
-
-    this.logger.debug(`${this.client.user.username} ready!`);
-    this.logger.debug(`Bot: ${this.client.user.username}#${this.client.user.discriminator}`);
+    if (this.bot.controlHook) {
+      await this.bot.controlHook.edit(
+        this.bot.client.user.username,
+        this.bot.client.user.displayAvatarURL,
+      );
+      this.bot.controlHook.send({
+        embeds: [{
+          description: `Shard **${this.bot.client.shard.id + 1}/${this.bot.client.shard.count}** ready`,
+          color: 0x2B90EC,
+        }],
+      });
+    }
     this.client.user.setPresence({
       status: 'online',
       afk: false,

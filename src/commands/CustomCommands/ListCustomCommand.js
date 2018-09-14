@@ -16,7 +16,7 @@ class ListCustomCommand extends Command {
     gcc.forEach((cc) => {
       if (cc.response.length > 1024) {
         ccs.push({ name: cc.call, value: decodeURIComponent(cc.response.substring(0, 1020)) });
-        ccs.push({ name: '_ _', value: decodeURIComponent(cc.response.substring(1021)) });
+        ccs.push({ name: '\u200B', value: decodeURIComponent(cc.response.substring(1021)) });
       } else {
         ccs.push({ name: cc.call, value: decodeURIComponent(cc.response) });
       }

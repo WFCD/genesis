@@ -21,7 +21,7 @@ class Untrack extends Command {
       title: 'Cephalon Genesis',
       fields: [
         {
-          name: '_ _',
+          name: '\u200B',
           value: 'Genesis is an open-source and freely provided bot and service,'
             + '\nbut any help towards subsidizing development and server costs helps out.'
             + '\nCome support Genesis [on patreon](https://patreon.com/cephalongenesis) if you\'re interested.'
