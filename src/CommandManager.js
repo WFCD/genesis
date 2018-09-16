@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const decache = require('decache');
 
+const BaseCommand = require('./models/Command');
+
 const commandDir = path.join(__dirname, 'commands');
 
 /**
@@ -46,6 +48,10 @@ class CommandManager {
     if (this.commandCache[manifest.id]) {
       this.logger.debug(`Found ${manifest.id} in cache`);
       return this.commandCache[manifest.id];
+    }
+
+    if (manifest instanceof BaseCommand) {
+      return manifest;
     }
 
     // eslint-disable-next-line global-require, import/no-dynamic-require

@@ -27,6 +27,7 @@ class CommandHandler extends Handler {
 
     this.statuses = this.bot.messageManager.statuses;
     this.commandManager = this.bot.commandManager;
+    this.logger = bot.logger;
   }
 
   /**
@@ -69,10 +70,11 @@ class CommandHandler extends Handler {
     if (checkOnlyInlines) {
       commands = this.commandManager.inlineCommands;
     } else if (ctx.allowCustom) {
-      commands = this.commandManager.commands.concat(this.customCommands);
+      commands = this.commandManager.commands.concat(this.commandManager.customCommands);
     } else {
       ({ commands } = this.commandManager);
     }
+    commands = commands.filter(command => command);
 
     if (content.startsWith(ctx.prefix)) {
       content = content.replace(ctx.prefix, '');
