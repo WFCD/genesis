@@ -66,7 +66,7 @@ class CommandManager {
    * Loads the commands from disk into this.commands
    */
   async loadCommands() {
-    if (!this.commands.length) {
+    if (!this.commands.length && !(this.commands[0] instanceof BaseCommand)) {
       let files = fs.readdirSync(commandDir);
 
       const categories = files.filter(f => f.indexOf('.js') === -1);
@@ -101,9 +101,9 @@ class CommandManager {
       }).filter(c => c);
 
       this.commands = commands.filter(c => !c.isInline);
-
-      this.inlineCommands = commands.filter(c => c.isInline);
     }
+
+    this.inlineCommands = this.commands.filter(c => c.isInline);
 
     await this.loadCustomCommands();
   }
