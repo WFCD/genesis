@@ -104,7 +104,6 @@ class CommandManager {
     }
 
     this.inlineCommands = this.commands.filter(c => c.isInline);
-
     await this.loadCustomCommands();
   }
 

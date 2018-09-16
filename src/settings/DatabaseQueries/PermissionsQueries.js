@@ -1,6 +1,7 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+const { Role } = require('discord.js');
 
 class PermissionsQueries {
   constructor(db) {
@@ -138,6 +139,12 @@ class PermissionsQueries {
     if (res[0].length === 0) {
       return 'none';
     }
+
+    res[0].sort((a, b) => -Role.comparePositions(
+      channel.guild.roles.get(a.target_id),
+      channel.guild.roles.get(b.target_id),
+    ));
+
     return res[0][0].allowed;
   }
 
