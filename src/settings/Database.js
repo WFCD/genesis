@@ -3,17 +3,8 @@
 const SQL = require('sql-template-strings');
 const mysql = require('mysql2/promise');
 const Promise = require('bluebird');
-
-const BuildQueries = require('./DatabaseQueries/BuildQueries');
-const WelcomeQueries = require('./DatabaseQueries/WelcomeQueries');
-const CustomCommandQueries = require('./DatabaseQueries/CustomCommandQueries');
-const SettingsQueries = require('./DatabaseQueries/SettingsQueries');
-const TrackingQueries = require('./DatabaseQueries/TrackingQueries');
-const PingsQueries = require('./DatabaseQueries/PingsQueries');
-const PermissionsQueries = require('./DatabaseQueries/PermissionsQueries');
-const DBMQueries = require('./DatabaseQueries/DBMQueries');
-const PrivateRoomQueries = require('./DatabaseQueries/PrivateRoomQueries');
-const PromocodeQueries = require('./DatabaseQueries/PromocodeQueries');
+const path = require('path');
+const fs = require('fs');
 
 const props = (obj) => {
   const p = [];
@@ -91,22 +82,15 @@ class Database {
       'settings.cc.ping': true,
     };
 
-    const queryClasses = [
-      new BuildQueries(this.db),
-      new WelcomeQueries(this.db),
-      new CustomCommandQueries(this.db),
-      new SettingsQueries(this.db),
-      new TrackingQueries(this.db),
-      new PingsQueries(this.db),
-      new PermissionsQueries(this.db),
-      new DBMQueries(this.db),
-      new PrivateRoomQueries(this.db),
-      new PromocodeQueries(this.db),
-    ];
-
-    queryClasses.forEach((queryClass) => {
-      copyChildrenQueries(queryClass);
-    });
+    const dbRoot = path.join(__dirname, 'DatabaseQueries');
+    fs.readdirSync(dbRoot)
+      .filter(f => f.endsWith('.js'))
+      .forEach((file) => {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        const QClass = require(path.join(dbRoot, file));
+        const qInstance = new QClass(this.db);
+        copyChildrenQueries(qInstance);
+      });
   }
 
   /**

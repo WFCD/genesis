@@ -100,6 +100,7 @@ class DBMQueries {
     results.push(this.removeGuildPermissions(guild.id));
     results.push(this.removePings(guild.id));
     results.push(this.removeGuildCustomCommands(guild.id));
+    results.push(this.deleteGuildRatio(guild));
     return Promise.all(results);
   }
 }

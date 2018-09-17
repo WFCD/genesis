@@ -20,6 +20,7 @@ class JoinNotify extends Handler {
   async execute(...[guild]) {
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
     const bots = guild.members.filter(member => member.user.bot);
+
     const tokens = [
       `**Name:** ${guild.name}`,
       `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})`,
