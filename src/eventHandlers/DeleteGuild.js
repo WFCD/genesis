@@ -1,5 +1,6 @@
 'use strict';
 
+const SQL = require('sql-template-strings');
 const Handler = require('../models/BaseEventHandler');
 
 /**
@@ -26,6 +27,7 @@ class DeleteGuild extends Handler {
     }
     await this.settings.removeGuild(guild);
     this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
+    this.settings.db.query(SQL`DELETE FROM guild_ratio WHERE guild_id = ${guild.id};`);
   }
 }
 
