@@ -20,17 +20,21 @@ class LeaveNotify extends Handler {
   async execute(...[guild]) {
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
 
-    this.bot.controlHook.send({
-      embeds: [{
-        color: 0x00d62e,
-        title: 'Left Server',
-        description: `Left: ${guild.name}\nID: ${guild.id}`,
-        thumbnail: {
-          url: guild.iconURL,
-        },
-        timestamp: new Date(),
-      }],
-    });
+    try {
+      this.bot.controlHook.send({
+        embeds: [{
+          color: 0x00d62e,
+          title: 'Left Server',
+          description: `Left: ${guild.name}\nID: ${guild.id}`,
+          thumbnail: {
+            url: guild.iconURL,
+          },
+          timestamp: new Date(),
+        }],
+      });
+    } catch (e) {
+      this.bot.logger.error(e);
+    }
   }
 }
 

@@ -28,18 +28,21 @@ class JoinNotify extends Handler {
       `**Percent:** ${((bots.size / (guild.memberCount)) * 100).toFixed(2)}%`,
       `**Created:** ${guild.createdAt.toLocaleString('en-US', { timeZone: 'America/Chicago' })}`,
     ];
-
-    this.bot.controlHook.send({
-      embeds: [{
-        color: 0x00d62e,
-        title: 'Joined Server',
-        description: tokens.join('\n'),
-        thumbnail: {
-          url: guild.iconURL,
-        },
-        timestamp: new Date(),
-      }],
-    });
+    try {
+      this.bot.controlHook.send({
+        embeds: [{
+          color: 0x00d62e,
+          title: 'Joined Server',
+          description: tokens.join('\n'),
+          thumbnail: {
+            url: guild.iconURL,
+          },
+          timestamp: new Date(),
+        }],
+      });
+    } catch (e) {
+      this.bot.logger.error(e);
+    }
   }
 }
 

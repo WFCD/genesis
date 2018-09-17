@@ -30,14 +30,18 @@ class NotifyOwnerJoin extends Handler {
     const bots = guild.members.filter(member => member.user.bot);
     const isOverLimit = ((bots.size / guild.memberCount) * 100) >= 80;
 
-    if (!isOverLimit) {
-      const prefix = await this.settings.getChannelSetting(guild.channels.first(), 'prefix');
-      guild.owner.send(`${this.client.user.username} has been added `
-                       + `to ${guild.name} and is ready\n Type `
-                       + `\`${prefix}help\` for help`);
-    } else {
-      guild.owner.send(`Your guild **${guild.name}** is over the bot-to-user ratio.\nGenesis will now leave.\nIf you want to keep using ${this.client.user.username} please invite more people or kick some bots.`);
-      guild.leave();
+    try {
+      if (!isOverLimit) {
+        const prefix = await this.settings.getChannelSetting(guild.channels.first(), 'prefix');
+        guild.owner.send(`${this.client.user.username} has been added `
+                         + `to ${guild.name} and is ready\n Type `
+                         + `\`${prefix}help\` for help`);
+      } else {
+        guild.owner.send(`Your guild **${guild.name}** is over the bot-to-user ratio.\nGenesis will now leave.\nIf you want to keep using ${this.client.user.username} please invite more people or kick some bots.`);
+        guild.leave();
+      }
+    } catch (e) {
+      this.bot.logger.error(e);
     }
   }
 }
