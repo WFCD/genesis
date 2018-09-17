@@ -140,4 +140,9 @@ module.exports = [
       REFERENCES code_pool(pool_id)
       ON DELETE CASCADE
   );`,
+  `CREATE TABLE IF NOT EXISTS guild_ratio (
+    shard_id TINYINT NOT NULL,
+    guild_id BIGINT(20) UNIQUE NOT NULL,
+    owner_id BIGINT(20) NOT NULL
+  );`,
 ];

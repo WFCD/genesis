@@ -29,10 +29,6 @@ class AddGuildToDatabase extends Handler {
     }
     await this.settings.addGuild([guild]);
     this.logger.debug(`Joined guild ${guild} (${guild.id}`);
-    const prefix = await this.settings.getChannelSetting(guild.channels.first(), 'prefix');
-    guild.owner.send(`**${this.client.user.username.toUpperCase()} has been added `
-                     + `to ${guild.name} and is ready\n Type `
-                     + `\`${prefix}help\` for help**`);
   }
 }
 

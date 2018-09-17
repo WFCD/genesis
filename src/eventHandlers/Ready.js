@@ -2,7 +2,6 @@
 
 const Handler = require('../models/BaseEventHandler');
 
-
 /**
  * Check if private rooms have expired and are empty. If not, do nothing.
  * If so, delete the corresponding channels.
