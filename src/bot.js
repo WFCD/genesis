@@ -58,7 +58,6 @@ class Genesis {
       fetchAllMembers: false,
       ws: {
         compress: true,
-        large_threshold: 1000,
       },
       shardId,
       shardCount,
