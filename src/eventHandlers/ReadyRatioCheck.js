@@ -35,7 +35,7 @@ async function guildLeave(self) {
       clearInterval(guildCheck);
     }
   } catch (e) {
-    this.bot.logger.error(e);
+    self.bot.logger.error(e);
   }
 }
 
