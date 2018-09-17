@@ -48,12 +48,18 @@ class BugReport extends Command {
             icon_url: message.author.avatarURL,
             name: `${message.author.username}#${message.author.discriminator}`,
           },
-          title: `Bug Report | ${message.author}`,
+          color: 0xf4425f,
+          title: 'Bug Report',
+          description: message.author,
           fields: [],
+          footer: {
+            text: 'Sent • ',
+          },
+          timestamp: new Date(),
         };
 
         if (params.length < 2) {
-          embed.fields = [{ name: '\u200B', value: bugReport }];
+          embed.description += `\n\u200B\n${bugReport}`;
         } else {
           embed.fields[0] = {
             name: params[0].trim(),
@@ -69,7 +75,7 @@ class BugReport extends Command {
             };
           }
         }
-        this.messageManager.sendDirectEmbedToOwner(embed);
+        this.bot.controlHook.send({ embeds: [embed] });
         this.messageManager.reply(message, 'Bug report sent.', true, true);
         return this.messageManager.statuses.SUCCESS;
       }
