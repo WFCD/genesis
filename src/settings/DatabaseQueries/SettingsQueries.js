@@ -35,6 +35,19 @@ class SettingsQueries {
     return undefined;
   }
 
+  async getChannelSettings(channel, settings) {
+    const query = SQL`SELECT val, setting FROM settings WHERE settings.channel_id = ${channel.id} and settings.setting in (${settings})`;
+    const results = await this.db.query(query);
+    if (results[0].length === 0) {
+      return {};
+    }
+    const values = {};
+    results[0].forEach((row) => {
+      values[row.setting] = row.val;
+    });
+    return values;
+  }
+
   /**
    * Get a setting for a particular channel
    * @param {Channel} channel channel to get the setting for

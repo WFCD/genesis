@@ -68,36 +68,61 @@ class Settings extends Command {
 
   async composeChannelSettings(channel, message) {
     const page = new RichEmbed(embedDefaults);
-    page.setTitle('General Settings');
-    page.addField('Language', await this.settings.getChannelSetting(channel, 'language'), true);
-    page.addField('Platform', await this.settings.getChannelSetting(channel, 'platform'), true);
-    page.addField('Prefix', await this.settings.getGuildSetting(message.guild, 'prefix'), true);
-    page.addField('Private Channels', await this.resolveBoolean(channel, 'createPrivateChannel'), true);
-    page.addField('Deleted Expired', await this.resolveBoolean(channel, 'deleteExpired'), true);
-    page.addField('Allow Inline', await this.resolveBoolean(channel, 'allowInline'), true);
-    page.addField('Allow Custom', await this.resolveBoolean(channel, 'allowCustom'), true);
-    page.addField('Ping Custom', await this.resolveBoolean(channel, 'settings.cc.ping'), true);
-    page.addField('Locked Channel', await this.resolveBoolean(channel, 'defaultRoomsLocked'), true);
-    page.addField('No Text Channel', await this.resolveBoolean(channel, 'defaultNoText'), true);
-    page.addField('Hidden Channel', await this.resolveBoolean(channel, 'defaultShown'), true);
-    page.addField('Respond to Settings', await this.resolveBoolean(channel, 'respond_to_settings'), true);
-    page.addField('Delete Message Post-Respond', await this.resolveBoolean(channel, 'delete_after_respond'), true);
-    page.addField('Delete Response Post-Respond', await this.resolveBoolean(channel, 'delete_response'), true);
+    const settings = await this.settings.getChannelSettings(channel, [
+      'language',
+      'platform',
+      'prefix',
+      'createPrivateChannel',
+      'deleteExpired',
+      'allowInline',
+      'allowCustom',
+      'settings.cc.ping',
+      'defaultRoomsLocked',
+      'defaultNoText',
+      'defaultShown',
+      'respond_to_settings',
+      'respond_to_settings',
+      'delete_after_respond',
+      'delete_response',
+      'defaultRoles',
+      'tempCategory',
+      'lfgChannel',
+      'vulgarLog',
+      'msgDeleteLog',
+      'memberRemoveLog',
+      'banLog',
+      'unbanLog',
+      'modRole',
+    ]);
 
-    const defaultRoles = JSON.parse(await this.settings.getGuildSetting(message.guild, 'defaultRoles') || '[]')
-      .map(roleId => channel.guild.roles.get(roleId));
+    page.setTitle('General Settings');
+    page.addField('Language', settings.language, true);
+    page.addField('Platform', settings.platform, true);
+    page.addField('Prefix', settings.prefix, true);
+    page.addField('Private Room', await this.resolveBoolean(channel, 'createPrivateChannel', settings), true);
+    page.addField('Deleted Expired', await this.resolveBoolean(channel, 'deleteExpired', settings), true);
+    page.addField('Allow Inline', await this.resolveBoolean(channel, 'allowInline', settings), true);
+    page.addField('Allow Custom', await this.resolveBoolean(channel, 'allowCustom', settings), true);
+    page.addField('Ping Custom', await this.resolveBoolean(channel, 'settings.cc.ping', settings), true);
+    page.addField('Locked Channel', await this.resolveBoolean(channel, 'defaultRoomsLocked', settings), true);
+    page.addField('No Text Channel', await this.resolveBoolean(channel, 'defaultNoText', settings), true);
+    page.addField('Hidden Channel', await this.resolveBoolean(channel, 'defaultShown', settings), true);
+    page.addField('Respond to Settings', await this.resolveBoolean(channel, 'respond_to_settings', settings), true);
+    page.addField('Delete Message Post-Respond', await this.resolveBoolean(channel, 'delete_after_respond', settings), true);
+    page.addField('Delete Response Post-Respond', await this.resolveBoolean(channel, 'delete_response', settings), true);
+
+    const defaultRoles = JSON.parse(settings.defaultRoles || '[]').map(roleId => channel.guild.roles.get(roleId));
 
     if (message.guild) {
-      const category = await this.settings.getGuildSetting(message.guild, 'tempCategory');
-      page.addField('Temp Channel Category', category !== '0' ? category : '✘', true);
-      page.addField('LFG', await this.settings.getGuildSetting(message.guild, 'lfgChannel') || '✘', true);
+      page.addField('Temp Channel Category', settings.tempCategory !== '0' ? settings.tempCategory : '✘', true);
+      page.addField('LFG', settings.lfgChannel || '✘', true);
       page.addField('Default Roles', defaultRoles.length ? defaultRoles : '✘', true);
-      page.addField('Vulgar Log', await this.settings.getGuildSetting(message.guild, 'vulgarLog') || '✘', true);
-      page.addField('Delete Log', await this.settings.getGuildSetting(message.guild, 'msgDeleteLog') || '✘', true);
-      page.addField('Leave Log', await this.settings.getGuildSetting(message.guild, 'memberRemoveLog') || '✘', true);
-      page.addField('Ban Log', await this.settings.getGuildSetting(message.guild, 'banLog') || '✘', true);
-      page.addField('Unban Log', await this.settings.getGuildSetting(message.guild, 'unbanLog') || '✘', true);
-      page.addField('Mod Role', await this.settings.getGuildSetting(message.guild, 'modRole') || '✘', true);
+      page.addField('Vulgar Log', settings.vulgarLog || '✘', true);
+      page.addField('Delete Log', settings.msgDeleteLog || '✘', true);
+      page.addField('Leave Log', settings.memberRemoveLog || '✘', true);
+      page.addField('Ban Log', settings.banLog || '✘', true);
+      page.addField('Unban Log', settings.unbanLog || '✘', true);
+      page.addField('Mod Role', settings.modRole || '✘', true);
     }
 
     const items = await this.settings.getTrackedItems(channel);
@@ -115,7 +140,10 @@ class Settings extends Command {
     return [page, trackedItems, trackedEvents, permPage];
   }
 
-  async resolveBoolean(channel, setting) {
+  async resolveBoolean(channel, setting, settings) {
+    if (settings) {
+      return settings.setting === '1' ? '✓' : '✘';
+    }
     return ((await this.settings.getChannelSetting(channel, setting)) === '1' ? '✓' : '✘');
   }
 
