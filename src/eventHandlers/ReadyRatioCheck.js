@@ -12,26 +12,30 @@ async function guildLeave(self) {
   const [results] = await self.settings.getGuildRatios(self.client.shard);
   const guilds = results.slice(0, 5);
   const owners = {};
-  guilds.forEach((row) => {
-    if (owners[row.owner_id]) {
-      owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
-      owners[row.owner_id].guilds.push(row.guild_id);
-    } else {
-      owners[row.owner_id] = {
-        message: `**${self.client.guilds.get(row.guild_id).name}**`,
-        guilds: [row.guild_id],
-      };
+  try {
+    guilds.forEach((row) => {
+      if (owners[row.owner_id]) {
+        owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
+        owners[row.owner_id].guilds.push(row.guild_id);
+      } else {
+        owners[row.owner_id] = {
+          message: `**${self.client.guilds.get(row.guild_id).name}**`,
+          guilds: [row.guild_id],
+        };
+      }
+    });
+    Object.keys(owners).forEach(async (id) => {
+      // const user = await self.client.fetchUser(id, true);
+      // const DM = await user.createDM();
+      // await DM.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''} ${owners[id].message} are over the bot-to-user ratio. ${self.client.user.username} will now leave. If you want to keep using Genesis please invite more people or kick some bots.`);
+      owners[id].guilds.forEach(guild => self.client.guilds.get(guild).leave());
+    });
+    if ((results.length - 5) <= 0) {
+      self.logger.debug('No more guilds in "guild_ratio" clearing interval.');
+      clearInterval(guildCheck);
     }
-  });
-  Object.keys(owners).forEach(async (id) => {
-    const user = await self.client.fetchUser(id, true);
-    const DM = await user.createDM();
-    await DM.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''} ${owners[id].message} are over the bot-to-user ratio. ${self.client.user.username} will now leave. If you want to keep using Genesis please invite more people or kick some bots.`);
-    owners[id].guilds.forEach(guild => self.client.guilds.get(guild).leave());
-  });
-  if ((results.length - 5) <= 0) {
-    self.logger.debug('No more guilds in "guild_ratio" clearing interval.');
-    clearInterval(guildCheck);
+  } catch (e) {
+    this.bot.logger.error(e);
   }
 }
 
