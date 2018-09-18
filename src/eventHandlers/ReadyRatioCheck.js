@@ -14,7 +14,7 @@ async function guildLeave(self) {
   const owners = {};
   try {
     guilds.forEach((row) => {
-      if (self.client.row.guilds.has(row.guild_id)) {
+      if (self.client.guilds.has(row.guild_id)) {
         if (owners[row.owner_id]) {
           owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
           owners[row.owner_id].guilds.push(row.guild_id);
