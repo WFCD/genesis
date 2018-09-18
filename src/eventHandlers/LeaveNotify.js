@@ -19,15 +19,23 @@ class LeaveNotify extends Handler {
    */
   async execute(...[guild]) {
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
-
+    const tokens = [
+      `**Left:** ${guild.name}`,
+      `**ID:** ${guild.id}`,
+      `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})`,
+      `**Members:** ${guild.memberCount}`,
+    ];
     try {
       this.bot.controlHook.send({
         embeds: [{
           color: 0x00d62e,
           title: 'Left Server',
-          description: `Left: ${guild.name}\nID: ${guild.id}`,
+          description: tokens.join('\n'),
           thumbnail: {
             url: guild.iconURL,
+          },
+          footer: {
+            text: guild.id,
           },
           timestamp: new Date(),
         }],

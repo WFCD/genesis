@@ -85,7 +85,7 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
-    if (this.bot.controlHook) {
+    if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
         this.bot.client.user.username,
         this.bot.client.user.displayAvatarURL,

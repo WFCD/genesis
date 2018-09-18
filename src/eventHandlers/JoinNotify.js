@@ -37,6 +37,9 @@ class JoinNotify extends Handler {
           thumbnail: {
             url: guild.iconURL,
           },
+          footer: {
+            text: guild.id,
+          },
           timestamp: new Date(),
         }],
       });

@@ -14,20 +14,28 @@ async function guildLeave(self) {
   const owners = {};
   try {
     guilds.forEach((row) => {
-      if (owners[row.owner_id]) {
-        // owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
-        owners[row.owner_id].guilds.push(row.guild_id);
-      } else {
-        owners[row.owner_id] = {
-          // message: `**${self.client.guilds.get(row.guild_id).name}**`,
-          guilds: [row.guild_id],
-        };
+      if (self.client.row.guilds.has(row.guild_id)) {
+        if (owners[row.owner_id]) {
+          owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
+          owners[row.owner_id].guilds.push(row.guild_id);
+        } else {
+          owners[row.owner_id] = {
+            message: `**${self.client.guilds.get(row.guild_id).name}**`,
+            guilds: [row.guild_id],
+          };
+        }
       }
     });
     Object.keys(owners).forEach(async (id) => {
-      // const user = await self.client.fetchUser(id, true);
-      // const DM = await user.createDM();
-      // await DM.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''} ${owners[id].message} are over the bot-to-user ratio. ${self.client.user.username} will now leave. If you want to keep using Genesis please invite more people or kick some bots.`);
+      const user = self.client.users.has(id)
+        ? self.client.users.get(id)
+        : await self.client.fetchUser(id, true);
+      if (user) {
+        await user.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''}
+        ${owners[id].message} are over the bot-to-user ratio.
+        ${self.client.user.username} will now leave.
+        If you want to keep using Genesis please invite more people or kick some bots.`);
+      }
       owners[id].guilds.forEach((guild) => {
         if (guild && self.client.guilds.has(guild)) {
           self.client.guilds.get(guild).leave();

@@ -9,10 +9,8 @@ let controlHook;
 if (process.env.CONTROL_WH_ID) {
   // eslint-disable-next-line global-require
   const { WebhookClient } = require('discord.js');
-
   controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
 }
-
 
 /**
  * Raven client instance for logging errors and debugging events
