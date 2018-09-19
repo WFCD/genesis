@@ -14,7 +14,7 @@ class ModEmbed extends BaseEmbed {
     this.title = modData.name;
     this.color = 0xC0C0C0;
     this.description = `Mod result for ${query}`;
-    this.url = `https://warfarme.wikia.com/wiki/${modData.name.replace(/\s/ig, '_'}`;
+    this.url = `https://warfarme.wikia.com/wiki/${modData.name.replace(/\s/ig, '_')}`;
     this.image = {
       url: `https://cdn.warframestat.us/img/${modData.imageName}`,
     };
