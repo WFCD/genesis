@@ -77,7 +77,7 @@ const termToTrackable = (term) => {
   }
 
   if (term === 'events') {
-    trackable.items = eventTypes;
+    trackable.events = eventTypes;
     return trackable;
   }
 
