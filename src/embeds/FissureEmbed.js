@@ -17,6 +17,7 @@ class FissureEmbed extends BaseEmbed {
     if (fissures.length < 2) {
       this.title = `[${platform.toUpperCase()}] Worldstate - Void Fissures`;
     }
+    this.url = 'http://warframe.wikia.com/wiki/Void_Fissure';
     this.thumbnail = {
       url: 'http://i.imgur.com/EfIRu6v.png',
     };
