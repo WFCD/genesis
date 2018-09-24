@@ -62,6 +62,7 @@ class Broadcaster {
     const channels = await this.settings.getNotifications(type, platform, items);
     return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
+
       if (channel) {
         if (channel.type === 'text') {
           return this.sendWithPrepend(channel, embed, type, items, deleteAfter);

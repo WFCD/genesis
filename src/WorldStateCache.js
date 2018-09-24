@@ -37,6 +37,7 @@ class WorldStateCache extends EventEmitter {
   update() {
     this.updating = this.httpGet().then((data) => {
       this.lastUpdated = Date.now();
+      delete this.currentData;
       this.currentData = JSON.parse(data);
       this.updating = null;
       this.emit('newData', this.platform, this.currentData);

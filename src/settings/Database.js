@@ -138,6 +138,7 @@ class Database {
       });
       if (!context.platform) {
         context.platform = this.defaults.platform;
+        this.setGuildSetting(channel.guild, 'platform', this.defaults.platform);
       }
 
       if (!context.prefix) {

@@ -2,7 +2,8 @@
 
 const Command = require('../../models/Command.js');
 
-const jokes = ['Saryn. Want some STD?',
+const jokes = [
+  'Saryn. Want some STD?',
   "Mesa. Ya'll bow down to the cowgirl.",
   'Mag. Plenty of things she can pull.',
   'Volt. Doing it fast and clean.',
@@ -47,7 +48,8 @@ const jokes = ['Saryn. Want some STD?',
   "Excalibur Prime, how's that forma on your face?",
   'Vauban. Why did you make the bouncy castle from hell?',
   'Badder than a ceramic dagger fight over primed reach',
-  'You should feel bad about that. Let me rub your face in it to help.'];
+  'You should feel bad about that. Let me rub your face in it to help.',
+];
 
 /**
  * Tell a joke
