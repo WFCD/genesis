@@ -14,7 +14,7 @@ class FissureEmbed extends BaseEmbed {
   constructor(bot, fissures, platform) {
     super();
 
-    if (fissures.length < 2) {
+    if (fissures.length > 1) {
       this.title = `[${platform.toUpperCase()}] Worldstate - Void Fissures`;
     }
     this.url = 'http://warframe.wikia.com/wiki/Void_Fissure';
