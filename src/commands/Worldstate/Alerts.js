@@ -14,22 +14,13 @@ class Alerts extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.alerts', 'alert', 'Display the currently active alerts');
-    this.regex = new RegExp(`^${this.call}s?\\s?(?:(compact))?(?:on\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.regex = new RegExp(`^${this.call}s?\\s?(?:(compact))?\\s?(?:on\\s+([pcsxb14]{2,3}))?`, 'i');
   }
 
   async run(message, ctx) {
-    const matches = message.strippedContent.match(this.regex);
-    const param1 = (matches[1] || '').toLowerCase();
-    const param2 = (matches[2] || '').toLowerCase();
-    const compact = /compact/ig.test(param1) || /compact/ig.test(param2);
-    let platformParam;
-    if (this.platforms.indexOf(param2) > -1) {
-      platformParam = param2;
-    } else if (this.platforms.indexOf(param1) > -1) {
-      platformParam = param1;
-    }
-
-    const platform = platformParam || ctx.platform;
+    const platformParam = message.strippedContent.match(/[pcsxb14]{2,3}/ig);
+    const compact = /compact/ig.test(message.strippedContent);
+    const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const alerts = ws.alerts.filter(a => !a.expired);
 
