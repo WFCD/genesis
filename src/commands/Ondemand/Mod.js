@@ -25,29 +25,29 @@ class ModEmbed extends BaseEmbed {
  * Displays mods from the wiki
  */
 class Mod extends Command {
-	/**
-	 * Constructs a callable command
-	 * @param {Genesis} bot  The bot object
-	 */
-	constructor(bot) {
-		super(bot, 'warframe.misc.mod', 'mod', 'Search the Warframe Wiki for a mod\'s image');
-		this.regex = new RegExp('^mod(.+)', 'i');
-		this.noResultStr = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
-	}
+  /**
+   * Constructs a callable command
+   * @param {Genesis} bot  The bot object
+   */
+  constructor(bot) {
+    super(bot, 'warframe.misc.mod', 'mod', 'Search the Warframe Wiki for a mod\'s image');
+    this.regex = new RegExp('^mod(.+)', 'i');
+    this.noResultStr = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
+  }
 
-	/**
-	 * Run the command
-	 * @param {Message} message Message with a command to handle, reply to,
-	 *                          or perform an action based on parameters.
-	 * @returns {string} success status
-	 */
-	async run(message) {
-		const query = this.regex.exec(message.strippedContent.match(this.regex)[0])[1];
-		if (!query) {
-			this.messageManager.reply(message, this.noResultStr, true, false);
-			return this.messageManager.statuses.FAILURE;
-		}
-    
+  /**
+   * Run the command
+   * @param {Message} message Message with a command to handle, reply to,
+   *                          or perform an action based on parameters.
+   * @returns {string} success status
+   */
+  async run(message) {
+    const query = this.regex.exec(message.strippedContent.match(this.regex)[0])[1];
+    if (!query) {
+      this.messageManager.reply(message, this.noResultStr, true, false);
+      return this.messageManager.statuses.FAILURE;
+    }
+
     const options = {
       uri: `${apiBase}/mods/search/${query}`,
       json: true,
@@ -77,7 +77,7 @@ class Mod extends Command {
       this.messageManager.reply(message, this.noResultStr, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-	}
+  }
 }
 
 module.exports = Mod;

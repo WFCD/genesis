@@ -96,9 +96,9 @@ class Settings extends Command {
     ]);
 
     page.setTitle('General Settings');
-    page.addField('Language', settings.language, true);
-    page.addField('Platform', settings.platform, true);
-    page.addField('Prefix', settings.prefix, true);
+    page.addField('Language', settings.language || this.bot.settings.defaults.language, true);
+    page.addField('Platform', settings.platform || this.bot.settings.defaults.platform, true);
+    page.addField('Prefix', settings.prefix || this.bot.settings.defaults.prefix, true);
     page.addField('Private Room', await this.resolveBoolean(channel, 'createPrivateChannel', settings), true);
     page.addField('Deleted Expired', await this.resolveBoolean(channel, 'deleteExpired', settings), true);
     page.addField('Allow Inline', await this.resolveBoolean(channel, 'allowInline', settings), true);

@@ -90,7 +90,7 @@ class FrameStatsInline extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.info', 'frame', 'Get stats for a Warframe');
+    super(bot, 'warframe.info', '[Query]', 'Get stats for a Warframe');
     this.regex = new RegExp('\\[(.*?)\\]', 'ig');
     this.usages = [
       {

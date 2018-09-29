@@ -20,7 +20,7 @@ const createEmbedsForCommands = (commandFields, title, color) => ({
 });
 
 const mapCommands = (commands, prefix) => commands.map(command => command.usages.map(u => ({
-  name: `${prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
+  name: `${command.isInline ? '' : prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
   value: u.description || 'No description',
   inline: false,
 })));
