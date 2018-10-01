@@ -12,18 +12,32 @@ const relays = [
   'Orcus Relay',
   'Cetus',
   'Iron Wake',
+  'Solaris',
+  'Orb Vallis',
 ];
 
 const generator = new Generator();
 
+const getRelayName = async (guild, retries = 0) => {
+  const name = relays[Math.floor(Math.random() * relays.length)];
+  const alreadyUsed = guild.channels.find(channel => channel.name === name);
+  if (retries > relays.length - 1 && alreadyUsed) {
+    return name;
+  }
+  if (retries < relays.length - 1 && alreadyUsed) {
+    return getRelayName(guild, retries + 1);
+  }
+  return name;
+};
+
 const clone = async (template, settings) => {
   const { guild } = template;
-  const perms = template.permissionsOverwrites
-    ? template.permissionsOverwrites.map(({ id, allow, deny }) => ({ id, allow, deny }))
+  const perms = template.permissionOverwrites
+    ? template.permissionOverwrites.map(({ id, allow, deny }) => ({ id, allow, deny }))
     : [];
   const isRelay = await settings.isRelay(template.id);
   const name = isRelay
-    ? relays[Math.floor(Math.random() * relays.length)]
+    ? await getRelayName(guild)
     : generator.make({ adjective: true, type: 'places' });
 
   const newChannel = await guild.createChannel(name, template.type, perms);

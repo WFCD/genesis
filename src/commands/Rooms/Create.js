@@ -145,7 +145,7 @@ class Create extends Command {
         if (useable.includes(roomType)) {
           const users = getUsersForCall(message);
           const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
-          if (users.length < 11 && !message.guild.channels.find('name', name)) {
+          if (users.length < 11 && !message.guild.channels.find(channel => channel.name === name)) {
             const overwrites = this.createOverwrites({
               users,
               everyone: message.guild.defaultRole,
