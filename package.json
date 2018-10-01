@@ -47,7 +47,8 @@
     "raven": "^2.6.3",
     "request-promise": "^4.2.2",
     "right-pad": "^1.0.1",
-    "sql-template-strings": "^2.2.2"
+    "sql-template-strings": "^2.2.2",
+    "warframe-name-generator": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
