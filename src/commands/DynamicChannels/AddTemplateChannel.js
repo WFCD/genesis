@@ -16,8 +16,8 @@ class AddTemplateChannel extends Command {
     this.allowDM = false;
     this.usages = [
       {
-        description: 'Add a template channel',
-        parameters: ['channel mention'],
+        description: 'Add a template channel. If `--relay` is specified, it will use relay naming.',
+        parameters: ['channel mention', '--relay'],
       },
     ];
   }
