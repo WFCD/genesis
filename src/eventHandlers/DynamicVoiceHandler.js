@@ -73,9 +73,9 @@ class DynamicVoiceHandler {
       templates.forEach(async (template) => {
         instances.push(...await this.settings.getInstances(template));
       });
-      return templates.filter(channel => this.checkIfShouldFilter(
-        channel, oldMember, newMember,
-      )).length > 0;
+      return templates
+        .filter(channel => this.checkIfShouldFilter(channel, oldMember, newMember))
+        .length > 0;
     }
     return templates.length;
   }

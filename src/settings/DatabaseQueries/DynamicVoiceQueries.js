@@ -104,14 +104,13 @@ class DynamicVoiceQueries {
   }
 
   async isRelay(channelId) {
-    const res = await this.db.query(
-      SQL`SELECT t.is_relay
+    const res = await this.db.query(SQL`
+      SELECT t.is_relay
       FROM dynamic_voice_template as t,
         dynamic_voice_instance as i
       WHERE t.channel_id = ${channelId}
         OR (t.channel_id = i.template_id
-          AND i.instance_id = ${channelId})`,
-    );
+          AND i.instance_id = ${channelId})`);
     if (!res[0].length) {
       return 'none';
     }
