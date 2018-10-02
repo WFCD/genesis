@@ -145,4 +145,18 @@ module.exports = [
     guild_id BIGINT(20) UNIQUE NOT NULL,
     owner_id BIGINT(20) NOT NULL
   );`,
+  `CREATE TABLE IF NOT EXISTS dynamic_voice_template (
+    guild_id BIGINT(20) NOT NULL,
+    channel_id BIGINT(20) UNIQUE NOT NULL,
+    is_relay varchar(1) NOT NULL,
+    PRIMARY KEY (guild_id, channel_id)
+  )`,
+  `CREATE TABLE IF NOT EXISTS dynamic_voice_instance (
+    template_id BIGINT(20) NOT NULL,
+    instance_id BIGINT(20) NOT NULL,
+    PRIMARY KEY (template_id, instance_id),
+    FOREIGN KEY (template_id)
+      REFERENCES dynamic_voice_template(channel_id)
+      ON DELETE CASCADE
+  )`,
 ];

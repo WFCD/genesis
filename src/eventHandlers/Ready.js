@@ -2,6 +2,8 @@
 
 const Handler = require('../models/BaseEventHandler');
 
+const DynamicVoiceHandler = require('./DynamicVoiceHandler');
+
 /**
  * Check if private rooms have expired and are empty. If not, do nothing.
  * If so, delete the corresponding channels.
@@ -110,8 +112,8 @@ class OnReadyHandle extends Handler {
 
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.bot.shardId);
-
     setInterval(updatePresence, 60000, self);
+    this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
   }
 }
 

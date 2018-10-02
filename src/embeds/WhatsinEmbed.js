@@ -37,10 +37,10 @@ class WhatsinEmbed extends BaseEmbed {
       const reward = transformedRewards[rewardName];
       const qualities = [];
       reward.forEach((quality) => {
-        const wrappedQuality = lpad(`${quality.toFixed(2)}`, 6, ' ').substring(0, 5);
+        const wrappedQuality = lpad(`${quality.toFixed(2)}`, 6, '\u2003').substring(0, 5);
         qualities.push(wrappedQuality);
       });
-      tokens.push(`${rpad(rewardName, longest.length + 1, ' ')} ${qualities.join('/')}%`);
+      tokens.push(`${rpad(rewardName, longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
     });
 
 

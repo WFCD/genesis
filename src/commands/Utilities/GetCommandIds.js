@@ -30,8 +30,8 @@ class GetCommandIds extends Command {
     commands = commands
       .filter(command => !command.ownerOnly
         || (message.author.id === this.bot.owner && command.ownerOnly))
-      .map(command => `${rpad(command.call, longestCall.length, ' ')} `
-        + `| ${rpad(command.id, longestId.length, ' ')} | ${command.blacklistable ? '✓' : '✗'}`);
+      .map(command => `${rpad(command.call, longestCall.length, '\u2003')} `
+        + `| ${rpad(command.id, longestId.length, '\u2003')} | ${command.blacklistable ? '✓' : '✗'}`);
 
     const pages = [];
     createGroupedArray(commands, 12).forEach((group) => {

@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const decache = require('decache');
+const BaseEventHandler = require('./models/BaseEventHandler');
 
 /**
  * Describes a CommandHandler for a bot.
@@ -52,7 +53,7 @@ class EventHandler {
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Handler = require(path.join(handlersDir, f));
-        if (Object.prototype.toString.call(Handler) === '[object Function]') {
+        if (Handler.prototype instanceof BaseEventHandler) {
           const handler = new Handler(this.bot);
 
           this.logger.debug(`Adding ${handler.id}`);
