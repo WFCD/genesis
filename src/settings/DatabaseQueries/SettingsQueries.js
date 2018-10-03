@@ -29,7 +29,7 @@ class SettingsQueries {
 
   async checkWebhookAndReturn(channel, setting) {
     if (!/webhook/.test(setting)) {
-      await this.setChannelSetting(channel, setting, this.defaults[`${setting}`]);
+      await this.setChannelSetting(channel, setting, this.defaults[setting]);
       return this.defaults[`${setting}`];
     }
     return undefined;
