@@ -30,7 +30,7 @@ class PriceCheckEmbed extends BaseEmbed {
       };
     } else {
       const attachment = result[0];
-      this.color = parseInt(attachment.color, 16);
+      this.color = parseInt(attachment.color, 10);
       this.type = attachment.type;
       this.title = attachment.title;
       this.url = attachment.url;
