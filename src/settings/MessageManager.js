@@ -231,8 +231,8 @@ class MessaageManager {
         if (ctx.webhook.avatar) {
           embedCopy.avatarURL = ctx.webhook.avatar;
         }
-        if (ctx.webhook.username) {
-          embedCopy.username = ctx.webhook.username;
+        if (ctx.webhook.name) {
+          embedCopy.username = ctx.webhook.name;
         }
         const msg = await client.send(text, embedCopy);
         if (msg.deletable && ctx.deleteAfterDuration > 0) {
