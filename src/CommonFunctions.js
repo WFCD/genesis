@@ -216,7 +216,8 @@ const emojify = (stringWithoutEmoji) => {
   Object.keys(emoji).forEach((identifier) => {
     if (typeof stringWithEmoji === 'string') {
       stringWithEmoji = stringWithEmoji
-        .replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]}`);
+        .replace(/\<DT_\w+\>/ig, '')
+        .replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]} `);
     }
   });
   return stringWithEmoji;

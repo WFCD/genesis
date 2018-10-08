@@ -5,7 +5,8 @@ const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const BaseEmbed = require('../../embeds/BaseEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
-const { createPageCollector, apiBase, createGroupedArray } = require('../../CommonFunctions');
+// eslint-disable-next-line object-curly-newline
+const { createPageCollector, apiBase, createGroupedArray, emojify } = require('../../CommonFunctions');
 
 class ModEmbed extends BaseEmbed {
   constructor(bot, modData, query) {
@@ -13,11 +14,36 @@ class ModEmbed extends BaseEmbed {
 
     this.title = modData.name;
     this.color = 0xC0C0C0;
-    this.description = `Mod result for ${query}`;
+    this.description = `Mod result for ${query}\n\n${emojify(modData.description)}`;
     this.url = `https://warframe.wikia.com/wiki/${modData.name.replace(/\s/ig, '_')}`;
     this.image = {
       url: `https://cdn.warframestat.us/img/${modData.imageName}`,
     };
+    this.fields = [{
+      name: 'Polarity',
+      value: emojify(modData.polarity.toLowerCase()),
+      inline: true,
+    }, {
+      name: 'Max Rank',
+      value: String(modData.fusionLimit),
+      inline: true,
+    }, {
+      name: 'Type',
+      value: String(modData.type),
+      inline: true,
+    }, {
+      name: 'Rarity',
+      value: modData.rarity,
+      inline: true,
+    }, {
+      name: 'Base Drain',
+      value: String(Math.abs(modData.baseDrain)),
+      inline: true,
+    }, {
+      name: 'Tradeable',
+      value: modData.tradable ? '✅' : '❌',
+      inline: true,
+    }];
   }
 }
 
