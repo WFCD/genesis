@@ -227,7 +227,14 @@ class MessaageManager {
     if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
       const client = new this.discord.WebhookClient(ctx.webhook.id, ctx.webhook.token);
       try {
-        const msg = await client.send(text, embed);
+        const embedCopy = Object.assign({}, embed);
+        if (ctx.webhook.avatar) {
+          embedCopy.avatarURL = ctx.webhook.avatar;
+        }
+        if (ctx.webhook.username) {
+          embedCopy.username = ctx.webhook.username;
+        }
+        const msg = await client.send(text, embedCopy);
         if (msg.deletable && ctx.deleteAfterDuration > 0) {
           const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
           if (deleteExpired) {
