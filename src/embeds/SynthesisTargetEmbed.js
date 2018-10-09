@@ -2,16 +2,10 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-const colors = {
-  common: 0x443B25,
-  uncommon: 0x95BACD,
-  rare: 0xC8BE92,
-};
-
 /**
  * Generates synthesis target embeds
  */
-class SynthesisEmbed extends BaseEmbed {
+class SynthesisTargetEmbed extends BaseEmbed {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<SynthesisTarget>} synthTargets - The synthesis targets to send info on
@@ -43,4 +37,4 @@ class SynthesisEmbed extends BaseEmbed {
   }
 }
 
-module.exports = SynthesisEmbed;
+module.exports = SynthesisTargetEmbed;

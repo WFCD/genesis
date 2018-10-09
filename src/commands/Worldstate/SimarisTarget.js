@@ -3,7 +3,7 @@
 const request = require('request-promise');
 
 const Command = require('../../models/Command.js');
-const SynthesisEmbed = require('../../embeds/SynthesisEmbed.js');
+const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
 const Logger = require('../../Logger.js');
 
 const { createPageCollector } = require('../../CommonFunctions');
@@ -11,19 +11,19 @@ const { createPageCollector } = require('../../CommonFunctions');
 const { apiBase } = require('../../CommonFunctions');
 
 /**
- * Displays the currently active alerts
+ * Displays allows the user
  */
-class Synthesis extends Command {
+class SimarisTarget extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.synth', 'synth', 'Get information about synthesis targets');
-    this.regex = new RegExp('^synth(.+)?', 'i');
+    super(bot, 'warframe.misc.synth', 'simaris', 'Search for synthesis targets based on name');
+    this.regex = new RegExp(`^${this.call}(?:\\s+([a-zA-Z]+))?$`, 'i');
     this.usages = [
       {
-        description: 'Get information about synthesis targets',
+        description: 'Search for synthesis targets based on name',
         parameters: ['target-name'],
       },
     ];
@@ -50,14 +50,14 @@ class Synthesis extends Command {
 
     // If there is a single result, show it
     if (results.length == 1) {
-      this.messageManager.embed(message, new SynthesisEmbed(this.bot, results, query), true, false);
+      this.messageManager.embed(message, new SynthesisTargetEmbed(this.bot, results, query), true, false);
     }
     else {
       // If there is more than one result, show a result list and the pages
       const pages = [];
-      pages.push(new SynthesisEmbed(this.bot, results, query));
+      pages.push(new SynthesisTargetEmbed(this.bot, results, query));
       results.forEach((result) => {
-        pages.push(new SynthesisEmbed(this.bot, [result], query));
+        pages.push(new SynthesisTargetEmbed(this.bot, [result], query));
       });
       if (pages.length) {
         const msg = await this.messageManager.embed(message, pages[0], false, false);
@@ -67,10 +67,9 @@ class Synthesis extends Command {
         message.delete(10000);
       }  
     }
-    
 
     return this.messageManager.statuses.SUCCESS;
   }
 }
 
-module.exports = Synthesis;
+module.exports = SimarisTarget;
