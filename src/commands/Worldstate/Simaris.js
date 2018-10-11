@@ -1,11 +1,11 @@
 'use strict';
 
+const request = require('request-promise');
 const Command = require('../../models/Command.js');
 const SimarisEmbed = require('../../embeds/SimarisEmbed.js');
 const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
 const { createPageCollector } = require('../../CommonFunctions');
-const request = require('request-promise');
 const Logger = require('../../Logger.js');
 
 /**
@@ -18,7 +18,8 @@ class Simaris extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.');
-    // Can only have 1 regex that a command can match on, so this is a combination of platform or target
+    // Can only have 1 regex that a command can match on,
+    // so this is a combination of platform or target
     this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');
     this.platformRegex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
     this.targetRegex = new RegExp(`^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$`, 'i');
@@ -26,18 +27,18 @@ class Simaris extends Command {
   }
 
   async run(message, ctx) {
-    const platformParam = await this.getRegexParam(message, this.platformRegex)
+    const platformParam = await Simaris.getRegexParam(message, this.platformRegex);
     this.logger.debug(`got platform ${platformParam}`);
 
-    const targetParam = await this.getRegexParam(message, this.targetRegex);
+    const targetParam = await Simaris.getRegexParam(message, this.targetRegex);
     this.logger.debug(`got target ${targetParam}`);
-    
+
     if (targetParam !== undefined) {
       await this.handleTargetCommand(message, targetParam);
     } else {
       await this.handleSimarisCommmand(message, ctx, platformParam);
     }
-    
+
     return this.messageManager.statuses.SUCCESS;
   }
 
@@ -89,11 +90,13 @@ class Simaris extends Command {
     }
   }
 
-  async getRegexParam(message, regex) {
-    var param = undefined;
+  static getRegexParam(message, regex) {
+    let param;
+    const matchIndex = 1;
     const matches = message.strippedContent.match(regex);
-    if (matches !== null)
-      param = matches[1];
+    if (matches !== null) {
+      param = matches[matchIndex];
+    }
     return param;
   }
 }
