@@ -19,7 +19,7 @@ class Simaris extends Command {
   constructor(bot) {
     super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.');
     // Can only have 1 regex that a command can match on, so this is a combination of platform or target
-    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))|(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$`, 'i');
+    this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');
     this.platformRegex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
     this.targetRegex = new RegExp(`^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$`, 'i');
     this.logger = new Logger();
