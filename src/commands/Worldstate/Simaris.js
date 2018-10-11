@@ -6,7 +6,6 @@ const SimarisEmbed = require('../../embeds/SimarisEmbed.js');
 const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
 const { createPageCollector } = require('../../CommonFunctions');
-const Logger = require('../../Logger.js');
 
 /**
  * Displays the current simaris target
@@ -23,15 +22,12 @@ class Simaris extends Command {
     this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');
     this.platformRegex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
     this.targetRegex = new RegExp(`^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$`, 'i');
-    this.logger = new Logger();
   }
 
   async run(message, ctx) {
     const platformParam = await Simaris.getRegexParam(message, this.platformRegex);
-    this.logger.debug(`got platform ${platformParam}`);
 
     const targetParam = await Simaris.getRegexParam(message, this.targetRegex);
-    this.logger.debug(`got target ${targetParam}`);
 
     if (targetParam !== undefined) {
       await this.handleTargetCommand(message, targetParam);
@@ -54,7 +50,6 @@ class Simaris extends Command {
 
   async handleTargetCommand(message, targetParam) {
     let query = targetParam;
-    this.logger.debug(`query: "${JSON.stringify(query)}"`);
 
     const options = {
       uri: `${apiBase}/synthtargets`,
