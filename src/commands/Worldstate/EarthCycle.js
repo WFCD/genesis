@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const EarthCycleEmbed = require('../../embeds/EarthCycleEmbed.js');
+const MakeSimpleImage = require('../Image/MakeSimpleImage.js')
 
 /**
  * Displays the current stage in Earth's cycle
@@ -36,19 +37,55 @@ class EarthCycle extends Command {
   async run(message, ctx) {
     let cycleData;
     const earth = (/earth/ig).test(message.strippedContent);
+    const image = (/-i/ig).test(message.strippedContent);
     const ws = await this.bot.worldStates[ctx.platform.toLowerCase()].getData();
-    if (earth) {
-      cycleData = ws.earthCycle;
+    if (image) {
+
+      if (earth) {
+
+        cycleData = ws.earthCycle;
+        
+        new MakeSimpleImage(
+          cycleData.isDay,                             // data
+          '././src/resources/earthdayModel.png',     // readFile0
+          '././src/resources/earthnightModel.png',   // readFile1
+          cycleData.timeLeft,                          // text
+          '././src/resources/CDfontSize40wnumber.fnt', // font
+          '././src/resources/cycleEarth.png',          // sendFileCD
+          message                                      
+          ).run()
+          
+          
+      } else {
+        cycleData = ws.cetusCycle;
+  
+        new MakeSimpleImage(
+          cycleData.isDay,                             // data
+          '././src/resources/cetusdayModel.png',     // readFile0
+          '././src/resources/cetusnightModel.png',   // readFile1
+          cycleData.timeLeft,                          // text
+          '././src/resources/CDfontSize40wnumber.fnt', // font
+          '././src/resources/cycleCetus.png',          // sendFileCD
+          message                                      
+          ).run()
+        }
+
+        return this.messageManager.statuses.SUCCESS;
+        
     } else {
-      cycleData = ws.cetusCycle;
-      const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      if (ostrons) {
-        cycleData.bountyExpiry = ostrons.expiry;
+      if (earth) {
+        cycleData = ws.earthCycle;
+      } else {
+        cycleData = ws.cetusCycle;
+        const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+        if (ostrons) {
+          cycleData.bountyExpiry = ostrons.expiry;
+        }
       }
+      const embed = new EarthCycleEmbed(this.bot, cycleData);
+      await this.messageManager.embed(message, embed, true, true);
+      return this.messageManager.statuses.SUCCESS;
     }
-    const embed = new EarthCycleEmbed(this.bot, cycleData);
-    await this.messageManager.embed(message, embed, true, true);
-    return this.messageManager.statuses.SUCCESS;
   }
 }
 
