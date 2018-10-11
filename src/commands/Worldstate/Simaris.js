@@ -66,8 +66,10 @@ class Simaris extends Command {
 
     // If there is a single result, show it
     if (results.length === 1) {
-      this.messageManager.embed(message,
-        new SynthesisTargetEmbed(this.bot, results, query), true, false);
+      this.messageManager.embed(
+        message,
+        new SynthesisTargetEmbed(this.bot, results, query), true, false,
+      );
     } else {
       // If there is more than one result, show a result list and the pages
       const pages = [];
