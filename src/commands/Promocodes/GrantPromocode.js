@@ -39,6 +39,11 @@ class GrantPromocode extends Command {
     }
     // eslint-disable-next-line camelcase
     if (grantedTo === null) {
+      if (await this.settings.hasCodeInPool(message.author, pool)) {
+        this.messageManager.reply(message, `<@${message.author.id}> already has a code from `);
+        return this.messageManager.statuses.FAILURE;
+      }
+
       await this.settings.grantCode(code, user, message.author.id, platform);
       this.messageManager.reply(message, `Code granted to <@${user}> from ${pool} on ${platform}`);
       this.messageManager.sendDirectMessageToUser(this.bot.client.users.get(user), `You've been granted a code for ${pool} on ${platform}.

@@ -39,7 +39,7 @@ class ClaimPromocode extends Command {
       this.messageManager.reply(message, 'Your password is invalid, or you didn\'t provide one and the pool is not open.');
       return this.messageManager.statuses.FAILURE;
     }
-    if (this.settings.hasCodeInPool(message.author, pool)) {
+    if (await this.settings.hasCodeInPool(message.author, pool)) {
       this.messageManager.reply(message, `<@${message.author.id}> already has a code from `);
       return this.messageManager.statuses.FAILURE;
     }
