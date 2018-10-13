@@ -53,6 +53,17 @@ class PromocodeQueries {
     return res[0].pool_restricted;
   }
 
+  async hasCodeInPool(member, pool) {
+    const query = SQL`SELECT count(cm.code) as count
+      FROM code_pool_member cm
+      WHERE granted_to = ${member.id} and pool_id = ${pool};`;
+    const res = await this.db.query(query);
+    if (res[0].length === 0) {
+      return undefined;
+    }
+    return res[0].count > 0;
+  }
+
   async isPoolPublic(id) {
     const query = SQL`SELECT pool_public FROM code_pool WHERE pool_id = ${id};`;
     const res = await this.db.query(query);
