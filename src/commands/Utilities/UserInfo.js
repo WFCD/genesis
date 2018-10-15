@@ -13,7 +13,7 @@ class UserInfo extends Command {
    */
   constructor(bot) {
     super(bot, 'util.userinfo', 'userinfo', 'Get info about a user');
-    this.regex = new RegExp(`^${this.call}\\s*((?:\\<\\@?\\!?)?\\d+(?:\\>)?)?`);
+    this.regex = new RegExp(`^${this.call}\\s*(?:(?:<@)(\\d+)(?:>))?`);
   }
 
   async run(message) {
