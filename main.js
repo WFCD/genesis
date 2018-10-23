@@ -4,6 +4,7 @@ const cluster = require('cluster');
 const Raven = require('raven');
 
 const Genesis = require('./src/bot');
+const TwitterCache = require('./src/TwitterCache.js');
 
 let controlHook;
 if (process.env.CONTROL_WH_ID) {
@@ -39,6 +40,24 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
+const twitterTimeout = process.env.TWITTER_TIMEOUT || 60000;
+const twitterCache = new TwitterCache({
+  clientInfo: 
+  {
+    consumer_key: process.env.TWITTER_KEY, 
+    consumer_secret: process.env.TWITTER_SECRET,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
+  },
+  toWatch:
+  [
+    "@Cam_Rogers",
+    "@PabloPoon",
+    "@rebbford",
+    "@sj_sinclair"
+  ]
+},twitterTimeout, logger);
+
 if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require
   require('./src/tools/generateManifest.js')();
@@ -53,7 +72,7 @@ if (cluster.isMaster) {
   clusterManager.start();
 } else {
   const totalShards = parseInt(process.env.SHARDS, 10) || 1;
-  const shard = new Genesis(process.env.TOKEN, logger, {
+  const shard = new Genesis(process.env.TOKEN, logger, twitterCache, {
     shardId: parseInt(process.env.shard_id, 10),
     shardCount: totalShards,
     prefix: process.env.PREFIX,

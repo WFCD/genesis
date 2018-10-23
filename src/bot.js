@@ -40,7 +40,7 @@ class Genesis {
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
    */
-  constructor(discordToken, logger, {
+  constructor(discordToken, logger, twitterCache, {
     shardId = 0,
     shardCount = 1,
     prefix = process.env.PREFIX,
@@ -153,7 +153,7 @@ class Genesis {
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
+      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, twitterCache, this.logger);
     });
 
     /**

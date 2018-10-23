@@ -70,6 +70,10 @@
       "cetus.night",
       "earth.day",
       "earth.night",
+      "twitter.cam_rogers",
+      "twitter.pablopoon",
+      "twitter.rebbford",
+      "twitter.sj_sinclair",
       "syndicate.ostrons",
       "syndicate.assassins",
       "operations",
@@ -179,7 +183,8 @@
       "fissures.evacuation",
       "fissures",
       "cetus",
-      "earth"
+      "earth",
+      "twitter"
    ],
    "fissures":[
       "fissures.t1.excavation",

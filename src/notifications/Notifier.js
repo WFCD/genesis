@@ -13,6 +13,7 @@ const InvasionEmbed = require('../embeds/InvasionEmbed');
 const NewsEmbed = require('../embeds/NewsEmbed');
 const SalesEmbed = require('../embeds/SalesEmbed');
 const SortieEmbed = require('../embeds/SortieEmbed');
+const TweetEmbed = require('../embeds/TweetEmbed');
 const SyndicateEmbed = require('../embeds/SyndicateEmbed');
 const VoidTraderEmbed = require('../embeds/VoidTraderEmbed');
 const EarthCycleEmbed = require('../embeds/EarthCycleEmbed');
@@ -28,6 +29,10 @@ const warframe = new Wikia('warframe');
 function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
+
+function fromNowInt(minutes, now = Date.now) {
+    return new Date(now() + minutes*60000);
+  } 
 
 async function getThumbnailForItem(query) {
   if (query) {
@@ -109,6 +114,7 @@ class Notifier {
       .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
+    const tweetsToNotify = newData.twitter.filter(t => !ids.includes(t.id));
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     // Concat all notified ids
@@ -127,6 +133,7 @@ class Notifier {
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
       .concat([newData.cetusCycle.id])
       .concat([newData.earthCycle.id]);
+      .concat(newData.twitter.map(t => t.id));
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -137,6 +144,9 @@ class Notifier {
     if (conclaveToNotify && conclaveToNotify.length > 0) {
       this.sendConclaveDailies(conclaveToNotify, platform);
       await this.sendConclaveWeeklies(conclaveToNotify, platform);
+    }
+    if(tweetsToNotify && tweetsToNotify.length > 0) {
+      this.sendTweets(tweetsToNotify, platform);
     }
     this.sendDarvo(dailyDealsToNotify, platform);
     this.sendEvent(eventsToNotify, platform);
@@ -256,6 +266,10 @@ class Notifier {
 
   async sendInvasions(newInvasions, platform) {
     await Promise.all(newInvasions.map(invasion => this.sendInvasion(invasion, platform)));
+  }
+
+  async sendTweets(newTweets, platform) {
+    await Promise.all(newTweets.map(t => this.broadcaster.broadcast(new TweetEmbed(this.bot, t, platform), platform, `${t.id}`, null, fromNowInt(4))));
   }
 
   async sendInvasion(invasion, platform) {
