@@ -14,16 +14,25 @@ class TweetEmbed extends BaseEmbed {
   constructor(bot, tweet, platform) {
     super();
     this.color = 33972;
-    this.description = `${tweet.tweets[0].text}`;
+    this.description =`${tweet.text}`;
     this.footer = {
-      text: `${tweet.tweets[0].user.name} - ${tweet.tweets[0].user.url}`,
+      text: `${tweet.user.name} - ${tweet.user.url}`,
       icon_url: 'https://i.imgur.com/CwIRKhh.png'
     };
+    this.timestamp = `${tweet.created_at}`
+    this.url = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
 
-    console.log(`${tweet.tweets[0].user.profile_image_url}`);
-    this.title = `${tweet.tweets[0].user.name} (@${tweet.tweets[0].user.screen_name}) Tweeted`;
+    if(tweet.in_reply_to_status_id != null) {
+      this.title = `${tweet.user.name} (@${tweet.user.screen_name}) replied to a Tweet`;
+    } else if(tweet.retweeted_status != null) {
+      this.title = `${tweet.user.name} (@${tweet.user.screen_name}) retweeted a Tweet from ${tweet.retweeted_status.user.name} (@${tweet.retweeted_status.user.screen_name})`;
+    } else {
+      this.title = `${tweet.user.name} (@${tweet.user.screen_name}) Tweeted`;
+    }
+
+
     this.thumbnail = {
-      url: `${tweet.tweets[0].user.profile_image_url.replace('_normal.jpg', '.jpg')}`
+      url: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`
     };
   }
 }
