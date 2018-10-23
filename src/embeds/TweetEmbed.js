@@ -13,14 +13,17 @@ class TweetEmbed extends BaseEmbed {
    */
   constructor(bot, tweet, platform) {
     super();
-    this.color = 0xa84300;
+    this.color = 33972;
     this.description = `${tweet.tweets[0].text}`;
-    this.footer.text = `${tweet.tweets[0].user.name}`;
-  
+    this.footer = {
+      text: `${tweet.tweets[0].user.name} - ${tweet.tweets[0].user.url}`,
+      icon_url: 'https://i.imgur.com/CwIRKhh.png'
+    };
 
-    this.title = `New Tweet From ${tweet.tweets[0].user.name}`;
+    console.log(`${tweet.tweets[0].user.profile_image_url}`);
+    this.title = `${tweet.tweets[0].user.name} (@${tweet.tweets[0].user.screen_name}) Tweeted`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/wWBRhaB.png',
+      url: `${tweet.tweets[0].user.profile_image_url.replace('_normal.jpg', '.jpg')}`
     };
   }
 }
