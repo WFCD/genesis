@@ -1,6 +1,7 @@
 'use strict';
 
 const Twitter = require('twitter');
+const { determineTweetType } = require('./CommonFunctions.js');
 
 class TwitterCache {
   constructor(params, timeout, logger = console) {
@@ -25,7 +26,8 @@ class TwitterCache {
       delete this.currentData;
       this.currentData = [];
       for (let x = 0; x < this.toWatch.length; x += 1) {
-        this.currentData.push({ id: `twitter.${this.toWatch[x].plain}`, uniqueId: `${data[x][0].id}`, tweets: data[x] });
+        const type = determineTweetType(data[x][0]);
+        this.currentData.push({ id: `twitter.${this.toWatch[x].plain}.${type}`, uniqueId: `${data[x][0].id}`, tweets: data[x] });
       }
       this.updating = null;
       return this.currentData;
@@ -42,6 +44,6 @@ class TwitterCache {
     }
     return this.currentData;
   }
-};
+}
 
 module.exports = TwitterCache;
