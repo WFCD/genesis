@@ -141,7 +141,7 @@ class Notifier {
       this.sendConclaveDailies(conclaveToNotify, platform);
       await this.sendConclaveWeeklies(conclaveToNotify, platform);
     }
-    if(tweetsToNotify && tweetsToNotify.length > 0) {
+    if (tweetsToNotify && tweetsToNotify.length > 0) {
       this.sendTweets(tweetsToNotify, platform);
     }
     this.sendDarvo(dailyDealsToNotify, platform);

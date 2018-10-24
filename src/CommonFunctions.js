@@ -50,7 +50,23 @@ const trackableEvents = {
   deals,
   cetus: ['cetus.day', 'cetus.night'],
   earth: ['earth.day', 'earth.night'],
-  twitter: ['twitter.cam', 'twitter.pablo', 'twitter.rebecca', 'twitter.steve']
+  twitter: [
+    'twitter.warframe',
+    'twitter.digitalextremes',
+    'twitter.pablo',
+    'twitter.cameron',
+    'twitter.rebecca',
+    'twitter.steve',
+    'twitter.danielle',
+    'twitter.megan',
+    'twitter.george',
+    'twitter.maciej',
+    'twitter.sheldon',
+    'twitter.narc',
+    'twitter.helen',
+    'twitter.tobiah',
+    'twitter.wfdiscord',
+  ],
 };
 
 const trackableItems = {

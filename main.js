@@ -42,21 +42,32 @@ process.on('unhandledRejection', (err) => {
 
 const twitterTimeout = process.env.TWITTER_TIMEOUT || 60000;
 const twitterCache = new TwitterCache({
-  clientInfo: 
+  clientInfo:
   {
-    consumer_key: process.env.TWITTER_KEY, 
+    consumer_key: process.env.TWITTER_KEY,
     consumer_secret: process.env.TWITTER_SECRET,
     access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
-    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
   },
   toWatch:
   [
-    {acc_name: "@PabloPoon", plain: "pablo"},
-    {acc_name: "@Cam_Rogers", plain: "cam"},
-    {acc_name: "@rebbford", plain: "rebecca"},
-    {acc_name: "@sj_sinclair", plain: "steve"}
-  ]
-},twitterTimeout, logger);
+    { acc_name: '@playwarframe', plain: 'warframe' },
+    { acc_name: '@digitalextremes', plain: 'digitalextremes' },
+    { acc_name: '@PabloPoon', plain: 'pablo' },
+    { acc_name: '@Cam_Rogers', plain: 'cameron' },
+    { acc_name: '@rebbford', plain: 'rebecca' },
+    { acc_name: '@sj_sinclair', plain: 'steve' },
+    { acc_name: '@soelloo', plain: 'danielle' },
+    { acc_name: '@moitoi', plain: 'megan' },
+    { acc_name: '@GameSoundDesign', plain: 'george' },
+    { acc_name: '@msinilo', plain: 'maciej' },
+    { acc_name: '@sheldoncarter', plain: 'sheldon' },
+    { acc_name: '@narcbag', plain: 'narc' },
+    { acc_name: '@Helen_Heikkila', plain: 'helen' },
+    { acc_name: '@tobitenno', plain: 'tobiah' },
+    { acc_name: '@wfdiscord', plain: 'wfdiscord' },
+  ],
+}, twitterTimeout, logger);
 
 if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require

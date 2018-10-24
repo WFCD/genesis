@@ -38,22 +38,18 @@ class WorldStateCache extends EventEmitter {
   update() {
     this.updating = this.httpGet().then((data) => {
       this.twitter.getData().then((twitterData) => {
+        this.lastUpdated = Date.now();
+        delete this.currentData;
+        this.currentData = JSON.parse(data);
+        this.currentData.twitter = twitterData;
 
-      this.lastUpdated = Date.now();
-      delete this.currentData;
-      this.currentData = JSON.parse(data);
-      this.currentData['twitter'] = twitterData;
-
-      this.updating = null;
-      this.emit('newData', this.platform, this.currentData);
-      
-      return this.currentData;
-
+        this.updating = null;
+        this.emit('newData', this.platform, this.currentData);
+        return this.currentData;
       }).catch((err) => {
         this.updating = null;
         this.logger.error(err);
       });
-
     }).catch((err) => {
       this.updating = null;
       this.logger.error(err);
