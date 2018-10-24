@@ -17,7 +17,7 @@ class TwitterCache {
   update() {
     const promises = [];
     for(let i=0;i<this.toWatch.length;i++) {
-      promises.push(this.client.get('statuses/user_timeline', {screen_name: this.toWatch[i], count: 1}));
+      promises.push(this.client.get('statuses/user_timeline', {screen_name: this.toWatch[i].acc_name, count: 1}));
     }
 
     this.updating = Promise.all(promises).then((data) => {
@@ -25,7 +25,7 @@ class TwitterCache {
       delete this.currentData;
       this.currentData = [];
       for(let x=0;x<this.toWatch.length;x++) {
-        this.currentData.push({id: `twitter.${this.toWatch[x].toLowerCase().slice(1)}`, uniqueId:`${data[x][0].id}`, tweets: data[x]});
+        this.currentData.push({id: `twitter.${this.toWatch[x].plain}`, uniqueId:`${data[x][0].id}`, tweets: data[x]});
       }
       this.updating = null;
       return this.currentData;

@@ -30,10 +30,6 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-function fromNowInt(minutes, now = Date.now) {
-    return new Date(now() + minutes*60000);
-  } 
-
 async function getThumbnailForItem(query) {
   if (query) {
     const articles = await warframe.getSearchList({ query, limit: 1 });
@@ -269,7 +265,7 @@ class Notifier {
   }
 
   async sendTweets(newTweets, platform) {
-    await Promise.all(newTweets.map(t => this.broadcaster.broadcast(new TweetEmbed(this.bot, t, platform), platform, `${t.id}`, null, fromNowInt(4))));
+    await Promise.all(newTweets.map(t => this.broadcaster.broadcast(new TweetEmbed(this.bot, t.tweets[0], platform), platform, `${t.id}`, null, 3600)));
   }
 
   async sendInvasion(invasion, platform) {

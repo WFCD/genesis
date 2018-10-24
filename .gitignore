@@ -40,3 +40,4 @@ jspm_packages
 #ignore prod pm2 config
 genesis.json
 .idea/
+mypm2.json

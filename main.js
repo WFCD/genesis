@@ -51,10 +51,10 @@ const twitterCache = new TwitterCache({
   },
   toWatch:
   [
-    "@Cam_Rogers",
-    "@PabloPoon",
-    "@rebbford",
-    "@sj_sinclair"
+    {acc_name: "@PabloPoon", plain: "pablo"},
+    {acc_name: "@Cam_Rogers", plain: "cam"},
+    {acc_name: "@rebbford", plain: "rebecca"},
+    {acc_name: "@sj_sinclair", plain: "steve"}
   ]
 },twitterTimeout, logger);
 
