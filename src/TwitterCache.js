@@ -13,13 +13,11 @@ class TwitterCache {
     const clientInfo = {
       consumer_key: process.env.TWITTER_KEY,
       consumer_secret: process.env.TWITTER_SECRET,
-      access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
-      access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+      bearer_token: process.env.TWITTER_BEARER_TOKEN,
     };
 
     try {
       this.client = new Twitter(clientInfo);
-
       // don't attempt anything else if authentication fails
       this.toWatch = toWatch;
       this.currentData = null;
