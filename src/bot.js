@@ -34,7 +34,7 @@ class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
-   * @param  {Object}           twitterCache         Holds Twitter client, latest tweets, and list of accounts to watch
+   * @param  {Object}           twitterCache         Holds Twitter client and latest tweets
    * @param  {Object}           [options]            Bot options
    * @param  {number}           [options.shardId]    The shard ID of this instance
    * @param  {number}           [options.shardCount] The total number of shards
@@ -154,7 +154,8 @@ class Genesis {
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, twitterCache, this.logger);
+      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout,
+        twitterCache, this.logger);
     });
 
     /**

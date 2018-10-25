@@ -2,7 +2,7 @@
 
 const Twitter = require('twitter');
 
-const toWatch = require('./resources/tweeters.json')
+const toWatch = require('./resources/tweeters.json');
 const { determineTweetType } = require('./CommonFunctions.js');
 
 class TwitterCache {

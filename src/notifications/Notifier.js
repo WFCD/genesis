@@ -110,7 +110,8 @@ class Notifier {
       .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-    const tweetsToNotify = newData.twitter ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
+    const tweetsToNotify = newData.twitter
+      ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
 
