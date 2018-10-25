@@ -543,13 +543,13 @@ const csvToCodes = (csv) => {
 };
 
 const determineTweetType = (tweet) => {
-  if (tweet.in_reply_to_status_id != null) {
+  if (tweet.in_reply_to_status_id) {
     return ('reply');
   }
-  if (tweet.quoted_status_id != null) {
+  if (tweet.quoted_status_id) {
     return ('quote');
   }
-  if (tweet.retweeted_status != null) {
+  if (tweet.retweeted_status) {
     return ('retweet');
   }
   return ('tweet');
