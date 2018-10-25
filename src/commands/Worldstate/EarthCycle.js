@@ -7,13 +7,13 @@ const MakeSimpleImage = require('../Image/MakeSimpleImage.js');
 const earthResources = {
   readFile0: '././src/resources/earthdayModel.png',
   readFile1: '././src/resources/earthnightModel.png',
-  sendFileCD: '././src/resources/cycleEarth.png',
+  sendFileCD: '././src/resources/cycleEarth.{ts}.png',
 };
 
 const cetusResources = {
   readFile0: '././src/resources/cetusdayModel.png',
   readFile1: '././src/resources/cetusnightModel.png',
-  sendFileCD: '././src/resources/cycleCetus.png',
+  sendFileCD: '././src/resources/cycleCetus.{ts}.png',
 };
 
 const font = '././src/resources/CDfontSize40wnumber.fnt';
