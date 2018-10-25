@@ -43,7 +43,7 @@ class WorldStateCache extends EventEmitter {
       delete this.currentData;
       this.currentData = JSON.parse(data);
       this.currentData.twitter = twitterData;
-
+      
       this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;
