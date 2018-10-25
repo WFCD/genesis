@@ -34,6 +34,7 @@ class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
+   * @param  {Object}           twitterCache         Holds Twitter client, latest tweets, and list of accounts to watch
    * @param  {Object}           [options]            Bot options
    * @param  {number}           [options.shardId]    The shard ID of this instance
    * @param  {number}           [options.shardCount] The total number of shards
