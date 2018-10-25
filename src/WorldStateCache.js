@@ -14,7 +14,7 @@ const worldStateURLs = {
 };
 
 class WorldStateCache extends EventEmitter {
-  constructor(platform, timeout, logger = console) {
+  constructor(platform, timeout, twitterCache, logger = console) {
     super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;
@@ -24,6 +24,7 @@ class WorldStateCache extends EventEmitter {
     this.platform = platform;
     this.updateInterval = setInterval(() => this.update(), timeout);
     this.logger = logger;
+    this.twitter = twitterCache;
     this.update();
   }
 
@@ -34,18 +35,21 @@ class WorldStateCache extends EventEmitter {
     return this.currentData;
   }
 
-  update() {
-    this.updating = this.httpGet().then((data) => {
+  async update() {
+    try {
+      const data = await this.httpGet();
+      const twitterData = await this.twitter.getData();
       this.lastUpdated = Date.now();
       delete this.currentData;
       this.currentData = JSON.parse(data);
-      this.updating = null;
+      this.currentData.twitter = twitterData;
+      this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;
-    }).catch((err) => {
-      this.updating = null;
+    } catch (err) {
+      this.updating = undefined;
       this.logger.error(err);
-    });
+    }
     return this.updating;
   }
 
@@ -54,7 +58,7 @@ class WorldStateCache extends EventEmitter {
       const protocol = this.url.startsWith('https') ? https : http;
       const request = protocol.get(this.url, (response) => {
         if (response.statusCode < 200 || response.statusCode > 299) {
-          reject(new Error(`Failed to load page, status code: ${response.statusCode}`));
+          reject(new Error(`Failed to load page ${this.url}, status code: ${response.statusCode}`));
         }
         const body = [];
         response.on('data', chunk => body.push(chunk));

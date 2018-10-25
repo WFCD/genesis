@@ -5,7 +5,8 @@ const emoji = require('./resources/emoji.json');
 const welcomes = require('./resources/welcomes.json');
 
 const {
-  eventTypes, rewardTypes, opts, fissures, syndicates, conclave, deals, clantech, resources,
+  eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
+  resources,
 } = require('./resources/trackables.json');
 
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
@@ -50,6 +51,7 @@ const trackableEvents = {
   deals,
   cetus: ['cetus.day', 'cetus.night'],
   earth: ['earth.day', 'earth.night'],
+  twitter,
 };
 
 const trackableItems = {
@@ -540,6 +542,19 @@ const csvToCodes = (csv) => {
   }).filter(code => code.code !== null);
 };
 
+const determineTweetType = (tweet) => {
+  if (tweet.in_reply_to_status_id) {
+    return ('reply');
+  }
+  if (tweet.quoted_status_id) {
+    return ('quote');
+  }
+  if (tweet.retweeted_status) {
+    return ('retweet');
+  }
+  return ('tweet');
+};
+
 module.exports = {
   createGroupedArray,
   emojify,
@@ -559,5 +574,6 @@ module.exports = {
   resolvePool,
   createPageCollector,
   csvToCodes,
+  determineTweetType,
   apiBase,
 };

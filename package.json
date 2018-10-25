@@ -48,6 +48,7 @@
     "request-promise": "^4.2.2",
     "right-pad": "^1.0.1",
     "sql-template-strings": "^2.2.2",
+    "twitter": "^1.7.1",
     "warframe-name-generator": "^1.0.0"
   },
   "devDependencies": {
