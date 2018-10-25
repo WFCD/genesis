@@ -69,7 +69,11 @@ DISCORD_BOTS_WEB_TOKEN | Token used to update bots.discord.pw bot statistics | `
 DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server count | 6456514654966321321 | N\A
 DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
 PREFIX | Default prefix to use for the instance | `\` | `\`
-RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***' | N\A
+RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
+TWITTER_TIMEOUT | Milliseconds between each request batch to twitter | 60000 | 60000
+TWITTER_KEY | Twitter API consumer key | 'asdfiijas' | N\A
+TWITTER_SECRET | Twitter API consumer secret | 'asddofh' | N\A
+TWITTER_BEARER_TOKEN | Twitter App-only Bearer token | 'AAAAAasddfasd' | N\A
 
 ## Commands
 
