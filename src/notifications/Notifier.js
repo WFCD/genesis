@@ -110,9 +110,10 @@ class Notifier {
       .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
     const streamsToNotify = newData.news
       .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-    const tweetsToNotify = newData.twitter.filter(t => !ids.includes(t.uniqueId));
+    const tweetsToNotify = newData.twitter ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
+
     // Concat all notified ids
     notifiedIds = notifiedIds
       .concat(newData.alerts.map(a => a.id))
@@ -129,7 +130,7 @@ class Notifier {
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
       .concat([newData.cetusCycle.id])
       .concat([newData.earthCycle.id])
-      .concat(newData.twitter.map(t => t.uniqueId));
+      .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : []);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);

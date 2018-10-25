@@ -28,9 +28,14 @@ const levels = [
 
 levels.forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
+    let oString;
+    if (typeof message === 'object') {
+      oString = JSON.stringify(message);
+    }
+
     if ((levels.indexOf(level) >= levels.indexOf(logLevel)) && levels.indexOf(level) < 3) {
       if (level.toLowerCase() === 'debug') {
-        const verboseMsg = `[${level}] ${message}`;
+        const verboseMsg = `[${level}] ${oString || message}`;
         if (`[${level}] "${message}"` !== verboseMsg) {
           // eslint-disable-next-line no-console
           console.log(verboseMsg);
@@ -46,7 +51,7 @@ levels.forEach((level) => {
     }
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
-      console.error(`[${level}] ${message}`);
+      console.error(`[${level}] ${oString || message}`);
       if (this && this.ravenClient) {
         this.ravenClient.captureException(message);
       }

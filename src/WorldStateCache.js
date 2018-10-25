@@ -35,26 +35,22 @@ class WorldStateCache extends EventEmitter {
     return this.currentData;
   }
 
-  update() {
-    this.updating = this.httpGet().then((data) => {
-      this.twitter.getData().then((twitterData) => {
-        this.lastUpdated = Date.now();
-        delete this.currentData;
-        this.currentData = JSON.parse(data);
-        this.currentData.twitter = twitterData;
+  async update() {
+    try {
+      const data = await this.httpGet();
+      const twitterData = await this.twitter.getData();
+      this.lastUpdated = Date.now();
+      delete this.currentData;
+      this.currentData = JSON.parse(data);
+      this.currentData.twitter = twitterData;
 
-        this.updating = null;
-        this.emit('newData', this.platform, this.currentData);
-        return this.currentData;
-      }).catch((err) => {
-        this.updating = null;
-        this.logger.error(err);
-      });
-    }).catch((err) => {
-      this.updating = null;
+      this.updating = undefined;
+      this.emit('newData', this.platform, this.currentData);
+      return this.currentData;
+    } catch (err) {
+      this.updating = undefined;
       this.logger.error(err);
-    });
-
+    }
     return this.updating;
   }
 
@@ -63,7 +59,7 @@ class WorldStateCache extends EventEmitter {
       const protocol = this.url.startsWith('https') ? https : http;
       const request = protocol.get(this.url, (response) => {
         if (response.statusCode < 200 || response.statusCode > 299) {
-          reject(new Error(`Failed to load page, status code: ${response.statusCode}`));
+          reject(new Error(`Failed to load page ${this.url}, status code: ${response.statusCode}`));
         }
         const body = [];
         response.on('data', chunk => body.push(chunk));
