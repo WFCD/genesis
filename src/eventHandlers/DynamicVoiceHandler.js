@@ -43,6 +43,7 @@ const clone = async (template, settings) => {
   const newChannel = await guild.createChannel(name, template.type, perms);
   await newChannel.setParent(template.parentID, 'Moving channel for Dynamic channel');
   await newChannel.setUserLimit(template.userLimit, 'Channel setup for Dynamic Channel');
+  await newChannel.setPosition(template.position + 1);
   return newChannel;
 };
 
