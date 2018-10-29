@@ -16,7 +16,7 @@ class FrameEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: `${assetBase}/img/arcane.png`
+      url: `${assetBase}/img/arcane.png`,
     };
     if (frame && typeof frame !== 'undefined') {
       this.title = frame.name;

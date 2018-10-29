@@ -5,7 +5,7 @@ const BaseEmbed = require('./BaseEmbed.js');
 const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js');
 
 const ostron = `${assetBase}/img/ostron-banner.png`;
-const earth = `${assetBase}/img/earth-planet.png`
+const earth = `${assetBase}/img/earth-planet.png`;
 
 /**
  * Generates Earth cycle embeds

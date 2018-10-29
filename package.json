@@ -11,7 +11,9 @@
     "restart": "pm2 delete genesis && pm2 start genesis.json && pm2 logs genesis",
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
-    "update:genesis": "pm2 delete genesis && git pull && npm restart || npm start"
+    "update:genesis": "pm2 delete genesis && git pull && npm restart || npm start",
+    "lint": "eslint main.js src/",
+    "lint:fix": "eslint main.js src/ --fix"
   },
   "repository": {
     "type": "git",

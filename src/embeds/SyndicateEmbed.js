@@ -62,7 +62,7 @@ class SyndicateEmbed extends BaseEmbed {
       name: 'No such Syndicate',
       value: `Valid values: ${values.join(', ')}`,
     }];
-    this.url = `${wikiBase}/Syndicates`
+    this.url = `${wikiBase}/Syndicates`;
     this.thumbnail = {
       url: syndicateThumb,
     };
