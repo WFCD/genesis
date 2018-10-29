@@ -1,6 +1,9 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { assetBase } = require('../CommonFunctions');
+
+const efficiencyChart = `${assetBase}/img/efficiency-chart.png`;
 
 /**
  * Displays the Warframe efficincy/duration Chart
@@ -12,7 +15,6 @@ class Efficiency extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.efficiency', 'efficiency', 'Display Warframe Efficiency Chart');
-    this.efficiencyChart = 'https://i.imgur.com/dT7lpW2.png';
   }
 
   /**
@@ -25,7 +27,7 @@ class Efficiency extends Command {
     this.messageManager.sendFile(
       message,
       `Operator ${message.author.toString()}, the efficiency table, at your request.`,
-      this.efficiencyChart, 'efficiency.png', true,
+      efficiencyChart, 'efficiency.png', true,
     );
     return this.messageManager.statuses.SUCCESS;
   }

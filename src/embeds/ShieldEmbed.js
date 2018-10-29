@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const corpus = `${assetBase}/img/corpus.png`;
 
 function shieldCalc(baseShields, baseLevel, currentLevel) {
   return (parseFloat(baseShields)
@@ -26,7 +29,7 @@ class ShieldEmbed extends BaseEmbed {
     this.title = 'Warframe - Shields';
     this.url = 'https://warframe.com';
     this.thumbnail = {
-      url: 'http://i.imgur.com/BVUXIjA.png',
+      url: corpus,
     };
     this.fields = [
       {

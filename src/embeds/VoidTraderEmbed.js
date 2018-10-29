@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const baroThumb = `${assetBase}/img/baro.png`;
 
 /**
  * Generates void trader embeds
@@ -31,7 +34,7 @@ class VoidTraderEmbed extends BaseEmbed {
     });
     this.title = `[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/z0wU29P.png',
+      url: baroThumb,
     };
   }
 }

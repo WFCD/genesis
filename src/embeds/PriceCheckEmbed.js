@@ -25,7 +25,7 @@ class PriceCheckEmbed extends BaseEmbed {
         },
       ];
       this.footer = {
-        icon_url: 'https://cdn.discordapp.com/icons/195582152849620992/4c1fbd47b3e6c8d49b6d2362c79a537b.jpg',
+        icon_url: 'https://staging.nexushub.co/img/brand/nexushub-logo-color.png',
         text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
       };
     } else {

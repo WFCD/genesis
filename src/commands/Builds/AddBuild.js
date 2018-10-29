@@ -2,6 +2,9 @@
 
 const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
+const { assetBase } = require('../CommonFunctions');
+
+const outageThumb = `${assetBase}/img/outage.png`;
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)
@@ -32,7 +35,7 @@ class AddBuild extends Command {
     // save params based on order
     const title = params[0] || 'My Build';
     const body = params[1] || 'My Build Body';
-    const image = params[2] || 'https://i.imgur.com/31xCos6.png';
+    const image = params[2] || outageThumb;
     const build = await this.settings.addNewBuild(title, body, image, message.author);
     const embed = new BuildEmbed(this.bot, build);
     this.messageManager.embed(message, embed, true, true);

@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const alertThumb = `${assetBase}/img/alert.png`;
 
 /**
  * Generates alert embeds
@@ -15,7 +18,7 @@ class AlertEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'http://i.imgur.com/KQ7f9l7.png',
+      url: alertThumb,
     };
     this.color = 0xF1C40F;
     // compact

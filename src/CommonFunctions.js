@@ -10,6 +10,8 @@ const {
 } = require('./resources/trackables.json');
 
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
+const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
+const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
@@ -576,4 +578,6 @@ module.exports = {
   csvToCodes,
   determineTweetType,
   apiBase,
+  assetBase,
+  wikiBase,
 };

@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase, wikiBase } = require('../CommonFunctions');
+
+const fissureThumb = `${assetBase}img/fissure-sm.png`;
 
 /**
  * Generates fissure embeds
@@ -17,9 +20,9 @@ class FissureEmbed extends BaseEmbed {
     if (fissures.length > 1) {
       this.title = `[${platform.toUpperCase()}] Worldstate - Void Fissures`;
     }
-    this.url = 'http://warframe.wikia.com/wiki/Void_Fissure';
+    this.url = `${wikiBase}Void_Fissure`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/EfIRu6v.png',
+      url: fissureThumb,
     };
     if (fissures.length > 1) {
       fissures.sort((a, b) => a.tierNum - b.tierNum);
@@ -39,7 +42,7 @@ class FissureEmbed extends BaseEmbed {
       this.description = `${f.node} against ${f.enemy}`;
       this.footer.text = `${f.eta} remaining • Ends at `;
       this.timestamp = new Date(f.expiry);
-      this.thumbnail.url = 'https://i.imgur.com/EfIRu6v.png';
+      this.thumbnail.url = fissureThumb;
     }
 
     this.color = 0x4aa1b2;

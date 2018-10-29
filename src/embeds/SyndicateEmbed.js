@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase, wikiBase } = require('../CommonFunctions');
+
+const syndicateThumb = `${assetBase}/img/syndicate.png`;
 
 const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil', 'Ostrons', 'Assassins', 'Quills'];
 
@@ -59,9 +62,9 @@ class SyndicateEmbed extends BaseEmbed {
       name: 'No such Syndicate',
       value: `Valid values: ${values.join(', ')}`,
     }];
-    this.url = 'https://warframe.com';
+    this.url = `${wikiBase}/Syndicates`
     this.thumbnail = {
-      url: 'https://i.imgur.com/I8CjF9d.png',
+      url: syndicateThumb,
     };
 
     const foundSyndicate = missions.length && values.find(v => syndicate
