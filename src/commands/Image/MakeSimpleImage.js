@@ -4,6 +4,7 @@ const fs = require('fs');
 const Jimp = require('jimp');
 const CycleImageEmbed = require('../../embeds/CycleImageEmbed');
 
+//eslint-disable-next-line no-console
 const fsCb = (err) => { if (err) console.error(err); };
 
 class MakeSimpleImage {
