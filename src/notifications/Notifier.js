@@ -317,8 +317,8 @@ class Notifier {
       await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
   }
-  
-  async checkAndSendSyndicate(embed, syndicate, timeout) {
+ 
+  async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
     if (embed.descrption && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
       await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
     }
@@ -326,42 +326,42 @@ class Notifier {
 
   async sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.arbiters', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.arbiters', 86400000, platform);
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.loka', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.loka', 86400000, platform);
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.meridian', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.meridian', 86400000, platform);
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.perrin', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.perrin', 86400000, platform);
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.suda', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.suda', 86400000, platform);
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.veil', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.veil', 86400000, platform);
   }
 
   async sendSyndicateOstrons(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Ostrons', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.ostrons', fromNow(newSyndicates[0].expiry));
+    await this.checkAndSendSyndicate(embed, 'syndicate.ostrons', fromNow(newSyndicates[0].expiry), platform);
   }
 
   async sendSyndicateAssassins(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Assassins', platform);
-    await this.checkAndSendSyndicate(embed, 'syndicate.assassins', 86400000);
+    await this.checkAndSendSyndicate(embed, 'syndicate.assassins', 86400000, platform);
   }
 
   async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
