@@ -7,10 +7,11 @@ const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const WikiEmbed = require('../../embeds/WikiEmbed.js');
-const { apiBase } = require('../../CommonFunctions');
-
+const { apiBase, assetBase } = require('../../CommonFunctions');
 
 const warframe = new Wikia('warframe');
+
+const ancientRetributionThumb = `${assetBase}/img/ancient-retribution.png`;
 
 const checkFrames = async (prompt) => {
   const options = {
@@ -59,7 +60,7 @@ const checkMods = async (prompt) => {
     const [{ id }] = searchJson.items;
     const detailsJson = await warframe.getArticleDetails({ ids: [id] });
     let thumbUrl = detailsJson.items[`${id}`].thumbnail;
-    thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : 'https://i.imgur.com/11VCxbq.jpg';
+    thumbUrl = thumbUrl ? thumbUrl.replace(/\/revision\/.*/, '') : ancientRetributionThumb;
     const list = await warframe.getArticlesList({ category: 'Mods', limit: 1000 });
     let result;
     list.items.forEach((item) => {

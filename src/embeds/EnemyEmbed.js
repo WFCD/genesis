@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const acolyteThumb = `${assetBase}/img/acolyte.png`;
 
 /**
  * Generates enemy embeds
@@ -15,7 +18,7 @@ class EnemyEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'http://i.imgur.com/pMRt2Cp.png',
+      url: acolyteThumb,
     };
     this.title = `[${platform.toUpperCase()}] Acolytes`;
     if (enemies.length > 1) {

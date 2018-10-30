@@ -2,7 +2,10 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-const { timeDeltaToString, fromNow } = require('../CommonFunctions.js');
+const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js');
+
+const ostron = `${assetBase}/img/ostron-banner.png`;
+const earth = `${assetBase}/img/earth-planet.png`;
 
 /**
  * Generates Earth cycle embeds
@@ -18,7 +21,7 @@ class EarthCycleEmbed extends BaseEmbed {
     this.title = `Worldstate - ${state.isCetus ? 'Plains of Eidolon' : 'Earth'} Cycle - ${state.isDay ? 'Day' : 'Night'}time`;
     this.color = state.isDay ? 0xB64624 : 0x000066;
     this.thumbnail = {
-      url: state.isCetus ? 'https://i.imgur.com/Ph337PR.png' : 'https://i.imgur.com/oR6Sskf.png',
+      url: state.isCetus ? ostron : earth,
     };
     this.description = `Time remaining until ${state.isDay ? 'night' : 'day'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`
       + `${state.bountyExpiry ? `\nBounties expire in ${timeDeltaToString(fromNow(new Date(state.bountyExpiry)))}` : ''}`;

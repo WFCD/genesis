@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const sortieThumb = `${assetBase}/img/sortie.png`;
 
 /**
  * Generates sortie embeds
@@ -26,7 +29,7 @@ class SortieEmbed extends BaseEmbed {
 
     this.title = `[${platform.toUpperCase()}] Worldstate - Sortie`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/wWBRhaB.png',
+      url: sortieThumb,
     };
   }
 }

@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const darvo = `${assetBase}/img/darvo-md.png`;
 
 /**
  * Generates daily deal embeds
@@ -17,7 +20,7 @@ class SalesEmbed extends BaseEmbed {
     this.color = 0x0000ff;
     this.title = sales[0].isPopular ? `[${platform.toUpperCase()}] Popular Sales ` : `[${platform.toUpperCase()}] Featured Deal`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/i9IXX7P.png',
+      url: darvo,
     };
     this.fields = [];
     sales.forEach((sale) => {

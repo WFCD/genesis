@@ -1,6 +1,9 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { assetBase } = require('../CommonFunctions');
+
+const damageChart = `${assetBase}/img/damage-chart.png`;
 
 /**
  * Displays the Damage 2.0 charts
@@ -12,7 +15,6 @@ class Damage extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.damage', 'damage', 'Display Damage 2.0 chart');
-    this.damageChart = 'http://i.imgur.com/EOzr440.png';
   }
 
   /**
@@ -25,7 +27,7 @@ class Damage extends Command {
     this.messageManager.embed(message, {
       title: 'Legend',
       image: {
-        url: 'http://i.imgur.com/EOzr440.png',
+        url: damageChart,
       },
       fields: [
         { name: 'Blast', value: '<:blast:363136256907149312>', inline: true },

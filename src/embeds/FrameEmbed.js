@@ -1,7 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const { emojify } = require('../CommonFunctions.js');
+const { emojify, assetBase } = require('../CommonFunctions');
 
 /**
  * Generates enemy embeds
@@ -16,7 +16,7 @@ class FrameEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'https://i.imgur.com/tIBB0ea.png',
+      url: `${assetBase}/img/arcane.png`,
     };
     if (frame && typeof frame !== 'undefined') {
       this.title = frame.name;

@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const arcaneThumb = `${assetBase}/img/arcane.png`;
 
 const colors = {
   common: 0x443B25,
@@ -21,7 +24,7 @@ class EnhancementEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'https://i.imgur.com/tIBB0ea.png',
+      url: arcaneThumb,
     };
     if (enhancement && typeof enhancement !== 'undefined') {
       this.title = enhancement.name;

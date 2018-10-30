@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const scannerThumb = `${assetBase}/img/synthesis-scanner.png`;
 
 /**
  * Generates synthesis target embeds
@@ -15,7 +18,7 @@ class SynthesisTargetEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'https://i.imgur.com/4Awre4E.png',
+      url: scannerThumb,
     };
     if (synthTargets.length === 1) {
       this.title = synthTargets[0].name;

@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const conclaveThumb = `${assetBase}/img/conclave-lg.png`;
 
 const values = ['all', 'day', 'week'];
 
@@ -36,7 +39,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     }
     this.title = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`;
     this.thumbnail = {
-      url: 'http://i.imgur.com/KDzKPYA.png',
+      url: conclaveThumb,
     };
   }
 }

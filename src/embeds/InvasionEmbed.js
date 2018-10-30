@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase, wikiBase } = require('../CommonFunctions');
+
+const invasionThumb = `${assetBase}img/invasion.png`;
 
 /**
  * Generates invasion embeds
@@ -15,7 +18,7 @@ class InvasionEmbed extends BaseEmbed {
     super();
 
     this.color = 0x3498db;
-    this.url = 'http://warframe.wikia.com/wiki/Invasion';
+    this.url = `${wikiBase}Invasion`;
     if (invasions.length > 1) {
       this.fields = invasions.map((i) => {
         let rewards = i.defenderReward.asString;
@@ -46,7 +49,7 @@ class InvasionEmbed extends BaseEmbed {
     }
 
     this.thumbnail = {
-      url: 'http://i.imgur.com/QUPS0ql.png',
+      url: invasionThumb,
     };
   }
 }

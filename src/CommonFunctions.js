@@ -5,10 +5,13 @@ const emoji = require('./resources/emoji.json');
 const welcomes = require('./resources/welcomes.json');
 
 const {
-  eventTypes, rewardTypes, opts, fissures, syndicates, conclave, deals, clantech, resources,
+  eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
+  resources,
 } = require('./resources/trackables.json');
 
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
+const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
+const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
@@ -50,6 +53,7 @@ const trackableEvents = {
   deals,
   cetus: ['cetus.day', 'cetus.night'],
   earth: ['earth.day', 'earth.night'],
+  twitter,
 };
 
 const trackableItems = {
@@ -540,6 +544,19 @@ const csvToCodes = (csv) => {
   }).filter(code => code.code !== null);
 };
 
+const determineTweetType = (tweet) => {
+  if (tweet.in_reply_to_status_id) {
+    return ('reply');
+  }
+  if (tweet.quoted_status_id) {
+    return ('quote');
+  }
+  if (tweet.retweeted_status) {
+    return ('retweet');
+  }
+  return ('tweet');
+};
+
 module.exports = {
   createGroupedArray,
   emojify,
@@ -559,5 +576,8 @@ module.exports = {
   resolvePool,
   createPageCollector,
   csvToCodes,
+  determineTweetType,
   apiBase,
+  assetBase,
+  wikiBase,
 };

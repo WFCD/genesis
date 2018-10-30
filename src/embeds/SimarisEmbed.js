@@ -1,6 +1,9 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { assetBase } = require('../CommonFunctions');
+
+const simarisThumb = `${assetBase}/img/simaris.png`;
 
 /**
  * Generates simaris embeds
@@ -15,7 +18,7 @@ class SimarisEmbed extends BaseEmbed {
     super();
 
     this.thumbnail = {
-      url: 'http://i.imgur.com/mRKOHyv.png',
+      url: simarisThumb,
     };
     this.title = `[${platform.toUpperCase()}] Worldstate - Sanctuary`;
     this.color = simaris.isTargetActive > 2 ? 0x00ff00 : 0xff0000;
