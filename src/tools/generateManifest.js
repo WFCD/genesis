@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const colors = require('colors/safe');
+const BaseCommand = require('../models/Command');
 
 const generateManifest = async () => {
   const commandDir = path.join(__dirname, '../commands');
@@ -25,7 +26,7 @@ const generateManifest = async () => {
     try {
       // eslint-disable-next-line import/no-dynamic-require, global-require
       const Cmd = require(path.join(commandDir, f));
-      if (Object.prototype.toString.call(Cmd) === '[object Function]') {
+      if (Cmd.prototype instanceof BaseCommand) {
         const command = new Cmd({
           md: {}, messageManager: {}, settings: {}, path: f,
         });
