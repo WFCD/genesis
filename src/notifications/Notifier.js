@@ -317,61 +317,51 @@ class Notifier {
       await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
   }
+  
+  async checkAndSendSyndicate(embed, syndicate, timeout) {
+    if (embed.descrption && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
+      await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
+    }
+  }
 
   async sendSyndicateArbiters(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Arbiters of Hexis', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.arbiters', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.arbiters', 86400000);
   }
 
   async sendSyndicateLoka(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'New Loka', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.loka', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.loka', 86400000);
   }
 
   async sendSyndicateMeridian(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Steel Meridian', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.meridian', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.meridian', 86400000);
   }
 
   async sendSyndicatePerrin(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Perrin Sequence', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.perin', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.perrin', 86400000);
   }
 
   async sendSyndicateSuda(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Cephalon Suda', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.suda', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.suda', 86400000);
   }
 
   async sendSyndicateVeil(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Red Veil', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.veil', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.veil', 86400000);
   }
 
   async sendSyndicateOstrons(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Ostrons', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.ostrons', null, fromNow(newSyndicates[0].expiry));
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.ostrons', fromNow(newSyndicates[0].expiry));
   }
 
   async sendSyndicateAssassins(newSyndicates, platform) {
     const embed = new SyndicateEmbed(this.bot, newSyndicates, 'Assassins', platform);
-    if (embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, 'syndicate.assassins', null, 86400000);
-    }
+    await this.checkAndSendSyndicate(embed, 'syndicate.assassins', 86400000);
   }
 
   async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
