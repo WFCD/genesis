@@ -69,7 +69,7 @@
       "twitter.warframe.reply",
       "twitter.digitalextremes.tweet",
       "twitter.digitalextremes.quote",
-      "twitter.digitalextremes.reply", 
+      "twitter.digitalextremes.reply",
       "twitter.pablo.tweet",
       "twitter.pablo.retweet",
       "twitter.pablo.quote",
@@ -239,6 +239,10 @@
       "fissures",
       "cetus",
       "earth",
+      "twitter.tweet",
+      "twitter.retweet",
+      "twitter.quote",
+      "twitter.reply",
       "twitter"
    ],
    "fissures":[
@@ -331,7 +335,7 @@
       "twitter.warframe.quote",
       "twitter.digitalextremes.tweet",
       "twitter.digitalextremes.retweet",
-      "twitter.digitalextremes.quote",     
+      "twitter.digitalextremes.quote",
       "twitter.pablo.tweet",
       "twitter.pablo.retweet",
       "twitter.pablo.quote",

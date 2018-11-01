@@ -53,6 +53,10 @@ const trackableEvents = {
   deals,
   cetus: ['cetus.day', 'cetus.night'],
   earth: ['earth.day', 'earth.night'],
+  'twitter.reply': eventTypes.filter(event => /twitter\.\w*\.reply/.test(event)),
+  'twitter.tweet': eventTypes.filter(event => /twitter\.\w*\.tweet/.test(event)),
+  'twitter.retweet': eventTypes.filter(event => /twitter\.\w*\.retweet/.test(event)),
+  'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
   twitter,
 };
 
