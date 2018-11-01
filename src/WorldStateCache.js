@@ -14,7 +14,7 @@ const worldStateURLs = {
 };
 
 class WorldStateCache extends EventEmitter {
-  constructor(platform, timeout, twitterCache, logger = console) {
+  constructor(platform, timeout, logger = console) {
     super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;
@@ -24,7 +24,6 @@ class WorldStateCache extends EventEmitter {
     this.platform = platform;
     this.updateInterval = setInterval(() => this.update(), timeout);
     this.logger = logger;
-    this.twitter = twitterCache;
     this.update();
   }
 
@@ -38,11 +37,9 @@ class WorldStateCache extends EventEmitter {
   async update() {
     try {
       const data = await this.httpGet();
-      const twitterData = await this.twitter.getData();
       this.lastUpdated = Date.now();
       delete this.currentData;
       this.currentData = JSON.parse(data);
-      this.currentData.twitter = twitterData;
       this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;

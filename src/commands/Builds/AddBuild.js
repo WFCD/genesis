@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
-const { assetBase } = require('../CommonFunctions');
+const { assetBase } = require('../../CommonFunctions');
 
 const outageThumb = `${assetBase}/img/outage.png`;
 

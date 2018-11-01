@@ -12,7 +12,7 @@ class DeleteBuild extends Command {
    */
   constructor(bot) {
     super(bot, 'builds.delete', 'delete build', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call}|db)\\s?(.+)?`, 'i');
 
     this.usages = [
       { description: 'Display information on an existing build from Genesis', parameters: [] },

@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { assetBase } = require('../CommonFunctions');
+const { assetBase } = require('../../CommonFunctions');
 
 const efficiencyChart = `${assetBase}/img/efficiency-chart.png`;
 
