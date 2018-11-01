@@ -111,7 +111,11 @@ class Settings extends Command {
     page.addField('Delete Message Post-Respond', await this.resolveBoolean(channel, 'delete_after_respond', settings), true);
     page.addField('Delete Response Post-Respond', await this.resolveBoolean(channel, 'delete_response', settings), true);
 
-    const defaultRoles = JSON.parse(settings.defaultRoles || '[]').map(roleId => channel.guild.roles.get(roleId));
+    const defaultRoles = JSON.parse(settings.defaultRoles || '[]')
+      .map(roleId => channel.guild.roles.get(roleId) || undefined)
+      .filter(role => role)
+      .map(role => role.toString())
+      .join(', ');
 
     if (message.guild) {
       page.addField('Temp Channel Category', settings.tempCategory !== '0' ? settings.tempCategory : '✘', true);
