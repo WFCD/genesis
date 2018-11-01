@@ -317,7 +317,7 @@ class Notifier {
       await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
   }
- 
+
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
     if (embed.descrption && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
       await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
