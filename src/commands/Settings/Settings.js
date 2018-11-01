@@ -119,8 +119,8 @@ class Settings extends Command {
 
     if (message.guild) {
       page.addField('Temp Channel Category', settings.tempCategory !== '0'
-                    && typeof settings.tempCategory !== 'undefined'
-                    ? settings.tempCategory : '✘', true);
+        && typeof settings.tempCategory !== 'undefined'
+        ? settings.tempCategory : '✘', true);
       page.addField('LFG', settings.lfgChannel || '✘', true);
       page.addField('Default Roles', defaultRoles.length ? defaultRoles : '✘', true);
       page.addField('Vulgar Log', settings.vulgarLog || '✘', true);
