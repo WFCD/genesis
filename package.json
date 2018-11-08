@@ -41,7 +41,7 @@
     "greenkeeper-lockfile": "^1.14.0",
     "jimp": "^0.5.3",
     "json-query": "^2.2.2",
-    "mysql2": "^1.5.2",
+    "mysql2": "^1.6.4",
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
