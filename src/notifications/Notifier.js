@@ -262,10 +262,8 @@ class Notifier {
   }
 
   async sendTweets(newTweets, platform) {
-    await Promise.all(newTweets.map(t => this.broadcaster.broadcast(new TweetEmbed(
-      this.bot,
-      t.tweets[0],
-    ), platform, t.id, null, 3600)));
+    await Promise.all(newTweets.map(t => this.broadcaster
+      .broadcast(new TweetEmbed(this.bot, t.tweets[0]), platform, t.id, null, 3600)));
   }
 
   async sendInvasion(invasion, platform) {
