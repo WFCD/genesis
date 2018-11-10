@@ -17,7 +17,7 @@ class Solaris extends Command {
     const platformParam = message.strippedContent.match(/[pcsxb14]{2,3}/ig);
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const solaris = ws.syndicateMissions.filter(m => m.syndicate == 'Solaris United');
+    const solaris = ws.syndicateMissions.filter(m => m.syndicate === 'Solaris United');
 
     if (solaris && solaris.length) {
       // make the embed
