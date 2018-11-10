@@ -3,8 +3,9 @@
 const Command = require('../../models/Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
 const { createPageCollector } = require('../../CommonFunctions');
+const syndicates = require('../../resources/syndicates.json');
 
-const values = ['all', 'arbiters of hexis', 'perrin sequence', 'cephalon suda', 'steel meridian', 'new loka', 'red veil', 'ostrons', 'assassins'];
+const values = syndicates.map(s => s.display.toLowerCase());
 
 /**
  * Displays the currently active Invasions

@@ -1,0 +1,74 @@
+[
+  {
+    "key": "arbiters",
+    "display": "Arbiters of Hexis",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "suda",
+    "display": "Cephalon Suda",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "loka",
+    "display": "New Loka",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "perrin",
+    "display": "Perrin Sequence",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "veil",
+    "display": "Red Veil",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "meridian",
+    "display": "Steel Meridian",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "ostrons",
+    "display": "Ostrons",
+    "prefix": true,
+    "timeout": 0
+  },
+  {
+    "key": "assassins",
+    "display": "Ostrons",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "quills",
+    "display": "Quills",
+    "prefix": true,
+    "timeout": 86400000
+  },
+  {
+    "key": "solaris",
+    "display": "Solaris United",
+    "prefix": false,
+    "timeout": 0
+  },
+  {
+    "key": "vox",
+    "display": "Vox Solaris",
+    "prefix": false,
+    "timeout": 86400000
+  },
+  {
+    "key": "all",
+    "display": "all",
+    "prefix": false,
+    "timeout": 86400000
+  }
+]
