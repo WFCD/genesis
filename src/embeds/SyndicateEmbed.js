@@ -2,10 +2,11 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 const { assetBase, wikiBase } = require('../CommonFunctions');
+const syndicates = require('../resources/syndicates.json');
 
 const syndicateThumb = `${assetBase}/img/syndicate.png`;
 
-const values = ['all', 'Arbiters of Hexis', 'Perrin Sequence', 'Cephalon Suda', 'Steel Meridian', 'New Loka', 'Red Veil', 'Ostrons', 'Assassins', 'Quills'];
+const values = syndicates.map(s => s.display);
 
 const makeJobs = (mission, numSyndMissions) => {
   if (mission.jobs && mission.jobs.length) {
@@ -13,12 +14,12 @@ const makeJobs = (mission, numSyndMissions) => {
     mission.jobs.forEach((job) => {
       const totalStanding = job.standingStages.reduce((a, b) => a + b, 0);
       const levels = job.enemyLevels.join(' - ');
-      const rewards = job.rewardPool.join(', ');
+      const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(', ') : job.rewardPool;
       tokens.push(`:arrow_up: ${totalStanding} - ${job.type} (${levels})`);
       tokens.push(`:moneybag: ${rewards}\n`);
     });
 
-    if (numSyndMissions < 2) {
+    if (numSyndMissions > 1) {
       tokens.push(`\n**Expires in ${mission.eta}**`);
     }
 

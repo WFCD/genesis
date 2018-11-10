@@ -203,7 +203,8 @@
       "fissures.t4.darksector",
       "fissures.t4.hijack",
       "fissures.t4.assault",
-      "fissures.t4.evacuation"
+      "fissures.t4.evacuation",
+      "solaris"
    ],
    "opts":[
       "all",
@@ -327,7 +328,8 @@
       "syndicate.veil",
       "syndicate.meridian",
       "syndicate.ostrons",
-      "syndicate.assassins"
+      "syndicate.assassins",
+      "solaris"
    ],
    "twitter": [
       "twitter.warframe.tweet",
