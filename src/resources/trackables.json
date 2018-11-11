@@ -204,6 +204,8 @@
       "fissures.t4.hijack",
       "fissures.t4.assault",
       "fissures.t4.evacuation",
+      "solaris.warm",
+      "solaris.cold",
       "solaris"
    ],
    "opts":[

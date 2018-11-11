@@ -1,7 +1,8 @@
 'use strict';
 
 const Command = require('../../models/Command');
-const SyndicateEmbed = require('../../embeds/SyndicateEmbed');
+// const SyndicateEmbed = require('../../embeds/SyndicateEmbed');
+const SolarisEmbed = require('../../embeds/SolarisEmbed');
 
 class Solaris extends Command {
   /**
@@ -20,8 +21,11 @@ class Solaris extends Command {
     const solaris = ws.syndicateMissions.filter(m => m.syndicate === 'Solaris United');
 
     if (solaris && solaris.length) {
+      const vallis = ws.vallisCycle;
+      [vallis.bounty] = solaris;
+
       // make the embed
-      this.messageManager.embed(message, new SyndicateEmbed(this.bot, solaris, 'Solaris United', platform, true), true, true);
+      this.messageManager.embed(message, new SolarisEmbed(this.bot, vallis), true, true);
       return this.messageManager.statuses.SUCCESS;
     }
     this.messageManager.reply(message, 'No data at present', true, true);

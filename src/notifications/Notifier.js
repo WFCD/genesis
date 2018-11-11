@@ -17,6 +17,7 @@ const TweetEmbed = require('../embeds/TweetEmbed');
 const SyndicateEmbed = require('../embeds/SyndicateEmbed');
 const VoidTraderEmbed = require('../embeds/VoidTraderEmbed');
 const EarthCycleEmbed = require('../embeds/EarthCycleEmbed');
+const SolarisEmbed = require('../embeds/SolarisEmbed');
 
 const warframe = new Wikia('warframe');
 
@@ -116,6 +117,7 @@ class Notifier {
       ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
+    const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
 
     // Concat all notified ids
     notifiedIds = notifiedIds
@@ -133,6 +135,7 @@ class Notifier {
       .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
       .concat([newData.cetusCycle.id])
       .concat([newData.earthCycle.id])
+      .concat([newData.vallisCycle.id])
       .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : []);
 
     // Send all notifications
@@ -170,6 +173,12 @@ class Notifier {
     }
     await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
     await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
+    const solaris = newData.syndicateMissions.filter(mission => mission.syndicate === 'Solaris United')[0];
+    if (solaris) {
+      // eslint-disable-next-line no-param-reassign
+      newData.vallisCycle.bounty = solaris;
+    }
+    await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
     this.sendUpdates(updatesToNotify, platform);
     await this.sendAlerts(alertsToNotify, platform);
   }
@@ -344,6 +353,15 @@ class Notifier {
     await this.broadcaster.broadcast(
       new EarthCycleEmbed(this.bot, newEarthCycle),
       platform, type, null, fromNow(newEarthCycle.expiry),
+    );
+  }
+
+  async sendVallisCycle(newCycle, platform, cycleChange) {
+    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+    const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
+    await this.broadcaster.broadcast(
+      new SolarisEmbed(this.bot, newCycle),
+      platform, type, null, fromNow(newCycle.expiry),
     );
   }
 }
