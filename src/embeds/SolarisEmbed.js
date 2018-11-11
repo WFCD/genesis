@@ -14,7 +14,7 @@ const makeJobs = (mission) => {
       const levels = job.enemyLevels.join(' - ');
       const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(', ') : '';
       tokens.push(`:arrow_up: ${totalStanding} - ${job.type} (${levels})`);
-      if (job.rewardPool === rewards) {
+      if (job.rewardPool[0] && !job.rewardPool[0].startsWith('Pattern Mismatch.')) {
         tokens.push(`:moneybag: ${rewards}\n`);
       }
     });
