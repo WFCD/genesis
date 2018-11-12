@@ -68,14 +68,10 @@ class EarthCycle extends Command {
 
       return this.messageManager.statuses.SUCCESS;
     }
-    if (earth) {
-      cycleData = ws.earthCycle;
-    } else {
-      cycleData = ws.cetusCycle;
-      const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      if (ostrons) {
-        cycleData.bountyExpiry = ostrons.expiry;
-      }
+    cycleData = earth ? ws.earthCycle : ws.cycleData;
+    const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+    if (!earth && ostrons) {
+      cycleData.bountyExpiry = ostrons.expiry;
     }
     const embed = new EarthCycleEmbed(this.bot, cycleData);
     await this.messageManager.embed(message, embed, true, true);
