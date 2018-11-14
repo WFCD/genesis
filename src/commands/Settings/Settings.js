@@ -45,7 +45,7 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const chunks = chunkify({ string: stringToChunk, breakChar }).filter(stringFilter);
   if (chunks.length) {
     chunks.forEach((chunk, index) => {
-      if (!index) {
+      if (index > 0) {
         embed.addField('\u200B', chunk, true);
       } else {
         embed.setDescription(chunk);
