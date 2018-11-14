@@ -1,10 +1,9 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const CommonFunctions = require('../../CommonFunctions.js');
-const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
-
-const callables = eventTypes.concat(rewardTypes).concat(opts);
+const {
+  trackablesFromParameters, getTrackInstructionEmbed, trackablesCapture,
+} = require('../../CommonFunctions');
 
 class SetPing extends Command {
   constructor(bot) {
@@ -12,20 +11,20 @@ class SetPing extends Command {
     this.usages = [
       { description: 'Set ping for an event or item', parameters: ['event or reward', '@role or user mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*((${callables.join('|')})(.+)?)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*(${trackablesCapture}(.+)?)?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
 
   async run(message) {
-    const regex = new RegExp(`(cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${callables.join('|')})(.+)?`, 'i');
+    const regex = new RegExp(`${trackablesCapture}(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'dm') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
     }
     if (match) {
-      const trackables = CommonFunctions.trackablesFromParameters(match[1].trim().split(' '));
+      const trackables = trackablesFromParameters(match[1].trim().split(' '));
       const eventsAndItems = [].concat(trackables.events).concat(trackables.items);
       const pingString = match[2] ? match[2].trim() : undefined;
 
@@ -33,7 +32,7 @@ class SetPing extends Command {
         const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
         this.messageManager.embed(
           message,
-          CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+          getTrackInstructionEmbed(message, prefix, this.call), true, true,
         );
         return this.messageManager.statuses.FAILURE;
       }
@@ -54,8 +53,8 @@ class SetPing extends Command {
       return this.messageManager.statuses.SUCCESS;
     }
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-    await this.messageManager.embed(message, CommonFunctions
-      .getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    await this.messageManager.embed(message,
+      getTrackInstructionEmbed(message, prefix, this.call), true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

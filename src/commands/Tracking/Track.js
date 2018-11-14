@@ -1,8 +1,13 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const CommonFunctions = require('../../CommonFunctions.js');
-const { eventTypes, rewardTypes, opts } = require('../../resources/trackables.json');
+const {
+  getEventsOrItems,
+  trackablesFromParameters,
+  getChannel,
+  getTrackInstructionEmbed,
+  trackablesCapture,
+} = require('../../CommonFunctions');
 
 /**
  * Track an event or item
@@ -14,18 +19,20 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${trackablesCapture})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message) {
-    const unsplitItems = CommonFunctions.getEventsOrItems(message);
+    const unsplitItems = getEventsOrItems(message);
     const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
 
     if (unsplitItems.length === 0) {
       return this.failure(message);
     }
-    const trackables = CommonFunctions.trackablesFromParameters(unsplitItems);
+    this.logger.debug(`unsplit items: ${JSON.stringify(unsplitItems)}`);
+    const trackables = trackablesFromParameters(unsplitItems);
+    this.logger.debug(`resolved trackables: ${JSON.stringify(trackables)}`);
     if (!(trackables.events.length || trackables.items.length)) {
       return this.failure(message);
     }
@@ -35,7 +42,7 @@ class Track extends Command {
       .filter((elem, pos) => trackables.items.indexOf(elem) === pos);
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
-    const channel = CommonFunctions.getChannel(channelParam, message);
+    const channel = getChannel(channelParam, message);
     const results = [];
     if (trackables.events.length) {
       results.push(this.settings.trackEventTypes(channel, trackables.events));
@@ -52,7 +59,7 @@ class Track extends Command {
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     this.messageManager.embed(
       message,
-      CommonFunctions.getTrackInstructionEmbed(message, prefix, this.call), true, true,
+      getTrackInstructionEmbed(message, prefix, this.call), true, true,
     );
     return this.messageManager.statuses.FAILURE;
   }

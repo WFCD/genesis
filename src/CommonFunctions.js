@@ -15,6 +15,8 @@ const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wik
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
+const trackablesCapture = `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`;
+
 const duration = {
   minute: 60,
   hour: 60 * 60,
@@ -73,13 +75,17 @@ const trackableItems = {
  */
 const termToTrackable = (term) => {
   const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
-  const earthCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
+  const earthCustomTimeRegex = new RegExp('earth\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
+  const solarisCustomTimeRegex = new RegExp('solaris\\.(warm|cold)\\.[0-9]?[0-9]?', 'ig');
+
   const trackable = {
     events: [],
     items: [],
   };
 
-  if (cetusCustomTimeRegex.test(term) || earthCustomTimeRegex.test(term)) {
+  if (cetusCustomTimeRegex.test(term)
+    || earthCustomTimeRegex.test(term)
+    || solarisCustomTimeRegex.test(term)) {
     trackable.events = term;
     return trackable;
   }
@@ -147,7 +153,7 @@ const trackablesFromParameters = (params) => {
   return trackables;
 };
 
-const eventsOrItems = new RegExp(`earth\\.day\\.[0-1]?[0-9]?[0-9]|earth\\.night\\.[0-1]?[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]|cetus\\.night\\.[0-1]?[0-9]?[0-9]|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')}`, 'ig');
+const eventsOrItems = new RegExp(trackablesCapture, 'ig');
 
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
 
@@ -584,4 +590,5 @@ module.exports = {
   apiBase,
   assetBase,
   wikiBase,
+  trackablesCapture,
 };
