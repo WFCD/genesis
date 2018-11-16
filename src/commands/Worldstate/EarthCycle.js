@@ -68,7 +68,7 @@ class EarthCycle extends Command {
 
       return this.messageManager.statuses.SUCCESS;
     }
-    cycleData = earth ? ws.earthCycle : ws.cycleData;
+    cycleData = earth ? ws.earthCycle : ws.cetusCycle;
     const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
     if (!earth && ostrons) {
       cycleData.bountyExpiry = ostrons.expiry;
