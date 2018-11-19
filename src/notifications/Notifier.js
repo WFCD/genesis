@@ -173,11 +173,7 @@ class Notifier {
     }
     await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
     await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
-    const solaris = newData.syndicateMissions.filter(mission => mission.syndicate === 'Solaris United')[0];
-    if (solaris) {
-      // eslint-disable-next-line no-param-reassign
-      newData.vallisCycle.bounty = solaris;
-    }
+
     await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
     this.sendUpdates(updatesToNotify, platform);
     await this.sendAlerts(alertsToNotify, platform);

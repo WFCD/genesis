@@ -20,16 +20,14 @@ class Solaris extends Command {
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const solaris = ws.syndicateMissions.filter(m => m.syndicate === 'Solaris United');
 
+    const vallis = ws.vallisCycle;
     if (solaris && solaris.length) {
-      const vallis = ws.vallisCycle;
       [vallis.bounty] = solaris;
-
-      // make the embed
-      this.messageManager.embed(message, new SolarisEmbed(this.bot, vallis), true, true);
-      return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.reply(message, 'No data at present', true, true);
-    return this.messageManager.statuses.FAILURE;
+
+    // make the embed
+    this.messageManager.embed(message, new SolarisEmbed(this.bot, vallis), true, true);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 

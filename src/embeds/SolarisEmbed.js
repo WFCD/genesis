@@ -43,7 +43,7 @@ class SolarisEmbed extends BaseEmbed {
       url: solaris,
     };
     const warmstring = `Time remaining until ${state.isWarm ? 'cold' : 'warm'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`;
-    this.description = `${makeJobs(state.bounty, 1)}\n\n${warmstring}`;
+    this.description = `${state.bounty ? makeJobs(state.bounty, 1) : ''}\n\n${warmstring}`;
 
     this.footer.text = `${state.isWarm ? 'Cold' : 'Warm'} starts `;
     this.timestamp = new Date(state.expiry);
