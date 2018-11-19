@@ -30,9 +30,7 @@ class Track extends Command {
     if (unsplitItems.length === 0) {
       return this.failure(message);
     }
-    this.logger.debug(`unsplit items: ${JSON.stringify(unsplitItems)}`);
     const trackables = trackablesFromParameters(unsplitItems);
-    this.logger.debug(`resolved trackables: ${JSON.stringify(trackables)}`);
     if (!(trackables.events.length || trackables.items.length)) {
       return this.failure(message);
     }

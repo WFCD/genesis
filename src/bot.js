@@ -148,7 +148,7 @@ class Genesis {
      * The platforms that Warframe exists for
      * @type {Array.<string>}
      */
-    this.platforms = ['pc', 'ps4', 'xb1'];
+    this.platforms = ['pc', 'ps4', 'xb1', 'swi'];
 
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 

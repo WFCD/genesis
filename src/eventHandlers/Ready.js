@@ -52,12 +52,20 @@ async function checkPrivateRooms(self, shardId) {
 async function updatePresence(self) {
   try {
     const cetusState = (await self.bot.worldStates.pc.getData()).cetusCycle;
+    const vallisState = (await self.bot.worldStates.pc.getData()).vallisCycle;
+    const base = `@${self.client.user.username} help`;
+    let final = base;
+    if (vallisState || cetusState) {
+      // Later: ${vallisState ? `${vallisState.shortString} | ` : ''}
+      final = `${cetusState ? `${cetusState.shortString} | ` : ''}${base}`
+    }
+
     if (cetusState) {
       self.client.user.setPresence({
         status: 'online',
         afk: false,
         game: {
-          name: `${cetusState.shortString} | @${self.client.user.username} help`,
+          name: final,
           type: 'WATCHING',
         },
       });

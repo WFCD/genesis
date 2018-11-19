@@ -1,7 +1,6 @@
 'use strict';
 
-const https = require('https');
-const http = require('http');
+const fetch = require('node-fetch');
 
 const EventEmitter = require('events');
 const { apiBase } = require('./CommonFunctions.js');
@@ -11,6 +10,7 @@ const worldStateURLs = {
   pc: `${apiBase}/pc`,
   ps4: `${apiBase}/ps4`,
   xb1: `${apiBase}/xb1`,
+  swi: `${apiBase}/swi`,
 };
 
 class WorldStateCache extends EventEmitter {
@@ -36,7 +36,7 @@ class WorldStateCache extends EventEmitter {
 
   async update() {
     try {
-      const data = await this.httpGet();
+      const data = await fetch(this.url).then(res => res.json());
       this.lastUpdated = Date.now();
       delete this.currentData;
       this.currentData = JSON.parse(data);
@@ -48,21 +48,6 @@ class WorldStateCache extends EventEmitter {
       this.logger.error(err);
     }
     return this.updating;
-  }
-
-  httpGet() {
-    return new Promise((resolve, reject) => {
-      const protocol = this.url.startsWith('https') ? https : http;
-      const request = protocol.get(this.url, (response) => {
-        if (response.statusCode < 200 || response.statusCode > 299) {
-          reject(new Error(`Failed to load page ${this.url}, status code: ${response.statusCode}`));
-        }
-        const body = [];
-        response.on('data', chunk => body.push(chunk));
-        response.on('end', () => resolve(body.join('')));
-      });
-      request.on('error', err => reject(err));
-    });
   }
 }
 
