@@ -42,9 +42,9 @@ class WeaponEmbed extends BaseEmbed {
           + `**Impact:** ${emojify(weapon.primary.impact) || '-'}\n`
           + `**Puncture:** ${emojify(weapon.primary.puncture) || '-'}\n`
           + `**Slash:** ${emojify(weapon.primary.slash) || '-'}\n`
-          + `**Critical Chance:** ${weapon.primary.crit_chance || '-'}%\n`
-          + `**Critical Multiplier:** ${weapon.primary.crit_mult || '-'}x\n`
-          + `**Status Chance:** ${weapon.primary.status_chance || '-'}%`,
+          + `**Critical Chance:** ${((weapon.primary.crit_chance || 0) * 100).toFixed(2) || '-'}%\n`
+          + `**Critical Multiplier:** ${(weapon.primary.crit_mult || 0).toFixed(2) || '-'}x\n`
+          + `**Status Chance:** ${((weapon.primary.status_chance || 0) * 100).toFixed(2) || '-'}%`,
           inline: true,
         });
       } else {
@@ -124,13 +124,13 @@ class WeaponEmbed extends BaseEmbed {
           values.push(`**Slash:** ${weapon.secondary.slash}`);
         }
         if (weapon.secondary.crit_chance) {
-          values.push(`**Critical Chance:** ${weapon.secondary.crit_chance}%`);
+          values.push(`**Critical Chance:** ${(weapon.secondary.crit_chance || 0).toFixed(2) || '-'}%`);
         }
         if (weapon.secondary.crit_mult) {
-          values.push(`**Critical Multiplier:** ${weapon.secondary.crit_mult}x`);
+          values.push(`**Critical Multiplier:** ${(weapon.secondary.crit_mult || 0).toFixed(2) || '-'}x`);
         }
         if (weapon.secondary.status_chance) {
-          values.push(`**Status Chance:** ${weapon.secondary.status_chance}%`);
+          values.push(`**Status Chance:** ${((weapon.secondary.status_chance || 0) * 100).toFixed(2) || '-'}%`);
         }
 
         this.fields.push({
