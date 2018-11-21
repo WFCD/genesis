@@ -2,7 +2,7 @@
 
 const { RichEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
-const { getChannels, createPageCollector } = require('../../CommonFunctions');
+const { getChannels, createPageCollector, createGroupedArray } = require('../../CommonFunctions');
 
 const negate = '✘';
 const affirm = '✓';
@@ -20,6 +20,16 @@ const wrapRoleValue = (val) => {
   }
   return val;
 }
+
+const checkAndMergeEmbeds = (original, value) => {
+  if (value instanceof Array) {
+    original.push(...value);
+  } else {
+    original.push(value);
+  }
+}
+
+const fieldLimit = 5;
 
 const chunkify = ({
   string, newStrings = [], breakChar = '; ', maxLength = 1000,
@@ -71,6 +81,22 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   } else {
     embed.setDescription(`No ${title}`);
   }
+
+  if (embed.fields.length > fieldLimit) {
+    const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
+    const embeds = [];
+    fieldGroups.forEach((fields, index) => {
+      const smEmbed = new RichEmbed(embedDefaults);
+      embed.setTitle(title);
+
+      smEmbed.fields = fields;
+      if(index === 0) {
+        smEmbed.setDescription(embed.description);
+      }
+      embeds.push(smEmbed);
+    });
+    return embeds;
+  }
   return embed;
 };
 
@@ -82,8 +108,6 @@ class Settings extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s*--expand)?(?:\\s+in\\s+((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
     this.requiresAuth = true;
   }
-
-
 
   async composeChannelSettings(channel, message) {
     const page = new RichEmbed(embedDefaults);
@@ -163,7 +187,11 @@ class Settings extends Command {
 
     const permPage = createChunkedEmbed(permissions, 'Channel Permissions', '\n');
 
-    return [page, trackedItems, trackedEvents, permPage];
+    const embeds = [page];
+    checkAndMergeEmbeds(embeds, trackedItems);
+    checkAndMergeEmbeds(embeds, trackedEvents);
+    checkAndMergeEmbeds(embeds, permPage);
+    return embeds;
   }
 
   async resolveBoolean(channel, setting, settings) {
@@ -207,13 +235,13 @@ class Settings extends Command {
         .filter(obj => obj.thing && obj.text)
         .map(obj => `**${obj.thing}**: ${obj.text}`)
         .join('\n');
-      pages.push(createChunkedEmbed(pingParts, 'Pings', '\n'));
+      checkAndMergeEmbeds(pages, createChunkedEmbed(pingParts, 'Pings', '\n'));
 
       // Guild Permissions
       const guildPermissions = await this.settings.permissionsForGuild(message.guild);
       const guildParts = guildPermissions
         .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`).join('\n');
-      pages.push(createChunkedEmbed(guildParts, 'Guild Permissions', '\n'));
+      checkAndMergeEmbeds(pages, createChunkedEmbed(guildParts, 'Guild Permissions', '\n'));
 
       pages = pages.filter(page => JSON.stringify(page) !== '{}');
 
