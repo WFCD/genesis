@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { getChannel } = require('../../CommonFunctions');
+const { getChannel, captures } = require('../../CommonFunctions');
 
 class RespondToSettings extends Command {
   constructor(bot) {
@@ -9,7 +9,7 @@ class RespondToSettings extends Command {
     this.usages = [
       { description: 'Change if this channel has settings changes responded in it', parameters: ['response enabled'] },
     ];
-    this.regex = new RegExp('^respond(?:\\sto)?\\s?settings\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
+    this.regex = new RegExp(`^respond(?:\\sto)?\\s?settings\\s?(on|off)?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;
   }
 

@@ -3,11 +3,11 @@
 const Command = require('../../models/Command.js');
 const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
-const { getTarget, getChannels } = require('../../CommonFunctions.js');
+const { getTarget, getChannels, captures } = require('../../CommonFunctions.js');
 
 const commandIdRegex = new RegExp('(\\w*\\.*\\w*\\.*\\w*\\*?)', 'ig');
-const locationRegex = new RegExp('(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))', 'ig');
-const appliesToRegex = new RegExp('(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?', 'ig');
+const locationRegex = new RegExp(`(?:\\s+in\\s+(${captures.channel}|here|\\*))`, 'ig');
+const appliesToRegex = new RegExp(`(?:\\s+for\\s(${captures.user}|${captures.role}|\\*))?`, 'ig');
 
 class Enable extends Command {
   constructor(bot) {
@@ -16,7 +16,7 @@ class Enable extends Command {
       { description: 'Enable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];
     this.regex = new RegExp(
-      `^${this.call}(?:\\s+(\\w*\\.*\\w*\\.*\\w*\\*?)(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))?(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?)?`,
+      `^${this.call}`,
       'i',
     );
     this.requiresAuth = true;

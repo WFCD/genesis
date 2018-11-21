@@ -1,14 +1,15 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { captures } = require('../../CommonFunctions');
 
 class SetMessageDeleteLog extends Command {
   constructor(bot) {
     super(bot, 'settings.msgDeleteLog', 'set message delete log', 'Sets the log channel for message deletions.');
     this.usages = [
-      { description: 'Set the message dlete log channel', parameters: ['channel id'] },
+      { description: 'Set the message delete log channel', parameters: ['channel id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)(\\d+)(?:>))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.channel}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

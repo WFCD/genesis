@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { getChannel } = require('../../CommonFunctions');
+const { getChannel, captures } = require('../../CommonFunctions');
 
 const languages = ['en-us'];
 
@@ -11,7 +11,7 @@ class Language extends Command {
     this.usages = [
       { description: 'Change this channel\'s language', parameters: ['language'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(${languages.join('|')})?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(${languages.join('|')})?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;
   }
 

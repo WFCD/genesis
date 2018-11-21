@@ -4,6 +4,23 @@ const { RichEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
 const { getChannels, createPageCollector } = require('../../CommonFunctions');
 
+const negate = '✘';
+const affirm = '✓';
+
+const wrapChannelValue = (val) => {
+  if (val !== negate) {
+    return `<#${val}>`;
+  }
+  return val;
+}
+
+const wrapRoleValue = (val) => {
+  if (val !== negate) {
+    return `<@&${val}>`;
+  }
+  return val;
+}
+
 const chunkify = ({
   string, newStrings = [], breakChar = '; ', maxLength = 1000,
 }) => {
@@ -66,6 +83,8 @@ class Settings extends Command {
     this.requiresAuth = true;
   }
 
+
+
   async composeChannelSettings(channel, message) {
     const page = new RichEmbed(embedDefaults);
     const settings = await this.settings.getChannelSettings(channel, [
@@ -108,8 +127,8 @@ class Settings extends Command {
     page.addField('No Text Channel', await this.resolveBoolean(channel, 'defaultNoText', settings), true);
     page.addField('Hidden Channel', await this.resolveBoolean(channel, 'defaultShown', settings), true);
     page.addField('Respond to Settings', await this.resolveBoolean(channel, 'respond_to_settings', settings), true);
-    page.addField('Delete Message Post-Respond', await this.resolveBoolean(channel, 'delete_after_respond', settings), true);
-    page.addField('Delete Response Post-Respond', await this.resolveBoolean(channel, 'delete_response', settings), true);
+    page.addField('Delete Message', await this.resolveBoolean(channel, 'delete_after_respond', settings), true);
+    page.addField('Delete Response', await this.resolveBoolean(channel, 'delete_response', settings), true);
 
     const defaultRoles = JSON.parse(settings.defaultRoles || '[]')
       .map(roleId => channel.guild.roles.get(roleId) || undefined)
@@ -118,17 +137,18 @@ class Settings extends Command {
       .join(', ');
 
     if (message.guild) {
-      page.addField('Temp Channel Category', settings.tempCategory !== '0'
+      const tempCategory = settings.tempCategory !== '0'
         && typeof settings.tempCategory !== 'undefined'
-        ? settings.tempCategory : '✘', true);
-      page.addField('LFG', settings.lfgChannel || '✘', true);
-      page.addField('Default Roles', defaultRoles.length ? defaultRoles : '✘', true);
-      page.addField('Vulgar Log', settings.vulgarLog || '✘', true);
-      page.addField('Delete Log', settings.msgDeleteLog || '✘', true);
-      page.addField('Leave Log', settings.memberRemoveLog || '✘', true);
-      page.addField('Ban Log', settings.banLog || '✘', true);
-      page.addField('Unban Log', settings.unbanLog || '✘', true);
-      page.addField('Mod Role', settings.modRole || '✘', true);
+        ? settings.tempCategory : negate;
+      page.addField('Temp Channel Category', wrapChannelValue(tempCategory), true);
+      page.addField('LFG', wrapChannelValue(settings.lfgChannel || negate), true);
+      page.addField('Default Roles', defaultRoles.length ? defaultRoles : negate, true);
+      page.addField('Vulgar Log', wrapChannelValue(settings.vulgarLog || negate), true);
+      page.addField('Delete Log', wrapChannelValue(settings.msgDeleteLog || negate), true);
+      page.addField('Leave Log', wrapChannelValue(settings.memberRemoveLog || negate), true);
+      page.addField('Ban Log', wrapChannelValue(settings.banLog || negate), true);
+      page.addField('Unban Log', wrapChannelValue(settings.unbanLog || negate), true);
+      page.addField('Mod Role', wrapRoleValue(settings.modRole || negate), true);
     }
 
     const items = await this.settings.getTrackedItems(channel);
@@ -148,9 +168,9 @@ class Settings extends Command {
 
   async resolveBoolean(channel, setting, settings) {
     if (settings) {
-      return settings.setting === '1' ? '✓' : '✘';
+      return settings.setting === '1' ? affirm : negate;
     }
-    return ((await this.settings.getChannelSetting(channel, setting)) === '1' ? '✓' : '✘');
+    return ((await this.settings.getChannelSetting(channel, setting)) === '1' ? affirm : negate);
   }
 
   async run(message) {

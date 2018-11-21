@@ -3,11 +3,11 @@
 const Command = require('../../models/Command.js');
 const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
-const { getChannels, getTarget } = require('../../CommonFunctions');
+const { getChannels, getTarget, captures } = require('../../CommonFunctions');
 
 const commandIdRegex = new RegExp('(\\w*\\.*\\w*\\.*\\w*\\*?)', 'ig');
-const locationRegex = new RegExp('(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here|\\*))', 'ig');
-const appliesToRegex = new RegExp('(?:\\s+for\\s((?:\\<\\@\\&?)?\\d+(?:\\>)?|\\*))?', 'ig');
+const locationRegex = new RegExp(`(?:\\s+in\\s+(${captures.channel}|here|\\*))`, 'ig');
+const appliesToRegex = new RegExp(`(?:\\s+for\\s(${captures.user}|${captures.role}|\\*))?`, 'ig');
 
 class Disable extends Command {
   constructor(bot) {

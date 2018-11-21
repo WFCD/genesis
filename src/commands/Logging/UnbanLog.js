@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { captures } = require('../../CommonFunctions');
 
 class SetUnBanLog extends Command {
   constructor(bot) {
@@ -8,7 +9,7 @@ class SetUnBanLog extends Command {
     this.usages = [
       { description: 'Set the unban log channel', parameters: ['channel id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)(\\d+)(?:>))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.channel}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

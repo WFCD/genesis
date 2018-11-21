@@ -6,7 +6,7 @@ const {
   trackablesFromParameters,
   getChannel,
   getTrackInstructionEmbed,
-  trackablesCapture,
+  captures
 } = require('../../CommonFunctions');
 
 /**
@@ -19,7 +19,7 @@ class Untrack extends Command {
       { description: 'Show tracking command for untracking events', parameters: [] },
       { description: 'Untrack an event or events', parameters: ['event(s) to untrack'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*${trackablesCapture}*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*${captures.trackables}*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
     this.requiresAuth = true;
   }
 

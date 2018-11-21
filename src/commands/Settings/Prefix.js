@@ -9,7 +9,7 @@ class Prefix extends Command {
   constructor(bot) {
     super(bot, 'settings.prefix', 'prefix');
     this.usages = [
-      { description: 'Change this channel\'s platform', parameters: ['prefix (up to 3 characters)'] },
+      { description: 'Change this channel\'s prefix', parameters: ['prefix (up to 3 characters)'] },
     ];
     this.regex = new RegExp(
       `^${this.call}(?:\\s+(.+))?`,

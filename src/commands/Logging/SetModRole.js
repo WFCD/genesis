@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { captures } = require('../../CommonFunctions');
 
 class SetModRole extends Command {
   constructor(bot) {
@@ -8,7 +9,7 @@ class SetModRole extends Command {
     this.usages = [
       { description: 'Change the configured mod role', parameters: ['mod role id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(?:(?:<@&)(\\d+)(?:>))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.role}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

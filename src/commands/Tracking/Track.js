@@ -6,7 +6,7 @@ const {
   trackablesFromParameters,
   getChannel,
   getTrackInstructionEmbed,
-  trackablesCapture,
+  captures,
 } = require('../../CommonFunctions');
 
 /**
@@ -19,7 +19,7 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${trackablesCapture})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${captures.trackables})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
     this.requiresAuth = true;
   }
 
