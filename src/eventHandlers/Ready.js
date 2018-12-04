@@ -4,6 +4,8 @@ const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 
+const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
+
 /**
  * Check if private rooms have expired and are empty. If not, do nothing.
  * If so, delete the corresponding channels.
@@ -56,8 +58,9 @@ async function updatePresence(self) {
     const base = `@${self.client.user.username} help`;
     let final = base;
     if (vallisState || cetusState) {
-      // Later: ${vallisState ? `${vallisState.shortString} | ` : ''}
-      final = `${cetusState ? `${cetusState.shortString} | ` : ''}${base}`
+      const vs = vallisState ? `${timeDeltaToMinutesString(fromNow(new Date(vallisState.expiry))) || '??'} to ${vallisState.isWarm ? '❄' : '🔥'} | ` : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(fromNow(new Date(cetusState.expiry))) || '??'} to  ${cetusState.isDay ? '🌙' : '☀'} | ` : '';
+      final = `${vs}${cs}${base}`;
     }
 
     if (cetusState) {

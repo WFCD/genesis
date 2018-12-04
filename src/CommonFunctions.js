@@ -19,8 +19,8 @@ const captures = {
   channel: '(?:(?:<#)?(\\d+)(?:>)?)',
   role: '(?:(?:<@&)?(\\d+)(?:>)?)',
   user: '(?:(?:<@!?)?(\\d+)(?:>)?)',
-  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`
-}
+  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
+};
 
 const duration = {
   minute: 60,
@@ -274,6 +274,22 @@ const timeDeltaToString = (millis) => {
   if (seconds >= 0) {
     timePieces.push(`${Math.floor(seconds)}s`);
   }
+  return `${prefix}${timePieces.join(' ')}`;
+};
+
+const timeDeltaToMinutesString = (millis) => {
+  if (typeof millis !== 'number') {
+    throw new TypeError('millis should be a number');
+  }
+  const timePieces = [];
+  const prefix = millis < 0 ? '-' : '';
+  let seconds = Math.abs(millis / 1000);
+
+  if (seconds >= duration.minute) {
+    timePieces.push(`${Math.floor(seconds / duration.minute)}m`);
+    seconds = Math.floor(seconds) % duration.minute;
+  }
+
   return `${prefix}${timePieces.join(' ')}`;
 };
 
@@ -584,6 +600,7 @@ module.exports = {
   getTrackInstructionEmbed,
   getUsersForCall,
   timeDeltaToString,
+  timeDeltaToMinutesString,
   trackablesFromParameters,
   isVulgarCheck,
   getRandomWelcome,
