@@ -13,6 +13,24 @@ const warframe = new Wikia('warframe');
 
 const ancientRetributionThumb = `${assetBase}/img/ancient-retribution.png`;
 
+const checkResult = (prompt, results) => {
+  let res;
+  results.forEach(result => {
+    if (result.name) {
+      if (result.name.toLowerCase() === prompt.toLowerCase()){
+        res = result;
+      }
+      if (!res && result.name.toLowerCase().indexOf(prompt.toLowerCase() > -1)) {
+        res = result;
+      }
+    }
+  })
+  if (!res) {
+    res = results[0];
+  }
+  return res;
+}
+
 const checkFrames = async (prompt) => {
   const options = {
     uri: `${apiBase}/warframes/search/${prompt}`,
@@ -21,7 +39,7 @@ const checkFrames = async (prompt) => {
   };
   const results = await request(options);
   if (results.length > 0) {
-    return new FrameEmbed(this.bot, results[0]);
+    return new FrameEmbed(this.bot, checkResult(prompt, results));
   }
   return undefined;
 };
@@ -34,7 +52,7 @@ const checkWeapons = async (prompt) => {
   };
   const results = await request(options);
   if (results.length > 0) {
-    return new WeaponEmbed(this.bot, results[0]);
+    return new WeaponEmbed(this.bot, checkResult(prompt, results));
   }
   return undefined;
 };
