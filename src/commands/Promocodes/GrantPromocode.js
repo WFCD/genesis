@@ -6,7 +6,7 @@ const { resolvePool } = require('../../CommonFunctions');
 class GrantPromocode extends Command {
   constructor(bot) {
     super(bot, 'promocode.code.grant', 'glyphs grant', 'Grant a code.');
-    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1)?\\s?(?:<@([0-9]{0,20})>)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1|switch)?\\s?(?:<@([0-9]{0,20})>)?`, 'i');
     this.usages = [
       {
         description: 'Grant a code to a user from a specific pool',
@@ -21,7 +21,7 @@ class GrantPromocode extends Command {
 
   async run(message, ctx) {
     const pool = await resolvePool(message, this.settings);
-    const platform = message.strippedContent.match(/(pc|ps4|xb1)/i)[0] || 'pc';
+    const platform = message.strippedContent.match(/(pc|ps4|xb1|switch)/i)[0] || 'pc';
     const user = message.strippedContent.match(/([0-9]{16,20})/i)[0];
     if (!pool) {
       this.messageManager.reply(message, 'You can either not manage provided pool, or provided pool doesn\'t exist.');
