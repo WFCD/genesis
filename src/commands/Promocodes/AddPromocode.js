@@ -33,7 +33,7 @@ class AddPromocode extends Command {
     this.ownerOnly = false;
     this.requiresAuth = true;
     this.allowDM = true;
-    this.regex = new RegExp(`^${this.call}\\s*(?:--pool\\s(.*))?\\s?(pc|ps4|xb1)?(.*)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*(?:--pool\\s(.*))?\\s?(pc|ps4|xb1|switch)?(.*)?`, 'i');
     this.usages = [
       {
         description: 'Add a single code',
@@ -62,7 +62,7 @@ class AddPromocode extends Command {
 
   async runExplicitPath(message) {
     const pool = await resolvePool(message, this.settings, { checkRestriction: true });
-    const platform = (message.strippedContent.match(/(pc|ps4|xb1)/i) || [])[0] || 'pc';
+    const platform = (message.strippedContent.match(/(pc|ps4|xb1|switch)/i) || [])[0] || 'pc';
     const code = (message.strippedContent.match(/(\w{4}-\w{4}-\w{4}-\w{4})/i) || [])[0];
 
     if (!code) {
