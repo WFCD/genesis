@@ -6,7 +6,7 @@ const { resolvePool } = require('../../CommonFunctions');
 class ClaimPromocode extends Command {
   constructor(bot) {
     super(bot, 'promocode.code.claim', 'glyphs claim', 'Claim a code.');
-    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1)?\\s?(?:--password\\s(.*))?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1|switch)?\\s?(?:--password\\s(.*))?`, 'i');
     this.usages = [
       {
         description: 'Claim a code',
@@ -21,7 +21,7 @@ class ClaimPromocode extends Command {
 
   async run(message) {
     const pool = await resolvePool(message, this.settings, { checkRestriction: true });
-    const platform = (message.strippedContent.match(/(pc|ps4|xb1)/i) || [])[0] || 'pc';
+    const platform = (message.strippedContent.match(/(pc|ps4|xb1|switch)/i) || [])[0] || 'pc';
     const userPassword = (message.strippedContent.match(/(?:--pass(?:word)\s?(.*))/i) || [])[0] || undefined;
     if (!pool) {
       this.messageManager.reply(message, 'The pool is either restricted to another guild, or you need to specify one.');
