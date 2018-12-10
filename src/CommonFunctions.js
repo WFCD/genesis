@@ -20,6 +20,7 @@ const captures = {
   role: '(?:(?:<@&)?(\\d+)(?:>)?)',
   user: '(?:(?:<@!?)?(\\d+)(?:>)?)',
   trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
+  platforms: '(pc|ps4|xb1|swi)',
 };
 
 const duration = {
