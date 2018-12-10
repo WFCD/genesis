@@ -96,6 +96,7 @@ class CommandHandler extends Handler {
           this.logger.debug(`Matched ${command.id}`);
           ctx.message = messageWithStrippedContent;
           const cmd = await this.bot.commandManager.loadCommand(command);
+          ctx.message.channel.startTyping();
           const status = await cmd.run(messageWithStrippedContent, ctx);
           const canReact = (message.channel.type === 'dm'
                 || (message.channel.permissionsFor(this.bot.client.user.id)
@@ -115,6 +116,7 @@ class CommandHandler extends Handler {
             default:
               break;
           }
+          ctx.message.channel.stopTyping(true);
           done = true;
         }
       }
