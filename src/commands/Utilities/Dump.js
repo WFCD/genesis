@@ -1,7 +1,7 @@
 'use strict';
 
 const Discord = require('discord.js');
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 
 /**
@@ -32,9 +32,8 @@ class Dump extends Command {
       let channelConfig;
 
       try {
-        const reqRes = await request({
-          uri: firstAttach.url,
-        });
+        const reqRes = await fetch(firstAttach.url).then(data => data.json());
+
         channelConfig = JSON.parse(reqRes);
       } catch (e) {
         message.reply('Couldn\'t get file.');

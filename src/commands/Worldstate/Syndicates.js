@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
-const { createPageCollector } = require('../../CommonFunctions');
+const { createPageCollector, captures } = require('../../CommonFunctions');
 const syndicates = require('../../resources/syndicates.json');
 
 const values = syndicates.map(s => s.display.toLowerCase());
@@ -17,7 +17,7 @@ class Syndicates extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.');
-    this.regex = new RegExp(`^${this.call}\\s?(?:(${values.join('|')}))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?(?:(${values.join('|')}))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
     this.usages = [
       {
         description: 'Display syndicate nodes for a syndicate.',

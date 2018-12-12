@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const SalesEmbed = require('../../embeds/SalesEmbed.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+const { createGroupedArray, createPageCollector, captures } = require('../../CommonFunctions');
 
 
 /**
@@ -15,7 +15,7 @@ class FeaturedDeal extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.featureddeal', 'featureddeal', 'Displays current featured deals');
-    this.regex = new RegExp('^featured\\s?deals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
+    this.regex = new RegExp(`^featured\\s?deals?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

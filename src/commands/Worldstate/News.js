@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const NewsEmbed = require('../../embeds/NewsEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active warframe news
@@ -13,7 +14,7 @@ class News extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.news', 'news', 'Display the currently active news');
-    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

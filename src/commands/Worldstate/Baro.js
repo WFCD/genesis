@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const VoidTraderEmbed = require('../../embeds/VoidTraderEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -13,7 +14,7 @@ class Baro extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.baro', 'baro', 'Display the current status of the Void Trader');
-    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?`, 'i');
   }
 
   async run(message, ctx) {

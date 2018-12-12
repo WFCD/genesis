@@ -6,7 +6,7 @@ const {
   trackablesFromParameters,
   getChannel,
   getTrackInstructionEmbed,
-  captures
+  captures,
 } = require('../../CommonFunctions');
 
 /**

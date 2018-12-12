@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const EnhancementEmbed = require('../../embeds/EnhancementEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
@@ -33,22 +33,15 @@ class Arcane extends Command {
    */
   async run(message) {
     let arcane = message.strippedContent.match(this.regex)[1];
-    const options = {
-      uri: `${apiBase}/arcanes`,
-      json: true,
-      rejectUnauthorized: false,
-    };
     if (arcane) {
       arcane = arcane.trim().toLowerCase();
-      options.uri = `${apiBase}/arcanes/search/${arcane}`;
-      const results = await request(options);
+      const results = await fetch(`${apiBase}/arcanes/search/${arcane}`).then(data => data.json());
       if (results.length > 0) {
         this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = `${apiBase}/arcanes`;
-    const enhancements = await request(options);
+    const enhancements = await fetch(`${apiBase}/arcanes`).then(data => data.json());
     this.messageManager.embed(
       message,
       new EnhancementEmbed(this.bot, undefined, enhancements), true, false,

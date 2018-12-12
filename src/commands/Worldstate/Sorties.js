@@ -3,6 +3,7 @@
 const Wikia = require('node-wikia');
 const Command = require('../../models/Command.js');
 const SortieEmbed = require('../../embeds/SortieEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 const warframe = new Wikia('warframe');
 
@@ -17,7 +18,7 @@ class Sorties extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.sorties', 'sortie', 'Display the currently active sorties');
-    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

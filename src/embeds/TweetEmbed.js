@@ -25,13 +25,13 @@ class TweetEmbed extends BaseEmbed {
 
     if (tweet.in_reply_to_status_id != null) {
       this.title = `${tweet.user.name} replied to a Tweet`;
-    } else if (tweet.quoted_status_id != null) {
+    } else if (tweet.quoted_status_id != null && tweet.quoted_status) {
       this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.quoted_status.user.name} (@${tweet.quoted_status.user.screen_name})`;
       this.fields.push({
         name: `${tweet.quoted_status.user.name}`,
         value: `${tweet.quoted_status.full_text}`,
       });
-    } else if (tweet.retweeted_status != null) {
+    } else if (tweet.retweeted_status) {
       this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.retweeted_status.user.name} (@${tweet.retweeted_status.user.screen_name})`;
       this.description = `${tweet.retweeted_status.full_text}`;
     } else {

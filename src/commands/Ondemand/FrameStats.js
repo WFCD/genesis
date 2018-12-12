@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 
 const Command = require('../../models/Command.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
@@ -42,8 +42,7 @@ class FrameStats extends Command {
     };
     if (frame) {
       frame = frame.trim().toLowerCase();
-      options.uri = `${apiBase}/warframes/search/${frame}`;
-      const results = await request(options);
+      const results = await fetch(`${apiBase}/warframes/search/${frame}`).then(data => data.json());
       if (results.length > 0) {
         const pages = [];
 

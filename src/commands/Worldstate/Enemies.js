@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const EnemyEmbed = require('../../embeds/EnemyEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently persistent enemies
@@ -13,7 +14,7 @@ class Enemies extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.acolytes', 'acolyte', 'Display any currently active acolyte-style enemies.');
-    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?`, 'i');
   }
 
   async run(message, ctx) {

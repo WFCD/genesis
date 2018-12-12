@@ -1,7 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
-
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
 const { createGroupedArray, createPageCollector, apiBase } = require('../../CommonFunctions.js');
@@ -47,15 +46,9 @@ class Whereis extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     try {
-      const options = {
-        uri: `${apiBase}/drops/`,
-        json: true,
-        rejectUnauthorized: false,
-      };
       query = query.trim().toLowerCase();
       const queryWReplaces = query.replace(/prime/ig, 'p.').replace(/blueprint/ig, 'bp');
-      options.uri = `${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`;
-      const results = await request(options);
+      const results = await fetch(`${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`).then(data => data.json());
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)

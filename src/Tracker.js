@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 
 const config = {
   updateInterval: process.env.TRACKERS_UPDATE_INTERVAL || 3660000,
@@ -68,19 +68,19 @@ class Tracker {
       const guildsLen = results.reduce((prev, val) => prev + val, 0);
       this.logger.debug('Updating Carbonitex');
       this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
-      const requestBody = {
-        url: 'https://www.carbonitex.net/discord/data/botdata.php',
-        body: {
-          key: config.carbon.token,
-          servercount: guildsLen,
-          shardid: parseInt(this.shardId, 10),
-          shardcount: parseInt(this.shardCount, 10),
-        },
-        json: true,
-        rejectUnauthorized: false,
-      };
+
       try {
-        const parsedBody = await request(requestBody);
+        const parsedBody = await fetch('https://www.carbonitex.net/discord/data/botdata.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            key: config.carbon.token,
+            servercount: guildsLen,
+            shardid: parseInt(this.shardId, 10),
+            shardcount: parseInt(this.shardCount, 10),
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(data => data.json());
         this.logger.debug(parsedBody);
       } catch (err) {
         this.logger.error(`Error updating carbonitex. Token: ${config.carbon.token} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
@@ -96,22 +96,20 @@ class Tracker {
     if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
       this.logger.debug('Updating discord bots');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
-      const requestBody = {
-        method: 'POST',
-        url: `https://bots.discord.pw/api/bots/${config.botsDiscordPw.id}/stats`,
-        headers: {
-          Authorization: config.botsDiscordPw.token,
-          'Content-Type': 'application/json',
-        },
-        body: {
-          shard_id: parseInt(this.shardId, 10),
-          shard_count: parseInt(this.shardCount, 10),
-          server_count: parseInt(guildsLen, 10),
-        },
-        json: true,
-        rejectUnauthorized: false,
-      };
       try {
+        const parsedBody = await fetch(`https://bots.discord.pw/api/bots/${config.botsDiscordPw.id}/stats`, {
+          method: 'POST',
+          body: JSON.stringify({
+            shard_id: parseInt(this.shardId, 10),
+            shard_count: parseInt(this.shardCount, 10),
+            server_count: parseInt(guildsLen, 10),
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: config.botsDiscordPw.token,
+          },
+        })
+          .then(data => data.json());
         const parsedBody = await request(requestBody);
         this.logger.debug(parsedBody);
       } catch (err) {
@@ -128,23 +126,20 @@ class Tracker {
     if (config.botsDiscordOrg.token && config.botsDiscordOrg.id) {
       this.logger.debug('Updating discordbots.org');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
-      const requestBody = {
-        method: 'POST',
-        url: `https://discordbots.org/api/bots/${config.botsDiscordOrg.id}/stats`,
-        headers: {
-          Authorization: config.botsDiscordOrg.token,
-          'Content-Type': 'application/json',
-        },
-        body: {
-          shard_id: parseInt(this.shardId, 10),
-          shard_count: parseInt(this.shardCount, 10),
-          server_count: parseInt(guildsLen, 10),
-        },
-        json: true,
-        rejectUnauthorized: false,
-      };
       try {
-        const parsedBody = await request(requestBody);
+        const parsedBody = await fetch(`https://discordbots.org/api/bots/${config.botsDiscordOrg.id}/stats`, {
+          method: 'POST',
+          body: JSON.stringify({
+            shard_id: parseInt(this.shardId, 10),
+            shard_count: parseInt(this.shardCount, 10),
+            server_count: parseInt(guildsLen, 10),
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: config.botsDiscordOrg.token,
+          },
+        })
+          .then(data => data.json());
         this.logger.debug(parsedBody);
       } catch (err) {
         this.logger.error(`Error updating discordbots.org. Token: ${config.botsDiscordOrg.token} | User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
@@ -165,19 +160,17 @@ class Tracker {
    * Post the cachet heartbeat for the shardCount
    */
   async postHeartBeat() {
-    const requestBody = {
+    const parsedBody = await fetch(`${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`, {
       method: 'POST',
-      url: `${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`,
+      body: JSON.stringify({
+        value: 1
+      }),
       headers: {
         'Content-Type': 'application/json',
         'X-Cachet-Token': config.cachet.token,
       },
-      body: {
-        value: 1,
-      },
-      json: true,
-      rejectUnauthorized: false,
-    };
+    })
+      .then(data => data.json());
     const parsedBody = await request(requestBody);
     this.logger.debug(parsedBody);
   }

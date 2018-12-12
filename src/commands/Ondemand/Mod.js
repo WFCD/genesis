@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 
 const Command = require('../../models/Command.js');
 const BaseEmbed = require('../../embeds/BaseEmbed.js');
@@ -74,13 +74,8 @@ class Mod extends Command {
       return this.messageManager.statuses.FAILURE;
     }
 
-    const options = {
-      uri: `${apiBase}/mods/search/${query}`,
-      json: true,
-      rejectUnauthorized: false,
-    };
     try {
-      const results = await request(options);
+      const results = await fetch(`${apiBase}/mods/search/${query}`).then(data => data.json());
       if (results.length > 0) {
         const pages = [];
         results.forEach((result) => {

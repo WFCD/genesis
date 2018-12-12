@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const ConclaveChallengeEmbed = require('../../embeds/ConclaveChallengeEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 const values = ['all', 'day', 'week'];
 
@@ -16,7 +17,7 @@ class ConclaveChallenges extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.conclaveChallenges', 'conclave', 'Gets the current conclave challenges for a category of challenge, or all.');
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${values.join('|')}))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${values.join('|')}))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
 
     this.usages = [
       {
