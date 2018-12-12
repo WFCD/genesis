@@ -110,7 +110,6 @@ class Tracker {
           },
         })
           .then(data => data.json());
-        const parsedBody = await request(requestBody);
         this.logger.debug(parsedBody);
       } catch (err) {
         this.logger.error(`Error updating bots.discord.pw. Token: ${config.botsDiscordPw.token} | User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
@@ -163,7 +162,7 @@ class Tracker {
     const parsedBody = await fetch(`${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`, {
       method: 'POST',
       body: JSON.stringify({
-        value: 1
+        value: 1,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +170,6 @@ class Tracker {
       },
     })
       .then(data => data.json());
-    const parsedBody = await request(requestBody);
     this.logger.debug(parsedBody);
   }
 }
