@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const UpdateEmbed = require('../../embeds/NewsEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Warframe update news
@@ -9,11 +10,12 @@ const UpdateEmbed = require('../../embeds/NewsEmbed.js');
 class Updates extends Command {
   /**
    * Constructs a callable command
-   * @param {Genesis} bot  The bot object
+   * @param {Genesis} bot  The bot objectgratz
+   *
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.updates', 'update', 'Display the currently active update news');
-    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

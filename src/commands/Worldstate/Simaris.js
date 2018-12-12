@@ -1,11 +1,11 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const SimarisEmbed = require('../../embeds/SimarisEmbed.js');
 const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
-const { createPageCollector } = require('../../CommonFunctions');
+const { createPageCollector, captures } = require('../../CommonFunctions');
 
 /**
  * Displays the current simaris target
@@ -19,8 +19,8 @@ class Simaris extends Command {
     super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.');
     // Can only have 1 regex that a command can match on,
     // so this is a combination of platform or target
-    this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');
-    this.platformRegex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+${captures.platforms})?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');
+    this.platformRegex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
     this.targetRegex = new RegExp(`^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$`, 'i');
   }
 
@@ -51,18 +51,12 @@ class Simaris extends Command {
   async handleTargetCommand(message, targetParam) {
     let query = targetParam;
 
-    const options = {
-      uri: `${apiBase}/synthtargets`,
-      json: true,
-      rejectUnauthorized: false,
-    };
     if (query) {
       query = query.trim().toLowerCase();
     }
 
     // Search the synth targets for the user's query
-    options.uri = `${apiBase}/synthtargets/search/${query}`;
-    const results = await request(options);
+    const results = await fetch(`${apiBase}/synthtargets/search/${query}`).then(data => data.json());
 
     // If there is a single result, show it
     if (results.length === 1) {

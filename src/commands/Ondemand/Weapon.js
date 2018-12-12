@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
@@ -37,13 +37,8 @@ class WeaponStats extends Command {
     let weapon = message.strippedContent.match(this.regex)[1];
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
-      const options = {
-        uri: `${apiBase}/weapons/search/${weapon}`,
-        json: true,
-        rejectUnauthorized: false,
-      };
       try {
-        const results = await request(options);
+        const results = await fetch(`${apiBase}/weapons/search/${weapon}`).then(data => data.json());
         if (results.length > 0) {
           const pages = [];
           results.forEach((result) => {

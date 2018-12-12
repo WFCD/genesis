@@ -1,7 +1,7 @@
 'use strict';
 
 const Wikia = require('node-wikia');
-const request = require('request-promise');
+const fetch = require('node-fetch');
 
 const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
@@ -15,29 +15,24 @@ const ancientRetributionThumb = `${assetBase}/img/ancient-retribution.png`;
 
 const checkResult = (prompt, results) => {
   let res;
-  results.forEach(result => {
+  results.forEach((result) => {
     if (result.name) {
-      if (result.name.toLowerCase() === prompt.toLowerCase()){
+      if (result.name.toLowerCase() === prompt.toLowerCase()) {
         res = result;
       }
       if (!res && result.name.toLowerCase().indexOf(prompt.toLowerCase() > -1)) {
         res = result;
       }
     }
-  })
+  });
   if (!res) {
-    res = results[0];
+    [res] = results;
   }
   return res;
-}
+};
 
 const checkFrames = async (prompt) => {
-  const options = {
-    uri: `${apiBase}/warframes/search/${prompt}`,
-    json: true,
-    rejectUnauthorized: false,
-  };
-  const results = await request(options);
+  const results = await fetch(`${apiBase}/warframes/search/${prompt}`).then(data => data.json());
   if (results.length > 0) {
     return new FrameEmbed(this.bot, checkResult(prompt, results));
   }
@@ -45,12 +40,7 @@ const checkFrames = async (prompt) => {
 };
 
 const checkWeapons = async (prompt) => {
-  const options = {
-    uri: `${apiBase}/weapons/search/${prompt}`,
-    json: true,
-    rejectUnauthorized: false,
-  };
-  const results = await request(options);
+  const results = await fetch(`${apiBase}/weapons/search/${prompt}`).then(data => data.json());
   if (results.length > 0) {
     return new WeaponEmbed(this.bot, checkResult(prompt, results));
   }

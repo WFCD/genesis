@@ -1,12 +1,8 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 
-const options = {
-  uri: 'https://dog.ceo/api/breed/corgi/cardigan/images/random',
-  json: true,
-};
 /**
  * Corgis - Bsed on https://github.com/ryands/hubot-corgi
  */
@@ -26,7 +22,7 @@ class Corgi extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const corgi = await request(options);
+    const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random').then(data => data.json());
     if (corgi) {
       await this.messageManager.sendFile(message, undefined, corgi.message, `corgi.${corgi.message.split('.').pop()}`, true);
       return this.messageManager.statuses.SUCCESS;

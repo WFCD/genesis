@@ -1,8 +1,8 @@
 'use strict';
 
 const Command = require('../../models/Command');
-// const SyndicateEmbed = require('../../embeds/SyndicateEmbed');
 const SolarisEmbed = require('../../embeds/SolarisEmbed');
+const { captures } = require('../../CommonFunctions');
 
 class Solaris extends Command {
   /**
@@ -11,7 +11,7 @@ class Solaris extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.solaris', 'solaris', 'Display the currently active Solaris bounties');
-    this.regex = new RegExp(`^${this.call}s?\\s?(?:on\\s+([pcsxb14]{2,3}))?`, 'i');
+    this.regex = new RegExp(`^${this.call}s?\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 
   async run(message, ctx) {

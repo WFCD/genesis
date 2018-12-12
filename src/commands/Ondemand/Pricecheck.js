@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
@@ -37,12 +37,8 @@ class PriceCheck extends Command {
     try {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
-      const options = {
-        uri: `${apiBase}/pricecheck/attachment/${item}`,
-        json: true,
-        rejectUnauthorized: false,
-      };
-      const result = await request(options);
+
+      const result = await fetch(`${apiBase}/pricecheck/attachment/${item}`).then(data => data.json());
       const embed = new PriceCheckEmbed(this.bot, result, item);
       sentMessage.edit({ embed });
       return embed.color === 0xff55ff

@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const SalesEmbed = require('../../embeds/SalesEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays current popular sales
@@ -13,7 +14,7 @@ class PopularDeal extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.populardeals', 'populardeal', 'Displays current featured deals');
-    this.regex = new RegExp('^popular\\sdeals?(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
+    this.regex = new RegExp(`^popular\\sdeals?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

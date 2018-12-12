@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const { apiBase } = require('../../CommonFunctions');
 
@@ -31,15 +31,10 @@ class FrameProfile extends Command {
    */
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
-    const options = {
-      uri: `${apiBase}/tutorials`,
-      json: true,
-      rejectUnauthorized: false,
-    };
+
     if (query) {
       query = query.trim().toLowerCase();
-      options.uri = `${apiBase}/tutorials/search/${query}`;
-      const results = await request(options);
+      const results = await fetch(`${apiBase}/tutorials/search/${query}`).then(data => data.json());
       if (results.length > 0) {
         results.forEach((tutorial) => {
           this.messageManager.reply(message, `Warfame Tutorial | ${tutorial.name}: ${tutorial.url}`, true, true);
@@ -47,8 +42,7 @@ class FrameProfile extends Command {
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    options.uri = `${apiBase}/tutorials`;
-    const tutorials = await request(options);
+    const tutorials = await fetch(`${apiBase}/tutorials`).then(data => data.json());
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
       fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],

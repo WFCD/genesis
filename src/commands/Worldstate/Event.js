@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const EventEmbed = require('../../embeds/EventEmbed.js');
-const { createPageCollector } = require('../../CommonFunctions');
+const { createPageCollector, captures } = require('../../CommonFunctions');
 
 
 /**
@@ -15,7 +15,7 @@ class Event extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.events', 'events', 'Display current events.');
-    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

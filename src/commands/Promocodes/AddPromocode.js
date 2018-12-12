@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const rpad = require('right-pad');
 
 const Command = require('../../models/Command');
@@ -86,9 +86,7 @@ class AddPromocode extends Command {
     let codes;
     let response;
     try {
-      const reqRes = await request({
-        uri: firstAttach.url,
-      });
+      const reqRes = await fetch(firstAttach.url).then(data => data.json());
       if (firstAttach.filename.indexOf('.json') > -1) {
         codes = JSON.parse(reqRes);
       } else if (firstAttach.filename.indexOf('.csv') > -1) {

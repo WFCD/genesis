@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const DarvoEmbed = require('../../embeds/DarvoEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays today's Darvo deal
@@ -13,7 +14,7 @@ class Darvo extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.darvo', 'darvo', 'Displays today\'s Darvo deal');
-    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

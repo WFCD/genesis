@@ -2,6 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const PrimeAccessEmbed = require('../../embeds/NewsEmbed.js');
+const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active warframe prime access news
@@ -13,7 +14,7 @@ class PrimeAccess extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.primeaccess', 'primeaccess', 'Display the currently active prime access news');
-    this.regex = new RegExp('^prime\\s?access(?:\\s+on\\s+([pcsxb14]{2,3}))?$', 'i');
+    this.regex = new RegExp(`^prime\\s?access(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

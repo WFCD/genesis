@@ -12,14 +12,14 @@ const wrapChannelValue = (val) => {
     return `<#${val}>`;
   }
   return val;
-}
+};
 
 const wrapRoleValue = (val) => {
   if (val !== negate) {
     return `<@&${val}>`;
   }
   return val;
-}
+};
 
 const checkAndMergeEmbeds = (original, value) => {
   if (value instanceof Array) {
@@ -27,7 +27,7 @@ const checkAndMergeEmbeds = (original, value) => {
   } else {
     original.push(value);
   }
-}
+};
 
 const fieldLimit = 5;
 
@@ -90,7 +90,7 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
       embed.setTitle(title);
 
       smEmbed.fields = fields;
-      if(index === 0) {
+      if (index === 0) {
         smEmbed.setDescription(embed.description);
       }
       embeds.push(smEmbed);

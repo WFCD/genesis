@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const InvasionEmbed = require('../../embeds/InvasionEmbed.js');
-const { createPageCollector } = require('../../CommonFunctions');
+const { createPageCollector, captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -14,7 +14,7 @@ class Invasions extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.invasions', 'invasion', 'Display the currently active Invasions');
-    this.regex = new RegExp(`^${this.call}s?(?:\\s?(compact))?(?:\\s+on\\s+([pcsxb14]{2,3}))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}s?(?:\\s?(compact))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {
