@@ -35,11 +35,7 @@ class FrameStats extends Command {
    */
   async run(message) {
     let frame = message.strippedContent.match(this.regex)[1];
-    const options = {
-      uri: `${apiBase}/warframes`,
-      json: true,
-      rejectUnauthorized: false,
-    };
+
     if (frame) {
       frame = frame.trim().toLowerCase();
       const results = await fetch(`${apiBase}/warframes/search/${frame}`).then(data => data.json());
@@ -62,12 +58,11 @@ class FrameStats extends Command {
         await createPageCollector(msg, pages, message.author);
         return this.messageManager.statuses.SUCCESS;
       }
-      options.uri = `${apiBase}/warframes`;
-      const frames = await request(options);
+      const frames = await fetch(`${apiBase}/warframes`).then(data => data.json());
       this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    const frames = await request(options);
+    const frames = await fetch(`${apiBase}/warframes`).then(data => data.json());
     this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
     return this.messageManager.statuses.FAILURE;
   }
