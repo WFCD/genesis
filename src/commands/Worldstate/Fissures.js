@@ -18,7 +18,7 @@ class Fissures extends Command {
   }
 
   async run(message, ctx) {
-    const platformParam = message.strippedContent.match(new RegExp(`(?:on\\s?${captures.platforms}`, 'ig'));
+    const platformParam = message.strippedContent.match(new RegExp(`(?:on\\s?${captures.platforms})`, 'ig'));
     const compact = /compact/ig.test(message.strippedContent);
     const platform = platformParam && platformParam.length ? platformParam[0].replace('on ', '') : ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
