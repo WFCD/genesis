@@ -30,8 +30,9 @@ const generateManifest = async () => {
         const command = new Cmd({
           md: {}, messageManager: {}, settings: {}, path: f,
         });
-
-        return command;
+        if (command.enabled) {
+          return command;
+        }
       }
       return null;
     } catch (err) {

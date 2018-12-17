@@ -21,6 +21,7 @@ class Raid extends Command {
         parameters: ['username'],
       },
     ];
+    this.enabled = false;
   }
 
   /**

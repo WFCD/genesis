@@ -23,6 +23,7 @@ class PriceCheck extends Command {
         parameters: ['in-game name (PC only)'],
       },
     ];
+    this.enabled = false;
   }
 
   /**

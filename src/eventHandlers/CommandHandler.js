@@ -133,6 +133,9 @@ class CommandHandler extends Handler {
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
   async checkCanAct(command, message) {
+    if (!command.enabled) {
+      return false;
+    }
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
     }

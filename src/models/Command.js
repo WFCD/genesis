@@ -129,6 +129,12 @@ class Command {
     if (bot.path) {
       this.path = bot.path;
     }
+
+    /**
+     * Hard value to toggle a command off from code
+     * @type {Boolean}
+     */
+    this.enabled = true;
   }
 
   /**
@@ -184,6 +190,7 @@ class Command {
       path: this.path,
       usages: this.usages,
       blacklistable: this.blacklistable,
+      enabled: this.enabled,
     };
   }
 }
