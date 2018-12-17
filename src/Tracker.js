@@ -97,7 +97,7 @@ class Tracker {
       this.logger.debug('Updating discord bots');
       this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
       try {
-        const parsedBody = await fetch(`https://bots.discord.pw/api/bots/${config.botsDiscordPw.id}/stats`, {
+        const parsedBody = await fetch(`https://discord.bots.gg/api/v1/bots/${config.botsDiscordPw.id}/stats`, {
           method: 'POST',
           body: JSON.stringify({
             shard_id: parseInt(this.shardId, 10),
@@ -112,7 +112,7 @@ class Tracker {
           .then(data => data.json());
         this.logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating bots.discord.pw. Token: ${config.botsDiscordPw.token} | User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
+        this.logger.error(`Error updating bots.discord.gg. User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
       }
     }
   }
@@ -141,7 +141,7 @@ class Tracker {
           .then(data => data.json());
         this.logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating discordbots.org. Token: ${config.botsDiscordOrg.token} | User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
+        this.logger.error(`Error updating discordbots.org. User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
       }
     }
   }
