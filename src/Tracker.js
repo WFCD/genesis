@@ -91,6 +91,7 @@ class Tracker {
   /**
    * Updates bots.discord.pw if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOnRydWUsImlkIjoiNzY2ODU1OTA1ODU2NzE2ODAiLCJpYXQiOjE1NDUwNjUwMzN9.GNUxtZcjoiq74N4mFL51kfwd2eW8iRLK8-LqVndUx5w
    */
   async updateDiscordBotsWeb(guildsLen) {
     if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
@@ -100,9 +101,9 @@ class Tracker {
         const parsedBody = await fetch(`https://discord.bots.gg/api/v1/bots/${config.botsDiscordPw.id}/stats`, {
           method: 'POST',
           body: JSON.stringify({
-            shard_id: parseInt(this.shardId, 10),
-            shard_count: parseInt(this.shardCount, 10),
-            server_count: parseInt(guildsLen, 10),
+            shardId: parseInt(this.shardId, 10),
+            shardCount: parseInt(this.shardCount, 10),
+            guildCount: parseInt(guildsLen, 10),
           }),
           headers: {
             'Content-Type': 'application/json',
