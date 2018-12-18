@@ -94,7 +94,6 @@ class Tracker {
   /**
    * Updates bots.discord.pw if the corresponding token is provided
    * @param   {number}  guildsLen number of guilds that this bot is present on
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOnRydWUsImlkIjoiNzY2ODU1OTA1ODU2NzE2ODAiLCJpYXQiOjE1NDUwNjUwMzN9.GNUxtZcjoiq74N4mFL51kfwd2eW8iRLK8-LqVndUx5w
    */
   async updateDiscordBotsWeb(guildsLen) {
     if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
