@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const NewsEmbed = require('../../embeds/NewsEmbed.js');
-const { captures } = require('../../CommonFunctions');
+const { captures, createPageCollector } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active warframe news
