@@ -50,7 +50,7 @@ const checkWeapons = async (prompt) => {
 const checkWikia = async (prompt) => {
   try {
     const articles = await warframe.getSearchList({
-      query: prompt,
+      query: encodeURIComponent(prompt),
       limit: 1,
     });
     const details = await warframe.getArticleDetails({

@@ -40,7 +40,7 @@ class Wiki extends Command {
     }
     try {
       this.logger.debug(`Searched for query: ${query}`);
-      const articles = await warframe.getSearchList({ query, limit: 1 });
+      const articles = await warframe.getSearchList({ query: encodeURIComponent(query), limit: 1 });
       const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
       this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
       return this.messageManager.statuses.SUCCESS;

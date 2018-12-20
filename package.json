@@ -4,7 +4,7 @@
   "description": "A Warframe bot for your Discord server or clan   Star",
   "main": "main.js",
   "scripts": {
-    "test": "eslint main.js src/",
+    "test": "npx eslint main.js src/",
     "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c .github/docs/jsdoc.conf -R README.md -r main.js src/. -d docs",
     "start": "pm2 start genesis.json && pm2 logs genesis",
     "preinstall": "npm i -g pm2",
@@ -12,8 +12,8 @@
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git pull && npm i && npm restart || npm start",
-    "lint": "eslint main.js src/",
-    "lint:fix": "eslint main.js src/ --fix"
+    "lint": "npx eslint main.js src/",
+    "lint:fix": "npx eslint main.js src/ --fix"
   },
   "repository": {
     "type": "git",

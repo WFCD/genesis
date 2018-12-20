@@ -24,7 +24,7 @@ class News extends Command {
     const language = await this.settings.getChannelSetting(message.channel, 'language');
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const news = ws.news.filter(n => !n.update && !n.primeAccess && n.translations[language]);
-    
+
     if (compact) {
       await this.messageManager
         .embed(message, new NewsEmbed(this.bot, news, undefined, platform), true, true);
