@@ -31,7 +31,7 @@ class News extends Command {
     } else {
       const pages = [];
       news.forEach((article) => {
-        pages.push(new NewsEmbed(this.bot, [article], undefined platform));
+        pages.push(new NewsEmbed(this.bot, [article], undefined, platform));
       });
       if (pages.length) {
         const msg = await this.messageManager.embed(message, pages[0], false, false);
