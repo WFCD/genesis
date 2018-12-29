@@ -3,6 +3,8 @@
 const Command = require('../../models/InlineCommand.js');
 const VoidTraderEmbed = require('../../embeds/VoidTraderEmbed.js');
 
+const { createGroupedArray } = require('../../CommonFunctions');
+
 /**
  * Displays the currently active Invasions
  */
@@ -20,8 +22,18 @@ class Baro extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    await this.messageManager
-      .embed(message, new VoidTraderEmbed(this.bot, ws.voidTrader, platform), false, true);
+    const embed = new VoidTraderEmbed(this.bot, ws.voidTrader, platform);
+    if (embed.fields.length > 25) {
+      const fields = createGroupedArray(embed.fields, 15);
+      fields.forEach(async (fieldGroup) => {
+        const tembed = Object.assign({}, embed);
+        tembed.fields = fieldGroup;
+        await this.messageManager.embed(message, tembed, false, true);
+        await this.broadcaster.broadcast(tembed, platform, 'baro', null);
+      });
+    } else {
+      await this.messageManager.embed(message, embed, false, true);
+    }
     return this.messageManager.statuses.SUCCESS;
   }
 }

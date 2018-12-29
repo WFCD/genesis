@@ -19,6 +19,8 @@ const VoidTraderEmbed = require('../embeds/VoidTraderEmbed');
 const EarthCycleEmbed = require('../embeds/EarthCycleEmbed');
 const SolarisEmbed = require('../embeds/SolarisEmbed');
 
+const { createGroupedArray } = require('../CommonFunctions');
+
 const warframe = new Wikia('warframe');
 
 const syndicates = require('../resources/syndicates.json');
@@ -225,7 +227,16 @@ class Notifier {
 
   async sendBaro(newBaro, platform) {
     const embed = new VoidTraderEmbed(this.bot, newBaro, platform);
-    await this.broadcaster.broadcast(embed, platform, 'baro', null);
+    if (embed.fields.length > 25) {
+      const fields = createGroupedArray(embed.fields, 15);
+      fields.forEach(async (fieldGroup) => {
+        const tembed = Object.assign({}, embed);
+        tembed.fields = fieldGroup;
+        await this.broadcaster.broadcast(tembed, platform, 'baro', null);
+      });
+    } else {
+      await this.broadcaster.broadcast(embed, platform, 'baro', null);
+    }
   }
 
   async sendConclaveDailies(newDailies, platform) {

@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const VoidTraderEmbed = require('../../embeds/VoidTraderEmbed.js');
-const { captures } = require('../../CommonFunctions');
+const { captures, createGroupedArray, createPageCollector } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -21,8 +21,23 @@ class Baro extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    await this.messageManager
-      .embed(message, new VoidTraderEmbed(this.bot, ws.voidTrader, platform), true, false);
+    const pages = [];
+    const embed = new VoidTraderEmbed(this.bot, ws.voidTrader, platform);
+    if (embed.fields.length > 25) {
+      createGroupedArray(embed.fields, 15).forEach((fieldGroup) => {
+        this.logger.debug(fieldGroup);
+        const tembed = Object.assign({}, embed);
+        tembed.fields = fieldGroup;
+        pages.push(tembed);
+      });
+    }
+    if (pages.length) {
+      const msg = await this.messageManager.embed(message, pages[0], false, false);
+      await createPageCollector(msg, pages, message.author);
+    }
+    if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+      message.delete(10000);
+    }
     return this.messageManager.statuses.SUCCESS;
   }
 }
