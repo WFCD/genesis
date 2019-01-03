@@ -30,6 +30,8 @@ class Baro extends Command {
         tembed.fields = fieldGroup;
         pages.push(tembed);
       });
+    } else {
+      pages.push(embed);
     }
     if (pages.length) {
       const msg = await this.messageManager.embed(message, pages[0], false, false);
