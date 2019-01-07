@@ -122,31 +122,28 @@ class FrameStatsInline extends Command {
       this.logger.debug(`Checking ${strippedQuery} from wiki`);
       const wikiResult = await checkWikia(query);
 
-      if (modResult && modResult.title.toLowerCase() === strippedQuery.toLowerCase()) {
-        this.messageManager.embed(message, modResult, false, true);
-        return this.messageManager.statuses.SUCCESS;
-      }
+      const possibles = [modResult, frameResult, weaponResult, wikiResult];
 
-      if (frameResult) {
-        this.messageManager.embed(message, frameResult, false, true);
-        return this.messageManager.statuses.SUCCESS;
-      }
+      let sent = false;
+      possibles.forEach(possible => {
+        if (!sent && possible && possible.title.toLowerCase() === strippedQuery.toLowerCase()) {
+          sent = true;
+          this.messageManager.embed(message, possible, false, true);
+        }
+      });
 
-      if (weaponResult) {
-        this.messageManager.embed(message, weaponResult, false, true);
-        return this.messageManager.statuses.SUCCESS;
-      }
-
-      if (wikiResult) {
-        this.messageManager.embed(message, wikiResult, false, true);
-        return this.messageManager.statuses.SUCCESS;
-      }
+      possibles.forEach(possible => {
+        if (!sent && possible) {
+          sent = true;
+          this.messageManager.embed(message, possible, false, true);
+        }
+      });
     } catch (error) {
       this.logger.error(JSON.stringify(error));
       this.logger.error(error);
     }
 
-    return this.messageManager.statuses.FAILURE;
+    return this.messageManager.statuses.NO_ACCESS;
   }
 
   /**
@@ -160,7 +157,7 @@ class FrameStatsInline extends Command {
     if (queries.length > 0) {
       queries.forEach(query => this.evalQuery(message, query));
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.messageManager.statuses.NO_ACCESS;
   }
 }
 

@@ -35,9 +35,10 @@ class BugReport extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {String} prefix  Prefix to call the bot in this channel with
    * @returns{boolean} success status
    */
-  async run(message) {
+  async run(message, { prefix }) {
     const bugReport = message.strippedContent.match(this.regex)[1];
 
     if (this.bot.owner) {
@@ -50,34 +51,47 @@ class BugReport extends Command {
           },
           color: 0xf4425f,
           title: 'Bug Report',
-          description: message.author,
-          fields: [],
+          fields: [{
+            name: 'Submitter',
+            value: message.author.toString(),
+          }],
           footer: {
-            text: 'Sent • ',
+            text: 'Sent',
           },
           timestamp: new Date(),
         };
-
         if (params.length < 2) {
-          embed.description += `\n\u200B\n${bugReport}`;
+          embed.description = bugReport;
         } else {
-          embed.fields[0] = {
-            name: params[0].trim(),
+          embed.fields.push({
+            name: 'Title',
             value: params[1].trim(),
-          };
+          });
+          embed.fields.push({
+            name: 'Body',
+            value: params[0].trim(),
+          });
           if (params.length > 2) {
             embed.image = {
               url: params[2].trim(),
             };
-          } else if (message.attachments.array().length > 0) {
-            embed.image = {
-              url: message.attachments.array()[0].url,
-            };
           }
         }
-        this.bot.controlHook.send({ embeds: [embed] });
-        this.messageManager.reply(message, 'Bug report sent.', true, true);
-        return this.messageManager.statuses.SUCCESS;
+        if (message.attachments.size > 0) {
+          embed.image = {
+            url: message.attachments.first().url,
+          };
+        }
+        try {
+          this.bot.controlHook.send({ embeds: [embed] });
+          this.messageManager.reply(message, 'Bug report sent.', true, true);
+          return this.messageManager.statuses.SUCCESS;
+        } catch (error) {
+          this.logger.error(error);
+          this.messageManager.reply(message, 'Failed to submit bug report', true, true);
+          return this.messageManager.statuses.FAILURE;
+        }
+
       }
       const embed = {
         author: {
@@ -85,8 +99,8 @@ class BugReport extends Command {
           name: `${message.author.username}#${message.author.discriminator}`,
         },
         title: `Bug Report | ${message.author}`,
-        fields: [{ name: '\u200B', value: 'Need to provide a bug report, see `/help` for syntax.' }],
-        footer: { text: 'Add Tobiah#8452 as a friend so he can respond to your bug report' },
+        fields: [{ name: '\u200B', value: `Need to provide a bug report, see \`${prefix}help\` for syntax.` }],
+        footer: { text: 'Add Tobiah#0001 as a friend so he can respond to your bug report' },
       };
       this.messageManager.embed(message, embed, true, false);
       return this.messageManager.statuses.FAILURE;

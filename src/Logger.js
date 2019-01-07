@@ -29,9 +29,6 @@ const levels = [
 levels.forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     let oString;
-    if (typeof message === 'object') {
-      oString = JSON.stringify(message);
-    }
 
     if ((levels.indexOf(level) >= levels.indexOf(logLevel)) && levels.indexOf(level) < 3) {
       if (level.toLowerCase() === 'debug') {
