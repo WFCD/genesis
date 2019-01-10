@@ -13,7 +13,7 @@ class AddBuild extends Command {
    */
   constructor(bot) {
     super(bot, 'builds.set', 'set build', 'Create a temporary room.');
-    this.regex = new RegExp(`^${this.call}(?:\\s?(all|title|body|image)\\s?(.+))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(all|title|body|image)\\s+(.+))?`, 'i');
 
     this.usages = [
       { description: 'Display instructions for creating a new build with Genesis', parameters: [] },

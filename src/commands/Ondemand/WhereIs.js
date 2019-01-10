@@ -48,7 +48,18 @@ class Whereis extends Command {
     try {
       query = query.trim().toLowerCase();
       const queryWReplaces = query.replace(/prime/ig, 'p.').replace(/blueprint/ig, 'bp');
-      const results = await fetch(`${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`).then(data => data.json());
+      let results = await fetch(`${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`).then(data => data.json());
+      results = results.map(result => ({
+        item: result.item,
+        rarity: result.rarity,
+        chance: `${String(parseFloat(result.chance).toFixed(2)).padEnd(5, '0')}%`,
+        place: result.place
+          .replace('Level ', '')
+          .replace('Orb Vallis Bounty', 'Bounty')
+          .replace('Cetus Bounty', 'Bounty')
+          .trim(),
+      }))
+
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       const longestRelic = results.length ? results.map(result => result.place)
