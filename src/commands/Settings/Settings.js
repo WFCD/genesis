@@ -221,9 +221,9 @@ class Settings extends Command {
         const msgs = chunkify({ string: welcome.message });
         msgs.forEach((msg, index) => {
           if (index === 0) {
-            welcomePage.addField(`${welcome.isDm === '1' ? ' DM' : ' Message'} • ${welcome.channel.name}`, `\`\`\`${msg}\`\`\``);
+            welcomePage.addField(`${welcome.isDm === '1' ? ' DM' : ' Message'} • ${welcome.channel ? welcome.channel.name : '#deleted-channel'}`, `\`\`\`${msg}\`\`\``);
           } else {
-            welcome.addField('\u200B', `\`\`\`${msg}\`\`\``);
+            welcomePage.addField('\u200B', `\`\`\`${msg}\`\`\``);
           }
         });
       });
