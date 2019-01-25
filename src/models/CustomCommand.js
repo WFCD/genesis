@@ -30,13 +30,16 @@ class CustomCommand extends Command {
   async run(message, ctx) {
     if (!message.guild || message.guild.id !== this.guildId) return;
     let format;
-    if (ctx['settings.cc.ping']) {
-      const mention = message.mentions.members.size > 0
+    let msg = decodeURIComponent(this.response);
+    const mention = message.mentions.members.size > 0
         ? message.mentions.members.first()
         : message.member;
-      format = `${mention}, ${decodeURIComponent(this.response)}`;
+    if (ctx['settings.cc.ping']) {
+      const hasMtn = msg.indexOf('$mtn') > -1;
+      msg = msg.replace('$mtn', mention)
+      format = hasMtn ? msg : `${mention}, ${msg}`;
     } else {
-      format = decodeURIComponent(this.response);
+      format = decodeURIComponent(this.response).replace('$mtn', `**${mention.displayName}**`);
     }
     this.messageManager.sendMessage(message, format, false, false);
   }
