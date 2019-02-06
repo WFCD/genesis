@@ -32,11 +32,11 @@ class CustomCommand extends Command {
     let format;
     let msg = decodeURIComponent(this.response);
     const mention = message.mentions.members.size > 0
-        ? message.mentions.members.first()
-        : message.member;
+      ? message.mentions.members.first()
+      : message.member;
     if (ctx['settings.cc.ping']) {
       const hasMtn = msg.indexOf('$mtn') > -1;
-      msg = msg.replace('$mtn', mention)
+      msg = msg.replace('$mtn', mention);
       format = hasMtn ? msg : `${mention}, ${msg}`;
     } else {
       format = decodeURIComponent(this.response).replace('$mtn', `**${mention.displayName}**`);
