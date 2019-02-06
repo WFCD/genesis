@@ -125,14 +125,14 @@ class FrameStatsInline extends Command {
       const possibles = [modResult, frameResult, weaponResult, wikiResult];
 
       let sent = false;
-      possibles.forEach(possible => {
+      possibles.forEach((possible) => {
         if (!sent && possible && possible.title.toLowerCase() === strippedQuery.toLowerCase()) {
           sent = true;
           this.messageManager.embed(message, possible, false, true);
         }
       });
 
-      possibles.forEach(possible => {
+      possibles.forEach((possible) => {
         if (!sent && possible) {
           sent = true;
           this.messageManager.embed(message, possible, false, true);

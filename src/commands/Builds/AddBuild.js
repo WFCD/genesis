@@ -20,6 +20,13 @@ class AddBuild extends Command {
 
     this.usages = [
       { description: 'Display instructions for creating a new build with Genesis', parameters: [] },
+      {
+        description: 'Add a build with the provided title, body, and image URL',
+        parameters: ['title', 'body', 'image url'],
+        delimBefore: ' ',
+        delimAfter: ' ',
+        separator: ' | ',
+      },
     ];
 
     this.allowDM = false;

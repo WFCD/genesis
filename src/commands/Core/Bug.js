@@ -35,7 +35,7 @@ class BugReport extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {String} prefix  Prefix to call the bot in this channel with
+   * @param {string} prefix  Prefix to call the bot in this channel with
    * @returns{boolean} success status
    */
   async run(message, { prefix }) {
@@ -91,7 +91,6 @@ class BugReport extends Command {
           this.messageManager.reply(message, 'Failed to submit bug report', true, true);
           return this.messageManager.statuses.FAILURE;
         }
-
       }
       const embed = {
         author: {

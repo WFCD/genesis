@@ -68,7 +68,7 @@ class Database {
       prefix: '/',
       respond_to_settings: true,
       platform: 'pc',
-      language: 'en',
+      language: 'en-US',
       delete_after_respond: true,
       delete_response: true,
       createPrivateChannel: false,
@@ -120,7 +120,7 @@ class Database {
       and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
         'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-        'lfgChannel', 'settings.cc.ping');`;
+        'lfgChannel', 'settings.cc.ping', 'language');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -144,6 +144,11 @@ class Database {
       if (!context.prefix) {
         context.prefix = this.defaults.prefix;
       }
+
+      if (!context.language) {
+        context.language = this.defaults.language;
+      }
+
       if (typeof context.allowCustom === 'undefined') {
         context.allowCustom = this.defaults.allowCustom;
       } else {
@@ -204,6 +209,7 @@ class Database {
       context = {
         platform: this.defaults.platform,
         prefix: this.defaults.prefix,
+        language: this.defaults.language,
         allowCustom: this.defaults.allowCustom === '1',
         allowInline: this.defaults.allowInline === '1',
         defaultRoomsLocked: this.defaults.defaultRoomsLocked === '1',

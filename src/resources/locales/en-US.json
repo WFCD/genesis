@@ -1,0 +1,14 @@
+{
+    "{0} | {1} left": "{0} | {1} left",
+    "{0} {1} on {2} \n level {3} - {4}\n\u200B": "{0} {1} on {2} \n level {3} - {4}\n\u200B",
+    "[{0}] Worldstate - Alerts": "[{0}] Worldstate - Alerts",
+    "[{0}] {1}": "[{0}] {1}",
+    "{0} Credits": "{0} Credits",
+    "{0} {1} on {2}": "{0} {1} on {2}",
+    "{0} {1}": "{0} {1}",
+    "{0} - {1}": "{0} - {1}",
+    "Yes": "Yes",
+    "No": "No",
+    "**Credits:** {0}": "**Credits:** {0}",
+    "{0} remaining • Expires ": "{0} remaining • Expires "
+}

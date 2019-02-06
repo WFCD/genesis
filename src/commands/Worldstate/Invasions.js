@@ -25,10 +25,10 @@ class Invasions extends Command {
     const invasions = ws.invasions.filter(i => !i.completed);
     const pages = [];
     if (compact) {
-      pages.push(new InvasionEmbed(this.bot, invasions, platform));
+      pages.push(new InvasionEmbed(this.bot, invasions, platform, ctx.i18n));
     } else {
       invasions.forEach((invasion) => {
-        pages.push(new InvasionEmbed(this.bot, [invasion], platform));
+        pages.push(new InvasionEmbed(this.bot, [invasion], platform, ctx.i18n));
       });
     }
     const msg = await this.messageManager.embed(message, pages[0], true, false);

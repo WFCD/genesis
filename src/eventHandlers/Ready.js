@@ -105,7 +105,7 @@ class OnReadyHandle extends Handler {
       );
       this.bot.controlHook.send({
         embeds: [{
-          description: `Shard **${this.bot.client.shard.id + 1}/${this.bot.client.shard.count}** ready`,
+          description: `Shard **${this.bot.shardId + 1}/${this.bot.shardCount}** ready`,
           color: 0x2B90EC,
         }],
       });

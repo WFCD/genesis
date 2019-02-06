@@ -3,7 +3,7 @@
 const Command = require('../../models/Command.js');
 const { getChannel, captures } = require('../../CommonFunctions');
 
-const languages = ['en-us'];
+const languages = require('../../resources/locales').map(lang => lang.toLowerCase());
 
 class Language extends Command {
   constructor(bot) {
@@ -17,7 +17,7 @@ class Language extends Command {
 
   async run(message) {
     const language = message.strippedContent.match(this.regex)[1];
-    if (!language || !this.bot.languages.includes(language.toLowerCase())) {
+    if (!language || !languages.includes(language.toLowerCase())) {
       const embed = {
         title: 'Usage',
         type: 'rich',
@@ -25,7 +25,7 @@ class Language extends Command {
         fields: [
           {
             name: `${this.bot.prefix}${this.call} <language>`,
-            value: `Language is one of ${this.bot.languages.join(', ')}`,
+            value: `Language is one of ${languages.join(', ')}`,
           },
         ],
       };
@@ -33,8 +33,14 @@ class Language extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
+    let m = '';
+    languages.forEach((lang) => {
+      if (language.toLowerCase() === lang.toLowerCase()) {
+        m = lang;
+      }
+    });
     const channel = getChannel(channelParam, message);
-    await this.settings.setChannelSetting(channel, 'language', language.toLowerCase());
+    await this.settings.setChannelSetting(channel, 'language', m || language.toLowerCase());
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

@@ -13,8 +13,9 @@ class InvasionEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
+   * @param {Object} i18n - internationalization template function
    */
-  constructor(bot, invasions, platform) {
+  constructor(bot, invasions, platform, i18n) {
     super();
 
     this.color = 0x3498db;
@@ -23,29 +24,29 @@ class InvasionEmbed extends BaseEmbed {
       this.fields = invasions.map((i) => {
         let rewards = i.defenderReward.asString;
         if (!i.vsInfestation) {
-          rewards = `${i.attackerReward.asString} vs ${rewards}`;
+          rewards = i18n`${i.attackerReward.asString} vs ${rewards}`;
         }
         const completion = Math.round(i.completion * 100) / 100;
         return {
-          name: `${rewards} - ${completion > 0 ? completion : 0}%`,
-          value: `${i.desc} on ${i.node} - ETA ${i.eta}`,
+          name: i18n`${rewards} - ${completion > 0 ? completion : 0}%`,
+          value: i18n`${i.desc} on ${i.node} - ETA ${i.eta}`,
         };
       });
-      this.title = `[${platform.toUpperCase()}] Worldstate - Invasions`;
-      this.description = 'Currently in-progress invasions:';
+      this.title = i18n`[${platform.toUpperCase()}] Worldstate - Invasions`;
+      this.description = i18n`Currently in-progress invasions:`;
     } else {
       const i = invasions[0];
       let rewards = i.defenderReward.asString;
       if (!i.vsInfestation) {
-        rewards = `${i.attackerReward.asString} vs ${rewards}`;
+        rewards = i18n`${i.attackerReward.asString} vs ${rewards}`;
       }
       const completion = Math.round(i.completion * 100) / 100;
-      this.title = `[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
+      this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
       this.description = i.desc;
       this.fields = [
-        { name: 'Location', value: i.node, inline: true },
+        { name: i18n`Location`, value: i.node, inline: true },
       ];
-      this.footer.text = `${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining`;
+      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining`;
     }
 
     this.thumbnail = {

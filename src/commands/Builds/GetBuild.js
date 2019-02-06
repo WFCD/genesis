@@ -16,20 +16,26 @@ class GetBuild extends Command {
     this.regex = new RegExp(`^(?:${this.call}|gb)\\s?(.+)?`, 'i');
 
     this.usages = [
-      { description: 'Display information on an existing build from Genesis', parameters: [] },
+      { description: 'Display information on an existing build from Genesis', parameters: ['build id'] },
     ];
   }
 
   async run(message) {
     const buildId = message.strippedContent.match(this.regex)[1];
-    if (buildId.length < 1) {
+    this.logger.debug(buildId);
+    if (!buildId || buildId.length < 1) {
       // let them know it's not a valid build id
       return this.messageManager.statuses.FAILURE;
     }
-    const build = await this.settings.getBuild(buildId);
-    const embed = new BuildEmbed(this.bot, build);
-    this.messageManager.embed(message, embed, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    try {
+      const build = await this.settings.getBuild(buildId);
+      const embed = new BuildEmbed(this.bot, build);
+      this.messageManager.embed(message, embed, true, true);
+      return this.messageManager.statuses.SUCCESS;
+    } catch (e) {
+      this.logger.error(e);
+      return this.messageManager.statuses.FAILURE;
+    }
   }
 }
 

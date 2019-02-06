@@ -17,6 +17,8 @@ class EventHandler {
     this.bot = bot;
     this.logger = bot.logger;
 
+    this.client = bot.client;
+
     /**
      * Array of command objects that can be called
      * @type {Array<BaseEventHandler>}

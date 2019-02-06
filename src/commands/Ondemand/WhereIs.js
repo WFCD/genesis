@@ -58,7 +58,7 @@ class Whereis extends Command {
           .replace('Orb Vallis Bounty', 'Bounty')
           .replace('Cetus Bounty', 'Bounty')
           .trim(),
-      }))
+      }));
 
       const longestName = results.length ? results.map(result => result.item)
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';

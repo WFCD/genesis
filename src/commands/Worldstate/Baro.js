@@ -38,7 +38,7 @@ class Baro extends Command {
       await createPageCollector(msg, pages, message.author);
     }
     if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-      message.delete(10000);
+      message.delete({ timeout: 10000 });
     }
     return this.messageManager.statuses.SUCCESS;
   }

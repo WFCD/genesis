@@ -125,7 +125,7 @@ class MessaageManager {
       if (msg.deletable && deleteAfter > 0) {
         const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
         if (deleteExpired) {
-          msg.delete(deleteAfter);
+          msg.delete({ timeout: deleteAfter });
         }
       }
     }
@@ -214,12 +214,12 @@ class MessaageManager {
     if (call && call.channel) {
       const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond') === '1';
       if (deleteAfterRespond && deleteCall && call.deletable) {
-        call.delete(10000);
+        call.delete({ timeout: 10000 });
       }
     }
     const deleteResponseAfterRespond = await this.settings.getChannelSetting(response.channel, 'delete_response') === '1';
     if (deleteResponseAfterRespond && deleteResponse && response.deletable) {
-      response.delete(30000);
+      response.delete({ timeout: 30000 });
     }
   }
 
@@ -238,7 +238,7 @@ class MessaageManager {
         if (msg.deletable && ctx.deleteAfterDuration > 0) {
           const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
           if (deleteExpired) {
-            msg.delete(ctx.deleteAfterDuration);
+            msg.delete({ timeout: ctx.deleteAfterDuration });
           }
         }
         return msg;

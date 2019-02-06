@@ -13,8 +13,9 @@ class AlertEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Alert>} alerts - The alerts to be included in the embed
    * @param {string} platform - platform
+   * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(bot, alerts, platform) {
+  constructor(bot, alerts, platform, i18n) {
     super();
 
     this.thumbnail = {
@@ -24,27 +25,26 @@ class AlertEmbed extends BaseEmbed {
     // compact
     if (alerts.length > 1) {
       this.fields = alerts.map(a => ({
-        name: `${a.mission.reward.asString} | ${a.eta} left`,
-        value: `${a.mission.faction} ${a.mission.type} on ${a.mission.node}\n`
-        + `level ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
+        name: i18n`${a.mission.reward.asString} | ${a.eta} left`,
+        value: i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}\nlevel ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
       }));
-      this.title = `[${platform.toUpperCase()}] Worldstate - Alerts`;
+      this.title = i18n`[${platform.toUpperCase()}] Worldstate - Alerts`;
     } else { // divided
       const a = alerts[0];
-      this.title = `[${platform.toUpperCase()}] ${a.mission.reward.itemString || `${a.mission.reward.credits} Credits`}`;
+      this.title = i18n`[${platform.toUpperCase()}] ${a.mission.reward.itemString || i18n`${a.mission.reward.credits} Credits`}`;
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;
-      const summary = `${a.mission.faction} ${a.mission.type} on ${a.mission.node}`;
+      const summary = i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}`;
       this.description = a.description;
 
       this.fields = [];
       if (this.description !== summary) {
-        this.fields.push({ name: 'Mission', value: `${a.mission.faction} ${a.mission.type}`, inline: true });
+        this.fields.push({ name: 'Mission', value: i18n`${a.mission.faction} ${a.mission.type}`, inline: true });
         this.fields.push({ name: 'Location', value: a.mission.node, inline: true });
       }
       this.fields.push({ name: 'Levels:', value: `${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`, inline: true });
 
-      this.fields.push({ name: 'Archwing Required', value: a.mission.archwingRequired ? 'Yes' : 'No', inline: true });
+      this.fields.push({ name: 'Archwing Required', value: a.mission.archwingRequired ? i18n`Yes` : i18n`No`, inline: true });
 
       if (this.title.indexOf('Cr') === -1) {
         this.fields.push({ name: '\u200B', value: `**Credits:** ${a.mission.reward.credits}`, inline: true });

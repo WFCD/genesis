@@ -1,6 +1,6 @@
 'use strict';
 
-const { Collection, RichEmbed } = require('discord.js');
+const { Collection, MessageEmbed } = require('discord.js');
 const emoji = require('./resources/emoji.json');
 const welcomes = require('./resources/welcomes.json');
 
@@ -12,6 +12,7 @@ const {
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
 const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
 const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
+const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
 
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
@@ -193,11 +194,13 @@ function getTrackInstructionEmbed(message, prefix, call) {
       },
     ],
   };
-  createGroupedArray(eventTypes, 35).forEach((group, index) => embed.fields.push({
-    name: `**Events${index > 0 ? ' cont\'d.' : ''}:**`,
-    value: group.join(' '),
-    inline: true,
-  }));
+
+  createGroupedArray(eventTypes, 35)
+    .forEach((group, index) => embed.fields.push({
+      name: `**Events${index > 0 ? ' cont\'d.' : ''}:**`,
+      value: group.join(' '),
+      inline: true,
+    }));
 
   embed.fields.push({
     name: '**Rewards:**',
@@ -520,7 +523,7 @@ const createPageCollector = async (msg, pages, author) => {
         break;
     }
     try {
-      await reaction.remove(author.id);
+      await reaction.users.remove(author.id);
     } catch (e) {
       // can't remove
     }
@@ -529,7 +532,7 @@ const createPageCollector = async (msg, pages, author) => {
       const newPage = pages[page - 1];
       const pageInd = `Page ${page}/${pages.length}`;
       if (newPage.footer) {
-        if (newPage instanceof RichEmbed) {
+        if (newPage instanceof MessageEmbed) {
           if (newPage.footer.text.indexOf('Page') === -1) {
             newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.icon_url);
           }
@@ -614,4 +617,5 @@ module.exports = {
   assetBase,
   wikiBase,
   captures,
+  apiCdnBase,
 };

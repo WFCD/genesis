@@ -1,6 +1,6 @@
 'use strict';
 
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
 const { getChannels, createPageCollector, createGroupedArray } = require('../../CommonFunctions');
 
@@ -67,7 +67,7 @@ const embedDefaults = {
 };
 
 const createChunkedEmbed = (stringToChunk, title, breakChar) => {
-  const embed = new RichEmbed(embedDefaults);
+  const embed = new MessageEmbed(embedDefaults);
   embed.setTitle(title);
   const chunks = chunkify({ string: stringToChunk, breakChar }).filter(stringFilter);
   if (chunks.length) {
@@ -86,7 +86,7 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
     const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
     const embeds = [];
     fieldGroups.forEach((fields, index) => {
-      const smEmbed = new RichEmbed(embedDefaults);
+      const smEmbed = new MessageEmbed(embedDefaults);
       embed.setTitle(title);
 
       smEmbed.fields = fields;
@@ -110,7 +110,7 @@ class Settings extends Command {
   }
 
   async composeChannelSettings(channel, message) {
-    const page = new RichEmbed(embedDefaults);
+    const page = new MessageEmbed(embedDefaults);
     const settings = await this.settings.getChannelSettings(channel, [
       'language',
       'platform',
@@ -211,7 +211,7 @@ class Settings extends Command {
 
     if (message.channel.guild) {
       // Welcomes
-      const welcomePage = new RichEmbed(embedDefaults);
+      const welcomePage = new MessageEmbed(embedDefaults);
       const welcomes = await this.settings.getWelcomes(message.guild);
       welcomePage.setTitle('Welcomes');
       if (!welcomes.length) {
@@ -258,7 +258,7 @@ class Settings extends Command {
         this.messageManager.reply(message, 'Can\'t give you settings. Something went wrong.', true, true);
       }
       if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete(10000);
+        message.delete({ timeout: 10000 });
       }
     }
     return this.messageManager.statuses.SUCCESS;

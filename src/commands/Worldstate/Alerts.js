@@ -26,18 +26,18 @@ class Alerts extends Command {
 
     if (compact) {
       await this.messageManager
-        .embed(message, new AlertEmbed(this.bot, alerts, platform), true, true);
+        .embed(message, new AlertEmbed(this.bot, alerts, platform, ctx.i18n), true, true);
     } else {
       const pages = [];
       alerts.forEach((alert) => {
-        pages.push(new AlertEmbed(this.bot, [alert], platform));
+        pages.push(new AlertEmbed(this.bot, [alert], platform, ctx.i18n));
       });
       if (pages.length) {
         const msg = await this.messageManager.embed(message, pages[0], false, false);
         await createPageCollector(msg, pages, message.author);
       }
       if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete(10000);
+        message.delete({ timeout: 10000 });
       }
     }
 

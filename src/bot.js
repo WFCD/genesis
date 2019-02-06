@@ -59,8 +59,8 @@ class Genesis {
       ws: {
         compress: true,
       },
-      shardId,
-      shardCount,
+      shards: shardId,
+      totalShardCount: shardCount,
     });
 
     this.shardId = shardId;

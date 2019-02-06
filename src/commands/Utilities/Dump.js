@@ -1,6 +1,5 @@
 'use strict';
 
-const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 
@@ -25,20 +24,25 @@ class Dump extends Command {
    */
   async run(message) {
     if (message.attachments.first() && message.member.hasPermission('ADMINISTRATOR')) {
-      const firstAttach = message.attachments.first();
-      if (firstAttach.filename.indexOf('.json') === -1) {
+      let firstAttach;
+      try {
+        firstAttach = message.attachments.first();
+      } catch (e) {
+        this.logger.error(e);
+        return this.messageManager.statuses.FAILURE;
+      }
+
+      if (firstAttach.name.indexOf('.json') === -1) {
         return this.messageManager.statuses.FAILURE;
       }
       let channelConfig;
 
       try {
-        const reqRes = await fetch(firstAttach.url).then(data => data.json());
-
-        channelConfig = JSON.parse(reqRes);
+        channelConfig = await fetch(firstAttach.url).then(data => data.json());
       } catch (e) {
         message.reply('Couldn\'t get file.');
         this.logger.error(e);
-        message.delete(30);
+        message.delete({ timeout: 30000 });
         return this.messageManager.statuses.FAILURE;
       }
 
@@ -49,16 +53,19 @@ class Dump extends Command {
             .get(channelConfig.target.channel || message.channel.id);
           if (!(message.guild && message.guild.channels.has(target.id))) {
             message.reply('Channel Not Accessible');
-            message.delete(30);
+            message.delete({ timeout: 30000 });
             return this.messageManager.statuses.FAILURE;
           }
-          if (channelConfig.target.webhook
+          this.logger.debug(`has config: ${channelConfig.target.webhook
             && channelConfig.target.webhook.id
-            && channelConfig.target.webhook.token) {
-            target = new Discord.WebhookClient(
-              channelConfig.target.webhook.id,
-              channelConfig.target.webhook.token,
-            );
+            && channelConfig.target.webhook.token}`);
+          if (channelConfig.target.webhook
+            && channelConfig.target.webhook.id) {
+            const wh = (await target.fetchWebhooks()).get(channelConfig.target.webhook.id);
+            this.logger.debug(Object.keys(wh));
+            if (wh.guildID === target.guild.id) {
+              target = wh;
+            }
           }
 
           if (channelConfig.cleanFirst) {
@@ -88,10 +95,10 @@ class Dump extends Command {
       } catch (e) {
         this.logger.error(e.message);
         message.reply('Bad File');
-        message.delete(30);
+        message.delete({ timeout: 30000 });
         return this.messageManager.statuses.FAILURE;
       }
-      message.delete(30);
+      message.delete({ timeout: 30000 });
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.FAILURE;

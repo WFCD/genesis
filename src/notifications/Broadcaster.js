@@ -88,6 +88,7 @@ class Broadcaster {
     const prepend = await this.settings
       .getPing(channel.guild, (items || []).concat([type]));
     const ctx = await this.settings.getCommandContext(channel);
+    if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) return false;
     ctx.deleteAfterDuration = deleteAfter;
     let roles = [];
     if (prepend && prepend.length) {
