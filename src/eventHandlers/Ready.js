@@ -67,7 +67,7 @@ async function updatePresence(self) {
       self.client.user.setPresence({
         status: 'online',
         afk: false,
-        game: {
+        activity: {
           name: final,
           type: 'WATCHING',
         },
@@ -114,7 +114,7 @@ class OnReadyHandle extends Handler {
     this.client.user.setPresence({
       status: 'online',
       afk: false,
-      game: {
+      activity: {
         name: `@${this.client.user.username} help`,
         url: 'https://genesis.warframestat.us',
       },
