@@ -186,24 +186,6 @@ class Create extends Command {
               permissionOverwrites: overwrites,
             });
 
-            // if (!isPublic) {
-            //   // manually add overwrites for "everyone"
-            //   await category.overwritePermissions(message.guild.defaultRole.id, {
-            //     CONNECT: false,
-            //     VIEW_CHANNEL: shown,
-            //   });
-            //   if (useText) {
-            //     await textChannel.overwritePermissions(message.guild.defaultRole.id, {
-            //       CONNECT: false,
-            //       VIEW_CHANNEL: shown,
-            //     });
-            //   }
-            //   await voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
-            //     CONNECT: false,
-            //     VIEW_CHANNEL: shown,
-            //   });
-            // }
-
             // add channel to listenedChannels
             await this.settings
               .addPrivateRoom(
