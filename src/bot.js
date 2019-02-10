@@ -10,6 +10,8 @@ const Notifier = require('./notifications/Notifier.js');
 const Tracker = require('./Tracker.js');
 const WorldStateCache = require('./WorldStateCache.js');
 
+const unlog = ['WS_CONNECTION_TIMEOUT'];
+
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
  * @typedef {Object.<string>} MarkdownSettings
@@ -49,6 +51,7 @@ class Genesis {
     controlHook = null,
     commandManifest = null,
   } = {}) {
+    logger.debug(`${shardId} (${shardCount})`);
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -61,6 +64,7 @@ class Genesis {
       },
       shards: shardId,
       totalShardCount: shardCount,
+      retryLimit: 2,
     });
 
     this.shardId = shardId;
@@ -224,15 +228,17 @@ class Genesis {
     await this.eventHandler.loadHandles();
 
     this.setupHandlers();
-    const t = await this.client.login(this.token);
-    this.logger.debug(`Logged in with token ${t}`);
-
     try {
+      const t = await this.client.login(this.token);
+      this.logger.debug(`Logged in with token ${t}`);
       await this.notifier.start();
     } catch (err) {
-      this.logger.error(err);
+      const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
+      if (!unlog.includes(type)) {
+        this.logger.error(err);
+      }
       this.logger.fatal(err);
-      process.exit(0);
+      process.exit(1);
     }
   }
 }

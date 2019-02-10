@@ -98,6 +98,7 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
+    this.logger.info(`[Shard ${this.bot.shardId}] READY`);
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
         this.bot.client.user.username,
