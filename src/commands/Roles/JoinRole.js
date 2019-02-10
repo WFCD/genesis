@@ -65,8 +65,8 @@ class JoinRole extends Command {
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
 
-    const botIsHigher = message.guild.members.get(this.bot.client.user.id)
-      .highestRole.comparePositionTo(message.guild.roles.get(role.id));
+    const botIsHigher = message.guild.me
+      .roles.highest.comparePositionTo(message.guild.roles.get(role.id));
 
     const botHasPerm = message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
 

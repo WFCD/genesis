@@ -61,8 +61,7 @@ class AddRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     let role = getRoleForString(stringRole, message);
-    if (create && message.guild.members
-      .get(this.bot.client.user.id).hasPermission('MANAGE_ROLES')) {
+    if (create && message.guild.me.hasPermission('MANAGE_ROLES')) {
       role = await message.guild.createRole({
         name: stringRole,
         permissions: 0,
