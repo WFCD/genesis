@@ -9,7 +9,7 @@ let guildCheck = null; // I don't know where to put this
  * @param {Bot} self the bot
  */
 async function guildLeave(self) {
-  const [results] = await self.settings.getGuildRatios(self.bot.shardClient);
+  const [results] = await self.settings.getGuildRatios(self.bot.shardClient) || [];
   const guilds = results.slice(0, 5);
   const owners = {};
   try {

@@ -12,6 +12,7 @@ class RatioQueries {
   }
 
   getGuildRatios(shard) {
+    if (!shard) return undefined;
     return this.db.query(SQL`SELECT * FROM guild_ratio WHERE shard_id = ${shard.id};`);
   }
 
