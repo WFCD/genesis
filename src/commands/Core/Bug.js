@@ -46,7 +46,7 @@ class BugReport extends Command {
         const params = bugReport.split('|');
         const embed = {
           author: {
-            icon_url: message.author.avatarURL,
+            icon_url: message.author.displayAvatarURL(),
             name: `${message.author.username}#${message.author.discriminator}`,
           },
           color: 0xf4425f,
@@ -94,7 +94,7 @@ class BugReport extends Command {
       }
       const embed = {
         author: {
-          icon_url: message.author.avatarURL,
+          icon_url: message.author.displayAvatarURL(),
           name: `${message.author.username}#${message.author.discriminator}`,
         },
         title: `Bug Report | ${message.author}`,

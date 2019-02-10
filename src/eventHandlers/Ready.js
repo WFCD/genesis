@@ -102,7 +102,7 @@ class OnReadyHandle extends Handler {
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
         this.bot.client.user.username,
-        this.bot.client.user.displayAvatarURL,
+        this.bot.client.user.displayAvatarURL(),
       );
       this.bot.controlHook.send({
         embeds: [{

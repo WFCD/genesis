@@ -37,7 +37,7 @@ async function guildLeave(self) {
           ${self.client.user.username} will now leave.
           If you want to keep using Genesis please invite more people or kick some bots.`);
         } catch (e) {
-          this.logger.error(e);
+          // swallow, it's not an important error
         }
       }
       owners[id].guilds.forEach((guild) => {
