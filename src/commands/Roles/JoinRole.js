@@ -83,7 +83,7 @@ class JoinRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     if (roleAddable) {
-      await message.member.addRole(role.id);
+      await message.member.roles.add(role.id);
       await this.sendJoined(message, role);
       return this.messageManager.statuses.SUCCESS;
     }

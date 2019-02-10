@@ -82,7 +82,7 @@ class LeaveRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     if (roleRemoveable && filteredRoles[0].leaveable) {
-      await message.member.removeRole(role.id);
+      await message.member.roles.remove(role.id);
       await this.sendLeft(message, role);
       return this.messageManager.statuses.SUCCESS;
     }
