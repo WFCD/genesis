@@ -503,7 +503,7 @@ const createPageCollector = async (msg, pages, author) => {
   await msg.react('▶');
   await msg.react('⏭');
   const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
-  setTimeout(() => { msg.clearReactions(); }, 601000);
+  setTimeout(() => { msg.reactions.removeAll(); }, 601000);
 
   collector.on('collect', async (reaction) => {
     switch (reaction.emoji.name) {
