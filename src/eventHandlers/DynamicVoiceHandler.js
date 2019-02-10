@@ -40,7 +40,7 @@ const clone = async (template, settings) => {
 
   const newChannel = await template.clone({
     name,
-    position: template.position + 1,
+    position: template.rawPosition + 1,
   });
   return newChannel;
 };
