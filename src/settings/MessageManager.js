@@ -265,7 +265,7 @@ class MessaageManager {
       }
       this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
       webhook.name = this.client.user.username;
-      webhook.avatar = this.client.user.displayAvatarURL.replace('?size=2048', '');
+      webhook.avatar = this.client.user.displayAvatarURL().replace('?size=2048', '');
       // Make this one query
       await this.settings.setChannelWebhook(ctx.channel, webhook);
       // eslint-disable-next-line no-param-reassign
