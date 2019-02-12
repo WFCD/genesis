@@ -2,7 +2,7 @@
 
 const { MessageEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
-const { getChannels, createPageCollector, createGroupedArray } = require('../../CommonFunctions');
+const { getChannels, setupPages, createGroupedArray } = require('../../CommonFunctions');
 
 const negate = '✘';
 const affirm = '✓';
@@ -251,14 +251,10 @@ class Settings extends Command {
             await this.messageManager.embed(message, page, false, false);
           });
         } else {
-          const msg = await this.messageManager.embed(message, pages[0], false, false);
-          await createPageCollector(msg, pages, message.author);
+          await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         }
       } else {
         this.messageManager.reply(message, 'Can\'t give you settings. Something went wrong.', true, true);
-      }
-      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete({ timeout: 10000 });
       }
     }
     return this.messageManager.statuses.SUCCESS;

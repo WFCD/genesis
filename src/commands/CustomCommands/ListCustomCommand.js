@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
+const { createGroupedArray, setupPages } = require('../../CommonFunctions.js');
 
 class ListCustomCommand extends Command {
   constructor(bot) {
@@ -27,8 +27,7 @@ class ListCustomCommand extends Command {
       pages.push({ color: 0x301934, fields: metaGroup, title: 'Custom Commands' });
     });
     if (pages.length) {
-      const msg = await this.messageManager.embed(message, pages[0], false, false);
-      await createPageCollector(msg, pages, message.author);
+      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     } else {
       await this.messageManager.embed(message, { color: 0x301934, description: 'No Custom Commands', title: 'Custom Commands' }, true, true);
     }

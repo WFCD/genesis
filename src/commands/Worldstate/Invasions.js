@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const InvasionEmbed = require('../../embeds/InvasionEmbed.js');
-const { createPageCollector, captures } = require('../../CommonFunctions');
+const { setupPages, captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -31,8 +31,7 @@ class Invasions extends Command {
         pages.push(new InvasionEmbed(this.bot, [invasion], platform, ctx.i18n));
       });
     }
-    const msg = await this.messageManager.embed(message, pages[0], true, false);
-    createPageCollector(msg, pages, message.author);
+    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 }

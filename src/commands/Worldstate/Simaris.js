@@ -5,7 +5,7 @@ const Command = require('../../models/Command.js');
 const SimarisEmbed = require('../../embeds/SimarisEmbed.js');
 const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
-const { createPageCollector, captures } = require('../../CommonFunctions');
+const { setupPages, captures } = require('../../CommonFunctions');
 
 /**
  * Displays the current simaris target
@@ -71,13 +71,7 @@ class Simaris extends Command {
       results.forEach((result) => {
         pages.push(new SynthesisTargetEmbed(this.bot, [result], query));
       });
-      if (pages.length) {
-        const msg = await this.messageManager.embed(message, pages[0], false, false);
-        await createPageCollector(msg, pages, message.author);
-      }
-      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete({ timeout: 10000 });
-      }
+      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     }
   }
 

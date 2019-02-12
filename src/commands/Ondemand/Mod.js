@@ -6,7 +6,7 @@ const Command = require('../../models/Command.js');
 const BaseEmbed = require('../../embeds/BaseEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
 // eslint-disable-next-line object-curly-newline
-const { createPageCollector, apiBase, createGroupedArray, emojify } = require('../../CommonFunctions');
+const { setupPages, apiBase, createGroupedArray, emojify } = require('../../CommonFunctions');
 
 class ModEmbed extends BaseEmbed {
   constructor(bot, modData, query) {
@@ -87,8 +87,7 @@ class Mod extends Command {
           }
         });
 
-        const msg = await this.messageManager.embed(message, pages[0], true, false);
-        await createPageCollector(msg, pages, message.author);
+        await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
       }
       this.messageManager.reply(message, this.noResultStr, true, false);

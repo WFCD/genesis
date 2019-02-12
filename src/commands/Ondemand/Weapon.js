@@ -5,7 +5,7 @@ const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
-const { createPageCollector, apiBase, createGroupedArray } = require('../../CommonFunctions');
+const { setupPages, apiBase, createGroupedArray } = require('../../CommonFunctions');
 
 
 /**
@@ -53,8 +53,7 @@ class WeaponStats extends Command {
             }
           });
 
-          const msg = await this.messageManager.embed(message, pages[0], true, false);
-          await createPageCollector(msg, pages, message.author);
+          await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
           return this.messageManager.statuses.SUCCESS;
         }
         this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);

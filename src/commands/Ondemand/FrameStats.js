@@ -6,7 +6,7 @@ const Command = require('../../models/Command.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
-const { apiBase, createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+const { apiBase, createGroupedArray, setupPages } = require('../../CommonFunctions');
 
 /**
  * Displays the stats for a warframe
@@ -54,8 +54,7 @@ class FrameStats extends Command {
           }
         });
 
-        const msg = await this.messageManager.embed(message, pages[0], true, false);
-        await createPageCollector(msg, pages, message.author);
+        await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
       }
       const frames = await fetch(`${apiBase}/warframes`).then(data => data.json());

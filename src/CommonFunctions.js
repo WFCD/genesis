@@ -500,10 +500,11 @@ const createPageCollector = async (msg, pages, author) => {
   let page = 1;
   await msg.react('⏮');
   await msg.react('◀');
+  await msg.react('⏹');
   await msg.react('▶');
   await msg.react('⏭');
-  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
-  setTimeout(() => { msg.reactions.removeAll(); }, 601000);
+  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '⏹'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+  const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
 
   collector.on('collect', async (reaction) => {
     switch (reaction.emoji.name) {
@@ -519,6 +520,10 @@ const createPageCollector = async (msg, pages, author) => {
       case '⏭':
         page = pages.length;
         break;
+      case '⏹':
+        msg.reactions.removeAll();
+        clearTimeout(timeout);
+        return;
       default:
         break;
     }
@@ -553,6 +558,16 @@ const createPageCollector = async (msg, pages, author) => {
       page = pages.length;
     }
   });
+};
+
+const setupPages = async (pages, { message, settings, mm }) => {
+  if (pages.length) {
+    const msg = await mm.embed(message, pages[0], false, false);
+    await createPageCollector(msg, pages, message.author);
+  }
+  if (parseInt(await settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+    message.delete({ timeout: 10000 });
+  }
 };
 
 const safeGetEntry = (entry) => {
@@ -610,6 +625,7 @@ module.exports = {
   getRandomWelcome,
   resolveRoles,
   resolvePool,
+  setupPages,
   createPageCollector,
   csvToCodes,
   determineTweetType,

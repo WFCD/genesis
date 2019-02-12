@@ -2,7 +2,7 @@
 
 const rpad = require('right-pad');
 const Command = require('../../models/Command.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
+const { createGroupedArray, setupPages } = require('../../CommonFunctions.js');
 
 /**
  * Add a joinable role
@@ -45,8 +45,7 @@ class Roles extends Command {
         })),
       });
     });
-    const msg = await this.messageManager.embed(message, embeds[0], true, false);
-    await createPageCollector(msg, embeds, message.author);
+    await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 }

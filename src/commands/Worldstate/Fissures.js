@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const FissureEmbed = require('../../embeds/FissureEmbed.js');
-const { createPageCollector, captures } = require('../../CommonFunctions');
+const { setupPages, captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -32,8 +32,7 @@ class Fissures extends Command {
         pages.push(new FissureEmbed(this.bot, [fissure], platform));
       });
     }
-    const msg = await this.messageManager.embed(message, pages[0], true, false);
-    createPageCollector(msg, pages, message.author);
+    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 }
