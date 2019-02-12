@@ -43,8 +43,8 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-async function getThumbnailForItem(query) {
-  if (query) {
+async function getThumbnailForItem(query, fWiki) {
+  if (query && !fWiki) {
     const fq = query
       .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
       .trim().toLowerCase();
@@ -345,7 +345,7 @@ class Notifier {
   async sendSortie(newSortie, platform) {
     const embed = new SortieEmbed(this.bot, newSortie, platform);
     try {
-      const thumb = await getThumbnailForItem(newSortie.boss);
+      const thumb = await getThumbnailForItem(newSortie.boss, true);
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
