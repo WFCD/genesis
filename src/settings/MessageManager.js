@@ -229,7 +229,7 @@ class MessaageManager {
       try {
         const embedCopy = Object.assign({}, embed);
         if (ctx.webhook.avatar) {
-          embedCopy.displayAvatarURL = ctx.webhook.avatar;
+          embedCopy.avatarURL = ctx.webhook.avatar;
         }
         if (ctx.webhook.name) {
           embedCopy.username = ctx.webhook.name;
