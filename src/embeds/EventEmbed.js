@@ -40,9 +40,17 @@ class EventEmbed extends BaseEmbed {
             .rewards.map(reward => reward.asString).join('; ') : 'No Rewards',
         });
       }
-      if (event.maximumScore) {
-        this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
+      if (event.maximumScore && event.currentScore) {
+        this.fields.push({ name: 'Progress', value: `${Number(parseFloat(event.currentScore) / parseFloat(event.maximumScore)).toFixed(2)}%` });
+      } else {
+        if (event.maximumScore) {
+          this.fields.push({ name: 'Completion Score', value: String(event.maximumScore) });
+        }
+        if (event.currentScore) {
+          this.fields.push({ name: 'Current Score', value: String(event.currentScore) });
+        }
       }
+
       if (event.affiliatedWith) {
         const jobString = event.jobs.map((job) => {
           const rewards = job.rewardPool.length > 0 ? job.rewardPool.map(reward => `* ${reward}`).join('\n') : 'No Clear Reward';
