@@ -27,6 +27,7 @@ class PollInline extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @returns {string} status for message manager.
    */
   async run(message) {
     if (message.channel.permissionsFor(this.bot.client.user.id)
@@ -45,8 +46,8 @@ class PollInline extends Command {
       await message.react('👍');
       await message.react('👎');
       await message.react('🤷');
-      return this.messageManager.statuses.NO_ACCESS;
     }
+    return this.messageManager.statuses.NO_ACCESS;
   }
 }
 
