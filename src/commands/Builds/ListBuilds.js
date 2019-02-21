@@ -26,7 +26,7 @@ class ListBuilds extends Command {
     const useAll = message.strippedContent.match(this.regex)[1] === 'all' && this.bot.owner === message.author.id;
     const builds = await this.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
-      const buildGroups = createGroupedArray(builds, 15);
+      const buildGroups = createGroupedArray(builds, 10);
       const titleLen = (builds.length ? builds.map(result => result.title.trim())
         .reduce((a, b) => (a.length > b.length ? a : b)) : '').length;
 

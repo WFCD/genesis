@@ -31,7 +31,7 @@ class GetBuild extends Command {
     try {
       const results = await this.settings.getBuildSearch(query);
       if (results.length > 1) {
-        const buildGroups = createGroupedArray(results, 15);
+        const buildGroups = createGroupedArray(results, 10);
         const titleLen = (results.length ? results.map(result => result.title.trim())
           .reduce((a, b) => (a.length > b.length ? a : b)) : '').length;
 
