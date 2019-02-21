@@ -32,7 +32,7 @@ class ListBuilds extends Command {
 
       const tokens = buildGroups.map(buildGroup => ({
         name: '\u200B',
-        value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n')
+        value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n'),
       }));
 
       const tokenGroups = createGroupedArray(tokens, 5);

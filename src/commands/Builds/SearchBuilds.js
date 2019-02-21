@@ -37,7 +37,7 @@ class GetBuild extends Command {
 
         const tokens = buildGroups.map(buildGroup => ({
           name: '\u200B',
-          value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n')
+          value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n'),
         }));
 
         const tokenGroups = createGroupedArray(tokens, 5);
@@ -57,7 +57,7 @@ class GetBuild extends Command {
 
         await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
-      } else if (results.length === 1) {
+      } if (results.length === 1) {
         const build = results[0];
         const embed = new BuildEmbed(this.bot, build);
         this.messageManager.embed(message, embed, true, true);

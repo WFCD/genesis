@@ -15,7 +15,7 @@ class BuildEmbed extends BaseEmbed {
     const sections = build.body.split(';');
     this.color = 0xF1C40F;
     this.title = build.title;
-    this.fields = []
+    this.fields = [];
     sections.forEach((section, index) => {
       if (index === 0) {
         this.description = section;

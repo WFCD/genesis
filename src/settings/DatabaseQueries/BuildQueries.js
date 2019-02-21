@@ -58,7 +58,7 @@ class BuildQueries {
       const res = await this.db.query(query);
       const builds = [];
       if (res[0]) {
-        res[0].forEach(result => {
+        res[0].forEach((result) => {
           builds.push({
             title: result.title,
             body: result.body,
