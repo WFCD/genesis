@@ -12,7 +12,7 @@ class GetBuild extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.get', 'get build', 'Create a temporary room.');
+    super(bot, 'builds.get', 'get build', 'Get a build.');
     this.regex = new RegExp(`^(?:${this.call}|gb)\\s?(.+)?`, 'i');
 
     this.usages = [
@@ -24,7 +24,6 @@ class GetBuild extends Command {
     const buildId = message.strippedContent.match(this.regex)[1];
     this.logger.debug(buildId);
     if (!buildId || buildId.length < 1) {
-      // let them know it's not a valid build id
       return this.messageManager.statuses.FAILURE;
     }
     try {
@@ -34,8 +33,8 @@ class GetBuild extends Command {
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      return this.messageManager.statuses.FAILURE;
     }
+    return this.messageManager.statuses.FAILURE;
   }
 }
 

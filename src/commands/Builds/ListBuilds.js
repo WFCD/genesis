@@ -1,7 +1,9 @@
 'use strict';
 
+const rpad = require('right-pad');
+
 const Command = require('../../models/Command.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
+const { createGroupedArray, setupPages } = require('../../CommonFunctions.js');
 
 /**
  * Create temporary voice/text channels (can be expanded in the future)
@@ -25,19 +27,25 @@ class ListBuilds extends Command {
     const builds = await this.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
       const buildGroups = createGroupedArray(builds, 15);
-      const tokens = buildGroups.map(buildGroup => ({ name: '\u200B', value: buildGroup.map(build => `\`${build.id} | ${build.title} | Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n') }));
+      const titleLen = (builds.length ? builds.map(result => result.title.trim())
+        .reduce((a, b) => (a.length > b.length ? a : b)) : '').length;
+
+      const tokens = buildGroups.map(buildGroup => ({
+        name: '\u200B',
+        value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n')
+      }));
+
       const tokenGroups = createGroupedArray(tokens, 5);
       const embeds = [];
       tokenGroups.forEach((tokenGroup) => {
         const fields = tokenGroup;
-        fields[0].value = `\`Build ID | Title | Owner\`\n${tokenGroup[0].value}`;
+        fields[0].value = `\`Build ID | ${rpad('Title', titleLen, '\u2003')} | Owner\`\n${tokenGroup[0].value}`;
         embeds.push({
           color: 0xcda2a3,
           fields,
         });
       });
-      const msg = await this.messageManager.embed(message, embeds[0], true, false);
-      await createPageCollector(msg, embeds, message.author);
+      await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
     await this.messageManager.embed(message, { color: 0xcda2a3, title: 'No builds for user' }, true, true);
