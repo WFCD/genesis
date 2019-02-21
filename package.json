@@ -13,7 +13,8 @@
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git pull && npm i && npm restart || npm start",
     "lint": "npx eslint main.js src/",
-    "lint:fix": "npx eslint main.js src/ --fix"
+    "lint:fix": "npx eslint main.js src/ --fix",
+    "setup:hooks": "ln -s scripts/git-hooks/pre-commit.sh .git/hooks/pre-commit"
   },
   "repository": {
     "type": "git",
