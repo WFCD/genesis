@@ -63,12 +63,12 @@ class CommandHandler extends Handler {
     let { content } = message;
     let botping;
     if (message.guild) {
-      if (message.guild.members.has(this.bot.client.user.id)) {
-        botping = `@${message.guild.members.get(this.bot.client.user.id).displayName}`;
+      if (message.guild.members.me) {
+        botping = `@${message.guild.me.displayName}`;
       }
     }
     if (typeof botping === 'undefined') {
-      botping = `@${await message.guild.members.get(this.bot.client.user.id).displayName}`;
+      botping = `@${message.guild ? message.guild.me.displayName : this.bot.client.user.username}`;
     }
     const botPingId = `<@${this.bot.client.user.id}>`;
     const botNickPing = `<@!${this.bot.client.user.id}>`;
