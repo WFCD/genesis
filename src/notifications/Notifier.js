@@ -19,6 +19,7 @@ const SyndicateEmbed = require('../embeds/SyndicateEmbed');
 const VoidTraderEmbed = require('../embeds/VoidTraderEmbed');
 const EarthCycleEmbed = require('../embeds/EarthCycleEmbed');
 const SolarisEmbed = require('../embeds/SolarisEmbed');
+const NightwaveEmbed = require('../embeds/NightwaveEmbed');
 
 const { createGroupedArray, apiBase, apiCdnBase } = require('../CommonFunctions');
 
@@ -139,6 +140,8 @@ class Notifier {
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
+    const nightwave = newData.nightwave
+      && !ids.includes(newData.nightwave.id) && newData.nightwave.active ? newData.nightwave : undefined;
 
     // Concat all notified ids
     notifiedIds = notifiedIds
@@ -157,7 +160,9 @@ class Notifier {
       .concat([newData.cetusCycle.id])
       .concat([newData.earthCycle.id])
       .concat([newData.vallisCycle.id])
-      .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : []);
+      .concat([newData.nightwave ? newData.nightwave.id : undefined])
+      .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : [])
+      .filter(id => id);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -198,6 +203,7 @@ class Notifier {
     await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
     this.sendUpdates(updatesToNotify, platform);
     await this.sendAlerts(alertsToNotify, platform);
+    await this.sendNightwave(nightwave, platform);
   }
 
   /**
@@ -223,6 +229,16 @@ class Notifier {
       this.bot,
       [a], platform,
     ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`, null, 3600000)));
+  }
+
+  async sendNightwave(nightwave, platform) {
+    if (!nightwave) return;
+    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+      const embed = new NightwaveEmbed(this.bot, nightwave, platform, i18n);
+      embed.locale = locale;
+      // Broadcast even if the thumbnail fails to fetch
+      await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
+    });
   }
 
   async sendAlerts(newAlerts, platform) {
