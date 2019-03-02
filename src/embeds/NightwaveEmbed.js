@@ -3,6 +3,8 @@
 const BaseEmbed = require('./BaseEmbed.js');
 const { timeDeltaToString } = require('../CommonFunctions');
 
+const chString = (challenge) => `:white_small_square: **${challenge.title}** _(${challenge.reputation})_\n\u2003\t❯ ${challenge.desc}`;
+
 /**
  * Generates alert embeds
  */
@@ -33,7 +35,7 @@ class NightwaveEmbed extends BaseEmbed {
       name: i18n`Daily`,
       value: nightwave.activeChallenges
         .filter(challenge => challenge.isDaily)
-        .map(challenge => `:white_small_square: ${challenge.desc}`)
+        .map(chString)
         .join('\n'),
       inline: true,
     });
@@ -42,7 +44,7 @@ class NightwaveEmbed extends BaseEmbed {
       name: i18n`Weekly`,
       value: nightwave.activeChallenges
         .filter(challenge => !challenge.isDaily)
-        .map(challenge => `:white_small_square: ${challenge.desc}`)
+        .map(chString)
         .join('\n'),
       inline: true,
     });
