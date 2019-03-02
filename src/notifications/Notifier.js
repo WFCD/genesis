@@ -141,7 +141,8 @@ class Notifier {
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
     const nightwave = newData.nightwave
-      && !ids.includes(newData.nightwave.id) && newData.nightwave.active ? newData.nightwave : undefined;
+      && !ids.includes(newData.nightwave.id)
+      && newData.nightwave.active ? newData.nightwave : undefined;
 
     // Concat all notified ids
     notifiedIds = notifiedIds

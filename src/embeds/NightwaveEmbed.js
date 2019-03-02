@@ -21,6 +21,7 @@ class NightwaveEmbed extends BaseEmbed {
     };
     this.color = 0x663333;
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Nightwave`;
+    this.description = i18n`Season ${nightwave.season + 1} • Phase ${nightwave.phase + 1}`;
     this.fields = [];
     this.fields.push({
       name: i18n`Currently Active`,
@@ -35,7 +36,7 @@ class NightwaveEmbed extends BaseEmbed {
         .map(challenge => `:white_small_square: ${challenge.desc}`)
         .join('\n'),
       inline: true,
-    })
+    });
 
     this.fields.push({
       name: i18n`Weekly`,

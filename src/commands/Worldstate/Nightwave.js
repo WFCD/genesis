@@ -21,7 +21,7 @@ class Nightwave extends Command {
     const platformParam = message.strippedContent.match(new RegExp(captures.platforms, 'ig'));
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const nightwave = ws.nightwave;
+    const { nightwave } = ws;
     await this.messageManager
       .embed(message, new NightwaveEmbed(this.bot, nightwave, platform, ctx.i18n), true, true);
 
