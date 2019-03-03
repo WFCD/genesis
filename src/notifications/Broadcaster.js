@@ -104,7 +104,7 @@ class Broadcaster {
       { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
     );
 
-    if (prepend && prepend.length && roles.length) {
+    if (roles.length) {
       await makePingsUnmentionable(roles);
     }
     return true;

@@ -3,72 +3,84 @@
     "key": "arbiters",
     "display": "Arbiters of Hexis",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "suda",
     "display": "Cephalon Suda",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "loka",
     "display": "New Loka",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "perrin",
     "display": "Perrin Sequence",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "veil",
     "display": "Red Veil",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "meridian",
     "display": "Steel Meridian",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "ostrons",
     "display": "Ostrons",
     "prefix": true,
-    "timeout": 0
+    "timeout": 0,
+    "notifiable": "true"
   },
   {
     "key": "assassins",
-    "display": "Ostrons",
+    "display": "Assassins",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "quills",
     "display": "Quills",
     "prefix": true,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "solaris",
     "display": "Solaris United",
     "prefix": false,
-    "timeout": 0
+    "timeout": 0,
+    "notifiable": "true"
   },
   {
     "key": "vox",
     "display": "Vox Solaris",
     "prefix": false,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "true"
   },
   {
     "key": "all",
     "display": "all",
     "prefix": false,
-    "timeout": 86400000
+    "timeout": 86400000,
+    "notifiable": "false"
   }
 ]

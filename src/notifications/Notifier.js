@@ -140,9 +140,16 @@ class Notifier {
     const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
-    const nightwave = newData.nightwave && newData.nightwave.id
-      && !ids.includes(newData.nightwave.id)
-      && newData.nightwave.active ? newData.nightwave : undefined;
+
+    const nWaveChallenges = newData.nightwave.activeChallenges
+      .filter(challenge => !ids.includes(challenge.id) && challenge.active && challenge.id && challenge.desc.indexOf('[PH]' !== -1));
+    const nWaveIds = newData.nightwave.activeChallenges
+      .filter(challenge => challenge.active && challenge.id && challenge.desc.indexOf('[PH]' !== -1))
+      .map(challenge => challenge.id);
+    const nightwave = nWaveChallenges.length ? Object.assign({}, newData.nightwave) : undefined;
+    if (nightwave) {
+      nightwave.activeChallenges = nWaveChallenges;
+    }
 
     // Concat all notified ids
     notifiedIds = notifiedIds
@@ -161,9 +168,8 @@ class Notifier {
       .concat([newData.cetusCycle.id])
       .concat([newData.earthCycle.id])
       .concat([newData.vallisCycle.id])
-      .concat([newData.nightwave ? newData.nightwave.id : undefined])
       .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : [])
-      .filter(id => id);
+      .concat(nWaveIds);
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
@@ -235,10 +241,19 @@ class Notifier {
   async sendNightwave(nightwave, platform) {
     if (!nightwave) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      const embed = new NightwaveEmbed(this.bot, nightwave, platform, i18n);
-      embed.locale = locale;
-      // Broadcast even if the thumbnail fails to fetch
-      await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
+      if (nightwave.activeChallenges.length > 1) {
+        nightwave.activeChallenges.forEach(async (challenge) => {
+          const nwCopy = Object.assign({}, nightwave);
+          nwCopy.activeChallenges = [challenge];
+          const embed = new NightwaveEmbed(this.bot, nwCopy, platform, i18n);
+          embed.locale = locale;
+          await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(challenge.expiry));
+        });
+      } else {
+        const embed = new NightwaveEmbed(this.bot, nightwave, platform, i18n);
+        embed.locale = locale;
+        await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
+      }
     });
   }
 
@@ -381,10 +396,12 @@ class Notifier {
 
   async sendSyndicates(newSyndicates, platform) {
     for (const {
-      key, display, prefix, timeout,
+      key, display, prefix, timeout, notifiable,
     } of syndicates) {
-      const embed = new SyndicateEmbed(this.bot, newSyndicates, display, platform);
-      await this.checkAndSendSyndicate(embed, `${prefix ? 'syndicate.' : ''}${key}`, timeout || fromNow(newSyndicates[0].expiry), platform);
+      if (notifiable) {
+        const embed = new SyndicateEmbed(this.bot, newSyndicates, display, platform);
+        await this.checkAndSendSyndicate(embed, `${prefix ? 'syndicate.' : ''}${key}`, timeout || fromNow(newSyndicates[0].expiry), platform);
+      }
     }
   }
 
