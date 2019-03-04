@@ -18,6 +18,7 @@
   "{0} remaining • Expires ": "{0} remaining • Expires ",
   "Daily": "Daily",
   "Weekly": "Weekly",
+  "Weekly, ctd.": "Weekly, ctd.",
   "Currently Active": "# Currently Active",
   "Season {0} • Phase {1}": "Season {0} • Phase {1}"
 }

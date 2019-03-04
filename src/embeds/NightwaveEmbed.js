@@ -1,7 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const { timeDeltaToString } = require('../CommonFunctions');
+const { timeDeltaToString, createGroupedArray } = require('../CommonFunctions');
 
 const chString = challenge => `:white_small_square: **${challenge.title}** _(${challenge.reputation})_\n\u2003\t❯ ${challenge.desc}`;
 const chStringSingle = challenge => `**${challenge.title}** _(${challenge.reputation})_\n\u2003❯ ${challenge.desc}`;
@@ -42,14 +42,17 @@ class NightwaveEmbed extends BaseEmbed {
         inline: true,
       });
 
-      this.fields.push({
-        name: i18n`Weekly`,
-        value: nightwave.activeChallenges
-          .filter(challenge => !challenge.isDaily)
-          .map(chString)
-          .join('\n'),
-        inline: true,
-      });
+      createGroupedArray(nightwave.activeChallenges
+        .filter(challenge => !challenge.isDaily), 4)
+        .forEach((challengeGroup, index) => {
+          this.fields.push({
+            name: index > 0 ? i18n`Weekly, ctd.` : i18n`Weekly`,
+            value: challengeGroup
+              .map(chString)
+              .join('\n'),
+            inline: true,
+          });
+        });
 
       this.footer.text = `${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = nightwave.expiry;
