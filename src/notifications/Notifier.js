@@ -239,6 +239,16 @@ class Notifier {
   }
 
   async sendNightwave(nightwave, platform) {
+    const makeType = (challenge) => {
+      let type = 'daily';
+      if (challenge.isElite) {
+        type = 'elite';
+      } else if (!challenge.daily) {
+        type = 'weekly';
+      }
+      return `nightwave.${type}`;
+    };
+
     if (!nightwave) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       if (nightwave.activeChallenges.length > 1) {
@@ -247,7 +257,8 @@ class Notifier {
           nwCopy.activeChallenges = [challenge];
           const embed = new NightwaveEmbed(this.bot, nwCopy, platform, i18n);
           embed.locale = locale;
-          await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(challenge.expiry));
+          await this.broadcaster.broadcast(embed, platform,
+            makeType(challenge), null, fromNow(challenge.expiry));
         });
       } else {
         const embed = new NightwaveEmbed(this.bot, nightwave, platform, i18n);

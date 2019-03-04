@@ -120,7 +120,7 @@ class Database {
       and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
         'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-        'lfgChannel', 'settings.cc.ping', 'language');`;
+        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -205,6 +205,13 @@ class Database {
       } else {
         context.lfgChannel = undefined;
       }
+
+      if (typeof context.respond_to_settings === 'undefined') {
+        context.respondToSettings = this.defaults.respond_to_settings;
+      } else {
+        context.respondToSettings = context.respond_to_settings === '1';
+        delete context.respond_to_settings;
+      }
     } else {
       context = {
         platform: this.defaults.platform,
@@ -216,6 +223,7 @@ class Database {
         defaultNoText: this.defaults.defaultNoText === '1',
         createPrivateChannel: this.defaults.createPrivateChannel === '1',
         'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
+        respondToSettings: this.defaults.respond_to_settings,
       };
     }
     context.channel = channel;

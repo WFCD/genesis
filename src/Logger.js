@@ -50,6 +50,8 @@ levels.forEach((level) => {
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
       console.error(`[${level}] ${message}`);
+      // eslint-disable-next-line no-console
+      console.error(message);
       if (this && this.ravenClient) {
         this.ravenClient.captureException(message);
       }

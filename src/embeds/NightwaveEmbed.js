@@ -56,6 +56,9 @@ class NightwaveEmbed extends BaseEmbed {
     } else {
       const challenge = nightwave.activeChallenges[0];
       this.description = chStringSingle(challenge);
+      if (challenge.isElite) {
+        this.title = i18n`[${platform.toUpperCase()}] Worldstate - Elite Nightwave`;
+      }
       this.footer.text = `${timeDeltaToString(new Date(challenge).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = challenge.expiry;
     }

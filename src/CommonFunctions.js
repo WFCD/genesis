@@ -6,7 +6,7 @@ const welcomes = require('./resources/welcomes.json');
 
 const {
   eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources,
+  resources, nightwave,
 } = require('./resources/trackables.json');
 
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
@@ -67,6 +67,7 @@ const trackableEvents = {
   'twitter.retweet': eventTypes.filter(event => /twitter\.\w*\.retweet/.test(event)),
   'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
   twitter,
+  nightwave,
 };
 
 const trackableItems = {
@@ -177,8 +178,245 @@ function getEventsOrItems(message) {
   return matches || [];
 }
 
-function getTrackInstructionEmbed(message, prefix, call) {
-  const embed = {
+const stringFilter = chunk => chunk && chunk.length;
+
+const fieldLimit = 5;
+
+const embedDefaults = {
+  color: 0x77dd77,
+  url: 'https://warframestat.us/',
+  footer: {
+    text: 'Sent',
+    icon_url: 'https://warframestat.us/wfcd_logo_color.png',
+  },
+  timestamp: new Date(),
+};
+
+const chunkify = ({
+  string, newStrings = [], breakChar = '; ', maxLength = 1000,
+}) => {
+  let breakIndex;
+  let chunk;
+  if (!string) return undefined;
+  if (string.length > maxLength) {
+    while (string.length > 0) {
+      // Split message at last break character, if it exists
+      chunk = string.substring(0, maxLength);
+      breakIndex = chunk.lastIndexOf(breakChar) !== -1 ? chunk.lastIndexOf(breakChar) : maxLength;
+      newStrings.push(string.substring(0, breakIndex));
+      // Skip char if split on line break
+      if (breakIndex !== maxLength) {
+        breakIndex += 1;
+      }
+      // eslint-disable-next-line no-param-reassign
+      string = string.substring(breakIndex, string.length);
+    }
+  }
+  newStrings.push(string);
+  return newStrings;
+};
+
+const checkAndMergeEmbeds = (original, value) => {
+  if (value instanceof Array) {
+    original.push(...value);
+  } else {
+    original.push(value);
+  }
+};
+
+const createPageCollector = async (msg, pages, author) => {
+  if (pages.length <= 1) return;
+
+  let page = 1;
+  await msg.react('⏮');
+  await msg.react('◀');
+  await msg.react('⏹');
+  await msg.react('▶');
+  await msg.react('⏭');
+  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '⏹'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+  const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
+
+  collector.on('collect', async (reaction) => {
+    switch (reaction.emoji.name) {
+      case '◀':
+        if (page > 1) page -= 1;
+        break;
+      case '▶':
+        if (page <= pages.length) page += 1;
+        break;
+      case '⏮':
+        page = 1;
+        break;
+      case '⏭':
+        page = pages.length;
+        break;
+      case '⏹':
+        msg.reactions.removeAll();
+        clearTimeout(timeout);
+        return;
+      default:
+        break;
+    }
+    try {
+      await reaction.users.remove(author.id);
+    } catch (e) {
+      // can't remove
+    }
+
+    if (page <= pages.length && page > 0) {
+      const newPage = pages[page - 1];
+      const pageInd = `Page ${page}/${pages.length}`;
+      if (newPage.footer) {
+        if (newPage instanceof MessageEmbed) {
+          if (newPage.footer.text.indexOf('Page') === -1) {
+            newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.icon_url);
+          }
+        } else if (newPage.footer.text) {
+          if (newPage.footer.text.indexOf('Page') === -1) {
+            newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
+          }
+        } else {
+          newPage.footer.text = pageInd;
+        }
+      } else {
+        newPage.footer = { text: pageInd };
+      }
+      msg.edit({ embed: newPage });
+    } else if (page < 1) {
+      page = 1;
+    } else if (page > pages.length) {
+      page = pages.length;
+    }
+  });
+};
+
+const setupPages = async (pages, { message, settings, mm }) => {
+  if (pages.length) {
+    const msg = await mm.embed(message, pages[0], false, false);
+    await createPageCollector(msg, pages, message.author);
+  }
+  if (parseInt(await settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
+    message.delete({ timeout: 10000 });
+  }
+};
+
+const createChunkedEmbed = (stringToChunk, title, breakChar) => {
+  const embed = new MessageEmbed(embedDefaults);
+  embed.setTitle(title);
+  const chunks = (chunkify({ string: stringToChunk, breakChar }) || []).filter(stringFilter);
+  if (chunks.length) {
+    chunks.forEach((chunk, index) => {
+      if (index > 0) {
+        embed.addField('\u200B', chunk, true);
+      } else {
+        embed.setDescription(chunk);
+      }
+    });
+  } else {
+    embed.setDescription(`No ${title}`);
+  }
+
+  if (embed.fields.length > fieldLimit) {
+    const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
+    const embeds = [];
+    fieldGroups.forEach((fields, index) => {
+      const smEmbed = new MessageEmbed(embedDefaults);
+      embed.setTitle(title);
+
+      smEmbed.fields = fields;
+      if (index === 0) {
+        smEmbed.setDescription(embed.description);
+      }
+      embeds.push(smEmbed);
+    });
+    return embeds;
+  }
+  return embed;
+};
+
+const chunkFields = (valArr, title) => {
+  const chunkified = chunkify({ string: valArr.join('; ') });
+  if (!chunkified) {
+    return [];
+  }
+  const mapped = chunkified
+    .map((val, ind) => {
+      if (val && val.length) {
+        return {
+          name: `${title}${ind > 0 ? ', ctd.' : ''}`,
+          value: val && val.length ? val : '✘',
+          inline: true,
+        };
+      }
+      return undefined;
+    })
+    .filter(field => field);
+  return mapped;
+};
+
+const constructTypeEmbeds = (types) => {
+  const includedTypes = Object.assign({}, trackableEvents);
+  Object.keys(trackableEvents).forEach((eventType) => {
+    includedTypes[eventType] = [];
+    types.forEach((type) => {
+      if (trackableEvents[eventType].includes(type)) {
+        includedTypes[eventType].push(type);
+      }
+    });
+  });
+
+  const fields = [];
+  Object.keys(includedTypes).forEach((type) => {
+    const chunked = chunkFields(includedTypes[type], type);
+    if (chunked.length) {
+      fields.push(...chunked);
+    }
+  });
+  const fieldGroups = createGroupedArray(fields, fieldLimit * 3);
+  return fieldGroups.map((fieldGroup, index) => {
+    const embed = new MessageEmbed(embedDefaults);
+    embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
+    fieldGroup.forEach((field) => {
+      embed.addField(field.name, field.value, true);
+    });
+    return embed;
+  });
+};
+
+const constructItemEmbeds = (types) => {
+  const includedItems = Object.assign({}, trackableItems);
+  Object.keys(trackableItems).forEach((itemType) => {
+    includedItems[itemType] = [];
+    types.forEach((type) => {
+      if (trackableItems[itemType].includes(type)) {
+        includedItems[itemType].push(type);
+      }
+    });
+  });
+
+  const fields = [];
+  Object.keys(includedItems).forEach((item) => {
+    const chunked = chunkFields(includedItems[item], item);
+    if (chunked.length) {
+      fields.push(...chunked);
+    }
+  });
+  const fieldGroups = createGroupedArray(fields, fieldLimit);
+  return fieldGroups.map((fieldGroup, index) => {
+    const embed = new MessageEmbed(embedDefaults);
+    embed.setTitle(`Item Trackables${index > 0 ? ', ctd.' : ''}`);
+    fieldGroup.forEach((field) => {
+      embed.addField(field.name, field.value, true);
+    });
+    return embed;
+  });
+};
+
+async function sendTrackInstructionEmbeds({
+  message, prefix, call, settings, mm,
+}) {
+  const pages = [];
+  pages.push({
     type: 'rich',
     color: 0x0000ff,
     fields: [
@@ -187,42 +425,24 @@ function getTrackInstructionEmbed(message, prefix, call) {
         value: 'Track events/items to be alerted in this channel.',
         inline: true,
       },
-      {
-        name: 'Possible values:',
-        value: '\u200B',
-        inline: false,
-      },
     ],
-  };
-
-  createGroupedArray(eventTypes, 35)
-    .forEach((group, index) => embed.fields.push({
-      name: `**Events${index > 0 ? ' cont\'d.' : ''}:**`,
-      value: group.join(' '),
-      inline: true,
-    }));
-
-  embed.fields.push({
-    name: '**Rewards:**',
-    value: rewardTypes.join(' '),
-    inline: true,
   });
-  embed.fields.push({
-    name: 'Optional Groups:',
-    value: opts.join(' '),
-    inline: true,
-  });
+
+  const trackedItems = constructItemEmbeds(rewardTypes);
+  const trackedEvents = constructTypeEmbeds(eventTypes);
+  checkAndMergeEmbeds(pages, trackedItems);
+  checkAndMergeEmbeds(pages, trackedEvents);
 
   switch (call) {
     case 'track':
-      embed.fields[0].value = 'Track events/items to be alerted in this channel.';
+      pages[0].fields[0].value = 'Track events/items to be alerted in this channel.';
       break;
     case 'untrack':
-      embed.fields[0].value = 'Untrack events/items to be alerted in this channel.';
+      pages[0].fields[0].value = 'Untrack events/items to be alerted in this channel.';
       break;
     case 'set ping':
-      embed.fields[0].value = 'Set the text added before an event/item notification.';
-      embed.fields.push({
+      pages[0].fields[0].value = 'Set the text added before an event/item notification.';
+      pages[0].fields.push({
         name: '**Ping:**',
         value: 'Whatever string you want to be added before a notification for this item or event. If you leave this blank, the ping for this item/event will be cleared',
         inline: true,
@@ -231,7 +451,19 @@ function getTrackInstructionEmbed(message, prefix, call) {
     default:
       break;
   }
-  return embed;
+
+  switch (call) {
+    case 'set ping':
+
+      break;
+    default:
+      break;
+  }
+
+  if (pages.length) {
+    return setupPages(pages, { message, settings, mm });
+  }
+  return undefined;
 }
 
 const emojify = (stringWithoutEmoji) => {
@@ -494,82 +726,6 @@ const resolvePool = async (message, settings,
   return poolId;
 };
 
-const createPageCollector = async (msg, pages, author) => {
-  if (pages.length <= 1) return;
-
-  let page = 1;
-  await msg.react('⏮');
-  await msg.react('◀');
-  await msg.react('⏹');
-  await msg.react('▶');
-  await msg.react('⏭');
-  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '⏹'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
-  const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
-
-  collector.on('collect', async (reaction) => {
-    switch (reaction.emoji.name) {
-      case '◀':
-        if (page > 1) page -= 1;
-        break;
-      case '▶':
-        if (page <= pages.length) page += 1;
-        break;
-      case '⏮':
-        page = 1;
-        break;
-      case '⏭':
-        page = pages.length;
-        break;
-      case '⏹':
-        msg.reactions.removeAll();
-        clearTimeout(timeout);
-        return;
-      default:
-        break;
-    }
-    try {
-      await reaction.users.remove(author.id);
-    } catch (e) {
-      // can't remove
-    }
-
-    if (page <= pages.length && page > 0) {
-      const newPage = pages[page - 1];
-      const pageInd = `Page ${page}/${pages.length}`;
-      if (newPage.footer) {
-        if (newPage instanceof MessageEmbed) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
-            newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.icon_url);
-          }
-        } else if (newPage.footer.text) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
-            newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
-          }
-        } else {
-          newPage.footer.text = pageInd;
-        }
-      } else {
-        newPage.footer = { text: pageInd };
-      }
-      msg.edit({ embed: newPage });
-    } else if (page < 1) {
-      page = 1;
-    } else if (page > pages.length) {
-      page = pages.length;
-    }
-  });
-};
-
-const setupPages = async (pages, { message, settings, mm }) => {
-  if (pages.length) {
-    const msg = await mm.embed(message, pages[0], false, false);
-    await createPageCollector(msg, pages, message.author);
-  }
-  if (parseInt(await settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-    message.delete({ timeout: 10000 });
-  }
-};
-
 const safeGetEntry = (entry) => {
   if (entry === null || typeof entry === 'undefined' || entry === 'null') {
     return null;
@@ -616,7 +772,7 @@ module.exports = {
   getEmoji,
   getEventsOrItems,
   getTarget,
-  getTrackInstructionEmbed,
+  sendTrackInstructionEmbeds,
   getUsersForCall,
   timeDeltaToString,
   timeDeltaToMinutesString,
@@ -634,4 +790,14 @@ module.exports = {
   wikiBase,
   captures,
   apiCdnBase,
+  chunkify,
+  createChunkedEmbed,
+  chunkFields,
+  fieldLimit,
+  embedDefaults,
+  trackableEvents,
+  trackableItems,
+  constructItemEmbeds,
+  constructTypeEmbeds,
+  checkAndMergeEmbeds,
 };
