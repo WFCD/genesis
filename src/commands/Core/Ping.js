@@ -65,9 +65,9 @@ class Ping extends Command {
         },
       },
     });
-    await msg.delete(100000);
+    await msg.delete({ timeout: 100000, reason: 'automated cleanup' });
     if (message.deletable) {
-      message.delete(10000);
+      message.delete({ timeout: 10000, reason: 'automated cleanup' });
     }
     return this.messageManager.statuses.SUCCESS;
   }

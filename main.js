@@ -2,8 +2,14 @@
 
 const cluster = require('cluster');
 const Raven = require('raven');
+const fs = require('fs');
 
+const genManifest = require('./src/tools/generateManifest.js');
 const Genesis = require('./src/bot');
+let commandManifest = require('./commands.json');
+
+const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
+const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
 
 let controlHook;
 if (process.env.CONTROL_WH_ID) {
@@ -39,14 +45,13 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && localShards < 2) {
   // eslint-disable-next-line global-require
-  require('./src/tools/generateManifest.js')();
+  genManifest();
+  commandManifest = JSON.parse(fs.readFileSync('commands.json', 'utf8'));
 }
 
 if (cluster.isMaster) {
-  const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
-  const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
   // eslint-disable-next-line global-require
   const ClusterManager = require('./src/ClusterManager');
   const clusterManager = new ClusterManager(cluster, logger, localShards, shardOffset);
@@ -60,8 +65,7 @@ if (cluster.isMaster) {
     logger,
     owner: process.env.OWNER,
     controlHook,
-    // eslint-disable-next-line global-require
-    commandManifest: require('./commands.json'),
+    commandManifest,
   });
   shard.start();
 }

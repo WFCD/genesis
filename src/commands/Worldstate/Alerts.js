@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const AlertEmbed = require('../../embeds/AlertEmbed.js');
-const { createPageCollector, captures } = require('../../CommonFunctions');
+const { captures, setupPages } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active alerts
@@ -26,19 +26,13 @@ class Alerts extends Command {
 
     if (compact) {
       await this.messageManager
-        .embed(message, new AlertEmbed(this.bot, alerts, platform), true, true);
+        .embed(message, new AlertEmbed(this.bot, alerts, platform, ctx.i18n), true, true);
     } else {
       const pages = [];
       alerts.forEach((alert) => {
-        pages.push(new AlertEmbed(this.bot, [alert], platform));
+        pages.push(new AlertEmbed(this.bot, [alert], platform, ctx.i18n));
       });
-      if (pages.length) {
-        const msg = await this.messageManager.embed(message, pages[0], false, false);
-        await createPageCollector(msg, pages, message.author);
-      }
-      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete(10000);
-      }
+      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     }
 
     return this.messageManager.statuses.SUCCESS;

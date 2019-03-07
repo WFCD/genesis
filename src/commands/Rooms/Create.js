@@ -1,5 +1,6 @@
 'use strict';
 
+const { Permissions } = require('discord.js');
 const Command = require('../../models/Command.js');
 const { getUsersForCall, isVulgarCheck } = require('../../CommonFunctions');
 
@@ -154,42 +155,36 @@ class Create extends Command {
               useText,
               useModRole,
               modRole,
+              shown,
             });
             let category;
             if (!ctx.tempCategory
               || !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
-              category = await message.guild
-                .createChannel(name, 'category', overwrites);
+              category = await message.guild.channels.create(name, {
+                name,
+                type: 'category',
+                permissionOverwrites: overwrites,
+              });
             } else {
               category = ctx.tempCategory;
             }
 
             let textChannel;
             if (useText) {
-              textChannel = await message.guild.createChannel(name.replace(/[^\w|-]/ig, ''), 'text', overwrites);
-              textChannel = await textChannel.setParent(category.id);
-            }
-
-            let voiceChannel = await message.guild.createChannel(name, 'voice', overwrites);
-            voiceChannel = await voiceChannel.setParent(category.id);
-
-            if (!isPublic) {
-              // manually add overwrites for "everyone"
-              await category.overwritePermissions(message.guild.defaultRole.id, {
-                CONNECT: false,
-                VIEW_CHANNEL: shown,
-              });
-              if (useText) {
-                await textChannel.overwritePermissions(message.guild.defaultRole.id, {
-                  CONNECT: false,
-                  VIEW_CHANNEL: shown,
-                });
-              }
-              await voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
-                CONNECT: false,
-                VIEW_CHANNEL: shown,
+              textChannel = await message.guild.channels.create(name.replace(/[^\w|-]/ig, ''), {
+                name: name.replace(/[^\w|-]/ig, ''),
+                type: 'text',
+                parent: category.id,
+                permissionOverwrites: overwrites,
               });
             }
+
+            const voiceChannel = await message.guild.channels.create(name, {
+              name,
+              type: 'voice',
+              parent: category.id,
+              permissionOverwrites: overwrites,
+            });
 
             // add channel to listenedChannels
             await this.settings
@@ -267,40 +262,74 @@ class Create extends Command {
     const overwrites = [];
     // this still doesn't work, need to figure out why
     if (!isPublic) {
-      const evOverwrites = ['CONNECT'];
+      const evOverwrites = [Permissions.FLAGS.CONNECT];
       if (!shown) {
-        evOverwrites.push('VIEW_CHANNEL');
+        evOverwrites.push(Permissions.FLAGS.CONNECT);
       }
       overwrites.push({
         id: everyone,
         deny: evOverwrites,
       });
       overwrites.push({
-        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'MUTE_MEMBERS', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS', 'MANAGE_ROLES', 'MANAGE_CHANNELS'],
+        allow: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.CONNECT,
+          Permissions.FLAGS.MUTE_MEMBERS,
+          Permissions.FLAGS.DEAFEN_MEMBERS,
+          Permissions.FLAGS.MOVE_MEMBERS,
+          Permissions.FLAGS.MANAGE_ROLES,
+          Permissions.FLAGS.MANAGE_CHANNELS,
+        ],
         id: this.bot.client.user.id,
       });
       // set up overwrites per-user
       users.forEach((user) => {
         overwrites.push({
           id: user.id,
-          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD'],
+          allow: [
+            Permissions.FLAGS.VIEW_CHANNEL,
+            Permissions.FLAGS.SEND_MESSAGES,
+            Permissions.FLAGS.CONNECT,
+            Permissions.FLAGS.SPEAK,
+            Permissions.FLAGS.USE_VAD,
+          ],
         });
       });
       overwrites.push({
         id: author.id,
-        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES'],
+        allow: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.CONNECT,
+          Permissions.FLAGS.SPEAK,
+          Permissions.FLAGS.USE_VAD,
+          Permissions.FLAGS.MANAGE_MESSAGES,
+        ],
       });
       // Add mod role overwrites if one is present
       if (useModRole) {
         overwrites.push({
-          id: modRole,
-          allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'CONNECT', 'SPEAK', 'USE_VAD', 'MANAGE_MESSAGES', 'DEAFEN_MEMBERS', 'MOVE_MEMBERS'],
+          id: modRole.id,
+          allow: [
+            Permissions.FLAGS.VIEW_CHANNEL,
+            Permissions.FLAGS.SEND_MESSAGES,
+            Permissions.FLAGS.CONNECT,
+            Permissions.FLAGS.SPEAK,
+            Permissions.FLAGS.USE_VAD,
+            Permissions.FLAGS.MANAGE_MESSAGES,
+            Permissions.FLAGS.DEAFEN_MEMBERS,
+            Permissions.FLAGS.MOVE_MEMBERS,
+          ],
         });
       }
     } else {
       overwrites.push({
         id: everyone,
-        allow: ['VIEW_CHANNEL', 'CONNECT'],
+        allow: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.CONNECT,
+        ],
       });
     }
     return overwrites;

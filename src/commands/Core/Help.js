@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+const { createGroupedArray, setupPages } = require('../../CommonFunctions');
 
 const invalidResultsEmbed = {
   color: 0x00CCFF,
@@ -119,16 +119,14 @@ class Help extends Command {
       const lines = mapCommands(matchingCommands, config.prefix);
       const groups = createGroupedArray(lines, 9);
       const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
-      const msg = await this.messageManager.embed(message, embeds[0], false, false);
-      await createPageCollector(msg, embeds, message.author);
+      await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
     searchableCommands.sort(commandSort);
     const lines = mapCommands(searchableCommands, config.prefix);
     const groups = createGroupedArray(lines, 9);
     const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
-    const msg = await this.messageManager.embed(message, embeds[0], false, false);
-    await createPageCollector(msg, embeds, message.author);
+    await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 

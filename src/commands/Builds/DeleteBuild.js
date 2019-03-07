@@ -27,7 +27,7 @@ class DeleteBuild extends Command {
     }
     const build = await this.settings.getBuild(buildId);
     const owner = typeof build.owner === 'object' ? build.owner.id : build.owner;
-    if (owner === message.author.id || owner === this.bot.owner) {
+    if (owner === message.author.id || message.author.id === this.bot.owner) {
       this.logger.debug('owner matched author');
       await this.settings.deleteBuild(buildId);
       this.messageManager.embed(message, { title: `Build ${buildId} deleted.`, color: 0xcda2a3 }, true, true);

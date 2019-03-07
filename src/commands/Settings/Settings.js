@@ -1,8 +1,11 @@
 'use strict';
 
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
-const { getChannels, createPageCollector, createGroupedArray } = require('../../CommonFunctions');
+const {
+  getChannels, setupPages, constructTypeEmbeds, constructItemEmbeds,
+  createChunkedEmbed, embedDefaults, chunkify, checkAndMergeEmbeds,
+} = require('../../CommonFunctions');
 
 const negate = '✘';
 const affirm = '✓';
@@ -21,85 +24,6 @@ const wrapRoleValue = (val) => {
   return val;
 };
 
-const checkAndMergeEmbeds = (original, value) => {
-  if (value instanceof Array) {
-    original.push(...value);
-  } else {
-    original.push(value);
-  }
-};
-
-const fieldLimit = 5;
-
-const chunkify = ({
-  string, newStrings = [], breakChar = '; ', maxLength = 1000,
-}) => {
-  let breakIndex;
-  let chunk;
-  if (string.length > maxLength) {
-    while (string.length > 0) {
-      // Split message at last break character, if it exists
-      chunk = string.substring(0, maxLength);
-      breakIndex = chunk.lastIndexOf(breakChar) !== -1 ? chunk.lastIndexOf(breakChar) : maxLength;
-      newStrings.push(string.substring(0, breakIndex));
-      // Skip char if split on line break
-      if (breakIndex !== maxLength) {
-        breakIndex += 1;
-      }
-      // eslint-disable-next-line no-param-reassign
-      string = string.substring(breakIndex, string.length);
-    }
-  }
-  newStrings.push(string);
-  return newStrings;
-};
-
-const stringFilter = chunk => chunk && chunk.length;
-
-const embedDefaults = {
-  color: 0x77dd77,
-  url: 'https://warframestat.us/',
-  footer: {
-    text: 'Sent',
-    icon_url: 'https://warframestat.us/wfcd_logo_color.png',
-  },
-  timestamp: new Date(),
-};
-
-const createChunkedEmbed = (stringToChunk, title, breakChar) => {
-  const embed = new RichEmbed(embedDefaults);
-  embed.setTitle(title);
-  const chunks = chunkify({ string: stringToChunk, breakChar }).filter(stringFilter);
-  if (chunks.length) {
-    chunks.forEach((chunk, index) => {
-      if (index > 0) {
-        embed.addField('\u200B', chunk, true);
-      } else {
-        embed.setDescription(chunk);
-      }
-    });
-  } else {
-    embed.setDescription(`No ${title}`);
-  }
-
-  if (embed.fields.length > fieldLimit) {
-    const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
-    const embeds = [];
-    fieldGroups.forEach((fields, index) => {
-      const smEmbed = new RichEmbed(embedDefaults);
-      embed.setTitle(title);
-
-      smEmbed.fields = fields;
-      if (index === 0) {
-        smEmbed.setDescription(embed.description);
-      }
-      embeds.push(smEmbed);
-    });
-    return embeds;
-  }
-  return embed;
-};
-
 const nonCompact = new RegExp('--expand', 'ig');
 
 class Settings extends Command {
@@ -110,32 +34,13 @@ class Settings extends Command {
   }
 
   async composeChannelSettings(channel, message) {
-    const page = new RichEmbed(embedDefaults);
+    const page = new MessageEmbed(embedDefaults);
     const settings = await this.settings.getChannelSettings(channel, [
-      'language',
-      'platform',
-      'prefix',
-      'createPrivateChannel',
-      'deleteExpired',
-      'allowInline',
-      'allowCustom',
-      'settings.cc.ping',
-      'defaultRoomsLocked',
-      'defaultNoText',
-      'defaultShown',
-      'respond_to_settings',
-      'respond_to_settings',
-      'delete_after_respond',
-      'delete_response',
-      'defaultRoles',
-      'tempCategory',
-      'lfgChannel',
-      'vulgarLog',
-      'msgDeleteLog',
-      'memberRemoveLog',
-      'banLog',
-      'unbanLog',
-      'modRole',
+      'language', 'platform', 'prefix', 'createPrivateChannel', 'deleteExpired', 'allowInline',
+      'allowCustom', 'settings.cc.ping', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown',
+      'respond_to_settings', 'respond_to_settings', 'delete_after_respond', 'delete_response',
+      'defaultRoles', 'tempCategory', 'lfgChannel', 'vulgarLog', 'msgDeleteLog', 'memberRemoveLog',
+      'banLog', 'unbanLog', 'modRole',
     ]);
 
     page.setTitle('General Settings');
@@ -176,10 +81,10 @@ class Settings extends Command {
     }
 
     const items = await this.settings.getTrackedItems(channel);
-    const trackedItems = createChunkedEmbed(items.join('; '), 'Tracked Items', '; ');
+    const trackedItems = constructItemEmbeds(items);
 
     const events = await this.settings.getTrackedEventTypes(channel);
-    const trackedEvents = createChunkedEmbed(events.join('; '), 'Tracked Events', '; ');
+    const trackedEvents = constructTypeEmbeds(events);
 
     const permissions = (await this.settings.permissionsForChannel(channel))
       .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`)
@@ -211,7 +116,7 @@ class Settings extends Command {
 
     if (message.channel.guild) {
       // Welcomes
-      const welcomePage = new RichEmbed(embedDefaults);
+      const welcomePage = new MessageEmbed(embedDefaults);
       const welcomes = await this.settings.getWelcomes(message.guild);
       welcomePage.setTitle('Welcomes');
       if (!welcomes.length) {
@@ -251,14 +156,10 @@ class Settings extends Command {
             await this.messageManager.embed(message, page, false, false);
           });
         } else {
-          const msg = await this.messageManager.embed(message, pages[0], false, false);
-          await createPageCollector(msg, pages, message.author);
+          await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         }
       } else {
         this.messageManager.reply(message, 'Can\'t give you settings. Something went wrong.', true, true);
-      }
-      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete(10000);
       }
     }
     return this.messageManager.statuses.SUCCESS;

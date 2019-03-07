@@ -13,8 +13,8 @@ class PopularDeal extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.populardeals', 'populardeal', 'Displays current featured deals');
-    this.regex = new RegExp(`^popular\\sdeals?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
+    super(bot, 'warframe.worldstate.populardeals', 'popular deal', 'Displays current featured deals');
+    this.regex = new RegExp(`^popular\\s?deals?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 
   async run(message, ctx) {

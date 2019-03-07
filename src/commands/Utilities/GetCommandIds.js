@@ -3,7 +3,7 @@
 const rpad = require('right-pad');
 const Command = require('../../models/Command.js');
 const CommandIdEmbed = require('../../embeds/CommandIdEmbed');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+const { createGroupedArray, setupPages } = require('../../CommonFunctions');
 
 /**
  * Get a list of all servers
@@ -38,8 +38,7 @@ class GetCommandIds extends Command {
       const embed = new CommandIdEmbed(this.bot, createGroupedArray(group, 4));
       pages.push(embed);
     });
-    const msg = await this.messageManager.embed(message, pages[0], true, true);
-    await createPageCollector(msg, pages, message.author);
+    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -24,9 +24,9 @@ class AssignDefaultRolesHandle extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     const defaultRoles = JSON.parse(await this.settings.getGuildSetting(member.guild, 'defaultRoles') || '[]')
-      .map(roleId => member.guild.roles.get(roleId));
+      .map(roleId => member.guild.roles.get(roleId)).filter(role => role);
     if (defaultRoles.length) {
-      await member.addRoles(defaultRoles, `Default role assignment for ${member.user.tag}`);
+      await member.roles.add(defaultRoles, `Default role assignment for ${member.user.tag}`);
     }
   }
 }

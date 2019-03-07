@@ -5,8 +5,12 @@ const {
   getEventsOrItems,
   trackablesFromParameters,
   getChannel,
-  getTrackInstructionEmbed,
+  sendTrackInstructionEmbeds,
   captures,
+  checkAndMergeEmbeds,
+  setupPages,
+  constructItemEmbeds,
+  constructTypeEmbeds,
 } = require('../../CommonFunctions');
 
 /**
@@ -23,16 +27,16 @@ class Track extends Command {
     this.requiresAuth = true;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const unsplitItems = getEventsOrItems(message);
     const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
 
     if (unsplitItems.length === 0) {
-      return this.failure(message);
+      return this.failure(message, ctx.prefix);
     }
     const trackables = trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
-      return this.failure(message);
+      return this.failure(message, ctx.prefix);
     }
     trackables.events = trackables.events
       .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
@@ -41,24 +45,42 @@ class Track extends Command {
 
     const channelParam = message.strippedContent.match(roomId) ? message.strippedContent.match(roomId)[0].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message);
-    const results = [];
+
     if (trackables.events.length) {
-      results.push(this.settings.trackEventTypes(channel, trackables.events));
+      await this.settings.trackEventTypes(channel, trackables.events);
     }
     if (trackables.items.length) {
-      results.push(this.settings.trackItems(channel, trackables.items));
+      await this.settings.trackItems(channel, trackables.items);
     }
-    Promise.all(results);
+    if (ctx.respondToSettings) {
+      await this.notifyCurrent(channel, message);
+    }
     this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 
-  async failure(message) {
-    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-    this.messageManager.embed(
+  async notifyCurrent(channel, message) {
+    const pages = [];
+    const items = await this.settings.getTrackedItems(channel);
+    const trackedItems = constructItemEmbeds(items);
+    const events = await this.settings.getTrackedEventTypes(channel);
+    const trackedEvents = constructTypeEmbeds(events);
+    checkAndMergeEmbeds(pages, trackedItems);
+    checkAndMergeEmbeds(pages, trackedEvents);
+    if (pages.length) {
+      return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+    }
+    return this.messageManager.sendMessage(message, 'Nothing Tracked', true, true);
+  }
+
+  async failure(message, prefix) {
+    await sendTrackInstructionEmbeds({
       message,
-      getTrackInstructionEmbed(message, prefix, this.call), true, true,
-    );
+      prefix,
+      call: this.call,
+      settings: this.settings,
+      mm: this.messageManager,
+    });
     return this.messageManager.statuses.FAILURE;
   }
 }

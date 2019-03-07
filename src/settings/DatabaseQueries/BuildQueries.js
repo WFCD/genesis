@@ -51,6 +51,29 @@ class BuildQueries {
     };
   }
 
+  async getBuildSearch(qString) {
+    if (qString) {
+      const wrapped = `%${qString}%`;
+      const query = SQL`SELECT * FROM builds WHERE title like ${wrapped} or body like ${wrapped};`;
+      const res = await this.db.query(query);
+      const builds = [];
+      if (res[0]) {
+        res[0].forEach((result) => {
+          builds.push({
+            title: result.title,
+            body: result.body,
+            url: result.image,
+            id: result.build_id,
+            owner: this.bot.client.users.get(result.owner_id) || result.owner_id,
+            owner_id: result.owner_id,
+          });
+        });
+        return builds;
+      }
+    }
+    return [];
+  }
+
   async deleteBuild(buildId) {
     const query = SQL`DELETE FROM builds WHERE build_id=${buildId};`;
     return this.db.query(query);

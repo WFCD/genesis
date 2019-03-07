@@ -98,7 +98,7 @@ class SettingsQueries {
       });
 
       if (!webhook.avatar) {
-        webhook.avatar = this.bot.client.user.avatarURL.replace('?size=2048', '');
+        webhook.avatar = this.bot.client.user.displayAvatarURL().replace('?size=2048', '');
       }
       if (!webhook.name) {
         webhook.name = this.bot.client.user.username;

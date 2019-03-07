@@ -206,7 +206,10 @@
       "fissures.t4.evacuation",
       "solaris.warm",
       "solaris.cold",
-      "solaris"
+      "solaris",
+      "nightwave.daily",
+      "nightwave.elite",
+      "nightwave.weekly"
    ],
    "opts":[
       "all",
@@ -246,7 +249,8 @@
       "twitter.retweet",
       "twitter.quote",
       "twitter.reply",
-      "twitter"
+      "twitter",
+      "nightwave"
    ],
    "fissures":[
       "fissures.t1.excavation",
@@ -411,5 +415,10 @@
       "argonCrystal",
       "cryotic",
       "tellurium"
+   ],
+   "nightwave": [
+     "nightwave.daily",
+     "nightwave.elite",
+     "nightwave.weekly"
    ]
 }

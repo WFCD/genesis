@@ -32,18 +32,16 @@ const getRelayName = async (guild, retries = 0) => {
 
 const clone = async (template, settings) => {
   const { guild } = template;
-  const perms = template.permissionOverwrites
-    ? template.permissionOverwrites.map(({ id, allow, deny }) => ({ id, allow, deny }))
-    : [];
+
   const isRelay = await settings.isRelay(template.id);
   const name = isRelay
     ? await getRelayName(guild)
     : generator.make({ adjective: true, type: 'places' });
 
-  const newChannel = await guild.createChannel(name, template.type, perms);
-  await newChannel.setParent(template.parentID, 'Moving channel for Dynamic channel');
-  await newChannel.setUserLimit(template.userLimit, 'Channel setup for Dynamic Channel');
-  await newChannel.setPosition(template.position + 1);
+  const newChannel = await template.clone({
+    name,
+    position: template.rawPosition + 1,
+  });
   return newChannel;
 };
 

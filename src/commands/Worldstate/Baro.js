@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const VoidTraderEmbed = require('../../embeds/VoidTraderEmbed.js');
-const { captures, createGroupedArray, createPageCollector } = require('../../CommonFunctions');
+const { captures, createGroupedArray, setupPages } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active Invasions
@@ -33,13 +33,7 @@ class Baro extends Command {
     } else {
       pages.push(embed);
     }
-    if (pages.length) {
-      const msg = await this.messageManager.embed(message, pages[0], false, false);
-      await createPageCollector(msg, pages, message.author);
-    }
-    if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-      message.delete(10000);
-    }
+    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }
 }

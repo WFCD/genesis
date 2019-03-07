@@ -9,7 +9,7 @@ let guildCheck = null; // I don't know where to put this
  * @param {Bot} self the bot
  */
 async function guildLeave(self) {
-  const [results] = await self.settings.getGuildRatios(self.client.shard);
+  const [results] = await self.settings.getGuildRatios(self.bot.shardClient) || [];
   const guilds = results.slice(0, 5);
   const owners = {};
   try {
@@ -31,10 +31,14 @@ async function guildLeave(self) {
         ? self.client.users.get(id)
         : await self.client.fetchUser(id, true);
       if (user) {
-        await user.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''}
-        ${owners[id].message} are over the bot-to-user ratio.
-        ${self.client.user.username} will now leave.
-        If you want to keep using Genesis please invite more people or kick some bots.`);
+        try {
+          await user.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''}
+          ${owners[id].message} are over the bot-to-user ratio.
+          ${self.client.user.username} will now leave.
+          If you want to keep using Genesis please invite more people or kick some bots.`);
+        } catch (e) {
+          // swallow, it's not an important error
+        }
       }
       owners[id].guilds.forEach((guild) => {
         if (guild && self.client.guilds.has(guild)) {

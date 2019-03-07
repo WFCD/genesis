@@ -68,8 +68,7 @@ class LeaveRole extends Command {
     }
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
-    const botIsHigher = message.guild.members.get(this.bot.client.user.id)
-      .highestRole.comparePositionTo(role);
+    const botIsHigher = message.guild.me.roles.highest.comparePositionTo(role);
     const roleRemoveable = filteredRoles.length > 0
           && message.member.roles.get(role.id)
           && message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES')
@@ -83,7 +82,7 @@ class LeaveRole extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     if (roleRemoveable && filteredRoles[0].leaveable) {
-      await message.member.removeRole(role.id);
+      await message.member.roles.remove(role.id);
       await this.sendLeft(message, role);
       return this.messageManager.statuses.SUCCESS;
     }

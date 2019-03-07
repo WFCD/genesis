@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const SyndicateEmbed = require('../../embeds/SyndicateEmbed.js');
-const { createPageCollector, captures } = require('../../CommonFunctions');
+const { setupPages, captures } = require('../../CommonFunctions');
 const syndicates = require('../../resources/syndicates.json');
 
 const values = syndicates.map(s => s.display.toLowerCase());
@@ -45,13 +45,7 @@ class Syndicates extends Command {
       matching.forEach((mission) => {
         pages.push(new SyndicateEmbed(this.bot, [mission], mission.syndicate, platform, true));
       });
-      if (pages.length) {
-        const msg = await this.messageManager.embed(message, pages[0], false, false);
-        await createPageCollector(msg, pages, message.author);
-      }
-      if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-        message.delete(10000);
-      }
+      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.FAILURE;

@@ -1,6 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
+const I18n = require('../settings/I18n');
 
 const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
   if ((command.isCustom && allowCustom) || (command.isInline && allowInline)) {
@@ -10,6 +11,23 @@ const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
     return hasAuth;
   }
   return false;
+};
+
+const stripContent = (content, prefix, ping, pingId, botNickPing) => {
+  let c = content;
+  if (content.startsWith(prefix)) {
+    c = content.replace(prefix, '');
+  }
+  if (content.startsWith(ping)) {
+    c = content.replace(new RegExp(`${ping}\\s+`, 'i'), '');
+  }
+  if (content.startsWith(pingId)) {
+    c = content.replace(new RegExp(`${pingId}\\s+`, 'i'), '');
+  }
+  if (content.startsWith(botNickPing)) {
+    c = content.replace(new RegExp(`${botNickPing}\\s+`, 'i'), '');
+  }
+  return c;
 };
 
 /**
@@ -45,19 +63,21 @@ class CommandHandler extends Handler {
     let { content } = message;
     let botping;
     if (message.guild) {
-      if (message.guild.members.has(this.bot.client.user.id)) {
-        botping = `@${message.guild.members.get(this.bot.client.user.id).displayName}`;
+      if (message.guild.members.me) {
+        botping = `@${message.guild.me.displayName}`;
       }
     }
     if (typeof botping === 'undefined') {
-      botping = `@${this.bot.client.user.username}`;
+      botping = `@${message.guild ? message.guild.me.displayName : this.bot.client.user.username}`;
     }
     const botPingId = `<@${this.bot.client.user.id}>`;
-    const ctx = await this.bot.settings
-      .getCommandContext(message.channel);
+    const botNickPing = `<@!${this.bot.client.user.id}>`;
+    const ctx = await this.bot.settings.getCommandContext(message.channel);
+
     let checkOnlyInlines = false;
-    const notStartWithPrefix = !content.startsWith(ctx.prefix)
-        && !content.startsWith(botping) && !content.startsWith(botPingId);
+
+    const notStartWithPrefix = !content.startsWith(ctx.prefix) && !content.startsWith(botNickPing)
+      && !content.startsWith(botping) && !content.startsWith(botPingId);
     if (notStartWithPrefix) {
       if (ctx.allowInline && this.commandManager.inlineCommands.length > 0) {
         checkOnlyInlines = true;
@@ -76,48 +96,61 @@ class CommandHandler extends Handler {
     }
     commands = commands.filter(command => command);
 
-    if (content.startsWith(ctx.prefix)) {
-      content = content.replace(ctx.prefix, '');
-    }
-    if (content.startsWith(botping)) {
-      content = content.replace(new RegExp(`${botping}\\s+`, 'i'), '');
-    }
-    if (content.startsWith(botPingId)) {
-      content = content.replace(new RegExp(`${botPingId}\\s+`, 'i'), '');
-    }
-    const messageWithStrippedContent = message;
-    messageWithStrippedContent.strippedContent = content;
+    // strip content
+    const strippedMessage = message;
+    content = stripContent(content, ctx.prefix, botping, botPingId, botNickPing);
+    strippedMessage.strippedContent = content;
+
+    // set new context objects
+    ctx.message = strippedMessage;
+    ctx.i18n = I18n.use(ctx.language);
     this.logger.debug(`Handling \`${content}\``);
+
     let done = false;
     commands.forEach(async (command) => {
+      // only run the first matching command
       if (command.regex.test(content) && !done) {
-        const canAct = await this.checkCanAct(command, messageWithStrippedContent);
+        // check if it's runnable for the user
+        const canAct = await this.checkCanAct(command, strippedMessage);
         if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {
           this.logger.debug(`Matched ${command.id}`);
-          ctx.message = messageWithStrippedContent;
+
+          // load command
           const cmd = await this.bot.commandManager.loadCommand(command);
           ctx.message.channel.startTyping();
-          const status = await cmd.run(messageWithStrippedContent, ctx);
-          const canReact = (message.channel.type === 'dm'
-                || (message.channel.permissionsFor(this.bot.client.user.id)
-                  .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
-          switch (status) {
-            case this.statuses.SUCCESS:
-              if (canReact) {
-                message.react('✅');
-              }
-              break;
-            case this.statuses.FAILURE:
-              if (canReact) {
-                message.react('❌');
-              }
-              break;
-            case this.statuses.NO_ACCESS:
-            default:
-              break;
+
+          // run
+          try {
+            const status = await cmd.run(strippedMessage, ctx);
+
+            // react based on result
+            const canReact = (message.channel.type === 'dm'
+                  || (message.channel.permissionsFor(this.bot.client.user.id)
+                    .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+            switch (status) {
+              case this.statuses.SUCCESS:
+                if (canReact) {
+                  message.react('✅');
+                }
+                break;
+              case this.statuses.FAILURE:
+                if (canReact) {
+                  message.react('❌');
+                }
+                break;
+              case this.statuses.NO_ACCESS:
+              default:
+                break;
+            }
+          } catch (error) {
+            this.logger.error(error);
+          } finally {
+            // finish typing
+            ctx.message.channel.stopTyping(true);
+
+            // make sure we don't run more
+            done = true;
           }
-          ctx.message.channel.stopTyping(true);
-          done = true;
         }
       }
     });

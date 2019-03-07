@@ -45,8 +45,10 @@ const generateManifest = async () => {
 
   try {
     fs.writeFileSync('commands.json', JSON.stringify(commands), 'utf8');
-    // eslint-disable-next-line no-console
-    console.log(colors.cyan('Wrote command manifest...'));
+    if (['DEBUG', 'INFO'].some(str => str === process.env.LOG_LEVEL)) {
+      // eslint-disable-next-line no-console
+      console.log(`[DEBUG] ${colors.cyan('Wrote command manifest...')}`);
+    }
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

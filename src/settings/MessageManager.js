@@ -125,7 +125,7 @@ class MessaageManager {
       if (msg.deletable && deleteAfter > 0) {
         const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
         if (deleteExpired) {
-          msg.delete(deleteAfter);
+          msg.delete({ timeout: deleteAfter });
         }
       }
     }
@@ -214,12 +214,12 @@ class MessaageManager {
     if (call && call.channel) {
       const deleteAfterRespond = await this.settings.getChannelSetting(call.channel, 'delete_after_respond') === '1';
       if (deleteAfterRespond && deleteCall && call.deletable) {
-        call.delete(10000);
+        call.delete({ timeout: 10000 });
       }
     }
     const deleteResponseAfterRespond = await this.settings.getChannelSetting(response.channel, 'delete_response') === '1';
     if (deleteResponseAfterRespond && deleteResponse && response.deletable) {
-      response.delete(30000);
+      response.delete({ timeout: 30000 });
     }
   }
 
@@ -238,7 +238,7 @@ class MessaageManager {
         if (msg.deletable && ctx.deleteAfterDuration > 0) {
           const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
           if (deleteExpired) {
-            msg.delete(ctx.deleteAfterDuration);
+            msg.delete({ timeout: ctx.deleteAfterDuration });
           }
         }
         return msg;
@@ -265,7 +265,7 @@ class MessaageManager {
       }
       this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
       webhook.name = this.client.user.username;
-      webhook.avatar = this.client.user.avatarURL.replace('?size=2048', '');
+      webhook.avatar = this.client.user.displayAvatarURL().replace('?size=2048', '');
       // Make this one query
       await this.settings.setChannelWebhook(ctx.channel, webhook);
       // eslint-disable-next-line no-param-reassign
@@ -287,7 +287,7 @@ class MessaageManager {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
       avatarURL: ctx.webhoook && ctx.webhook.avatar
-        ? ctx.webhook.avatar : this.client.user.avatarURL,
+        ? ctx.webhook.avatar : this.client.user.displayAvatarURL(),
       embeds: [embed],
     };
   }
@@ -296,7 +296,7 @@ class MessaageManager {
     return {
       username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
       avatarURL: ctx.webhoook && ctx.webhook.avatar
-        ? ctx.webhook.avatar : this.client.user.avatarURL,
+        ? ctx.webhook.avatar : this.client.user.displayAvatarURL(),
       embeds,
     };
   }

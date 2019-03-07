@@ -2,7 +2,9 @@
 
 const Command = require('../../models/Command.js');
 const {
-  trackablesFromParameters, getTrackInstructionEmbed, captures,
+  trackablesFromParameters,
+  sendTrackInstructionEmbeds,
+  captures,
 } = require('../../CommonFunctions');
 
 class SetPing extends Command {
@@ -16,7 +18,7 @@ class SetPing extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const regex = new RegExp(`${captures.trackables}(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'dm') {
@@ -29,11 +31,13 @@ class SetPing extends Command {
       const pingString = match[2] ? match[2].trim() : undefined;
 
       if (!eventsAndItems.length) {
-        const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-        this.messageManager.embed(
+        await sendTrackInstructionEmbeds({
           message,
-          getTrackInstructionEmbed(message, prefix, this.call), true, true,
-        );
+          prefix: ctx.prefix,
+          call: this.call,
+          settings: this.settings,
+          mm: this.messageManager,
+        });
         return this.messageManager.statuses.FAILURE;
       }
       const results = [];
@@ -52,9 +56,13 @@ class SetPing extends Command {
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-    await this.messageManager.embed(message,
-      getTrackInstructionEmbed(message, prefix, this.call), true, true);
+    await sendTrackInstructionEmbeds({
+      message,
+      prefix: ctx.prefix,
+      call: this.call,
+      settings: this.settings,
+      mm: this.messageManager,
+    });
     return this.messageManager.statuses.FAILURE;
   }
 }

@@ -86,7 +86,7 @@ class AddPromocode extends Command {
     let codes;
     let response;
     try {
-      const reqRes = await fetch(firstAttach.url).then(data => data.json());
+      const reqRes = await fetch(firstAttach.url).then(data => data.text());
       if (firstAttach.filename.indexOf('.json') > -1) {
         codes = JSON.parse(reqRes);
       } else if (firstAttach.filename.indexOf('.csv') > -1) {

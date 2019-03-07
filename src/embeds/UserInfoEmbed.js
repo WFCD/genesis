@@ -21,10 +21,10 @@ class UserInfoEmbed extends BaseEmbed {
     const guildString = guilds.filter(guild => guild.members.get(user.id)).map(guild => guild.name).join('; ');
     this.author = {
       name: `${user.username}#${user.discriminator} | ${user.id}`,
-      icon_url: user.displayAvatarURL,
+      icon_url: user.displayAvatarURL(),
     };
     this.thumbnail = {
-      url: user.avatarURL,
+      url: user.displayAvatarURL(),
     };
     this.fields = [
       {
