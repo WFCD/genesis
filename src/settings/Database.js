@@ -20,7 +20,7 @@ const props = (obj) => {
 };
 
 /**
- * Copy funcitonns from class to this class... theoretically
+ * Copy functions from class to this class... theoretically
  * @param {Object} queriesClass class instance
  * @returns {undefined} doesn't return anything
  */
@@ -112,9 +112,10 @@ class Database {
   /**
    * Get context (including settings) for a command in a channel
    * @param {Discord.Channel} channel channel to get settings for
+   * @param {Discord.User} user user to check for specific settings for
    * @returns {Object} context
    */
-  async getCommandContext(channel) {
+  async getCommandContext(channel, user) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
       and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
@@ -225,6 +226,10 @@ class Database {
         'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
         respondToSettings: this.defaults.respond_to_settings,
       };
+    }
+    if (user) {
+      context.isBlacklisted = await this.isBlacklisted(user.id, channel.guild ? channel.guild.id : 0);
+      context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;
     return context;
