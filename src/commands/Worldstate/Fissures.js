@@ -24,6 +24,10 @@ class Fissures extends Command {
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
 
+    if (!fissures.length) {
+      this.messageManager.reply(message, ctx.i18n`No Fissures Active`, true, true);
+    }
+
     const pages = [];
     if (compact) {
       pages.push(new FissureEmbed(this.bot, fissures, platform));
