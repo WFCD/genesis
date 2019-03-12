@@ -18,7 +18,7 @@ class ServerInfoEmbed extends BaseEmbed {
     this.title = guild.name;
     this.description = `**Region:** ${guild.region}`;
     this.color = verificationColors[guild.verificationLevel];
-    this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`};
+    this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` };
     this.fields = [
       {
         name: 'Created:',

@@ -22,7 +22,7 @@ class BlacklistQueries {
    * Get blacklisted users
    * @param  {string}  guildId Guild to get data
    * @param  {boolean}  global  whether or not it's global
-   * @return {Promise}
+   * @returns {Promise}
    */
   async getBlacklisted(guildId, global) {
     const query = `SELECT user_id
@@ -30,7 +30,6 @@ class BlacklistQueries {
       WHERE guild_id = ${guildId}
         AND is_global = ${global};`;
     const res = await this.db.query(query);
-    console.log(res[0]);
     if (res[0]) {
       return res[0]
         .map(result => this.bot.client.users.get(result.user_id))
@@ -57,7 +56,7 @@ class BlacklistQueries {
    * @param  {string}  userId  User's id
    * @param  {string}  guildId Guild id
    * @param  {boolean}  global  whether or not to show globals
-   * @return {Promise}
+   * @returns {Promise}
    */
   async deleteBlacklistedUser(userId, guildId, global) {
     const query = SQL`DELETE IGNORE FROM user_blacklist

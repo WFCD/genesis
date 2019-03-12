@@ -31,8 +31,8 @@ class DeleteUser extends Command {
     const matches = message.strippedContent.replace('--global', '').replace('-g', '').trim().match(new RegExp(user, 'i'));
 
     if (!matches || !matches.length) {
-        this.messageManager.reply(message, 'No user provided.', true, true);
-        return this.messageManager.statuses.FAILURE;
+      this.messageManager.reply(message, 'No user provided.', true, true);
+      return this.messageManager.statuses.FAILURE;
     }
     const userId = matches[1];
 

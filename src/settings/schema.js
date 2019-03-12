@@ -164,5 +164,5 @@ module.exports = [
     guild_id BIGINT(20) NOT NULL DEFAULT '0',
     is_global BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (user_id, guild_id, is_global)
-  )`
+  )`,
 ];

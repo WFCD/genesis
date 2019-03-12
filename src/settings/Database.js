@@ -228,7 +228,8 @@ class Database {
       };
     }
     if (user) {
-      context.isBlacklisted = await this.isBlacklisted(user.id, channel.guild ? channel.guild.id : 0);
+      context.isBlacklisted = await this.isBlacklisted(user.id,
+        channel.guild ? channel.guild.id : 0);
       context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;

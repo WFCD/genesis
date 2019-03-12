@@ -1,10 +1,9 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
-
 const { MessageEmbed } = require('discord.js');
 
-const { captures: { user }, createGroupedArray, embedDefaults, setupPages } = require('../../CommonFunctions');
+const Command = require('../../models/Command.js');
+const { createGroupedArray, embedDefaults, setupPages } = require('../../CommonFunctions');
 
 class ListUsers extends Command {
   constructor(bot) {
@@ -29,18 +28,18 @@ class ListUsers extends Command {
       const groupedUsers = createGroupedArray(users, 10);
       const pages = [];
       if (groupedUsers.length) {
-        groupedUsers.forEach(userGroup => {
+        groupedUsers.forEach((userGroup) => {
           const page = new MessageEmbed(embedDefaults);
           page.setTitle(`Blacklisted Users${global ? ' (Global Incl.)' : ''}`);
           page.setDescription(userGroup.map(user => `${user} (${user.id})`).join('\n'));
           pages.push(page);
-        })
+        });
       } else {
         const noDataPage = new MessageEmbed(embedDefaults);
         noDataPage.setTitle('No Blacklisted Users');
         pages.push(noDataPage);
       }
-      setupPages(pages, {message, settings: this.settings, mm: this.messageManager });
+      setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
     this.messageManager.reply(message, 'Must be in a guild.', true, true);
