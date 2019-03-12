@@ -56,24 +56,6 @@ class MessaageManager {
    * @param {boolean} deleteResponse True to delete the sent message after time
    * @returns {null|Promise<Message>}
    */
-  async replyMessageRetPromise(message, content, deleteOriginal, deleteResponse) {
-    if ((message.channel.type === 'text'
-        && message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))
-        || message.channel.type === 'dm') {
-      const msg = await message.channel.send(`${this.zSWC}${content}`);
-      return this.deleteCallAndResponse(message, msg, deleteOriginal, deleteResponse);
-    }
-    return null;
-  }
-
-  /**
-   * Send a message, with options to delete messages after calling
-   * @param {Message} message original message being responded to
-   * @param {string} content String to send to a channel
-   * @param {boolean} deleteOriginal True to delete the original message
-   * @param {boolean} deleteResponse True to delete the sent message after time
-   * @returns {null|Promise<Message>}
-   */
   async reply(message, content, deleteOriginal, deleteResponse) {
     if ((message.channel && message.channel.type === 'text'
         && message.channel.permissionsFor(this.client.user.id).has('SEND_MESSAGES'))

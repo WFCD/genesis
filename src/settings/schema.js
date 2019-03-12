@@ -159,4 +159,10 @@ module.exports = [
       REFERENCES dynamic_voice_template(channel_id)
       ON DELETE CASCADE
   )`,
+  `CREATE TABLE IF NOT EXISTS user_blacklist (
+    user_id BIGINT(20) NOT NULL,
+    guild_id BIGINT(20) NOT NULL DEFAULT '0',
+    is_global BOOLEAN NOT NULL DEFAULT false,
+    PRIMARY KEY (user_id, guild_id, is_global)
+  )`,
 ];

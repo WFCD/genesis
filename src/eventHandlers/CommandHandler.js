@@ -72,7 +72,11 @@ class CommandHandler extends Handler {
     }
     const botPingId = `<@${this.bot.client.user.id}>`;
     const botNickPing = `<@!${this.bot.client.user.id}>`;
-    const ctx = await this.bot.settings.getCommandContext(message.channel);
+    const ctx = await this.bot.settings.getCommandContext(message.channel, message.author);
+    this.logger.debug(`${message.author.id} is ${ctx.isBlacklisted ? '' : 'not '}blacklisted`);
+    if (ctx.isBlacklisted) {
+      return;
+    }
 
     let checkOnlyInlines = false;
 

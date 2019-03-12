@@ -5,7 +5,7 @@ const Command = require('../../models/Command.js');
 /**
  * Sets the current guild's custom prefix
  */
-class Untrack extends Command {
+class Info extends Command {
   constructor(bot) {
     super(bot, 'core.info', 'info', 'Information about the bot');
   }
@@ -14,9 +14,10 @@ class Untrack extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {Object} ctx     Message/command context
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     this.messageManager.embed(message, {
       title: 'Cephalon Genesis',
       fields: [
@@ -29,7 +30,7 @@ class Untrack extends Command {
         },
         {
           name: '\u200B',
-          value: 'For help information, type `/help`',
+          value: `For help information, type \`${ctx.prefix}help\``,
           inline: false,
         },
         {
@@ -49,4 +50,4 @@ class Untrack extends Command {
   }
 }
 
-module.exports = Untrack;
+module.exports = Info;

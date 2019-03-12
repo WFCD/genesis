@@ -1,7 +1,16 @@
 'use strict';
 
 const { Collection, MessageEmbed } = require('discord.js');
+/**
+ * Map of emoji names to full types
+ * @type {Object}
+ */
 const emoji = require('./resources/emoji.json');
+
+/**
+ * Welcomes
+ * @type {string[]}
+ */
 const welcomes = require('./resources/welcomes.json');
 
 const {
@@ -9,13 +18,42 @@ const {
   resources, nightwave,
 } = require('./resources/trackables.json');
 
+/**
+ * API base path
+ * @type {string]}
+ */
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
+/**
+ * Genesis asset base URL
+ * @type {string}
+ */
 const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
+/**
+ * Warframe Wiki base url
+ * @type {string}
+ */
 const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
+/**
+ * API base url for the warframe-items cdn
+ * @type {string}
+ */
 const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
 
+/**
+ * Regex to check for vulgarity
+ * @type {RegExp}
+ */
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
+/**
+ * Captures for commonly needed parameters
+ * @type {Object}
+ * @property {string} channel     channel capture body
+ * @property {string} role        role capture body
+ * @property {string} user        user capture body
+ * @property {string} trackables  possible trackables capture body
+ * @property {string} platforms   platforms captrure body
+ */
 const captures = {
   channel: '(?:(?:<#)?(\\d+)(?:>)?)',
   role: '(?:(?:<@&)?(\\d+)(?:>)?)',
@@ -24,6 +62,10 @@ const captures = {
   platforms: '(pc|ps4|xb1|swi)',
 };
 
+/**
+ * Duration mapping
+ * @type {Object}
+ */
 const duration = {
   minute: 60,
   hour: 60 * 60,
@@ -32,6 +74,10 @@ const duration = {
 
 const fissureList = filter => fissures.filter(fissure => fissure.includes(filter));
 
+/**
+ * Object describing all trackable events
+ * @type {Object}
+ */
 const trackableEvents = {
   events: eventTypes,
   'fissures.t1': fissureList('fissures.t1'),
@@ -70,6 +116,10 @@ const trackableEvents = {
   nightwave,
 };
 
+/**
+ * Object of all trackable items
+ * @type {Object}
+ */
 const trackableItems = {
   items: rewardTypes,
   clantech,
@@ -161,27 +211,59 @@ const trackablesFromParameters = (params) => {
   return trackables;
 };
 
+/**
+ * RegExp to determine a trackable
+ * @type {RegExp}
+ */
 const eventsOrItems = new RegExp(captures.trackables, 'ig');
 
+/**
+ * Get a randome welcome message
+ * @returns {string} welcome string
+ */
 const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
 
-const createGroupedArray = (arr, chunkSize) => {
+/**
+ * Create array of arrays from
+ * @param  {any[]} arr        array of things
+ * @param  {number} chunkSize size of chunk
+ * @returns {Array.<any[]>}   Array of arrays of items
+ */
+const createGroupedArray = (arr, chunkSize = 10) => {
   const groups = [];
-  for (let i = 0; i < arr.length; i += (chunkSize || 10)) {
-    groups.push(arr.slice(i, i + (chunkSize || 10)));
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    groups.push(arr.slice(i, i + chunkSize));
   }
   return groups;
 };
 
+/**
+ * Get event and item matches from message
+ * @param  {Discord.Message} message message to fetch data from
+ * @returns {string[]}         Array of matches
+ */
 function getEventsOrItems(message) {
   const matches = message.strippedContent.match(eventsOrItems);
   return matches || [];
 }
 
+/**
+ * Simple string filter for filtering empty or undefined strings from an array
+ * @param  {string} chunk String chunk to check
+ * @returns {boolean}       Whether or not the string is allowed
+ */
 const stringFilter = chunk => chunk && chunk.length;
 
+/**
+ * Field limit for chunked embeds
+ * @type {Number}
+ */
 const fieldLimit = 5;
 
+/**
+ * Default values for embeds
+ * @type {Object}
+ */
 const embedDefaults = {
   color: 0x77dd77,
   url: 'https://warframestat.us/',
@@ -192,6 +274,14 @@ const embedDefaults = {
   timestamp: new Date(),
 };
 
+/**
+ * Chunkify a string
+ * @param  {string} string                    String to chunkify
+ * @param  {Array.<string>}  [newStrings=[]]  Chunked strings
+ * @param  {string} [breakChar='; ']          Break character to check for splits on
+ * @param  {number} [maxLength=1000]          Maximum length per string
+ * @returns {Array.<string>}                  Array of string chunks
+ */
 const chunkify = ({
   string, newStrings = [], breakChar = '; ', maxLength = 1000,
 }) => {
@@ -216,6 +306,11 @@ const chunkify = ({
   return newStrings;
 };
 
+/**
+ * Check that embeds are valid, and merge values into array
+ * @param  {Array.<any>} original  Original array
+ * @param  {Array.<any>|any} value Value to merge into array
+ */
 const checkAndMergeEmbeds = (original, value) => {
   if (value instanceof Array) {
     original.push(...value);
@@ -224,6 +319,12 @@ const checkAndMergeEmbeds = (original, value) => {
   }
 };
 
+/**
+ * Create a page collector for the given message and pages
+ * @param   {Discord.Message}                 msg     Message to start the page collector from
+ * @param   {(Object|Discord.MessageEmbed)}   pages   Array of possible pages
+ * @param   {Discord.User}                    author  Calling author
+ */
 const createPageCollector = async (msg, pages, author) => {
   if (pages.length <= 1) return;
 
@@ -290,6 +391,13 @@ const createPageCollector = async (msg, pages, author) => {
   });
 };
 
+/**
+ * Set up pages from an array of embeds
+ * @param  {Array.<Object|MessageEmbed>}  pages    Array of embeds to use as pages
+ * @param  {Message}                      message  Message for author
+ * @param  {Settings}                     settings Settings
+ * @param  {MessageManager}               mm      Message manager for interacting with messages
+ */
 const setupPages = async (pages, { message, settings, mm }) => {
   if (pages.length) {
     const msg = await mm.embed(message, pages[0], false, false);
@@ -763,6 +871,13 @@ const determineTweetType = (tweet) => {
   return ('tweet');
 };
 
+
+/**
+ * Common functions for determining common functions
+ * @typedef {Object} CommonFunctions
+ *
+ * @property {function} createGroupedArray create an array of arrays grouped to specified amount
+ */
 module.exports = {
   createGroupedArray,
   emojify,

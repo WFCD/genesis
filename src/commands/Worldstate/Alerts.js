@@ -24,6 +24,10 @@ class Alerts extends Command {
     const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const alerts = ws.alerts.filter(a => !a.expired);
 
+    if (!alerts.length) {
+      this.messageManager.reply(message, ctx.i18n`No Alerts Active`, true, true);
+    }
+
     if (compact) {
       await this.messageManager
         .embed(message, new AlertEmbed(this.bot, alerts, platform, ctx.i18n), true, true);
