@@ -4,9 +4,6 @@ const Command = require('../../models/Command.js');
 
 const { captures: { user } } = require('../../CommonFunctions');
 
-/**
- * Sets the current guild's custom prefix
- */
 class DeleteUser extends Command {
   constructor(bot) {
     super(bot, 'core.blacklist.remove', 'bl remove', 'Remove a user from the blacklist');

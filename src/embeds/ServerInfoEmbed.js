@@ -18,7 +18,7 @@ class ServerInfoEmbed extends BaseEmbed {
     this.title = guild.name;
     this.description = `**Region:** ${guild.region}`;
     this.color = verificationColors[guild.verificationLevel];
-    this.thumbnail = { url: guild.iconURL };
+    this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`};
     this.fields = [
       {
         name: 'Created:',
@@ -32,17 +32,17 @@ class ServerInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Text Channels:',
-        value: guild.channels.filterArray(channel => channel.type === 'text').length,
+        value: guild.channels.filter(channel => channel.type === 'text').size || 0,
         inline: true,
       },
       {
         name: 'Voice Channels:',
-        value: guild.channels.filterArray(channel => channel.type === 'voice').length,
+        value: guild.channels.filter(channel => channel.type === 'voice').size || 0,
         inline: true,
       },
       {
         name: 'Members:',
-        value: `${guild.members.filterArray(member => member.presence.status === 'online' || member.presence.status === 'idle' || member.presence.status === 'dnd').length}/${guild.memberCount}`,
+        value: `${guild.members.filter(member => member.presence.status === 'online' || member.presence.status === 'idle' || member.presence.status === 'dnd').size}/${guild.memberCount}` || 0,
         inline: true,
       },
       {
