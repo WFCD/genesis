@@ -11,7 +11,15 @@ class AddUser extends Command {
   constructor(bot) {
     super(bot, 'core.blacklist.add', 'bl add', 'Add a user to the blacklist');
     this.requiresAuth = true;
-    this.regex = new RegExp(`^${this.call}\\s?${user}`);
+    this.regex = new RegExp(`^${this.call}\\s?${user}?`);
+    this.allowDM = false;
+    this.usages = [
+      { description: 'Add a user to this server\'s blacklist, preventing the user from calling commands.', parameters: ['user'] },
+      {
+        description: 'Add a user to the global blacklist. Owner only. `--global` or `-g` specify global',
+        parameters: ['user', '--global', '-g'],
+      },
+    ];
   }
 
   /**
@@ -23,7 +31,13 @@ class AddUser extends Command {
    */
   async run(message, ctx) {
     const global = /--?g(?:lobal)?/ig.test(message.strippedContent) && ctx.isOwner;
-    const userId = message.strippedContent.replace('--global', '').replace('-g', '').trim().match(new RegExp(user, 'i'))[1];
+    const matches = message.strippedContent.replace('--global', '').replace('-g', '').trim().match(new RegExp(user, 'i'));
+
+    if (!matches || !matches.length) {
+        this.messageManager.reply(message, 'No user provided.', true, true);
+        return this.messageManager.statuses.FAILURE;
+    }
+    const userId = matches[1];
 
     if (userId && message.guild) {
       await this.settings.addBlacklistedUser(userId, message.guild ? message.guild.id : 0, global);

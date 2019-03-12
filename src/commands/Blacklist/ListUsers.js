@@ -9,7 +9,9 @@ const { captures: { user }, createGroupedArray, embedDefaults, setupPages } = re
 class ListUsers extends Command {
   constructor(bot) {
     super(bot, 'core.blacklist.list', 'bl ls', 'List users in the blacklist');
+    this.regex = new RegExp(`^(?:${this.call}?|bl list)`);
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   /**
