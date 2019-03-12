@@ -21,5 +21,8 @@
   "Weekly, ctd.": "Weekly, ctd.",
   "Currently Active": "# Currently Active",
   "Season {0} • Phase {1}": "Season {0} • Phase {1}",
-  "No Alerts Active": ":warning: No Alerts Active"
+  "No Alerts Active": ":warning: No Alerts Active",
+  "No Fissures Active": ":warning: No Fissuress Active",
+  "No Invasions Active": ":warning: No Invasions Active",
+  "No Sortie Active": ":warning: No Sortie Active"
 }
