@@ -142,9 +142,9 @@ class Notifier {
     const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
 
     const nWaveChallenges = newData.nightwave.activeChallenges
-      .filter(challenge => !ids.includes(challenge.id) && challenge.active && challenge.id && challenge.desc.indexOf('[PH]' === -1));
+      .filter(challenge => !ids.includes(challenge.id) && challenge.active);
     const nWaveIds = newData.nightwave.activeChallenges
-      .filter(challenge => challenge.active && challenge.id && challenge.desc.indexOf('[PH]' === -1))
+      .filter(challenge => challenge.active)
       .map(challenge => challenge.id);
     const nightwave = nWaveChallenges.length ? Object.assign({}, newData.nightwave) : undefined;
     if (nightwave) {
