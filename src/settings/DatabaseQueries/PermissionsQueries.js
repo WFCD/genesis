@@ -84,7 +84,7 @@ class PermissionsQueries {
     if (!res || res[0].length === 0) {
       return 'none';
     }
-    return res.rows[0].allowed;
+    return res[0][0].allowed;
   }
 
   /**
@@ -103,7 +103,7 @@ class PermissionsQueries {
     if (!res || res[0].length === 0) {
       return 'none';
     }
-    return res.rows[0].allowed === 1;
+    return res[0][0].allowed;
   }
 
   /**

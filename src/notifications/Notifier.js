@@ -146,7 +146,9 @@ class Notifier {
     const nWaveIds = newData.nightwave.activeChallenges
       .filter(challenge => challenge.active)
       .map(challenge => challenge.id);
-    const nightwave = nWaveChallenges.length ? Object.assign({}, newData.nightwave) : undefined;
+    const nightwave = nWaveChallenges.length
+      ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
+      : undefined;
     if (nightwave) {
       nightwave.activeChallenges = nWaveChallenges;
     }
