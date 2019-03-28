@@ -103,14 +103,21 @@ class MessaageManager {
   async embedToChannel(channel, embed, prepend, deleteAfter) {
     if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id)
       .has(['SEND_MESSAGES', 'EMBED_LINKS'])) || channel.type === 'dm')) {
-      const msg = await channel.send(prepend, { embed });
-      if (msg.deletable && deleteAfter > 0) {
-        const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
-        if (deleteExpired) {
-          msg.delete({ timeout: deleteAfter });
+      try {
+        const msg = await channel.send(prepend, { embed });
+        if (msg.deletable && deleteAfter > 0) {
+          const deleteExpired = await this.settings.getChannelSetting(channel, 'deleteExpired') === '1';
+          if (deleteExpired) {
+            msg.delete({ timeout: deleteAfter });
+          }
         }
+        return msg;
+      } catch (error) {
+        this.logger.debug(`Could not embed to ${channel.id}`);
+        throw error;
       }
     }
+    return undefined;
   }
 
   /**

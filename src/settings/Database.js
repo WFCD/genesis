@@ -45,6 +45,41 @@ const copyChildrenQueries = (queriesClass) => {
  */
 
 /**
+  * Command Context
+  * @type {Object} CommandContext
+  * @property {string} platform The channel's configured platform
+  * @property {string} prefix The channel's configured command prefix
+  * @property {string} language Language to localize, if possible
+  * @property {boolean} allowCustom Whether or not to allow custom commands in this channel
+  * @property {boolean} allowInline Whether or not to allow inline commands in this channel
+  * @property {boolean} defaultRoomsLocked Whether or not to set private rooms
+  *  created from this channel to locked
+  * @property {boolean} defaultNoText Whether or not to create a text chat with private chats
+  * @property {boolean} createPrivateChannel Whether or not private chats
+  *  are allowed to be created here
+  * @property {boolean} defaultShown Whether or not private chats created here are shown by default
+  * @property {string} tempCategory Temp category to put private chats in when created.
+  *   Makes text chats not be created.
+  * @property {boolean} settings.cc.ping Whether or not to ping in custom commands called here
+  * @property {boolean} respondToSettings Whether or not to respond to settings changes.
+  *  Changes are applied no matter the value.
+  * @property {Object} webhook Webhook information for this channel
+  * @property {string} webhook.id Webhook id
+  * @property {string} webhook.token Webhook token
+  * @property {string} webhook.name Webhook name (can be overrided)
+  * @property {string} webhook.avatar Webhook avatar (can be overrided)
+  * @property {Object} lfg Channel configs per-platform where LFG posts will be put.
+  * @property {Discord.Channel} lfg.pc PC lfg channel
+  * @property {Discord.Channel} lfg.ps4 PS4 lfg channel
+  * @property {Discord.Channel} lfg.swi Switch lfg channel
+  * @property {Discord.Channel} lfg.xb1 XB1 lfg channel
+  * @property {boolean} isBlacklisted whether or not the user
+  *   calling the command is blacklisted from the bot
+  * @property {boolean} isOwner whether or not the user
+  *   calling the command is blacklisted from the bot
+  */
+
+/**
  * Persistent storage for the bot
  */
 class Database {
@@ -113,7 +148,7 @@ class Database {
    * Get context (including settings) for a command in a channel
    * @param {Discord.Channel} channel channel to get settings for
    * @param {Discord.User} user user to check for specific settings for
-   * @returns {Object} context
+   * @returns {CommandContext} context
    */
   async getCommandContext(channel, user) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
@@ -121,7 +156,8 @@ class Database {
       and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
         'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings');`;
+        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -201,10 +237,23 @@ class Database {
         context.tempCategory = undefined;
       }
 
-      if (context.lfgChannel && channel.guild.channels.has(context.lfgChannel.trim())) {
-        context.lfgChannel = channel.guild.channels.get(context.lfgChannel.trim());
-      } else {
-        context.lfgChannel = undefined;
+      if (context.lfgChannel) {
+        context.lfg = {};
+        context.lfg.pc = channel.guild.channels.get(context.lfgChannel);
+        delete context.lfgChannel;
+      }
+
+      if (context['lfgChannel.ps4']) {
+        context.lfg.ps4 = channel.guild.channels.get(context['lfgChannel.ps4']);
+        delete context['lfgChannel.ps4'];
+      }
+      if (context['lfgChannel.swi']) {
+        context.lfg.swi = channel.guild.channels.get(context['lfgChannel.swi']);
+        delete context['lfgChannel.swi'];
+      }
+      if (context['lfgChannel.xb1']) {
+        context.lfg.xb1 = channel.guild.channels.get(context['lfgChannel.xb1']);
+        delete context['lfgChannel.xb1'];
       }
 
       if (typeof context.respond_to_settings === 'undefined') {

@@ -50,6 +50,7 @@
     "node-md-config": "^2.0.1",
     "node-wikia": "0.0.3",
     "pad-left": "^2.1.0",
+    "parse-duration": "^0.1.1",
     "ping": "^0.2.2",
     "progress": "^2.0.3",
     "raven": "^2.6.4",

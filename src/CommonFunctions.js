@@ -52,12 +52,12 @@ const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@
  * @property {string} role        role capture body
  * @property {string} user        user capture body
  * @property {string} trackables  possible trackables capture body
- * @property {string} platforms   platforms captrure body
+ * @property {string} platforms   platforms capture body
  */
 const captures = {
-  channel: '(?:(?:<#)?(\\d+)(?:>)?)',
-  role: '(?:(?:<@&)?(\\d+)(?:>)?)',
-  user: '(?:(?:<@!?)?(\\d+)(?:>)?)',
+  channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
+  role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
+  user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
   trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
   platforms: '(pc|ps4|xb1|swi)',
 };

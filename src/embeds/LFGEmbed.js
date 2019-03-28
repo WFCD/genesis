@@ -28,9 +28,11 @@ class LFGEmbed extends BaseEmbed {
       { name: 'Where', value: lfg.location, inline: true },
       { name: 'Time', value: lfg.duration, inline: true },
       { name: 'Farming For', value: lfg.goal, inline: true },
-      { name: 'Platform', value: lfg.platform, inline: true },
+      { name: 'Platform', value: lfg.platform.toUpperCase(), inline: true },
+      { name: 'Need', value: `${lfg.membersNeeded - lfg.members.length}`, inline: true },
+      { name: 'Members', value: lfg.members.map(id => `<@!${id}>`).join(', '), inline: true },
     ];
-    this.footer.text = 'Posted';
+    this.footer.text = `Expires in ${lfg.expiry} • Posted`;
   }
 }
 

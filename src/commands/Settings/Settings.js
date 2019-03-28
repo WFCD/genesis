@@ -39,8 +39,8 @@ class Settings extends Command {
       'language', 'platform', 'prefix', 'createPrivateChannel', 'deleteExpired', 'allowInline',
       'allowCustom', 'settings.cc.ping', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown',
       'respond_to_settings', 'respond_to_settings', 'delete_after_respond', 'delete_response',
-      'defaultRoles', 'tempCategory', 'lfgChannel', 'vulgarLog', 'msgDeleteLog', 'memberRemoveLog',
-      'banLog', 'unbanLog', 'modRole',
+      'defaultRoles', 'tempCategory', 'lfgChannel', 'lfgChannel.ps4', 'lfgChannel.xb1', 'lfgChannel.swi',
+      'vulgarLog', 'msgDeleteLog', 'memberRemoveLog', 'banLog', 'unbanLog', 'modRole',
     ]);
 
     page.setTitle('General Settings');
@@ -69,8 +69,25 @@ class Settings extends Command {
       const tempCategory = settings.tempCategory !== '0'
         && typeof settings.tempCategory !== 'undefined'
         ? settings.tempCategory : negate;
+
+      let lfgVal = '';
+      if (settings.lfgChannel) {
+        lfgVal += `**PC:** ${wrapChannelValue(settings.lfgChannel)}\n`;
+      }
+      if (settings['lfgChannel.ps4']) {
+        lfgVal += `**PS4:** ${wrapChannelValue(settings['lfgChannel.ps4'])}\n`;
+      }
+      if (settings['lfgChannel.xb1']) {
+        lfgVal += `**XB1:** ${wrapChannelValue(settings['lfgChannel.xb1'])}\n`;
+      }
+      if (settings['lfgChannel.swi']) {
+        lfgVal += `**Switch:** ${wrapChannelValue(settings['lfgChannel.swi'])}\n`;
+      }
+      if (!(settings.lfgChannel || settings['lfgChannel.ps4'] || settings['lfgChannel.xb1'] || settings['lfgChannel.swi'])) {
+        lfgVal = negate;
+      }
       page.addField('Temp Channel Category', wrapChannelValue(tempCategory), true);
-      page.addField('LFG', wrapChannelValue(settings.lfgChannel || negate), true);
+      page.addField('LFG', lfgVal, true);
       page.addField('Default Roles', defaultRoles.length ? defaultRoles : negate, true);
       page.addField('Vulgar Log', wrapChannelValue(settings.vulgarLog || negate), true);
       page.addField('Delete Log', wrapChannelValue(settings.msgDeleteLog || negate), true);
