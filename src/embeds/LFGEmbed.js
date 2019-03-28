@@ -33,6 +33,14 @@ class LFGEmbed extends BaseEmbed {
       { name: 'Members', value: lfg.members.map(id => `<@!${id}>`).join(', '), inline: true },
     ];
     this.footer.text = `Expires in ${lfg.expiry} • Posted`;
+    
+    if (lfg.vc) {
+      this.fields.push({
+        name: 'Voice Chat',
+        value: `[Join](https://discordapp.com/channels/${lfg.vc.channel.guild.id}/${lfg.vc.channel.id})`,
+        inline: true,
+      });
+    }
   }
 }
 
