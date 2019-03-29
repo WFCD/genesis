@@ -30,7 +30,7 @@ class SetLFGChannel extends Command {
     matchable = matchable.replace(platform);
 
     const chm = matchable.match(new RegExp(captures.channel, 'i'));
-    const channel = chm[1];
+    const channel = (chm || [])[1];
 
     if (channel && this.bot.client.channels.has(channel.trim())) {
       await this.settings.setGuildSetting(message.guild, `lfgChannel${platform !== 'pc' ? `.${platform}` : ''}`, channel);

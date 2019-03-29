@@ -34,7 +34,7 @@ class LFGEmbed extends BaseEmbed {
     ];
     this.footer.text = `Expires in ${lfg.expiry} • Posted`;
 
-    if (lfg.vc) {
+    if (lfg.vc.channel) {
       this.fields.push({
         name: 'Voice Chat',
         value: `[Join](https://discordapp.com/channels/${lfg.vc.channel.guild.id}/${lfg.vc.channel.id})`,
