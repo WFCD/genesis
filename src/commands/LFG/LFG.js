@@ -75,7 +75,7 @@ class AddLFG extends Command {
       try {
         const msg = await this.messageManager
           .embedToChannel(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]], embed);
-        msg.delete({ timeout: dehumanize(lfg.expiry) });
+        msg.delete({ timeout: dehumanize(lfg.expiry) + 10000 });
         msg.react('🔰');
         msg.react('❌');
 
