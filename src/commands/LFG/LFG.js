@@ -58,38 +58,37 @@ class AddLFG extends Command {
           .embedToChannel(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]], embed);
         msg.delete({ timeout: dehumanize(lfg.expiry) });
         msg.react('🔰');
-        
-      const collector = msg.createReactionCollector((reaction, user) => 
-        (reaction.emoji.name === '🔰') && user.id !== msg.guild.me.id,
-        { time: dehumanize(lfg.expiry), dispose: true });
-      
-      collector.on('end', () => {
-         msg.reactions.removeAll();
-      });
-      
-      collector.on('collect', (reaction, user) => {
-        if (!lfg.members.includes(user.id) && lfg.members.length <= lfg.membersNeeded) {
-          lfg.members.push(user.id);
-          lfg.vc = message.member.voice;
-          msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
-        }
-        if (user.id === message.author.id) {
-          try {
-            reaction.users.remove(message.author.id);
-          } catch (e) {
-            this.logger.debug(e);
+
+        const collector = msg.createReactionCollector((reaction, user) => (reaction.emoji.name === '🔰') && user.id !== msg.guild.me.id,
+          { time: dehumanize(lfg.expiry), dispose: true });
+
+        collector.on('end', () => {
+          msg.reactions.removeAll();
+        });
+
+        collector.on('collect', (reaction, user) => {
+          if (!lfg.members.includes(user.id) && lfg.members.length <= lfg.membersNeeded) {
+            lfg.members.push(user.id);
+            lfg.vc = message.member.voice;
+            msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
           }
-        }
-      });
-      
-      collector.on('remove', (reaction, user) => {
-        if (lfg.members.includes(user.id) && user.id !== message.author.id) {
-          lfg.members.splice(lfg.members.indexOf(user.id), 1);
-          lfg.vc = message.member.voice;
-          msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
-        }
-      });
-        
+          if (user.id === message.author.id) {
+            try {
+              reaction.users.remove(message.author.id);
+            } catch (e) {
+              this.logger.debug(e);
+            }
+          }
+        });
+
+        collector.on('remove', (reaction, user) => {
+          if (lfg.members.includes(user.id) && user.id !== message.author.id) {
+            lfg.members.splice(lfg.members.indexOf(user.id), 1);
+            lfg.vc = message.member.voice;
+            msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+          }
+        });
+
         return this.messageManager.statuses.SUCCESS;
       } catch (e) {
         this.logger.error(e);

@@ -99,6 +99,8 @@ class MessaageManager {
    * @param {Object} embed Embed object to send
    * @param {string} prepend String to prepend to the embed
    * @param {nunber} deleteAfter delete after a specified time
+   *
+   * @returns {Promise<Discord.Message>}
    */
   async embedToChannel(channel, embed, prepend, deleteAfter) {
     if (channel && ((channel.type === 'text' && channel.permissionsFor(this.client.user.id)
