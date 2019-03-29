@@ -4,6 +4,10 @@ const dehumanize = require('parse-duration');
 const Command = require('../../models/Command.js');
 const LFGEmbed = require('../../embeds/LFGEmbed');
 
+const hosting = /\[H\]/i;
+const lookingForMore = /\[LFM\]/i;
+const lookingForGroup = /\[LFG\]/i;
+
 /**
  * Create temporary voice/text channels (can be expanded in the future)
  */
@@ -41,15 +45,30 @@ class AddLFG extends Command {
 
       const lfg = {
         author: message.author,
-        location: (params[0] || 'Anywhere').trim(),
+        location: (params[0] || 'Anywhere').replace(lookingForGroup, '').replace(hosting, '').replace(lookingForMore, '').trim(),
         duration: (params[1] || 'Any Time').trim(),
         goal: (params[2] || 'Anything').trim(),
         platform: (params[3] || ctx.platform).trim().toLowerCase(),
         expiry: params[4] || '30m',
+        expiryTs: Date.now() + dehumanize(params[4] || '30m'),
         membersNeeded: params[5] || 4,
         members: [message.author.id],
         vc: message.member.voice,
+        types: [],
+        edited: false,
       };
+
+      if (hosting.test(message.strippedContent)) {
+        lfg.types.push('Hosting');
+      }
+
+      if (lookingForMore.test(message.strippedContent)) {
+        lfg.types.push('LFM');
+      }
+
+      if (lookingForGroup.test(message.strippedContent)) {
+        lfg.types.push('LFG');
+      }
 
       // save params based on order
       const embed = new LFGEmbed(this.bot, lfg);
@@ -58,21 +77,32 @@ class AddLFG extends Command {
           .embedToChannel(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]], embed);
         msg.delete({ timeout: dehumanize(lfg.expiry) });
         msg.react('🔰');
+        msg.react('❌');
 
-        const collector = msg.createReactionCollector((reaction, user) => (reaction.emoji.name === '🔰') && user.id !== msg.guild.me.id,
+        const collector = msg.createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
           { time: dehumanize(lfg.expiry), dispose: true });
 
         collector.on('end', () => {
           msg.reactions.removeAll();
+          lfg.expiry = 0;
+          lfg.edited = true;
+          msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
         });
 
         collector.on('collect', (reaction, user) => {
           if (!lfg.members.includes(user.id) && lfg.members.length <= lfg.membersNeeded) {
             lfg.members.push(user.id);
             lfg.vc = message.member.voice;
+            lfg.edited = true;
             msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
           }
           if (user.id === message.author.id) {
+            if (reaction.emoji.name === '❌') {
+              lfg.expiry = 0;
+              lfg.edited = true;
+              msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+              collector.stop();
+            }
             try {
               reaction.users.remove(message.author.id);
             } catch (e) {
@@ -85,6 +115,7 @@ class AddLFG extends Command {
           if (lfg.members.includes(user.id) && user.id !== message.author.id) {
             lfg.members.splice(lfg.members.indexOf(user.id), 1);
             lfg.vc = message.member.voice;
+            lfg.edited = true;
             msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
           }
         });
