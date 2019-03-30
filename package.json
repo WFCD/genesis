@@ -43,7 +43,7 @@
     "discord.js": "github:discordjs/discord.js",
     "erlpack": "github:discordapp/erlpack",
     "greenkeeper-lockfile": "^1.14.0",
-    "jimp": "^0.5.6",
+    "jimp": "^0.6.1",
     "json-query": "^2.2.2",
     "moment": "^2.24.0",
     "mysql2": "^1.6.4",
