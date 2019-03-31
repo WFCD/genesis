@@ -16,7 +16,7 @@ class AddBuild extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+(all|title|body|image)\\s+(.+))?`, 'i');
 
     this.usages = [
-      { description: 'Display instructions for creating a new build with Genesis', parameters: [] },
+      { description: 'Edit a field on the build', parameters: ['type (all, title, body, image)', 'title\\*', 'body\\*', 'image\\*'] },
     ];
 
     this.allowDM = false;
