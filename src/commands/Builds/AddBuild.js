@@ -1,8 +1,10 @@
 'use strict';
 
+const fetch = require('node-fetch');
+
 const Command = require('../../models/Command.js');
 const BuildEmbed = require('../../embeds/BuildEmbed');
-const { assetBase } = require('../../CommonFunctions');
+const { assetBase, setupPages } = require('../../CommonFunctions');
 
 const outageThumb = `${assetBase}/img/outage.png`;
 
@@ -27,6 +29,10 @@ class AddBuild extends Command {
         delimAfter: ' ',
         separator: ' | ',
       },
+      {
+        description: 'Add one or more builds from a structured json file. [Example file.](https://hastebin.com/etubajolit.json)',
+        parameters: [],
+      },
     ];
 
     this.allowDM = false;
@@ -35,6 +41,46 @@ class AddBuild extends Command {
   async run(message) {
     const matches = message.strippedContent.match(this.regex)[1];
     const params = (matches || '').split('|');
+
+    // json attachment
+    if (message.attachments.first()) {
+      let firstAttach;
+      try {
+        firstAttach = message.attachments.first();
+      } catch (e) {
+        this.logger.error(e);
+        return this.messageManager.statuses.FAILURE;
+      }
+
+      if (firstAttach.name.indexOf('.json') === -1) {
+        this.messageManager.reply(message, 'Invalid file. Check here (<https://hastebin.com/etubajolit.json>)', true, true);
+        return this.messageManager.statuses.FAILURE;
+      }
+      let buildsConfig;
+
+      try {
+        buildsConfig = await fetch(firstAttach.url).then(data => data.json());
+      } catch (e) {
+        message.reply('Couldn\'t get file.');
+        this.logger.error(e);
+        message.delete({ timeout: 30000 });
+        return this.messageManager.statuses.FAILURE;
+      }
+      const builds = await this.settings.addNewBuilds(buildsConfig.builds.map(build => ({
+        title: build.title,
+        body: `${buildsConfig.common.prefix || ''}${build.body}${buildsConfig.common.postfix || ''}`,
+        image: build.image,
+        ownerId: build.owner || message.author.id,
+        owner: this.bot.client.users.get(build.owner) || build.owner || message.author,
+        isPublic: build.isPublic || false,
+      })));
+
+      const pages = builds.map(build => new BuildEmbed(this.bot, build));
+      setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      return this.messageManager.statuses.SUCCESS;
+    }
+
+    // non-attachment route
     if (params.length < 1) {
       // let them know there's not enough params
       return this.messageManager.statuses.FAILURE;

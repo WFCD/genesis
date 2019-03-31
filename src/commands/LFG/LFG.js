@@ -18,7 +18,7 @@ class AddLFG extends Command {
    */
   constructor(bot) {
     super(bot, 'lfg.add', 'lfg|h|lfm', 'Submit an LFG request.');
-    this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call})\\s?(.+)?`, 'i');
 
     this.usages = [
       {
@@ -71,7 +71,7 @@ class AddLFG extends Command {
       }
 
       const typeMatches = message.strippedContent.match(/^(lfg|h|lfm)/ig);
-      if (typeMatches.length > 0) {
+      if (typeMatches && typeMatches.length) {
         typeMatches.forEach((type) => {
           switch (type.toLowerCase()) {
             case 'h':

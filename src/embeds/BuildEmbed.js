@@ -23,8 +23,8 @@ class BuildEmbed extends BaseEmbed {
         this.fields.push({ name: '\u200B', value: section });
       }
     });
-    this.image = { url: build.url };
-    this.footer.text = `${build.id} • Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
+    this.image = { url: build.url || build.image };
+    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
   }
 }
 

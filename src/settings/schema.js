@@ -105,6 +105,7 @@ module.exports = [
     body TEXT NOT NULL,
     image TEXT NOT NULL,
     owner_id BIGINT UNSIGNED NOT NULL,
+    is_public VARCHAR(1) NOT NULL DEFAULT '0',
     PRIMARY KEY (build_id)
   );`,
   `CREATE TABLE IF NOT EXISTS code_pool (

@@ -22,7 +22,6 @@ class GetBuild extends Command {
 
   async run(message) {
     const buildId = message.strippedContent.match(this.regex)[1];
-    this.logger.debug(buildId);
     if (!buildId || buildId.length < 1) {
       return this.messageManager.statuses.FAILURE;
     }

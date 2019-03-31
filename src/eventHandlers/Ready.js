@@ -6,6 +6,17 @@ const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 
 const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
 
+const max = {
+  cetus: {
+    day: 6000000,
+    night: 3000000,
+  },
+  vallis: {
+    warm: 400000,
+    cold: 1600000 - 400000,
+  },
+};
+
 /**
  * Check if private rooms have expired and are empty. If not, do nothing.
  * If so, delete the corresponding channels.
@@ -58,8 +69,21 @@ async function updatePresence(self) {
     const base = `@${self.client.user.username} help`;
     let final = base;
     if (vallisState || cetusState) {
-      const vs = vallisState ? `${timeDeltaToMinutesString(fromNow(new Date(vallisState.expiry))) || '??'} to ${vallisState.isWarm ? '❄' : '🔥'} | ` : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(fromNow(new Date(cetusState.expiry))) || '??'} to  ${cetusState.isDay ? '🌙' : '☀'} | ` : '';
+      let vsFromNow = fromNow(new Date(vallisState.expiry));
+      let csFromNow = fromNow(new Date(cetusState.expiry));
+
+      if (vsFromNow < 0) {
+        vsFromNow = (vallisState.isWarm ? max.vallis.cold : max.vallis.warm) + vsFromNow;
+        vallisState.isWarm = !vallisState.isWarm;
+      }
+
+      if (csFromNow < 0) {
+        csFromNow = (cetusState.isDay ? max.cetus.night : max.cetus.day) + csFromNow;
+        cetusState.isDay = !cetusState.isDay;
+      }
+
+      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'} to ${vallisState.isWarm ? '❄' : '🔥'} | ` : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'} to  ${cetusState.isDay ? '🌙' : '☀'} | ` : '';
       final = `${vs}${cs}${base}`;
     }
 

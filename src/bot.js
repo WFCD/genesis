@@ -229,8 +229,8 @@ class Genesis {
 
     this.setupHandlers();
     try {
-      const t = await this.client.login(this.token);
-      this.logger.debug(`Logged in with token ${t}`);
+      await this.client.login(this.token);
+      this.logger.debug('Logged in with token.');
       await this.notifier.start();
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');

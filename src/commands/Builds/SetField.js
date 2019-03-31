@@ -34,7 +34,7 @@ class AddBuild extends Command {
     let title;
     let body;
     let image;
-    if (build && (build.owner_id === message.author.id || message.author.id === this.bot.owner)) {
+    if (build && (build.ownerId === message.author.id || message.author.id === this.bot.owner)) {
       if (type === 'all') {
         [, title, body, image] = params;
       } else if (type === 'title') {
