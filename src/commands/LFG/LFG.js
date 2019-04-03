@@ -18,7 +18,7 @@ class AddLFG extends Command {
    */
   constructor(bot) {
     super(bot, 'lfg.add', 'lfg|h|lfm', 'Submit an LFG request.');
-    this.regex = new RegExp(`^(?:${this.call})\\s?(.+)?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call})(?!elp)\\s?(.+)?`, 'i');
 
     this.usages = [
       {
