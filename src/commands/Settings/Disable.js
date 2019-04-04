@@ -5,7 +5,7 @@ const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
 const { getChannels, getTarget, captures } = require('../../CommonFunctions');
 
-const commandIdRegex = new RegExp('(\\w*\\.*\\w*\\.*\\w*\\*?)', 'ig');
+const commandIdRegex = /(\w*\.*\w*\.*\w*\*?)/ig;
 const locationRegex = new RegExp(`(?:\\s+in\\s+(${captures.channel}|here|\\*))`, 'ig');
 const appliesToRegex = new RegExp(`(?:\\s+for\\s(${captures.user}|${captures.role}|\\*))?`, 'ig');
 
@@ -58,24 +58,56 @@ class Disable extends Command {
       return this.messageManager.statuses.FAILURE;
     }
 
+    console.log(`${commands.length}/${}`);
+
+
     const results = [];
+    const toChange = {}
     // set the stuff
     commands.forEach((command) => {
       channels.forEach((channel) => {
         if (!channel) return;
         try {
+          if (!toChange[channel.id]) {
+            toChange[channel.id] = {
+              roles: {},
+              members: {}
+            }
+          }
           if (target.type === 'Role') {
-            results.push(this.settings
-              .setChannelPermissionForRole(channel, target, command, 0));
+            if (!toChange[channel.id].roles[target.id]) {
+              toChange[channel.id].roles[target.id] = [];
+            }
+            toChange[channel.id].roles[target.id].push(command);
           } else {
-            results.push(this.settings
-              .setChannelPermissionForMember(channel, target, command, 0));
+            if (!toChange[channel.id].members[target.id]) {
+              toChange[channel.id].members[target.id] = [];
+            }
+            toChange[channel.id].members[target.id].push(command);
           }
         } catch (error) {
           this.logger.error(error);
         }
       });
     });
+
+    Object.keys(toChange).forEach((channelId) => {
+        const channel = toChange[channelId];
+        if (Object.keys(channel.roles).length) {
+          Object.keys(channel.roles).forEach((roleId) => {
+            const commands = channel[roleId];
+            results.push(this.settings.setChannelPermissionForRole(channelId, roleId, commands, 0));
+          });
+        }
+
+        if (Object.keys(channel.members).length) {
+          Object.keys(channel.members).forEach((memberId) => {
+            const commands = channel[memberId];
+            results.push(this.settings.setChannelPermissionForMember(channelId, memberId, commands, 0));
+          });
+        }
+    });
+
     await Promise.all(results);
     // notify info embed
     const infoEmbed = new EnableInfoEmbed(this.bot, 0, [commands, channels, target.toString()]);

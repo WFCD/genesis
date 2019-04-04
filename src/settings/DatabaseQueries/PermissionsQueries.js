@@ -10,32 +10,56 @@ class PermissionsQueries {
 
   /**
    * Enables or disables a command for an individual member in a channel
-   * @param {GuildChannel} channel - A discord guild channel
-   * @param {GuildMember} member - A discord guild member
-   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {GuildChannel|string} channel - A discord guild channel
+   * @param {GuildMember|string} member - A discord guild member
+   * @param {string|string[]} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
   async setChannelPermissionForMember(channel, member, commandId, allowed) {
-    const query = SQL`INSERT INTO channel_permissions VALUES
-      (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
-      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return this.db.query(query);
+    // const query = SQL`INSERT INTO channel_permissions VALUES
+    //   (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
+    //   ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+    // return this.db.query(query);
+
+    if (typeof commandId === 'string') {
+      const query = SQL`INSERT INTO channel_permissions VALUES
+        (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
+        ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+      return this.db.query(query);
+    } else {
+      const query = SQL`INSERT INTO channel_permissions VALUES`;
+      commandId.forEach((command, index) => {
+        query.append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`).append(index !== (rows.length - 1) ? ',' : '');
+      });
+      query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
+      return this.db.query(query);
+    }
   }
 
   /**
    * Enables or disables a command for a role in a channel
    * @param {GuildChannel} channel - A discord guild channel
    * @param {Role} role - A discord role
-   * @param {string} commandId - The ID of the command to set the permission for
+   * @param {string|string[]} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
    */
   async setChannelPermissionForRole(channel, role, commandId, allowed) {
-    const query = SQL`INSERT INTO channel_permissions VALUES
-      (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
-      ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
-    return this.db.query(query);
+    if (typeof commandId === 'string') {
+      const query = SQL`INSERT INTO channel_permissions VALUES
+        (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
+        ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
+      return this.db.query(query);
+    } else if (typeof commandId !== 'undefined'){
+      const query = SQL`INSERT INTO channel_permissions VALUES`;
+      commandId.forEach((command, index) => {
+        query.append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`).append(index !== (rows.length - 1) ? ',' : '');
+      });
+      query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
+      return this.db.query(query);
+    }
+    
   }
 
   /**

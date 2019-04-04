@@ -84,13 +84,16 @@ class Help extends Command {
         .permissionsFor(message.author)
         .has('MANAGE_ROLES'),
     };
-
-    const searchableCommands = this.bot.commandManager.commands.filter((command) => {
-      if ((command.ownerOnly && !config.isOwner) || (command.requiresAuth && !config.hasAuth)) {
-        return false;
+    
+    const searchableCommands = [];
+    for (const command of  this.bot.commandManager.commands) {
+      const canAct = await this.checkCanAct(command, message);
+      
+      if (canAct === '1' || canAct === 'none') {
+        this.logger.debug(`${command.id} ${canAct}`);
+        searchableCommands.push(command);
       }
-      return true;
-    });
+    }
 
     if (query) {
       query = String(query).toLowerCase();
@@ -135,6 +138,54 @@ class Help extends Command {
     if (commands.length > 0) {
       await this.messageManager.embed(message, embed, true, false);
     }
+  }
+  
+  /**
+   * Check if the current command being called is able to be performed for the user calling it.
+   * **COPIED FROM CommandHandler.js**
+   * @param   {Command} command  command to process to see if it can be called
+   * @param   {Message} message Discord message object
+   * @param   {boolean} allowCustom Whether or not to allow custom commands
+   * @param   {boolean} allowInline Whether or not to allow inline commands
+   * @returns {Promise<boolean>} Whether or not the current command can be called by the author
+   */
+  async checkCanAct(command, message) {
+    if (!command.enabled) {
+      return false;
+    }
+    if (command.ownerOnly && message.author.id !== this.bot.owner) {
+      return false;
+    }
+    if (message.channel.type === 'text') {
+      if (command.requiresAuth) {
+        if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
+          const memberHasPermForRequiredAuthCommand = await this.bot.settings
+            .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+          if (memberHasPermForRequiredAuthCommand === 'none') {
+            const roleHasPermForRequiredAuthCommand = await this.bot.settings
+              .getChannelPermissionForUserRoles(
+                message.channel,
+                message.author.id, command.id,
+              );
+            return roleHasPermForRequiredAuthCommand;
+          }
+          return memberHasPermForRequiredAuthCommand;
+        }
+        return false;
+      }
+      const memberHasPermForNonAuthCommand = await this.bot.settings
+        .getChannelPermissionForMember(message.channel, message.author.id, command.id);
+      if (memberHasPermForNonAuthCommand === 'none') {
+        const roleHasPermForNonAuthCommand = await this.bot.settings
+          .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+        return roleHasPermForNonAuthCommand;
+      }
+      return memberHasPermForNonAuthCommand;
+    }
+    if (message.channel.type === 'dm' && command.allowDM) {
+      return true;
+    }
+    return false;
   }
 }
 

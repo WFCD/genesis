@@ -59,22 +59,50 @@ class Enable extends Command {
     }
 
     const results = [];
+    const toChange = {}
     // set the stuff
     commands.forEach((command) => {
       channels.forEach((channel) => {
         if (!channel) return;
         try {
+          if (!toChange[channel.id]) {
+            toChange[channel.id] = {
+              roles: {},
+              members: {}
+            }
+          }
           if (target.type === 'Role') {
-            results.push(this.settings
-              .setChannelPermissionForRole(channel, target, command, 1));
+            if (!toChange[channel.id].roles[target.id]) {
+              toChange[channel.id].roles[target.id] = [];
+            }
+            toChange[channel.id].roles[target.id].push(command);
           } else {
-            results.push(this.settings
-              .setChannelPermissionForMember(channel, target, command, 1));
+            if (!toChange[channel.id].members[target.id]) {
+              toChange[channel.id].members[target.id] = [];
+            }
+            toChange[channel.id].members[target.id].push(command);
           }
         } catch (error) {
           this.logger.error(error);
         }
       });
+    });
+
+    Object.keys(toChange).forEach((channelId) => {
+        const channel = toChange[channelId];
+        if (Object.keys(channel.roles).length) {
+          Object.keys(channel.roles).forEach((roleId) => {
+            const commands = channel[roleId];
+            results.push(this.settings.setChannelPermissionForRole(channelId, roleId, commands, 1));
+          });
+        }
+
+        if (Object.keys(channel.members).length) {
+          Object.keys(channel.members).forEach((memberId) => {
+            const commands = channel[memberId];
+            results.push(this.settings.setChannelPermissionForMember(channelId, memberId, commands, 1));
+          });
+        }
     });
     await Promise.all(results);
     // notify info embed
