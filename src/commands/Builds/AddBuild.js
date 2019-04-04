@@ -30,7 +30,7 @@ class AddBuild extends Command {
         separator: ' | ',
       },
       {
-        description: 'Add one or more builds from a structured json file. [Example file.](https://hastebin.com/etubajolit.json)',
+        description: 'Add one or more builds from a structured json file. [Example file.](https://pastebin.com/raw/EU9ZX1uQ)',
         parameters: [],
       },
     ];
@@ -53,7 +53,7 @@ class AddBuild extends Command {
       }
 
       if (firstAttach.name.indexOf('.json') === -1) {
-        this.messageManager.reply(message, 'Invalid file. Check here (<https://hastebin.com/etubajolit.json>)', true, true);
+        this.messageManager.reply(message, 'Invalid file. Check here (<https://pastebin.com/raw/EU9ZX1uQ>)', true, true);
         return this.messageManager.statuses.FAILURE;
       }
       let buildsConfig;
