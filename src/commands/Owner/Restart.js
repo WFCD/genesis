@@ -13,6 +13,7 @@ class Restart extends Command {
   constructor(bot) {
     super(bot, 'core.restart', 'restart', 'Restart bot');
     this.ownerOnly = true;
+    this.blacklistable = false;
   }
 
   /**
