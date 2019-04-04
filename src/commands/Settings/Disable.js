@@ -3,7 +3,9 @@
 const Command = require('../../models/Command.js');
 const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
 const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
-const { getChannels, getTarget, captures } = require('../../CommonFunctions');
+const {
+  getChannels, getTarget, captures, createGroupedArray,
+} = require('../../CommonFunctions');
 
 const commandIdRegex = /(\w*\.*\w*\.*\w*\*?)/ig;
 const locationRegex = new RegExp(`(?:\\s+in\\s+(${captures.channel}|here|\\*))`, 'ig');
@@ -58,11 +60,8 @@ class Disable extends Command {
       return this.messageManager.statuses.FAILURE;
     }
 
-    console.log(`${commands.length}/${}`);
-
-
     const results = [];
-    const toChange = {}
+    const toChange = {};
     // set the stuff
     commands.forEach((command) => {
       channels.forEach((channel) => {
@@ -71,8 +70,8 @@ class Disable extends Command {
           if (!toChange[channel.id]) {
             toChange[channel.id] = {
               roles: {},
-              members: {}
-            }
+              members: {},
+            };
           }
           if (target.type === 'Role') {
             if (!toChange[channel.id].roles[target.id]) {
@@ -92,20 +91,28 @@ class Disable extends Command {
     });
 
     Object.keys(toChange).forEach((channelId) => {
-        const channel = toChange[channelId];
-        if (Object.keys(channel.roles).length) {
-          Object.keys(channel.roles).forEach((roleId) => {
-            const commands = channel[roleId];
-            results.push(this.settings.setChannelPermissionForRole(channelId, roleId, commands, 0));
+      const channel = toChange[channelId];
+      if (Object.keys(channel.roles).length) {
+        Object.keys(channel.roles).forEach((roleId) => {
+          const commandIds = channel.roles[roleId];
+          const cmdIdGroups = createGroupedArray(commandIds, 50);
+          cmdIdGroups.forEach((group) => {
+            results.push(this.settings.setChannelPermissionForRole(channelId, roleId, group, 0));
           });
-        }
+        });
+      }
 
-        if (Object.keys(channel.members).length) {
-          Object.keys(channel.members).forEach((memberId) => {
-            const commands = channel[memberId];
-            results.push(this.settings.setChannelPermissionForMember(channelId, memberId, commands, 0));
+      if (Object.keys(channel.members).length) {
+        Object.keys(channel.members).forEach((memberId) => {
+          const commandIds = channel.members[memberId];
+          const cmdIdGroups = createGroupedArray(commandIds, 50);
+          cmdIdGroups.forEach((group) => {
+            results.push(
+              this.settings.setChannelPermissionForMember(channelId, memberId, group, 0),
+            );
           });
-        }
+        });
+      }
     });
 
     await Promise.all(results);
@@ -126,13 +133,16 @@ class Disable extends Command {
    */
   getCommandsToEnable(commandIdParam) {
     const commandsToEnable = [];
-    const commandRegex = new RegExp(commandIdParam.replace('.', '\\.').replace('*', '.*'), 'ig');
+    const escapedId = commandIdParam.trim().replace('.', '\\.').replace('*', '.*');
+    const commandRegex = new RegExp(escapedId, 'i');
     const commands = this.commandManager.commands
       .concat(this.commandManager.inlineCommands || [])
       .concat(this.commandManager.customCommands || []);
     commands.forEach((command) => {
       if (commandRegex.test(command.id) && command.blacklistable) {
         commandsToEnable.push(command.id);
+      } else {
+        this.logger.debug(`not including (${command.blacklistable ? '' : 'Not '}Blacklistable) ${command.id}`);
       }
     });
     return commandsToEnable;

@@ -9,6 +9,7 @@ class ClearChannelPermissions extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s*((?:(?:<#)?\\d+(?:>)?)|current|all|guild))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
+    this.blacklistable = false;
   }
 
   async run(message) {

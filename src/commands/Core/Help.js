@@ -84,11 +84,11 @@ class Help extends Command {
         .permissionsFor(message.author)
         .has('MANAGE_ROLES'),
     };
-    
+
     const searchableCommands = [];
-    for (const command of  this.bot.commandManager.commands) {
+    for (const command of this.bot.commandManager.commands) {
       const canAct = await this.checkCanAct(command, message);
-      
+
       if (canAct === '1' || canAct === 'none') {
         this.logger.debug(`${command.id} ${canAct}`);
         searchableCommands.push(command);
@@ -139,7 +139,7 @@ class Help extends Command {
       await this.messageManager.embed(message, embed, true, false);
     }
   }
-  
+
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * **COPIED FROM CommandHandler.js**

@@ -27,14 +27,13 @@ class PermissionsQueries {
         (${channel.id}, ${member.id}, TRUE, ${commandId}, ${allowed})
         ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
       return this.db.query(query);
-    } else {
-      const query = SQL`INSERT INTO channel_permissions VALUES`;
-      commandId.forEach((command, index) => {
-        query.append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`).append(index !== (rows.length - 1) ? ',' : '');
-      });
-      query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
-      return this.db.query(query);
     }
+    const query = SQL`INSERT INTO channel_permissions VALUES`;
+    commandId.forEach((command, index) => {
+      query.append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+    });
+    query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
+    return this.db.query(query);
   }
 
   /**
@@ -51,15 +50,13 @@ class PermissionsQueries {
         (${channel.id}, ${role.id}, FALSE, ${commandId}, ${allowed})
         ON DUPLICATE KEY UPDATE allowed = ${allowed};`;
       return this.db.query(query);
-    } else if (typeof commandId !== 'undefined'){
-      const query = SQL`INSERT INTO channel_permissions VALUES`;
-      commandId.forEach((command, index) => {
-        query.append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`).append(index !== (rows.length - 1) ? ',' : '');
-      });
-      query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
-      return this.db.query(query);
     }
-    
+    const query = SQL`INSERT INTO channel_permissions VALUES`;
+    commandId.forEach((command, index) => {
+      query.append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+    });
+    query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
+    return this.db.query(query);
   }
 
   /**

@@ -17,7 +17,7 @@ class EnableInfoEmbed extends BaseEmbed {
     this.title = 'Settings to Change';
     this.type = 'rich';
     this.color = 0x0000ff;
-    this.fields = [{ name: 'Command Ids', value: params[0].length > 1 ? 'No Commands' : '\u200B', inline: true }];
+    this.fields = [{ name: 'Command Ids', value: params[0].length > 1 ? '\u200B' : 'No Commands', inline: true }];
 
     createGroupedArray(params[0]).forEach((commandArray) => {
       this.fields.push({ name: '\u200B', value: commandArray.join('; '), inline: false });

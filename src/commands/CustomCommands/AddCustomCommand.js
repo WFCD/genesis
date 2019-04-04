@@ -6,7 +6,7 @@ class AddCustomCommand extends Command {
   constructor(bot) {
     super(bot, 'customcommands.add', 'add cc');
     this.usages = [
-      { description: 'Add a custom command', parameters: ['command call', 'comamnd response'] },
+      { description: 'Add a custom command', parameters: ['command call', 'command response'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s+(\\w+)?\\s?([\\s\\S]*)`, 'i');
     this.requiresAuth = true;
@@ -22,7 +22,7 @@ class AddCustomCommand extends Command {
           name: '\u200B',
           value: `**${this.call}**\n`
             + '**command call**: command trigger\n'
-            + '**comamnd response**: response to the trigger',
+            + '**command response**: response to the trigger',
         }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;
