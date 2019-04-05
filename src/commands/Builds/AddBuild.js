@@ -66,14 +66,27 @@ class AddBuild extends Command {
         message.delete({ timeout: 30000 });
         return this.messageManager.statuses.FAILURE;
       }
-      const builds = await this.settings.addNewBuilds(buildsConfig.builds.map(build => ({
-        title: build.title,
-        body: `${buildsConfig.common.prefix || ''}${build.body}${buildsConfig.common.postfix || ''}`,
-        image: build.image,
-        ownerId: build.owner || message.author.id,
-        owner: this.bot.client.users.get(build.owner) || build.owner || message.author,
-        isPublic: build.isPublic || false,
-      })));
+      let unfoundOwners = [];
+      const builds = await this.settings.addNewBuilds(buildsConfig.builds.map((build) => {
+        if ((typeof build.owner !== 'undefined' && this.bot.client.users.get(build.owner)) || typeof build.owner === 'undefined') {
+          return {
+            title: build.title,
+            body: `${buildsConfig.common.prefix || ''}${build.body}${buildsConfig.common.postfix || ''}`,
+            image: build.image,
+            ownerId: build.owner || message.author.id,
+            owner: this.bot.client.users.get(build.owner) || build.owner || message.author,
+            isPublic: build.is_public || false,
+          };
+        }
+        unfoundOwners.push(build.owner);
+        return undefined;
+      }));
+
+      unfoundOwners = Array.from(new Set(unfoundOwners));
+      if (unfoundOwners.length) {
+        this.messageManager.reply(message, `Could not find users for ownership:\n${unfoundOwners.map(id => `${id}`).join('\n')}`);
+        return this.messageManager.statuses.FAILURE;
+      }
 
       const pages = builds.map(build => new BuildEmbed(this.bot, build));
       setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
