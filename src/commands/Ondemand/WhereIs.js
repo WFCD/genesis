@@ -66,9 +66,9 @@ class Whereis extends Command {
         .reduce((a, b) => (a.length > b.length ? a : b)) : '';
       query = toTitleCase(query.trim());
       const embeds = [];
-      createGroupedArray(results, 28).forEach((group, index) => {
+      createGroupedArray(results, 20).forEach((group, index) => {
         const embed = new WhereisEmbed(
-          this.bot, createGroupedArray(group, 4),
+          this.bot, createGroupedArray(group, 10),
           query, longestName.length, longestRelic.length,
         );
         embeds.push(embed);

@@ -18,10 +18,16 @@ class WhereisEmbed extends BaseEmbed {
     super();
     this.fields = [];
 
-    resultsGroups.forEach((results) => {
+    resultsGroups.forEach((results, index) => {
       const mappedResults = results.map(result => `\`${rpad(result.item, nameWidth, '\u2003')} `
       + `| ${rpad(result.place, relicWidth, '\u2003')} | ${result.rarity.charAt(0)}@${result.chance}\``);
-      this.fields.push({ name: '\u200B', value: mappedResults.join('\n') });
+
+      const value = mappedResults.join('\n');
+      if (index > 0) {
+        this.fields.push({ name: '\u200B', value });
+      } else {
+        this.description = value;
+      }
     });
 
     this.title = `${query}`;

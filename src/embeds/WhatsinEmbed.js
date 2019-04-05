@@ -47,12 +47,7 @@ class WhatsinEmbed extends BaseEmbed {
     this.title = `${tier} ${type}`;
     this.color = 0x3498db;
     this.type = 'rich';
-    this.fields = [
-      {
-        name: '\u200B',
-        value: `\`\`\`${tokens.join('\n')}\`\`\``,
-      },
-    ];
+    this.description = tokens.map(token => `\`${token}\``).join('\n');
   }
 }
 
