@@ -16,7 +16,11 @@ class AddBuild extends Command {
     this.regex = new RegExp(`^${this.call}(?:\\s+(all|title|body|image)\\s+(.+))?`, 'i');
 
     this.usages = [
-      { description: 'Edit a field on the build', parameters: ['type (all, title, body, image)', 'title\\*', 'body\\*', 'image\\*'] },
+      {
+        description: 'Edit a field on the build. `|` is only between build Id and following parameters.',
+        parameters: ['type (all, title, body, image)', 'buildId', 'title\\*', 'body\\*', 'image\\*'],
+        separator: ' | ',
+      },
     ];
 
     this.allowDM = false;

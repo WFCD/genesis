@@ -117,18 +117,20 @@ class BuildQueries {
   }
 
   async setBuildFields(buildId, { title = undefined, body = undefined, image = undefined }) {
-    const setTokens = [];
+    const query = SQL`UPDATE builds SET `;
+
     if (title) {
-      setTokens.push(`title = '${title.trim().replace(/'/ig, '\\\'')}'`);
+      query.append(SQL`title = ${title.trim().replace(/'/ig, '\\\'')}`);
     }
     if (body) {
-      setTokens.push(`body = '${body.trim().replace(/'/ig, '\\\'')}'`);
+      query.append(SQL`body = ${body.trim().replace(/'/ig, '\\\'')}`);
     }
     if (image) {
-      setTokens.push(`image = '${image.trim().replace(/'/ig, '\\\'')}'`);
+      query.append(SQL`image = ${image.trim().replace(/'/ig, '\\\'')}`);
     }
-    if (setTokens.length > 0) {
-      const query = SQL`UPDATE builds SET ${setTokens.join(', ')} WHERE build_id='${buildId}';`;
+
+    if (title || body || image) {
+      query.append(SQL` WHERE build_id=${buildId};`);
       return this.db.query(query);
     }
     return false;
