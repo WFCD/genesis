@@ -1,8 +1,7 @@
 # Project Genesis <img src="src/resources/genesis-vector-cyan.png" height="25" width="25" alt="Genesis Avatar"/>
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/WFCD/genesis.svg)](https://greenkeeper.io/)
-
 [![Supported by Warframe Community Developers](https://warframestat.us/wfcd.png)](https://github.com/WFCD "Supported by Warframe Community Developers")
+
 ### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more. 
 
 # Contribute
@@ -10,9 +9,16 @@
 [![Stories in Ready](https://badge.waffle.io/wfcd/genesis.png?label=ready&title=Ready)](http://waffle.io/wfcd/genesis) 
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord) 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade) 
+[![Greenkeeper badge](https://badges.greenkeeper.io/WFCD/genesis.svg)](https://greenkeeper.io/)
+
+[![Build Status](https://travis-ci.com/WFCD/genesis.svg?branch=master)](https://travis-ci.com/WFCD/genesis) (primarily represents linting, not real tests)
+
+## Live Public Bot info
 [![Discord Bots](https://discordbots.org/api/widget/status/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
 [![Discord Bots](https://discordbots.org/api/widget/servers/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
 [![Discord Bots](https://discordbots.org/api/widget/lib/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
+
+
 
 Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
 
@@ -82,7 +88,7 @@ Honestly too many to put here
 
 ## Throughput
 
-[![Throughput Graph](https://graphs.waffle.io/aliasfalse/genesis/throughput.svg)](https://waffle.io/aliasfalse/genesis/metrics/throughput)
+[![Throughput Graph](https://graphs.waffle.io/wfcd/genesis/throughput.svg)](https://waffle.io/wfcd/genesis/metrics/throughput)
 
 
 ## License
