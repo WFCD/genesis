@@ -13,7 +13,6 @@ class FeedsNotifier {
   }) {
     this.logger = logger;
     this.shardId = shardId;
-    this.settings = settings;
     this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard ${shardId}` });
 
     feeds.forEach((feed) => {
@@ -31,12 +30,20 @@ class FeedsNotifier {
     this.logger.debug(`Shard ${shardId} RSS Notifier ready`);
 
     this.feeder.on('new-item', (item) => {
-      if (new Date(item.pubDate).getTime() > this.start) {
-        const { key } = feeds.reduce(feed => feed.url === item.meta.link)[0];
-        const itemEmbed = new RSSEmbed(item);
-        platforms.forEach((platform) => {
-          this.broadcaster.broadcast(itemEmbed, platform, key);
-        });
+      try {
+        if (Object.keys(item.image).length) {
+          this.logger.debug(JSON.stringify(item.image));
+        }
+
+        if (new Date(item.pubDate).getTime() > this.start) {
+          const feed = feeds.filter(feedEntry => feedEntry.url === item.meta.link)[0];
+          const itemEmbed = new RSSEmbed(item, feed);
+          platforms.forEach((platform) => {
+            this.broadcaster.broadcast(itemEmbed, platform, feed.key);
+          });
+        }
+      } catch (error) {
+        this.logger.error(error);
       }
     });
   }

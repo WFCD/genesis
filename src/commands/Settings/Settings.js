@@ -118,7 +118,7 @@ class Settings extends Command {
 
   async resolveBoolean(channel, setting, settings) {
     if (settings) {
-      return settings.setting === '1' ? affirm : negate;
+      return settings[setting] === '1' ? affirm : negate;
     }
     return ((await this.settings.getChannelSetting(channel, setting)) === '1' ? affirm : negate);
   }

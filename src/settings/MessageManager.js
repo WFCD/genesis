@@ -254,7 +254,7 @@ class MessaageManager {
       } else {
         webhook = await ctx.channel.createWebhook(this.client.user.username);
       }
-      this.logger.debug(`Created and adding ${webhook} to ${ctx.channel}`);
+      this.logger.debug(`Created and adding ${JSON.stringify(webhook)} to ${ctx.channel}`);
       webhook.name = this.client.user.username;
       webhook.avatar = this.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif').replace('?size=2048', '');
       // Make this one query

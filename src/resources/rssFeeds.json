@@ -1,6 +1,191 @@
 [
   {
     "url": "https://forums.warframe.com/forum/38-players-helping-players.xml/",
-    "key": "players_helping_players"
+    "key": "players_helping_players",
+    "defaultAttach": "https://i.imgur.com/cuk4ro9.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/3-pc-update-notes.xml/",
+    "key": "forum.updates.pc",
+    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/152-ps4-update-notes.xml/",
+    "key": "forum.updates.ps4",
+    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/253-xbox-one-update-notes.xml/",
+    "key": "forum.updates.xb1",
+    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/1196-nintendo-switch-update-notes.xml/",
+    "key": "forum.updates.switch",
+    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/2-pc-announcements.xml/",
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
+    "key": "forum.announcements.pc"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/151-ps4-announcements.xml/",
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
+    "key": "forum.announcements.ps4"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/252-xbox-one-announcements.xml/",
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
+    "key": "forum.announcements.xb1"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/1198-nintendo-switch-announcements.xml/",
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
+    "key": "forum.announcements.switch"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/170-announcements-events.xml/",
+    "key": "forum.news",
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png"
+  },
+  {
+    "url": "https://forums.warframe.com/forum/123-developer-workshop-update-notes.xml/",
+    "key": "forum.workshop"
+  },
+  {
+    "url": "https://forums.warframe.com/discover/837.xml/",
+    "key": "forum.staff.megan",
+    "author": {
+      "name": "[DE]Megan",
+      "url": "https://forums.warframe.com/profile/384139-demegan/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_06/ezgif.com-crop.thumb.gif.e510920610e8489a54dd5dbe8b9fd4db.gif"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/839.xml/",
+    "key": "forum.staff.rebecca",
+    "author": {
+      "name": "[DE]Rebecca",
+      "url": "https://forums.warframe.com/profile/4-derebecca/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/pages_media/1_PlayerAvatarsInkary.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/840.xml/",
+    "key": "forum.staff.danielle",
+    "author": {
+      "name": "[DE]Danielle",
+      "url": "https://forums.warframe.com/profile/869879-dedanielle/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_04/profile.thumb.jpg.fe072e16d5b54892b95030ea410264e7.jpg"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/841.xml/",
+    "key": "forum.staff.drew",
+    "author": {
+      "name": "[DE]Drew",
+      "url": "https://forums.warframe.com/profile/488958-dedrew/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_06/576c323f14e92_AnimatedAvatarMirrored.thumb.gif.f12f2373d0d4b91363647f35b30026e0.gif"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/842.xml/",
+    "key": "forum.staff.glen",
+    "author": {
+      "name": "[DE]Glen",
+      "url": "https://forums.warframe.com/profile/10-deglen/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_05/57474a4312a72_GlensHorse.thumb.png.7b47cb0660f5af2e6101ed84d3192c03.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1171.xml/",
+    "key": "forum.staff.taylor",
+    "author": {
+      "name": "[DE]taylor",
+      "url": "https://forums.warframe.com/profile/1943322-detaylor/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_07/596ceb9b4e182_6FUC4s3%281%29.thumb.png.7045d25fc7b057c70ddcffe14cd1f43e.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1777.xml/",
+    "key": "forum.staff.steve",
+    "author": {
+      "name": "[DE]Steve",
+      "url": "https://forums.warframe.com/profile/24-desteve/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_06/575f13eaf3080_Pastedimageat2016_06_1304_11PM.thumb.png.fb98af24931a1820d00293a55c05baef.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1291.xml/",
+    "key": "forum.staff.helen",
+    "author": {
+      "name": "[DE]Helen",
+      "url": "https://forums.warframe.com/profile/2522846-dehelen/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_06/590e937e598f2_Helen-Icon.jpg.0ac6d3d86c1d48f3f3e1a035344ab87a.thumb.jpg.d2225fb0dcd980f081ddddbf46458072.jpg"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1294.xml/",
+    "key": "forum.staff.saske",
+    "author": {
+      "name": "[DE]Saske",
+      "url": "https://forums.warframe.com/profile/4513168-nswdesaske/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/pages_media/1_TennoCon2018Glyph.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1295.xml/",
+    "key": "forum.staff.syncrasis",
+    "author": {
+      "name": "[DE]Syncrasis",
+      "url": "https://forums.warframe.com/profile/2514676-desyncrasis//",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_02/aladv.thumb.jpg.a06cbfa091579eb9ce2ae96eb0b42e34.jpg"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1299.xml/",
+    "key": "forum.staff.pablo",
+    "author": {
+      "name": "[DE]Pablo",
+      "url": "https://forums.warframe.com/profile/217656-depablo/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_05/Pablo.thumb.png.35bb0384ef7b88e807d55ffc31af0896.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1778.xml/",
+    "key": "forum.staff.connor",
+    "author": {
+      "name": "[DE]Connor",
+      "url": "https://forums.warframe.com/profile/710227-deconnor/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_02/nezha_watermarked_120_by_kevin_glint-d9zkt5n.thumb.jpg.c9519505f40a304bece8eb435eb99ddd.jpg"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1779.xml/",
+    "key": "forum.staff.marcus",
+    "author": {
+      "name": "[DE]Marcus",
+      "url": "https://forums.warframe.com/profile/3443485-demarcus/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_01/5a55278d71caa_MarcusIIPrint.thumb.jpg.16cb689d778112333cffb6fe546b89ec.jpg"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1780.xml/",
+    "key": "forum.staff.george",
+    "author": {
+      "name": "[DE]George",
+      "url": "https://forums.warframe.com/profile/138665-degeorge/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_02/George_Forum_Photo.thumb.png.62acd07b2b2e40831eca57a0e230a2b2.png"
+    }
+  },
+  {
+    "url": "https://forums.warframe.com/discover/1781.xml/",
+    "key": "forum.staff.bear",
+    "author": {
+      "name": "[DE]Bear",
+      "url": "https://forums.warframe.com/profile/1589-debear/",
+      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_02/juggerdaddy.thumb.gif.85061b940143c7310801ce00337636ac.gif"
+    }
   }
 ]
