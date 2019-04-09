@@ -5,7 +5,7 @@ const RssFeedEmitter = require('rss-feed-emitter');
 const Broadcaster = require('./Broadcaster');
 const RSSEmbed = require('../embeds/RSSEmbed');
 const { platforms } = require('../CommonFunctions');
-const feeds = require('../resources/rssfeeds');
+const feeds = require('../resources/rssFeeds');
 
 class FeedsNotifier {
   constructor({
