@@ -3,6 +3,7 @@
 const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
+const FeedsNotifier = require('../notifications/FeedsNotifier');
 
 const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
 
@@ -127,7 +128,7 @@ class OnReadyHandle extends Handler {
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
         this.bot.client.user.username,
-        this.bot.client.user.displayAvatarURL(),
+        this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
       );
       this.bot.controlHook.send({
         embeds: [{
@@ -151,6 +152,7 @@ class OnReadyHandle extends Handler {
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.bot.shardId);
     setInterval(updatePresence, 60000, self);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
+    this.bot.feedNotifier = new FeedsNotifier(this.bot);
   }
 }
 

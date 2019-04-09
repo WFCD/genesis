@@ -18,6 +18,8 @@ const {
   resources, nightwave,
 } = require('./resources/trackables.json');
 
+const rssFeeds = require('./resources/rssFeeds');
+
 /**
  * API base path
  * @type {string]}
@@ -46,6 +48,12 @@ const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
 /**
+ * Allowed platforms
+ * @type {Array.<string>}
+ */
+const platforms = ['pc', 'ps4', 'xb1', 'swi'];
+
+/**
  * Captures for commonly needed parameters
  * @type {Object}
  * @property {string} channel     channel capture body
@@ -59,7 +67,7 @@ const captures = {
   role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
   user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
   trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
-  platforms: '(pc|ps4|xb1|swi)',
+  platforms: `(${platforms.join('|')})`,
 };
 
 /**
@@ -79,7 +87,7 @@ const fissureList = filter => fissures.filter(fissure => fissure.includes(filter
  * @type {Object}
  */
 const trackableEvents = {
-  events: eventTypes,
+  events: eventTypes.concat(rssFeeds.map(feed => feed.key)),
   'fissures.t1': fissureList('fissures.t1'),
   'fissures.t2': fissureList('fissures.t2'),
   'fissures.t3': fissureList('fissures.t3'),
@@ -114,6 +122,7 @@ const trackableEvents = {
   'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
   twitter,
   nightwave,
+  rss: rssFeeds.map(feed => feed.key),
 };
 
 /**
@@ -915,4 +924,5 @@ module.exports = {
   constructItemEmbeds,
   constructTypeEmbeds,
   checkAndMergeEmbeds,
+  platforms,
 };

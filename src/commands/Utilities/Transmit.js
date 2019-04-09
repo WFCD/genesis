@@ -90,7 +90,7 @@ class Transmit extends Command {
                     username: (channelConfig.systemUser && channelConfig.transmitUser.name)
                       || message.author.username,
                     avatarURL: (channelConfig.systemUser && channelConfig.transmitUser.avatar)
-                      || message.author.displayAvatarURL(),
+                      || message.author.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
                   });
                 }, wait);
                 break;
@@ -103,7 +103,7 @@ class Transmit extends Command {
                       username: (channelConfig.systemUser && channelConfig.transmitUser.name)
                         || message.author.username,
                       avatarURL: (channelConfig.systemUser && channelConfig.transmitUser.avatar)
-                        || message.author.displayAvatarURL(),
+                        || message.author.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
                     }],
                   });
                 }, wait);

@@ -14,10 +14,10 @@ const makeJobs = (mission, numSyndMissions) => {
     mission.jobs.forEach((job) => {
       const totalStanding = job.standingStages.reduce((a, b) => a + b, 0);
       const levels = job.enemyLevels.join(' - ');
-      const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(', ') : job.rewardPool;
-      tokens.push(`:arrow_up: ${totalStanding} - ${job.type} (${levels})`);
+      const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(' • ') : job.rewardPool;
+      tokens.push(`\u200B \\⬆  ${totalStanding} - ${job.type} (${levels})`);
       if (job.rewardPool[0] && !job.rewardPool[0].startsWith('Pattern Mismatch.')) {
-        tokens.push(`:moneybag: ${rewards}\n`);
+        tokens.push(`\\💰 ${rewards}\n`);
       }
     });
 

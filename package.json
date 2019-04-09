@@ -56,6 +56,7 @@
     "progress": "^2.0.3",
     "raven": "^2.6.4",
     "right-pad": "^1.0.1",
+    "rss-feed-emitter": "^2.0.1",
     "sql-template-strings": "^2.2.2",
     "twitter": "^1.7.1",
     "warframe-name-generator": "^1.0.0",
