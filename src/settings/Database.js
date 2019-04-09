@@ -242,7 +242,7 @@ class Database {
         context.lfg.pc = channel.guild.channels.get(context.lfgChannel);
         delete context.lfgChannel;
       }
-      
+
       if (context.delete_after_respond) {
         context.deleteCommand = parseInt(context.delete_after_respond, 10) === 1;
         delete context.delete_after_respond;
@@ -251,21 +251,21 @@ class Database {
       }
 
       if (context['lfgChannel.ps4']) {
-        if(!context.lfg) {
+        if (!context.lfg) {
           context.lfg = {};
         }
         context.lfg.ps4 = channel.guild.channels.get(context['lfgChannel.ps4']);
         delete context['lfgChannel.ps4'];
       }
       if (context['lfgChannel.swi']) {
-        if(!context.lfg) {
+        if (!context.lfg) {
           context.lfg = {};
         }
         context.lfg.swi = channel.guild.channels.get(context['lfgChannel.swi']);
         delete context['lfgChannel.swi'];
       }
       if (context['lfgChannel.xb1']) {
-        if(!context.lfg) {
+        if (!context.lfg) {
           context.lfg = {};
         }
         context.lfg.xb1 = channel.guild.channels.get(context['lfgChannel.xb1']);

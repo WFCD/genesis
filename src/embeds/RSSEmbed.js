@@ -24,9 +24,9 @@ class RSSEmbed extends BaseEmbed {
 
     this.color = 0x993333;
     this.footer.text = `${feedItem.meta.description} • Published`;
-    
-    this.thumbnail = { url: 'https://i.imgur.com/GGzVZPL.png', height: 50, width: 50, };
-    
+
+    this.thumbnail = { url: 'https://i.imgur.com/GGzVZPL.png', height: 50, width: 50 };
+
     if (feed.author) {
       this.author = feed.author;
     } else {
@@ -36,16 +36,16 @@ class RSSEmbed extends BaseEmbed {
         icon_url: 'https://i.imgur.com/hE2jdpv.png',
       };
     }
-    
+
     if (!Object.keys(feedItem.image).length) {
       let first = ((feedItem.description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
       if (first) {
-        if(first.startsWith('//')) {
+        if (first.startsWith('//')) {
           first = first.replace('//', 'https://');
 
           this.image = {
-            url: first
-          }
+            url: first,
+          };
         }
       } else if (feed.defaultAttach) {
         this.image = {

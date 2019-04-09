@@ -140,7 +140,7 @@ class AddLFG extends Command {
             msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
           }
         });
-        
+
         if (ctx.deleteCommand && message.deletable) {
           message.delete({ timeout: 10000 });
         }
