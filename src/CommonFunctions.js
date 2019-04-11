@@ -18,6 +18,8 @@ const {
   resources, nightwave,
 } = require('./resources/trackables.json');
 
+const rssFeeds = require('./resources/rssFeeds');
+
 /**
  * API base path
  * @type {string]}
@@ -46,21 +48,10 @@ const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
 const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
 /**
- * Captures for commonly needed parameters
- * @type {Object}
- * @property {string} channel     channel capture body
- * @property {string} role        role capture body
- * @property {string} user        user capture body
- * @property {string} trackables  possible trackables capture body
- * @property {string} platforms   platforms capture body
+ * Allowed platforms
+ * @type {Array.<string>}
  */
-const captures = {
-  channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
-  role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
-  user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
-  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
-  platforms: '(pc|ps4|xb1|swi)',
-};
+const platforms = ['pc', 'ps4', 'xb1', 'swi'];
 
 /**
  * Duration mapping
@@ -114,6 +105,27 @@ const trackableEvents = {
   'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
   twitter,
   nightwave,
+  rss: rssFeeds.map(feed => feed.key),
+};
+
+trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
+trackableEvents.events.push(...trackableEvents.rss);
+
+/**
+ * Captures for commonly needed parameters
+ * @type {Object}
+ * @property {string} channel     channel capture body
+ * @property {string} role        role capture body
+ * @property {string} user        user capture body
+ * @property {string} trackables  possible trackables capture body
+ * @property {string} platforms   platforms capture body
+ */
+const captures = {
+  channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
+  role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
+  user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
+  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${trackableEvents.rss.join('|')}|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
+  platforms: `(${platforms.join('|')})`,
 };
 
 /**
@@ -915,4 +927,5 @@ module.exports = {
   constructItemEmbeds,
   constructTypeEmbeds,
   checkAndMergeEmbeds,
+  platforms,
 };

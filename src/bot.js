@@ -2,13 +2,15 @@
 
 const Discord = require('discord.js');
 const md = require('node-md-config');
-const CommandManager = require('./CommandManager.js');
-const Database = require('./settings/Database.js');
+
+const WorldStateCache = require('./WorldStateCache');
+const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
-const MessageManager = require('./settings/MessageManager.js');
-const Notifier = require('./notifications/Notifier.js');
-const Tracker = require('./Tracker.js');
-const WorldStateCache = require('./WorldStateCache.js');
+const Tracker = require('./Tracker');
+
+const MessageManager = require('./settings/MessageManager');
+const Notifier = require('./notifications/Notifier');
+const Database = require('./settings/Database');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 

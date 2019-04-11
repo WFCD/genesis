@@ -250,7 +250,9 @@
       "twitter.quote",
       "twitter.reply",
       "twitter",
-      "nightwave"
+      "nightwave",
+      "rss",
+      "forum.staff"
    ],
    "fissures":[
       "fissures.t1.excavation",

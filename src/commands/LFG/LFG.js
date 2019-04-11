@@ -133,7 +133,7 @@ class AddLFG extends Command {
         });
 
         collector.on('remove', (reaction, user) => {
-          if (lfg.members.includes(user.id) && user.id !== message.author.id) {
+          if (lfg.members.includes(user.id) && user.id !== message.author.id && reaction.emooji.name === '🔰') {
             lfg.members.splice(lfg.members.indexOf(user.id), 1);
             lfg.vc = message.member.voice;
             lfg.edited = true;
@@ -141,14 +141,18 @@ class AddLFG extends Command {
           }
         });
 
+        if (ctx.deleteCommand && message.deletable) {
+          message.delete({ timeout: 10000 });
+        }
+
         return this.messageManager.statuses.SUCCESS;
       } catch (e) {
         this.logger.error(e);
-        await this.messageManager.reply(message, `something failed in sending. You sent: ${params.join(', ')}`);
+        await this.messageManager.reply(message, `something failed in sending. You sent: ${params.join(', ')}`, true, true);
         return this.messageManager.statuses.FAILURE;
       }
     }
-    await this.messageManager.reply(message, `please ask your admin to designate a setting for  \`${ctx.prefix}set lfg channel\``);
+    await this.messageManager.reply(message, `please ask your admin to designate a setting for  \`${ctx.prefix}set lfg channel\``, true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

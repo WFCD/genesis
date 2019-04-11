@@ -157,7 +157,7 @@ class Database {
         'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1');`;
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond');`;
     const res = await this.db.query(query);
     let context = {
       webhook: {},
@@ -243,15 +243,31 @@ class Database {
         delete context.lfgChannel;
       }
 
+      if (context.delete_after_respond) {
+        context.deleteCommand = parseInt(context.delete_after_respond, 10) === 1;
+        delete context.delete_after_respond;
+      } else {
+        context.deleteCommand = this.defaults.delete_after_respond;
+      }
+
       if (context['lfgChannel.ps4']) {
+        if (!context.lfg) {
+          context.lfg = {};
+        }
         context.lfg.ps4 = channel.guild.channels.get(context['lfgChannel.ps4']);
         delete context['lfgChannel.ps4'];
       }
       if (context['lfgChannel.swi']) {
+        if (!context.lfg) {
+          context.lfg = {};
+        }
         context.lfg.swi = channel.guild.channels.get(context['lfgChannel.swi']);
         delete context['lfgChannel.swi'];
       }
       if (context['lfgChannel.xb1']) {
+        if (!context.lfg) {
+          context.lfg = {};
+        }
         context.lfg.xb1 = channel.guild.channels.get(context['lfgChannel.xb1']);
         delete context['lfgChannel.xb1'];
       }
@@ -274,6 +290,7 @@ class Database {
         createPrivateChannel: this.defaults.createPrivateChannel === '1',
         'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
         respondToSettings: this.defaults.respond_to_settings,
+        deleteCommand: this.defaults.delete_after_respond,
       };
     }
     if (user) {

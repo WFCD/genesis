@@ -12,10 +12,10 @@ const makeJobs = (mission) => {
     mission.jobs.forEach((job) => {
       const totalStanding = job.standingStages.reduce((a, b) => a + b, 0);
       const levels = job.enemyLevels.join(' - ');
-      const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(', ') : '';
-      tokens.push(`:arrow_up: ${totalStanding} - ${job.type} (${levels})`);
+      const rewards = job.rewardPool instanceof Array ? job.rewardPool.join(' • ') : '';
+      tokens.push(`\u200B \\⬆  ${totalStanding} - ${job.type} (${levels})`);
       if (job.rewardPool[0] && !job.rewardPool[0].startsWith('Pattern Mismatch.')) {
-        tokens.push(`:moneybag: ${rewards}\n`);
+        tokens.push(`\\💰 ${rewards}\n`);
       }
     });
 
@@ -43,7 +43,7 @@ class SolarisEmbed extends BaseEmbed {
       url: solaris,
     };
     const warmstring = `Time remaining until ${state.isWarm ? 'cold' : 'warm'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`;
-    this.description = `${state.bounty ? makeJobs(state.bounty, 1) : ''}\n\n${warmstring}`;
+    this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
 
     this.footer.text = `${state.isWarm ? 'Cold' : 'Warm'} starts `;
     this.timestamp = new Date(state.expiry);
