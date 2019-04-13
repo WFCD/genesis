@@ -24,6 +24,8 @@ class Reload extends Command {
   async run(message) {
     this.logger.debug('Reloading modules');
     const commandsBefore = this.commandManager.commands.map(c => c.id);
+    const precache = Object.keys(this.commandManager.commandCache);
+    delete this.commandManager.commandCache;
     this.commandManager.commandCache = {};
     this.commandManager.loadCommands();
     const commandsAfter = this.commandManager.commands.map(c => c.id);
@@ -33,10 +35,18 @@ class Reload extends Command {
 
     const commandsAddedString = commandsAdded.length > 0 ? commandsAdded.sort().join(' ') : ' No Commands Added';
     const commandsRemovedString = commandsRemoved.length > 0 ? commandsRemoved.sort().join(' ') : ' No Commands Removed';
+    const precacheString = precache.length > 0 ? precache.sort().join('\n- ') : 'No Commands decached'
 
-    await this.messageManager.sendMessage(message, `${this.md.codeMulti}Commands reloaded!${this.md.blockEnd}`
-        + `${this.md.lineEnd}\`\`\`diff${this.md.lineEnd}-${commandsRemovedString}\`\`\`\n`
-        + `\`\`\`diff${this.md.lineEnd}+${commandsAddedString}\`\`\``, true, true);
+    await this.messageManager.sendMessage(message, `**Commands reloaded!**
+\`\`\`diff
+- ${commandsRemovedString}\`\`\`
+\`\`\`diff
++ ${commandsAddedString}\`\`\`
+
+**Decached**
+\`\`\`diff
+- ${precacheString}
+\`\`\``, true, true);
     return this.messageManager.statuses.SUCCESS;
   }
 }

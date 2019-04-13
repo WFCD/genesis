@@ -98,7 +98,9 @@ const trackableEvents = {
   conclave,
   deals,
   cetus: ['cetus.day', 'cetus.night'],
+  ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
+  vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
   'twitter.reply': eventTypes.filter(event => /twitter\.\w*\.reply/.test(event)),
   'twitter.tweet': eventTypes.filter(event => /twitter\.\w*\.tweet/.test(event)),
   'twitter.retweet': eventTypes.filter(event => /twitter\.\w*\.retweet/.test(event)),
@@ -423,7 +425,7 @@ const setupPages = async (pages, { message, settings, mm }) => {
 const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const embed = new MessageEmbed(embedDefaults);
   embed.setTitle(title);
-  const chunks = (chunkify({ string: stringToChunk, breakChar }) || []).filter(stringFilter);
+  const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || []).filter(stringFilter);
   if (chunks.length) {
     chunks.forEach((chunk, index) => {
       if (index > 0) {
@@ -464,7 +466,7 @@ const chunkFields = (valArr, title) => {
       if (val && val.length) {
         return {
           name: `${title}${ind > 0 ? ', ctd.' : ''}`,
-          value: val && val.length ? val : '✘',
+          value: val,
           inline: true,
         };
       }
@@ -492,7 +494,7 @@ const constructTypeEmbeds = (types) => {
       fields.push(...chunked);
     }
   });
-  const fieldGroups = createGroupedArray(fields, fieldLimit * 3);
+  const fieldGroups = createGroupedArray(fields, fieldLimit * 2);
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
