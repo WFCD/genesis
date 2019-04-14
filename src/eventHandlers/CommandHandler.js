@@ -121,6 +121,10 @@ class CommandHandler extends Handler {
 
           // load command
           const cmd = await this.bot.commandManager.loadCommand(command);
+          if (cmd.parseArgs) {
+            ctx.args = cmd.parseArgs(message.content);
+          }
+
           ctx.message.channel.startTyping();
 
           // run

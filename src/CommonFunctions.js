@@ -422,10 +422,18 @@ const setupPages = async (pages, { message, settings, mm }) => {
   }
 };
 
+/**
+ * Create an embed with chunked fields
+ * @param  {string} stringToChunk string that will be broken up for the fields
+ * @param  {string} title         title of the embed
+ * @param  {string} breakChar     character to break on
+ * @returns {Discord.Embed}               Embed
+ */
 const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const embed = new MessageEmbed(embedDefaults);
   embed.setTitle(title);
-  const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || []).filter(stringFilter);
+  const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || [])
+    .filter(stringFilter);
   if (chunks.length) {
     chunks.forEach((chunk, index) => {
       if (index > 0) {
@@ -885,6 +893,22 @@ const determineTweetType = (tweet) => {
   return ('tweet');
 };
 
+/**
+ * Safely get matches from a string for the given RegExp
+ * @param  {string} str   string to get matches from
+ * @param  {RegExp} regex regex to match
+ * @returns {string[]}       Array of matches, potentially empty
+ */
+const safeMatch = (str, regex) => str.match(regex) || [];
+
+const getMessage = async (message, otherMessageId) => {
+  const msgResults = [];
+  message.guild.channels.each((channel) => {
+    msgResults.push(channel.messages.fetch(otherMessageId));
+  });
+
+  return (await Promise.all(msgResults)).filter(fetched => fetched)[0];
+};
 
 /**
  * Common functions for determining common functions
@@ -930,4 +954,6 @@ module.exports = {
   constructTypeEmbeds,
   checkAndMergeEmbeds,
   platforms,
+  safeMatch,
+  getMessage,
 };

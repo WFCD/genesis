@@ -4,7 +4,8 @@
     "sourceType": "script"
   },
   "rules": {
-    "valid-jsdoc": ["error", {
+    "valid-jsdoc": ["error",
+    {
       "requireReturn": false,
       "requireReturnDescription": false,
       "preferType": {
