@@ -35,7 +35,7 @@ class Reload extends Command {
 
     const commandsAddedString = commandsAdded.length > 0 ? commandsAdded.sort().join(' ') : ' No Commands Added';
     const commandsRemovedString = commandsRemoved.length > 0 ? commandsRemoved.sort().join(' ') : ' No Commands Removed';
-    const precacheString = precache.length > 0 ? precache.sort().join('\n- ') : 'No Commands decached'
+    const precacheString = precache.length > 0 ? precache.sort().join('\n- ') : 'No Commands decached';
 
     await this.messageManager.sendMessage(message, `**Commands reloaded!**
 \`\`\`diff
