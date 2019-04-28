@@ -17,7 +17,7 @@ class AddLFG extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'lfg.add', 'lfg|h|lfm', 'Submit an LFG request.');
+    super(bot, 'lfg.add', 'lfg|hosting|lfm', 'Submit an LFG request.');
     this.regex = new RegExp(`^(?:${this.call})(?!elp)\\s?(.+)?`, 'i');
 
     this.usages = [
@@ -70,11 +70,11 @@ class AddLFG extends Command {
         lfg.types.push('LFG');
       }
 
-      const typeMatches = message.strippedContent.match(/^(lfg|h|lfm)/ig);
+      const typeMatches = message.strippedContent.match(/^(lfg|hosting|lfm)/ig);
       if (typeMatches && typeMatches.length) {
         typeMatches.forEach((type) => {
           switch (type.toLowerCase()) {
-            case 'h':
+            case 'hosting':
               lfg.types.push('Hosting');
               break;
             case 'lfm':
