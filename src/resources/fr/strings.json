@@ -1,0 +1,21 @@
+{
+  "languages": {
+    "en-US": {
+      "damage_reply": "Opérateur $author, voici le schéma des dégâts, suite à votre demande.",
+      "override_enabled": "Opérateur, l'annulation est activée.",
+      "override_disabled": "Opérateur, l'annulation est désactivée.",
+      "override_toggle_error": "Une erreur s'est produite lors de \" l'annulation \".",
+      "command_not_blacklistable": "\" $command \" ne peut pas être ajoutée à la liste noire.",
+      "cannot_reply": "Impossible de répondre à la commande, \" $command \".",
+      "command_added_blacklist": "\" $command \" a été ajoutée à la liste noire.",
+      "all_command_added_blacklist": "Toutes les commandes ont été ajoutées à la liste noire",
+      "command_removed_blacklist": "\" $command \" supprimée de la liste noire.",
+      "all_command_removed_blacklist": "Toutes les commandes ont été supprimées de la liste noire.",
+      "response_enabled": "Opérateur, les réponses aux changements des paramètres ont été activées.",
+      "response_disabled": "Opérateur, les réponses aux changements des paramètres ont été désactivées.",
+      "response_toggle_error": "Une erreur s'est produite lors de l'activation de \" response \".",
+      "language_set": "Langue définie sur \" $language \".",
+      "language_not_set": "Langue non définie sur \" $language \". La langue sélectionnée est invalide ou déjà définie."
+    }
+  }
+}
