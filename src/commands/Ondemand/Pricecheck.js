@@ -31,14 +31,19 @@ class PriceCheck extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {CommandContext} ctx Command context for calling commands 
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     try {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
 
-      const result = await fetch(`${apiBase}/pricecheck/attachment/${item}`).then(data => data.json());
+      const result = await fetch(`${apiBase}/pricecheck/attachment/${item}`, {
+        headers: {
+          platform: ctx.platform,
+        }
+      }).then(data => data.json());
       const embed = new PriceCheckEmbed(this.bot, result, item);
       sentMessage.edit({ embed });
       return embed.color === 0xff55ff
