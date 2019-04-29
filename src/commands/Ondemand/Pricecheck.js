@@ -31,7 +31,7 @@ class PriceCheck extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {CommandContext} ctx Command context for calling commands 
+   * @param {CommandContext} ctx Command context for calling commands
    * @returns {string} success status
    */
   async run(message, ctx) {
@@ -42,7 +42,7 @@ class PriceCheck extends Command {
       const result = await fetch(`${apiBase}/pricecheck/attachment/${item}`, {
         headers: {
           platform: ctx.platform,
-        }
+        },
       }).then(data => data.json());
       const embed = new PriceCheckEmbed(this.bot, result, item);
       sentMessage.edit({ embed });
