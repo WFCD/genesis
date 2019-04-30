@@ -29,7 +29,7 @@ class FeedsNotifier {
     });
     this.logger.debug(`Shard ${shardId} RSS Notifier ready`);
 
-    this.feeder.on('error', this.logger.error);
+    this.feeder.on('error', this.logger.debug);
 
     this.feeder.on('new-item', (item) => {
       try {
