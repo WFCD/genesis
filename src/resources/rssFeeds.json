@@ -1,60 +1,60 @@
 [
   {
-    "url": "https://forums.warframe.com/forum/38-players-helping-players.xml/",
+    "url": "https://forums.warframe.com/forum/38-players-helping-players.xml",
     "key": "players_helping_players",
     "defaultAttach": "https://i.imgur.com/cuk4ro9.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/3-pc-update-notes.xml/",
+    "url": "https://forums.warframe.com/forum/3-pc-update-notes.xml",
     "key": "forum.updates.pc",
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/152-ps4-update-notes.xml/",
+    "url": "https://forums.warframe.com/forum/152-ps4-update-notes.xml",
     "key": "forum.updates.ps4",
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/253-xbox-one-update-notes.xml/",
+    "url": "https://forums.warframe.com/forum/253-xbox-one-update-notes.xml",
     "key": "forum.updates.xb1",
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/1196-nintendo-switch-update-notes.xml/",
+    "url": "https://forums.warframe.com/forum/1196-nintendo-switch-update-notes.xml",
     "key": "forum.updates.switch",
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/2-pc-announcements.xml/",
+    "url": "https://forums.warframe.com/forum/2-pc-announcements.xml",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
     "key": "forum.announcements.pc"
   },
   {
-    "url": "https://forums.warframe.com/forum/151-ps4-announcements.xml/",
+    "url": "https://forums.warframe.com/forum/151-ps4-announcements.xml",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
     "key": "forum.announcements.ps4"
   },
   {
-    "url": "https://forums.warframe.com/forum/252-xbox-one-announcements.xml/",
+    "url": "https://forums.warframe.com/forum/252-xbox-one-announcements.xml",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
     "key": "forum.announcements.xb1"
   },
   {
-    "url": "https://forums.warframe.com/forum/1198-nintendo-switch-announcements.xml/",
+    "url": "https://forums.warframe.com/forum/1198-nintendo-switch-announcements.xml",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
     "key": "forum.announcements.switch"
   },
   {
-    "url": "https://forums.warframe.com/forum/170-announcements-events.xml/",
+    "url": "https://forums.warframe.com/forum/170-announcements-events.xml",
     "key": "forum.news",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/123-developer-workshop-update-notes.xml/",
+    "url": "https://forums.warframe.com/forum/123-developer-workshop-update-notes.xml",
     "key": "forum.workshop"
   },
   {
-    "url": "https://forums.warframe.com/discover/837.xml/",
+    "url": "https://forums.warframe.com/discover/837.xml",
     "key": "forum.staff.megan",
     "author": {
       "name": "[DE]Megan",
@@ -63,7 +63,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/839.xml/",
+    "url": "https://forums.warframe.com/discover/839.xml",
     "key": "forum.staff.rebecca",
     "author": {
       "name": "[DE]Rebecca",
@@ -72,7 +72,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/840.xml/",
+    "url": "https://forums.warframe.com/discover/840.xml",
     "key": "forum.staff.danielle",
     "author": {
       "name": "[DE]Danielle",
@@ -81,7 +81,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/841.xml/",
+    "url": "https://forums.warframe.com/discover/841.xml",
     "key": "forum.staff.drew",
     "author": {
       "name": "[DE]Drew",
@@ -90,7 +90,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/842.xml/",
+    "url": "https://forums.warframe.com/discover/842.xml",
     "key": "forum.staff.glen",
     "author": {
       "name": "[DE]Glen",
@@ -99,7 +99,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1171.xml/",
+    "url": "https://forums.warframe.com/discover/1171.xml",
     "key": "forum.staff.taylor",
     "author": {
       "name": "[DE]taylor",
@@ -108,7 +108,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1777.xml/",
+    "url": "https://forums.warframe.com/discover/1777.xml",
     "key": "forum.staff.steve",
     "author": {
       "name": "[DE]Steve",
@@ -117,7 +117,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1291.xml/",
+    "url": "https://forums.warframe.com/discover/1291.xml",
     "key": "forum.staff.helen",
     "author": {
       "name": "[DE]Helen",
@@ -126,7 +126,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1294.xml/",
+    "url": "https://forums.warframe.com/discover/1294.xml",
     "key": "forum.staff.saske",
     "author": {
       "name": "[DE]Saske",
@@ -135,7 +135,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1295.xml/",
+    "url": "https://forums.warframe.com/discover/1295.xml",
     "key": "forum.staff.syncrasis",
     "author": {
       "name": "[DE]Syncrasis",
@@ -144,7 +144,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1299.xml/",
+    "url": "https://forums.warframe.com/discover/1299.xml",
     "key": "forum.staff.pablo",
     "author": {
       "name": "[DE]Pablo",
@@ -153,7 +153,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1778.xml/",
+    "url": "https://forums.warframe.com/discover/1778.xml",
     "key": "forum.staff.connor",
     "author": {
       "name": "[DE]Connor",
@@ -162,7 +162,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1779.xml/",
+    "url": "https://forums.warframe.com/discover/1779.xml",
     "key": "forum.staff.marcus",
     "author": {
       "name": "[DE]Marcus",
@@ -171,7 +171,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1780.xml/",
+    "url": "https://forums.warframe.com/discover/1780.xml",
     "key": "forum.staff.george",
     "author": {
       "name": "[DE]George",
@@ -180,7 +180,7 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1781.xml/",
+    "url": "https://forums.warframe.com/discover/1781.xml",
     "key": "forum.staff.bear",
     "author": {
       "name": "[DE]Bear",

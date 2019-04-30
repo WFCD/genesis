@@ -16,7 +16,7 @@ class FeedsNotifier {
     this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard ${shardId}` });
 
     feeds.forEach((feed) => {
-      this.feeder.add({ url: feed.url, timeout: 60000 });
+      this.feeder.add({ url: feed.url, timeout: 600000 });
     });
 
     this.start = Date.now();
@@ -28,6 +28,8 @@ class FeedsNotifier {
       logger,
     });
     this.logger.debug(`Shard ${shardId} RSS Notifier ready`);
+
+    this.feeder.on('error', this.logger.error);
 
     this.feeder.on('new-item', (item) => {
       try {

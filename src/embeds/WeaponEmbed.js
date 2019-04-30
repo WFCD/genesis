@@ -163,7 +163,8 @@ class WeaponEmbed extends BaseEmbed {
         });
       }
 
-      if (weapon.damageTypes) {
+      if (weapon.damageTypes
+        && (weapon.damageTypes.impact || weapon.damageTypes.puncture || weapon.damageTypes.slash)) {
         this.fields.push({
           name: 'IPS Damage Distribution',
           value: emojify(`impact ${String(weapon.damageTypes.impact || '-')}\npuncture ${String(weapon.damageTypes.puncture || '-')}\nslash ${String(weapon.damageTypes.slash || '-')}`),
@@ -209,7 +210,7 @@ class WeaponEmbed extends BaseEmbed {
       if (weapon.disposition) {
         this.fields.push({
           name: 'Riven Disposition',
-          value: dispositions[weapon.disposition],
+          value: `${dispositions[weapon.disposition]} (${Number(weapon.omegaAttenuation).toFixed(2)})`,
           inline: true,
         });
       }

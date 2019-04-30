@@ -18,7 +18,7 @@ class RivenStatEmbed extends BaseEmbed {
       url: 'https://i.imgur.com/luKxF3t.png',
     };
     this.fields = [];
-    if(rivenResult.rerolled) {
+    if (rivenResult.rerolled) {
       this.fields.push(...[{
         name: i18n`Rerolled`,
         value: '\u200B',
@@ -49,7 +49,7 @@ class RivenStatEmbed extends BaseEmbed {
         inline: true,
       }]);
     }
-    
+
     if (rivenResult.unrolled && rivenResult.rerolled) {
       this.fields.push({
         name: '\u200B',
@@ -57,8 +57,8 @@ class RivenStatEmbed extends BaseEmbed {
         inline: false,
       });
     }
-    
-    if(rivenResult.unrolled) {
+
+    if (rivenResult.unrolled) {
       this.fields.push(...[{
         name: i18n`Unrolled`,
         value: '\u200B',
@@ -89,7 +89,7 @@ class RivenStatEmbed extends BaseEmbed {
         inline: true,
       }]);
     }
-    
+
     if (!this.fields.length) {
       this.description = i18n`No data available`;
     }

@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
+const RivenStatEmbed = require('../../embeds/RivenStatEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
 const { setupPages, apiBase, createGroupedArray } = require('../../CommonFunctions');
 
@@ -31,21 +32,35 @@ class WeaponStats extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {CommandContext} ctx Context for the command, such as platform, etc.
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     let weapon = message.strippedContent.match(this.regex)[1];
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       try {
         const results = await fetch(`${apiBase}/weapons/search/${weapon}`).then(data => data.json());
+        const strippedWeaponN = weapon.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
+        const rivenResults = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${strippedWeaponN}`).then(data => data.json());
         if (results.length > 0) {
           const pages = [];
           results.forEach((result) => {
             pages.push(new WeaponEmbed(this.bot, result));
+
+            if (Object.keys(rivenResults).length > 0) {
+              const strippedRes = result.name.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
+              if (rivenResults[strippedRes]) {
+                pages.push(new RivenStatEmbed(
+                  this.bot, rivenResults[strippedRes], result.name, ctx.i18n,
+                ));
+              }
+            }
+
             if (result.components && result.components.length) {
               pages.push(new ComponentEmbed(this.bot, result.components));
             }
+
             if (result.patchlogs && result.patchlogs.length) {
               createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
                 pages.push(new PatchnotesEmbed(this.bot, patchGroup));
