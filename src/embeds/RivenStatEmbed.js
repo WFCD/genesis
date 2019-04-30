@@ -14,6 +14,9 @@ class RivenStatEmbed extends BaseEmbed {
    */
   constructor(bot, rivenResult, resultKey, i18n) {
     super();
+    this.thumbnail = {
+      url: 'https://i.imgur.com/luKxF3t.png',
+    };
     this.fields = [];
     if(rivenResult.rerolled) {
       this.fields.push(...[{
@@ -47,12 +50,16 @@ class RivenStatEmbed extends BaseEmbed {
       }]);
     }
     
-    if(rivenResult.unrolled) {
-      this.fields.push(...[{
+    if (rivenResult.unrolled && rivenResult.rerolled) {
+      this.fields.push({
         name: '\u200B',
         value: '\u200B',
         inline: false,
-      },{
+      });
+    }
+    
+    if(rivenResult.unrolled) {
+      this.fields.push(...[{
         name: i18n`Unrolled`,
         value: '\u200B',
         inline: false,
