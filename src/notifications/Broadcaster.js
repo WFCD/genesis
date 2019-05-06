@@ -51,15 +51,18 @@ class Broadcaster {
 
   /**
    * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
-   * @param  {string} platform   Platform of worldstate
-   * @param  {string} type       Type of new data to notify
-   * @param  {Array}  [items=[]] Items to broadcast
-   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
-   * @returns {Array.<Object>} values for successes
+   * @param {Object} embed                  Embed to send to a channel
+   * @param {string} type                   Type of new data to notify
+   * @param {Array}  [meta.items=[]]             Items to broadcast
+   * @param {string} [meta.platform = 'pc'] Platform of worldstate
+   * @param {number} [meta.deleteAfter=0]   Amount of time to delete broadcast after
+   * @param {string} [meta.language = 'en'] Language to broadcast to
+   * @returns {Array.<Object>}              values for successes
    */
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
-    const channels = await this.settings.getNotifications(type, platform, items);
+  async broadcast(embed, type, {
+    platform = 'pc', deleteAfter = 0, language = 'en', items = [],
+  }) {
+    const channels = await this.settings.getNotifications(type, platform, items, language);
     return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
 

@@ -20,10 +20,9 @@ class Enemies extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     await this.messageManager.embed(
       message,
-      new EnemyEmbed(this.bot, ws.persistentEnemies, platform), true, false,
+      new EnemyEmbed(this.bot, await this.ws.get('persistentEnemies', platform, ctx.language), platform), true, false,
     );
     return this.messageManager.statuses.SUCCESS;
   }

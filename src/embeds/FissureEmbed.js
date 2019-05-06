@@ -3,7 +3,7 @@
 const BaseEmbed = require('./BaseEmbed.js');
 const { assetBase, wikiBase } = require('../CommonFunctions');
 
-const fissureThumb = `${assetBase}img/fissure-sm.png`;
+const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissure-sm.png`;
 
 /**
  * Generates fissure embeds
@@ -13,12 +13,17 @@ class FissureEmbed extends BaseEmbed {
    * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Fissure>} fissures - The fissures to be included in the embed
    * @param {string} platform - platform
+   * @param {I18n} i18n internationalization function
+   * @param {string} era Era to override title
    */
-  constructor(bot, fissures, platform) {
+  constructor(bot, fissures, platform, i18n, era) {
     super();
 
     if (fissures.length > 1) {
-      this.title = `[${platform.toUpperCase()}] Worldstate - Void Fissures`;
+      this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Fissures`;
+    }
+    if (era) {
+      this.title = i18n`[${platform.toUpperCase()}] ${era} Fissures`;
     }
     this.url = `${wikiBase}Void_Fissure`;
     this.thumbnail = {
@@ -28,19 +33,19 @@ class FissureEmbed extends BaseEmbed {
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
       this.fields = fissures.map(f => ({
-        name: `${f.missionType} ${f.tier}`,
-        value: `[${f.eta}] ${f.node} against ${f.enemy}`,
+        name: i18n`${f.missionType} ${era ? '' : f.tier}`,
+        value: i18n`[${f.eta}] ${f.node} against ${f.enemy}`,
       }));
     } else if (fissures.length === 0) {
       this.fields = {
-        name: 'Currently no fissures',
+        name: i18n`Currently no fissures`,
         value: '\u200B',
       };
     } else {
       const f = fissures[0];
-      this.title = `[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
-      this.description = `${f.node} against ${f.enemy}`;
-      this.footer.text = `${f.eta} remaining • Ends at `;
+      this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
+      this.description = i18n`${f.node} against ${f.enemy}`;
+      this.footer.text = i18n`${f.eta} remaining • Expires `;
       this.timestamp = new Date(f.expiry);
       this.thumbnail.url = fissureThumb;
     }

@@ -21,8 +21,7 @@ class Fissures extends Command {
     const platformParam = message.strippedContent.match(new RegExp(`(?:on\\s?${captures.platforms})`, 'ig'));
     const compact = /compact/ig.test(message.strippedContent);
     const platform = platformParam && platformParam.length ? platformParam[0].replace('on ', '') : ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const fissures = ws.fissures.sort((a, b) => a.tierNum > b.tierNum);
+    const fissures = (await this.ws.get('fissures', platform, ctx.language)).sort((a, b) => a.tierNum > b.tierNum);
 
     if (!fissures.length) {
       this.messageManager.reply(message, ctx.i18n`No Fissures Active`, true, true);
@@ -30,10 +29,23 @@ class Fissures extends Command {
 
     const pages = [];
     if (compact) {
-      pages.push(new FissureEmbed(this.bot, fissures, platform));
+      pages.push(new FissureEmbed(this.bot, fissures, platform, ctx.i18n));
     } else {
+      const eras = {
+        lith: [],
+        meso: [],
+        neo: [],
+        axi: [],
+      };
+
       fissures.forEach((fissure) => {
-        pages.push(new FissureEmbed(this.bot, [fissure], platform));
+        eras[fissure.tier.toLowerCase()].push(fissure);
+      });
+
+      Object.keys(eras).forEach((eraKey) => {
+        const embed = new FissureEmbed(this.bot, eras[eraKey],
+          platform, ctx.i18n, eras[eraKey][0].tier);
+        pages.push(embed);
       });
     }
     await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });

@@ -10,7 +10,7 @@ const { setupPages, apiBase, createGroupedArray } = require('../../CommonFunctio
 
 
 /**
- * Displays the stats for a warframe
+ * Displays the stats for a weapon
  */
 class WeaponStats extends Command {
   /**
@@ -22,7 +22,7 @@ class WeaponStats extends Command {
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {
-        description: 'Get stats for a Warframe',
+        description: 'Get stats for a weapon',
         parameters: ['weapon name'],
       },
     ];

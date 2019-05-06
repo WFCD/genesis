@@ -33,17 +33,19 @@ class NightwaveEmbed extends BaseEmbed {
         inline: false,
       });
 
-      this.fields.push({
-        name: i18n`Daily`,
-        value: nightwave.activeChallenges
-          .filter(challenge => challenge.isDaily)
-          .map(chString)
-          .join('\n'),
-        inline: true,
-      });
+      if (nightwave.activeChallenges.filter(challenge => challenge.isDaily).length) {
+        this.fields.push({
+          name: i18n`Daily`,
+          value: nightwave.activeChallenges
+            .filter(challenge => challenge.isDaily)
+            .map(chString)
+            .join('\n'),
+          inline: true,
+        });
+      }
 
       createGroupedArray(nightwave.activeChallenges
-        .filter(challenge => !challenge.isDaily), 4)
+        .filter(challenge => !challenge.isDaily && !challenge.isElite), 5)
         .forEach((challengeGroup, index) => {
           this.fields.push({
             name: index > 0 ? i18n`Weekly, ctd.` : i18n`Weekly`,
@@ -54,8 +56,20 @@ class NightwaveEmbed extends BaseEmbed {
           });
         });
 
+      createGroupedArray(nightwave.activeChallenges
+        .filter(challenge => !challenge.isDaily && challenge.isElite), 4)
+        .forEach((challengeGroup, index) => {
+          this.fields.push({
+            name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
+            value: challengeGroup
+              .map(chString)
+              .join('\n'),
+            inline: true,
+          });
+        });
+
       this.footer.text = `${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `;
-      this.timestamp = nightwave.expiry;
+      this.timestamp = nightwave.activeChallenges[0].expiry;
     } else {
       const challenge = nightwave.activeChallenges[0];
       this.description = chStringSingle(challenge);

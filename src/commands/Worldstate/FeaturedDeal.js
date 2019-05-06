@@ -21,8 +21,7 @@ class FeaturedDeal extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const sales = ws.flashSales.filter(popularItem => popularItem.isFeatured);
+    const sales = (await this.ws.get('flashSales', platform, ctx.language)).filter(popularItem => popularItem.isFeatured);
     const salesGroups = createGroupedArray(sales, 10);
     const pages = salesGroups.map(group => new SalesEmbed(this.bot, group, platform));
     const msg = await this.messageManager.embed(message, pages[0], true, false);

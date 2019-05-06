@@ -17,10 +17,9 @@ class Solaris extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(/[pcsxb14]{2,3}/ig);
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const solaris = ws.syndicateMissions.filter(m => m.syndicate === 'Solaris United');
+    const solaris = (await this.ws.get('syndicateMissions', platform, ctx.language)).filter(m => m.syndicate === 'Solaris United');
 
-    const vallis = ws.vallisCycle;
+    const vallis = await this.ws.get('vallisCycle', platform, ctx.language);
     if (solaris && solaris.length) {
       [vallis.bounty] = solaris;
     }

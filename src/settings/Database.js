@@ -103,7 +103,7 @@ class Database {
       prefix: '/',
       respond_to_settings: true,
       platform: 'pc',
-      language: 'en-US',
+      language: 'en',
       delete_after_respond: true,
       delete_response: true,
       createPrivateChannel: false,
@@ -183,7 +183,9 @@ class Database {
       }
 
       if (!context.language) {
-        context.language = this.defaults.language;
+        context.language = this.defaults.language.substr(0, 2);
+      } else {
+        context.language = context.language.substr(0, 2);
       }
 
       if (typeof context.allowCustom === 'undefined') {

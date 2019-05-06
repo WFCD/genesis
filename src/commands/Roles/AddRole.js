@@ -62,10 +62,12 @@ class AddRole extends Command {
     }
     let role = getRoleForString(stringRole, message);
     if (create && message.guild.me.hasPermission('MANAGE_ROLES')) {
-      role = await message.guild.createRole({
-        name: stringRole,
-        permissions: 0,
-        mentionable,
+      role = await message.guild.roles.create({
+        data: {
+          name: stringRole,
+          permissions: 0,
+          mentionable,
+        },
       }, 'Add Role Command with create flag');
     } else if (!role) {
       await this.sendInstructionEmbed(message);

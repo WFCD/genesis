@@ -21,8 +21,7 @@ class Alerts extends Command {
     const platformParam = message.strippedContent.match(new RegExp(captures.platforms, 'ig'));
     const compact = /compact/ig.test(message.strippedContent);
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const alerts = ws.alerts.filter(a => !a.expired);
+    const alerts = (await this.ws.get('alerts', platform, ctx.language)).filter(a => !a.expired);
 
     if (!alerts.length) {
       this.messageManager.reply(message, ctx.i18n`No Alerts Active`, true, true);

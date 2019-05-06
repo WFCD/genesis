@@ -17,11 +17,12 @@ class Logger {
     this.ravenClient = ravenClient;
   }
 }
+
 const logLevel = process.env.LOG_LEVEL || 'ERROR';
 const levels = [
   'DEBUG',
   'INFO',
-  'WARNING',
+  'WARN',
   'ERROR',
   'FATAL',
 ];

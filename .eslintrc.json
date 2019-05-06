@@ -25,6 +25,7 @@
     "linebreak-style": "off",
     "no-restricted-syntax": ["off"],
     "no-await-in-loop": "off",
-    "import/no-unresolved": 0
+    "import/no-unresolved": 0,
+    "no-useless-escape": 0
   }
 }

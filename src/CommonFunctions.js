@@ -65,6 +65,9 @@ const duration = {
 
 const fissureList = filter => fissures.filter(fissure => fissure.includes(filter));
 
+const missionTypes = require('./resources/missionTypes');
+const factions = require('./resources/factions');
+
 /**
  * Object describing all trackable events
  * @type {Object}
@@ -108,10 +111,21 @@ const trackableEvents = {
   twitter,
   nightwave,
   rss: rssFeeds.map(feed => feed.key),
+  arbitration: [],
+  kuva: [],
 };
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
+Object.keys(missionTypes).forEach((type) => {
+  if (missionTypes[type]) {
+    factions.forEach((faction) => {
+      trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
+    });
+  }
+  trackableEvents.kuva.push(`kuva.${type}`);
+});
+trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
 
 /**
  * Captures for commonly needed parameters
@@ -272,7 +286,7 @@ const stringFilter = chunk => chunk && chunk.length;
  * Field limit for chunked embeds
  * @type {Number}
  */
-const fieldLimit = 5;
+const fieldLimit = 7;
 
 /**
  * Default values for embeds
@@ -488,11 +502,22 @@ const constructTypeEmbeds = (types) => {
   const includedTypes = Object.assign({}, trackableEvents);
   Object.keys(trackableEvents).forEach((eventType) => {
     includedTypes[eventType] = [];
-    types.forEach((type) => {
+  });
+
+  types.forEach((type) => {
+    let found = false;
+    Object.keys(trackableEvents).forEach((eventType) => {
       if (trackableEvents[eventType].includes(type)) {
         includedTypes[eventType].push(type);
+        found = true;
       }
     });
+    if (!found) {
+      if (!includedTypes['no type']) {
+        includedTypes['no type'] = [];
+      }
+      includedTypes['no type'].push(type);
+    }
   });
 
   const fields = [];
@@ -502,7 +527,7 @@ const constructTypeEmbeds = (types) => {
       fields.push(...chunked);
     }
   });
-  const fieldGroups = createGroupedArray(fields, fieldLimit * 2);
+  const fieldGroups = createGroupedArray(fields, fieldLimit);
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
@@ -649,11 +674,10 @@ const timeDeltaToMinutesString = (millis) => {
   }
   const timePieces = [];
   const prefix = millis < 0 ? '-' : '';
-  let seconds = Math.abs(millis / 1000);
+  const seconds = Math.abs(millis / 1000);
 
   if (seconds >= duration.minute) {
     timePieces.push(`${Math.floor(seconds / duration.minute)}m`);
-    seconds = Math.floor(seconds) % duration.minute;
   }
 
   return `${prefix}${timePieces.join(' ')}`;
@@ -911,6 +935,24 @@ const getMessage = async (message, otherMessageId) => {
 };
 
 /**
+ * Group an array by a field value
+ * @param  {Object[]} array array of objects to broup
+ * @param  {string} field field to group by
+ * @returns {Object}       [description]
+ */
+const groupBy = (array, field) => {
+  const grouped = {};
+  array.forEach((item) => {
+    const fVal = item[field];
+    if (!grouped[fVal]) {
+      grouped[fVal] = [];
+    }
+    grouped[fVal].push(item);
+  });
+  return grouped;
+};
+
+/**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
  *
@@ -956,4 +998,5 @@ module.exports = {
   platforms,
   safeMatch,
   getMessage,
+  groupBy,
 };

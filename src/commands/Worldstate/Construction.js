@@ -20,8 +20,7 @@ class Construction extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const embed = new EventEmbed(this.bot, ws.constructionProgress, platform.toUpperCase());
+    const embed = new EventEmbed(this.bot, await this.ws.get('constructionProgress', platform, ctx.language), platform);
     await this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;
   }

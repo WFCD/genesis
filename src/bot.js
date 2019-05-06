@@ -1,9 +1,10 @@
 'use strict';
 
-const Discord = require('discord.js');
+const { Client, ShardClientUtil } = require('discord.js');
 const md = require('node-md-config');
+const io = require('socket.io-client');
 
-const WorldStateCache = require('./WorldStateCache');
+const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
 const Tracker = require('./Tracker');
@@ -11,6 +12,8 @@ const Tracker = require('./Tracker');
 const MessageManager = require('./settings/MessageManager');
 const Notifier = require('./notifications/Notifier');
 const Database = require('./settings/Database');
+
+const { apiBase } = require('./CommonFunctions');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
@@ -59,14 +62,33 @@ class Genesis {
      * @type {Discord.Client}
      * @private
      */
-    this.client = new Discord.Client({
+    this.client = new Client({
       fetchAllMembers: false,
       ws: {
         compress: true,
       },
       shards: shardId,
       totalShardCount: shardCount,
-      retryLimit: 2,
+      retryLimit: 1,
+      disabledEvents: [
+        'VOICE_SERVER_UPDATE',
+        'PRESENSE_UPDATE',
+        'USER_SETTINGS_UPDATE',
+        'GUILD_INTEGRATIONS_UPDATE',
+        'GUILD_EMOJIS_UPDATE',
+        'GUILD_UPDATE',
+        'CHANNEL_PINS_UPDATE',
+      ],
+      restSweepInterval: 20,
+      messageSweepInterval: 3600,
+      messageCacheLifetime: 3600,
+      presence: {
+        status: 'dnd',
+        afk: false,
+        activity: {
+          name: `Starting... (${shardId})`,
+        },
+      },
     });
 
     this.shardId = shardId;
@@ -78,12 +100,6 @@ class Genesis {
      * @private
      */
     this.token = discordToken;
-
-    /**
-     * Discord.js API
-     * @type {Discord}
-     */
-    this.discord = Discord;
 
     /**
      * The logger object
@@ -130,7 +146,7 @@ class Genesis {
      * Shard client for communicating with other shards
      * @type {Discord.ShardClientUtil}
      */
-    this.shardClient = new Discord.ShardClientUtil(this.client);
+    this.shardClient = new ShardClientUtil(this.client);
 
     /**
      * Persistent storage for settings
@@ -145,28 +161,10 @@ class Genesis {
     }, this);
 
     /**
-     * Objects holding worldState data, one for each platform
-     * @type {Object.<WorldStateCache>}
+     * common api client for calling the worldstate so we don't re-use fetch everywhere
+     * @type {WorldStateClient}
      */
-    this.worldStates = {};
-
-    /**
-     * The platforms that Warframe exists for
-     * @type {Array.<string>}
-     */
-    this.platforms = ['pc', 'ps4', 'xb1', 'swi'];
-
-    const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
-
-    this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
-    });
-
-    /**
-     * The languages that are useable for the bot
-     * @type {Array.<string>}
-     */
-    this.languages = ['en-us'];
+    this.ws = new WorldStateClient(this.logger);
 
     this.tracker = new Tracker(this.logger, this.client, this.shardClient, {
       shardId,
@@ -191,6 +189,8 @@ class Genesis {
      * @type {EventHandler}
      */
     this.eventHandler = new EventHandler(this);
+
+    this.socket = io(apiBase);
 
     // Notification emitter
     this.notifier = new Notifier(this);
@@ -226,7 +226,7 @@ class Genesis {
   async start() {
     await this.settings.createSchema(this.client);
     this.logger.debug('Schema created');
-    await this.commandManager.loadCommands();
+    await this.commandManager.loadCustomCommands();
     await this.eventHandler.loadHandles();
 
     this.setupHandlers();

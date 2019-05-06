@@ -5,6 +5,8 @@ const Handler = require('../models/BaseEventHandler');
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 const FeedsNotifier = require('../notifications/FeedsNotifier');
 
+const MessageManager = require('../settings/MessageManager');
+
 const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
 
 const max = {
@@ -65,8 +67,8 @@ async function checkPrivateRooms(self, shardId) {
  */
 async function updatePresence(self) {
   try {
-    const cetusState = (await self.bot.worldStates.pc.getData()).cetusCycle;
-    const vallisState = (await self.bot.worldStates.pc.getData()).vallisCycle;
+    const cetusState = await self.bot.ws.get('cetusCycle');
+    const vallisState = await self.bot.ws.get('vallisCycle');
     const base = `@${self.client.user.username} help`;
     let final = base;
     if (vallisState || cetusState) {
@@ -114,7 +116,7 @@ class OnReadyHandle extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'onReady', 'onReady');
+    super(bot, 'handlers.onReady', 'onReady');
     this.channelTimeout = 60000;
   }
 
@@ -137,19 +139,15 @@ class OnReadyHandle extends Handler {
         }],
       });
     }
-    this.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      activity: {
-        name: `@${this.client.user.username} help`,
-        url: 'https://genesis.warframestat.us',
-      },
-    });
+
+    this.bot.MessageManager = new MessageManager(this.bot);
+
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
     const self = this;
     setInterval(checkPrivateRooms, self.channelTimeout, self, self.bot.shardId);
+    updatePresence(this);
     setInterval(updatePresence, 60000, self);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
     this.bot.feedNotifier = new FeedsNotifier(this.bot);

@@ -1,30 +1,35 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const NightwaveEmbed = require('../../embeds/NightwaveEmbed.js');
+const ArbitrationEmbed = require('../../embeds/ArbitrationEmbed.js');
 const { captures } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active alerts
  */
-class Nightwave extends Command {
+class Arbitration extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.nightwave', 'nightwave', 'Display the currently active nightwave season');
-    this.regex = new RegExp(`^${this.call}s?\\s?(?:on\\s+${captures.platforms})?`, 'i');
+    super(bot, 'warframe.worldstate.arbitration', 'arbi', 'Display the currently active arbitration');
   }
 
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(new RegExp(captures.platforms, 'ig'));
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
+    const arbi = (await this.ws.get('arbitration', platform, ctx.language));
+
+    if (!arbi) {
+      this.messageManager.reply(message, ctx.i18n`No Arbitration Mission Active`, true, true);
+    }
+
     await this.messageManager
-      .embed(message, new NightwaveEmbed(this.bot, await this.ws.get('nightwave', platform, ctx.language), platform, ctx.i18n), true, true);
+      .embed(message, new ArbitrationEmbed(this.bot, arbi, platform, ctx.i18n), true, true);
 
     return this.messageManager.statuses.SUCCESS;
   }
 }
 
-module.exports = Nightwave;
+module.exports = Arbitration;
