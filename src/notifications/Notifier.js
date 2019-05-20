@@ -141,16 +141,21 @@ class Notifier {
     const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
     const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
 
-    const nWaveChallenges = newData.nightwave.activeChallenges
-      .filter(challenge => !ids.includes(challenge.id) && challenge.active);
-    const nWaveIds = newData.nightwave.activeChallenges
-      .filter(challenge => challenge.active)
-      .map(challenge => challenge.id);
-    const nightwave = nWaveChallenges.length
-      ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
-      : undefined;
-    if (nightwave) {
-      nightwave.activeChallenges = nWaveChallenges;
+    let nightwave;
+    let nWaveIds = [];
+
+    if (newData.nightwave) {
+      const nWaveChallenges = newData.nightwave.activeChallenges
+        .filter(challenge => !ids.includes(challenge.id) && challenge.active);
+      nWaveIds = newData.nightwave.activeChallenges
+        .filter(challenge => challenge.active)
+        .map(challenge => challenge.id);
+      nightwave = nWaveChallenges.length
+        ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
+        : undefined;
+      if (nightwave) {
+        nightwave.activeChallenges = nWaveChallenges;
+      }
     }
 
     // Concat all notified ids
