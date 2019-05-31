@@ -6,7 +6,6 @@
 
 # Contribute
 
-[![Stories in Ready](https://badge.waffle.io/wfcd/genesis.png?label=ready&title=Ready)](http://waffle.io/wfcd/genesis) 
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord) 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade) 
 [![Greenkeeper badge](https://badges.greenkeeper.io/WFCD/genesis.svg)](https://greenkeeper.io/)
@@ -84,12 +83,6 @@ TWITTER_BEARER_TOKEN | Twitter App-only Bearer token | 'AAAAAasddfasd' | N\A
 ## Commands
 
 Honestly too many to put here
-
-
-## Throughput
-
-[![Throughput Graph](https://graphs.waffle.io/wfcd/genesis/throughput.svg)](https://waffle.io/wfcd/genesis/metrics/throughput)
-
 
 ## License
 
