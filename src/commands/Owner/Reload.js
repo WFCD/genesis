@@ -2,6 +2,9 @@
 
 const Command = require('../../models/Command.js');
 
+const decache = require('decache');
+const path = require('path');
+
 /**
  * Reloads the script containing the commands
  */
@@ -23,30 +26,35 @@ class Reload extends Command {
    */
   async run(message) {
     this.logger.debug('Reloading modules');
-    const commandsBefore = this.commandManager.commands.map(c => c.id);
     const precache = Object.keys(this.commandManager.commandCache);
+
+    // decache processes
+    const commandDir = path.join(__dirname, '../commands');
+    this.commandManager.commands
+      .filter(command => precache.includes(command.id))
+      .forEach((command) => {
+        try {
+          decache(path.join(commandDir, command.path));
+          this.logger.debug(`Decached ${command.id} @ ${command.path}`);
+        } catch (e) {
+          this.logger.error(`Could not decache ${command.id} @ ${command.path}`);
+        }
+      });
+
     delete this.commandManager.commandCache;
     this.commandManager.commandCache = {};
-    this.commandManager.loadCommands();
-    const commandsAfter = this.commandManager.commands.map(c => c.id);
-
-    const commandsAdded = commandsAfter.filter(command => !commandsBefore.includes(command));
-    const commandsRemoved = commandsBefore.filter(command => !commandsAfter.includes(command));
-
-    const commandsAddedString = commandsAdded.length > 0 ? commandsAdded.sort().join(' ') : ' No Commands Added';
-    const commandsRemovedString = commandsRemoved.length > 0 ? commandsRemoved.sort().join(' ') : ' No Commands Removed';
     const precacheString = precache.length > 0 ? precache.sort().join('\n- ') : 'No Commands decached';
 
-    await this.messageManager.sendMessage(message, `**Commands reloaded!**
-\`\`\`diff
-- ${commandsRemovedString}\`\`\`
-\`\`\`diff
-+ ${commandsAddedString}\`\`\`
-
+    await this.messageManager.send(message, `**Commands reloaded!**
 **Decached**
 \`\`\`diff
 - ${precacheString}
-\`\`\``, true, true);
+\`\`\``,
+    {
+      deleteOriginal: true,
+      deleteResponse: true,
+      message,
+    });
     return this.messageManager.statuses.SUCCESS;
   }
 }

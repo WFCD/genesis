@@ -153,10 +153,13 @@ class FrameStatsInline extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const queries = message.strippedContent.match(this.regex);
-    if (queries.length > 0) {
-      queries.forEach(query => this.evalQuery(message, query));
+    const strippedQueries = Array.from(new Set(queries.map(query => query.replace(/\[|\]/ig, '').trim().toLowerCase())));
+    this.logger.debug(strippedQueries.join(','));
+
+    if (strippedQueries.length > 0) {
+      strippedQueries.forEach(query => this.evalQuery(message, query));
     }
+
     return this.messageManager.statuses.NO_ACCESS;
   }
 }

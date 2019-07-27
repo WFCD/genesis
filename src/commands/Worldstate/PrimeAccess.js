@@ -20,8 +20,7 @@ class PrimeAccess extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const news = ws.news.filter(n => n.primeAccess);
+    const news = (this.ws.get('news', platform, ctx.language)).filter(n => n.primeAccess && n.translations.en);
     await this.messageManager.embed(message, new PrimeAccessEmbed(this.bot, news, 'primeaccess', platform), true, false);
     return this.messageManager.statuses.SUCCESS;
   }

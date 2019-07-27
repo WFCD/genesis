@@ -135,6 +135,12 @@ class Command {
      * @type {Boolean}
      */
     this.enabled = true;
+
+    /**
+     * Bot Worldstate Client
+     * @type {WorldStateClient}
+     */
+    this.ws = bot.ws;
   }
 
   /**

@@ -38,10 +38,9 @@ class Syndicates extends Command {
       platformParam = param1;
     }
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const pages = [];
-    const matching = ws.syndicateMissions.filter(m => m.syndicate.toLowerCase() === syndicate || syndicate === 'all');
-    if (matching.length) {
+    const matching = (await this.ws.get('syndicateMissions', platform, ctx.language))
+          .filter(m => m.syndicate.toLowerCase() === syndicate || syndicate === 'all');    if (matching.length) {
       matching.forEach((mission) => {
         pages.push(new SyndicateEmbed(this.bot, [mission], mission.syndicate, platform, true));
       });

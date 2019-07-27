@@ -1,4 +1,5 @@
 'use strict';
+const Sentry = require('@sentry/node');
 
 /**
  * A collection of methods for logging
@@ -10,18 +11,13 @@
 *                                 an error
  */
 class Logger {
-  /**
-   * @param {Raven} ravenClient client for logging errors and fatal errors
-   */
-  constructor(ravenClient) {
-    this.ravenClient = ravenClient;
-  }
+  constructor() {}
 }
 const logLevel = process.env.LOG_LEVEL || 'ERROR';
 const levels = [
   'DEBUG',
   'INFO',
-  'WARNING',
+  'WARN',
   'ERROR',
   'FATAL',
 ];
@@ -41,8 +37,8 @@ levels.forEach((level) => {
       }
     }
 
-    if (level.toLowerCase() === 'fatal' && this.ravenClient) {
-      this.ravenClient.captureMessage(message, {
+    if (level.toLowerCase() === 'fatal' && Sentry) {
+      Sentry.captureMessage(message, {
         level: 'fatal',
       });
       process.exit(4);
@@ -52,8 +48,8 @@ levels.forEach((level) => {
       console.error(`[${level}] ${message}`);
       // eslint-disable-next-line no-console
       console.error(message);
-      if (this && this.ravenClient) {
-        this.ravenClient.captureException(message);
+      if (Sentry) {
+        Sentry.captureException(message);
       }
     }
   };

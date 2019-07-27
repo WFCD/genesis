@@ -52,9 +52,9 @@ class EarthCycle extends Command {
     let cycleData;
     const earth = (/earth/ig).test(message.strippedContent);
     const image = (/--?i(?:mage)?/ig).test(message.strippedContent);
-    const ws = await this.bot.worldStates[ctx.platform.toLowerCase()].getData();
+    const cycleData = await this.ws.get(earth ? 'earthCycle' : 'cetusCycle', 'pc');
+
     if (image) {
-      cycleData = earth ? ws.earthCycle : ws.cetusCycle;
       const model = earth ? earthResources : cetusResources;
       new MakeSimpleImage(
         cycleData.isDay,
@@ -68,8 +68,8 @@ class EarthCycle extends Command {
 
       return this.messageManager.statuses.SUCCESS;
     }
-    cycleData = earth ? ws.earthCycle : ws.cetusCycle;
-    const ostrons = ws.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+    const ostrons = (await this.ws.get('syndicateMissions', ctx.platform))
+      .filter(mission => mission.syndicate === 'Ostrons')[0];
     if (!earth && ostrons) {
       cycleData.bountyExpiry = ostrons.expiry;
     }

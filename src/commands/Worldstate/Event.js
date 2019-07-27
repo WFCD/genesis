@@ -21,9 +21,9 @@ class Event extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = (platformParam || ctx.platform).toLowerCase();
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    if (ws.events.length > 0) {
-      const pages = ws.events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
+    const events = await this.ws.get('events', platform, ctx.language);
+    if (events.length > 0) {
+      const pages = events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
       const msg = await this.messageManager.embed(message, pages[0], true, false);
       if (pages.length > 1) {
         await createPageCollector(msg, pages, message.author);

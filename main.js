@@ -1,7 +1,7 @@
 'use strict';
 
 const cluster = require('cluster');
-const Raven = require('raven');
+const Sentry = require('@sentry/node');
 const fs = require('fs');
 
 const genManifest = require('./src/tools/generateManifest.js');
@@ -21,9 +21,7 @@ if (process.env.CONTROL_WH_ID) {
 /**
  * Raven client instance for logging errors and debugging events
  */
-const client = Raven.config(process.env.RAVEN_URL, {
-  autoBreadcrumbs: true,
-});
+Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
 
 /**
  * Logging functions class
@@ -31,13 +29,8 @@ const client = Raven.config(process.env.RAVEN_URL, {
  */
 const Logger = require('./src/Logger.js');
 
-client.install();
-client.on('error', (error) => {
-  // eslint-disable-next-line no-console
-  console.error(`Could not report the following error to Sentry: ${error.message}`);
-});
 
-const logger = new Logger(client);
+const logger = new Logger();
 process.on('uncaughtException', (err) => {
   logger.error(err);
 });

@@ -40,11 +40,9 @@ class Simaris extends Command {
 
   async handleSimarisCommmand(message, ctx, platformParam) {
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const { simaris } = ws;
     await this.messageManager.embed(
       message,
-      new SimarisEmbed(this.bot, simaris, platform), true, false,
+      new SimarisEmbed(this.bot, await this.ws.get('simaris', platform, ctx.language), platform), true, false,
     );
   }
 

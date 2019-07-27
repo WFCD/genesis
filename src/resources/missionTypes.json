@@ -1,0 +1,19 @@
+{
+  "excavation": true,
+  "mobiledefense": false,
+  "extermination": false,
+  "assassination": false,
+  "rescue": false,
+  "sabotage": false,
+  "defense": true,
+  "disruption": true,
+  "survival": true,
+  "spy": false,
+  "arena": true,
+  "capture": false,
+  "defection": true,
+  "hijack": false,
+  "infestedsalvage": true,
+  "interception": true,
+  "sanctuaryonslaught": true
+}

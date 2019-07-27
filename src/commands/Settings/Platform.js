@@ -1,7 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { getChannel, captures } = require('../../CommonFunctions');
+const { getChannel, captures, platforms } = require('../../CommonFunctions');
 
 class Platform extends Command {
   constructor(bot) {
@@ -15,7 +15,7 @@ class Platform extends Command {
 
   async run(message) {
     const platform = message.strippedContent.match(this.regex)[1];
-    if (!platform || !this.bot.platforms.includes(platform.toLowerCase())) {
+    if (!platform || !platforms.includes(platform.toLowerCase())) {
       const embed = {
         title: 'Usage',
         type: 'rich',
