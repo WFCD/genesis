@@ -1,4 +1,5 @@
 'use strict';
+
 const Sentry = require('@sentry/node');
 
 /**
@@ -10,9 +11,7 @@ const Sentry = require('@sentry/node');
  * @property {function} fatal   - Logs a fatal message. The program should terminate after such
 *                                 an error
  */
-class Logger {
-  constructor() {}
-}
+class Logger {}
 const logLevel = process.env.LOG_LEVEL || 'ERROR';
 const levels = [
   'DEBUG',

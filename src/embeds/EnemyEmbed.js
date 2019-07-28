@@ -19,15 +19,15 @@ class EnemyEmbed extends BaseEmbed {
     this.fields = [{
       name: 'Health Base',
       value: String(enemy.health),
-      inline: true
+      inline: true,
     }, {
       name: 'Shield Base',
       value: String(enemy.shield),
-      inline: true
+      inline: true,
     }, {
       name: 'Armor Base',
       value: String(enemy.armor),
-      inline: true
+      inline: true,
     }];
 
     enemy.resistances.forEach((resistance) => {

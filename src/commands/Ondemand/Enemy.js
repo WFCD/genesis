@@ -43,11 +43,11 @@ class EnemyStats extends Command {
 
               pages.push(new DropsEmbed(this.bot, result.drops));
 
-              // if (result.patchlogs && result.patchlogs.length) {
-              //   createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
-              //     pages.push(new PatchnotesEmbed(this.bot, patchGroup));
-              //   });
-              // }
+              if (result.patchlogs && result.patchlogs.length) {
+                createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
+                  pages.push(new PatchnotesEmbed(this.bot, patchGroup));
+                });
+              }
             }
           });
 

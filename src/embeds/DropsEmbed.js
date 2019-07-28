@@ -23,13 +23,11 @@ class DropsEmbed extends BaseEmbed {
     }).filter(drop => drop);
 
     const dropGroups = createGroupedArray(consolidated, 10);
-    this.fields = dropGroups.map((group) => {
-      return {
-        name: '\u200B',
-        value: group.join('\n'),
-        inline: false,
-      };
-    });
+    this.fields = dropGroups.map(group => ({
+      name: '\u200B',
+      value: group.join('\n'),
+      inline: false,
+    }));
   }
 }
 

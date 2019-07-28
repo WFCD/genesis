@@ -153,6 +153,7 @@ class FrameStatsInline extends Command {
    * @returns {string} success status
    */
   async run(message) {
+    const queries = message.strippedContent.match(this.regex);
     const strippedQueries = Array.from(new Set(queries.map(query => query.replace(/\[|\]/ig, '').trim().toLowerCase())));
     this.logger.debug(strippedQueries.join(','));
 

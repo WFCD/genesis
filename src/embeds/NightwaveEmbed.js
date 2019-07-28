@@ -56,17 +56,17 @@ class NightwaveEmbed extends BaseEmbed {
           });
         });
 
-        createGroupedArray(nightwave.activeChallenges
-          .filter(challenge => !challenge.isDaily && challenge.isElite), 4)
-          .forEach((challengeGroup, index) => {
-            this.fields.push({
-              name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
-              value: challengeGroup
-                .map(chString)
-                .join('\n'),
-              inline: true,
-            });
+      createGroupedArray(nightwave.activeChallenges
+        .filter(challenge => !challenge.isDaily && challenge.isElite), 4)
+        .forEach((challengeGroup, index) => {
+          this.fields.push({
+            name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
+            value: challengeGroup
+              .map(chString)
+              .join('\n'),
+            inline: true,
           });
+        });
 
       this.footer.text = `${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = nightwave.activeChallenges[0].expiry;

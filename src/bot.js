@@ -13,8 +13,6 @@ const MessageManager = require('./settings/MessageManager');
 const Notifier = require('./notifications/Notifier');
 const Database = require('./settings/Database');
 
-const { apiBase } = require('./CommonFunctions');
-
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
 /**

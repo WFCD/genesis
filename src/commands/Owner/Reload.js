@@ -1,9 +1,9 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
 
 const decache = require('decache');
 const path = require('path');
+const Command = require('../../models/Command.js');
 
 /**
  * Reloads the script containing the commands
