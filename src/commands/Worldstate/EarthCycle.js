@@ -49,7 +49,6 @@ class EarthCycle extends Command {
    * @returns {string} success status
    */
   async run(message, ctx) {
-    let cycleData;
     const earth = (/earth/ig).test(message.strippedContent);
     const image = (/--?i(?:mage)?/ig).test(message.strippedContent);
     const cycleData = await this.ws.get(earth ? 'earthCycle' : 'cetusCycle', 'pc');

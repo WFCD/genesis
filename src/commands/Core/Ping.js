@@ -53,7 +53,7 @@ class Ping extends Command {
     const now = Date.now();
     const msg = await this.messageManager.reply(message, 'Testing Ping', { deleteOriginal: true, deleteResponse: false });
     const afterSend = Date.now();
-    msg = await msg.edit('', {
+    await msg.edit('', {
       embed: {
         title: 'PONG',
         type: 'rich',

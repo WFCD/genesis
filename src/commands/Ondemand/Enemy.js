@@ -20,17 +20,17 @@ class EnemyStats extends Command {
   }
 
   async run(message) {
-    let enemy = message.strippedContent.match(this.regex)[1];
-    if (enemy) {
-      enemy = enemy.trim().toLowerCase();
+    let query = message.strippedContent.match(this.regex)[1];
+    if (query) {
+      query = query.trim().toLowerCase();
       try {
-        const results = await this.ws.search('items', enemy);
+        const results = await this.ws.search('items', query);
         if (results.length > 0) {
           const pages = [];
           const known = [];
-          const enemies = results.filter(enemy => {
-            if (!known.includes(enemy.name)) {
-              known.push(enemy.name);
+          const enemies = results.filter((result) => {
+            if (!known.includes(result.name)) {
+              known.push(result.name);
               return true;
             }
             return false;
@@ -43,11 +43,11 @@ class EnemyStats extends Command {
 
               pages.push(new DropsEmbed(this.bot, result.drops));
 
-              if (result.patchlogs && result.patchlogs.length) {
-                createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
-                  pages.push(new PatchnotesEmbed(this.bot, patchGroup));
-                });
-              }
+              // if (result.patchlogs && result.patchlogs.length) {
+              //   createGroupedArray(result.patchlogs, 4).forEach((patchGroup) => {
+              //     pages.push(new PatchnotesEmbed(this.bot, patchGroup));
+              //   });
+              // }
             }
           });
 

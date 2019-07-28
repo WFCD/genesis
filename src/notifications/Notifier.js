@@ -339,11 +339,16 @@ class Notifier {
   }
 
   async sendFissures(newFissures, platform) {
-    await Promise.all(newFissures
-      .map(f => this.broadcaster.broadcast(
-        new FissureEmbed(this.bot, [f], platform), platform,
-        `fissures.t${f.tierNum}.${f.missionType.toLowerCase()}`, null, fromNow(f.expiry),
-      )));
+    await Promise.all(newFissures.map(fissure => this.sendFissure(fissure, platform)));
+  }
+
+  async sendFissure(fissure, platform) {
+    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+      const embed = new FissureEmbed(this.bot, [fissure], platform, i18n);
+      embed.locale = locale;
+      const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase()}`;
+      await this.broadcaster.broadcast(embed, platform, id, null, fromNow(fissure.expiry));
+    });
   }
 
   async sendInvasions(newInvasions, platform) {
