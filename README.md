@@ -26,6 +26,7 @@ Due to the New Discord T.O.S , if you continue to use, participate, be in, or no
 
 If you do not agree to letting Genesis, Oratoris, or any other bot there do so, please kick Genesis from your servers.
 
+tl;dr Bots need data. While I don't record any of your personal data or save it off for long-term use, I still need to tell you that bots can access your messages and user ID. If you don't want that, get rid of all of them, cause they all need that data.
 
 ## Installation
 
