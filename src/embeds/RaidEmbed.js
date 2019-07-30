@@ -2,6 +2,7 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 const RaidStat = require('../resources/RaidStat.js');
+const { assetBase } = require('../CommonFunctions');
 
 /**
  * Generates simaris embeds
@@ -14,12 +15,12 @@ class RaidStatEmbed extends BaseEmbed {
    * @param {string} platform - Platform for the query
    */
   constructor(bot, userStats, query, platform) {
-    super();
+    super(bot);
     this.title = `Raid statistics for ${query}`;
     this.url = encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`);
     this.color = 0xaf5b4b;
     this.thumbnail = {
-      url: 'https://raw.githubusercontent.com/aliasfalse/genesis/master/src/resources/NightmareRaidSekhara.png',
+      url: `${assetBase}/NightmareRaidSekhara.png`,
     };
     const stats = {
       lor: new RaidStat(userStats, 'lor'),

@@ -1,19 +1,7 @@
-### Genesis Issue
----
-
-**Summary (short):**
-
----
-**Description:**
+**Summary:**
 
 ---
 **If issue, Reproduction:**
 
 ---
 **Mockups, screenshots, evidence:**
-
----
-
-(Check one)
-- [ ] Issue
-- [ ] Suggestion

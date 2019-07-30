@@ -13,9 +13,11 @@ before_script:
 after_script: greenkeeper-lockfile-upload
 
 after_success:
-  - chmod +x .github/travis/success.sh
-  - ./.github/travis/success.sh
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $DISCORD_WEBHOOK_URL
 after_failure:
-  - chmod +x .github/travis/fail.sh
-  - ./.github/travis/fail.sh
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $DISCORD_WEBHOOK_URL
 install: npm install

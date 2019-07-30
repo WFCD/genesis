@@ -98,6 +98,9 @@ class PingsQueries {
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
   async getNotifications(type, platform, items) {
+    if (this.scope === 'worker') {
+      return this.getAgnosticNotifications(type, platform, items);
+    }
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
@@ -108,6 +111,37 @@ class PingsQueries {
         .append(SQL`
         WHERE type_notifications.type = ${String(type)}
           AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}
+          AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
+        .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
+          AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
+      return (await this.db.query(query))[0];
+    } catch (e) {
+      this.logger.error(e);
+      return [];
+    }
+  }
+
+  /**
+   * Returns all the channels that should get a notification for the items in the list
+   *    - ignores shard id, because this is for the standalone notifications
+   * @param {string} type The type of the event
+   * @param {string} platform The platform of the event
+   * @param {Array.<string>} items The items in the reward that is being notified
+   * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
+   */
+  async getAgnosticNotifications(type, platform, items) {
+    if (scope !== 'worker') {
+        return this.getNotifications(type, platform, items);
+    }
+    try {
+      const query = SQL`SELECT DISTINCT channels.id as channelId
+          FROM type_notifications`
+        .append(items && items.length > 0
+          ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
+        .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
+        .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
+        .append(SQL`
+        WHERE type_notifications.type = ${String(type)}
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
         .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);

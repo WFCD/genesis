@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { assetBase } = require('../../CommonFunctions');
 
 /**
  * Calculates the damage reduction for a given armor value
@@ -87,7 +88,7 @@ class Armor extends Command {
       const embed = {
         color: 0xffa500,
         thumbnail: {
-          url: 'https://raw.githubusercontent.com/wfcd/genesis/master/src/resources/grineer.png',
+          url: `${assetBase}/grineer.png`,
         },
         fields: [
           {
@@ -115,7 +116,7 @@ class Armor extends Command {
     const embed = {
       color: 0xff0000,
       thumbnail: {
-        url: 'https://raw.githubusercontent.com/wfcd/genesis/master/src/resources/grineer.png',
+        url: `${assetBase}/grineer.png`,
       },
       fields: [
         {

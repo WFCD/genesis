@@ -104,28 +104,28 @@ const trackableEvents = {
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
   vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
-  'twitter.reply': eventTypes.filter(event => /twitter\.\w*\.reply/.test(event)),
-  'twitter.tweet': eventTypes.filter(event => /twitter\.\w*\.tweet/.test(event)),
-  'twitter.retweet': eventTypes.filter(event => /twitter\.\w*\.retweet/.test(event)),
-  'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
+  'twitter.reply': twitter.filter(event => /twitter\.\w*\.reply/.test(event)),
+  'twitter.tweet': twitter.filter(event => /twitter\.\w*\.tweet/.test(event)),
+  'twitter.retweet': twitter.filter(event => /twitter\.\w*\.retweet/.test(event)),
+  'twitter.quote': twitter.filter(event => /twitter\.\w*\.quote/.test(event)),
   twitter,
   nightwave,
   rss: rssFeeds.map(feed => feed.key),
-  arbitration: [],
-  kuva: [],
+  // arbitration: [],
+  // kuva: [],
 };
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
-Object.keys(missionTypes).forEach((type) => {
-  if (missionTypes[type]) {
-    factions.forEach((faction) => {
-      trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
-    });
-  }
-  trackableEvents.kuva.push(`kuva.${type}`);
-});
-trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
+// Object.keys(missionTypes).forEach((type) => {
+//   if (missionTypes[type]) {
+//     factions.forEach((faction) => {
+//       trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
+//     });
+//   }
+//   trackableEvents.kuva.push(`kuva.${type}`);
+// });
+// trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
 
 /**
  * Captures for commonly needed parameters

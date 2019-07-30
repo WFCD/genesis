@@ -9,7 +9,7 @@
     "lint:fix": "npx eslint main.js src/ --fix",
     "logs": "pm2 logs genesis",
     "test": "npx eslint main.js src/",
-    "restart": "pm2 delete genesis && pm2 start genesis.json && pm2 logs genesis",
+    "restart": "pm2 delete genesis && npm start && npm run logs",
     "setup": "npm i",
     "start": "pm2 start genesis.json",
     "start:logs": "npm start && npm run logs",
@@ -38,6 +38,7 @@
   "dependencies": {
     "@discordjs/uws": "^11.149.1",
     "@sentry/node": "^5.5.0",
+    "@spectacles/rest": "^0.5.2",
     "bluebird": "^3.5.5",
     "decache": "^4.5.1",
     "discord.js": "github:discordjs/discord.js",
@@ -61,9 +62,7 @@
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "ink-docstrap": "^1.3.2",
-    "jsdoc": "^3.6.3"
+    "eslint-plugin-import": "^2.18.2"
   },
   "license": "Apache-2.0",
   "engines": {

@@ -98,10 +98,10 @@ class SettingsQueries {
       });
 
       if (!webhook.avatar) {
-        webhook.avatar = this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif').replace('?size=2048', '');
+        webhook.avatar = this.defaults.avatar;
       }
       if (!webhook.name) {
-        webhook.name = this.bot.client.user.username;
+        webhook.name = this.defaults.username;
       }
       if (!(webhook.id && webhook.token)) {
         webhook = undefined;
