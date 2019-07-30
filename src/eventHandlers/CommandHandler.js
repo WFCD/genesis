@@ -134,8 +134,6 @@ class CommandHandler extends Handler {
             ctx.args = cmd.parseArgs(message.content);
           }
 
-          ctx.message.channel.startTyping();
-
           // run
           try {
             const status = await cmd.run(strippedMessage, ctx);
@@ -162,9 +160,6 @@ class CommandHandler extends Handler {
           } catch (error) {
             this.logger.error(error);
           } finally {
-            // finish typing
-            ctx.message.channel.stopTyping(true);
-
             // make sure we don't run more
             done = true;
           }
