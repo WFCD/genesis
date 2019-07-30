@@ -130,8 +130,8 @@ class PingsQueries {
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
   async getAgnosticNotifications(type, platform, items) {
-    if (scope !== 'worker') {
-        return this.getNotifications(type, platform, items);
+    if (this.scope !== 'worker') {
+      return this.getNotifications(type, platform, items);
     }
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId

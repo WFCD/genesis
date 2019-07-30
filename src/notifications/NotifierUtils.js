@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable global-require */
 const embeds = {
   Alert: require('../embeds/AlertEmbed'),
   Conclave: require('../embeds/ConclaveChallengeEmbed'),
@@ -16,7 +17,7 @@ const embeds = {
   VoidTrader: require('../embeds/VoidTraderEmbed'),
   Cycle: require('../embeds/EarthCycleEmbed'),
   Solaris: require('../embeds/SolarisEmbed'),
-  Nightwave: require('../embeds/NightwaveEmbed')
+  Nightwave: require('../embeds/NightwaveEmbed'),
 };
 
 // const dbSettings = {

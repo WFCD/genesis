@@ -65,8 +65,8 @@ const duration = {
 
 const fissureList = filter => fissures.filter(fissure => fissure.includes(filter));
 
-const missionTypes = require('./resources/missionTypes');
-const factions = require('./resources/factions');
+// const missionTypes = require('./resources/missionTypes');
+// const factions = require('./resources/factions');
 
 /**
  * Object describing all trackable events

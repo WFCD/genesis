@@ -105,9 +105,9 @@ class Database {
         : 'Genesis',
       avatar: this.bot.client && this.bot.client.user
         ? this.bot.client.user.displayAvatarURL().replace('.webp', '.png')
-            .replace('.webm', '.gif').replace('?size=2048', '')
+          .replace('.webm', '.gif').replace('?size=2048', '')
         : `${assetBase}/avatar.png`,
-    }
+    };
 
     const opts = {
       supportBigNumbers: true,

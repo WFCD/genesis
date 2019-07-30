@@ -64,6 +64,7 @@ class Notifier {
    * rewrite to not use a bot client, but a direct api router
    * * Instantiate our own logger
    * * Instantiate our own db connection
+   * @param {Genesis} bot instance of the bot.... this needs to be refactored/removed
    */
   constructor(bot) {
     this.bot = bot;
