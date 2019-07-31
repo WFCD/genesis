@@ -1,9 +1,7 @@
 'use strict';
 
-const rpad = require('right-pad');
-
-const Command = require('../../models/Command.js');
-const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
+const Command = require('../../models/Command');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions');
 
 class ListPools extends Command {
   constructor(bot) {
@@ -29,8 +27,8 @@ class ListPools extends Command {
         color: 0xd30000,
         fields: poolGroup.map(group => ({
           name: '\u200B',
-          value: group.map(pool => `\`${rpad(pool.pool_id, longestId.length, '\u2003')} `
-            + `| ${rpad(pool.name, longestName.length, '\u2003')} | ${pool.len}\``).join('\n'),
+          value: group.map(pool => `\`${pool.pool_id.padEnd(longestId.length, '\u2003')} `
+            + `| ${pool.name.padEnd(longestName.length, '\u2003')} | ${pool.len}\``).join('\n'),
         })),
       };
       pages.push(embed);

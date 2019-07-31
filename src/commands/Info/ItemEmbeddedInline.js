@@ -1,7 +1,7 @@
 'use strict';
 
 const Wikia = require('node-wikia');
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 
 const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
@@ -32,7 +32,7 @@ const checkResult = (prompt, results) => {
 };
 
 const checkFrames = async (prompt) => {
-  const results = await fetch(`${apiBase}/warframes/search/${prompt}`).then(data => data.json());
+  const results = await fetch(`${apiBase}/warframes/search/${prompt}`);
   if (results.length > 0) {
     return new FrameEmbed(this.bot, checkResult(prompt, results));
   }
@@ -40,7 +40,7 @@ const checkFrames = async (prompt) => {
 };
 
 const checkWeapons = async (prompt) => {
-  const results = await fetch(`${apiBase}/weapons/search/${prompt}`).then(data => data.json());
+  const results = await fetch(`${apiBase}/weapons/search/${prompt}`);
   if (results.length > 0) {
     return new WeaponEmbed(this.bot, checkResult(prompt, results));
   }

@@ -1,8 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
-const rpad = require('right-pad');
-
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command');
 const { csvToCodes, resolvePool } = require('../../CommonFunctions');
 
@@ -86,7 +84,7 @@ class AddPromocode extends Command {
     let codes;
     let response;
     try {
-      const reqRes = await fetch(firstAttach.url).then(data => data.text());
+      const reqRes = await fetch(firstAttach.url);
       if (firstAttach.filename.indexOf('.json') > -1) {
         codes = JSON.parse(reqRes);
       } else if (firstAttach.filename.indexOf('.csv') > -1) {
@@ -127,7 +125,7 @@ class AddPromocode extends Command {
 
     const longestName = codes.map(pool => pool.id)
       .reduce((a, b) => (a.length > b.length ? a : b)).length;
-    const addedCodeLines = codes.map(code => `+ ${rpad(code.id, Number(longestName + 1), '\u2003')}| ${rpad(String(code.platform.toUpperCase()), 4, '\u2003')}| ${code.code}`);
+    const addedCodeLines = codes.map(code => `+ ${code.id.padEnd(Number(longestName + 1), '\u2003')}| ${String(code.platform.toUpperCase()).padEnd(4, '\u2003')}| ${code.code}`);
     response = await appendIfResponse(message, response, this.messageManager, `\\✅ Importing ${addedCodeLines.length}`);
     codes.forEach((code) => {
       code.adder = message.author.id; // eslint-disable-line no-param-reassign

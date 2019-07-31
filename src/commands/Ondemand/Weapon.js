@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
@@ -40,9 +40,9 @@ class WeaponStats extends Command {
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       try {
-        const results = await fetch(`${apiBase}/weapons/search/${weapon}`).then(data => data.json());
+        const results = await fetch(`${apiBase}/weapons/search/${weapon}`);
         const strippedWeaponN = weapon.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
-        const rivenResults = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${strippedWeaponN}`).then(data => data.json());
+        const rivenResults = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${strippedWeaponN}`);
         if (results.length > 0) {
           const pages = [];
           results.forEach((result) => {

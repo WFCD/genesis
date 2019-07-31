@@ -1,6 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
 const BaseEmbed = require('./BaseEmbed.js');
 
 const { createGroupedArray } = require('../CommonFunctions.js');
@@ -19,7 +18,7 @@ class DropsEmbed extends BaseEmbed {
       if (!(drop.rarity && drop.location && drop.chance)) return undefined;
 
       const chance = `${drop.rarity.charAt(0).toUpperCase()}@${(drop.chance * 100).toFixed(2)}%`;
-      return `\`${rpad(drop.location, longest, '\u2003')} | ${chance}\``;
+      return `\`${drop.location.padEnd(longest, '\u2003')} | ${chance}\``;
     }).filter(drop => drop);
 
     const dropGroups = createGroupedArray(consolidated, 10);

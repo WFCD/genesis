@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
 const { createGroupedArray, createPageCollector, apiBase } = require('../../CommonFunctions.js');
@@ -48,7 +48,8 @@ class Whereis extends Command {
     try {
       query = query.trim().toLowerCase();
       const queryWReplaces = query.replace(/prime/ig, 'p.').replace(/blueprint/ig, 'bp');
-      let results = await fetch(`${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`).then(data => data.json());
+      let results = await this.ws.search('drops', queryWReplaces);
+
       results = results.map(result => ({
         item: result.item,
         rarity: result.rarity,

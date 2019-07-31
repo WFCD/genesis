@@ -1,6 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
@@ -14,7 +13,7 @@ class RolesEmbed extends BaseEmbed {
    * @param {number} longest - length of longest name so that all are aligned
    */
   constructor(bot, roleGroups, prefix, longest) {
-    super();
+    super(bot);
     this.title = 'Joinable Roles';
     this.type = 'rich';
     this.color = 0x779ECB;
@@ -22,7 +21,7 @@ class RolesEmbed extends BaseEmbed {
     roleGroups.forEach((roleGroup) => {
       this.fields.push({
         name: '\u200B',
-        value: `\`\`\`${roleGroup.map(role => `${rpad(role.guildRole.name, Number(longest + 2), '\u2003')}${rpad(String(role.guildRole.members.size), 4, '\u2003')} members`).join(' \n')}\`\`\``,
+        value: `\`\`\`${roleGroup.map(role => `${role.guildRole.name.padEnd(Number(longest + 2), '\u2003')}${String(role.guildRole.members.size).padEnd(4, '\u2003')} members`).join(' \n')}\`\`\``,
       });
     });
 

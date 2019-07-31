@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('./Fetcher');
 const { apiBase } = require('../CommonFunctions');
 
 class WorldStateClient {
@@ -14,12 +14,32 @@ class WorldStateClient {
       headers: {
         'Accept-Language': language,
       },
-    }).then(data => data.json());
+    });
+  }
+
+  async g(endpoint, platform = 'pc', language = 'en') {
+    this.logger.debug(`fetching ${endpoint}`);
+    return fetch(`${apiBase}/${endpoint}`, {
+      headers: {
+        'Accept-Language': language,
+        Platform: platform,
+      },
+    });
   }
 
   async search(endpoint, query) {
     this.logger.debug(`searching ${endpoint} for ${query}`);
-    return fetch(`${apiBase}/${endpoint}/search/${query}`).then(data => data.json());
+    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query)}`);
+  }
+
+  async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
+    this.logger.debug(`pricechecking ${query}`);
+    return fetch(`${apiBase}/pricecheck/${type}/${query}`, {
+      headers: {
+        'Accept-Language': language,
+        Platform: platform,
+      },
+    });
   }
 }
 

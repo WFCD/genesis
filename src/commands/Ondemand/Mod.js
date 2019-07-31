@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 
 const Command = require('../../models/Command.js');
 const BaseEmbed = require('../../embeds/BaseEmbed.js');
@@ -75,7 +75,7 @@ class Mod extends Command {
     }
 
     try {
-      const results = await fetch(`${apiBase}/mods/search/${query}`).then(data => data.json());
+      const results = await fetch(`${apiBase}/mods/search/${query}`);
       if (results.length > 0) {
         const pages = [];
         results.forEach((result) => {

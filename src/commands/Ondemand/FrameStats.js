@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 
 const Command = require('../../models/Command.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
@@ -38,7 +38,7 @@ class FrameStats extends Command {
 
     if (frame) {
       frame = frame.trim().toLowerCase();
-      const results = await fetch(`${apiBase}/warframes/search/${frame}`).then(data => data.json());
+      const results = await fetch(`${apiBase}/warframes/search/${frame}`);
       if (results.length > 0) {
         const pages = [];
 
@@ -57,11 +57,11 @@ class FrameStats extends Command {
         await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
       }
-      const frames = await fetch(`${apiBase}/warframes`).then(data => data.json());
+      const frames = await fetch(`${apiBase}/warframes`);
       this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    const frames = await fetch(`${apiBase}/warframes`).then(data => data.json());
+    const frames = await fetch(`${apiBase}/warframes`);
     this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
     return this.messageManager.statuses.FAILURE;
   }

@@ -1,7 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
-const lpad = require('pad-left');
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
@@ -37,10 +35,11 @@ class WhatsinEmbed extends BaseEmbed {
       const reward = transformedRewards[rewardName];
       const qualities = [];
       reward.forEach((quality) => {
-        const wrappedQuality = lpad(`${quality.toFixed(2)}`, 6, '\u2003').substring(0, 5);
+        const wrappedQuality = `${quality.toFixed(2)}`.padStart(6, '\u2003').substring(0, 5);
         qualities.push(wrappedQuality);
       });
-      tokens.push(`${rpad(rewardName, longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
+
+      tokens.push(`${rewardName.padEnd(longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
     });
 
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 const SimarisEmbed = require('../../embeds/SimarisEmbed.js');
 const SynthesisTargetEmbed = require('../../embeds/SynthesisTargetEmbed.js');
@@ -54,7 +54,7 @@ class Simaris extends Command {
     }
 
     // Search the synth targets for the user's query
-    const results = await fetch(`${apiBase}/synthtargets/search/${query}`).then(data => data.json());
+    const results = await fetch(`${apiBase}/synthtargets/search/${query}`);
 
     // If there is a single result, show it
     if (results.length === 1) {

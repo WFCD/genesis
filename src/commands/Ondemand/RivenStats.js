@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 
 const RivenStatEmbed = require('../../embeds/RivenStatEmbed');
 const Command = require('../../models/Command.js');
@@ -37,7 +37,7 @@ class FrameStats extends Command {
 
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
-      const results = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${weapon}`).then(data => data.json());
+      const results = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${weapon}`);
       if (Object.keys(results).length > 0) {
         const pages = [];
 

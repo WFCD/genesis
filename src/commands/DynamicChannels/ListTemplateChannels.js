@@ -1,7 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
-
 const Command = require('../../models/Command.js');
 const BaseEmbed = require('../../embeds/BaseEmbed');
 
@@ -32,10 +30,10 @@ class AddTemplateChannel extends Command {
     });
     const embed = new BaseEmbed(this.bot);
     const longestName = templates.length ? templates.map(template => template.name).reduce((a, b) => (a.length > b.length ? a : b)) : '';
-    embed.description = `\`${rpad('Template', longestName.length, '\u2003')} | ${'# ch'.padStart(5, '\u2003')} | # Empty\`\n`;
+    embed.description = `\`${'Template'.padEnd(longestName.length, '\u2003')} | ${'# ch'.padStart(5, '\u2003')} | # Empty\`\n`;
     embed.description += (await Promise.all(templates.map(async (template) => {
       const instancesRes = await this.settings.getInstances(template);
-      return `\`${rpad(template.name, longestName.length, '\u2003')} | ${String(instancesRes.instances.length).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
+      return `\`${template.name.padEnd(longestName.length, '\u2003')} | ${String(instancesRes.instances.length).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
     }))).join('\n');
     this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.SUCCESS;

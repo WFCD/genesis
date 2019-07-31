@@ -1,7 +1,7 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const Wikia = require('node-wikia');
+const fetch = require('../resources/Fetcher');
 
 const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');
@@ -34,7 +34,7 @@ async function getThumbnailForItem(query, fWiki) {
     const fq = query
       .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
       .trim().toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`).then(data => data.json());
+    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
     if (results.length) {
       const url = `${apiCdnBase}img/${results[0].imageName}`;
       const getImg = await fetch(url);

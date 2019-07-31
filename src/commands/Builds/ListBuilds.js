@@ -1,7 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
-
 const Command = require('../../models/Command.js');
 const { createGroupedArray, setupPages } = require('../../CommonFunctions.js');
 
@@ -32,14 +30,14 @@ class ListBuilds extends Command {
 
       const tokens = buildGroups.map(buildGroup => ({
         name: '\u200B',
-        value: buildGroup.map(build => `\`${build.id} | ${rpad(build.title, titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n'),
+        value: buildGroup.map(build => `\`${build.id} | ${build.title.padEnd(titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n'),
       }));
 
       const tokenGroups = createGroupedArray(tokens, 5);
       const embeds = [];
       tokenGroups.forEach((tokenGroup) => {
         const fields = tokenGroup;
-        fields[0].value = `\`Build ID | ${rpad('Title', titleLen, '\u2003')} | Owner\`\n${tokenGroup[0].value}`;
+        fields[0].value = `\`Build ID | ${'Title'.padEnd(titleLen, '\u2003')} | Owner\`\n${tokenGroup[0].value}`;
         embeds.push({
           color: 0xcda2a3,
           fields,
