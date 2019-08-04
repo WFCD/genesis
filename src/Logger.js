@@ -1,6 +1,7 @@
 'use strict';
 
 const Sentry = require('@sentry/node');
+require('colors');
 
 /**
  * A collection of methods for logging
@@ -9,31 +10,35 @@ const Sentry = require('@sentry/node');
  * @property {function} warning - Logs a warning message
  * @property {function} error   - Logs an error message
  * @property {function} fatal   - Logs a fatal message. The program should terminate after such
-*                                 an error
+ *                                 an error
  */
 class Logger {}
-const logLevel = process.env.LOG_LEVEL || 'ERROR';
-const levels = [
-  'DEBUG',
-  'INFO',
-  'WARN',
-  'ERROR',
-  'FATAL',
-];
 
-levels.forEach((level) => {
+const l = {
+  get logLevel() {
+    process.env.LOG_LEVEL || 'ERROR'
+  }
+};
+const levels = {
+  'DEBUG': 'cyan',
+  'INFO': 'blue',
+  'WARN': 'orange',
+  'ERROR': 'red',
+  'FATAL': 'magenta',
+};
+const scopes = {
+  'BOT': 'yellow',
+  'WORKER': 'green',
+};
+
+const colorify = (level, map) => level[map[level] || 'red'];
+const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${colorify(level, levels).toLowerCase()}: ${msg}`;
+
+Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
-    if ((levels.indexOf(level) >= levels.indexOf(logLevel)) && levels.indexOf(level) < 3) {
-      if (level.toLowerCase() === 'debug') {
-        const verboseMsg = `[${level}] ${message}`;
-        if (`[${level}] "${message}"` !== verboseMsg) {
-          // eslint-disable-next-line no-console
-          console.log(verboseMsg);
-        }
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[${level}] ${message}`);
-      }
+    const simple = fmt(level, process.env.SCOPE || 'BOT', message);
+    if ((Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel)) && Object.keys(levels).indexOf(level) < 3) {
+      console.log(simple);
     }
 
     if (level.toLowerCase() === 'fatal' && Sentry) {
@@ -44,7 +49,7 @@ levels.forEach((level) => {
     }
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
-      console.error(`[${level}] ${message}`);
+      console.error(simple);
       // eslint-disable-next-line no-console
       console.error(message);
       if (Sentry) {
