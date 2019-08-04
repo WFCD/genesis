@@ -1,9 +1,7 @@
 'use strict';
 
-const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
-const { apiBase } = require('../../CommonFunctions');
 
 const inProgressEmbed = { title: 'Processing search...' };
 

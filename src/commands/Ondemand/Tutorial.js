@@ -1,8 +1,6 @@
 'use strict';
 
-const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
-const { apiBase } = require('../../CommonFunctions');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up

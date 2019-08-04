@@ -16,19 +16,19 @@ class Logger {}
 
 const l = {
   get logLevel() {
-    process.env.LOG_LEVEL || 'ERROR'
-  }
+    return process.env.LOG_LEVEL || 'ERROR';
+  },
 };
 const levels = {
-  'DEBUG': 'cyan',
-  'INFO': 'blue',
-  'WARN': 'orange',
-  'ERROR': 'red',
-  'FATAL': 'magenta',
+  DEBUG: 'cyan',
+  INFO: 'blue',
+  WARN: 'orange',
+  ERROR: 'red',
+  FATAL: 'magenta',
 };
 const scopes = {
-  'BOT': 'yellow',
-  'WORKER': 'green',
+  BOT: 'yellow',
+  WORKER: 'green',
 };
 
 const colorify = (level, map) => level[map[level] || 'red'];
@@ -37,7 +37,9 @@ const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${colorify(leve
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     const simple = fmt(level, process.env.SCOPE || 'BOT', message);
-    if ((Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel)) && Object.keys(levels).indexOf(level) < 3) {
+    if ((Object.keys(levels).indexOf(level) >= Object.keys(levels)
+      .indexOf(l.logLevel)) && Object.keys(levels).indexOf(level) < 3) {
+      // eslint-disable-next-line no-console
       console.log(simple);
     }
 

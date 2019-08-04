@@ -31,7 +31,7 @@ class Roles extends Command {
     });
     const longest = roles.map(role => role.name)
       .reduce((a, b) => (a.length > b.length ? a : b));
-    const roleGroups = createGroupedArray(roles.map(role => `\`${role.name, longest.length.padEnd('\u2003')} ${role.id}\``), 6);
+    const roleGroups = createGroupedArray(roles.map(role => `\`${role.name.padEnd('\u2003', longest.length)} ${role.id}\``), 6);
     const metaGroups = createGroupedArray(roleGroups, 4);
     const embeds = [];
     metaGroups.forEach((metaGroup) => {
