@@ -415,13 +415,15 @@ class Notifier {
     }
   }
 
-  async sendSyndicates(newSyndicates, platform) {
+  async sendSyndicates(newSyndicate, platform) {
     for (const {
       key, display, prefix, timeout, notifiable,
     } of syndicates) {
       if (notifiable) {
-        const embed = new embeds.Syndicate(this.bot, newSyndicates, display, platform);
-        await this.checkAndSendSyndicate(embed, `${prefix ? 'syndicate.' : ''}${key}`, timeout || fromNow(newSyndicates[0].expiry), platform);
+        const embed = new embeds.Syndicate(this.bot, newSyndicate, display, platform);
+        const eKey = `${prefix ? 'syndicate.' : ''}${key}`;
+        const deleteAfter = timeout || fromNow(newSyndicate[0].expiry);
+        await this.checkAndSendSyndicate(embed, eKey, deleteAfter, platform);
       }
     }
   }

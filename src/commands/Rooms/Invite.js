@@ -41,13 +41,13 @@ class Invite extends Command {
         };
         try {
           if (room.category) {
-            await Promise.all(users.map(async user => room.category.overwritePermissions(user, permOverwrite, `Invitation from ${message.author.tag}`)));
+            await Promise.all(users.map(async user => room.category.updateOverwrite(user, permOverwrite, `Invitation from ${message.author.tag}`)));
           }
           if (room.voiceChannel) {
-            await Promise.all(users.map(async user => room.voiceChannel.overwritePermissions(user, permOverwrite, `Invitation from ${message.author.tag}`)));
+            await Promise.all(users.map(async user => room.voiceChannel.updateOverwrite(user, permOverwrite, `Invitation from ${message.author.tag}`)));
           }
           if (room.textChannel) {
-            await Promise.all(users.map(async user => room.textChannel.overwritePermissions(user, permOverwrite, `Invitation from ${message.author.tag}`)));
+            await Promise.all(users.map(async user => room.textChannel.updateOverwrite(user, permOverwrite, `Invitation from ${message.author.tag}`)));
           }
           // send users invite link to new rooms
           this.sendInvites(room.voiceChannel, users, message.author);
@@ -71,11 +71,15 @@ class Invite extends Command {
    * @param {User} author Calling user who sends message
    */
   async sendInvites(voiceChannel, users, author) {
-    if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
-      const invite = await voiceChannel.createInvite({ maxUses: users.length });
-      for (const user of users) {
-        this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
+    try {
+      if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
+        const invite = await voiceChannel.createInvite({ maxUses: users.length });
+        for (const user of users) {
+          this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
+        }
       }
+    } catch (e) {
+      this.logger.error(e);
     }
   }
 }

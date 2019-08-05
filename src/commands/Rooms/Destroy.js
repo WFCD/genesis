@@ -42,7 +42,9 @@ class Destroy extends Command {
           await room.category.delete();
         }
         await this.settings.deletePrivateRoom(room);
-        await this.messageManager.reply(message, 'done.', true, true);
+        if (!message.channel.deleted) {
+          await this.messageManager.reply(message, 'done.', true, true);
+        }
         return this.messageManager.statuses.SUCCESS;
       }
       await this.messageManager.reply(message, `you haven't created a room. Only the creator of a room can destroy a room.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);

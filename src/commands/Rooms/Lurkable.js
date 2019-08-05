@@ -3,15 +3,15 @@
 const Command = require('../../models/Command.js');
 
 /**
- * Resize temp channel
+ * Change channel visibility
  */
-class Lock extends Command {
+class Show extends Command {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.lock', 'lock', 'Lock temp room');
+    super(bot, 'rooms.lurk', 'lurk', 'Make room lurkable. Users can join, see, and listen, but not write.');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;
@@ -30,20 +30,21 @@ class Lock extends Command {
       if (userHasRoom) {
         const room = await this.settings.getUsersRoom(message.member);
         const everyone = message.guild.defaultRole;
-        const view = room.voiceChannel.permissionsFor(everyone).has('VIEW_CHANNEL');
-        const options = { VIEW_CHANNEL: view, CONNECT: false };
+        const options = {
+          VIEW_CHANNEL: true, CONNECT: true, SPEAK: false, SEND_MESSAGES: false,
+        };
         try {
           if (room.category) {
-            room.category.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
+            room.category.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
           }
           if (room.textChannel) {
-            room.textChannel.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
+            room.textChannel.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
           }
-          await room.voiceChannel.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
+          await room.voiceChannel.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to lock the channel. Please either try again or review your command to ensure it is valid.', true, true);
+          await this.messageManager.reply(message, 'unable to make the channel visible. Please either try again or review your command to ensure it is valid.', true, true);
           return this.messageManager.statuses.FAILURE;
         }
       }
@@ -54,4 +55,4 @@ class Lock extends Command {
   }
 }
 
-module.exports = Lock;
+module.exports = Show;

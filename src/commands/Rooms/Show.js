@@ -11,7 +11,7 @@ class Show extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.show', 'show', 'Lock temp room');
+    super(bot, 'rooms.show', 'show', 'Show temp room');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;
@@ -29,20 +29,17 @@ class Show extends Command {
       const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
         const room = await this.settings.getUsersRoom(message.member);
+        const everyone = message.guild.defaultRole;
+        const connect = room.voiceChannel.permissionsFor(everyone).has('CONNECT');
+        const options = { VIEW_CHANNEL: true, CONNECT: connect };
         try {
           if (room.category) {
-            await room.category.overwritePermissions(message.guild.defaultRole.id, {
-              VIEW_CHANNEL: true,
-            });
+            room.category.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
           }
           if (room.textChannel) {
-            await room.textChannel.overwritePermissions(message.guild.defaultRole.id, {
-              VIEW_CHANNEL: true,
-            });
+            room.textChannel.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
           }
-          await room.voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
-            VIEW_CHANNEL: true,
-          });
+          await room.voiceChannel.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);

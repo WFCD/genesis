@@ -52,8 +52,10 @@ Object.keys(levels).forEach((level) => {
     if (level.toLowerCase() === 'error') {
       // eslint-disable-next-line no-console
       console.error(simple);
-      // eslint-disable-next-line no-console
-      console.error(message);
+      if (typeof message === 'object') {
+        // eslint-disable-next-line no-console
+        console.error(message);
+      }
       if (Sentry) {
         Sentry.captureException(message);
       }
