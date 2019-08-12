@@ -171,7 +171,6 @@ class MessaageManager {
    * @returns {Promise<Discord.Message>}
    */
   async embedToChannel(channel, embed, prepend, delRes) {
-    this.logger.debug(`look, i\'m embedding.... ${JSON.stringify(embed)}`);
     return this.send(channel, prepend, {
       msgOpts: { embed }, delRes,
     });
