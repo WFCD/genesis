@@ -380,7 +380,6 @@ class Notifier {
     if (!nightwave) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       if (nightwave.activeChallenges.length > 1) {
-
         nightwave.activeChallenges.forEach(async (challenge) => {
           const nwCopy = Object.assign({}, nightwave);
           nwCopy.activeChallenges = [challenge];

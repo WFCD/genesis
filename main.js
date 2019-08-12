@@ -2,7 +2,6 @@
 
 const cluster = require('cluster');
 const Sentry = require('@sentry/node');
-const fs = require('fs');
 
 const genManifest = require('./src/tools/generateManifest.js');
 const Genesis = require('./src/bot');
