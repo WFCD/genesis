@@ -6,7 +6,6 @@ const fs = require('fs');
 
 const genManifest = require('./src/tools/generateManifest.js');
 const Genesis = require('./src/bot');
-let commandManifest = require('./commands.json');
 
 const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
 const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
@@ -41,8 +40,8 @@ process.on('unhandledRejection', (err) => {
 if (process.env.NODE_ENV !== 'production' && localShards < 2) {
   // eslint-disable-next-line global-require
   genManifest();
-  commandManifest = JSON.parse(fs.readFileSync('commands.json', 'utf8'));
 }
+const commandManifest = require('./commands.json');
 
 if (cluster.isMaster) {
   // eslint-disable-next-line global-require

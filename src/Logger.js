@@ -32,7 +32,7 @@ const scopes = {
 };
 
 const colorify = (level, map) => level[map[level] || 'red'];
-const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${colorify(level, levels).toLowerCase()}: ${msg}`;
+const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {

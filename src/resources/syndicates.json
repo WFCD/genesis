@@ -2,85 +2,85 @@
   {
     "key": "arbiters",
     "display": "Arbiters of Hexis",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "suda",
     "display": "Cephalon Suda",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "loka",
     "display": "New Loka",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "perrin",
     "display": "Perrin Sequence",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "veil",
     "display": "Red Veil",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "meridian",
     "display": "Steel Meridian",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "ostrons",
     "display": "Ostrons",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 0,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "assassins",
     "display": "Assassins",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": false
   },
   {
     "key": "quills",
     "display": "Quills",
-    "prefix": true,
+    "prefix": "syndicate.",
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": false
   },
   {
     "key": "solaris",
     "display": "Solaris United",
     "prefix": false,
     "timeout": 0,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "vox",
     "display": "Vox Solaris",
     "prefix": false,
     "timeout": 86400000,
-    "notifiable": "true"
+    "notifiable": true
   },
   {
     "key": "all",
     "display": "all",
     "prefix": false,
     "timeout": 86400000,
-    "notifiable": "false"
+    "notifiable": false
   }
 ]

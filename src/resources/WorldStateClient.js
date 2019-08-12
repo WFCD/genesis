@@ -10,20 +10,13 @@ class WorldStateClient {
 
   async get(endpoint, platform = 'pc', language = 'en') {
     this.logger.debug(`fetching ${endpoint} for ${platform} with lang(${language})`);
-    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}`, {
-      headers: {
-        'Accept-Language': language,
-      },
-    });
+    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}?language=${language}`);
   }
 
   async g(endpoint, platform = 'pc', language = 'en') {
     this.logger.debug(`fetching ${endpoint}`);
-    return fetch(`${apiBase}/${endpoint}`, {
-      headers: {
-        'Accept-Language': language,
-        Platform: platform,
-      },
+    return fetch(`${apiBase}/${endpoint}?language=${language}`, {
+      headers: { platform },
     });
   }
 
@@ -34,11 +27,8 @@ class WorldStateClient {
 
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
     this.logger.debug(`pricechecking ${query}`);
-    return fetch(`${apiBase}/pricecheck/${type}/${query}`, {
-      headers: {
-        'Accept-Language': language,
-        Platform: platform,
-      },
+    return fetch(`${apiBase}/pricecheck/${type}/${query}?language=${language}`, {
+      headers: { platform },
     });
   }
 }

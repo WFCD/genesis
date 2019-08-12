@@ -85,12 +85,11 @@ class Help extends Command {
         .has('MANAGE_ROLES'),
     };
 
-    const searchableCommands = [];
+    let searchableCommands = [];
     for (const command of this.bot.commandManager.commands) {
-      const canAct = await this.checkCanAct(command, message);
+      const canAct = this.checkCanAct(command, message);
 
-      if (canAct === '1' || canAct === 'none') {
-        this.logger.debug(`${command.id} ${canAct}`);
+      if ((canAct === '1' || canAct === 'none' || canAct !== '0') && canAct) {
         searchableCommands.push(command);
       }
     }
@@ -99,7 +98,7 @@ class Help extends Command {
       query = String(query).toLowerCase();
 
       // filter commands
-      const matchingCommands = searchableCommands.filter((command) => {
+      searchableCommands = searchableCommands.filter((command) => {
         if (query.length < 3) {
           return false;
         }
@@ -113,17 +112,10 @@ class Help extends Command {
           }).length > 0;
       });
 
-      if (matchingCommands.length < 1) {
+      if (searchableCommands.length < 1) {
         await this.messageManager.embed(message, invalidResultsEmbed, false);
         return this.messageManager.statuses.FAILURE;
       }
-      matchingCommands.sort(commandSort);
-
-      const lines = mapCommands(matchingCommands, config.prefix);
-      const groups = createGroupedArray(lines, 9);
-      const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
-      await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
-      return this.messageManager.statuses.SUCCESS;
     }
     searchableCommands.sort(commandSort);
     const lines = mapCommands(searchableCommands, config.prefix);
@@ -133,23 +125,15 @@ class Help extends Command {
     return this.messageManager.statuses.SUCCESS;
   }
 
-  async sendEmbedForCommands(message, commands, title, color) {
-    const embed = createEmbedsForCommands(commands, title, color);
-    if (commands.length > 0) {
-      await this.messageManager.embed(message, embed, true, false);
-    }
-  }
-
   /**
    * Check if the current command being called is able to be performed for the user calling it.
-   * **COPIED FROM CommandHandler.js**
    * @param   {Command} command  command to process to see if it can be called
    * @param   {Message} message Discord message object
    * @param   {boolean} allowCustom Whether or not to allow custom commands
    * @param   {boolean} allowInline Whether or not to allow inline commands
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
-  async checkCanAct(command, message) {
+  checkCanAct(command, message) {
     if (!command.enabled) {
       return false;
     }
@@ -157,30 +141,7 @@ class Help extends Command {
       return false;
     }
     if (message.channel.type === 'text') {
-      if (command.requiresAuth) {
-        if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
-          const memberHasPermForRequiredAuthCommand = await this.bot.settings
-            .getChannelPermissionForMember(message.channel, message.author.id, command.id);
-          if (memberHasPermForRequiredAuthCommand === 'none') {
-            const roleHasPermForRequiredAuthCommand = await this.bot.settings
-              .getChannelPermissionForUserRoles(
-                message.channel,
-                message.author.id, command.id,
-              );
-            return roleHasPermForRequiredAuthCommand;
-          }
-          return memberHasPermForRequiredAuthCommand;
-        }
-        return false;
-      }
-      const memberHasPermForNonAuthCommand = await this.bot.settings
-        .getChannelPermissionForMember(message.channel, message.author.id, command.id);
-      if (memberHasPermForNonAuthCommand === 'none') {
-        const roleHasPermForNonAuthCommand = await this.bot.settings
-          .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
-        return roleHasPermForNonAuthCommand;
-      }
-      return memberHasPermForNonAuthCommand;
+      return (command.requiresAuth && message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) || !command.requiresAuth;
     }
     if (message.channel.type === 'dm' && command.allowDM) {
       return true;

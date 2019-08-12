@@ -29,7 +29,7 @@ class Diagnostics extends Command {
     embed.setTitle(`Diagnostics for Shard ${this.bot.shardId + 1}/${this.bot.shardCount}`);
 
     embed.addField('Discord WS', `\\✅ ${this.bot.client.ws.ping.toFixed(2)}ms`, true);
-    embed.addField('Worldstate Socket', this.bot.socket.connected ? '\\✅ Connected' : '\\❎ Disconnected');
+    // embed.addField('Worldstate Socket', this.bot.socket.connected ? '\\✅ Connected' : '\\❎ Disconnected');
 
     // check what permissions the bot has in the current channel
     const perms = message.channel.permissionsFor(this.bot.client.user.id);

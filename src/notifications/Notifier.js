@@ -29,27 +29,6 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-async function getThumbnailForItem(query, fWiki) {
-  if (query && !fWiki) {
-    const fq = query
-      .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
-      .trim().toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
-    if (results.length) {
-      const url = `${apiCdnBase}img/${results[0].imageName}`;
-      const getImg = await fetch(url);
-      if (getImg.ok) {
-        return url;
-      }
-    }
-    const articles = await warframe.getSearchList({ query: fq, limit: 1 });
-    const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-    const item = Object.values(details.items)[0];
-    return item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-  }
-  return undefined;
-}
-
 /**
  * Notifier for alerts, invasions, etc.
  *   TODO: remove dependence on 'bot', use something like https://github.com/spec-tacles/rest.js
@@ -235,42 +214,36 @@ class Notifier {
     await this.settings.setNotifiedIds(platform, this.bot.shardId, ids);
   }
 
+  async getThumbnailForItem(query, fWiki) {
+    if (query && !fWiki) {
+      const fq = query
+        .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
+        .trim().toLowerCase();
+      const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
+      if (results.length) {
+        const url = `${apiCdnBase}img/${results[0].imageName}`;
+        const getImg = await fetch(url);
+        if (getImg.ok) {
+          return url;
+        }
+      }
+      try {
+        const articles = await warframe.getSearchList({ query: fq, limit: 1 });
+        const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+        const item = Object.values(details.items)[0];
+        return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+      } catch (e) {
+        this.logger.error(e);
+      }
+    }
+    return undefined;
+  }
+
   async sendAcolytes(newAcolytes, platform) {
     await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Enemy(
       this.bot,
       [a], platform,
     ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`, null, 3600000)));
-  }
-
-  async sendNightwave(nightwave, platform) {
-    const makeType = (challenge) => {
-      let type = 'daily';
-
-      if (challenge.isElite) {
-        type = 'elite';
-      } else if (!challenge.isDaily) {
-        type = 'weekly';
-      }
-      return `nightwave.${type}`;
-    };
-
-    if (!nightwave) return;
-    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      if (nightwave.activeChallenges.length > 1) {
-        nightwave.activeChallenges.forEach(async (challenge) => {
-          const nwCopy = Object.assign({}, nightwave);
-          nwCopy.activeChallenges = [challenge];
-          const embed = new embeds.Nightwave(this.bot, nwCopy, platform, i18n);
-          embed.locale = locale;
-          await this.broadcaster.broadcast(embed, platform,
-            makeType(challenge), null, fromNow(challenge.expiry));
-        });
-      } else {
-        const embed = new embeds.Nightwave(this.bot, nightwave, platform, i18n);
-        embed.locale = locale;
-        await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
-      }
-    });
   }
 
   async sendAlerts(newAlerts, platform) {
@@ -282,7 +255,7 @@ class Notifier {
       const embed = new embeds.Alert(this.bot, [a], platform, i18n);
       embed.locale = locale;
       try {
-        const thumb = await getThumbnailForItem(a.mission.reward.itemString);
+        const thumb = await this.getThumbnailForItem(a.mission.reward.itemString);
         if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
@@ -309,22 +282,40 @@ class Notifier {
     }
   }
 
+  async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
+    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
+    const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    await this.broadcaster.broadcast(
+      new embeds.Cycle(this.bot, newCetusCycle),
+      platform, type, null, fromNow(newCetusCycle.expiry),
+    );
+  }
+
   async sendConclaveDailies(newDailies, platform) {
     if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
-      const embed = new embeds.ConclaveChallenge(this.bot, newDailies, 'day', platform);
+      const embed = new embeds.Conclave(this.bot, newDailies, 'day', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new embeds.ConclaveChallenge(this.bot, newWeeklies, 'week', platform);
+      const embed = new embeds.Conclave(this.bot, newWeeklies, 'week', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
     await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
+  }
+
+  async sendEarthCycle(newEarthCycle, platform, cetusCycleChange) {
+    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
+    const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    await this.broadcaster.broadcast(
+      new embeds.Cycle(this.bot, newEarthCycle),
+      platform, type, null, fromNow(newEarthCycle.expiry),
+    );
   }
 
   async sendEvent(newEvents, platform) {
@@ -352,18 +343,13 @@ class Notifier {
     await Promise.all(newInvasions.map(invasion => this.sendInvasion(invasion, platform)));
   }
 
-  async sendTweets(newTweets, platform) {
-    await Promise.all(newTweets.map(t => this.broadcaster
-      .broadcast(new embeds.Tweet(this.bot, t.tweets[0]), platform, t.id, null, 3600)));
-  }
-
   async sendInvasion(invasion, platform) {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
       embed.locale = locale;
       try {
         const reward = invasion.attackerReward.itemString || invasion.defenderReward.itemString;
-        const thumb = await getThumbnailForItem(reward);
+        const thumb = await this.getThumbnailForItem(reward);
         if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
@@ -379,8 +365,36 @@ class Notifier {
     await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news')));
   }
 
-  async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams')));
+  async sendNightwave(nightwave, platform) {
+    const makeType = (challenge) => {
+      let type = 'daily';
+
+      if (challenge.isElite) {
+        type = 'elite';
+      } else if (!challenge.isDaily) {
+        type = 'weekly';
+      }
+      return `nightwave.${type}`;
+    };
+
+    if (!nightwave) return;
+    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+      if (nightwave.activeChallenges.length > 1) {
+
+        nightwave.activeChallenges.forEach(async (challenge) => {
+          const nwCopy = Object.assign({}, nightwave);
+          nwCopy.activeChallenges = [challenge];
+          const embed = new embeds.Nightwave(this.bot, nwCopy, platform, i18n);
+          embed.locale = locale;
+          await this.broadcaster.broadcast(embed, platform,
+            makeType(challenge), null, fromNow(challenge.expiry));
+        });
+      } else {
+        const embed = new embeds.Nightwave(this.bot, nightwave, platform, i18n);
+        embed.locale = locale;
+        await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
+      }
+    });
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
@@ -391,22 +405,22 @@ class Notifier {
     await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
-  async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates')));
-  }
-
   async sendSortie(newSortie, platform) {
     const embed = new embeds.Sortie(this.bot, newSortie, platform);
     try {
-      const thumb = await getThumbnailForItem(newSortie.boss, true);
+      const thumb = await this.getThumbnailForItem(newSortie.boss, true);
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
     } catch (e) {
-      this.logger.error(`${e}`);
+      this.logger.error(e);
     } finally {
       await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
+  }
+
+  async sendStreams(newStreams, platform) {
+    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams')));
   }
 
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
@@ -415,35 +429,26 @@ class Notifier {
     }
   }
 
-  async sendSyndicates(newSyndicate, platform) {
+  async sendSyndicates(newSyndicates, platform) {
     for (const {
       key, display, prefix, timeout, notifiable,
     } of syndicates) {
       if (notifiable) {
-        const embed = new embeds.Syndicate(this.bot, newSyndicate, display, platform);
-        const eKey = `${prefix ? 'syndicate.' : ''}${key}`;
-        const deleteAfter = timeout || fromNow(newSyndicate[0].expiry);
+        const embed = new embeds.Syndicate(this.bot, newSyndicates, display, platform);
+        const eKey = `${prefix || ''}${key}`;
+        const deleteAfter = timeout || fromNow(newSyndicates[0].expiry);
         await this.checkAndSendSyndicate(embed, eKey, deleteAfter, platform);
       }
     }
   }
 
-  async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
-    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
-    const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    await this.broadcaster.broadcast(
-      new embeds.Cycle(this.bot, newCetusCycle),
-      platform, type, null, fromNow(newCetusCycle.expiry),
-    );
+  async sendTweets(newTweets, platform) {
+    await Promise.all(newTweets.map(t => this.broadcaster
+      .broadcast(new embeds.Tweet(this.bot, t.tweets[0]), platform, t.id, null, 3600)));
   }
 
-  async sendEarthCycle(newEarthCycle, platform, cetusCycleChange) {
-    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
-    const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    await this.broadcaster.broadcast(
-      new embeds.Cycle(this.bot, newEarthCycle),
-      platform, type, null, fromNow(newEarthCycle.expiry),
-    );
+  async sendUpdates(newNews, platform) {
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange) {

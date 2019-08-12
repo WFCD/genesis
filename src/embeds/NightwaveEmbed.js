@@ -17,7 +17,7 @@ class NightwaveEmbed extends BaseEmbed {
    * @param {I18n} i18n - string template function for internationalization
    */
   constructor(bot, nightwave, platform, i18n) {
-    super();
+    super(bot);
 
     this.thumbnail = {
       url: 'https://i.imgur.com/yVcWOPp.png',
@@ -76,7 +76,7 @@ class NightwaveEmbed extends BaseEmbed {
       if (challenge.isElite) {
         this.title = i18n`[${platform.toUpperCase()}] Worldstate - Elite Nightwave`;
       }
-      this.footer.text = `${timeDeltaToString(new Date(challenge).getTime() - Date.now())} remaining • Expires `;
+      this.footer.text = `${timeDeltaToString(new Date(challenge.expiry).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = challenge.expiry;
     }
   }
