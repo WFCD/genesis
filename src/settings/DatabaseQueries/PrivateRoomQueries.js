@@ -45,11 +45,14 @@ class PrivateRoomQueries {
           const parsed = JSON.parse(role);
           if (typeof parsed === 'object') {
             return typeof guild.roles.has(parsed.id);
-          } if (typeof parsed === 'number') {
+          }
+          if (typeof parsed === 'number') {
             return guild.roles.has(String(parsed));
           }
           return undefined;
-        }).filter(role => role).map((role) => {
+        })
+        .filter(role => role)
+        .map((role) => {
           const parsed = JSON.parse(role);
           if (typeof parsed === 'object' && guild.roles.has(parsed.id)) {
             const joinable = new JoinableRole(guild.roles.get(parsed.id));
@@ -60,7 +63,8 @@ class PrivateRoomQueries {
             }
             joinable.isLeaveable = typeof parsed.leaveable !== 'undefined' ? parsed.leavable : true;
             return joinable;
-          } if (typeof parsed === 'string' && guild.roles.has(parsed)) {
+          }
+          if (typeof parsed === 'string' && guild.roles.has(parsed)) {
             const joinable = new JoinableRole(guild.roles.get(parsed));
             joinable.requiredRole = undefined;
             joinable.isLeaveable = true;

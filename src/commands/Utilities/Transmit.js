@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 
 class Transmit extends Command {
@@ -35,7 +35,7 @@ class Transmit extends Command {
       let channelConfig;
 
       try {
-        channelConfig = await fetch(firstAttach.url).then(data => data.json());
+        channelConfig = await fetch(firstAttach.url);
       } catch (e) {
         message.reply('Couldn\'t get file.');
         this.logger.error(e);

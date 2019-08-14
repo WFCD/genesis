@@ -12,7 +12,7 @@ class Rename extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.rename', 'rename room ', 'Rename user\'s temp room.');
+    super(bot, 'rooms.rename', 'rename room', 'Rename user\'s temp room.');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [];
     this.allowDM = false;

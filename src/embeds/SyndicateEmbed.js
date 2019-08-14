@@ -65,7 +65,7 @@ class SyndicateEmbed extends BaseEmbed {
       name: 'No such Syndicate',
       value: `Valid values: ${values.join(', ')}`,
     }];
-    this.url = `${wikiBase}/Syndicates`;
+    this.url = `${wikiBase}${wikiBase.endsWith('/') ? '' : '/'}Syndicates`;
     this.thumbnail = {
       url: syndicateThumb,
     };
@@ -85,6 +85,7 @@ class SyndicateEmbed extends BaseEmbed {
         if (syndMissions.length < 2) {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
           this.footer.text = `Expires in ${syndMissions[0].eta}`;
+          this.timestamp = syndMissions[0].expiry;
         }
         if (syndMissions.length < 2) {
           this.description = makeMissionValue(syndMissions[0], syndMissions);

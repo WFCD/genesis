@@ -15,7 +15,7 @@
   "Yes": "Yes",
   "No": "No",
   "**Credits:** {0}": "**Credits:** {0}",
-  "{0} remaining • Expires ": "{0} remaining • Expires ",
+  "{0} remaining • Expires ": "{0} to go • Expires ",
   "Daily": "Daily",
   "Weekly": "Weekly",
   "Weekly, ctd.": "Weekly, ctd.",
@@ -24,5 +24,6 @@
   "No Alerts Active": ":warning: No Alerts Active",
   "No Fissures Active": ":warning: No Fissuress Active",
   "No Invasions Active": ":warning: No Invasions Active",
-  "No Sortie Active": ":warning: No Sortie Active"
+  "No Sortie Active": ":warning: No Sortie Active",
+  "{0} against {1}": "{0} against {1}"
 }

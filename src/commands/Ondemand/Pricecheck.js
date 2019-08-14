@@ -1,9 +1,7 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const PriceCheckEmbed = require('../../embeds/PriceCheckEmbed.js');
-const { apiBase } = require('../../CommonFunctions');
 
 const inProgressEmbed = { title: 'Processing search...' };
 
@@ -39,11 +37,7 @@ class PriceCheck extends Command {
       const item = message.strippedContent.match(this.regex)[1];
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
 
-      const result = await fetch(`${apiBase}/pricecheck/attachment/${item}`, {
-        headers: {
-          platform: ctx.platform,
-        },
-      }).then(data => data.json());
+      const result = await this.ws.pricecheck(item, { platform: ctx.platform });
       const embed = new PriceCheckEmbed(this.bot, result, item);
       sentMessage.edit({ embed });
       return embed.color === 0xff55ff

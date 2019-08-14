@@ -40,16 +40,20 @@ class Ping extends Command {
         .then((result) => {
           results.push({
             name: host,
-            value: `${result.alive ? ':ballot_box_with_check:' : ':black_square_button:'} `
-              + `${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : ':x: '}ms`,
+            value: `${result.alive ? '\\✅' : '\\❎'} ${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '--'}ms`,
           });
         });
     });
 
+    results.unshift({
+      name: 'Discord WS',
+      value: `\\✅ ${this.bot.client.ws.ping.toFixed(2)}ms`,
+    });
+
     const now = Date.now();
-    let msg = await message.reply('Testing Ping');
+    const msg = await this.messageManager.reply(message, 'Testing Ping', { deleteOriginal: true, deleteResponse: false });
     const afterSend = Date.now();
-    msg = await msg.edit({
+    await msg.edit('', {
       embed: {
         title: 'PONG',
         type: 'rich',
@@ -65,10 +69,6 @@ class Ping extends Command {
         },
       },
     });
-    await msg.delete({ timeout: 100000, reason: 'automated cleanup' });
-    if (message.deletable) {
-      message.delete({ timeout: 10000, reason: 'automated cleanup' });
-    }
     return this.messageManager.statuses.SUCCESS;
   }
 }

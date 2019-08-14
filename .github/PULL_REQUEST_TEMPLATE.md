@@ -1,24 +1,8 @@
-### Genesis Pull Request
+**Summary:**
 
 ---
-
-**Summary (short):**
-
-
----
-**Description:**
-
+**Resolves issue:**
+resolves #
 
 ---
-**Fixes issue (include link):**
-
-
----
-**Mockups, screenshots, evidence:**
-
-
----
-
-(Check one)
-- [ ] Issue fix
-- [ ] Suggestion fulfillment
+**Screenshots:**

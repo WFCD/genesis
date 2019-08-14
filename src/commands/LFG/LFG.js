@@ -133,7 +133,7 @@ class AddLFG extends Command {
         });
 
         collector.on('remove', (reaction, user) => {
-          if (lfg.members.includes(user.id) && user.id !== message.author.id && reaction.emooji.name === '🔰') {
+          if (lfg.members.includes(user.id) && user.id !== message.author.id && reaction.emoji.name === '🔰') {
             lfg.members.splice(lfg.members.indexOf(user.id), 1);
             lfg.vc = message.member.voice;
             lfg.edited = true;

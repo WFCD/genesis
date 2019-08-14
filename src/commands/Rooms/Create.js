@@ -152,7 +152,6 @@ class Create extends Command {
               everyone: message.guild.defaultRole,
               author: message.author,
               isPublic,
-              useText,
               useModRole,
               modRole,
               shown,
@@ -196,6 +195,7 @@ class Create extends Command {
             this.sendInvites(voiceChannel, users, message.author);
             // set room limits
             this.setLimits(voiceChannel, roomType);
+            this.makeInteractable(textChannel, message);
             this.messageManager.embed(message, {
               title: 'Channels created',
               fields: [{
@@ -261,6 +261,7 @@ class Create extends Command {
     // create overwrites
     const overwrites = [];
     // this still doesn't work, need to figure out why
+    this.logger.debug(`creating overwrites: ${isPublic} | ${shown}`);
     if (!isPublic) {
       const evOverwrites = [Permissions.FLAGS.CONNECT];
       if (!shown) {
@@ -269,6 +270,7 @@ class Create extends Command {
       overwrites.push({
         id: everyone,
         deny: evOverwrites,
+        type: 'role',
       });
       overwrites.push({
         allow: [
@@ -282,6 +284,7 @@ class Create extends Command {
           Permissions.FLAGS.MANAGE_CHANNELS,
         ],
         id: this.bot.client.user.id,
+        type: 'user',
       });
       // set up overwrites per-user
       users.forEach((user) => {
@@ -294,6 +297,7 @@ class Create extends Command {
             Permissions.FLAGS.SPEAK,
             Permissions.FLAGS.USE_VAD,
           ],
+          type: 'user',
         });
       });
       overwrites.push({
@@ -306,6 +310,7 @@ class Create extends Command {
           Permissions.FLAGS.USE_VAD,
           Permissions.FLAGS.MANAGE_MESSAGES,
         ],
+        type: 'user',
       });
       // Add mod role overwrites if one is present
       if (useModRole) {
@@ -321,6 +326,7 @@ class Create extends Command {
             Permissions.FLAGS.DEAFEN_MEMBERS,
             Permissions.FLAGS.MOVE_MEMBERS,
           ],
+          type: 'role',
         });
       }
     } else {
@@ -330,11 +336,17 @@ class Create extends Command {
           Permissions.FLAGS.VIEW_CHANNEL,
           Permissions.FLAGS.CONNECT,
         ],
+        type: 'role',
       });
     }
     return overwrites;
   }
 
+  /**
+   * Set user limit for channel
+   * @param  {Discord.VoiceChannel}  voiceChannel voice channel to mutate limit
+   * @param  {string}  type         level of voice channel, determines limit
+   */
   async setLimits(voiceChannel, type) {
     let limit;
     switch (type) {
@@ -353,6 +365,25 @@ class Create extends Command {
       await voiceChannel.setUserLimit(limit);
     }
     this.logger.debug(`User limit set to ${limit || 'none'} for ${voiceChannel.name}`);
+  }
+
+  /**
+   * Allows the creator of the channel to call room commands in the text channel,
+   *  if one exits
+   * @param  {Discord.VoiceChannel}  textChannel text channel to allow commands in
+   * @param  {Discord.Message}  message     message to copy and use to call command
+   */
+  async makeInteractable(textChannel, message) {
+    if (!textChannel) return;
+    const allowCmd = await this.bot.commandManager
+      .loadCommand(this.bot.commandManager.commands
+        .find(cmd => cmd.id === 'settings.allowprivateroom'));
+
+    const msgClone = Object.assign({}, message);
+    msgClone.strippedContent = `${allowCmd.call} on`;
+    msgClone.channel = textChannel;
+    msgClone.guild = message.guild;
+    await allowCmd.run(msgClone);
   }
 }
 

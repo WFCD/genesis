@@ -20,9 +20,8 @@ class Baro extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
     const pages = [];
-    const embed = new VoidTraderEmbed(this.bot, ws.voidTrader, platform);
+    const embed = new VoidTraderEmbed(this.bot, await this.ws.get('voidTrader', platform, ctx.language), platform);
     if (embed.fields.length > 25) {
       createGroupedArray(embed.fields, 15).forEach((fieldGroup) => {
         this.logger.debug(fieldGroup);

@@ -1,10 +1,8 @@
 'use strict';
 
-const fetch = require('node-fetch');
-
 const EventEmitter = require('events');
 const { apiBase } = require('./CommonFunctions.js');
-
+const fetch = require('./resources/Fetcher');
 
 const worldStateURLs = {
   pc: `${apiBase}/pc`,
@@ -37,7 +35,7 @@ class WorldStateCache extends EventEmitter {
   async update() {
     try {
       this.lastUpdated = Date.now();
-      this.currentData = await fetch(this.url).then(data => data.json());
+      this.currentData = await fetch(this.url);
       this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;

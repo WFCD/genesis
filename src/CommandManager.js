@@ -26,7 +26,7 @@ class CommandManager {
      * @type {Array<Command>}
      * @private
      */
-    this.commands = commandManifest ? commandManifest.filter(cmd => !cmd.isCustomCommand) : [];
+    this.commands = commandManifest ? commandManifest.filter(cmd => !cmd.isInline) : [];
 
     /**
      * Array of custom comamnd objects that can be called
@@ -39,7 +39,7 @@ class CommandManager {
      * [statuses description]
      * @type {[type]}
      */
-    this.inlineCommands = commandManifest ? commandManifest.filter(cmd => cmd.isCustomCommand) : [];
+    this.inlineCommands = commandManifest ? commandManifest.filter(cmd => cmd.isInline) : [];
 
     this.commandCache = {};
   }
@@ -88,7 +88,7 @@ class CommandManager {
         try {
           // eslint-disable-next-line import/no-dynamic-require, global-require
           const Cmd = require(path.join(commandDir, f));
-          if (Object.prototype.toString.call(Cmd) === '[object Function]') {
+          if (Cmd instanceof BaseCommand) {
             const command = new Cmd(this.bot);
 
             return command;

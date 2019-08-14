@@ -1,6 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
 const Command = require('../../models/Command.js');
 const CommandIdEmbed = require('../../embeds/CommandIdEmbed');
 const { createGroupedArray, setupPages } = require('../../CommonFunctions');
@@ -30,8 +29,8 @@ class GetCommandIds extends Command {
     commands = commands
       .filter(command => !command.ownerOnly
         || (message.author.id === this.bot.owner && command.ownerOnly))
-      .map(command => `${rpad(command.call, longestCall.length, '\u2003')} `
-        + `| ${rpad(command.id, longestId.length, '\u2003')} | ${command.blacklistable ? '✓' : '✗'}`);
+      .map(command => `${command.call.padEnd(longestCall.length, '\u2003')} `
+        + `| ${command.id.padEnd(longestId.length, '\u2003')} | ${command.blacklistable ? '✓' : '✗'}`);
 
     const pages = [];
     createGroupedArray(commands, 12).forEach((group) => {

@@ -29,20 +29,17 @@ class Lock extends Command {
       const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
         const room = await this.settings.getUsersRoom(message.member);
+        const everyone = message.guild.defaultRole;
+        const view = room.voiceChannel.permissionsFor(everyone).has('VIEW_CHANNEL');
+        const options = { VIEW_CHANNEL: view, CONNECT: false };
         try {
           if (room.category) {
-            await room.category.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-            });
+            room.category.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
           }
           if (room.textChannel) {
-            await room.textChannel.overwritePermissions(message.guild.defaultRole.id, {
-              CONNECT: false,
-            });
+            room.textChannel.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
           }
-          await room.voiceChannel.overwritePermissions(message.guild.defaultRole.id, {
-            CONNECT: false,
-          });
+          await room.voiceChannel.updateOverwrite(everyone, options, `Room locked by ${message.author.tag}`);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);

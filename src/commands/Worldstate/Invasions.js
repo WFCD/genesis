@@ -21,8 +21,7 @@ class Invasions extends Command {
     const platformParam = message.strippedContent.match(/[pcsxb14]{2,3}/ig);
     const compact = /compact/ig.test(message.strippedContent);
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const invasions = ws.invasions.filter(i => !i.completed);
+    const invasions = (await this.ws.get('invasions', platform, ctx.language)).filter(i => !i.completed);
     const pages = [];
     if (compact) {
       pages.push(new InvasionEmbed(this.bot, invasions, platform, ctx.i18n));

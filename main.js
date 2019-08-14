@@ -1,12 +1,10 @@
 'use strict';
 
 const cluster = require('cluster');
-const Raven = require('raven');
-const fs = require('fs');
+const Sentry = require('@sentry/node');
 
 const genManifest = require('./src/tools/generateManifest.js');
 const Genesis = require('./src/bot');
-let commandManifest = require('./commands.json');
 
 const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
 const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
@@ -21,9 +19,7 @@ if (process.env.CONTROL_WH_ID) {
 /**
  * Raven client instance for logging errors and debugging events
  */
-const client = Raven.config(process.env.RAVEN_URL, {
-  autoBreadcrumbs: true,
-});
+Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
 
 /**
  * Logging functions class
@@ -31,13 +27,8 @@ const client = Raven.config(process.env.RAVEN_URL, {
  */
 const Logger = require('./src/Logger.js');
 
-client.install();
-client.on('error', (error) => {
-  // eslint-disable-next-line no-console
-  console.error(`Could not report the following error to Sentry: ${error.message}`);
-});
 
-const logger = new Logger(client);
+const logger = new Logger();
 process.on('uncaughtException', (err) => {
   logger.error(err);
 });
@@ -48,8 +39,8 @@ process.on('unhandledRejection', (err) => {
 if (process.env.NODE_ENV !== 'production' && localShards < 2) {
   // eslint-disable-next-line global-require
   genManifest();
-  commandManifest = JSON.parse(fs.readFileSync('commands.json', 'utf8'));
 }
+const commandManifest = require('./commands.json');
 
 if (cluster.isMaster) {
   // eslint-disable-next-line global-require

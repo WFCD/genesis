@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 
 /**
@@ -22,7 +22,7 @@ class Corgi extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random').then(data => data.json());
+    const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random');
     if (corgi) {
       await this.messageManager.sendFile(message, undefined, corgi.message, `corgi.${corgi.message.split('.').pop()}`, true);
       return this.messageManager.statuses.SUCCESS;

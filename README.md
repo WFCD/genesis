@@ -2,17 +2,17 @@
 
 [![Supported by the Warframe Community Developers](https://img.shields.io/badge/Warframe_Comm_Devs-supported-blue.svg?color=2E96EF&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOTgiIGhlaWdodD0iMTczIiB2aWV3Qm94PSIwIDAgMjk4IDE3MyI%2BPHBhdGggZD0iTTE4NSA2N2MxNSA4IDI4IDE2IDMxIDE5czIzIDE4LTcgNjBjMCAwIDM1LTMxIDI2LTc5LTE0LTctNjItMzYtNzAtNDUtNC01LTEwLTEyLTE1LTIyLTUgMTAtOSAxNC0xNSAyMi0xMyAxMy01OCAzOC03MiA0NS05IDQ4IDI2IDc5IDI2IDc5LTMwLTQyLTEwLTU3LTctNjBsMzEtMTkgMzYtMjIgMzYgMjJ6TTU1IDE3M2wtMTctM2MtOC0xOS0yMC00NC0yNC01MC01LTctNy0xMS0xNC0xNWwxOC0yYzE2LTMgMjItNyAzMi0xMyAxIDYgMCA5IDIgMTQtNiA0LTIxIDEwLTI0IDE2IDMgMTQgNSAyNyAyNyA1M3ptMTYtMTFsLTktMi0xNC0yOWEzMCAzMCAwIDAgMC04LThoN2wxMy00IDQgN2MtMyAyLTcgMy04IDZhODYgODYgMCAwIDAgMTUgMzB6bTE3MiAxMWwxNy0zYzgtMTkgMjAtNDQgMjQtNTAgNS03IDctMTEgMTQtMTVsLTE4LTJjLTE2LTMtMjItNy0zMi0xMy0xIDYgMCA5LTIgMTQgNiA0IDIxIDEwIDI0IDE2LTMgMTQtNSAyNy0yNyA1M3ptLTE2LTExbDktMiAxNC0yOWEzMCAzMCAwIDAgMSA4LThoLTdsLTEzLTQtNCA3YzMgMiA3IDMgOCA2YTg2IDg2IDAgMCAxLTE1IDMwem0tNzktNDBsLTYtNmMtMSAzLTMgNi02IDdsNSA1YTUgNSAwIDAgMSAyIDB6bS0xMy0yYTQgNCAwIDAgMSAxLTJsMi0yYTQgNCAwIDAgMSAyLTFsNC0xNy0xNy0xMC04IDcgMTMgOC0yIDctNyAyLTgtMTItOCA4IDEwIDE3em0xMiAxMWE1IDUgMCAwIDAtNC0yIDQgNCAwIDAgMC0zIDFsLTMwIDI3YTUgNSAwIDAgMCAwIDdsNCA0YTYgNiAwIDAgMCA0IDIgNSA1IDAgMCAwIDMtMWwyNy0zMWMyLTIgMS01LTEtN3ptMzkgMjZsLTMwLTI4LTYgNmE1IDUgMCAwIDEgMCAzbDI2IDI5YTEgMSAwIDAgMCAxIDBsNS0yIDItMmMxLTIgMy01IDItNnptNS00NWEyIDIgMCAwIDAtNCAwbC0xIDEtMi00YzEtMy01LTktNS05LTEzLTE0LTIzLTE0LTI3LTEzLTIgMS0yIDEgMCAyIDE0IDIgMTUgMTAgMTMgMTNhNCA0IDAgMCAwLTEgMyAzIDMgMCAwIDAgMSAxbC0yMSAyMmE3IDcgMCAwIDEgNCAyIDggOCAwIDAgMSAyIDNsMjAtMjFhNyA3IDAgMCAwIDEgMSA0IDQgMCAwIDAgNCAwYzEtMSA2IDMgNyA0aC0xYTMgMyAwIDAgMCAwIDQgMiAyIDAgMCAwIDQgMGw2LTZhMyAzIDAgMCAwIDAtM3oiIGZpbGw9IiMyZTk2ZWYiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg%3D%3D)](https://github.com/WFCD/banner/blob/master/PROJECTS.md)
 
-### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more. 
+### A [Discord.js](http://discord.js.org) bot for tracking Warframe alerts, invasions and more.
 
 # Contribute
 
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord) 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade) 
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/146691885363232769.svg?logo=discord)](https://discord.gg/DuFunUv)
 
 ## Live Public Bot info
-[![Discord Bots](https://discordbots.org/api/widget/status/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
-[![Discord Bots](https://discordbots.org/api/widget/servers/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget) 
+[![Discord Bots](https://discordbots.org/api/widget/status/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
+[![Discord Bots](https://discordbots.org/api/widget/servers/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
 [![Discord Bots](https://discordbots.org/api/widget/lib/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
 
 
@@ -24,8 +24,9 @@ Feel free to submit a pull request. We are working on build checks and tests, an
 
 Due to the New Discord T.O.S , if you continue to use, participate, be in, or not leave Cephalon Sanctuary, you agree to allowing me, any person, user, or member, any bot, service, app, and anything to collect, use, transmit, or any data related to your user account, any data made available by Discord in the API or SDK, any metadata from your user account, any messages and or content you send, and anything else you do or give by staying in Cephalon Sanctuary, or by using my bot.
 
-If you do not agree to letting Genesis, Oratoris, or any other bot there do so, please kick Genesis from your clan or depart from Cephalon Sanctuary.
+If you do not agree to letting Genesis, Oratoris, or any other bot there do so, please kick Genesis from your servers.
 
+tl;dr Bots need data. While I don't record any of your personal data or save it off for long-term use, I still need to tell you that bots can access your messages and user ID. If you don't want that, get rid of all of them, cause they all need that data.
 
 ## Installation
 
@@ -34,7 +35,7 @@ If you do not agree to letting Genesis, Oratoris, or any other bot there do so, 
     ```
     # For SSH
     git clone git@github.wfcd/genesis.git
-    
+
     # For HTTPS
     git clone https://github.com/WFCD/genesis.git
     ```
@@ -42,7 +43,7 @@ If you do not agree to letting Genesis, Oratoris, or any other bot there do so, 
 
 1. Run `npm i`
 
-1. Start bot with [pm2](http://pm2.keymetrics.io/) using a copy of the provided `pm2.json` file.
+1. Start bot with [pm2](http://pm2.keymetrics.io/) using a copy of the provided `pm2.json` file. The scripts assume it's named `genesis.json`
 
 1. See below for available config / commands
 
@@ -53,8 +54,6 @@ Genesis requires a MySQL server. It uses the **MYSQL_*** environment variables f
 Environment Variable | Description | Example | Default
 --- | --- | --- | ---
 TOKEN | Discord connection token | `mfa.234089sdfasdf20dfada,f.asd` | N\A
-LOCATION_MAX_CACHED_TIME | Maximum amount of time to cache location data | 600000 | 60000
-NEXUSSTATS_MAX_CACHED_TIME | Maximum amount of time to cache nexus stats data | 600000 | 60000
 LOG_LEVEL | Logging level of the bot, including info, debug, error, fatal | `DEBUG` | `ERROR`
 MYSQL_DB | MySQL database name, used for connecting to data provider and storage | `genesis` | `genesis`
 MYSQL_PASSWORD | MySQL database connection password | `password` | N\A
@@ -70,10 +69,6 @@ DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server cou
 DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
 PREFIX | Default prefix to use for the instance | `\` | `\`
 RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
-TWITTER_TIMEOUT | Milliseconds between each request batch to twitter | 60000 | 60000
-TWITTER_KEY | Twitter API consumer key | 'asdfiijas' | N\A
-TWITTER_SECRET | Twitter API consumer secret | 'asddofh' | N\A
-TWITTER_BEARER_TOKEN | Twitter App-only Bearer token | 'AAAAAasddfasd' | N\A
 
 ## Commands
 

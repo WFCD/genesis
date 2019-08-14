@@ -1,7 +1,7 @@
 'use strict';
 
 const Wikia = require('node-wikia');
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 
 const Command = require('../../models/InlineCommand.js');
 const FrameEmbed = require('../../embeds/FrameEmbed.js');
@@ -32,7 +32,7 @@ const checkResult = (prompt, results) => {
 };
 
 const checkFrames = async (prompt) => {
-  const results = await fetch(`${apiBase}/warframes/search/${prompt}`).then(data => data.json());
+  const results = await fetch(`${apiBase}/warframes/search/${prompt}`);
   if (results.length > 0) {
     return new FrameEmbed(this.bot, checkResult(prompt, results));
   }
@@ -40,7 +40,7 @@ const checkFrames = async (prompt) => {
 };
 
 const checkWeapons = async (prompt) => {
-  const results = await fetch(`${apiBase}/weapons/search/${prompt}`).then(data => data.json());
+  const results = await fetch(`${apiBase}/weapons/search/${prompt}`);
   if (results.length > 0) {
     return new WeaponEmbed(this.bot, checkResult(prompt, results));
   }
@@ -154,9 +154,13 @@ class FrameStatsInline extends Command {
    */
   async run(message) {
     const queries = message.strippedContent.match(this.regex);
-    if (queries.length > 0) {
-      queries.forEach(query => this.evalQuery(message, query));
+    const strippedQueries = Array.from(new Set(queries.map(query => query.replace(/\[|\]/ig, '').trim().toLowerCase())));
+    this.logger.debug(strippedQueries.join(','));
+
+    if (strippedQueries.length > 0) {
+      strippedQueries.forEach(query => this.evalQuery(message, query));
     }
+
     return this.messageManager.statuses.NO_ACCESS;
   }
 }

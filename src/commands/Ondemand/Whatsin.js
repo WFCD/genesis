@@ -1,8 +1,9 @@
 'use strict';
 
-const Fetcher = require('../../resources/Fetcher.js');
-const Command = require('../../models/Command.js');
-const WhatsinEmbed = require('../../embeds/WhatsinEmbed.js');
+const fetch = require('../../resources/Fetcher');
+
+const Command = require('../../models/Command');
+const WhatsinEmbed = require('../../embeds/WhatsinEmbed');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', color: 0xff6961 };
@@ -50,7 +51,7 @@ class Whatsin extends Command {
     tier = toTitleCase(tier.trim());
     relicName = toTitleCase(relicName.trim());
     try {
-      const relicData = await (new Fetcher(`${relicBase}/${tier}/${relicName}.json`)).httpGet();
+      const relicData = await fetch(`${relicBase}/${tier}/${relicName}.json`);
       if (relicData) {
         sentMessage.edit('', { embed: new WhatsinEmbed(this.bot, relicData, tier, relicName) });
         return this.messageManager.statuses.SUCCESS;

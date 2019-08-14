@@ -6,6 +6,8 @@ const Promise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
 
+const { assetBase } = require('../CommonFunctions');
+
 const props = (obj) => {
   const p = [];
   for (; obj != null; obj = Object.getPrototypeOf(obj)) { // eslint-disable-line no-param-reassign
@@ -91,6 +93,22 @@ class Database {
     this.bot = bot;
     this.logger = bot.logger;
 
+    if (bot.client) {
+      this.scope = 'bot';
+    } else {
+      this.scope = 'worker';
+    }
+
+    this.defaults = {
+      username: this.bot.client && this.bot.client.user
+        ? this.bot.client.user.username
+        : 'Genesis',
+      avatar: this.bot.client && this.bot.client.user
+        ? this.bot.client.user.displayAvatarURL().replace('.webp', '.png')
+          .replace('.webm', '.gif').replace('?size=2048', '')
+        : `${assetBase}/avatar.png`,
+    };
+
     const opts = {
       supportBigNumbers: true,
       bigNumberStrings: true,
@@ -103,7 +121,7 @@ class Database {
       prefix: '/',
       respond_to_settings: true,
       platform: 'pc',
-      language: 'en-US',
+      language: 'en',
       delete_after_respond: true,
       delete_response: true,
       createPrivateChannel: false,
@@ -183,7 +201,10 @@ class Database {
       }
 
       if (!context.language) {
-        context.language = this.defaults.language;
+        context.language = this.defaults.language.substr(0, 2);
+      } else if (context.language.length > 2) {
+        this.setChannelSetting(channel, 'language', context.language.substr(0, 2));
+        context.language = context.language.substr(0, 2);
       }
 
       if (typeof context.allowCustom === 'undefined') {

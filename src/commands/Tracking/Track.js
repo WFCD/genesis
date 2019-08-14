@@ -70,7 +70,7 @@ class Track extends Command {
     if (pages.length) {
       return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     }
-    return this.messageManager.sendMessage(message, 'Nothing Tracked', true, true);
+    return this.messageManager.send(message, { content: 'Nothing Tracked', deleteOriginal: true, deleteResponse: true });
   }
 
   async failure(message, prefix) {

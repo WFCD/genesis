@@ -1,9 +1,8 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
-const { createGroupedArray, createPageCollector, apiBase } = require('../../CommonFunctions.js');
+const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
 
 const inProgressEmbed = { title: 'Processing search...', color: 0xF1C40F };
 const noResultsEmbed = { title: 'No results for that query. Please refine your search.', description: 'This is either due to the item being vaulted or an invalid search. Sorry.', color: 0xff6961 };
@@ -16,10 +15,6 @@ function toTitleCase(str) {
  * Looks up locations of items
  */
 class Whereis extends Command {
-  /**
-   * Constructs a callable command
-   * @param {Genesis} bot  The bot object
-   */
   constructor(bot) {
     super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops');
     this.regex = new RegExp('^where\\s?(?:is\\s?)?(.+)?', 'i');
@@ -48,7 +43,8 @@ class Whereis extends Command {
     try {
       query = query.trim().toLowerCase();
       const queryWReplaces = query.replace(/prime/ig, 'p.').replace(/blueprint/ig, 'bp');
-      let results = await fetch(`${apiBase}/drops/search/${encodeURIComponent(queryWReplaces)}`).then(data => data.json());
+      let results = await this.ws.search('drops', queryWReplaces);
+
       results = results.map(result => ({
         item: result.item,
         rarity: result.rarity,

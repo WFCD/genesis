@@ -1,6 +1,5 @@
 'use strict';
 
-const rpad = require('right-pad');
 const BaseEmbed = require('./BaseEmbed.js');
 
 /**
@@ -19,8 +18,8 @@ class WhereisEmbed extends BaseEmbed {
     this.fields = [];
 
     resultsGroups.forEach((results, index) => {
-      const mappedResults = results.map(result => `\`${rpad(result.item, nameWidth, '\u2003')} `
-      + `| ${rpad(result.place, relicWidth, '\u2003')} | ${result.rarity.charAt(0)}@${result.chance}\``);
+      const mappedResults = results.map(result => `\`${result.item.padEnd(nameWidth, '\u2003')} `
+      + `| ${result.place.padEnd(relicWidth, '\u2003')} | ${result.rarity.charAt(0)}@${result.chance}\``);
 
       const value = mappedResults.join('\n');
       if (index > 0) {

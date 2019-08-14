@@ -63,7 +63,8 @@ const duration = {
   day: 60 * 60 * 24,
 };
 
-const fissureList = filter => fissures.filter(fissure => fissure.includes(filter));
+const missionTypes = require('./resources/missionTypes');
+// const factions = require('./resources/factions');
 
 /**
  * Object describing all trackable events
@@ -71,29 +72,7 @@ const fissureList = filter => fissures.filter(fissure => fissure.includes(filter
  */
 const trackableEvents = {
   events: eventTypes,
-  'fissures.t1': fissureList('fissures.t1'),
-  'fissures.t2': fissureList('fissures.t2'),
-  'fissures.t3': fissureList('fissures.t3'),
-  'fissures.t4': fissureList('fissures.t4'),
-  'fissures.excavation': fissureList('excavation'),
-  'fissures.sabotage': fissureList('sabotage'),
-  'fissures.mobiledefense': fissureList('mobiledefense'),
-  'fissures.assassination': fissureList('assassination'),
-  'fissures.exterminate': fissureList('exterminate'),
-  'fissures.hive': fissureList('hive'),
-  'fissures.defense': fissureList('defense'),
-  'fissures.interception': fissureList('interception'),
-  'fissures.rathuum': fissureList('rathuum'),
-  'fissures.conclave': fissureList('conclave'),
-  'fissures.rescue': fissureList('rescue'),
-  'fissures.spy': fissureList('spy'),
-  'fissures.survival': fissureList('survival'),
-  'fissures.capture': fissureList('capture'),
-  'fissures.darksector': fissureList('darksector'),
-  'fissures.hijack': fissureList('hijack'),
-  'fissures.assault': fissureList('assault'),
-  'fissures.evacuation': fissureList('evacuation'),
-  fissures,
+  fissures: [],
   syndicates,
   conclave,
   deals,
@@ -101,17 +80,51 @@ const trackableEvents = {
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
   vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
-  'twitter.reply': eventTypes.filter(event => /twitter\.\w*\.reply/.test(event)),
-  'twitter.tweet': eventTypes.filter(event => /twitter\.\w*\.tweet/.test(event)),
-  'twitter.retweet': eventTypes.filter(event => /twitter\.\w*\.retweet/.test(event)),
-  'twitter.quote': eventTypes.filter(event => /twitter\.\w*\.quote/.test(event)),
-  twitter,
+  twitter: [],
   nightwave,
   rss: rssFeeds.map(feed => feed.key),
+  // arbitration: [],
+  // kuva: [],
 };
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
+twitter.types.forEach((type) => {
+  twitter.accounts.forEach((account) => {
+    const id = `twitter.${type}.${account}`;
+    if (!trackableEvents[`twitter.${type}`]) {
+      trackableEvents[`twitter.${type}`] = [];
+    }
+    trackableEvents[`twitter.${type}`].push(id);
+    trackableEvents.events.push(id);
+  });
+});
+
+Object.keys(missionTypes).forEach((type) => {
+  // These will be re-enabled when arbitrations/kuva are ready
+  // if (missionTypes[type]) {
+  //   factions.forEach((faction) => {
+  //     trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
+  //   });
+  // }
+  // trackableEvents.kuva.push(`kuva.${type}`);
+
+  // Construct Fissure types
+  fissures.tiers.forEach((tier) => {
+    const id = `fissures.${tier}.${type}`;
+    if (!trackableEvents[`fissures.${tier}`]) {
+      trackableEvents[`fissures.${tier}`] = [];
+    }
+    trackableEvents[`fissures.${tier}`].push(id);
+    if (!trackableEvents[`fissures.${type}`]) {
+      trackableEvents[`fissures.${type}`] = [];
+    }
+    trackableEvents[`fissures.${type}`].push(id);
+    trackableEvents.events.push(id);
+  });
+});
+trackableEvents.events.push(...trackableEvents.twitter, ...trackableEvents.fissures);
+// trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
 
 /**
  * Captures for commonly needed parameters
@@ -126,7 +139,7 @@ const captures = {
   channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
   role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
   user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
-  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${trackableEvents.rss.join('|')}|${eventTypes.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
+  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${trackableEvents.rss.join('|')}|${trackableEvents.events.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
   platforms: `(${platforms.join('|')})`,
 };
 
@@ -272,7 +285,7 @@ const stringFilter = chunk => chunk && chunk.length;
  * Field limit for chunked embeds
  * @type {Number}
  */
-const fieldLimit = 5;
+const fieldLimit = 7;
 
 /**
  * Default values for embeds
@@ -488,11 +501,22 @@ const constructTypeEmbeds = (types) => {
   const includedTypes = Object.assign({}, trackableEvents);
   Object.keys(trackableEvents).forEach((eventType) => {
     includedTypes[eventType] = [];
-    types.forEach((type) => {
+  });
+
+  types.forEach((type) => {
+    let found = false;
+    Object.keys(trackableEvents).forEach((eventType) => {
       if (trackableEvents[eventType].includes(type)) {
         includedTypes[eventType].push(type);
+        found = true;
       }
     });
+    if (!found) {
+      if (!includedTypes['no type']) {
+        includedTypes['no type'] = [];
+      }
+      includedTypes['no type'].push(type);
+    }
   });
 
   const fields = [];
@@ -502,7 +526,7 @@ const constructTypeEmbeds = (types) => {
       fields.push(...chunked);
     }
   });
-  const fieldGroups = createGroupedArray(fields, fieldLimit * 2);
+  const fieldGroups = createGroupedArray(fields, fieldLimit);
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
@@ -649,11 +673,10 @@ const timeDeltaToMinutesString = (millis) => {
   }
   const timePieces = [];
   const prefix = millis < 0 ? '-' : '';
-  let seconds = Math.abs(millis / 1000);
+  const seconds = Math.abs(millis / 1000);
 
   if (seconds >= duration.minute) {
     timePieces.push(`${Math.floor(seconds / duration.minute)}m`);
-    seconds = Math.floor(seconds) % duration.minute;
   }
 
   return `${prefix}${timePieces.join(' ')}`;
@@ -911,6 +934,24 @@ const getMessage = async (message, otherMessageId) => {
 };
 
 /**
+ * Group an array by a field value
+ * @param  {Object[]} array array of objects to broup
+ * @param  {string} field field to group by
+ * @returns {Object}       [description]
+ */
+const groupBy = (array, field) => {
+  const grouped = {};
+  array.forEach((item) => {
+    const fVal = item[field];
+    if (!grouped[fVal]) {
+      grouped[fVal] = [];
+    }
+    grouped[fVal].push(item);
+  });
+  return grouped;
+};
+
+/**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
  *
@@ -956,4 +997,5 @@ module.exports = {
   platforms,
   safeMatch,
   getMessage,
+  groupBy,
 };

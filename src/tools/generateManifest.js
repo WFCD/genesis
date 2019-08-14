@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const colors = require('colors/safe');
 const BaseCommand = require('../models/Command');
 
 const generateManifest = async () => {
@@ -47,7 +46,7 @@ const generateManifest = async () => {
     fs.writeFileSync('commands.json', JSON.stringify(commands), 'utf8');
     if (['DEBUG', 'INFO'].some(str => str === process.env.LOG_LEVEL)) {
       // eslint-disable-next-line no-console
-      console.log(`[DEBUG] ${colors.cyan('Wrote command manifest...')}`);
+      console.log('[DEBUG] Wrote command manifest...');
     }
   } catch (e) {
     // eslint-disable-next-line no-console

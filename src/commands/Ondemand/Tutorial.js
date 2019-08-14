@@ -1,8 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const Command = require('../../models/Command.js');
-const { apiBase } = require('../../CommonFunctions');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -34,15 +32,15 @@ class FrameProfile extends Command {
 
     if (query) {
       query = query.trim().toLowerCase();
-      const results = await fetch(`${apiBase}/tutorials/search/${query}`).then(data => data.json());
+      const results = await this.ws.search('tutorials', query);
       if (results.length > 0) {
         results.forEach((tutorial) => {
-          this.messageManager.reply(message, `Warfame Tutorial | ${tutorial.name}: ${tutorial.url}`, true, true);
+          this.messageManager.send(message.channel, `Warfame Tutorial | ${tutorial.name}: ${tutorial.url}`);
         });
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    const tutorials = await fetch(`${apiBase}/tutorials`).then(data => data.json());
+    const tutorials = await this.ws.g('tutorials');
     this.messageManager.embed(message, {
       title: 'Available Tutorials',
       fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],

@@ -27,9 +27,9 @@ Use the provided `.eslintrc.json` to lint your files, include any ignores in you
 
 3. Add any other applicable tokens to `genesis.json` (or whatever you called it).
 
-4. Run `pm2 start genesis.json` to start the bot.
+4. Run `npm start` to start the bot.
 
-5. View logs in `pm2 logs genesis-test` if you wish to see logs for the process.
+5. View logs in `npm run logs` if you wish to see logs for the process.
 
 6. Invite the bot to your server using the format:
 
@@ -51,4 +51,4 @@ Nspace
  * Awesome dude who's working on porting and updating the accumulated tech debt caused by hubot
 
 Tobiah
- * Other dude who's helping, writing features, debugging, and sometimes sleeping
+ * ~~Other dude who's helping, writing features, debugging, and sometimes sleeping~~ Other dude who took over after a while, actively maintaining and trying to make genesis the best & most utilitous Warframe bot he can 

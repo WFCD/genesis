@@ -39,9 +39,7 @@ class ConclaveChallenges extends Command {
       platformParam = param1;
     }
     const platform = platformParam || ctx.context;
-    const ws = await this.bot.worldStates[platform.toLowerCase()].getData();
-    const { conclaveChallenges } = ws;
-    const embed = new ConclaveChallengeEmbed(this.bot, conclaveChallenges, category, platform);
+    const embed = new ConclaveChallengeEmbed(this.bot, await this.ws.get('conclaveChallenges', platform, ctx.language), category, platform);
     await this.messageManager.embed(message, embed, true, false);
     return this.messageManager.statuses.SUCCESS;
   }

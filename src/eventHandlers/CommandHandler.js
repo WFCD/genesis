@@ -3,6 +3,15 @@
 const Handler = require('../models/BaseEventHandler');
 const I18n = require('../settings/I18n');
 
+/**
+ * Checks if the command is callable,
+ * checking if the user has authorization, if custom is allowed
+ * @param  {boolean} hasAuth     whether or not the caller has authorization
+ * @param  {boolean} allowCustom whether or not custom commands are allowed
+ * @param  {boolean}  allowInline whether or not inline commands are allowed
+ * @param  {Command}  command     the command manifest
+ * @returns {boolean}              whether or not the settings allow this command to be called
+ */
 const checkInlineCustom = (hasAuth, allowCustom, allowInline, command) => {
   if ((command.isCustom && allowCustom) || (command.isInline && allowInline)) {
     return hasAuth;
@@ -125,8 +134,6 @@ class CommandHandler extends Handler {
             ctx.args = cmd.parseArgs(message.content);
           }
 
-          ctx.message.channel.startTyping();
-
           // run
           try {
             const status = await cmd.run(strippedMessage, ctx);
@@ -153,14 +160,14 @@ class CommandHandler extends Handler {
           } catch (error) {
             this.logger.error(error);
           } finally {
-            // finish typing
-            ctx.message.channel.stopTyping(true);
-
             // make sure we don't run more
             done = true;
           }
         }
       }
+      // force last index to 0 for any global checkers
+      // eslint-disable-next-line no-param-reassign
+      command.regex.lastIndex = 0;
     });
   }
 

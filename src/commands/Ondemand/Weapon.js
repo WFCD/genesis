@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 const WeaponEmbed = require('../../embeds/WeaponEmbed.js');
 const ComponentEmbed = require('../../embeds/ComponentEmbed.js');
@@ -10,7 +10,7 @@ const { setupPages, apiBase, createGroupedArray } = require('../../CommonFunctio
 
 
 /**
- * Displays the stats for a warframe
+ * Displays the stats for a weapon
  */
 class WeaponStats extends Command {
   /**
@@ -22,7 +22,7 @@ class WeaponStats extends Command {
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {
-        description: 'Get stats for a Warframe',
+        description: 'Get stats for a weapon',
         parameters: ['weapon name'],
       },
     ];
@@ -40,9 +40,9 @@ class WeaponStats extends Command {
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       try {
-        const results = await fetch(`${apiBase}/weapons/search/${weapon}`).then(data => data.json());
+        const results = await fetch(`${apiBase}/weapons/search/${weapon}`);
         const strippedWeaponN = weapon.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
-        const rivenResults = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${strippedWeaponN}`).then(data => data.json());
+        const rivenResults = await fetch(`${apiBase}/${ctx.platform}/rivens/search/${strippedWeaponN}`);
         if (results.length > 0) {
           const pages = [];
           results.forEach((result) => {
