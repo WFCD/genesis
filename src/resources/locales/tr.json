@@ -15,7 +15,7 @@
   "Yes": "Evet",
   "No": "Hayır",
   "**Credits:** {0}": "**Krediler:** {0}",
-  "{0} remaining • Expires ": "{0} kalan • Sona erdi ",
+  "{0} remaining • Expires ": "{0} gidiyor • Sona eriyor ",
   "Daily": "Günlük",
   "Weekly": "Haftalık",
   "Weekly, ctd.": "Haftalık, ctd.",
@@ -24,5 +24,6 @@
   "No Alerts Active": ":warning: Aktif uyarı yok",
   "No Fissures Active": ":warning: Aktif void çatlağı yok",
   "No Invasions Active": ":warning: Aktif istila yok",
-  "No Sortie Active": ":warning: Aktif taarruz yok"
+  "No Sortie Active": ":warning: Aktif taarruz yok",
+  "{0} against {1}": "{0} karşı {1}"
 }

@@ -24,5 +24,6 @@
   "No Alerts Active": ":warning: Nenhum alerta ativo",
   "No Fissures Active": ":warning: Nenhuma fissura ativa",
   "No Invasions Active": ":warning: Nenhuma invasão ativa",
-  "No Sortie Active": ":warning: Nenhuma Incursão ativa"
+  "No Sortie Active": ":warning: Nenhuma Incursão ativa",
+  "{0} against {1}": "{0} contra {1}"
 }
