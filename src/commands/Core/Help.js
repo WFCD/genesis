@@ -14,7 +14,7 @@ const createEmbedsForCommands = (commandFields, title, color) => ({
   color,
   type: 'rich',
   footer: {
-    text: '* Denotes Optionional Parameters',
+    text: '*Optional Parameter • <> Parameter Replacements',
     icon_url: 'https://warframestat.us/wfcd_logo_color.png',
   },
 });

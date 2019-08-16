@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
+const { captures } = require('../../CommonFunctions');
 
 class DeleteDefaultRole extends Command {
   constructor(bot) {
@@ -8,7 +9,7 @@ class DeleteDefaultRole extends Command {
     this.usages = [
       { description: 'Add a new default role for persons joining the server.', parameters: ['message'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?(\\d+)?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.roles}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

@@ -232,8 +232,9 @@ class Genesis {
     this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
 
     this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
-    this.client.on('error', error => this.logger.error(error));
-    this.client.on('warn', warning => this.logger.warning(warning));
+    this.client.on('error', this.logger.error);
+    this.client.on('warn', this.logger.warn);
+    this.client.on('debug', this.logger.debug);
   }
 
   /**
