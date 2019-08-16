@@ -6,7 +6,9 @@ const fetch = require('../resources/Fetcher');
 const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');
 
-const { createGroupedArray, apiBase, apiCdnBase } = require('../CommonFunctions');
+const {
+  createGroupedArray, apiBase, apiCdnBase, platforms,
+} = require('../CommonFunctions');
 
 const warframe = new Wikia('warframe');
 
@@ -17,6 +19,14 @@ const i18ns = {};
 require('../resources/locales.json').forEach((locale) => {
   i18ns[locale] = I18n.use(locale);
 });
+
+const beats = {};
+
+const between = (activation, shard, platform) => {
+  const isBeforeCurr = activation < beats[shard][platform].currCycleStart;
+  const isAfterLast = activation > beats[shard][platform].lastUpdate;
+  return isBeforeCurr && isAfterLast;
+};
 
 
 /**
@@ -57,6 +67,16 @@ class Notifier {
       logger: bot.logger,
     });
     this.logger.debug(`Shard ${this.bot.shardId} Notifier ready`);
+
+    if (!beats[this.bot.shardId]) {
+      beats[this.bot.shardId] = {};
+      platforms.forEach((p) => {
+        beats[this.bot.shardId][p] = {
+          lastUpdate: Date.now(),
+          currCycleStart: null,
+        };
+      });
+    }
   }
 
   /**
@@ -77,6 +97,8 @@ class Notifier {
    * @param  {json} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
+    beats[this.bot.shardId][platform].currCycleStart = Date.now();
+
     let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
     // Set up data to notify
@@ -156,44 +178,50 @@ class Notifier {
 
     // Send all notifications
     await this.updateNotified(notifiedIds, platform);
-    await this.sendAcolytes(acolytesToNotify, platform);
-    if (baroToNotify) {
-      this.sendBaro(baroToNotify, platform);
-    }
-    if (conclaveToNotify && conclaveToNotify.length > 0) {
-      this.sendConclaveDailies(conclaveToNotify, platform);
-      await this.sendConclaveWeeklies(conclaveToNotify, platform);
-    }
-    if (tweetsToNotify && tweetsToNotify.length > 0) {
-      this.sendTweets(tweetsToNotify, platform);
-    }
-    this.sendDarvo(dailyDealsToNotify, platform);
-    this.sendEvent(eventsToNotify, platform);
-    this.sendFeaturedDeals(featuredDealsToNotify, platform);
-    this.sendFissures(fissuresToNotify, platform);
-    this.sendNews(newsToNotify, platform);
-    this.sendStreams(streamsToNotify, platform);
-    this.sendPopularDeals(popularDealsToNotify, platform);
-    this.sendPrimeAccess(primeAccessToNotify, platform);
-    this.sendInvasions(invasionsToNotify, platform);
-    if (sortieToNotify) {
-      await this.sendSortie(sortieToNotify, platform);
-    }
-    if (syndicatesToNotify && syndicatesToNotify.length > 0) {
-      await this.sendSyndicates(syndicatesToNotify, platform);
-    }
-    const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-    if (ostron) {
-      // eslint-disable-next-line no-param-reassign
-      newData.cetusCycle.bountyExpiry = ostron.expiry;
-    }
-    await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
-    await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
+    try {
+      await this.sendAcolytes(acolytesToNotify, platform);
+      if (baroToNotify) {
+        this.sendBaro(baroToNotify, platform);
+      }
+      if (conclaveToNotify && conclaveToNotify.length > 0) {
+        this.sendConclaveDailies(conclaveToNotify, platform);
+        await this.sendConclaveWeeklies(conclaveToNotify, platform);
+      }
+      if (tweetsToNotify && tweetsToNotify.length > 0) {
+        this.sendTweets(tweetsToNotify, platform);
+      }
+      this.sendDarvo(dailyDealsToNotify, platform);
+      this.sendEvent(eventsToNotify, platform);
+      this.sendFeaturedDeals(featuredDealsToNotify, platform);
+      this.sendFissures(fissuresToNotify, platform);
+      this.sendNews(newsToNotify, platform);
+      this.sendStreams(streamsToNotify, platform);
+      this.sendPopularDeals(popularDealsToNotify, platform);
+      this.sendPrimeAccess(primeAccessToNotify, platform);
+      this.sendInvasions(invasionsToNotify, platform);
+      if (sortieToNotify) {
+        await this.sendSortie(sortieToNotify, platform);
+      }
+      if (syndicatesToNotify && syndicatesToNotify.length > 0) {
+        await this.sendSyndicates(syndicatesToNotify, platform);
+      }
+      const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+      if (ostron) {
+        // eslint-disable-next-line no-param-reassign
+        newData.cetusCycle.bountyExpiry = ostron.expiry;
+      }
+      await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
+      await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
 
-    await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
-    this.sendUpdates(updatesToNotify, platform);
-    await this.sendAlerts(alertsToNotify, platform);
-    await this.sendNightwave(nightwave, platform);
+      await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
+      this.sendUpdates(updatesToNotify, platform);
+      await this.sendAlerts(alertsToNotify, platform);
+      await this.sendNightwave(nightwave, platform);
+    } catch (e) {
+      this.logger.error(e);
+    } finally {
+      beats[this.bot.shardId][platform].lastUpdate = Date.now();
+    }
   }
 
   /**
@@ -270,6 +298,9 @@ class Notifier {
 
   async sendBaro(newBaro, platform) {
     const embed = new embeds.VoidTrader(this.bot, newBaro, platform);
+    const d = new Date(newBaro.activation);
+    if (!(newBaro.activation && between(d.getTime(), this.bot.shardId, platform))) return;
+
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
       fields.forEach(async (fieldGroup) => {
@@ -345,6 +376,9 @@ class Notifier {
 
   async sendInvasion(invasion, platform) {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+      if (!(invasion.activation
+        && between(invasion.activation.getTime(), this.bot.shardId, platform))) return;
+
       const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
       embed.locale = locale;
       try {
@@ -362,7 +396,10 @@ class Notifier {
   }
 
   async sendNews(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news')));
+    await Promise.all(newNews.map((i) => {
+      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news');
+    }));
   }
 
   async sendNightwave(nightwave, platform) {
@@ -397,14 +434,22 @@ class Notifier {
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    await Promise.all(newPopularDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
+    await Promise.all(newPopularDeals.map((d) => {
+      if (!(d.date && between(d.date.getTime(), this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000);
+    }));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
+    await Promise.all(newNews.map((i) => {
+      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess');
+    }));
   }
 
   async sendSortie(newSortie, platform) {
+    if (!(newSortie.activation
+      && between(newSortie.activation.getTime(), this.bot.shardId, platform))) return;
     const embed = new embeds.Sortie(this.bot, newSortie, platform);
     try {
       const thumb = await this.getThumbnailForItem(newSortie.boss, true);
@@ -419,7 +464,10 @@ class Notifier {
   }
 
   async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams')));
+    await Promise.all(newStreams.map((i) => {
+      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams');
+    }));
   }
 
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
@@ -447,7 +495,10 @@ class Notifier {
   }
 
   async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates')));
+    await Promise.all(newNews.map((i) => {
+      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates');
+    }));
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange) {
