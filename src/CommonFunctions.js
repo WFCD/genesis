@@ -96,7 +96,7 @@ twitter.types.forEach((type) => {
       trackableEvents[`twitter.${type}`] = [];
     }
     trackableEvents[`twitter.${type}`].push(id);
-    trackableEvents.events.push(id);
+    trackableEvents.twitter.push(id);
   });
 });
 
@@ -120,7 +120,7 @@ Object.keys(missionTypes).forEach((type) => {
       trackableEvents[`fissures.${type}`] = [];
     }
     trackableEvents[`fissures.${type}`].push(id);
-    trackableEvents.events.push(id);
+    trackableEvents.fissures.push(id);
   });
 });
 trackableEvents.events.push(...trackableEvents.twitter, ...trackableEvents.fissures);

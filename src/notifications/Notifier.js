@@ -23,11 +23,11 @@ require('../resources/locales.json').forEach((locale) => {
 const beats = {};
 
 const between = (activation, shard, platform) => {
-  const isBeforeCurr = activation < beats[shard][platform].currCycleStart;
-  const isAfterLast = activation > beats[shard][platform].lastUpdate;
+  const activationTs = new Date(activation).getTime();
+  const isBeforeCurr = activationTs < beats[shard][platform].currCycleStart;
+  const isAfterLast = activationTs > beats[shard][platform].lastUpdate;
   return isBeforeCurr && isAfterLast;
 };
-
 
 /**
  * Returns the number of milliseconds between now and a given date
@@ -98,6 +98,7 @@ class Notifier {
    */
   async onNewData(platform, newData) {
     beats[this.bot.shardId][platform].currCycleStart = Date.now();
+    if (!(newData && newData.timestamp)) return;
 
     let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform, this.bot.shardId);
@@ -298,8 +299,7 @@ class Notifier {
 
   async sendBaro(newBaro, platform) {
     const embed = new embeds.VoidTrader(this.bot, newBaro, platform);
-    const d = new Date(newBaro.activation);
-    if (!(newBaro.activation && between(d.getTime(), this.bot.shardId, platform))) return;
+    if (!(newBaro.activation && between(newBaro.activation, this.bot.shardId, platform))) return;
 
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
@@ -323,21 +323,29 @@ class Notifier {
   }
 
   async sendConclaveDailies(newDailies, platform) {
-    if (newDailies.filter(challenge => challenge.category === 'day').length > 0) {
-      const embed = new embeds.Conclave(this.bot, newDailies, 'day', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(newDailies[0].expiry));
+    const dailies = newDailies.filter(challenge => challenge.category === 'day');
+    if (dailies.length > 0 && (dailies[0].activation
+      && between(dailies[0].activation, this.bot.shardId, platform))) {
+      const embed = new embeds.Conclave(this.bot, dailies, 'day', platform);
+      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(dailies[0].expiry));
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
-    if (newWeeklies.filter(challenge => challenge.category === 'week').length > 0) {
-      const embed = new embeds.Conclave(this.bot, newWeeklies, 'week', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(newWeeklies[0].expiry));
+    const weeklies = newWeeklies.filter(challenge => challenge.category === 'week');
+    if (weeklies.length > 0 && (weeklies[0].activation
+      && between(weeklies[0].activation, this.bot.shardId, platform))) {
+      const embed = new embeds.Conclave(this.bot, weeklies, 'week', platform);
+      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(weeklies[0].expiry));
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
+    await Promise.all(newDarvoDeals.map((d) => {
+      if (!(d.activation
+        && between(d.activation, this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry));
+    }));
   }
 
   async sendEarthCycle(newEarthCycle, platform, cetusCycleChange) {
@@ -350,11 +358,20 @@ class Notifier {
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents.map(e => this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
+    await Promise.all(newEvents.map((e) => {
+      if (!(e.activation
+        && between(e.activation, this.bot.shardId, platform))) return false;
+
+      return this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry));
+    }));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    await Promise.all(newFeaturedDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
+    await Promise.all(newFeaturedDeals.map((d) => {
+      if (!(d.activation
+        && between(d.activation, this.bot.shardId, platform))) return false;
+      return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry));
+    }));
   }
 
   async sendFissures(newFissures, platform) {
@@ -362,6 +379,8 @@ class Notifier {
   }
 
   async sendFissure(fissure, platform) {
+    if (!(fissure.activation
+      && between(fissure.activation, this.bot.shardId, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Fissure(this.bot, [fissure], platform, i18n);
       embed.locale = locale;
@@ -375,10 +394,9 @@ class Notifier {
   }
 
   async sendInvasion(invasion, platform) {
+    if (!(invasion.activation
+      && between(invasion.activation, this.bot.shardId, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      if (!(invasion.activation
-        && between(invasion.activation.getTime(), this.bot.shardId, platform))) return;
-
       const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
       embed.locale = locale;
       try {
@@ -449,7 +467,7 @@ class Notifier {
 
   async sendSortie(newSortie, platform) {
     if (!(newSortie.activation
-      && between(newSortie.activation.getTime(), this.bot.shardId, platform))) return;
+      && between(newSortie.activation, this.bot.shardId, platform))) return;
     const embed = new embeds.Sortie(this.bot, newSortie, platform);
     try {
       const thumb = await this.getThumbnailForItem(newSortie.boss, true);
