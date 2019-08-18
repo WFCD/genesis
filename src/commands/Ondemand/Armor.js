@@ -33,6 +33,35 @@ function armorAtLevel(baseArmor, baseLevel, currentLevel) {
   return baseArmor * (1 + (((currentLevel - baseLevel) ** 1.75) / 200));
 }
 
+/**
+ * Returns a string with details on an enemy's armor at a certain level
+ * @param {number} baseArmor    The enemy's armor at the base level
+ * @param {number} baseLevel    The enemy's base level
+ * @param {number} currentLevel The level to calculate armor at
+ * @returns {string}
+ */
+function armorFull(baseArmor, baseLevel, currentLevel) {
+  const armor = armorAtLevel(baseArmor, baseLevel, currentLevel);
+  return [
+    `At level ${Math.round(currentLevel)} your enemy would have ${armor.toFixed(2)} Armor`,
+    `${(damageReduction(armor) * 100).toFixed((2))}% damage reduction`,
+    `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
+  ].join('\n');
+}
+
+/**
+ * Returns a string with details on an enemy's armor
+ * @param {number} armor    The enemy's armor
+ * @returns {string}
+ */
+function armorSimple(armor) {
+  return `\`\`\`haskell${
+    [
+      `${(damageReduction(armor) * 100).toFixed(2)}% damage reduction`,
+      `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
+    ].join('\n')}\`\`\``;
+}
+
 
 /**
  * Performs armor calculations
@@ -76,10 +105,10 @@ class Armor extends Command {
       const currentLevel = params3[3];
       if (typeof baseLevel === 'undefined') {
         this.logger.debug('Entered 1-param armor');
-        armorString = this.armorSimple(parseInt(armor, 10));
+        armorString = armorSimple(parseInt(armor, 10));
       } else {
         this.logger.debug('Entered 3-param armor');
-        armorString = this.armorFull(
+        armorString = armorFull(
           parseFloat(armor), parseFloat(baseLevel),
           parseFloat(currentLevel),
         );
@@ -121,7 +150,7 @@ class Armor extends Command {
       fields: [
         {
           name: 'Possible uses include:',
-          value: `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.${this.md.lineEnd}`
+          value: `${this.bot.prefix}armor (Base Armor) (Base Level) (Current Level) calculate armor and stats.\n`
             + `${this.bot.prefix}armor (Current Armor) Calculate damage resistance.`,
         },
       ],
@@ -131,35 +160,6 @@ class Armor extends Command {
     };
 
     this.messageManager.embed(message, embed, true, false);
-  }
-
-  /**
-   * Returns a string with details on an enemy's armor at a certain level
-   * @param {number} baseArmor    The enemy's armor at the base level
-   * @param {number} baseLevel    The enemy's base level
-   * @param {number} currentLevel The level to calculate armor at
-   * @returns {string}
-   */
-  armorFull(baseArmor, baseLevel, currentLevel) {
-    const armor = armorAtLevel(baseArmor, baseLevel, currentLevel);
-    return [
-      `At level ${Math.round(currentLevel)} your enemy would have ${armor.toFixed(2)} Armor`,
-      `${(damageReduction(armor) * 100).toFixed((2))}% damage reduction`,
-      `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
-    ].join(this.md.lineEnd);
-  }
-
-  /**
-   * Returns a string with details on an enemy's armor
-   * @param {number} armor    The enemy's armor
-   * @returns {string}
-   */
-  armorSimple(armor) {
-    return this.md.codeMulti
-      + [
-        `${(damageReduction(armor) * 100).toFixed(2)}% damage reduction`,
-        `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
-      ].join(this.md.lineEnd) + this.md.blockEnd;
   }
 }
 

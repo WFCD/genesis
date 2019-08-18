@@ -9,8 +9,8 @@ class CustomCommandQueries {
   }
 
   async getCustomCommands() {
-    this.logger.debug(`Shards: ${this.bot.shardCount}, this shard's id: ${this.bot.shardId}`);
-    const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardCount} = ${this.bot.shardId}`;
+    this.logger.debug(`Shards: ${this.bot.shardCount}, this shard's ids: ${this.bot.shards}`);
+    const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardCount} in (${this.bot.shards})`;
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0]

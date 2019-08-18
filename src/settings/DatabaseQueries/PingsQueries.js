@@ -110,7 +110,7 @@ class PingsQueries {
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
         .append(SQL`
         WHERE type_notifications.type = ${String(type)}
-          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}
+          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardCount}) in (${this.bot.shards})
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
         .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);

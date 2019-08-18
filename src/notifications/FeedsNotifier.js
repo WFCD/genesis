@@ -9,11 +9,10 @@ const feeds = require('../resources/rssFeeds');
 
 class FeedsNotifier {
   constructor({
-    logger, shardId, client, settings, messageManager,
+    logger, client, settings, messageManager,
   }) {
     this.logger = logger;
-    this.shardId = shardId;
-    this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard ${shardId}` });
+    this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard` });
 
     feeds.forEach((feed) => {
       this.feeder.add({ url: feed.url, timeout: 600000 });
@@ -27,7 +26,7 @@ class FeedsNotifier {
       messageManager,
       logger,
     });
-    this.logger.debug(`Shard ${shardId} RSS Notifier ready`);
+    this.logger.debug('Shard RSS Notifier ready.');
 
     this.feeder.on('error', this.logger.debug);
 

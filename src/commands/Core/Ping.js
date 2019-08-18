@@ -58,7 +58,7 @@ class Ping extends Command {
         title: 'PONG',
         type: 'rich',
         fields: [{
-          name: `Response time (shard ${this.bot.shardId + 1} of ${this.bot.shardCount})`,
+          name: `Response time (shard ${message.guild ? message.guild.shardID : 1} of ${this.bot.shards.length})`,
           value: `${afterSend - now}ms`,
         },
         ...results,

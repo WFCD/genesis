@@ -10,6 +10,8 @@ const {
   createGroupedArray, apiBase, apiCdnBase, platforms,
 } = require('../CommonFunctions');
 
+const logger = require('../Logger');
+
 const warframe = new Wikia('warframe');
 
 const syndicates = require('../resources/syndicates.json');
@@ -22,11 +24,12 @@ require('../resources/locales.json').forEach((locale) => {
 
 const beats = {};
 
-const between = (activation, shard, platform) => {
+const between = (activation, platform) => {
   const activationTs = new Date(activation).getTime();
-  const isBeforeCurr = activationTs < beats[shard][platform].currCycleStart;
-  const isAfterLast = activationTs > beats[shard][platform].lastUpdate;
-  return isBeforeCurr && isAfterLast;
+  // logger.info(`[Notifier] act: ${activationTs} | ccs: ${beats[platform].currCycleStart} | lastupate: ${beats[platform].lastUpdate}`);
+  const isBeforeCurr = activationTs < beats[platform].currCycleStart;
+  const isAfterLast = activationTs > (beats[platform].lastUpdate - 60000);
+  return true; // isBeforeCurr && isAfterLast;
 };
 
 /**
@@ -66,17 +69,14 @@ class Notifier {
       messageManager: bot.messageManager,
       logger: bot.logger,
     });
-    this.logger.debug(`Shard ${this.bot.shardId} Notifier ready`);
+    this.logger.info('[Notifier] Ready');
 
-    if (!beats[this.bot.shardId]) {
-      beats[this.bot.shardId] = {};
-      platforms.forEach((p) => {
-        beats[this.bot.shardId][p] = {
-          lastUpdate: Date.now(),
-          currCycleStart: null,
-        };
-      });
-    }
+    platforms.forEach((p) => {
+      beats[p] = {
+        lastUpdate: Date.now(),
+        currCycleStart: null,
+      };
+    });
   }
 
   /**
@@ -84,8 +84,9 @@ class Notifier {
    */
   async start() {
     for (const k of Object.keys(this.bot.worldStates)) {
+      if (k !== 'pc') continue;
       this.bot.worldStates[k].on('newData', async (platform, newData) => {
-        this.logger.debug(`Processing new data for ${platform}`);
+        this.logger.info(`[Notifier] Processing new data for ${platform}`);
         await this.onNewData(platform, newData);
       });
     }
@@ -97,11 +98,11 @@ class Notifier {
    * @param  {json} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
-    beats[this.bot.shardId][platform].currCycleStart = Date.now();
+    beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
     let notifiedIds = [];
-    const ids = await this.getNotifiedIds(platform, this.bot.shardId);
+    const ids = await this.getNotifiedIds(platform);
     // Set up data to notify
     const acolytesToNotify = newData.persistentEnemies
       .filter(e => !ids.includes(e.pid));
@@ -178,7 +179,6 @@ class Notifier {
       .concat(nWaveIds);
 
     // Send all notifications
-    await this.updateNotified(notifiedIds, platform);
     try {
       await this.sendAcolytes(acolytesToNotify, platform);
       if (baroToNotify) {
@@ -221,7 +221,8 @@ class Notifier {
     } catch (e) {
       this.logger.error(e);
     } finally {
-      beats[this.bot.shardId][platform].lastUpdate = Date.now();
+      await this.updateNotified(notifiedIds, platform);
+      beats[platform].lastUpdate = Date.now();
     }
   }
 
@@ -231,7 +232,7 @@ class Notifier {
    * @returns {Array}
    */
   async getNotifiedIds(platform) {
-    return this.bot.settings.getNotifiedIds(platform, this.bot.shardId);
+    return this.bot.settings.getNotifiedIds(platform, this.bot.clusterId);
   }
 
   /**
@@ -240,7 +241,7 @@ class Notifier {
    * @param {string} platform    platform corresponding to notified ids
    */
   async updateNotified(ids, platform) {
-    await this.settings.setNotifiedIds(platform, this.bot.shardId, ids);
+    await this.settings.setNotifiedIds(platform, this.bot.clusterId, ids);
   }
 
   async getThumbnailForItem(query, fWiki) {
@@ -299,7 +300,7 @@ class Notifier {
 
   async sendBaro(newBaro, platform) {
     const embed = new embeds.VoidTrader(this.bot, newBaro, platform);
-    if (!(newBaro.activation && between(newBaro.activation, this.bot.shardId, platform))) return;
+    if (!(newBaro.activation && between(newBaro.activation, platform))) return;
 
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
@@ -325,7 +326,7 @@ class Notifier {
   async sendConclaveDailies(newDailies, platform) {
     const dailies = newDailies.filter(challenge => challenge.category === 'day');
     if (dailies.length > 0 && (dailies[0].activation
-      && between(dailies[0].activation, this.bot.shardId, platform))) {
+      && between(dailies[0].activation, platform))) {
       const embed = new embeds.Conclave(this.bot, dailies, 'day', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(dailies[0].expiry));
     }
@@ -334,7 +335,7 @@ class Notifier {
   async sendConclaveWeeklies(newWeeklies, platform) {
     const weeklies = newWeeklies.filter(challenge => challenge.category === 'week');
     if (weeklies.length > 0 && (weeklies[0].activation
-      && between(weeklies[0].activation, this.bot.shardId, platform))) {
+      && between(weeklies[0].activation, platform))) {
       const embed = new embeds.Conclave(this.bot, weeklies, 'week', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(weeklies[0].expiry));
     }
@@ -343,7 +344,7 @@ class Notifier {
   async sendDarvo(newDarvoDeals, platform) {
     await Promise.all(newDarvoDeals.map((d) => {
       if (!(d.activation
-        && between(d.activation, this.bot.shardId, platform))) return false;
+        && between(d.activation, platform))) return false;
       return this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry));
     }));
   }
@@ -360,7 +361,7 @@ class Notifier {
   async sendEvent(newEvents, platform) {
     await Promise.all(newEvents.map((e) => {
       if (!(e.activation
-        && between(e.activation, this.bot.shardId, platform))) return false;
+        && between(e.activation, platform))) return false;
 
       return this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry));
     }));
@@ -369,7 +370,7 @@ class Notifier {
   async sendFeaturedDeals(newFeaturedDeals, platform) {
     await Promise.all(newFeaturedDeals.map((d) => {
       if (!(d.activation
-        && between(d.activation, this.bot.shardId, platform))) return false;
+        && between(d.activation, platform))) return false;
       return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry));
     }));
   }
@@ -380,7 +381,7 @@ class Notifier {
 
   async sendFissure(fissure, platform) {
     if (!(fissure.activation
-      && between(fissure.activation, this.bot.shardId, platform))) return;
+      && between(fissure.activation, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Fissure(this.bot, [fissure], platform, i18n);
       embed.locale = locale;
@@ -395,7 +396,7 @@ class Notifier {
 
   async sendInvasion(invasion, platform) {
     if (!(invasion.activation
-      && between(invasion.activation, this.bot.shardId, platform))) return;
+      && between(invasion.activation, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
       embed.locale = locale;
@@ -415,7 +416,7 @@ class Notifier {
 
   async sendNews(newNews, platform) {
     await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      if (!(i.date && between(i.date, platform))) return false;
       return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news');
     }));
   }
@@ -453,21 +454,21 @@ class Notifier {
 
   async sendPopularDeals(newPopularDeals, platform) {
     await Promise.all(newPopularDeals.map((d) => {
-      if (!(d.date && between(d.date.getTime(), this.bot.shardId, platform))) return false;
+      if (!(d.date && between(d.date, platform))) return false;
       return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000);
     }));
   }
 
   async sendPrimeAccess(newNews, platform) {
     await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      if (!(i.date && between(i.date, platform))) return false;
       return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess');
     }));
   }
 
   async sendSortie(newSortie, platform) {
     if (!(newSortie.activation
-      && between(newSortie.activation, this.bot.shardId, platform))) return;
+      && between(newSortie.activation, platform))) return;
     const embed = new embeds.Sortie(this.bot, newSortie, platform);
     try {
       const thumb = await this.getThumbnailForItem(newSortie.boss, true);
@@ -483,7 +484,7 @@ class Notifier {
 
   async sendStreams(newStreams, platform) {
     await Promise.all(newStreams.map((i) => {
-      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      if (!(i.date && between(i.date, platform))) return false;
       return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams');
     }));
   }
@@ -514,7 +515,7 @@ class Notifier {
 
   async sendUpdates(newNews, platform) {
     await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date.getTime(), this.bot.shardId, platform))) return false;
+      if (!(i.date && between(i.date, platform))) return false;
       return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates');
     }));
   }

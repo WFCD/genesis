@@ -26,9 +26,7 @@ const generateManifest = async () => {
       // eslint-disable-next-line import/no-dynamic-require, global-require
       const Cmd = require(path.join(commandDir, f));
       if (Cmd.prototype instanceof BaseCommand) {
-        const command = new Cmd({
-          md: {}, messageManager: {}, settings: {}, path: f,
-        });
+        const command = new Cmd({ messageManager: {}, settings: {}, path: f });
         if (command.enabled) {
           return command;
         }

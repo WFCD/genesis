@@ -122,8 +122,11 @@ class PrivateRoomQueries {
     return undefined;
   }
 
-  async getPrivateRooms() {
-    const query = SQL`SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec  FROM private_channels WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) = ${this.bot.shardId}`;
+  async getPrivateRooms(shards) {
+    const query = SQL`
+      SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec
+      FROM private_channels
+      WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) in (${shards})`;
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0].map(value => ({

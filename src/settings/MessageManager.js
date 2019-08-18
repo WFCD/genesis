@@ -328,6 +328,7 @@ class MessaageManager {
       ctx.webhook = webhook;
       return this.webhook(ctx, { text, embed });
     }
+    // stop allowing normal embeds
     if (ctx.message) {
       if (embed) {
         return Promise.all(embed.embeds

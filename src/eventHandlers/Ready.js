@@ -23,10 +23,9 @@ const max = {
  * Check if private rooms have expired and are empty. If not, do nothing.
  * If so, delete the corresponding channels.
  * @param  {Genesis} self    Bot instance
- * @param  {number} shardId shard identifier
  */
-async function checkPrivateRooms(self, shardId) {
-  self.logger.debug(`Checking private rooms... Shard ${shardId}`);
+async function checkPrivateRooms(self) {
+  self.logger.debug('Checking private rooms...');
   const privateRooms = await self.settings.getPrivateRooms();
   self.logger.debug(`Private rooms... ${privateRooms.length}`);
   privateRooms.forEach(async (room) => {
@@ -124,7 +123,7 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
-    this.logger.info(`[Shard ${this.bot.shardId}] READY`);
+    this.logger.info(`[Cluster] READY`);
 
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
@@ -133,25 +132,17 @@ class OnReadyHandle extends Handler {
       );
       this.bot.controlHook.send({
         embeds: [{
-          description: `Shard **${this.bot.shardId + 1}/${this.bot.shardCount}** ready`,
+          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1]+1}** ready`,
           color: 0x2B90EC,
         }],
       });
     }
-    this.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      activity: {
-        name: `@${this.client.user.username} help`,
-        url: 'https://genesis.warframestat.us',
-      },
-    });
     this.bot.MessageManager = new MessageManager(this.bot);
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
     const self = this;
-    setInterval(checkPrivateRooms, self.channelTimeout, self, self.bot.shardId);
+    setInterval(checkPrivateRooms, self.channelTimeout, self);
     updatePresence(this);
     setInterval(updatePresence, 60000, self);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);

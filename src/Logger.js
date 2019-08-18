@@ -3,6 +3,8 @@
 const Sentry = require('@sentry/node');
 require('colors');
 
+Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
+
 /**
  * A collection of methods for logging
  * @property {function} debug   - Logs a debug message
@@ -63,4 +65,13 @@ Object.keys(levels).forEach((level) => {
   };
 });
 
-module.exports = Logger;
+const logger = new Logger();
+
+process.on('uncaughtException', (err) => {
+  logger.error(err);
+});
+process.on('unhandledRejection', (err) => {
+  logger.error(err);
+});
+
+module.exports = logger;

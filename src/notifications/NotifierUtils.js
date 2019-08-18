@@ -30,7 +30,7 @@ const embeds = {
 
 const rest = require('@spectacles/rest')(process.env.TOKEN);
 
-const Logger = require('../Logger');
+const logger = require('../Logger');
 
 // const Database = require('../settings/Database');
 // const db = new Database(dbSettings);
@@ -39,5 +39,5 @@ module.exports = {
   rest,
   embeds,
   // db,
-  logger: new Logger(),
+  logger,
 };
