@@ -1,6 +1,6 @@
 'use strict';
 
-const { Client, ShardClientUtil, WebhookClient } = require('discord.js');
+const { Client, WebhookClient } = require('discord.js');
 
 const WorldStateCache = require('./WorldStateCache');
 const WorldStateClient = require('./resources/WorldStateClient');
@@ -144,28 +144,13 @@ class Genesis {
      */
     this.worldStates = {};
 
-    /**
-     * The platforms that Warframe exists for
-     * @type {Array.<string>}
-     */
-    this.platforms = ['pc', 'ps4', 'xb1', 'swi'];
-
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
-
-    this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
-    });
-
-    /**
-     * The languages that are useable for the bot
-     * @type {Array.<string>}
-     */
-    this.languages = ['en-us'];
+    ['pc', 'ps4', 'xb1', 'swi']
+      .forEach((platform) => {
+        this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
+      });
 
     this.ws = new WorldStateClient(this.logger);
-
-    // this.tracker = new Tracker(this.logger, this.client, this.shardClient);
-
     this.messageManager = new MessageManager(this);
 
     /**
@@ -184,13 +169,11 @@ class Genesis {
      * @type {EventHandler}
      */
     this.eventHandler = new EventHandler(this);
-
     this.shards = shards;
     this.shardTotal = process.env.SHARDS || 1;
     this.clusterId = process.env.CLUSTER_ID || 0;
-
-    // Notification emitter
     this.notifier = new Notifier(this);
+    this.tracker = new Tracker(this);
 
     if (process.env.CONTROL_WH_ID) {
       this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);

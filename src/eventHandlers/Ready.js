@@ -123,7 +123,7 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
-    this.logger.info(`[Cluster] READY`);
+    this.logger.info('[Cluster] READY');
 
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
@@ -132,7 +132,7 @@ class OnReadyHandle extends Handler {
       );
       this.bot.controlHook.send({
         embeds: [{
-          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1]+1}** ready`,
+          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready`,
           color: 0x2B90EC,
         }],
       });

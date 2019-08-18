@@ -10,7 +10,6 @@ const {
   createGroupedArray, apiBase, apiCdnBase, platforms,
 } = require('../CommonFunctions');
 
-const logger = require('../Logger');
 
 const warframe = new Wikia('warframe');
 
@@ -26,10 +25,9 @@ const beats = {};
 
 const between = (activation, platform) => {
   const activationTs = new Date(activation).getTime();
-  // logger.info(`[Notifier] act: ${activationTs} | ccs: ${beats[platform].currCycleStart} | lastupate: ${beats[platform].lastUpdate}`);
   const isBeforeCurr = activationTs < beats[platform].currCycleStart;
   const isAfterLast = activationTs > (beats[platform].lastUpdate - 60000);
-  return true; // isBeforeCurr && isAfterLast;
+  return isBeforeCurr && isAfterLast;
 };
 
 /**
@@ -84,11 +82,12 @@ class Notifier {
    */
   async start() {
     for (const k of Object.keys(this.bot.worldStates)) {
-      if (k !== 'pc') continue;
-      this.bot.worldStates[k].on('newData', async (platform, newData) => {
-        this.logger.info(`[Notifier] Processing new data for ${platform}`);
-        await this.onNewData(platform, newData);
-      });
+      if (k === 'pc') {
+        this.bot.worldStates[k].on('newData', async (platform, newData) => {
+          this.logger.info(`[Notifier] Processing new data for ${platform}`);
+          await this.onNewData(platform, newData);
+        });
+      }
     }
   }
 

@@ -13,7 +13,9 @@ if (process.env.NODE_ENV !== 'production' && localShards < 2) {
 }
 const commandManifest = require('./commands.json');
 
-const shards = new Array(localShards).fill(0, 0, localShards + 1).map((val, index) => index + shardOffset);
+const shards = new Array(localShards)
+  .fill(0, 0, localShards + 1)
+  .map((val, index) => index + shardOffset);
 
 new Genesis(process.env.TOKEN, {
   prefix: process.env.PREFIX,
