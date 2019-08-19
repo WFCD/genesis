@@ -40,6 +40,60 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
+function buildNotifiableData(ids, newData) {
+  const data = {};
+  data.acolytes = newData.persistentEnemies
+    .filter(e => !ids.includes(e.pid));
+  data.alerts = newData.alerts
+    .filter(a => !ids.includes(a.id) && !a.expired);
+  data.baro = newData.voidTrader && !ids.includes(newData.voidTrader.psId)
+    ? newData.voidTrader : undefined;
+  data.conclave = newData.conclaveChallenges
+    .filter(cc => !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
+  data.dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
+  data.events = newData.events
+    .filter(e => !ids.includes(e.id) && !e.expired);
+  data.invasions = newData.invasions
+    .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
+  data.featuredDeals = newData.flashSales
+    .filter(d => !ids.includes(d.id) && d.isFeatured);
+  data.fissures = newData.fissures
+    .filter(f => !ids.includes(f.id) && !f.expired);
+  data.news = newData.news
+    .filter(n => !ids.includes(n.id)
+            && !n.primeAccess && !n.update && !n.stream && n.translations.en);
+  data.popularDeals = newData.flashSales
+    .filter(d => !ids.includes(d.id) && d.isPopular);
+  data.primeAccess = newData.news
+    .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
+  data.sortie = newData.sortie && !ids.includes(newData.sortie.id)
+      && !newData.sortie.expired ? newData.sortie : undefined;
+  data.syndicates = newData.syndicateMissions.filter(m => !ids.includes(m.id));
+  data.updates = newData.news
+    .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
+  data.streams = newData.news
+    .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
+  data.tweets = newData.twitter
+    ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
+  data.cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
+  data.earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
+  data.vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
+
+  if (newData.nightwave) {
+    const nWaveChallenges = newData.nightwave.activeChallenges
+      .filter(challenge => !ids.includes(challenge.id) && challenge.active);
+    data.nWaveIds = newData.nightwave.activeChallenges
+      .filter(challenge => challenge.active)
+      .map(challenge => challenge.id);
+    data.nightwave = nWaveChallenges.length
+      ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
+      : undefined;
+    if (data.nightwave) {
+      data.nightwave.activeChallenges = nWaveChallenges;
+    }
+  }
+}
+
 /**
  * Notifier for alerts, invasions, etc.
  *   TODO: remove dependence on 'bot', use something like https://github.com/spec-tacles/rest.js
@@ -100,122 +154,75 @@ class Notifier {
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
-    let notifiedIds = [];
     const ids = await this.getNotifiedIds(platform);
     // Set up data to notify
-    const acolytesToNotify = newData.persistentEnemies
-      .filter(e => !ids.includes(e.pid));
-    const alertsToNotify = newData.alerts
-      .filter(a => !ids.includes(a.id) && !a.expired);
-    const baroToNotify = newData.voidTrader && !ids.includes(newData.voidTrader.psId)
-      ? newData.voidTrader : undefined;
-    const conclaveToNotify = newData.conclaveChallenges
-      .filter(cc => !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
-    const dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
-    const eventsToNotify = newData.events
-      .filter(e => !ids.includes(e.id) && !e.expired);
-    const invasionsToNotify = newData.invasions
-      .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
-    const featuredDealsToNotify = newData.flashSales
-      .filter(d => !ids.includes(d.id) && d.isFeatured);
-    const fissuresToNotify = newData.fissures
-      .filter(f => !ids.includes(f.id) && !f.expired);
-    const newsToNotify = newData.news
-      .filter(n => !ids.includes(n.id)
-              && !n.primeAccess && !n.update && !n.stream && n.translations.en);
-    const popularDealsToNotify = newData.flashSales
-      .filter(d => !ids.includes(d.id) && d.isPopular);
-    const primeAccessToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
-    const sortieToNotify = newData.sortie && !ids.includes(newData.sortie.id)
-        && !newData.sortie.expired ? newData.sortie : undefined;
-    const syndicatesToNotify = newData.syndicateMissions.filter(m => !ids.includes(m.id));
-    const updatesToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
-    const streamsToNotify = newData.news
-      .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-    const tweetsToNotify = newData.twitter
-      ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
-    const cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
-    const earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
-    const vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
-
-    let nightwave;
-    let nWaveIds = [];
-
-    if (newData.nightwave) {
-      const nWaveChallenges = newData.nightwave.activeChallenges
-        .filter(challenge => !ids.includes(challenge.id) && challenge.active);
-      nWaveIds = newData.nightwave.activeChallenges
-        .filter(challenge => challenge.active)
-        .map(challenge => challenge.id);
-      nightwave = nWaveChallenges.length
-        ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
-        : undefined;
-      if (nightwave) {
-        nightwave.activeChallenges = nWaveChallenges;
-      }
-    }
+    const {
+      alerts, dailyDeals, events, fissures, flashSales,
+      invasions, news, acolytes, sortie, syndicateMissions, baro,
+      cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
+      cetusCycleChange, earthCycleChange, vallisCycleChange,
+      featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
+    } = buildNotifiableData(ids, newData);
 
     // Concat all notified ids
-    notifiedIds = notifiedIds
-      .concat(newData.alerts.map(a => a.id))
-      .concat(newData.conclaveChallenges.map(c => c.id))
-      .concat(newData.dailyDeals.map(d => d.id))
-      .concat(newData.events.map(e => e.id))
-      .concat(newData.fissures.map(f => f.id))
-      .concat(newData.flashSales.map(d => d.id))
-      .concat(newData.invasions.map(i => i.id))
-      .concat(newData.news.map(n => n.id))
-      .concat(newData.persistentEnemies.map(p => p.pid))
-      .concat(newData.sortie ? [newData.sortie.id] : [])
-      .concat(newData.syndicateMissions.map(m => m.id))
-      .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
-      .concat([newData.cetusCycle.id])
-      .concat([newData.earthCycle.id])
-      .concat([newData.vallisCycle.id])
-      .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : [])
-      .concat(nWaveIds);
+    const notifiedIds = []
+      .concat(alerts.map(a => a.id))
+      .concat(conclave.map(c => c.id))
+      .concat(dailyDeals.map(d => d.id))
+      .concat(events.map(e => e.id))
+      .concat(fissures.map(f => f.id))
+      .concat(flashSales.map(d => d.id))
+      .concat(invasions.map(i => i.id))
+      .concat(news.map(n => n.id))
+      .concat(acolytes.map(p => p.pid))
+      .concat(sortie ? [sortie.id] : [])
+      .concat(syndicateMissions.map(m => m.id))
+      .concat(baro ? [`${baro.id}${baro.inventory.length}`] : [])
+      .concat([cetusCycle.id])
+      .concat([earthCycle.id])
+      .concat([vallisCycle.id])
+      .concat(tweets ? tweets.map(t => t.uniqueId) : [])
+      .concat(nightwave && nightwave.activeChallenges ? nightwave.activeChallenges.map(c => c.id) : []);
 
     // Send all notifications
     try {
-      await this.sendAcolytes(acolytesToNotify, platform);
-      if (baroToNotify) {
-        this.sendBaro(baroToNotify, platform);
+      await this.sendAcolytes(acolytes, platform);
+      if (baro) {
+        this.sendBaro(baro, platform);
       }
-      if (conclaveToNotify && conclaveToNotify.length > 0) {
-        this.sendConclaveDailies(conclaveToNotify, platform);
-        await this.sendConclaveWeeklies(conclaveToNotify, platform);
+      if (conclave && conclave.length > 0) {
+        this.sendConclaveDailies(conclave, platform);
+        await this.sendConclaveWeeklies(conclave, platform);
       }
-      if (tweetsToNotify && tweetsToNotify.length > 0) {
-        this.sendTweets(tweetsToNotify, platform);
+      if (tweets && tweets.length > 0) {
+        this.sendTweets(tweets, platform);
       }
-      this.sendDarvo(dailyDealsToNotify, platform);
-      this.sendEvent(eventsToNotify, platform);
-      this.sendFeaturedDeals(featuredDealsToNotify, platform);
-      this.sendFissures(fissuresToNotify, platform);
-      this.sendNews(newsToNotify, platform);
-      this.sendStreams(streamsToNotify, platform);
-      this.sendPopularDeals(popularDealsToNotify, platform);
-      this.sendPrimeAccess(primeAccessToNotify, platform);
-      this.sendInvasions(invasionsToNotify, platform);
-      if (sortieToNotify) {
-        await this.sendSortie(sortieToNotify, platform);
+      this.sendDarvo(dailyDeals, platform);
+      this.sendEvent(events, platform);
+      this.sendFeaturedDeals(featuredDeals, platform);
+      this.sendFissures(fissures, platform);
+      this.sendNews(news, platform);
+      this.sendStreams(streams, platform);
+      this.sendPopularDeals(popularDeals, platform);
+      this.sendPrimeAccess(primeAccess, platform);
+      this.sendInvasions(invasions, platform);
+      if (sortie) {
+        await this.sendSortie(sortie, platform);
       }
-      if (syndicatesToNotify && syndicatesToNotify.length > 0) {
-        await this.sendSyndicates(syndicatesToNotify, platform);
+      if (syndicates && syndicates.length > 0) {
+        await this.sendSyndicates(syndicates, platform);
       }
       const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
       if (ostron) {
         // eslint-disable-next-line no-param-reassign
-        newData.cetusCycle.bountyExpiry = ostron.expiry;
+        cetusCycle.bountyExpiry = ostron.expiry;
       }
-      await this.sendCetusCycle(newData.cetusCycle, platform, cetusCycleChange);
-      await this.sendEarthCycle(newData.earthCycle, platform, earthCycleChange);
+      await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange);
+      await this.sendEarthCycle(earthCycle, platform, earthCycleChange);
 
-      await this.sendVallisCycle(newData.vallisCycle, platform, vallisCycleChange);
-      this.sendUpdates(updatesToNotify, platform);
-      await this.sendAlerts(alertsToNotify, platform);
+      await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange);
+      this.sendUpdates(updates, platform);
+      await this.sendAlerts(alerts, platform);
       await this.sendNightwave(nightwave, platform);
     } catch (e) {
       this.logger.error(e);
