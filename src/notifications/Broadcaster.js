@@ -1,7 +1,6 @@
 'use strict';
 
 const { resolveRoles } = require('../CommonFunctions');
-const logger = require('../Logger');
 
 const makePingsMentionable = async (ping, { guild, client }) => {
   if (guild.members.get(client.user.id).hasPermission('MANAGE_ROLES', false, true, true)) {

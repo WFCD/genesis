@@ -67,11 +67,10 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-// const safeArr = (d) => d || [];
-
-function buildNotifiableData(ids, newData, platform) {
+function buildNotifiableData(newData, platform) {
   const data = {
-    acolytes: newData.persistentEnemies.filter(e => !ids.includes(e.pid)),
+    acolytes: newData.persistentEnemies
+      .filter(e => between(e.lastDiscoveredAt, platform)),
     alerts: newData.alerts
       .filter(a => !a.expired && between(a.activation, platform)),
     baro: newData.voidTrader && between(newData.voidTrader.activation, platform)
@@ -105,9 +104,7 @@ function buildNotifiableData(ids, newData, platform) {
       .filter(n => n.stream && between(n.activation, platform)),
     syndicateM: newData.syndicateMissions
       .filter(m => between(m.activation, platform)),
-    tweets: newData.twitter
-      ? newData.twitter.filter(t => !ids.includes(t.uniqueId))
-      : [],
+    tweets: newData.twitter ? newData.twitter.filter(t => t) : [],
     updates: newData.news
       .filter(n => n.update && !n.stream && between(n.activation, platform)),
 
@@ -137,28 +134,6 @@ function buildNotifiableData(ids, newData, platform) {
     }
   }
 
-  // data.notifiableIds = []
-  //   .concat(safeArr(newData.persistentEnemies).map(p => p.id))
-  //   .concat(safeArr(newData.alerts).filter(a => between(a.activation, platform)).map(a => a.id))
-  //   .concat(safeArr(newData.conclaveChallenges).filter(a => between(a.activation, platform)).map(c => c.id))
-  //   .concat(safeArr(newData.dailyDeals).filter(a => between(a.activation, platform)).map(d => d.id))
-  //   .concat(safeArr(newData.events).filter(a => between(a.activation, platform)).map(e => e.id))
-  //   .concat(safeArr(newData.fissures).filter(a => between(a.activation, platform)).map(f => f.id))
-  //   .concat(safeArr(newData.flashSales).filter(a => between(a.activation, platform)).map(d => d.id))
-  //   .concat(safeArr(newData.invasions).filter(a => between(a.activation, platform)).map(i => i.id))
-  //   .concat(safeArr(newData.news).filter(a => between(a.date, platform)).map(n => n.id))
-  //   .concat(newData.sortie ? [newData.sortie.id] : [])
-  //   .concat(newData.syndicateMissions.filter(a => between(a.activation, platform)).map(m => m.id))
-  //   .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
-  //   .concat([newData.cetusCycle.id])
-  //   .concat([newData.earthCycle.id])
-  //   .concat([newData.vallisCycle.id])
-  //   .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : [])
-  //   .concat(newData.nightwave && newData.nightwave.activeChallenges
-  //     ? newData.nightwave.activeChallenges
-  //       .filter(a => between(a.activation, platform))
-  //       .map(c => c.id)
-  //     : []);
   return data;
 }
 
@@ -218,7 +193,6 @@ class Notifier {
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
-    // const ids = await this.getNotifiedIds(platform);
     // Set up data to notify
     const {
       alerts, dailyDeals, events, fissures,
@@ -226,14 +200,12 @@ class Notifier {
       cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
       cetusCycleChange, earthCycleChange, vallisCycleChange,
       featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-      // notifiableIds,
-    } = buildNotifiableData([], newData, platform);
+    } = buildNotifiableData(newData, platform);
 
 
-    // logger.info('[N] Built ids');
     // Send all notifications
     try {
-      // logger.info('[N] sending new data...');
+      logger.debug('[N] sending new data...');
       await this.sendAcolytes(acolytes, platform);
       if (baro) {
         this.sendBaro(baro, platform);
@@ -265,28 +237,9 @@ class Notifier {
     } catch (e) {
       logger.error(e);
     } finally {
-      // await this.updateNotified(notifiableIds, platform);
       beats[platform].lastUpdate = Date.now();
     }
   }
-
-  /**
-   * Get the list of notified ids
-   * @param  {string} platform Platform to get notified ids for
-   * @returns {Array}
-   */
-  // async getNotifiedIds(platform) {
-  //   return this.bot.settings.getNotifiedIds(platform);
-  // }
-
-  /**
-   * Set the notified ids for a given platform and shard id
-   * @param {JSON} ids list of oids that have been notifiedIds
-   * @param {string} platform    platform corresponding to notified ids
-   */
-  // async updateNotified(ids, platform) {
-  //   return this.settings.setNotifiedIds(platform, ids);
-  // }
 
   async sendAcolytes(newAcolytes, platform) {
     await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Enemy(
