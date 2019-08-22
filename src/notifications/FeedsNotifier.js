@@ -6,12 +6,12 @@ const Broadcaster = require('./Broadcaster');
 const RSSEmbed = require('../embeds/RSSEmbed');
 const { platforms } = require('../CommonFunctions');
 const feeds = require('../resources/rssFeeds');
+const logger = require('../Logger');
 
 class FeedsNotifier {
   constructor({
-    logger, client, settings, messageManager,
+    client, settings, messageManager,
   }) {
-    this.logger = logger;
     this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard` });
 
     feeds.forEach((feed) => {
@@ -24,16 +24,15 @@ class FeedsNotifier {
       client,
       settings,
       messageManager,
-      logger,
     });
-    this.logger.debug('Shard RSS Notifier ready.');
+    logger.debug('Cluster RSS Notifier ready.');
 
-    this.feeder.on('error', this.logger.debug);
+    this.feeder.on('error', logger.debug);
 
     this.feeder.on('new-item', (item) => {
       try {
         if (Object.keys(item.image).length) {
-          this.logger.debug(JSON.stringify(item.image));
+          logger.debug(JSON.stringify(item.image));
         }
 
         if (new Date(item.pubDate).getTime() > this.start) {
@@ -44,7 +43,7 @@ class FeedsNotifier {
           });
         }
       } catch (error) {
-        this.logger.error(error);
+        logger.error(error);
       }
     });
   }

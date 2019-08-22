@@ -104,15 +104,14 @@ class PingsQueries {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-        .append(items && items.length > 0
+        .append(items && items.length
           ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
         .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
-        .append(SQL`
-        WHERE type_notifications.type = ${String(type)}
-          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardCount}) in (${this.bot.shards})
+        .append(SQL` WHERE type_notifications.type = ${String(type)}
+          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardTotal}) in (${this.bot.shards})
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
-        .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
+        .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return (await this.db.query(query))[0];
     } catch (e) {
@@ -136,14 +135,14 @@ class PingsQueries {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-        .append(items && items.length > 0
+        .append(items && items.length
           ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
         .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
         .append(SQL`
         WHERE type_notifications.type = ${String(type)}
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
-        .append(items && items.length > 0 ? SQL`AND item_notifications.item IN (${items})
+        .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return (await this.db.query(query))[0];
     } catch (e) {
@@ -165,13 +164,12 @@ class PingsQueries {
   /**
    * Set the notified ids for a given platform and shard id
    * @param {string} platform    platform corresponding to notified ids
-   * @param {number} shardId     shard id corresponding to notified ids
    * @param {JSON} notifiedIds list of oids that have been notifiedIds
    * @returns {Promise}
    */
-  async setNotifiedIds(platform, shardId, notifiedIds) {
+  async setNotifiedIds(platform, notifiedIds) {
     const query = SQL`INSERT INTO notified_ids VALUES
-      (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
+      (${this.clusterId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
     return this.db.query(query);
   }
@@ -179,13 +177,12 @@ class PingsQueries {
   /**
    * Get list of notified ids for the given platform and shard id
    * @param  {string} platform Platform
-   * @param  {number} shardId  Identifier of the corresponding shard
    * @returns {Promise.<Array>} Array of notified oids
    */
-  async getNotifiedIds(platform, shardId) {
+  async getNotifiedIds(platform) {
     const query = SQL`SELECT id_list
       FROM notified_ids
-      WHERE shard_id=${shardId} AND platform=${platform};`;
+      WHERE shard_id=${this.clusterId} AND platform=${platform};`;
     const res = await this.db.query(query);
     if (res[0].length === 0) {
       return [];

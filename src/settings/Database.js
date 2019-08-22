@@ -144,6 +144,20 @@ class Database {
         const qInstance = new QClass(this.db);
         copyChildrenQueries(qInstance);
       });
+
+    this.clusterId = process.env.CLUSTER_ID || 0;
+  }
+
+  debugQuery(query) {
+    const { strings, values } = JSON.parse(JSON.stringify(query));
+    const tokens = [];
+    strings.forEach((str, ind) => {
+      tokens.push(JSON.stringify(str));
+      if (values[ind]) {
+        tokens.push(values[ind]);
+      }
+    });
+    this.logger.error(tokens.join(''));
   }
 
   /**

@@ -1,10 +1,13 @@
 'use strict';
 
 const Wikia = require('node-wikia');
-const fetch = require('../resources/Fetcher');
+const util = require('util');
 
+const exists = util.promisify(require('url-exists'));
+const fetch = require('../resources/Fetcher');
 const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');
+const logger = require('../Logger');
 
 const {
   createGroupedArray, apiBase, apiCdnBase, platforms,
@@ -30,6 +33,30 @@ const between = (activation, platform) => {
   return isBeforeCurr && isAfterLast;
 };
 
+async function getThumbnailForItem(query, fWiki) {
+  if (query && !fWiki) {
+    const fq = query
+      .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
+      .trim().toLowerCase();
+    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
+    if (results.length) {
+      const url = `${apiCdnBase}img/${results[0].imageName}`;
+      if (await exists(url)) {
+        return url;
+      }
+    }
+    try {
+      const articles = await warframe.getSearchList({ query: fq, limit: 1 });
+      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+      const item = Object.values(details.items)[0];
+      return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+  return undefined;
+}
+
 /**
  * Returns the number of milliseconds between now and a given date
  * @param   {string} d         The date from which the current time will be subtracted
@@ -40,51 +67,68 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-function buildNotifiableData(ids, newData) {
-  const data = {};
-  data.acolytes = newData.persistentEnemies
-    .filter(e => !ids.includes(e.pid));
-  data.alerts = newData.alerts
-    .filter(a => !ids.includes(a.id) && !a.expired);
-  data.baro = newData.voidTrader && !ids.includes(newData.voidTrader.psId)
-    ? newData.voidTrader : undefined;
-  data.conclave = newData.conclaveChallenges
-    .filter(cc => !ids.includes(cc.id) && !cc.expired && !cc.rootChallenge);
-  data.dailyDealsToNotify = newData.dailyDeals.filter(d => !ids.includes(d.id));
-  data.events = newData.events
-    .filter(e => !ids.includes(e.id) && !e.expired);
-  data.invasions = newData.invasions
-    .filter(i => !ids.includes(i.id) && i.rewardTypes.length);
-  data.featuredDeals = newData.flashSales
-    .filter(d => !ids.includes(d.id) && d.isFeatured);
-  data.fissures = newData.fissures
-    .filter(f => !ids.includes(f.id) && !f.expired);
-  data.news = newData.news
-    .filter(n => !ids.includes(n.id)
-            && !n.primeAccess && !n.update && !n.stream && n.translations.en);
-  data.popularDeals = newData.flashSales
-    .filter(d => !ids.includes(d.id) && d.isPopular);
-  data.primeAccess = newData.news
-    .filter(n => !ids.includes(n.id) && n.primeAccess && !n.stream && n.translations.en);
-  data.sortie = newData.sortie && !ids.includes(newData.sortie.id)
-      && !newData.sortie.expired ? newData.sortie : undefined;
-  data.syndicates = newData.syndicateMissions.filter(m => !ids.includes(m.id));
-  data.updates = newData.news
-    .filter(n => !ids.includes(n.id) && n.update && !n.stream && n.translations.en);
-  data.streams = newData.news
-    .filter(n => !ids.includes(n.id) && n.stream && n.translations.en);
-  data.tweets = newData.twitter
-    ? newData.twitter.filter(t => !ids.includes(t.uniqueId)) : [];
-  data.cetusCycleChange = !ids.includes(newData.cetusCycle.id) && newData.cetusCycle.expiry;
-  data.earthCycleChange = !ids.includes(newData.earthCycle.id) && newData.earthCycle.expiry;
-  data.vallisCycleChange = !ids.includes(newData.vallisCycle.id) && newData.vallisCycle.expiry;
+// const safeArr = (d) => d || [];
 
+function buildNotifiableData(ids, newData, platform) {
+  const data = {
+    acolytes: newData.persistentEnemies.filter(e => !ids.includes(e.pid)),
+    alerts: newData.alerts
+      .filter(a => !a.expired && between(a.activation, platform)),
+    baro: newData.voidTrader && between(newData.voidTrader.activation, platform)
+      ? newData.voidTrader
+      : undefined,
+    conclave: newData.conclaveChallenges
+      .filter(cc => !cc.expired
+        && !cc.rootChallenge && between(cc.activation, platform)),
+    dailyDeals: newData.dailyDeals
+      .filter(d => between(d.activation, platform)),
+    events: newData.events
+      .filter(e => !e.expired && between(e.activation, platform)),
+    invasions: newData.invasions
+      .filter(i => i.rewardTypes.length && between(i.activation, platform)),
+    featuredDeals: newData.flashSales
+      .filter(d => d.isFeatured && between(d.activation, platform)),
+    fissures: newData.fissures
+      .filter(f => !f.expired && between(f.activation, platform)),
+    news: newData.news
+      .filter(n => !n.primeAccess
+        && !n.update && !n.stream && between(n.date, platform)),
+    popularDeals: newData.flashSales
+      .filter(d => d.isPopular && between(d.activation, platform)),
+    primeAccess: newData.news
+      .filter(n => n.primeAccess && !n.stream && between(n.date, platform)),
+    sortie: newData.sortie && !newData.sortie.expired
+      && between(newData.sortie.activation, platform)
+      ? newData.sortie
+      : undefined,
+    streams: newData.news
+      .filter(n => n.stream && between(n.activation, platform)),
+    syndicateM: newData.syndicateMissions
+      .filter(m => between(m.activation, platform)),
+    tweets: newData.twitter
+      ? newData.twitter.filter(t => !ids.includes(t.uniqueId))
+      : [],
+    updates: newData.news
+      .filter(n => n.update && !n.stream && between(n.activation, platform)),
+
+    /* Cycles data */
+    cetusCycleChange: between(newData.cetusCycle.activation, platform),
+    earthCycleChange: between(newData.earthCycle.activation, platform),
+    vallisCycleChange: between(newData.vallisCycle.activation, platform),
+    cetusCycle: newData.cetusCycle,
+    earthCycle: newData.earthCycle,
+    vallisCycle: newData.vallisCycle,
+  };
+
+  const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
+  if (ostron) {
+    data.cetusCycle.bountyExpiry = ostron.expiry;
+  }
+
+  /* Nightwave */
   if (newData.nightwave) {
     const nWaveChallenges = newData.nightwave.activeChallenges
-      .filter(challenge => !ids.includes(challenge.id) && challenge.active);
-    data.nWaveIds = newData.nightwave.activeChallenges
-      .filter(challenge => challenge.active)
-      .map(challenge => challenge.id);
+      .filter(challenge => challenge.active && between(challenge.activation, platform));
     data.nightwave = nWaveChallenges.length
       ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
       : undefined;
@@ -92,6 +136,30 @@ function buildNotifiableData(ids, newData) {
       data.nightwave.activeChallenges = nWaveChallenges;
     }
   }
+
+  // data.notifiableIds = []
+  //   .concat(safeArr(newData.persistentEnemies).map(p => p.id))
+  //   .concat(safeArr(newData.alerts).filter(a => between(a.activation, platform)).map(a => a.id))
+  //   .concat(safeArr(newData.conclaveChallenges).filter(a => between(a.activation, platform)).map(c => c.id))
+  //   .concat(safeArr(newData.dailyDeals).filter(a => between(a.activation, platform)).map(d => d.id))
+  //   .concat(safeArr(newData.events).filter(a => between(a.activation, platform)).map(e => e.id))
+  //   .concat(safeArr(newData.fissures).filter(a => between(a.activation, platform)).map(f => f.id))
+  //   .concat(safeArr(newData.flashSales).filter(a => between(a.activation, platform)).map(d => d.id))
+  //   .concat(safeArr(newData.invasions).filter(a => between(a.activation, platform)).map(i => i.id))
+  //   .concat(safeArr(newData.news).filter(a => between(a.date, platform)).map(n => n.id))
+  //   .concat(newData.sortie ? [newData.sortie.id] : [])
+  //   .concat(newData.syndicateMissions.filter(a => between(a.activation, platform)).map(m => m.id))
+  //   .concat(newData.voidTrader ? [`${newData.voidTrader.id}${newData.voidTrader.inventory.length}`] : [])
+  //   .concat([newData.cetusCycle.id])
+  //   .concat([newData.earthCycle.id])
+  //   .concat([newData.vallisCycle.id])
+  //   .concat(newData.twitter ? newData.twitter.map(t => t.uniqueId) : [])
+  //   .concat(newData.nightwave && newData.nightwave.activeChallenges
+  //     ? newData.nightwave.activeChallenges
+  //       .filter(a => between(a.activation, platform))
+  //       .map(c => c.id)
+  //     : []);
+  return data;
 }
 
 /**
@@ -112,16 +180,14 @@ class Notifier {
    */
   constructor(bot) {
     this.bot = bot;
-    this.logger = bot.logger;
     this.settings = bot.settings;
     this.client = bot.client;
     this.broadcaster = new Broadcaster({
       client: bot.client,
       settings: this.settings,
       messageManager: bot.messageManager,
-      logger: bot.logger,
     });
-    this.logger.info('[Notifier] Ready');
+    logger.info('[N] Ready');
 
     platforms.forEach((p) => {
       beats[p] = {
@@ -136,12 +202,10 @@ class Notifier {
    */
   async start() {
     for (const k of Object.keys(this.bot.worldStates)) {
-      if (k === 'pc') {
-        this.bot.worldStates[k].on('newData', async (platform, newData) => {
-          this.logger.info(`[Notifier] Processing new data for ${platform}`);
-          await this.onNewData(platform, newData);
-        });
-      }
+      this.bot.worldStates[k].on('newData', async (platform, newData) => {
+        logger.debug(`[N] Processing new data for ${platform}`);
+        await this.onNewData(platform, newData);
+      });
     }
   }
 
@@ -154,38 +218,22 @@ class Notifier {
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
-    const ids = await this.getNotifiedIds(platform);
+    // const ids = await this.getNotifiedIds(platform);
     // Set up data to notify
     const {
-      alerts, dailyDeals, events, fissures, flashSales,
-      invasions, news, acolytes, sortie, syndicateMissions, baro,
+      alerts, dailyDeals, events, fissures,
+      invasions, news, acolytes, sortie, syndicateM, baro,
       cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
       cetusCycleChange, earthCycleChange, vallisCycleChange,
       featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    } = buildNotifiableData(ids, newData);
+      // notifiableIds,
+    } = buildNotifiableData([], newData, platform);
 
-    // Concat all notified ids
-    const notifiedIds = []
-      .concat(alerts.map(a => a.id))
-      .concat(conclave.map(c => c.id))
-      .concat(dailyDeals.map(d => d.id))
-      .concat(events.map(e => e.id))
-      .concat(fissures.map(f => f.id))
-      .concat(flashSales.map(d => d.id))
-      .concat(invasions.map(i => i.id))
-      .concat(news.map(n => n.id))
-      .concat(acolytes.map(p => p.pid))
-      .concat(sortie ? [sortie.id] : [])
-      .concat(syndicateMissions.map(m => m.id))
-      .concat(baro ? [`${baro.id}${baro.inventory.length}`] : [])
-      .concat([cetusCycle.id])
-      .concat([earthCycle.id])
-      .concat([vallisCycle.id])
-      .concat(tweets ? tweets.map(t => t.uniqueId) : [])
-      .concat(nightwave && nightwave.activeChallenges ? nightwave.activeChallenges.map(c => c.id) : []);
 
+    // logger.info('[N] Built ids');
     // Send all notifications
     try {
+      // logger.info('[N] sending new data...');
       await this.sendAcolytes(acolytes, platform);
       if (baro) {
         this.sendBaro(baro, platform);
@@ -206,28 +254,18 @@ class Notifier {
       this.sendPopularDeals(popularDeals, platform);
       this.sendPrimeAccess(primeAccess, platform);
       this.sendInvasions(invasions, platform);
-      if (sortie) {
-        await this.sendSortie(sortie, platform);
-      }
-      if (syndicates && syndicates.length > 0) {
-        await this.sendSyndicates(syndicates, platform);
-      }
-      const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
-      if (ostron) {
-        // eslint-disable-next-line no-param-reassign
-        cetusCycle.bountyExpiry = ostron.expiry;
-      }
-      await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange);
-      await this.sendEarthCycle(earthCycle, platform, earthCycleChange);
-
-      await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange);
+      this.sendSortie(sortie, platform);
+      this.sendSyndicates(syndicateM, platform);
+      this.sendCetusCycle(cetusCycle, platform, cetusCycleChange);
+      this.sendEarthCycle(earthCycle, platform, earthCycleChange);
+      this.sendVallisCycle(vallisCycle, platform, vallisCycleChange);
       this.sendUpdates(updates, platform);
-      await this.sendAlerts(alerts, platform);
+      this.sendAlerts(alerts, platform);
       await this.sendNightwave(nightwave, platform);
     } catch (e) {
-      this.logger.error(e);
+      logger.error(e);
     } finally {
-      await this.updateNotified(notifiedIds, platform);
+      // await this.updateNotified(notifiableIds, platform);
       beats[platform].lastUpdate = Date.now();
     }
   }
@@ -237,43 +275,18 @@ class Notifier {
    * @param  {string} platform Platform to get notified ids for
    * @returns {Array}
    */
-  async getNotifiedIds(platform) {
-    return this.bot.settings.getNotifiedIds(platform, this.bot.clusterId);
-  }
+  // async getNotifiedIds(platform) {
+  //   return this.bot.settings.getNotifiedIds(platform);
+  // }
 
   /**
    * Set the notified ids for a given platform and shard id
    * @param {JSON} ids list of oids that have been notifiedIds
    * @param {string} platform    platform corresponding to notified ids
    */
-  async updateNotified(ids, platform) {
-    await this.settings.setNotifiedIds(platform, this.bot.clusterId, ids);
-  }
-
-  async getThumbnailForItem(query, fWiki) {
-    if (query && !fWiki) {
-      const fq = query
-        .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
-        .trim().toLowerCase();
-      const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
-      if (results.length) {
-        const url = `${apiCdnBase}img/${results[0].imageName}`;
-        const getImg = await fetch(url);
-        if (getImg.ok) {
-          return url;
-        }
-      }
-      try {
-        const articles = await warframe.getSearchList({ query: fq, limit: 1 });
-        const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-        const item = Object.values(details.items)[0];
-        return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-      } catch (e) {
-        this.logger.error(e);
-      }
-    }
-    return undefined;
-  }
+  // async updateNotified(ids, platform) {
+  //   return this.settings.setNotifiedIds(platform, ids);
+  // }
 
   async sendAcolytes(newAcolytes, platform) {
     await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Enemy(
@@ -291,12 +304,12 @@ class Notifier {
       const embed = new embeds.Alert(this.bot, [a], platform, i18n);
       embed.locale = locale;
       try {
-        const thumb = await this.getThumbnailForItem(a.mission.reward.itemString);
+        const thumb = await getThumbnailForItem(a.mission.reward.itemString);
         if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
       } catch (e) {
-        this.logger.error(e);
+        logger.error(e);
       } finally {
         // Broadcast even if the thumbnail fails to fetch
         await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
@@ -306,8 +319,6 @@ class Notifier {
 
   async sendBaro(newBaro, platform) {
     const embed = new embeds.VoidTrader(this.bot, newBaro, platform);
-    if (!(newBaro.activation && between(newBaro.activation, platform))) return;
-
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
       fields.forEach(async (fieldGroup) => {
@@ -331,8 +342,7 @@ class Notifier {
 
   async sendConclaveDailies(newDailies, platform) {
     const dailies = newDailies.filter(challenge => challenge.category === 'day');
-    if (dailies.length > 0 && (dailies[0].activation
-      && between(dailies[0].activation, platform))) {
+    if (dailies.length > 0 && dailies[0].activation) {
       const embed = new embeds.Conclave(this.bot, dailies, 'day', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(dailies[0].expiry));
     }
@@ -340,23 +350,18 @@ class Notifier {
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     const weeklies = newWeeklies.filter(challenge => challenge.category === 'week');
-    if (weeklies.length > 0 && (weeklies[0].activation
-      && between(weeklies[0].activation, platform))) {
+    if (weeklies.length > 0) {
       const embed = new embeds.Conclave(this.bot, weeklies, 'week', platform);
       await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(weeklies[0].expiry));
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map((d) => {
-      if (!(d.activation
-        && between(d.activation, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry));
-    }));
+    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
   }
 
-  async sendEarthCycle(newEarthCycle, platform, cetusCycleChange) {
-    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
+  async sendEarthCycle(newEarthCycle, platform, earthCycleChange) {
+    const minutesRemaining = earthCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
     const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     await this.broadcaster.broadcast(
       new embeds.Cycle(this.bot, newEarthCycle),
@@ -365,20 +370,11 @@ class Notifier {
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents.map((e) => {
-      if (!(e.activation
-        && between(e.activation, platform))) return false;
-
-      return this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry));
-    }));
+    await Promise.all(newEvents.map(e => this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    await Promise.all(newFeaturedDeals.map((d) => {
-      if (!(d.activation
-        && between(d.activation, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry));
-    }));
+    await Promise.all(newFeaturedDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
   }
 
   async sendFissures(newFissures, platform) {
@@ -386,8 +382,6 @@ class Notifier {
   }
 
   async sendFissure(fissure, platform) {
-    if (!(fissure.activation
-      && between(fissure.activation, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Fissure(this.bot, [fissure], platform, i18n);
       embed.locale = locale;
@@ -401,14 +395,12 @@ class Notifier {
   }
 
   async sendInvasion(invasion, platform) {
-    if (!(invasion.activation
-      && between(invasion.activation, platform))) return;
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
       embed.locale = locale;
       try {
         const reward = invasion.attackerReward.itemString || invasion.defenderReward.itemString;
-        const thumb = await this.getThumbnailForItem(reward);
+        const thumb = await getThumbnailForItem(reward);
         if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
           embed.thumbnail.url = thumb;
         }
@@ -421,10 +413,7 @@ class Notifier {
   }
 
   async sendNews(newNews, platform) {
-    await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news');
-    }));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news')));
   }
 
   async sendNightwave(nightwave, platform) {
@@ -459,40 +448,30 @@ class Notifier {
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    await Promise.all(newPopularDeals.map((d) => {
-      if (!(d.date && between(d.date, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000);
-    }));
+    await Promise.all(newPopularDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess');
-    }));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
   async sendSortie(newSortie, platform) {
-    if (!(newSortie.activation
-      && between(newSortie.activation, platform))) return;
+    if (!newSortie) return;
     const embed = new embeds.Sortie(this.bot, newSortie, platform);
     try {
-      const thumb = await this.getThumbnailForItem(newSortie.boss, true);
+      const thumb = await getThumbnailForItem(newSortie.boss, true);
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
     } catch (e) {
-      this.logger.error(e);
+      logger.error(e);
     } finally {
       await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
     }
   }
 
   async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map((i) => {
-      if (!(i.date && between(i.date, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams');
-    }));
+    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams')));
   }
 
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
@@ -502,6 +481,7 @@ class Notifier {
   }
 
   async sendSyndicates(newSyndicates, platform) {
+    if (!newSyndicates || !newSyndicates[0]) return;
     for (const {
       key, display, prefix, timeout, notifiable,
     } of syndicates) {
@@ -520,10 +500,7 @@ class Notifier {
   }
 
   async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map((i) => {
-      if (!(i.date && between(i.date, platform))) return false;
-      return this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates');
-    }));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange) {

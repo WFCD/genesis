@@ -30,7 +30,16 @@ const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
       } else {
         response.on('data', chunk => body.push(chunk));
         response.on('end', () => {
-          resolve(JSON.parse(body.join('')));
+          let r = body.join('');
+          try {
+            r = JSON.parse(r);
+          } catch (e) {
+            logger.error(`Failed to parse ${url}`);
+            logger.debug(r);
+            r = {};
+          } finally {
+            resolve(r);
+          }
         });
       }
     });

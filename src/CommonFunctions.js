@@ -204,7 +204,7 @@ const termToTrackable = (term) => {
     trackable.items = term;
     return trackable;
   }
-  return undefined;
+  return trackable;
 };
 
 /**
