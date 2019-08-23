@@ -115,6 +115,8 @@ function buildNotifiableData(newData, platform) {
     cetusCycle: newData.cetusCycle,
     earthCycle: newData.earthCycle,
     vallisCycle: newData.vallisCycle,
+    arbitration: between(newData.arbitration.activation, platform)
+      && newData.arbitration,
   };
 
   const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
@@ -268,6 +270,17 @@ class Notifier {
         await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
       }
     });
+  }
+
+  async sendArbitration(arbitration, platform) {
+    if (!arbitration) return;
+
+    for (const [locale, i18n] of i18ns) {
+      const embed = new embeds.Arbitration(this.bot, arbitration, platform, i18n);
+      embed.locale = locale;
+      const type = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
+      await this.broadcaster.broadcast(embed, platform, type);
+    }
   }
 
   async sendBaro(newBaro, platform) {

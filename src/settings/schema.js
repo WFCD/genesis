@@ -49,7 +49,7 @@ module.exports = [
   );`,
   `CREATE TABLE IF NOT EXISTS pings (
     guild_id BIGINT UNSIGNED NOT NULL,
-    item_or_type VARCHAR(20) NOT NULL,
+    item_or_type VARCHAR(50) NOT NULL,
     text TEXT NOT NULL,
     PRIMARY KEY (guild_id, item_or_type)
   );`,

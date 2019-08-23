@@ -3,6 +3,7 @@
 /* eslint-disable global-require */
 const embeds = {
   Alert: require('../embeds/AlertEmbed'),
+  Arbitration: require('../embeds/ArbitrationEmbed'),
   Conclave: require('../embeds/ConclaveChallengeEmbed'),
   Darvo: require('../embeds/DarvoEmbed'),
   Enemy: require('../embeds/EnemyEmbed'),
