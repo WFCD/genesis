@@ -115,8 +115,9 @@ function buildNotifiableData(newData, platform) {
     cetusCycle: newData.cetusCycle,
     earthCycle: newData.earthCycle,
     vallisCycle: newData.vallisCycle,
-    arbitration: between(newData.arbitration.activation, platform)
-      && newData.arbitration,
+    arbitration: newData.arbitration && between(newData.arbitration.activation, platform)
+      ? newData.arbitration
+      : undefined,
   };
 
   const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
