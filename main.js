@@ -1,7 +1,5 @@
 'use strict';
 
-// const cluster = require('cluster');
-
 const genManifest = require('./src/tools/generateManifest.js');
 const Genesis = require('./src/bot');
 
