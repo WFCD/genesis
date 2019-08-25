@@ -62,7 +62,7 @@ class Genesis {
         compress: true,
       },
       shards,
-      totalShardCount: shards.length,
+      totalShardCount: process.env.SHARDS || 1,
       retryLimit: 2,
       disabledEvents: [
         'VOICE_SERVER_UPDATE',
