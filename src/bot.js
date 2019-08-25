@@ -6,7 +6,7 @@ const WorldStateCache = require('./WorldStateCache');
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
-const Tracker = require('./Tracker');
+// const Tracker = require('./Tracker');
 
 const MessageManager = require('./settings/MessageManager');
 const Notifier = require('./notifications/Notifier');
@@ -173,7 +173,7 @@ class Genesis {
     this.shardTotal = process.env.SHARDS || 1;
     this.clusterId = process.env.CLUSTER_ID || 0;
     this.notifier = new Notifier(this);
-    this.tracker = new Tracker(this);
+    // this.tracker = new Tracker(this);
 
     if (process.env.CONTROL_WH_ID) {
       this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
