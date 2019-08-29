@@ -285,7 +285,7 @@ const stringFilter = chunk => chunk && chunk.length;
  * Field limit for chunked embeds
  * @type {Number}
  */
-const fieldLimit = 7;
+const fieldLimit = 5;
 
 /**
  * Default values for embeds
@@ -356,12 +356,12 @@ const createPageCollector = async (msg, pages, author) => {
   if (pages.length <= 1) return;
 
   let page = 1;
-  await msg.react('⏮');
+  // await msg.react('⏮');
   await msg.react('◀');
-  await msg.react('⏹');
+  // await msg.react('🛑');
   await msg.react('▶');
-  await msg.react('⏭');
-  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '⏹'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+  // await msg.react('⏭');
+  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '🛑'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
   const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
 
   collector.on('collect', async (reaction) => {
@@ -378,7 +378,7 @@ const createPageCollector = async (msg, pages, author) => {
       case '⏭':
         page = pages.length;
         break;
-      case '⏹':
+      case '🛑':
         msg.reactions.removeAll();
         clearTimeout(timeout);
         return;
