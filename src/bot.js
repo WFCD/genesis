@@ -1,17 +1,17 @@
 'use strict';
 
-const { Client, ShardClientUtil } = require('discord.js');
-const md = require('node-md-config');
+const { Client, WebhookClient } = require('discord.js');
 
 const WorldStateCache = require('./WorldStateCache');
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
-const Tracker = require('./Tracker');
+// const Tracker = require('./Tracker');
 
 const MessageManager = require('./settings/MessageManager');
 const Notifier = require('./notifications/Notifier');
 const Database = require('./settings/Database');
+const logger = require('./Logger');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
@@ -40,21 +40,17 @@ class Genesis {
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
    * @param  {Object}           [options]            Bot options
-   * @param  {number}           [options.shardId]    The shard ID of this instance
-   * @param  {number}           [options.shardCount] The total number of shards
    * @param  {string}           [options.prefix]     Prefix for calling the bot
    * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
+   * @param  {number[]}         [options.shards]     Ids of shards to control
+   * @param  {Object}           [options.commandManifest] Manifest of commands
    */
-  constructor(discordToken, logger, {
-    shardId = 0,
-    shardCount = 1,
+  constructor(discordToken, {
     prefix = process.env.PREFIX,
-    mdConfig = md,
     owner = null,
-    controlHook = null,
     commandManifest = null,
+    shards = [0],
   } = {}) {
-    logger.debug(`${shardId} (${shardCount})`);
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -65,8 +61,8 @@ class Genesis {
       ws: {
         compress: true,
       },
-      shards: shardId,
-      totalShardCount: shardCount,
+      shards,
+      totalShardCount: process.env.SHARDS || 1,
       retryLimit: 2,
       disabledEvents: [
         'VOICE_SERVER_UPDATE',
@@ -84,13 +80,10 @@ class Genesis {
         status: 'dnd',
         afk: false,
         activity: {
-          name: `Starting... (${shardId})`,
+          name: 'Starting...',
         },
       },
     });
-
-    this.shardId = shardId;
-    this.shardCount = shardCount;
 
     /**
      * Discord login token for is bot
@@ -121,13 +114,6 @@ class Genesis {
     this.prefix = prefix;
 
     /**
-     * The markdown settings
-     * @type {MarkdownSettings}
-     * @private
-     */
-    this.md = mdConfig;
-
-    /**
      * Whether or not the bot is ready to execute.
      * This allows stopping commands before servers and users are ready.
      * @type {boolean}
@@ -139,12 +125,6 @@ class Genesis {
      * @type {string}
      */
     this.owner = owner;
-
-    /**
-     * Shard client for communicating with other shards
-     * @type {Discord.ShardClientUtil}
-     */
-    this.shardClient = new ShardClientUtil(this.client);
 
     /**
      * Persistent storage for settings
@@ -164,31 +144,13 @@ class Genesis {
      */
     this.worldStates = {};
 
-    /**
-     * The platforms that Warframe exists for
-     * @type {Array.<string>}
-     */
-    this.platforms = ['pc', 'ps4', 'xb1', 'swi'];
-
     const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
-
-    this.platforms.forEach((platform) => {
-      this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
-    });
-
-    /**
-     * The languages that are useable for the bot
-     * @type {Array.<string>}
-     */
-    this.languages = ['en-us'];
+    ['pc', 'ps4', 'xb1', 'swi']
+      .forEach((platform) => {
+        this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
+      });
 
     this.ws = new WorldStateClient(this.logger);
-
-    this.tracker = new Tracker(this.logger, this.client, this.shardClient, {
-      shardId,
-      shardCount,
-    });
-
     this.messageManager = new MessageManager(this);
 
     /**
@@ -207,11 +169,15 @@ class Genesis {
      * @type {EventHandler}
      */
     this.eventHandler = new EventHandler(this);
-
-    // Notification emitter
+    this.shards = shards;
+    this.shardTotal = process.env.SHARDS || 1;
+    this.clusterId = process.env.CLUSTER_ID || 0;
     this.notifier = new Notifier(this);
+    // this.tracker = new Tracker(this);
 
-    this.controlHook = controlHook;
+    if (process.env.CONTROL_WH_ID) {
+      this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+    }
   }
 
   async setupHandlers() {

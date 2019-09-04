@@ -54,20 +54,6 @@ class Command {
     this.bot = bot;
 
     /**
-     * The markdown settings
-     * @type {MarkdownSettings}
-     * @private
-     */
-    this.md = bot.md;
-
-    /**
-     * Zero space whitespace character to prepend to any messages sent
-     * to prevent a command from inadvertantly being triggered.
-     * @type {string}
-     */
-    this.zSWC = '\u200B';
-
-    /**
      * The command manager for processing commands
      * @type {CommandManager}
      */

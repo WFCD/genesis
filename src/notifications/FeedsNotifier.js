@@ -6,14 +6,13 @@ const Broadcaster = require('./Broadcaster');
 const RSSEmbed = require('../embeds/RSSEmbed');
 const { platforms } = require('../CommonFunctions');
 const feeds = require('../resources/rssFeeds');
+const logger = require('../Logger');
 
 class FeedsNotifier {
   constructor({
-    logger, shardId, client, settings, messageManager,
+    client, settings, messageManager,
   }) {
-    this.logger = logger;
-    this.shardId = shardId;
-    this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard ${shardId}` });
+    this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard` });
 
     feeds.forEach((feed) => {
       this.feeder.add({ url: feed.url, timeout: 600000 });
@@ -25,16 +24,15 @@ class FeedsNotifier {
       client,
       settings,
       messageManager,
-      logger,
     });
-    this.logger.debug(`Shard ${shardId} RSS Notifier ready`);
+    logger.debug('Cluster RSS Notifier ready.');
 
-    this.feeder.on('error', this.logger.debug);
+    this.feeder.on('error', logger.debug);
 
     this.feeder.on('new-item', (item) => {
       try {
         if (Object.keys(item.image).length) {
-          this.logger.debug(JSON.stringify(item.image));
+          logger.debug(JSON.stringify(item.image));
         }
 
         if (new Date(item.pubDate).getTime() > this.start) {
@@ -45,7 +43,7 @@ class FeedsNotifier {
           });
         }
       } catch (error) {
-        this.logger.error(error);
+        logger.error(error);
       }
     });
   }

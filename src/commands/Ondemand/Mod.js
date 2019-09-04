@@ -58,7 +58,7 @@ class Mod extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.mod', 'mod', 'Search the Warframe Wiki for a mod\'s image');
     this.regex = new RegExp('^mod(.+)', 'i');
-    this.noResultStr = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
+    this.noResultStr = '```haskell\nNo result for search, Operator. Attempt another search query.```';
   }
 
   /**

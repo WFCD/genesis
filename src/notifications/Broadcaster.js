@@ -19,16 +19,14 @@ const makePingsMentionable = async (ping, { guild, client }) => {
 };
 
 const makePingsUnmentionable = async (roles) => {
-  const unmadePingable = [];
-  if (roles.map) {
-    await Promise.all(roles.map(async (role) => {
+  if (Array.isArray(roles)) {
+    for (const role in roles) {
       if (role && role.mentionable) {
-        await role.setMentionable(false, `${role.name} set unpingable`);
-        unmadePingable.push(role);
+        // eslint-disable-next-line
+        setTimeout(() => role.setMentionable(false, `${role.name} set unpingable`), 100);
       }
-    }));
+    }
   }
-  return unmadePingable;
 };
 
 /**
@@ -37,16 +35,14 @@ const makePingsUnmentionable = async (roles) => {
  * @param {Database} settings settings object for fetching data
  *    information about current channel, guild, and bot settings
  * @param {MessageManager} messageManager manages messages, including sending, deleing, and webhooks
- * @param {Logger|console} logger         Logger for errors and debugging
  */
 class Broadcaster {
   constructor({
-    client = undefined, settings = undefined, messageManager = undefined, logger = console,
+    client = undefined, settings = undefined, messageManager = undefined,
   }) {
     this.client = client;
     this.settings = settings;
     this.messageManager = messageManager;
-    this.logger = logger;
   }
 
   /**
@@ -55,11 +51,15 @@ class Broadcaster {
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
    * @param  {Array}  [items=[]] Items to broadcast
-   * @param {number} [deleteAfter=0] Amount of time to delete broadcast after
+   * @param  {number} [deleteAfter=0] Amount of time to delete broadcast after
    * @returns {Array.<Object>} values for successes
    */
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.settings.getNotifications(type, platform, items);
+    embed.bot = undefined; // eslint-disable-line no-param-reassign
+    // logger.info(`broadcasting ${embed.title} to ${channels.length} channels...`);
+    // logger.info('testing broadcasts...');
+    // logger.info(JSON.stringify(embed));
     return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
 

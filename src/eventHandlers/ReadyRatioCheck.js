@@ -9,7 +9,9 @@ let guildCheck = null; // I don't know where to put this
  * @param {Bot} self the bot
  */
 async function guildLeave(self) {
-  const [results] = await self.settings.getGuildRatios(self.bot.shardClient) || [];
+  const [results] = await self.settings.getGuildRatios(self.bot.shards) || [];
+  if (!results) return;
+
   const guilds = results.slice(0, 5);
   const owners = {};
   try {
@@ -27,9 +29,7 @@ async function guildLeave(self) {
       }
     });
     Object.keys(owners).forEach(async (id) => {
-      const user = self.client.users.has(id)
-        ? self.client.users.get(id)
-        : await self.client.fetchUser(id, true);
+      const user = await self.client.users.fetch(id);
       if (user) {
         try {
           await user.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''}
@@ -67,7 +67,7 @@ function guildRatioCheck(self) {
   });
 
   guilds.forEach((guild) => {
-    self.settings.addGuildRatio(self.client.shard, guild);
+    self.settings.addGuildRatio(guild.shard, guild);
   });
 
   guildCheck = setInterval(guildLeave, 10000, self);

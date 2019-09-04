@@ -23,7 +23,7 @@ class Wiki extends Command {
         parameters: ['topic'],
       },
     ];
-    this.noResult = `${this.md.codeMulti}No result for search, Operator. Attempt another search query.${this.md.blockEnd}`;
+    this.noResult = '```haskell\nNo result for search, Operator. Attempt another search query.```';
   }
 
   /**

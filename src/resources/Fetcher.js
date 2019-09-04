@@ -2,9 +2,7 @@
 
 const http = require('http');
 const https = require('https');
-const Logger = require('../Logger');
-
-const logger = new Logger();
+const logger = require('../Logger');
 
 const retryCodes = [429].concat((process.env.JSON_CACHE_RETRY_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
 
@@ -32,10 +30,15 @@ const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
       } else {
         response.on('data', chunk => body.push(chunk));
         response.on('end', () => {
+          let r = body.join('');
           try {
-            resolve(JSON.parse(body.join('')));
+            r = JSON.parse(r);
           } catch (e) {
-            logger.error(`failed to parse ${url}`);
+            logger.error(`Failed to parse ${url}`);
+            logger.debug(r);
+            r = {};
+          } finally {
+            resolve(r);
           }
         });
       }

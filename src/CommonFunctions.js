@@ -64,7 +64,7 @@ const duration = {
 };
 
 const missionTypes = require('./resources/missionTypes');
-// const factions = require('./resources/factions');
+const factions = require('./resources/factions');
 
 /**
  * Object describing all trackable events
@@ -83,8 +83,8 @@ const trackableEvents = {
   twitter: [],
   nightwave,
   rss: rssFeeds.map(feed => feed.key),
-  // arbitration: [],
-  // kuva: [],
+  arbitration: [],
+  kuva: [],
 };
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
@@ -102,12 +102,12 @@ twitter.types.forEach((type) => {
 
 Object.keys(missionTypes).forEach((type) => {
   // These will be re-enabled when arbitrations/kuva are ready
-  // if (missionTypes[type]) {
-  //   factions.forEach((faction) => {
-  //     trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
-  //   });
-  // }
-  // trackableEvents.kuva.push(`kuva.${type}`);
+  if (missionTypes[type]) {
+    factions.forEach((faction) => {
+      trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
+    });
+  }
+  trackableEvents.kuva.push(`kuva.${type}`);
 
   // Construct Fissure types
   fissures.tiers.forEach((tier) => {
@@ -124,7 +124,7 @@ Object.keys(missionTypes).forEach((type) => {
   });
 });
 trackableEvents.events.push(...trackableEvents.twitter, ...trackableEvents.fissures);
-// trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
+trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
 
 /**
  * Captures for commonly needed parameters
@@ -204,7 +204,7 @@ const termToTrackable = (term) => {
     trackable.items = term;
     return trackable;
   }
-  return undefined;
+  return trackable;
 };
 
 /**
@@ -285,7 +285,7 @@ const stringFilter = chunk => chunk && chunk.length;
  * Field limit for chunked embeds
  * @type {Number}
  */
-const fieldLimit = 7;
+const fieldLimit = 5;
 
 /**
  * Default values for embeds
@@ -356,12 +356,12 @@ const createPageCollector = async (msg, pages, author) => {
   if (pages.length <= 1) return;
 
   let page = 1;
-  await msg.react('⏮');
+  // await msg.react('⏮');
   await msg.react('◀');
-  await msg.react('⏹');
+  // await msg.react('🛑');
   await msg.react('▶');
-  await msg.react('⏭');
-  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '⏹'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+  // await msg.react('⏭');
+  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '🛑'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
   const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
 
   collector.on('collect', async (reaction) => {
@@ -378,7 +378,7 @@ const createPageCollector = async (msg, pages, author) => {
       case '⏭':
         page = pages.length;
         break;
-      case '⏹':
+      case '🛑':
         msg.reactions.removeAll();
         clearTimeout(timeout);
         return;

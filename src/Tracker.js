@@ -2,6 +2,8 @@
 
 const fetch = require('node-fetch');
 
+const logger = require('./Logger');
+
 const config = {
   updateInterval: process.env.TRACKERS_UPDATE_INTERVAL || 3660000,
   carbon: {
@@ -24,25 +26,36 @@ const config = {
 };
 
 /**
+ * Post the cachet heartbeat for the shardCount
+ */
+async function postHeartBeat() {
+  const parsedBody = await fetch(config.cachet.url, {
+    method: 'POST',
+    body: JSON.stringify({
+      value: 1,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Cachet-Token': config.cachet.token,
+    },
+  })
+    .then(data => data.json());
+  logger.debug(parsedBody);
+}
+
+/**
  * Describes a tracking service for updating remote sites
  * with server count for this bot
  */
 class Tracker {
   /**
-   * Constructs a simple tracking service with the given logger
-   * @param {Logger} logger          Simple logger for logging information
-   * @param {Client} client Discord Client for fetching statistucs from
-   * @param {ShardClientUtil} shardUtil Discord shard client util
+   * Constructs a simple server-tracking service
+   * @param {Bot} bot parent reference
    * used to fetch shard count of all shards
    */
-  constructor(logger, client, shardUtil, { shardId = 0, shardCount = 1 }) {
-    this.logger = logger;
-    this.client = client;
-    this.shardUtil = shardUtil;
-    this.shardId = shardId;
-    this.shardCount = shardCount;
-
-
+  constructor(bot) {
+    this.bot = bot;
+    config.cachet.url = `${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`;
     if (config.carbon.token && this.shardId === 0) {
       this.updateCarbonitex(this.shardUtil);
       setInterval(() => this.updateCarbonitex(this.shardUtil), config.updateInterval);
@@ -51,12 +64,15 @@ class Tracker {
       this.updateDiscordBotsWeb(this.client.guilds.size);
       setInterval(() => this.updateDiscordBotsWeb(this.client.guilds.size), config.updateInterval);
     }
-    if (config.botsDiscordOrg.token && config.botsDiscordOrg.id) {
+    if (config.botsDiscordOrg.token
+       && config.botsDiscordOrg.id) {
       this.updateDiscordBotsOrg(this.client.guilds.size);
       setInterval(() => this.updateDiscordBotsOrg(this.client.guilds.size), config.updateInterval);
     }
-    if (config.cachet.host && config.cachet.token && config.cachet.metricId) {
-      setInterval(() => this.postHeartBeat(), config.cachet.heartbeat);
+    if (config.cachet.host
+       && config.cachet.token
+       && config.cachet.metricId) {
+      setInterval(() => postHeartBeat(), config.cachet.heartbeat);
     }
   }
 
@@ -69,8 +85,8 @@ class Tracker {
     if (config.carbon.token) {
       const results = await shardUtil.fetchClientValues('guilds.size');
       const guildsLen = results.reduce((prev, val) => prev + val, 0);
-      this.logger.debug('Updating Carbonitex');
-      this.logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
+      logger.debug('Updating Carbonitex');
+      logger.debug(`${this.client.user.username} is on ${guildsLen} servers`);
 
       try {
         const parsedBody = await fetch('https://www.carbonitex.net/discord/data/botdata.php', {
@@ -84,9 +100,9 @@ class Tracker {
           headers: { 'Content-Type': 'application/json' },
         })
           .then(data => data.json());
-        this.logger.debug(parsedBody);
+        logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating carbonitex. Token: ${config.carbon.token} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
+        logger.error(`Error updating carbonitex. Token: ${config.carbon.token} | Error Code: ${err.statusCode} | Guilds: ${guildsLen}`);
       }
     }
   }
@@ -97,8 +113,8 @@ class Tracker {
    */
   async updateDiscordBotsWeb(guildsLen) {
     if (config.botsDiscordPw.token && config.botsDiscordPw.id) {
-      this.logger.debug('Updating discord bots');
-      this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
+      logger.debug('Updating discord bots');
+      logger.debug(`${this.client.username} is on ${guildsLen} servers`);
       try {
         const parsedBody = await fetch(`https://discord.bots.gg/api/v1/bots/${config.botsDiscordPw.id}/stats`, {
           method: 'POST',
@@ -113,9 +129,9 @@ class Tracker {
           },
         })
           .then(data => data.json());
-        this.logger.debug(parsedBody);
+        logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating bots.discord.gg. User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
+        logger.error(`Error updating bots.discord.gg. User: ${config.botsDiscordPw.id} | Error Code: ${err.statusCode}`);
       }
     }
   }
@@ -126,8 +142,8 @@ class Tracker {
    */
   async updateDiscordBotsOrg(guildsLen) {
     if (config.botsDiscordOrg.token && config.botsDiscordOrg.id) {
-      this.logger.debug('Updating discordbots.org');
-      this.logger.debug(`${this.client.username} is on ${guildsLen} servers`);
+      logger.debug('Updating discordbots.org');
+      logger.debug(`${this.client.username} is on ${guildsLen} servers`);
       try {
         const parsedBody = await fetch(`https://discordbots.org/api/bots/${config.botsDiscordOrg.id}/stats`, {
           method: 'POST',
@@ -142,9 +158,9 @@ class Tracker {
           },
         })
           .then(data => data.json());
-        this.logger.debug(parsedBody);
+        logger.debug(parsedBody);
       } catch (err) {
-        this.logger.error(`Error updating discordbots.org. User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
+        logger.error(`Error updating discordbots.org. User: ${config.botsDiscordOrg.id} | Error Code: ${err.statusCode}`);
       }
     }
   }
@@ -156,24 +172,6 @@ class Tracker {
   updateAll(guildsLen) {
     this.updateCarbonitex(guildsLen);
     this.updateDiscordBotsWeb(guildsLen);
-  }
-
-  /**
-   * Post the cachet heartbeat for the shardCount
-   */
-  async postHeartBeat() {
-    const parsedBody = await fetch(`${config.cachet.host}/api/v1/metrics/${config.cachet.metricId}/points`, {
-      method: 'POST',
-      body: JSON.stringify({
-        value: 1,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Cachet-Token': config.cachet.token,
-      },
-    })
-      .then(data => data.json());
-    this.logger.debug(parsedBody);
   }
 }
 
