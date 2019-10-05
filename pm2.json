@@ -7,7 +7,7 @@
       "watch"            : ["genesis.json"],
       "log_date_format"  : "YYYY-MM-DD HH:mm Z",
       "env": {
-      	"TOKEN": "NDk4MjcxOTAxNTEzMjg1NjMy.XZeyJw.rN72jgpWTCYar6_M2BX_Py5KBCQ",
+      	"TOKEN": "<discord bot token>",
         "RAVEN_URL": "<raven logging URL>",
         "PREFIX": "++",
         "DISCORD_CARBON_TOKEN": "Not used yet",
