@@ -69,6 +69,13 @@ DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server cou
 DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
 PREFIX | Default prefix to use for the instance | `\` | `\`
 RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
+TWITCH_NOTIFICATION_CHANNEL_ID | ID of Discord channel to send Twitch notifications to | 498248759872847969 | N/A
+TWITCH_CLIENT_ID | Twitch Client ID for querying Twitch API | uo6dggojyb8d6soh92zknwmi5ej1q2 | N/A
+TWITCH_USER_LOGIN | The Twitch user login to watch | warframe | warframe
+TWITCH_POLL_INTERVAL_MS | How often to poll Twitch for stream updates (in milliseconds) | 10000 | 10000
+
+## Setting up Twitch
+In order to setup Twitch you need to specify the Discord channel to notify and you must have a Twitch API Client ID. See the following links on how to get these:
 
 ## Commands
 

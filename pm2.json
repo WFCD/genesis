@@ -7,7 +7,7 @@
       "watch"            : ["genesis.json"],
       "log_date_format"  : "YYYY-MM-DD HH:mm Z",
       "env": {
-      	"TOKEN": "<discord bot token>",
+      	"TOKEN": "NDk4MjcxOTAxNTEzMjg1NjMy.XZeyJw.rN72jgpWTCYar6_M2BX_Py5KBCQ",
         "RAVEN_URL": "<raven logging URL>",
         "PREFIX": "++",
         "DISCORD_CARBON_TOKEN": "Not used yet",
@@ -27,7 +27,11 @@
         "INVITE_URL" : "https://github.com/wfcd/genesis",
         "CONTROL_WEBHOOK_TOKEN": "webhook token for control channel goes here",
         "CONTROL_WEBHOOK_ID": "webhook id for control channel goes here",
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "TWITCH_NOTIFICATION_CHANNEL_ID": "--REQUIRED--",
+        "TWITCH_CLIENT_ID": "--REQUIRED--",
+        "TWITCH_USER_LOGIN": "warframe",
+        "TWITCH_POLL_INTERVAL_MS": 10000
       }
     }
   ]

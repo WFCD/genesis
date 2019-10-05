@@ -12,6 +12,7 @@ const MessageManager = require('./settings/MessageManager');
 const Notifier = require('./notifications/Notifier');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
+const TwitchClient = require('./TwitchClient');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
@@ -174,6 +175,8 @@ class Genesis {
     this.clusterId = process.env.CLUSTER_ID || 0;
     this.notifier = new Notifier(this);
     // this.tracker = new Tracker(this);
+
+    this.twitchClient = new TwitchClient(this.client, this.logger);
 
     if (process.env.CONTROL_WH_ID) {
       this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
