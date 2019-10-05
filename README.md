@@ -76,6 +76,8 @@ TWITCH_POLL_INTERVAL_MS | How often to poll Twitch for stream updates (in millis
 
 ## Setting up Twitch
 In order to setup Twitch you need to specify the Discord channel to notify and you must have a Twitch API Client ID. See the following links on how to get these:
+* Discord Channel ID: https://github.com/5andr0/PogoLocationFeeder/issues/64#issuecomment-236785757
+* Twitch API Client ID: https://dev.twitch.tv/docs/v5/ (See Getting a client ID)
 
 ## Commands
 
