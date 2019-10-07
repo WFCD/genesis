@@ -72,7 +72,7 @@ class TwitchClient {
         // parse what time the stream started
         const startedAt = moment(response.data.data[0].started_at);
 
-        // if we havent seen the stream start yet 
+        // if we havent seen the stream start yet
         // OR the stream started after the last time it started, notify
         if (this.lastStartedAtTime == null || startedAt.isAfter(this.lastStartedAtTime)) {
           // get the user details now so we can enhance the embed with profile data
@@ -86,7 +86,7 @@ class TwitchClient {
             // send it!
             this.channel.send(`${userDetails.display_name} is streaming on Twitch!`, { embed });
 
-            // save the stream started time so we dont continue to send messages, 
+            // save the stream started time so we dont continue to send messages
             // but we will send one the next time a new stream starts
             this.lastStartedAtTime = startedAt;
           }
