@@ -4,6 +4,7 @@ const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 const FeedsNotifier = require('../notifications/FeedsNotifier');
+const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
 const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
@@ -147,6 +148,7 @@ class OnReadyHandle extends Handler {
     setInterval(updatePresence, 60000, self);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
     this.bot.feedNotifier = new FeedsNotifier(this.bot);
+    this.bot.twitchNotifier = new TwitchNotifier(this.bot);
   }
 }
 
