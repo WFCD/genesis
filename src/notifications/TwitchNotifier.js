@@ -22,11 +22,11 @@ class TwitchNotifier {
 
     this.lastStartedAtTime = null;
     this.user = process.env.TWITCH_USER_LOGIN || 'warframe';
+  }
 
-    // save this in closure for setInterval
-    const self = this;
-    setInterval(async () => { await self.pollTwitch(); },
-      process.env.TWITCH_POLL_INTERVAL_MS || 60000);
+  async start() {
+    this.userDetails = await this.getUserDetails();
+    setInterval(this.pollTwitch.bind(this), process.env.TWITCH_POLL_INTERVAL_MS || 60000);
   }
 
   /**
@@ -73,13 +73,10 @@ class TwitchNotifier {
         // if we havent seen the stream start yet
         // OR the stream started after the last time it started, notify
         if (this.lastStartedAtTime == null || startedAt.isAfter(this.lastStartedAtTime)) {
-          // get the user details now so we can enhance the embed with profile data
-          const userDetails = await this.getUserDetails();
-
           // if we got user details, notify
-          if (userDetails) {
+          if (this.userDetails) {
             // create our embed
-            const twitchEmbed = new TwitchEmbed(response.data[0], userDetails);
+            const twitchEmbed = new TwitchEmbed(response.data[0], this.userDetails);
 
             // broadcast it!
             platforms.forEach((platform) => {

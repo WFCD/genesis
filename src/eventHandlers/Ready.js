@@ -149,6 +149,7 @@ class OnReadyHandle extends Handler {
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
     this.bot.feedNotifier = new FeedsNotifier(this.bot);
     this.bot.twitchNotifier = new TwitchNotifier(this.bot);
+    this.bot.twitchNotifier.start();
   }
 }
 
