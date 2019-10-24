@@ -23,13 +23,13 @@ class Untrack extends Command {
       { description: 'Show tracking command for untracking events', parameters: [] },
       { description: 'Untrack an event or events', parameters: ['event(s) to untrack'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s*${captures.trackables}*(?:\\s+in\\s+)?((?:\\<\\#)?\\d+(?:\\>)?|here)?`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s*${captures.trackables}*(?:\\s+in\\s+)?(${captures.channel}|here)?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message, ctx) {
     const unsplitItems = getEventsOrItems(message);
-    const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
+    const roomId = new RegExp(`${captures.channel}|here`, 'ig');
 
     if (unsplitItems.length === 0) {
       return this.failure(message, ctx.prefix);

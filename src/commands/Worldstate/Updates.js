@@ -21,7 +21,7 @@ class Updates extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    const news = await (this.ws.get('news', platform, ctx.language)).filter(n => n.update);
+    const news = (await this.ws.get('news', platform, ctx.language)).filter(n => n.update);
     await this.messageManager.embed(message, new UpdateEmbed(this.bot, news, 'update', platform), true, false);
     return this.messageManager.statuses.SUCCESS;
   }

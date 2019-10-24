@@ -23,13 +23,13 @@ class Track extends Command {
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(${captures.trackables})*)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${captures.trackables})*)?(?:\\s+in\\s+(${captures.channel}|here))?`, 'i');
     this.requiresAuth = true;
   }
 
   async run(message, ctx) {
     const unsplitItems = getEventsOrItems(message);
-    const roomId = new RegExp('(?:\\<\\#)?\\d{15,}(?:\\>)?|here', 'ig');
+    const roomId = new RegExp(`${captures.channel}|here`, 'ig');
 
     if (unsplitItems.length === 0) {
       return this.failure(message, ctx.prefix);

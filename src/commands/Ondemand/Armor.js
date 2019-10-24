@@ -56,9 +56,9 @@ function armorFull(baseArmor, baseLevel, currentLevel) {
  */
 function armorSimple(armor) {
   return [
-      `**${(damageReduction(armor) * 100).toFixed(2)}%** damage reduction`,
-      `You will need **${armorStrip(armor)}** corrosive procs to strip your enemy of armor.`,
-    ].join('\n');
+    `**${(damageReduction(armor) * 100).toFixed(2)}%** damage reduction`,
+    `You will need **${armorStrip(armor)}** corrosive procs to strip your enemy of armor.`,
+  ].join('\n');
 }
 
 

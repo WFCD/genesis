@@ -2,6 +2,8 @@
 
 const Command = require('./Command.js');
 
+const URL_RE = /(https?:\/\/[^\s]+)/;
+
 /**
  * Describes a callable command
  */
@@ -34,6 +36,25 @@ class CustomCommand extends Command {
     const mention = message.mentions.members.size > 0
       ? message.mentions.members.first()
       : message.member;
+
+    const isSingleImg = msg.match(URL_RE)
+      && msg.match(URL_RE).length === 2
+      && msg.split(' ').length === 1
+      && !(msg.startsWith('<') && msg.endsWith('>'))
+      && (
+        msg.endsWith('.png')
+        || msg.endsWith('.webp')
+        || msg.endsWith('.jpg')
+        || msg.endsWith('.jpeg')
+        || msg.endsWith('.webm')
+        || msg.endsWith('.webm')
+      );
+
+    if (isSingleImg) {
+      await this.messageManager.send(message.channel, undefined, { msgOpts: { files: [msg] } });
+      return;
+    }
+
     if (ctx['settings.cc.ping']) {
       const hasMtn = msg.indexOf('$mtn') > -1;
       msg = msg.replace('$mtn', mention);

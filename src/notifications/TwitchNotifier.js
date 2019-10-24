@@ -22,11 +22,19 @@ class TwitchNotifier {
 
     this.lastStartedAtTime = null;
     this.user = process.env.TWITCH_USER_LOGIN || 'warframe';
+    this.clientId = process.env.TWITCH_CLIENT_ID;
+    this.validClientInfo = true;
+    if (!(this.user && this.clientId)) {
+      this.validClientInfo = false;
+      logger.debug('[Twitch] Cannot initialize Twitch Notifier... invalid credentials');
+    }
   }
 
   async start() {
-    this.userDetails = await this.getUserDetails();
-    setInterval(this.pollTwitch.bind(this), process.env.TWITCH_POLL_INTERVAL_MS || 60000);
+    if (this.validClientInfo) {
+      this.userDetails = await this.getUserDetails();
+      setInterval(this.pollTwitch.bind(this), process.env.TWITCH_POLL_INTERVAL_MS || 60000);
+    }
   }
 
   /**
@@ -34,6 +42,8 @@ class TwitchNotifier {
    * @returns {Object} a twitch api user response object
    */
   async getUserDetails() {
+    if (!this.validClientInfo) return undefined;
+
     try {
       const response = await fetch(`https://api.twitch.tv/helix/users?login=${this.user}`, {
         method: 'GET',
@@ -56,6 +66,8 @@ class TwitchNotifier {
    * Checks the user's stream to see if they are currently live
    */
   async pollTwitch() {
+    if (!this.validClientInfo) return;
+
     try {
       const response = await fetch(`https://api.twitch.tv/helix/streams?user_login=${this.user}`, {
         method: 'GET',

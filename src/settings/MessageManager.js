@@ -42,7 +42,7 @@ class MessaageManager {
    * Simplified sending wrapper for existing send operations
    * @param  {Discord.TextChannel}    target          Text channel implementation to send to
    * @param  {string}                 content         String content to send with message
-   * @param  {Discord.MessageOptions} msgOpts         Discrd message options to send, such as
+   * @param  {Discord.MessageOptions} msgOpts         Discord message options to send, such as
    *  embeds, attachments, files, etc.
    * @param  {boolean}                delCall         delete the original after sending
    * @param  {boolean}                delRes          delete the response after sending

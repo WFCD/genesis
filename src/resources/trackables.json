@@ -150,7 +150,8 @@
     "solaris",
     "nightwave.daily",
     "nightwave.elite",
-    "nightwave.weekly"
+    "nightwave.weekly",
+    "twitch"
   ],
   "opts": [
     "all",

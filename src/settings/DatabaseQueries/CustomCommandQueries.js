@@ -18,6 +18,32 @@ class CustomCommandQueries {
     return [];
   }
 
+  async getCustomCommandRaw(guild, call) {
+    const id = `${call}${guild.id}`;
+    const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id} AND command_id = ${id}`;
+
+    const res = await this.db.query(query);
+    if (res[0]) {
+      const vals = res[0]
+        .map(value => ({ call: value.command, response: value.response, id: value.command_id }));
+      this.logger.warn(JSON.stringify(vals));
+      return vals[0];
+    }
+    return undefined;
+  }
+
+  async updateCustomCommand(guild, { call, response, id }) {
+    const newId = `${call}${guild.id}`;
+    return this.db.query(SQL`
+      UPDATE custom_commands
+      SET command_id = ${newId},
+        command = ${call},
+        response = ${response}
+      WHERE guild_id = ${guild.id}
+        AND command_id = ${id}
+    `);
+  }
+
   async getCustomCommandsForGuild(guild) {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
     const res = await this.db.query(query);
