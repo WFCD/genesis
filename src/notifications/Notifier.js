@@ -104,7 +104,9 @@ function buildNotifiableData(newData, platform) {
       .filter(n => n.stream && between(n.activation, platform)),
     syndicateM: newData.syndicateMissions
       .filter(m => between(m.activation, platform)),
-    tweets: newData.twitter ? newData.twitter.filter(t => t) : [],
+    tweets: newData.twitter
+      ? newData.twitter.filter(t => t && between(t.createdAt, platform))
+      : [],
     updates: newData.news
       .filter(n => n.update && !n.stream && between(n.activation, platform)),
 
