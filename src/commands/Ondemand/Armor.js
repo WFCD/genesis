@@ -43,9 +43,9 @@ function armorAtLevel(baseArmor, baseLevel, currentLevel) {
 function armorFull(baseArmor, baseLevel, currentLevel) {
   const armor = armorAtLevel(baseArmor, baseLevel, currentLevel);
   return [
-    `At level ${Math.round(currentLevel)} your enemy would have ${armor.toFixed(2)} Armor`,
-    `${(damageReduction(armor) * 100).toFixed((2))}% damage reduction`,
-    `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
+    `At level **${Math.round(currentLevel)}** your enemy would have **${armor.toFixed(2)}** armor`,
+    `and **${(damageReduction(armor) * 100).toFixed((2))}%** damage reduction.`,
+    `You will need **${armorStrip(armor)}** corrosive procs to strip your enemy of armor.`,
   ].join('\n');
 }
 
@@ -55,11 +55,10 @@ function armorFull(baseArmor, baseLevel, currentLevel) {
  * @returns {string}
  */
 function armorSimple(armor) {
-  return `\`\`\`haskell${
-    [
-      `${(damageReduction(armor) * 100).toFixed(2)}% damage reduction`,
-      `You will need ${armorStrip(armor)} corrosive procs to strip your enemy of armor.`,
-    ].join('\n')}\`\`\``;
+  return [
+      `**${(damageReduction(armor) * 100).toFixed(2)}%** damage reduction`,
+      `You will need **${armorStrip(armor)}** corrosive procs to strip your enemy of armor.`,
+    ].join('\n');
 }
 
 
