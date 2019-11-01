@@ -72,7 +72,6 @@ const factions = require('./resources/factions');
  */
 const trackableEvents = {
   events: eventTypes,
-  fissures: [],
   syndicates,
   conclave,
   deals,
@@ -80,15 +79,16 @@ const trackableEvents = {
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
   vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
-  twitter: [],
   nightwave,
   rss: rssFeeds.map(feed => feed.key),
   arbitration: [],
   kuva: [],
+  opts,
 };
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
+const tTemp = [];
 twitter.types.forEach((type) => {
   twitter.accounts.forEach((account) => {
     const id = `twitter.${type}.${account}`;
@@ -96,18 +96,22 @@ twitter.types.forEach((type) => {
       trackableEvents[`twitter.${type}`] = [];
     }
     trackableEvents[`twitter.${type}`].push(id);
-    trackableEvents.twitter.push(id);
+    tTemp.push(id);
   });
 });
+trackableEvents.twitter = tTemp;
 
+const fTemp = [];
+const arbiTemp = [];
+const kuvaTemp = [];
 Object.keys(missionTypes).forEach((type) => {
   // These will be re-enabled when arbitrations/kuva are ready
   if (missionTypes[type]) {
     factions.forEach((faction) => {
-      trackableEvents.arbitration.push(`arbitration.${faction}.${type}`);
+      arbiTemp.push(`arbitration.${faction}.${type}`);
     });
   }
-  trackableEvents.kuva.push(`kuva.${type}`);
+  kuvaTemp.push(`kuva.${type}`);
 
   // Construct Fissure types
   fissures.tiers.forEach((tier) => {
@@ -120,11 +124,33 @@ Object.keys(missionTypes).forEach((type) => {
       trackableEvents[`fissures.${type}`] = [];
     }
     trackableEvents[`fissures.${type}`].push(id);
-    trackableEvents.fissures.push(id);
+    fTemp.push(id);
   });
 });
-trackableEvents.events.push(...trackableEvents.twitter, ...trackableEvents.fissures);
-trackableEvents.events.push(...trackableEvents.arbitration, ...trackableEvents.kuva);
+// gotta make sure this is outside the loop
+// and after it completes so all the generated ones are first
+trackableEvents.fissures = fTemp;
+trackableEvents.kuva = kuvaTemp;
+trackableEvents.arbitration = arbiTemp;
+
+trackableEvents.events.push(
+  ...trackableEvents.twitter,
+  ...trackableEvents.fissures,
+  ...trackableEvents.arbitration,
+  ...trackableEvents.kuva,
+);
+
+const dyn = [
+  'solaris\\.warm\\.[0-9]?[0-9]',
+  'solaris\\.cold\\.[0-9]?[0-9]',
+  'cetus\\.day\\.[0-1]?[0-9]?[0-9]?',
+  'cetus\\.night\\.[0-1]?[0-9]?[0-9]?',
+  ...trackableEvents.rss,
+  ...trackableEvents.events,
+  ...rewardTypes,
+  ...Object.keys(trackableEvents),
+  ...opts,
+];
 
 /**
  * Captures for commonly needed parameters
@@ -139,7 +165,7 @@ const captures = {
   channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
   role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
   user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
-  trackables: `(solaris\\.warm\\.[0-9]?[0-9]|solaris\\.cold\\.[0-9]?[0-9]|cetus\\.day\\.[0-1]?[0-9]?[0-9]?|cetus\\.night\\.[0-1]?[0-9]?[0-9]?|${trackableEvents.rss.join('|')}|${trackableEvents.events.join('|')}|${rewardTypes.join('|')}|${opts.join('|')})`,
+  trackables: `(${dyn.join('|')})`,
   platforms: `(${platforms.join('|')})`,
 };
 
@@ -498,7 +524,7 @@ const chunkFields = (valArr, title) => {
 };
 
 const constructTypeEmbeds = (types) => {
-  const includedTypes = Object.assign({}, trackableEvents);
+  const includedTypes = { ...trackableEvents };
   Object.keys(trackableEvents).forEach((eventType) => {
     includedTypes[eventType] = [];
   });
@@ -538,7 +564,7 @@ const constructTypeEmbeds = (types) => {
 };
 
 const constructItemEmbeds = (types) => {
-  const includedItems = Object.assign({}, trackableItems);
+  const includedItems = { ...trackableItems };
   Object.keys(trackableItems).forEach((itemType) => {
     includedItems[itemType] = [];
     types.forEach((type) => {
@@ -800,6 +826,13 @@ const resolveRoles = ({ mentions = undefined, content = '', guild = undefined })
 };
 
 /**
+ * Get all the users out of a role as users, not members
+ * @param  {Discord.Role} role role to convert members from
+ * @returns {Discord.User[]}      array of discord users
+ */
+const usersInRole = role => role.members.map(member => member.user);
+
+/**
  * Gets the list of users from the mentions in the call
  * @param {Message} message Channel message
  * @param {boolean} excludeAuthor whether or not to exclude the author in the list
@@ -808,7 +841,7 @@ const resolveRoles = ({ mentions = undefined, content = '', guild = undefined })
 const getUsersForCall = (message, excludeAuthor) => {
   const users = [];
   if (message.mentions.roles) {
-    message.mentions.roles.forEach(role => role.members.forEach(member => users.push(member.user)));
+    message.mentions.roles.forEach(role => users.push(...usersInRole(role)));
   }
   if (message.mentions.users) {
     message.mentions.users.forEach((user) => {

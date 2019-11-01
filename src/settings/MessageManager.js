@@ -279,7 +279,7 @@ class MessaageManager {
     if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
       const client = new WebhookClient(ctx.webhook.id, ctx.webhook.token);
       try {
-        const embedCopy = Object.assign({}, embed);
+        const embedCopy = { ...embed };
         if (ctx.webhook.avatar) {
           embedCopy.avatarURL = ctx.webhook.avatar;
         }

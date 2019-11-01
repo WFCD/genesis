@@ -6,7 +6,7 @@ class AllowPrivateRoom extends Command {
   constructor(bot) {
     super(bot, 'settings.allowprivateroom', 'allow private room', 'Set whether or not to allow the bot to create private rooms.');
     this.usages = [
-      { description: 'Change if the bot is allowed to create private channels', parameters: ['private rooms enabled'] },
+      { description: 'Change if the bot is allowed to create private channels', parameters: ['private rooms allowed'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(on|off)?$`, 'i');
     this.requiresAuth = true;

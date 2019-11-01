@@ -25,7 +25,7 @@ class Baro extends Command {
     if (embed.fields.length > 25) {
       createGroupedArray(embed.fields, 15).forEach((fieldGroup) => {
         this.logger.debug(fieldGroup);
-        const tembed = Object.assign({}, embed);
+        const tembed = { ...embed };
         tembed.fields = fieldGroup;
         pages.push(tembed);
       });

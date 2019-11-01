@@ -132,7 +132,7 @@ function buildNotifiableData(newData, platform) {
     const nWaveChallenges = newData.nightwave.activeChallenges
       .filter(challenge => challenge.active && between(challenge.activation, platform));
     data.nightwave = nWaveChallenges.length
-      ? Object.assign({}, JSON.parse(JSON.stringify(newData.nightwave)))
+      ? ({ ...JSON.parse(JSON.stringify(newData.nightwave)) })
       : undefined;
     if (data.nightwave) {
       data.nightwave.activeChallenges = nWaveChallenges;
@@ -291,7 +291,7 @@ class Notifier {
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
       fields.forEach(async (fieldGroup) => {
-        const tembed = Object.assign({}, embed);
+        const tembed = { ...embed };
         tembed.fields = fieldGroup;
         await this.broadcaster.broadcast(tembed, platform, 'baro', null);
       });
@@ -401,7 +401,7 @@ class Notifier {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
       if (nightwave.activeChallenges.length > 1) {
         nightwave.activeChallenges.forEach(async (challenge) => {
-          const nwCopy = Object.assign({}, nightwave);
+          const nwCopy = { ...nightwave };
           nwCopy.activeChallenges = [challenge];
           const embed = new embeds.Nightwave(this.bot, nwCopy, platform, i18n);
           embed.locale = locale;

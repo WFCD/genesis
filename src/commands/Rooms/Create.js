@@ -138,7 +138,9 @@ class Create extends Command {
 
     if (ctx.createPrivateChannel) {
       if (userHasRoom) {
-        await this.messageManager.reply(message, `you already have a private room registered. If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`, true, true);
+        const err = `you already have a private room registered.
+If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
+        await this.messageManager.reply(message, err, true, true);
         return this.messageManager.statuses.FAILURE;
       }
       if (type) {
@@ -146,7 +148,8 @@ class Create extends Command {
         if (useable.includes(roomType)) {
           const users = getUsersForCall(message);
           const name = optName || `${type}-${message.member.displayName}`.toLowerCase();
-          if (users.length < 11 && !message.guild.channels.find(channel => channel.name === name)) {
+          const existingName = message.guild.channels.find(channel => channel.name === name);
+          if (users.length < 11 && !existingName) {
             const overwrites = this.createOverwrites({
               users,
               everyone: message.guild.defaultRole,
@@ -379,7 +382,7 @@ class Create extends Command {
       .loadCommand(this.bot.commandManager.commands
         .find(cmd => cmd.id === 'settings.allowprivateroom'));
 
-    const msgClone = Object.assign({}, message);
+    const msgClone = { ...message };
     msgClone.strippedContent = `${allowCmd.call} on`;
     msgClone.channel = textChannel;
     msgClone.guild = message.guild;

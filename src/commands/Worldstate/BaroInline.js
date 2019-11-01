@@ -25,7 +25,7 @@ class Baro extends Command {
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
       fields.forEach(async (fieldGroup) => {
-        const tembed = Object.assign({}, embed);
+        const tembed = { ...embed };
         tembed.fields = fieldGroup;
         await this.messageManager.embed(message, tembed, false, true);
         await this.broadcaster.broadcast(tembed, platform, 'baro', null);
