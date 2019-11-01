@@ -21,18 +21,7 @@ class Prefix extends Command {
   async run(message, ctx) {
     const prefix = message.strippedContent.match(this.regex)[1];
     if (!prefix) {
-      this.messageManager.embed(message, {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${ctx.prefix}${this.call} <prefix>`,
-            value: 'Set the channel\'s custom prefix',
-          },
-        ],
-      }, true, false);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message, ctx, ['prefix']);
     }
     if (prefix === 'reset') {
       if (message.channel.type === 'text') {

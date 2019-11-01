@@ -14,22 +14,10 @@ class RespondToSettings extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     let option = message.strippedContent.match(this.regex)[1];
-    const usageEmbed = {
-      title: 'Usage',
-      type: 'rich',
-      color: 0x779ECB,
-      fields: [
-        {
-          name: '\u200B',
-          value: `${this.bot.prefix}${this.call} < all | command | respond | none > `,
-        },
-      ],
-    };
     if (!option) {
-      this.messageManager.embed(message, usageEmbed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message, ctx, ['all', 'command', 'respond', 'none']);
     }
     option = option.trim();
     let delCall = false;
@@ -66,8 +54,7 @@ class RespondToSettings extends Command {
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.embed(message, usageEmbed, true, true);
-    return this.messageManager.statuses.FAILURE;
+    return this.sendToggleUsage(message, ctx, ['all', 'command', 'respond', 'none']);
   }
 }
 

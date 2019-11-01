@@ -1,5 +1,7 @@
 'use strict';
 
+const { MessageEmbed } = require('discord.js');
+
 /**
  * Options for a command
  * @typedef  {Object} CommandOptions
@@ -142,21 +144,36 @@ class Command {
   /**
    * Send Usage for a toggle command
    * @param {Discord.Message} message message to respond to
+   * @param {Object} ctx Context object containing common elements,
+   *    such as channel settings, caller info
    * @param {Array.<string>} options optional replacement for args
    * @returns {string} failure status.
    */
-  async sendToggleUsage(message, options = ['on', 'off']) {
-    const embed = {
+  async sendToggleUsage(message, ctx, options = ['on', 'off']) {
+    const embed = new MessageEmbed({
       title: 'Usage',
       type: 'rich',
       color: 0x0000ff,
-      fields: [
-        {
-          name: `${this.bot.prefix}${this.call} <${options.join(' | ')}>`,
-          value: '\u200B',
-        },
-      ],
-    };
+      description: options ? `Basic Usage: ${ctx.prefix}${this.call} <${options.join(' | ')}>` : undefined,
+      provider: {
+        name: 'WFCD',
+        url: 'https://github.com/WFCD',
+      },
+      footer: {
+        text: 'Sent',
+        icon_url: 'https://warframestat.us/wfcd_logo_color.png',
+      },
+      timestamp: new Date(),
+    });
+
+    this.usages.forEach((u) => {
+      embed.addField(`${this.isInline ? '' : ctx.prefix}${this.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
+        u.description || 'No description', false);
+    });
+
+    embed.addField('Warning', `\`<\`, \`|\`, and \`>\` are used to delimit the beginning of parameter options, separate parameter options, and delimit the end of parameter options.
+If a \`|\` is between \`<\` and \`>\`, it doesn't need to be included when calling the command.\n\u200b`);
+
     this.messageManager.embed(message, embed, true, true);
     return this.messageManager.statuses.FAILURE;
   }

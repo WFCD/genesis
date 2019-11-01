@@ -14,12 +14,12 @@ class AllowCustomCommands extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message, message.guild.channels);
     if (!enable) {
-      return this.sendToggleUsage(message);
+      return this.sendToggleUsage(message, ctx);
     }
     enable = enable.trim();
     let allowInline = false;

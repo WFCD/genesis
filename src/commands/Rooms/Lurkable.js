@@ -29,7 +29,7 @@ class Show extends Command {
       const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
         const room = await this.settings.getUsersRoom(message.member);
-        const everyone = message.guild.defaultRole;
+        const { everyone } = message.guild.roles;
         const options = {
           VIEW_CHANNEL: true, CONNECT: true, SPEAK: false, SEND_MESSAGES: false,
         };

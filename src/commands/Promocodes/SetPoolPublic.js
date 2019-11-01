@@ -19,10 +19,10 @@ class SetPoolPublic extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
-      return this.sendToggleUsage(message);
+      return this.sendToggleUsage(message, ctx);
     }
     enable = enable.trim();
 

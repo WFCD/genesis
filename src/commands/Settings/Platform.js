@@ -13,22 +13,10 @@ class Platform extends Command {
     this.requiresAuth = true;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const platform = message.strippedContent.match(this.regex)[1];
     if (!platform || !platforms.includes(platform.toLowerCase())) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <platform>`,
-            value: `Platform is one of ${this.bot.platforms.join(', ')}`,
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message, ctx, platforms);
     }
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message);

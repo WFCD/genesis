@@ -17,12 +17,13 @@ class AllowPrivateRoom extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {Object} ctx Context object containing channel settings, caller information, etc.
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
-      return this.sendToggleUsage(message);
+      return this.sendToggleUsage(message, ctx);
     }
     enable = enable.trim();
     await this.settings.setGuildSetting(message.guild, 'createPrivateChannel', enable === 'on');

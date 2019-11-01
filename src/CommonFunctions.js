@@ -787,7 +787,7 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
     const userTarget = message.guild.members.get(targetParam);
     const roleTarget = message.guild.roles.get(targetParam);
     if (targetParam === '*') {
-      target = message.guild.defaultRole;
+      target = message.guild.roles.everyone;
       target.type = 'Role';
     } else if (roleTarget) {
       target = roleTarget;

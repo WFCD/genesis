@@ -152,7 +152,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
           if (users.length < 11 && !existingName) {
             const overwrites = this.createOverwrites({
               users,
-              everyone: message.guild.defaultRole,
+              everyone: message.guild.roles.everyone,
               author: message.author,
               isPublic,
               useModRole,

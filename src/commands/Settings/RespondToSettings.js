@@ -13,12 +13,12 @@ class RespondToSettings extends Command {
     this.requiresAuth = true;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     const channel = getChannel(channelParam, message);
     if (!enable) {
-      return this.sendToggleUsage(message);
+      return this.sendToggleUsage(message, ctx);
     }
     enable = enable.trim();
     let enableResponse = false;

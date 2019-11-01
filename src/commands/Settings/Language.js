@@ -15,22 +15,10 @@ class Language extends Command {
     this.requiresAuth = true;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const language = message.strippedContent.match(this.regex)[1];
     if (!language || !languages.includes(language.toLowerCase())) {
-      const embed = {
-        title: 'Usage',
-        type: 'rich',
-        color: 0x0000ff,
-        fields: [
-          {
-            name: `${this.bot.prefix}${this.call} <language>`,
-            value: `Language is one of ${languages.join(', ')}`,
-          },
-        ],
-      };
-      this.messageManager.embed(message, embed, true, true);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message, ctx, languages);
     }
     const channelParam = message.strippedContent.match(this.regex)[2] ? message.strippedContent.match(this.regex)[2].trim().replace(/<|>|#/ig, '') : undefined;
     let m = '';

@@ -29,7 +29,7 @@ class Hide extends Command {
       const userHasRoom = await this.settings.userHasRoom(message.member);
       if (userHasRoom) {
         const room = await this.settings.getUsersRoom(message.member);
-        const everyone = message.guild.defaultRole;
+        const { everyone } = message.guild.roles;
         const connect = room.voiceChannel.permissionsFor(everyone).has('CONNECT');
         const options = { VIEW_CHANNEL: false, CONNECT: connect };
         try {

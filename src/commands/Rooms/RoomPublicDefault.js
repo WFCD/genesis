@@ -20,10 +20,10 @@ class RoomUnlockedDefault extends Command {
    * @param {Object} ctx Command context for calling commands
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     let enable = message.strippedContent.match(this.regex)[1];
     if (!enable) {
-      return this.sendToggleUsage(message);
+      return this.sendToggleUsage(message, ctx);
     }
     enable = enable.trim();
     await this.settings.setGuildSetting(message.guild, 'defaultRoomsLocked', enable !== 'on');

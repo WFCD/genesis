@@ -26,14 +26,19 @@ class Disable extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const commandIdResults = message.strippedContent.match(commandIdRegex)
       .filter(str => str && !(str === this.call) && str.trim().length);
-    const commandIdResult = commandIdResults.length ? commandIdResults[0] : undefined;
+    const commandIdResult = commandIdResults.length ? commandIdResults[0] : '';
     const channelResult = (message.strippedContent.match(locationRegex) || ['', 'here'])[0].replace('in', '').replace(/<#/g, '').replace(/>/g, '').trim();
     const t = message.strippedContent.match(appliesToRegex).filter(str => str.length);
-    const targetResult = (t.length ? t : [message.guild.defaultRole.id])[0]
+    const targetResult = (t.length ? t : [message.guild.roles.everyone.id])[0]
       .replace(/<@&?/g, '').replace(/>/g, '').replace('for', '').trim();
+
+    if (!commandIdResult || !channelResult || !targetResult) {
+      return this.sendToggleUsage(message, ctx, commandIdResult, channelResult, targetResult);
+    }
+
     const commands = this.getCommandsToEnable(commandIdResult).filter(command => command);
     let channels = [];
 
@@ -52,12 +57,7 @@ class Disable extends Command {
     );
 
     if (!commands.length) {
-      this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
-        commandIdResult,
-        channelResult,
-        targetResult,
-      ], 0), true, false);
-      return this.messageManager.statuses.FAILURE;
+      return this.sendToggleUsage(message, ctx, commandIdResult, channelResult, targetResult);
     }
 
     const results = [];
@@ -146,6 +146,15 @@ class Disable extends Command {
       }
     });
     return commandsToEnable;
+  }
+
+  async sendToggleUsage(message, ctx, cmdIdResult, channelResult, targetResult) {
+    await this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
+      cmdIdResult,
+      channelResult,
+      targetResult,
+    ], 1), true, false);
+    return this.messageManager.statuses.FAILURE;
   }
 }
 
