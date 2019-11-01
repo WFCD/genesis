@@ -36,14 +36,12 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@discordjs/uws": "^11.149.1",
     "@sentry/node": "^5.7.1",
     "@spectacles/rest": "^0.5.2",
     "bluebird": "^3.7.1",
     "colors": "^1.4.0",
     "decache": "^4.5.1",
     "discord.js": "github:discordjs/discord.js",
-    "erlpack": "github:discordapp/erlpack",
     "greenkeeper-lockfile": "^1.14.0",
     "json-query": "^2.2.2",
     "moment": "^2.24.0",
@@ -55,9 +53,7 @@
     "rss-feed-emitter": "^2.0.1",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
-    "warframe-name-generator": "^1.0.2",
-    "zlib-sync": "^0.1.6",
-    "zucc": "^0.1.2"
+    "warframe-name-generator": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
