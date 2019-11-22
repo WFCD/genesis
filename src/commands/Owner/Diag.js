@@ -52,7 +52,7 @@ class Diagnostics extends Command {
     }
     chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
       .forEach(field => {
-        embed.addField(field.name, field.value, true);
+        embed.addField(field.name, field.value, false);
       });
 
     // Tracking
