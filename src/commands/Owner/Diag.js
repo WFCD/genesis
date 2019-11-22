@@ -3,7 +3,7 @@
 const { MessageEmbed } = require('discord.js');
 
 const Command = require('../../models/Command.js');
-const { timeDeltaToString } = require('../../CommonFunctions.js');
+const { timeDeltaToString, chunkFields } = require('../../CommonFunctions.js');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -50,7 +50,10 @@ class Diagnostics extends Command {
     } else {
       rolePermTokens.push('\\❎ Not configured to manage any roles.');
     }
-    embed.addField('Can Manage Roles', rolePermTokens.join('\n'));
+    chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
+      .forEach(field => {
+        embed.addField(field.name, field.value, true);
+      });
 
     // Tracking
     const trackingReadinessTokens = [`${perms.has('MANAGE_WEBHOOKS') ? '\\✅ Can' : '\\❎ Cannot'} Manage Webhooks`];
