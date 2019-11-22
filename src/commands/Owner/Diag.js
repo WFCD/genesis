@@ -51,7 +51,7 @@ class Diagnostics extends Command {
       rolePermTokens.push('\\❎ Not configured to manage any roles.');
     }
     chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
-      .forEach(field => {
+      .forEach((field) => {
         embed.addField(field.name, field.value, false);
       });
 
