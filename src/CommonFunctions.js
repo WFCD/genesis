@@ -503,8 +503,8 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   return embed;
 };
 
-const chunkFields = (valArr, title) => {
-  const chunkified = chunkify({ string: valArr.join('; ') });
+const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
+  const chunkified = chunkify({ string: valArr.join(chunkStr) });
   if (!chunkified) {
     return [];
   }
