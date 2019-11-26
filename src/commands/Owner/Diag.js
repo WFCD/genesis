@@ -16,6 +16,7 @@ class Diagnostics extends Command {
   constructor(bot) {
     super(bot, 'core.diag', 'diag', 'Run some basic diagnostics');
     this.requiresAuth = true;
+    this.allowDM = false;
   }
 
   /**
@@ -26,7 +27,7 @@ class Diagnostics extends Command {
    */
   async run(message) {
     const embed = new MessageEmbed();
-    embed.setTitle(`Diagnostics for Shard ${this.bot.shardId + 1}/${this.bot.shardCount}`);
+    embed.setTitle(`Diagnostics for Shard ${message.guild.shardID + 1}/${this.bot.shardTotal}/${this.bot.clusterId}`);
 
     embed.addField('Discord WS', `\\✅ ${this.bot.client.ws.ping.toFixed(2)}ms`, true);
     // embed.addField('Worldstate Socket', this.bot.socket.connected
