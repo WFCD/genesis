@@ -22,7 +22,7 @@ class VoidTraderEmbed extends BaseEmbed {
     if (voidTrader.active || voidTrader.inventory.length > 0) {
       this.fields = voidTrader.inventory.map(i => ({
         name: i.item,
-        value: `${i.ducats} ducats + ${i.credits}cr`,
+        value: `${i.ducats} ducats + ${i.credits}*cr*`,
         inline: true,
       }));
     } else {

@@ -39,6 +39,10 @@ const stripContent = (content, prefix, ping, pingId, botNickPing) => {
   return c;
 };
 
+const hasAuth = message => message.channel.permissionsFor(message.author).has('MANAGE_ROLES')
+    || (message.member.hasPermission('MANAGE_GUILD')
+    || message.member.hasPermission('MANAGE_ROLES'));
+
 /**
  * Describes a handler
  */
@@ -171,7 +175,6 @@ class CommandHandler extends Handler {
     });
   }
 
-
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
@@ -189,7 +192,7 @@ class CommandHandler extends Handler {
     }
     if (message.channel.type === 'text') {
       if (command.requiresAuth) {
-        if (message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) {
+        if (hasAuth(message)) {
           const memberHasPermForRequiredAuthCommand = await this.bot.settings
             .getChannelPermissionForMember(message.channel, message.author.id, command.id);
           if (memberHasPermForRequiredAuthCommand === 'none') {
