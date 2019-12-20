@@ -69,8 +69,14 @@ class CommandHandler extends Handler {
     const passesInitial = this.bot.readyToExecute
       && message.author.id !== this.bot.client.user.id
       && !message.author.bot;
+      
+    const canReply = message.channel.type === 'dm'
+      || (
+        message.channel.permissionsFor(message.guild.me).has('VIEW_CHANNEL')
+        && message.channel.permissionsFor(message.guild.me).has('SEND_MESSAGES')
+        && message.channel.permissionsFor(message.guild.me).has('ADD_REACTIONS'));
 
-    if (!passesInitial) {
+    if (!(passesInitial && canReply)) {
       return;
     }
     let { content } = message;

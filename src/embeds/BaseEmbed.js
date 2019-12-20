@@ -1,17 +1,20 @@
 'use strict';
 
+const { MessageEmbed } = require('discord.js');
+
 /**
  * Utility class for making rich embeds
  */
-class BaseEmbed {
+class BaseEmbed extends MessageEmbed{
   constructor(bot) {
-    this.url = 'https://warframestat.us/';
-    this.footer = {
-      text: 'Sent',
-      icon_url: 'https://warframestat.us/wfcd_logo_color.png',
-    };
-    this.fields = [];
-    this.timestamp = new Date();
+    super({
+      url: 'https://warframestat.us/',
+      footer: {
+        text: 'Sent',
+        icon_url: 'https://warframestat.us/wfcd_logo_color.png',
+      },
+      timestamp: new Date()
+    });
     if (bot) {
       this.bot = bot;
     }

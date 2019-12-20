@@ -24,13 +24,6 @@ class MessaageManager {
     this.settings = bot.settings;
     this.owner = bot.owner;
 
-    /**
-     * Zero space whitespace character to prepend to any messages sent
-     * to prevent a command from inadvertantly being triggered.
-     * @type {string}
-     */
-    this.zSWC = '\u200B';
-
     this.statuses = {
       SUCCESS: 'SUCCESS',
       FAILURE: 'FAILURE',
@@ -67,7 +60,7 @@ class MessaageManager {
         if (!target.client) {
           this.logger.error('Target is not TextBasedChannel');
         }
-        const msg = await target.send(content ? `${this.zSWC}${content}` : '', msgOpts);
+        const msg = await target.send(content, msgOpts);
         await this.deleteCallAndResponse(message, msg, delCall, delRes);
         if (deleteAfter) {
           msg.delete({ timeout: deleteAfter });
@@ -128,7 +121,7 @@ class MessaageManager {
         if (!message.channel.client) {
           this.logger.error('Target is not TextBasedChannel');
         }
-        const msg = await message.reply(content ? `${this.zSWC}${content}` : '', msgOpts);
+        const msg = await message.reply(content, msgOpts);
         await this.deleteCallAndResponse(message, msg, delCall, delRes);
         if (deleteAfter) {
           msg.delete({ timeout: deleteAfter, reason: 'Automated cleanup' });
@@ -247,7 +240,7 @@ class MessaageManager {
     const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings') === '1';
 
     if (respondToSettings) {
-      return this.reply(message, 'Settings updated', { delCall, delRes });
+      return this.send(message.channel, 'Settings updated', { delCall, delRes });
     }
     return null;
   }
