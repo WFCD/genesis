@@ -18,10 +18,11 @@ class Outpost extends Command {
     embed.setTitle(ctx.i18n`[${platform.toUpperCase()}] Sentient Outpost`);
     if (outpost.active) {
       embed.setDescription(outpost.mission.node);
+      this.messageManager.send(message.channel, embed);
     } else {
-      embed.setDescription(ctx.i18n`:warning: No active outpost detected`);
+      this.messageManager.send(message.channel, ctx.i18n` :warning: No active outpost detected`);
     }
-    this.messageManager.send(message.channel, embed);
+    return this.messageManager.statuses.SUCCESS;
   }
 }
 
