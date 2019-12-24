@@ -5,6 +5,7 @@ const https = require('https');
 const logger = require('../Logger');
 
 const retryCodes = [429].concat((process.env.JSON_CACHE_RETRY_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
+const redirectCodes = [302, 301].concat((process.env.JSON_CACHE_REDIRECT_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
 
 const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
 { promiseLib: Promise, maxRetry: 10, headers: {} }) => {
@@ -15,11 +16,17 @@ const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
       const body = [];
 
       if (response.statusCode < 200 || response.statusCode > 299) {
-        if ((response.statusCode > 499 || retryCodes.indexOf(response.statusCode) > -1)
+		if (redirectCodes.includes(response.statusCode)) {
+      setTimeout(() => {
+        fetch(response.headers.location, { promiseLib, maxRetry, headers })
+          .then(resolve)
+          .catch(logger.error);
+      }, 1000);
+		} else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode))
           && maxRetry > 0) {
           maxRetry -= 1; // eslint-disable-line no-param-reassign
           setTimeout(() => {
-            fetch(url, promiseLib, maxRetry)
+            fetch(url, { promiseLib, maxRetry })
               .then(resolve)
               .catch(logger.error);
           }, 1000);
@@ -30,16 +37,7 @@ const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
       } else {
         response.on('data', chunk => body.push(chunk));
         response.on('end', () => {
-          let r = body.join('');
-          try {
-            r = JSON.parse(r);
-          } catch (e) {
-            logger.error(`Failed to parse ${url}`);
-            logger.debug(r);
-            r = {};
-          } finally {
-            resolve(r);
-          }
+          resolve(JSON.parse(body.join('')));
         });
       }
     });
