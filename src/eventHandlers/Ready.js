@@ -97,7 +97,7 @@ async function updatePresence(self) {
         afk: false,
         activity: {
           name: final,
-          type: 'WATCHING',
+          type: 'PLAYING',
         },
       });
     }
