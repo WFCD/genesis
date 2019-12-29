@@ -68,6 +68,7 @@ async function updatePresence(self) {
   try {
     const cetusState = await self.bot.ws.get('cetusCycle');
     const vallisState = await self.bot.ws.get('vallisCycle');
+    const outpost = await self.bot.ws.get('sentientOutposts');
     const base = `@${self.client.user.username} help`;
     let final = base;
     if (vallisState || cetusState) {
@@ -84,9 +85,10 @@ async function updatePresence(self) {
         cetusState.isDay = !cetusState.isDay;
       }
 
-      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} | ` : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} | ` : '';
-      final = `${vs}${cs}${base}`;
+      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
+      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
+      final = `${ous}${vs}${cs}${base}`;
     }
 
     if (cetusState) {
@@ -95,7 +97,7 @@ async function updatePresence(self) {
         afk: false,
         activity: {
           name: final,
-          type: 'PLAYING',
+          type: 'WATCHING',
         },
       });
     }

@@ -19,6 +19,7 @@ const embeds = {
   Cycle: require('../embeds/EarthCycleEmbed'),
   Solaris: require('../embeds/SolarisEmbed'),
   Nightwave: require('../embeds/NightwaveEmbed'),
+  Outposts: require('../embeds/SentientOutpostEmbed'),
 };
 
 // const dbSettings = {

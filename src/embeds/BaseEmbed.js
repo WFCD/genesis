@@ -5,7 +5,7 @@ const { MessageEmbed } = require('discord.js');
 /**
  * Utility class for making rich embeds
  */
-class BaseEmbed extends MessageEmbed{
+class BaseEmbed extends MessageEmbed {
   constructor(bot) {
     super({
       url: 'https://warframestat.us/',
@@ -13,7 +13,7 @@ class BaseEmbed extends MessageEmbed{
         text: 'Sent',
         icon_url: 'https://warframestat.us/wfcd_logo_color.png',
       },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     if (bot) {
       this.bot = bot;

@@ -16,13 +16,13 @@ const fetch = (url, { promiseLib = Promise, maxRetry = 10, headers } =
       const body = [];
 
       if (response.statusCode < 200 || response.statusCode > 299) {
-		if (redirectCodes.includes(response.statusCode)) {
-      setTimeout(() => {
-        fetch(response.headers.location, { promiseLib, maxRetry, headers })
-          .then(resolve)
-          .catch(logger.error);
-      }, 1000);
-		} else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode))
+        if (redirectCodes.includes(response.statusCode)) {
+          setTimeout(() => {
+            fetch(response.headers.location, { promiseLib, maxRetry, headers })
+              .then(resolve)
+              .catch(logger.error);
+          }, 1000);
+        } else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode))
           && maxRetry > 0) {
           maxRetry -= 1; // eslint-disable-line no-param-reassign
           setTimeout(() => {

@@ -79,7 +79,8 @@
     "nightwave.daily",
     "nightwave.elite",
     "nightwave.weekly",
-    "twitch"
+    "twitch",
+    "outposts"
   ],
   "opts": [
     "all",

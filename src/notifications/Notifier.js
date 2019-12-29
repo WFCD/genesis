@@ -238,6 +238,7 @@ class Notifier {
       this.sendVallisCycle(vallisCycle, platform, vallisCycleChange);
       this.sendUpdates(updates, platform);
       this.sendAlerts(alerts, platform);
+      this.sendSentientOutposts(newData.sentientOutposts, platform);
       await this.sendNightwave(nightwave, platform);
     } catch (e) {
       logger.error(e);
@@ -479,6 +480,19 @@ class Notifier {
       new embeds.Solaris(this.bot, newCycle),
       platform, type, null, fromNow(newCycle.expiry),
     );
+  }
+
+  async sendSentientOutposts(outpost, platform) {
+    const isNotified = (await this.settings.getNotifiedIds(`${platform}-outposts`))
+      .includes(outpost.id);
+    if (outpost.active && !isNotified) {
+      Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+        const embed = new embeds.Outposts(this.bot, outpost, platform, i18n);
+        embed.locale = locale;
+        await this.broadcaster.broadcast(embed, platform, 'outposts');
+      });
+      this.settings.setNotifiedIds(`${platform}-outposts`, [outpost.id]);
+    }
   }
 }
 
