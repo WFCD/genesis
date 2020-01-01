@@ -1,8 +1,8 @@
 'use strict';
 
+const { MessageEmbed } = require('discord.js');
 const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
-const { MessageEmbed } = require('discord.js');
 
 /**
  * Add a joinable role

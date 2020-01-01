@@ -35,10 +35,12 @@ const clone = async (template, settings, member) => {
 
   const isRelay = await settings.isRelay(template.id);
   const nameTemplate = await settings.getDynTemplate(template.id);
-  const name = nameTemplate ? nameTemplate.replace('$username', member.displayName) :
-  (isRelay
+  const generatedName = isRelay
     ? await getRelayName(guild)
-    : generator.make({ adjective: true, type: 'places' }));
+    : generator.make({ adjective: true, type: 'places' });
+  const name = nameTemplate
+    ? nameTemplate.replace('$username', member.displayName)
+    : generatedName;
 
   const newChannel = await template.clone({
     name,

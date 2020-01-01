@@ -21,9 +21,10 @@ class SetTemplate extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {Object}  ctx     Context object
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     const templateChannelId = message.strippedContent.match(this.regex)[1];
     const nameTemplate = message.strippedContent.match(this.regex)[2];
     if (!templateChannelId || !nameTemplate) {
