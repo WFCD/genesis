@@ -150,6 +150,7 @@ module.exports = [
     guild_id BIGINT(20) NOT NULL,
     channel_id BIGINT(20) UNIQUE NOT NULL,
     is_relay varchar(1) NOT NULL,
+    template varchar(250) NULL DEFAULT NULL,
     PRIMARY KEY (guild_id, channel_id)
   )`,
   `CREATE TABLE IF NOT EXISTS dynamic_voice_instance (

@@ -9,7 +9,7 @@ class Platform extends Command {
     this.usages = [
       { description: 'Change this channel\'s platform', parameters: ['platform'] },
     ];
-    this.regex = new RegExp(`^${this.call}(?:\\s+(pc|ps4|xb1|swi))?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
+    this.regex = new RegExp(`^${this.call}(?:\\s+(${platforms.join('|')}))?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;
   }
 

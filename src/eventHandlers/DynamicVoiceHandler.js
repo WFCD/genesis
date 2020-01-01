@@ -30,18 +30,24 @@ const getRelayName = async (guild, retries = 0) => {
   return name;
 };
 
-const clone = async (template, settings) => {
+const clone = async (template, settings, member) => {
   const { guild } = template;
 
   const isRelay = await settings.isRelay(template.id);
-  const name = isRelay
+  const nameTemplate = await settings.getDynTemplate(template.id);
+  const name = nameTemplate ? nameTemplate.replace('$username', member.displayName) :
+  (isRelay
     ? await getRelayName(guild)
-    : generator.make({ adjective: true, type: 'places' });
+    : generator.make({ adjective: true, type: 'places' }));
 
   const newChannel = await template.clone({
     name,
     position: template.rawPosition + 1,
   });
+
+  if (nameTemplate) {
+    member.voice.setChannel(newChannel);
+  }
   return newChannel;
 };
 
@@ -54,7 +60,7 @@ class DynamicVoiceHandler {
     client.on('voiceStateUpdate', async (oldMember, newMember) => {
       const applicable = await this.checkManagementApplicable(oldMember, newMember);
       if (applicable) {
-        this.checkAllChannels(oldMember.guild);
+        this.checkAllChannels(oldMember.guild, newMember.member);
       }
     });
 
@@ -89,7 +95,7 @@ class DynamicVoiceHandler {
     return shouldFilter;
   }
 
-  async checkAllChannels(guild) {
+  async checkAllChannels(guild, member) {
     const templates = await this.settings.getTemplates([guild]);
 
     templates.forEach(async (template) => {
@@ -97,7 +103,7 @@ class DynamicVoiceHandler {
         const templateChannel = this.client.channels.get(template);
         const { remainingEmpty } = await this.settings.getInstances(templateChannel);
         if (remainingEmpty < 1) {
-          this.addChannel(templateChannel);
+          this.addChannel(templateChannel, member);
         }
       }
     });
@@ -109,9 +115,9 @@ class DynamicVoiceHandler {
     }
   }
 
-  async addChannel(template) {
+  async addChannel(template, member) {
     try {
-      const newChannel = await clone(template, this.settings);
+      const newChannel = await clone(template, this.settings, member);
       this.settings.addInstance(template, newChannel);
       return newChannel;
     } catch (error) {

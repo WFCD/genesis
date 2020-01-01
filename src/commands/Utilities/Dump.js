@@ -2,6 +2,7 @@
 
 const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
+const { MessageEmbed } = require('discord.js');
 
 /**
  * Add a joinable role
@@ -86,6 +87,9 @@ class Dump extends Command {
                     name: token.name,
                   }],
                 });
+                break;
+              case 'embed':
+                await target.send(new MessageEmbed(token.content));
                 break;
               default:
                 break;

@@ -2,6 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 const I18n = require('../settings/I18n');
+const { games } = require('../CommonFunctions');
 
 /**
  * Checks if the command is callable,
@@ -132,7 +133,7 @@ class CommandHandler extends Handler {
     let done = false;
     commands.forEach(async (command) => {
       // only run the first matching command
-      if (command.regex.test(content) && !done) {
+      if (games.includes(command.game) && command.regex.test(content) && !done) {
         // check if it's runnable for the user
         const canAct = await this.checkCanAct(command, strippedMessage);
         if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {

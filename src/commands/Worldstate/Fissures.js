@@ -36,6 +36,7 @@ class Fissures extends Command {
         meso: [],
         neo: [],
         axi: [],
+        requiem: [],
       };
 
       fissures.forEach((fissure) => {

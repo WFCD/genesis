@@ -51,7 +51,9 @@ const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@
  * Allowed platforms
  * @type {Array.<string>}
  */
-const platforms = ['pc', 'ps4', 'xb1', 'swi'];
+const platforms = ['pc', 'ps4', 'xb1', 'swi'].concat((process.env.PLATFORMS || '').split(','));
+
+const games = ['CORE'].concat((process.env.GAMES || '').split(','));
 
 /**
  * Duration mapping
@@ -1031,4 +1033,5 @@ module.exports = {
   safeMatch,
   getMessage,
   groupBy,
+  games,
 };

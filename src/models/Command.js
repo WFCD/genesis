@@ -1,6 +1,6 @@
 'use strict';
 
-const { MessageEmbed } = require('discord.js');
+const BaseEmbed = require('../embeds/BaseEmbed');
 
 /**
  * Options for a command
@@ -21,8 +21,9 @@ class Command {
    * @param {string}  id   The command's unique id
    * @param {string}  call The string that invokes this command
    * @param {string}  description A description for this command
+   * @param {string}  game  Game scope to allow this command in
    */
-  constructor(bot, id, call, description) {
+  constructor(bot, id, call, description, game) {
     /**
      * Command Identifier
      * @type {string}
@@ -41,6 +42,12 @@ class Command {
     this.usages = [
       { description, parameters: [] },
     ];
+
+    /**
+     * Game scope in which this command is allowed.
+     * @type {[type]}
+     */
+    this.game = game || 'CORE';
 
     /**
      * The logger object
@@ -150,21 +157,14 @@ class Command {
    * @returns {string} failure status.
    */
   async sendToggleUsage(message, ctx, options = ['on', 'off']) {
-    const embed = new MessageEmbed({
-      title: 'Usage',
-      type: 'rich',
-      color: 0x0000ff,
-      description: options ? `Basic Usage: ${ctx.prefix}${this.call} <${options.join(' | ')}>` : undefined,
-      provider: {
-        name: 'WFCD',
-        url: 'https://github.com/WFCD',
-      },
-      footer: {
-        text: 'Sent',
-        icon_url: 'https://warframestat.us/wfcd_logo_color.png',
-      },
-      timestamp: new Date(),
-    });
+    const embed = new BaseEmbed();
+    embed.title = 'Usage';
+    embed.color = 0x000ff;
+    embed.description = (options && options.length) ? `Basic Usage: ${ctx.prefix}${this.call} <${options.join(' | ')}>` : undefined;
+    embed.provider = {
+      name: 'WFCD',
+      url: 'https://github.com/WFCD',
+    };
 
     this.usages.forEach((u) => {
       embed.addField(`${this.isInline ? '' : ctx.prefix}${this.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
@@ -200,6 +200,7 @@ If a \`|\` is between \`<\` and \`>\`, it doesn't need to be included when calli
       usages: this.usages,
       blacklistable: this.blacklistable,
       enabled: this.enabled,
+      game: this.game,
     };
   }
 }

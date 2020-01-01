@@ -1,23 +1,22 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
-const { createGroupedArray, setupPages } = require('../../CommonFunctions');
+const BaseEmbed = require('../../embeds/BaseEmbed');
+const Command = require('../../models/Command');
+const { createGroupedArray, setupPages, games } = require('../../CommonFunctions');
 
 const invalidResultsEmbed = {
   color: 0x00CCFF,
   title: 'No results, please refine query.',
 };
 
-const createEmbedsForCommands = (commandFields, title, color) => ({
-  title,
-  fields: [].concat(...commandFields),
-  color,
-  type: 'rich',
-  footer: {
-    text: '*Optional Parameter • <> Parameter Replacements',
-    icon_url: 'https://warframestat.us/wfcd_logo_color.png',
-  },
-});
+const createEmbedsForCommands = (commandFields, title, color) => {
+  const embed = new BaseEmbed();
+  embed.title = title;
+  embed.fields = [].concat(...commandFields);
+  embed.color = color;
+  embed.footer.text = '*Optional Parameter • <> Parameter Replacements';
+  return embed;
+};
 
 const mapCommands = (commands, prefix) => commands.map(command => command.usages.map(u => ({
   name: `${command.isInline ? '' : prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
@@ -140,7 +139,7 @@ class Help extends Command {
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
     }
-    if (message.channel.type === 'text') {
+    if (message.channel.type === 'text' && games.includes(command.game)) {
       return (command.requiresAuth && message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) || !command.requiresAuth;
     }
     if (message.channel.type === 'dm' && command.allowDM) {
