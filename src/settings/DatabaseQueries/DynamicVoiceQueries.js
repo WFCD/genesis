@@ -9,7 +9,7 @@ class DynamicVoiceQueries {
 
   async addTemplate(channel, relay) {
     const query = SQL`INSERT IGNORE INTO dynamic_voice_template VALUES
-      (${channel.guild.id}, ${channel.id}, ${relay});`;
+      (${channel.guild.id}, ${channel.id}, ${relay}, NULL);`;
     await this.db.query(query);
     return this.addInstance(channel, channel);
   }
@@ -103,6 +103,21 @@ class DynamicVoiceQueries {
     return res[0].map(result => result.channel_id);
   }
 
+  async getDynTemplate(channelId) {
+    const res = await this.db.query(SQL`
+      SELECT t.template
+      FROM dynamic_voice_template as t
+      WHERE t.channel_id = ${channelId}`);
+    return res[0][0].template;
+  }
+
+  async setDynTemplate(channelId, template) {
+    return this.db.query(SQL`
+      UPDATE dynamic_voice_template
+      SET template = ${template}
+      WHERE channel_id = ${channelId}`);
+  }
+
   async isRelay(channelId) {
     const res = await this.db.query(SQL`
       SELECT t.is_relay
@@ -115,6 +130,14 @@ class DynamicVoiceQueries {
       return 'none';
     }
     return res[0][0].is_relay === '1';
+  }
+
+  async isTemplate(channel) {
+    const res = await this.db.query(SQL`
+      SELECT channel_id
+      FROM dynamic_voice_template
+      WHERE channel_id = ${channel.id}`);
+    return res[0].length;
   }
 
   async isInstance(channel) {
