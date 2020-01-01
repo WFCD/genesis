@@ -14,7 +14,7 @@ class Arbitration extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.worldstate.arbitration', 'arbi', 'Display the currently active arbitration');
-    this.regex = new RegExp(`^${this.call}(?:tration)?$`);
+    this.regex = new RegExp(`^${this.call}(?:tration)?(?:\\s+on\\s+${captures.platforms})?$`);
   }
 
   async run(message, ctx) {

@@ -51,9 +51,11 @@ const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@
  * Allowed platforms
  * @type {Array.<string>}
  */
-const platforms = ['pc', 'ps4', 'xb1', 'swi'].concat((process.env.PLATFORMS || '').split(','));
+const platforms = ['pc', 'ps4', 'xb1', 'swi']
+  .concat((process.env.PLATFORMS || '').split(',').filter(p => p));
 
-const games = ['CORE'].concat((process.env.GAMES || '').split(','));
+
+const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter(p => p));
 
 /**
  * Duration mapping
