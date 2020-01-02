@@ -17,7 +17,7 @@ class Sorties extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.sorties', 'sortie', 'Display the currently active sorties');
+    super(bot, 'warframe.worldstate.sorties', 'sortie', 'Display the currently active sorties', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class RestrictPool extends Command {
   constructor(bot) {
-    super(bot, 'promocode.pool.restrict', 'glyphs restrict', 'Restrict or unrestrict a pool');
+    super(bot, 'promocode.pool.restrict', 'glyphs restrict', 'Restrict or unrestrict a pool', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(on|off)?\\s*(?:--pool\\s?(.*))?`, 'i');
     this.usages = [
       {

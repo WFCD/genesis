@@ -14,7 +14,7 @@ class Reload extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.reload', 'reload', 'Reload bot modules');
+    super(bot, 'core.reload', 'reload', 'Reload bot modules', 'CORE');
     this.ownerOnly = true;
   }
 

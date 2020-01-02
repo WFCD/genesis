@@ -14,7 +14,7 @@ class Raid extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.stats.raid', 'raid', 'Get the raid record for a desired user, or for the calling user');
+    super(bot, 'warframe.stats.raid', 'raid', 'Get the raid record for a desired user, or for the calling user', 'WARFRAME');
     this.regex = new RegExp(`^(?:${this.call}s?|trials?)\\s*(.+)?`, 'i');
     this.usages = [
       {

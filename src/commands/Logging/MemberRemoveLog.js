@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetMemRemoveLog extends Command {
   constructor(bot) {
-    super(bot, 'settings.memberRemoveLog', 'set member remove log', 'Sets the log channel for member removals.');
+    super(bot, 'settings.memberRemoveLog', 'set member remove log', 'Sets the log channel for member removals.', 'LOGGING');
     this.usages = [
       { description: 'Set the member removal log channel', parameters: ['channel id'] },
     ];

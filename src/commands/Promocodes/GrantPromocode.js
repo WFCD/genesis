@@ -1,12 +1,12 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const { resolvePool } = require('../../CommonFunctions');
+const { resolvePool, captures } = require('../../CommonFunctions');
 
 class GrantPromocode extends Command {
   constructor(bot) {
-    super(bot, 'promocode.code.grant', 'glyphs grant', 'Grant a code.');
-    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1|switch)?\\s?(?:<@([0-9]{0,20})>)?`, 'i');
+    super(bot, 'promocode.code.grant', 'glyphs grant', 'Grant a code.', 'CODES');
+    this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?${captures.platform}?\\s?${captures.user}?`, 'i');
     this.usages = [
       {
         description: 'Grant a code to a user from a specific pool',

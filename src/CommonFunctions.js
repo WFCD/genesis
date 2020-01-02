@@ -54,7 +54,21 @@ const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@
 const platforms = ['pc', 'ps4', 'xb1', 'swi']
   .concat((process.env.PLATFORMS || '').split(',').filter(p => p));
 
-
+/**
+ * Games to enable.
+ * Allowed values:
+ *  * CORE
+ *  * UTIL
+ *  * LOGGING
+ *  * DESTINY2
+ *  * WARFRAME
+ *  * CODES
+ *  * FUN
+ * Default Values:
+ *  * CORE
+ *  * UTIL
+ * @type {Array<string>}
+ */
 const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter(p => p));
 
 /**

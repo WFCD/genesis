@@ -5,7 +5,7 @@ const { createGroupedArray, createPageCollector } = require('../../CommonFunctio
 
 class ListClaimed extends Command {
   constructor(bot) {
-    super(bot, 'promocode.code.claimed', 'glyphs list claimed', 'List claimed codes.');
+    super(bot, 'promocode.code.claimed', 'glyphs list claimed', 'List claimed codes.', 'CODES');
     this.regex = new RegExp(`^${this.call}`, 'i');
     this.allowDM = true;
   }

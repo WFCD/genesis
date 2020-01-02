@@ -34,7 +34,7 @@ const determineDescription = (userHasRole, hasMinimumRole) => {
  */
 class JoinRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.joinRole', 'join');
+    super(bot, 'settings.joinRole', 'join', 'Join a role', 'UTIL');
     this.usages = [
       { description: 'Show instructions for joining roles', parameters: [] },
       { description: 'Joining a role', parameters: ['Role/Role id to join.'] },

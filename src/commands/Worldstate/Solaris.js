@@ -10,7 +10,7 @@ class Solaris extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.solaris', 'solaris', 'Display the currently active Solaris bounties');
+    super(bot, 'warframe.worldstate.solaris', 'solaris', 'Display the currently active Solaris bounties', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 

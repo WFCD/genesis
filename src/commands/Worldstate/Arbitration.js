@@ -13,7 +13,7 @@ class Arbitration extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.arbitration', 'arbi', 'Display the currently active arbitration');
+    super(bot, 'warframe.worldstate.arbitration', 'arbi', 'Display the currently active arbitration', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:tration)?(?:\\s+on\\s+${captures.platforms})?$`);
   }
 

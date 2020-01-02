@@ -13,7 +13,7 @@ class Darvo extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.darvo', 'darvo', 'Displays today\'s Darvo deal');
+    super(bot, 'warframe.worldstate.darvo', 'darvo', 'Displays today\'s Darvo deal', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

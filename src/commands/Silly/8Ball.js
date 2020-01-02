@@ -35,7 +35,7 @@ class EightBall extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'silly.8ball', '8ball', 'Genesis answers your 8ball question');
+    super(bot, 'silly.8ball', '8ball', 'Get your 8Ball question answered!', 'FUN');
     this.regex = /8ball ?(.*)?/;
   }
 

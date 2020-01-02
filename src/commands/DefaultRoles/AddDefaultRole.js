@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class AddDefaultRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.addDefaultRole', 'add default role');
+    super(bot, 'settings.addDefaultRole', 'add default role', 'UTIL');
     this.usages = [
       { description: 'Add a new default role for persons joining the server.', parameters: ['role id'] },
     ];

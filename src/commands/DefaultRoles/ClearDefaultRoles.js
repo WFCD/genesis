@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class ClearDefaultRoles extends Command {
   constructor(bot) {
-    super(bot, 'settings.clearDefaultRoles', 'clear default roles', 'Clears all default roles for the server.');
+    super(bot, 'settings.clearDefaultRoles', 'clear default roles', 'Clears all default roles for the server.', 'UTIL');
     this.requiresAuth = true;
     this.allowDM = false;
   }

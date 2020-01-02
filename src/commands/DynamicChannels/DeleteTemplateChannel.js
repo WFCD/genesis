@@ -8,7 +8,7 @@ class DeleteTemplateChannel extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'dynamicchannels.delete', 'templates delete', 'Delete Template Channel');
+    super(bot, 'dynamicchannels.delete', 'templates delete', 'Delete Template Channel', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)?(\\d+)(?:>)?)?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;

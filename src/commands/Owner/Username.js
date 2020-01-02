@@ -11,7 +11,7 @@ class Username extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.username', 'username', 'Set Bot username');
+    super(bot, 'core.username', 'username', 'Set Bot username', 'CORE');
     this.ownerOnly = true;
     this.regex = new RegExp(`^${this.call}\\s*(.*)?`, 'i');
     this.usages = [

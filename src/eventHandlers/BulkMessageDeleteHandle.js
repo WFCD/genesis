@@ -2,6 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
+const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
@@ -22,6 +23,7 @@ class LogMessageDelete extends Handler {
    * @param {Discord.Collection<Message>} messages member to add roles to
    */
   async execute(...[messages]) {
+    if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     const first = messages.first();

@@ -6,7 +6,7 @@ const SentientOutpostEmbed = require('../../embeds/SentientOutpostEmbed');
 
 class Outpost extends Command {
   constructor(bot) {
-    super(bot, 'warframe.worldstate.rjoutpost', 'outpost', 'Display the activity status of the Sentient Outpost');
+    super(bot, 'warframe.worldstate.rjoutpost', 'outpost', 'Display the activity status of the Sentient Outpost', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 

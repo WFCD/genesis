@@ -7,7 +7,7 @@ const { createGroupedArray, embedDefaults, setupPages } = require('../../CommonF
 
 class ListUsers extends Command {
   constructor(bot) {
-    super(bot, 'core.blacklist.list', 'bl ls', 'List users in the blacklist');
+    super(bot, 'core.blacklist.list', 'bl ls', 'List users in the blacklist', 'CORE');
     this.regex = new RegExp(`^(?:${this.call}?|bl list)`);
     this.requiresAuth = true;
     this.allowDM = false;

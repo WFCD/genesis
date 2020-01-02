@@ -30,7 +30,7 @@ const reqRoleRegex = new RegExp('--requires (?:<@&)?(\\d{15,20})(>)?', 'ig');
  */
 class AddRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.addRole', 'add role');
+    super(bot, 'settings.addRole', 'add role', 'Add a role to the joinable system', 'UTIL');
     this.usages = [
       { description: 'Show instructions for adding joinable roles', parameters: [] },
       { description: 'Add a role', parameters: ['Role/Role id to add', '--create', '--mentionable', '--leavable (on | off)', '--requires @Role Mention'] },

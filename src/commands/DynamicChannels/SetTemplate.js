@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetTemplate extends Command {
   constructor(bot) {
-    super(bot, 'dynamicchannels.template', 'templates set', 'Set Template Channel name template');
+    super(bot, 'dynamicchannels.template', 'templates set', 'Set Template Channel name template', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s?${captures.channel}?(?:\\s+(.*))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;

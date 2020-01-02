@@ -7,7 +7,7 @@ const FeedsNotifier = require('../notifications/FeedsNotifier');
 const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
-const { timeDeltaToMinutesString, fromNow } = require('../CommonFunctions');
+const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
 
 const max = {
   cetus: {
@@ -26,6 +26,7 @@ const max = {
  * @param  {Genesis} self    Bot instance
  */
 async function checkPrivateRooms(self) {
+  if (!games.includes('UTIL')) return;
   self.logger.debug('Checking private rooms...');
   const privateRooms = await self.settings.getPrivateRooms();
   self.logger.debug(`Private rooms... ${privateRooms.length}`);
@@ -60,47 +61,51 @@ async function checkPrivateRooms(self) {
   });
 }
 
+async function getWarframePresence(self, base) {
+  const cetusState = await self.bot.ws.get('cetusCycle');
+  const vallisState = await self.bot.ws.get('vallisCycle');
+  const outpost = await self.bot.ws.get('sentientOutposts');
+
+  if (vallisState || cetusState) {
+    let vsFromNow = fromNow(new Date(vallisState.expiry));
+    let csFromNow = fromNow(new Date(cetusState.expiry));
+
+    if (vsFromNow < 0) {
+      vsFromNow = (vallisState.isWarm ? max.vallis.cold : max.vallis.warm) + vsFromNow;
+      vallisState.isWarm = !vallisState.isWarm;
+    }
+
+    if (csFromNow < 0) {
+      csFromNow = (cetusState.isDay ? max.cetus.night : max.cetus.day) + csFromNow;
+      cetusState.isDay = !cetusState.isDay;
+    }
+
+    const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
+    const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
+    const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
+    return `${ous}${vs}${cs}${base}`;
+  }
+  return base;
+}
+
 /**
  * Perform actions when the bot is ready
  * @param {Bot} self  the bot
  */
 async function updatePresence(self) {
   try {
-    const cetusState = await self.bot.ws.get('cetusCycle');
-    const vallisState = await self.bot.ws.get('vallisCycle');
-    const outpost = await self.bot.ws.get('sentientOutposts');
     const base = `@${self.client.user.username} help`;
-    let final = base;
-    if (vallisState || cetusState) {
-      let vsFromNow = fromNow(new Date(vallisState.expiry));
-      let csFromNow = fromNow(new Date(cetusState.expiry));
 
-      if (vsFromNow < 0) {
-        vsFromNow = (vallisState.isWarm ? max.vallis.cold : max.vallis.warm) + vsFromNow;
-        vallisState.isWarm = !vallisState.isWarm;
-      }
-
-      if (csFromNow < 0) {
-        csFromNow = (cetusState.isDay ? max.cetus.night : max.cetus.day) + csFromNow;
-        cetusState.isDay = !cetusState.isDay;
-      }
-
-      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
-      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
-      final = `${ous}${vs}${cs}${base}`;
-    }
-
-    if (cetusState) {
-      self.client.user.setPresence({
-        status: 'online',
-        afk: false,
-        activity: {
-          name: final,
-          type: 'PLAYING',
-        },
-      });
-    }
+    const wfPresence = games.includes('WARFRAME') ? await getWarframePresence(self, base) : null;
+    const presence = wfPresence || base;
+    self.client.user.setPresence({
+      status: 'online',
+      afk: false,
+      activity: {
+        name: presence,
+        type: 'PLAYING',
+      },
+    });
   } catch (error) {
     // swallow, it's not an important error
   }

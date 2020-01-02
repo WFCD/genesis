@@ -13,7 +13,7 @@ class GetBuild extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.search', 'search builds', 'Search for a build in the public builds');
+    super(bot, 'builds.search', 'search builds', 'Search for a build in the public builds', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call}|sb)\\s?(.+)?`, 'i');
 
     this.usages = [

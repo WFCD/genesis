@@ -43,7 +43,7 @@ class Help extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'core.help', 'help', 'Display this message');
+    super(bot, 'core.help', 'help', 'Display this message', 'CORE');
 
     this.helpEmbed = null;
 

@@ -12,7 +12,7 @@ class Invite extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.invite', 'invite', 'Invite user to temp room');
+    super(bot, 'rooms.invite', 'invite', 'Invite user to temp room', 'UTIL');
     this.regex = new RegExp(`^${this.call}`, 'i');
     this.usages = [];
     this.allowDM = false;

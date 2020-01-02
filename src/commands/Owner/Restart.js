@@ -11,7 +11,7 @@ class Restart extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.restart', 'restart', 'Restart bot');
+    super(bot, 'core.restart', 'restart', 'Restart bot', 'CORE');
     this.ownerOnly = true;
     this.blacklistable = false;
   }

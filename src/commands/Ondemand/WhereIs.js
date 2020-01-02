@@ -16,7 +16,7 @@ function toTitleCase(str) {
  */
 class Whereis extends Command {
   constructor(bot) {
-    super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops');
+    super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops', 'WARFRAME');
     this.regex = new RegExp('^where\\s?(?:is\\s?)?(.+)?', 'i');
 
     this.usages = [

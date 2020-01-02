@@ -14,7 +14,7 @@ class Updates extends Command {
    *
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.updates', 'update', 'Display the currently active update news');
+    super(bot, 'warframe.worldstate.updates', 'update', 'Display the currently active update news', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

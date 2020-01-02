@@ -14,7 +14,7 @@ class PriceCheck extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.pricecheck', 'pricecheck', 'pricecheck');
+    super(bot, 'warframe.misc.pricecheck', 'pricecheck', 'pricecheck', 'WARFRAME');
     this.regex = new RegExp('^p(?:rice)?\\s?c(?:heck)?(?:\\s+([\\w+\\s]+))?', 'i');
 
     this.usages = [

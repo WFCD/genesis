@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetModRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.setModRole', 'set mod', 'Sets the server\'s mod role.');
+    super(bot, 'settings.setModRole', 'set mod', 'Sets the server\'s mod role.', 'LOGGING');
     this.usages = [
       { description: 'Change the configured mod role', parameters: ['mod role id'] },
     ];

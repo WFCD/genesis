@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetMessageDeleteLog extends Command {
   constructor(bot) {
-    super(bot, 'settings.msgDeleteLog', 'set message delete log', 'Sets the log channel for message deletions.');
+    super(bot, 'settings.msgDeleteLog', 'set message delete log', 'Sets the log channel for message deletions.', 'LOGGING');
     this.usages = [
       { description: 'Set the message delete log channel', parameters: ['channel id'] },
     ];

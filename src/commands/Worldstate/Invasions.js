@@ -13,7 +13,7 @@ class Invasions extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.invasions', 'invasion', 'Display the currently active Invasions');
+    super(bot, 'warframe.worldstate.invasions', 'invasion', 'Display the currently active Invasions', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?(?:\\s?(compact))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

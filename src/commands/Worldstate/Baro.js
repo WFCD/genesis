@@ -13,7 +13,7 @@ class Baro extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.baro', 'baro', 'Display the current status of the Void Trader');
+    super(bot, 'warframe.worldstate.baro', 'baro', 'Display the current status of the Void Trader', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?`, 'i');
   }
 

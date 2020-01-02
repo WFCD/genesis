@@ -13,7 +13,7 @@ class Ping extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.ping', 'ping', 'Ping Genesis to test connectivity');
+    super(bot, 'core.ping', 'ping', 'Ping Genesis to test connectivity', 'CORE');
   }
 
   /**

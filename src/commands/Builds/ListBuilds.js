@@ -12,7 +12,7 @@ class ListBuilds extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.list', 'list builds', 'Create a temporary room.');
+    super(bot, 'builds.list', 'list builds', 'Create a temporary room.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call}|lb)\\s?(.+)?`, 'i');
 
     this.usages = [

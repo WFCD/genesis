@@ -13,7 +13,7 @@ class BuildChart extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.buildchart', 'buildchart', 'Display Weapon Build Flowchart chart');
+    super(bot, 'warframe.misc.buildchart', 'buildchart', 'Display Weapon Build Flowchart chart', 'WARFRAME');
   }
 
   /**

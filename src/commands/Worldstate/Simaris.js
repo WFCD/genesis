@@ -16,7 +16,7 @@ class Simaris extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.');
+    super(bot, 'warframe.worldstate.simaris', 'simaris', 'Display current Sanctuary status.', 'WARFRAME');
     // Can only have 1 regex that a command can match on,
     // so this is a combination of platform or target
     this.regex = new RegExp(`(^${this.call}(?:\\s+on\\s+${captures.platforms})?$)|(^${this.call}(?:\\s+target\\s+([\\sa-zA-Z0-9]+))?$)`, 'i');

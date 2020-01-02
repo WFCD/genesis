@@ -1,6 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
+const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
@@ -22,6 +23,7 @@ class NotifyOwnerJoin extends Handler {
    * @param {Discord.Guild} guild guild to add to the database
    */
   async execute(...[guild]) {
+    if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     if (!guild.available) {

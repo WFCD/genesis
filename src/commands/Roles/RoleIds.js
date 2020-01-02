@@ -8,7 +8,7 @@ const { createGroupedArray, setupPages } = require('../../CommonFunctions');
  */
 class Roles extends Command {
   constructor(bot) {
-    super(bot, 'settings.roleids', 'roleids', 'Get list of role ids');
+    super(bot, 'settings.roleids', 'roleids', 'Get list of role ids', 'UTIL');
     this.allowDM = false;
     this.requiresAuth = true;
   }

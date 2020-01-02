@@ -11,7 +11,7 @@ class DeleteBuild extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.delete', 'delete build', 'Create a temporary room.');
+    super(bot, 'builds.delete', 'delete build', 'Delete an existing build.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call}|db)\\s?(.+)?`, 'i');
 
     this.usages = [

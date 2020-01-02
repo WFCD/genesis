@@ -10,7 +10,7 @@ const Broadcaster = require('./Broadcaster');
 const logger = require('../Logger');
 
 const {
-  createGroupedArray, apiBase, apiCdnBase, platforms,
+  createGroupedArray, apiBase, apiCdnBase, platforms, games,
 } = require('../CommonFunctions');
 
 
@@ -181,11 +181,13 @@ class Notifier {
    * Start the notifier
    */
   async start() {
-    for (const k of Object.keys(this.bot.worldStates)) {
-      this.bot.worldStates[k].on('newData', async (platform, newData) => {
-        logger.debug(`[N] Processing new data for ${platform}`);
-        await this.onNewData(platform, newData);
-      });
+    if (games.includes('WARFRAME')) {
+      for (const k of Object.keys(this.bot.worldStates)) {
+        this.bot.worldStates[k].on('newData', async (platform, newData) => {
+          logger.debug(`[N] Processing new data for ${platform}`);
+          await this.onNewData(platform, newData);
+        });
+      }
     }
   }
 

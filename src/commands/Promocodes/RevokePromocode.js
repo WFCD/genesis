@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class RevokePromocode extends Command {
   constructor(bot) {
-    super(bot, 'promocode.code.revoke', 'glyphs revoke', 'Revoke a claimed or granted code.');
+    super(bot, 'promocode.code.revoke', 'glyphs revoke', 'Revoke a claimed or granted code.', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(.*)?`, 'i');
     this.usages = [
       {

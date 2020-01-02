@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class SetPoolGuild extends Command {
   constructor(bot) {
-    super(bot, 'promocode.pool.name', 'glyphs set name', 'Set a pool\'s name');
+    super(bot, 'promocode.pool.name', 'glyphs set name', 'Set a pool\'s name', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s?(?:.*))?(.*)?`, 'i');
     this.usages = [
       {

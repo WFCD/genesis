@@ -5,9 +5,9 @@ const Command = require('../../models/Command.js');
 /**
  * Sets the current guild's custom prefix
  */
-class Untrack extends Command {
+class Start extends Command {
   constructor(bot) {
-    super(bot, 'settings.start', 'start', 'Lols');
+    super(bot, 'settings.start', 'start', 'Lols', 'UTIL');
     this.requiresAuth = true;
   }
 
@@ -17,4 +17,4 @@ class Untrack extends Command {
   }
 }
 
-module.exports = Untrack;
+module.exports = Start;

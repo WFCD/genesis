@@ -13,7 +13,7 @@ class Enemies extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.acolytes', 'acolyte', 'Display any currently active acolyte-style enemies.');
+    super(bot, 'warframe.worldstate.acolytes', 'acolyte', 'Display any currently active acolyte-style enemies.', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?(?:\\s+on\\s+${captures.platforms})?`, 'i');
   }
 

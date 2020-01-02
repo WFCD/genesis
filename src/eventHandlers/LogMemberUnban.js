@@ -2,6 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
+const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
@@ -22,6 +23,7 @@ class LogMemberUnban extends Handler {
    * @param {Discord.User} user user that was banned
    */
   async execute(...[guild, user]) {
+    if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     let logChannel = await this.settings.getGuildSetting(guild, 'unbanLog');

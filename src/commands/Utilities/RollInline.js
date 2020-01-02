@@ -11,7 +11,7 @@ class RollInline extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'roll', 'roll?', 'Roll between 2 rivens');
+    super(bot, 'roll', 'roll?', 'Roll between 2 rivens', 'UTIL');
     this.regex = new RegExp('left or right[:\\?]', 'ig');
     this.usages = [
       {

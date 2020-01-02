@@ -11,7 +11,7 @@ class Resize extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.resize', 'resize room', 'Resize temp room');
+    super(bot, 'rooms.resize', 'resize room', 'Resize temp room', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s?(\\d+)`, 'i');
     this.usages = [];
     this.allowDM = false;

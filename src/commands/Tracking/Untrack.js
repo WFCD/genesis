@@ -18,7 +18,7 @@ const {
  */
 class Untrack extends Command {
   constructor(bot) {
-    super(bot, 'settings.untrack', 'untrack');
+    super(bot, 'settings.untrack', 'untrack', 'Untrack something', 'UTIL');
     this.usages = [
       { description: 'Show tracking command for untracking events', parameters: [] },
       { description: 'Untrack an event or events', parameters: ['event(s) to untrack'] },

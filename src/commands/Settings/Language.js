@@ -7,7 +7,7 @@ const languages = require('../../resources/locales').map(lang => lang.toLowerCas
 
 class Language extends Command {
   constructor(bot) {
-    super(bot, 'settings.language', 'language');
+    super(bot, 'settings.language', 'language', 'Set the channel\'s language', 'CORE');
     this.usages = [
       { description: 'Change this channel\'s language', parameters: ['language'] },
     ];

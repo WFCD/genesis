@@ -14,7 +14,7 @@ class FeaturedDeal extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.featureddeal', 'featureddeal', 'Displays current featured deals');
+    super(bot, 'warframe.worldstate.featureddeal', 'featureddeal', 'Displays current featured deals', 'WARFRAME');
     this.regex = new RegExp(`^featured\\s?deals?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

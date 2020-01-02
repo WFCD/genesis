@@ -13,7 +13,7 @@ class Fissures extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.fissures', 'fissure', 'Get the current list of Void Fissure Missions');
+    super(bot, 'warframe.worldstate.fissures', 'fissure', 'Get the current list of Void Fissure Missions', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?(?:\\s?(compact))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

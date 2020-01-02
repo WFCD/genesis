@@ -11,7 +11,7 @@ class Invitation extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.invitation', 'invitation', 'Send Invitation Link to Authorize Bot to Join a Server');
+    super(bot, 'core.invitation', 'invitation', 'Send Invitation Link to Authorize Bot to Join a Server', 'CORE');
     this.regex = new RegExp(`^${this.call}$`, 'ig');
   }
 

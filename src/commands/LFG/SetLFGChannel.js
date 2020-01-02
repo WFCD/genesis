@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetLFGChannel extends Command {
   constructor(bot) {
-    super(bot, 'settings.lfgChannel', 'set lfg channel', 'Sets the LFG Channel.');
+    super(bot, 'settings.lfgChannel', 'set lfg channel', 'Sets the LFG Channel.', 'UTIL');
     this.usages = [
       { description: 'Set the LFG channel', parameters: ['platform', 'channel id'] },
     ];

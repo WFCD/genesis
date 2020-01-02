@@ -9,7 +9,7 @@ class AddTemplateChannel extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'dynamicchannels.list', 'templates list', 'List Template Channels');
+    super(bot, 'dynamicchannels.list', 'templates list', 'List Template Channels', 'UTIL');
     this.requiresAuth = true;
     this.allowDM = false;
   }

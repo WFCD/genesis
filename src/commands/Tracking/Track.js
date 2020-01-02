@@ -18,7 +18,7 @@ const {
  */
 class Track extends Command {
   constructor(bot) {
-    super(bot, 'settings.track', 'track');
+    super(bot, 'settings.track', 'track', 'Track something', 'UTIL');
     this.usages = [
       { description: 'Show tracking command for tracking events', parameters: [] },
       { description: 'Track an event or events', parameters: ['event(s) to track'] },

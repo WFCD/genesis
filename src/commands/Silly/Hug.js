@@ -11,7 +11,7 @@ class Hug extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'silly.hug', 'hug', 'Hug Genesis');
+    super(bot, 'silly.hug', 'hug', 'Hug Genesis', 'FUN');
   }
 
   run(message) {

@@ -5,7 +5,7 @@ const { getChannel, captures, platforms } = require('../../CommonFunctions');
 
 class Platform extends Command {
   constructor(bot) {
-    super(bot, 'settings.platform', 'platform', 'Change a channel\'s platform');
+    super(bot, 'settings.platform', 'platform', 'Change a channel\'s platform', 'CORE');
     this.usages = [
       { description: 'Change this channel\'s platform', parameters: ['platform'] },
     ];

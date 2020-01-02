@@ -5,7 +5,7 @@ const { getChannel } = require('../../CommonFunctions.js');
 
 class PingCustomCommand extends Command {
   constructor(bot) {
-    super(bot, 'settings.cc.ping', 'ping cc', 'Toggle whether or not custom commands mention either the user or the mentioned person.');
+    super(bot, 'settings.cc.ping', 'ping cc', 'Toggle whether or not custom commands mention either the user or the mentioned person.', 'UTIL');
     this.usages = [
       { description: 'Change if this channel\'s use custom commands will ping', parameters: ['custom commands enabled'] },
     ];

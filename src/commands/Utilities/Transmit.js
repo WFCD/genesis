@@ -5,7 +5,7 @@ const Command = require('../../models/Command.js');
 
 class Transmit extends Command {
   constructor(bot) {
-    super(bot, 'utilities.transmit', 'transmit');
+    super(bot, 'utilities.transmit', 'transmit', 'Send messages formatted like message transmissions', 'UTIL');
     this.usages = [
       { description: 'Send Solaris-esque transmission to a channel', parameters: ['JSON configuration file'] },
     ];

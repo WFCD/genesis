@@ -2,6 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
+const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
@@ -21,6 +22,7 @@ class LogMemberRemove extends Handler {
    * @param {Discord.Message} message member that was remvoed, left, or kicked
    */
   async execute(...[member]) {
+    if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     let logChannel = await this.settings.getGuildSetting(member.guild, 'memberRemoveLog');

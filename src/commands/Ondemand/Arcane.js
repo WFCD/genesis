@@ -15,7 +15,7 @@ class Arcane extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.arcane', 'arcane', 'Get information about an Arcane Enhancement');
+    super(bot, 'warframe.misc.arcane', 'arcane', 'Get information about an Arcane Enhancement', 'WARFRAME');
     this.regex = new RegExp('^arcane(.+)?', 'i');
     this.usages = [
       {

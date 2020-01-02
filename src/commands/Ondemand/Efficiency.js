@@ -14,7 +14,7 @@ class Efficiency extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.efficiency', 'efficiency', 'Display Warframe Efficiency Chart');
+    super(bot, 'warframe.misc.efficiency', 'efficiency', 'Display Warframe Efficiency Chart', 'WARFRAME');
   }
 
   /**

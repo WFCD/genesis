@@ -59,7 +59,7 @@ class Create extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.create', 'create', 'Create a temporary room.');
+    super(bot, 'rooms.create', 'create', 'Create a temporary room.', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s?(room|raid|team|chat)?(\\w|-)?(?:-n(.+))?(--no-text)?(--public)?(--text)?(--hidden)?(--shown)?`, 'i');
 
     this.usages = [

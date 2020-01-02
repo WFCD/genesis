@@ -17,7 +17,7 @@ class AddBuild extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.add', 'add build', 'Create a temporary room.');
+    super(bot, 'builds.add', 'add build', 'Create a temporary room.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call}|ab)\\s?(.+)?`, 'i');
 
     this.usages = [

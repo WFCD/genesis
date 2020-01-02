@@ -11,7 +11,7 @@ class LeaveServer extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.leaveserver', 'leaveserver', 'Leave a specified server');
+    super(bot, 'core.leaveserver', 'leaveserver', 'Leave a specified server', 'CORE');
     this.ownerOnly = true;
     this.regex = new RegExp(`^${this.call}\\s*(.*)?`, 'i');
     this.usages = [

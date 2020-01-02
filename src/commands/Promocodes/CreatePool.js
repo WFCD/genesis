@@ -7,7 +7,7 @@ const Command = require('../../models/Command.js');
  */
 class CreatePool extends Command {
   constructor(bot) {
-    super(bot, 'promocode.pools.add', 'glyphs create pool', 'Create a new Glyph Pool');
+    super(bot, 'promocode.pools.add', 'glyphs create pool', 'Create a new Glyph Pool', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {

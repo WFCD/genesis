@@ -14,7 +14,7 @@ class Damage extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.damage', 'damage', 'Display Damage 2.0 chart');
+    super(bot, 'warframe.misc.damage', 'damage', 'Display Damage 2.0 chart', 'WARFRAME');
   }
 
   /**

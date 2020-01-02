@@ -71,7 +71,7 @@ class Armor extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.armor', 'armor', 'armor');
+    super(bot, 'warframe.misc.armor', 'armor', 'armor', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:\\s+([\\d+\\.?\\d*\\s]+))?`, 'i');
     this.usages = [
       { description: 'Display instructions for calculating armor', parameters: [] },

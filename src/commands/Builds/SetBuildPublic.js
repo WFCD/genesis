@@ -11,7 +11,7 @@ class SetBuildsPublic extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.setpublic', 'set public build|spb', 'Set whether or not a build is public.');
+    super(bot, 'builds.setpublic', 'set public build|spb', 'Set whether or not a build is public.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call})\\s?(.+)?`, 'i');
 
     this.usages = [

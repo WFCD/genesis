@@ -7,7 +7,6 @@
 # Contribute
 
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/genesis-discord/localized.svg)](https://crowdin.com/project/genesis-discord)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e0ada11fe724aaea15f5fdb97eaf781)](https://www.codacy.com/app/aliasfalse/genesis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WFCD/genesis&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/146691885363232769.svg?logo=discord)](https://discord.gg/DuFunUv)
 
 ## Live Public Bot info
@@ -51,6 +50,7 @@ tl;dr Bots need data. While I don't record any of your personal data or save it 
 
 Genesis requires a MySQL server. It uses the **MYSQL_*** environment variables for determining where to connect to
 
+### Base
 Environment Variable | Description | Example | Default
 --- | --- | --- | ---
 TOKEN | Discord connection token | `mfa.234089sdfasdf20dfada,f.asd` | N\A
@@ -64,16 +64,43 @@ SHARD_OFFSET | Offset of the first shard id for the local shards, default 0 | 2 
 LOCAL_SHARDS | Number of shards locally | 2 | 1
 SHARDS | Total number of shards | 1 | 1
 OWNER | ID of the person owning/running the bot, used for checking permissions
+PREFIX | Default prefix to use for the instance | `\` | `\`
+RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
+
+### Stats tracking
+Environment Variable | Description | Example | Default
+--- | --- | --- | ---
 DISCORD_BOTS_WEB_TOKEN | Token used to update bots.discord.pw bot statistics | `as;dofiahsdf` | N\A
 DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server count | 6456514654966321321 | N\A
 DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
-PREFIX | Default prefix to use for the instance | `\` | `\`
-RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
+
+
+### Feature Flags
+
+Environment Variable | Description | Example | Default
+--- | --- | --- | ---
+GAMES | Feature flags to enable | `WARFRAME,UTIL,LOGGING` | `CORE`
+
+* `CORE` does not need to be specified ever, it will always load
+
+Flag | Feature | Default
+--- | --- | ---
+CORE | Core features of the bot | ✓
+UTIL | Common utility functions that are domain agnostic, such as LFG and builds | ✗
+LOGGING | Just what it sounds like, logging guild actions | ✗
+CODES | Managing promo codes, like Warframe Glyph codes | ✗
+FUN | Fun stuff, like 8Ball and corgis | ✗
+WARFRAME | Warframe functionality, like tracking and Warframe informational Commands | ✗
+DESTINY2 | For an in-progress section allowing people to expand Genesis into Destiny 2 | ✗
+
+### Setting up Twitch
+
+Environment Variable | Description | Example | Default
+--- | --- | --- | ---
 TWITCH_CLIENT_ID | Twitch Client ID for querying Twitch API | uo6dggojyb8d6soh92zknwmi5ej1q2 | N/A
 TWITCH_USER_LOGIN | The Twitch user login to watch | warframe | warframe
 TWITCH_POLL_INTERVAL_MS | How often to poll Twitch for stream updates (in milliseconds) | 10000 | 10000
 
-## Setting up Twitch
 In order to setup Twitch you need to specify your Twitch API Client ID. See the following link on how to get one:
 * Twitch API Client ID: https://dev.twitch.tv/docs/v5/ (See Getting a client ID)
 

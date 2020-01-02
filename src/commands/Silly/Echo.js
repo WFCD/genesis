@@ -11,7 +11,7 @@ class Echo extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'silly.echo', 'echo', 'Genesis echos your message');
+    super(bot, 'silly.echo', 'echo', 'Echo your message', 'FUN');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
   }
 

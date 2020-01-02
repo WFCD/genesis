@@ -60,7 +60,7 @@ class Jokes extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'silly.joke', 'joke', 'Genesis tells a joke');
+    super(bot, 'silly.joke', 'joke', 'Genesis tells a joke', 'FUN');
   }
 
   /**

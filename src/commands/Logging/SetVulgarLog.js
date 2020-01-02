@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetVulgarLog extends Command {
   constructor(bot) {
-    super(bot, 'settings.vulgarLog', 'set vulgar log', 'Sets the log channel for vulgar names of new members.');
+    super(bot, 'settings.vulgarLog', 'set vulgar log', 'Sets the log channel for vulgar names of new members.', 'LOGGING');
     this.usages = [
       { description: 'Set the vulgarity log channel', parameters: ['channel id'] },
     ];

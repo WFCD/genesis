@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class ExportPromocodes extends Command {
   constructor(bot) {
-    super(bot, 'promocode.export', 'glyphs export', 'Export promocodes the user has access to to a csv file.');
+    super(bot, 'promocode.export', 'glyphs export', 'Export promocodes the user has access to to a csv file.', 'CODES');
     this.usages = [
       {
         description: 'Export codes from a pool to a `.csv` file',

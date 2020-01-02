@@ -28,7 +28,7 @@ const nonCompact = new RegExp('--expand', 'ig');
 
 class Settings extends Command {
   constructor(bot) {
-    super(bot, 'settings.settings', 'settings', 'Get settings');
+    super(bot, 'settings.settings', 'settings', 'Get settings', 'CORE');
     this.regex = new RegExp(`^${this.call}(?:\\s*--expand)?(?:\\s+in\\s+((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
     this.requiresAuth = true;
   }

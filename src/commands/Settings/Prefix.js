@@ -7,7 +7,7 @@ const Command = require('../../models/Command.js');
  */
 class Prefix extends Command {
   constructor(bot) {
-    super(bot, 'settings.prefix', 'prefix');
+    super(bot, 'settings.prefix', 'prefix', 'Set the bot prefix for the channel', 'CORE');
     this.usages = [
       { description: 'Change this channel\'s prefix', parameters: ['prefix (up to 3 characters)'] },
     ];

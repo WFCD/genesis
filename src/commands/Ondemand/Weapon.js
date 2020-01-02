@@ -18,7 +18,7 @@ class WeaponStats extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.weaponstats', 'weapon', 'Get stats for a weapon');
+    super(bot, 'warframe.misc.weaponstats', 'weapon', 'Get stats for a weapon', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {

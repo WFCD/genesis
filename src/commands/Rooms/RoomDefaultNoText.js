@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class RoomUnlockedDefault extends Command {
   constructor(bot) {
-    super(bot, 'settings.defaultNoText', 'set rooms notext', 'Set whether or not to the bot should default rooms to being unlocked (public).');
+    super(bot, 'settings.defaultNoText', 'set rooms notext', 'Set whether or not to the bot should default rooms to being unlocked (public).', 'UTIL');
     this.usages = [
       { description: 'Change if the bot should create unlocked channels by default (defaults to off)', parameters: ['private notext defaulted'] },
     ];

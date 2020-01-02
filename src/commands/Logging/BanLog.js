@@ -5,7 +5,7 @@ const { captures } = require('../../CommonFunctions');
 
 class SetBanLog extends Command {
   constructor(bot) {
-    super(bot, 'settings.banLog', 'set ban log', 'Sets the log channel for bans.');
+    super(bot, 'settings.banLog', 'set ban log', 'Sets the log channel for bans.', 'LOGGING');
     this.usages = [
       { description: 'Set the ban log channel', parameters: ['channel id'] },
     ];

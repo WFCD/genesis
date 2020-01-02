@@ -26,7 +26,7 @@ const deleteRegex = new RegExp('--delete', 'ig');
  */
 class RemoveRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.removeRole', 'remove role');
+    super(bot, 'settings.removeRole', 'remove role', 'Remove role from joinable system', 'UTIL');
     this.usages = [
       { description: 'Show instructions for removing joinable roles', parameters: [] },
       { description: 'Remove a role', parameters: ['Role/Role id to add', '--delete'] },

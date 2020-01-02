@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const BaseCommand = require('../models/Command');
+const { games } = require('../CommonFunctions');
 
 const generateManifest = async () => {
   const commandDir = path.join(__dirname, '../commands');
@@ -27,7 +28,7 @@ const generateManifest = async () => {
       const Cmd = require(path.join(commandDir, f));
       if (Cmd.prototype instanceof BaseCommand) {
         const command = new Cmd({ messageManager: {}, settings: {}, path: f });
-        if (command.enabled) {
+        if (command.enabled && games.includes(command.game)) {
           return command;
         }
       }

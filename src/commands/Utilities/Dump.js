@@ -9,7 +9,7 @@ const Command = require('../../models/Command.js');
  */
 class Dump extends Command {
   constructor(bot) {
-    super(bot, 'utilities.dump', 'dump');
+    super(bot, 'utilities.dump', 'dump', 'Dump message data to a channel', 'UTIL');
     this.usages = [
       { description: 'Dump a channel config to a channel', parameters: ['JSON configuration file'] },
     ];

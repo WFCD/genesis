@@ -12,7 +12,7 @@ const reqRoleRegex = new RegExp('--requires (?:<@&)?(\\d{15,20})(>)?', 'ig');
  */
 class AddRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.reactions.addRole', 'radd');
+    super(bot, 'settings.reactions.addRole', 'radd', 'UTIL');
     this.usages = [
       { description: 'Show instructions for adding reaction role', parameters: [] },
       { description: 'Add a role with an emote', parameters: ['Role/Role id to add', '--create', '--mentionable', '--leavable (on | off)', '--requires @Role Mention'] },

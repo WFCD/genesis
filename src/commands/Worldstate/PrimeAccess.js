@@ -13,7 +13,7 @@ class PrimeAccess extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.primeaccess', 'primeaccess', 'Display the currently active prime access news');
+    super(bot, 'warframe.worldstate.primeaccess', 'primeaccess', 'Display the currently active prime access news', 'WARFRAME');
     this.regex = new RegExp(`^prime\\s?access(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

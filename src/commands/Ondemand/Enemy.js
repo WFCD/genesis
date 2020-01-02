@@ -9,7 +9,7 @@ const { setupPages, createGroupedArray } = require('../../CommonFunctions');
 
 class EnemyStats extends Command {
   constructor(bot) {
-    super(bot, 'warframe.misc.enemystats', 'enemy', 'Get stats for an enemy');
+    super(bot, 'warframe.misc.enemystats', 'enemy', 'Get stats for an enemy', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {

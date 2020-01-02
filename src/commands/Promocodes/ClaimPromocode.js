@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class ClaimPromocode extends Command {
   constructor(bot) {
-    super(bot, 'promocode.code.claim', 'glyphs claim', 'Claim a code.');
+    super(bot, 'promocode.code.claim', 'glyphs claim', 'Claim a code.', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?\\s?(pc|ps4|xb1|switch)?\\s?(?:--password\\s(.*))?`, 'i');
     this.usages = [
       {

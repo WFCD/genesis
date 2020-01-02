@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class DeleteExpired extends Command {
   constructor(bot) {
-    super(bot, 'settings.deleteexpired', 'delete expired', 'Set whether or not to delete expired notifications.');
+    super(bot, 'settings.deleteexpired', 'delete expired', 'Set whether or not to delete expired notifications.', 'CORE');
     this.usages = [
       { description: 'Change if the bot to deletes expired notifications', parameters: ['deleting enabled'] },
     ];

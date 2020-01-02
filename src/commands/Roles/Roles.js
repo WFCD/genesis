@@ -9,7 +9,7 @@ const { createGroupedArray, setupPages } = require('../../CommonFunctions');
  */
 class Roles extends Command {
   constructor(bot) {
-    super(bot, 'settings.ranks', 'roles', 'Get list of joinable roles');
+    super(bot, 'settings.ranks', 'roles', 'Get list of joinable roles', 'UTIL');
     this.allowDM = false;
   }
 

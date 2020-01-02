@@ -11,7 +11,7 @@ class Kill extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.kill', 'kill', 'Kill current shard');
+    super(bot, 'core.kill', 'kill', 'Kill current shard', 'CORE');
     this.ownerOnly = true;
   }
 

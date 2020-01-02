@@ -1,7 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
-const { isVulgarCheck } = require('../CommonFunctions');
+const { isVulgarCheck, games } = require('../CommonFunctions');
 
 class VulgarNameHandle extends Handler {
   /**
@@ -19,8 +19,9 @@ class VulgarNameHandle extends Handler {
    * @param {GuildMember} member guildMember to welcome
    */
   async execute(...[member]) {
-    this.logger.debug(`Running ${this.id} for ${this.event}`);
+    if (!games.includes('LOGGING')) return;
 
+    this.logger.debug(`Running ${this.id} for ${this.event}`);
     this.logger.debug(`Handling 'vulgarCheck' for ${member.id} on ${member.guild.name}`);
 
     const isVulgar = isVulgarCheck.test(member.displayName)

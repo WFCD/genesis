@@ -11,7 +11,7 @@ class Servers extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.servers', 'servers', 'Get list of bot servers in file');
+    super(bot, 'core.servers', 'servers', 'Get list of bot servers in file', 'CORE');
     this.ownerOnly = true;
   }
 

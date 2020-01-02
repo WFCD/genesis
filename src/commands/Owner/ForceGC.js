@@ -11,7 +11,7 @@ class ForceGarbageCollection extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.garbagecollection', 'fgc', 'Force garbage collection');
+    super(bot, 'core.garbagecollection', 'fgc', 'Force garbage collection', 'CORE');
     this.ownerOnly = true;
   }
 

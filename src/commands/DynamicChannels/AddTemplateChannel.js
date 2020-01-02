@@ -10,7 +10,7 @@ class AddTemplateChannel extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'dynamicchannels.add', 'templates add', 'Add Template Channel');
+    super(bot, 'dynamicchannels.add', 'templates add', 'Add Template Channel', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s?(?:(?:<#)?(\\d+)(?:>)?)?(?:\\s+(--relay))?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;

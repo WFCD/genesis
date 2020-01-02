@@ -14,7 +14,7 @@ class Diagnostics extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.diag', 'diag', 'Run some basic diagnostics');
+    super(bot, 'core.diag', 'diag', 'Run some basic diagnostics', 'CORE');
     this.requiresAuth = true;
     this.allowDM = false;
   }

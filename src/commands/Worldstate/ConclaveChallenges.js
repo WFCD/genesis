@@ -16,7 +16,7 @@ class ConclaveChallenges extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.conclaveChallenges', 'conclave', 'Gets the current conclave challenges for a category of challenge, or all.');
+    super(bot, 'warframe.worldstate.conclaveChallenges', 'conclave', 'Gets the current conclave challenges for a category of challenge, or all.', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:\\s+(${values.join('|')}))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
 
     this.usages = [

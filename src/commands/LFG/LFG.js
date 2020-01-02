@@ -17,7 +17,7 @@ class AddLFG extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'lfg.add', 'lfg|hosting|lfm', 'Submit an LFG request.');
+    super(bot, 'lfg.add', 'lfg|hosting|lfm', 'Submit an LFG request.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call})(?!elp)\\s?(.+)?`, 'i');
 
     this.usages = [

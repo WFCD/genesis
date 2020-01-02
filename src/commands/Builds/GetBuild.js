@@ -12,7 +12,7 @@ class GetBuild extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.get', 'get build', 'Get a build.');
+    super(bot, 'builds.get', 'get build', 'Get a build.', 'UTIL');
     this.regex = new RegExp(`^(?:${this.call}|gb)\\s?(.+)?`, 'i');
 
     this.usages = [

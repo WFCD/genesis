@@ -14,7 +14,7 @@ class Baro extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'borko', 'when borko', 'Display the current status of the Void Trader');
+    super(bot, 'borko', 'when borko', 'Display the current status of the Void Trader', 'WARFRAME');
     this.regex = new RegExp('(?:where|when|whe|why|which).*(?:borko|baro|bimjo|bonko|bilbo|bermo|barmo|bruno|borso|borneo|bosnia|beerr?ow)', 'ig');
   }
 

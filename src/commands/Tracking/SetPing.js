@@ -9,7 +9,7 @@ const {
 
 class SetPing extends Command {
   constructor(bot) {
-    super(bot, 'settings.setping', 'set ping');
+    super(bot, 'settings.setping', 'set ping', 'Set the notification message', 'UTIL');
     this.usages = [
       { description: 'Set ping for an event or item', parameters: ['event or reward', '@role or user mention'] },
     ];

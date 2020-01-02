@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class DeleteCustomCommand extends Command {
   constructor(bot) {
-    super(bot, 'customcommands.delete', 'delete cc');
+    super(bot, 'customcommands.delete', 'delete cc', 'UTIL');
     this.usages = [
       { description: 'Delete a custom command', parameters: ['command call'] },
     ];

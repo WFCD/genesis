@@ -1,6 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
+const { games } = require('../CommonFunctions');
 
 class LeaveNotify extends Handler {
   /**
@@ -18,6 +19,7 @@ class LeaveNotify extends Handler {
    * @param {GuildMember} member guildMember to welcome
    */
   async execute(...[guild]) {
+    if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
     const bots = guild.members.filter(member => member.user.bot);
     const tokens = [

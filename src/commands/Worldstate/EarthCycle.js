@@ -12,7 +12,7 @@ class EarthCycle extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.cycle', 'cycle', 'Current and remaining time in cycle of Earth or Cetus rotations.');
+    super(bot, 'warframe.misc.cycle', 'cycle', 'Current and remaining time in cycle of Earth or Cetus rotations.', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(earth)?`, 'i');
     this.usages = [
       {

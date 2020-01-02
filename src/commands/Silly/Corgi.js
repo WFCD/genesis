@@ -12,7 +12,7 @@ class Corgi extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'silly.corgi', 'corgi', 'Genesis gets you a corgi');
+    super(bot, 'silly.corgi', 'corgi', 'Genesis gets you a corgi', 'FUN');
   }
 
   /**

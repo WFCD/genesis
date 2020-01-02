@@ -11,7 +11,7 @@ class Destroy extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.destry', 'destroy room', 'Destry user\'s temp room.');
+    super(bot, 'rooms.destry', 'destroy room', 'Destry user\'s temp room.', 'UTIL');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;

@@ -12,7 +12,7 @@ class UserInfo extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'util.userinfo', 'userinfo', 'Get info about a user');
+    super(bot, 'util.userinfo', 'userinfo', 'Get info about a user', 'UTIL');
     this.regex = new RegExp(`^${this.call}\\s*(?:(?:<@)(\\d+)(?:>))?`);
   }
 

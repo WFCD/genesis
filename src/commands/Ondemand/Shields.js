@@ -12,7 +12,7 @@ class Shields extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.calculations.shields', 'shields', 'shields');
+    super(bot, 'warframe.calculations.shields', 'shields', 'shields', 'WARFRAME');
     this.regex = new RegExp('^shield(?: +([\\d+\\.?\\d* ]+))?', 'i');
 
     this.usages = [

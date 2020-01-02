@@ -22,7 +22,7 @@ class Whatsin extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.whatsin', 'whatsin', 'Find what\'s in a relic');
+    super(bot, 'warframe.misc.whatsin', 'whatsin', 'Find what\'s in a relic', 'WARFRAME');
     this.regex = new RegExp('^whatsin(?:\\s+(axi|neo|meso|lith)\\s?(\\w\\d+))?', 'i');
 
     this.usages = [

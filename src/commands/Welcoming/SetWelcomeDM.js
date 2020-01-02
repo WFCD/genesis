@@ -4,9 +4,9 @@ const Command = require('../../models/Command.js');
 
 class SetWelcomeDM extends Command {
   constructor(bot) {
-    super(bot, 'settings.setwelcomedm', 'set welcome dm');
+    super(bot, 'settings.setwelcomedm', 'add welcome dm', 'Add a welcome dm for the channel', 'UTIL');
     this.usages = [
-      { description: 'Set welcome message for this server in this channel to send to a user in DM', parameters: ['message'] },
+      { description: 'Add a welcome message for this server in this channel to send to a user in DM', parameters: ['message'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?((.+|\\n)+)?$`, 'i');
     this.requiresAuth = true;

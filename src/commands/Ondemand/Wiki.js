@@ -15,7 +15,7 @@ class Wiki extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.wiki', 'wiki', 'Search the Warframe Wiki for information');
+    super(bot, 'warframe.misc.wiki', 'wiki', 'Search the Warframe Wiki for information', 'WARFRAME');
     this.regex = new RegExp('^wiki\\s*([\\w\\s-]+)?', 'i');
     this.usages = [
       {

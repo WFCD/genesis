@@ -40,7 +40,7 @@ const determineDescription = (userDoesntHaveRole, leaveable) => {
  */
 class LeaveRole extends Command {
   constructor(bot) {
-    super(bot, 'settings.leaveRole', 'leave');
+    super(bot, 'settings.leaveRole', 'leave', 'Leave a role', 'UTIL');
     this.usages = [
       { description: 'Show instructions for leaving roles', parameters: [] },
       { description: 'Leave a role', parameters: ['Role/Role id to leave'] },

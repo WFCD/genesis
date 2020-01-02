@@ -13,7 +13,7 @@ class Kuva extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.kuva', 'kuva', 'Display the currently active kuva missions');
+    super(bot, 'warframe.worldstate.kuva', 'kuva', 'Display the currently active kuva missions', 'WARFRAME');
   }
 
   async run(message, ctx) {

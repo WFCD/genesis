@@ -15,7 +15,7 @@ class FrameStats extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.rivens', 'riven', 'Get current riven sales stats');
+    super(bot, 'warframe.misc.rivens', 'riven', 'Get current riven sales stats', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
     this.usages = [
       {

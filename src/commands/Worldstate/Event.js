@@ -14,7 +14,7 @@ class Event extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.events', 'events', 'Display current events.');
+    super(bot, 'warframe.worldstate.events', 'events', 'Display current events.', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

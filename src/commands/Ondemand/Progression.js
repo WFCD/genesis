@@ -18,7 +18,7 @@ class Progression extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.progress', 'progress', 'Display Warframe Progression Chart');
+    super(bot, 'warframe.misc.progress', 'progress', 'Display Warframe Progression Chart', 'WARFRAME');
   }
 
   /**

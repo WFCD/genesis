@@ -6,7 +6,7 @@ const allowedParams = ['call', 'response'];
 
 class UpdateCustomCommand extends Command {
   constructor(bot) {
-    super(bot, 'customcommands.update', 'update cc');
+    super(bot, 'customcommands.update', 'update cc', 'UTIL');
     this.usages = [
       { description: 'Update a custom command', parameters: ['param', 'command call', 'new param value'] },
     ];

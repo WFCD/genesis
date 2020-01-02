@@ -1,6 +1,7 @@
 'use strict';
 
 const Handler = require('../models/BaseEventHandler');
+const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
@@ -21,6 +22,7 @@ class AssignDefaultRolesHandle extends Handler {
    * @param {Discord.member} member member to add roles to
    */
   async execute(...[member]) {
+    if (!games.includes('UTIL')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     const defaultRoles = JSON.parse(await this.settings.getGuildSetting(member.guild, 'defaultRoles') || '[]')

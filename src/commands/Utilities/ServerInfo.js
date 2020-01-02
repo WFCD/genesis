@@ -11,7 +11,7 @@ class ServerInfo extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'util.serverInfo', 'serverinfo', 'Get info about current server');
+    super(bot, 'util.serverInfo', 'serverinfo', 'Get info about current server', 'UTIL');
   }
 
   async run(message) {

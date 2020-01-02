@@ -13,7 +13,7 @@ class Nightwave extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.nightwave', 'nightwave', 'Display the currently active nightwave season');
+    super(bot, 'warframe.worldstate.nightwave', 'nightwave', 'Display the currently active nightwave season', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 

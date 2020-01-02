@@ -16,7 +16,7 @@ class Syndicates extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.');
+    super(bot, 'warframe.worldstate.syndicate', 'syndicate', 'Gets the starchat nodes for the desired syndicate, or all.', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(?:(${values.join('|')}))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
     this.usages = [
       {

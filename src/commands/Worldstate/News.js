@@ -13,7 +13,7 @@ class News extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.news', 'news', 'Display the currently active news');
+    super(bot, 'warframe.worldstate.news', 'news', 'Display the currently active news', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(?:(compact))?(?:\\s+on\\s+${captures.platforms})?$`, 'i');
   }
 

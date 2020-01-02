@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class ClearPoolPassword extends Command {
   constructor(bot) {
-    super(bot, 'promocode.pool.clearpassword', 'glyphs clear password', 'Clear a pool\'s password');
+    super(bot, 'promocode.pool.clearpassword', 'glyphs clear password', 'Clear a pool\'s password', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s(.*))?`, 'i');
     this.usages = [
       {

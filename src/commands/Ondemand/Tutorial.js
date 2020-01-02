@@ -11,7 +11,7 @@ class FrameProfile extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.misc.tutorial', 'tutorial', 'Get a Warframe Tutorial Video');
+    super(bot, 'warframe.misc.tutorial', 'tutorial', 'Get a Warframe Tutorial Video', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?\\s?(.+)?`, 'i');
     this.usages = [
       {

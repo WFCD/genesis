@@ -11,7 +11,7 @@ class Show extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.lurk', 'lurk', 'Make room lurkable. Users can join, see, and listen, but not write.');
+    super(bot, 'rooms.lurk', 'lurk', 'Make room lurkable. Users can join, see, and listen, but not write.', 'UTIL');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;

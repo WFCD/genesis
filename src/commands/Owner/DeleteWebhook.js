@@ -11,7 +11,7 @@ class DeleteWebhook extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.webhooks.delete', 'delete webhook in', 'Delete webhook in a provided channel');
+    super(bot, 'core.webhooks.delete', 'delete webhook in', 'Delete webhook in a provided channel', 'CORE');
     this.ownerOnly = true;
     this.regex = new RegExp(`^${this.call}\\s*(.*)?`, 'i');
     this.usages = [

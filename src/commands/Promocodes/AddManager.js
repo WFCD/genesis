@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class AddManager extends Command {
   constructor(bot) {
-    super(bot, 'promocode.managers.add', 'glyphs add manager', 'Add a manager to a glyph pool');
+    super(bot, 'promocode.managers.add', 'glyphs add manager', 'Add a manager to a glyph pool', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s?(.*))?([0-9]{0,20})?`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;

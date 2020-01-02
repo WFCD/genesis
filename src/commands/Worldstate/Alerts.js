@@ -13,7 +13,7 @@ class Alerts extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'warframe.worldstate.alerts', 'alert', 'Display the currently active alerts');
+    super(bot, 'warframe.worldstate.alerts', 'alert', 'Display the currently active alerts', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}s?\\s?(?:(compact))?\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 

@@ -13,7 +13,7 @@ class PollInline extends Command {
    * @param {Genesis} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'poll', 'poll:', 'Create a simple poll');
+    super(bot, 'poll', 'poll:', 'Create a simple poll', 'UTIL');
     this.regex = new RegExp('poll(?:\\s*\\((\\d*)\\))?:.+', 'i');
     this.usages = [
       {

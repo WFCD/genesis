@@ -13,7 +13,7 @@ class GetCommandIds extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'settings.getcommandids', 'getcommandids', 'Get list of bot command ids available for you to view');
+    super(bot, 'settings.getcommandids', 'getcommandids', 'Get list of bot command ids available for you to view', 'UTIL');
     this.requiresAuth = true;
   }
 

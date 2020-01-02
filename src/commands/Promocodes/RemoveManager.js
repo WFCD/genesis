@@ -5,7 +5,7 @@ const { resolvePool } = require('../../CommonFunctions');
 
 class RemoveManager extends Command {
   constructor(bot) {
-    super(bot, 'promocode.managers.remove', 'glyphs del manager', 'Remove a manager from a glyph pool');
+    super(bot, 'promocode.managers.remove', 'glyphs del manager', 'Remove a manager from a glyph pool', 'CODES');
     this.regex = new RegExp(`^${this.call}\\s?(?:--pool\\s?(.*))?\\s?(?:<@([0-9]{15,20})>)?`, 'i');
     this.usages = [
       {

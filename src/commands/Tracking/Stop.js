@@ -9,7 +9,7 @@ const { getChannel, captures } = require('../../CommonFunctions.js');
  */
 class Untrack extends Command {
   constructor(bot) {
-    super(bot, 'settings.stop', 'stop');
+    super(bot, 'settings.stop', 'stop', 'Stop all tracking', 'UTIL');
     this.usages = [
       { description: 'Untracks everything in a channel, effectively stopping tracking for the channel', parameters: [] },
     ];
