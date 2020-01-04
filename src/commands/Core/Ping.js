@@ -2,7 +2,22 @@
 
 const ping = require('ping').promise;
 const Command = require('../../models/Command.js');
-const { timeDeltaToString } = require('../../CommonFunctions.js');
+const { timeDeltaToString, games } = require('../../CommonFunctions.js');
+
+const d2Hosts = [
+  'bungie.net',
+  'api.steampowered.com',
+  'xbl.io',
+  'vlkyrie-superi.us',
+  'status.vlkyrie-superi.us',
+];
+
+const wfHosts = [
+  'warframe.com',
+  'api.warframestat.us',
+  'hub.warframestat.us',
+  'drops.warframestat.us',
+];
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
@@ -23,12 +38,9 @@ class Ping extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const hosts = [
-      'warframe.com',
-      'api.warframestat.us',
-      'hub.warframestat.us',
-      'drops.warframestat.us',
-    ];
+    const hosts = ['discordapp.com']
+      .concat(games.includes('WARFRAME') ? wfHosts : [])
+      .concat(games.includes('DESTINY2') ? d2Hosts : []);
     const results = [];
 
     hosts.forEach((host) => {

@@ -74,6 +74,13 @@ DISCORD_BOTS_WEB_TOKEN | Token used to update bots.discord.pw bot statistics | `
 DISCORD_BOTS_WEB_USER | Bot user id on bots.discord.pw to update with server count | 6456514654966321321 | N\A
 DISCORD_CARBON_TOKEN | Carbonitex bot token for posting server data to Carbonitex | `as;dofiahsdf` | N\A
 
+### Flair configuration
+Environment Variable | Description | Example | Default
+--- | --- | --- | ---
+EMBED_URL | Default link that embeds use in their title | `https://warframestat.us` | `https://warframestat.us`
+EMBED_ICON_URL | Default icon URL that embeds use in their footer | `https://warframestat.us/wfcd_logo_color.png` | `https://warframestat.us/wfcd_logo_color.png`
+BASE_PRES_MSG | Default presence message | `@Bot help` | `@Bot help`
+BASE_PRES_ACT | Default presence activity | `WATCHING` | `PLAYING`
 
 ### Feature Flags
 

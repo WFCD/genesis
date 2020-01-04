@@ -94,22 +94,24 @@ async function getWarframePresence(self, base) {
  */
 async function updatePresence(self) {
   try {
-    const base = `@${self.client.user.username} help`;
+    const baseMsg = process.env.BASE_PRES_MSG || `@${self.client.user.username} help`;
+    const activity = process.env.BASE_PRES_ACT || 'PLAYING';
 
-    const wfPresence = games.includes('WARFRAME') ? await getWarframePresence(self, base) : null;
-    const presence = wfPresence || base;
+    const wfPresence = games.includes('WARFRAME') ? await getWarframePresence(self, baseMsg) : null;
+    const presence = wfPresence || baseMsg;
     self.client.user.setPresence({
       status: 'online',
       afk: false,
       activity: {
         name: presence,
-        type: 'PLAYING',
+        type: activity,
       },
     });
   } catch (error) {
     // swallow, it's not an important error
   }
 }
+
 
 /**
  * Describes a handler
