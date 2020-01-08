@@ -99,6 +99,7 @@ CODES | Managing promo codes, like Warframe Glyph codes | ✗
 FUN | Fun stuff, like 8Ball and corgis | ✗
 WARFRAME | Warframe functionality, like tracking and Warframe informational Commands | ✗
 DESTINY2 | For an in-progress section allowing people to expand Genesis into Destiny 2 | ✗
+GIVEAWAYS | Giveaway functionality | ✗
 
 ### Setting up Twitch
 
@@ -110,6 +111,13 @@ TWITCH_POLL_INTERVAL_MS | How often to poll Twitch for stream updates (in millis
 
 In order to setup Twitch you need to specify your Twitch API Client ID. See the following link on how to get one:
 * Twitch API Client ID: https://dev.twitch.tv/docs/v5/ (See Getting a client ID)
+
+### Other Features
+
+Environment Variable | Description | Example | Default
+--- | --- | --- | ---
+LFG_ACTIVE_COLOR | Hex color as a string for an active LFG embed | `"0xaf01ff"` | `"0x9370db"`
+LFG_EXPIRED_COLOR | Hex color as a string for an expired LFG embed | `"0xff0000"` | `"0xff0000"`
 
 ## Commands
 

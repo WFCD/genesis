@@ -167,4 +167,10 @@ module.exports = [
     is_global BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (user_id, guild_id, is_global)
   )`,
+  `CREATE TABLE IF NOT EXISTS streams (
+    type VARCHAR(10) NOT NULL DEFAULT 'twitch',
+    stream_name VARCHAR(255) NOT NULL,
+    uid VARCHAR(255) NOT NULL DEFAULT '0',
+    PRIMARY KEY (type, stream_name)
+  )`,
 ];

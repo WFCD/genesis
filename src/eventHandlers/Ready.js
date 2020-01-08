@@ -1,5 +1,7 @@
 'use strict';
 
+const giveaways = require('discord-giveaways');
+
 const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
@@ -20,98 +22,7 @@ const max = {
   },
 };
 
-/**
- * Check if private rooms have expired and are empty. If not, do nothing.
- * If so, delete the corresponding channels.
- * @param  {Genesis} self    Bot instance
- */
-async function checkPrivateRooms(self) {
-  if (!games.includes('UTIL')) return;
-  self.logger.debug('Checking private rooms...');
-  const privateRooms = await self.settings.getPrivateRooms();
-  self.logger.debug(`Private rooms... ${privateRooms.length}`);
-  privateRooms.forEach(async (room) => {
-    if (room && (room.textChannel || room.category || room.voiceChannel)) {
-      const now = new Date();
-      if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
-          > self.channelTimeout)
-        && (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
-        if (room.textChannel && room.textChannel.deletable) {
-          self.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
-          await room.textChannel.delete();
-        }
-        if (room.voiceChannel && room.voiceChannel.deletable) {
-          self.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
-          await room.voiceChannel.delete();
-        }
-        if (room.category && room.category.deletable) {
-          self.logger.debug(`Deleting category... ${room.category.id}`);
-          await room.category.delete();
-        }
-        self.settings.deletePrivateRoom(room);
-      }
-    } else if (room) {
-      await self.settings.deletePrivateRoom({
-        textChannel: room.textId ? { id: room.textId } : undefined,
-        voiceChannel: { id: room.voiceId },
-        category: { id: room.categoryId },
-        guild: { id: room.guildId },
-      });
-    }
-  });
-}
-
-async function getWarframePresence(self, base) {
-  const cetusState = await self.bot.ws.get('cetusCycle');
-  const vallisState = await self.bot.ws.get('vallisCycle');
-  const outpost = await self.bot.ws.get('sentientOutposts');
-
-  if (vallisState || cetusState) {
-    let vsFromNow = fromNow(new Date(vallisState.expiry));
-    let csFromNow = fromNow(new Date(cetusState.expiry));
-
-    if (vsFromNow < 0) {
-      vsFromNow = (vallisState.isWarm ? max.vallis.cold : max.vallis.warm) + vsFromNow;
-      vallisState.isWarm = !vallisState.isWarm;
-    }
-
-    if (csFromNow < 0) {
-      csFromNow = (cetusState.isDay ? max.cetus.night : max.cetus.day) + csFromNow;
-      cetusState.isDay = !cetusState.isDay;
-    }
-
-    const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
-    const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
-    const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
-    return `${ous}${vs}${cs}${base}`;
-  }
-  return base;
-}
-
-/**
- * Perform actions when the bot is ready
- * @param {Bot} self  the bot
- */
-async function updatePresence(self) {
-  try {
-    const baseMsg = process.env.BASE_PRES_MSG || `@${self.client.user.username} help`;
-    const activity = process.env.BASE_PRES_ACT || 'PLAYING';
-
-    const wfPresence = games.includes('WARFRAME') ? await getWarframePresence(self, baseMsg) : null;
-    const presence = wfPresence || baseMsg;
-    self.client.user.setPresence({
-      status: 'online',
-      afk: false,
-      activity: {
-        name: presence,
-        type: activity,
-      },
-    });
-  } catch (error) {
-    // swallow, it's not an important error
-  }
-}
-
+const cycleTimeout = 60000;
 
 /**
  * Describes a handler
@@ -125,7 +36,6 @@ class OnReadyHandle extends Handler {
    */
   constructor(bot) {
     super(bot, 'handlers.onReady', 'onReady');
-    this.channelTimeout = 60000;
   }
 
   /**
@@ -135,6 +45,19 @@ class OnReadyHandle extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
 
+    this.notifyUp();
+    this.setupMessageManager();
+
+    await this.settings.ensureData(this.client);
+    this.bot.readyToExecute = true;
+
+    this.updatePresence();
+    this.setupAdditionalHandlers();
+    this.setupNotifiers();
+    this.setupGiveaways();
+  }
+
+  async notifyUp() {
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
       await this.bot.controlHook.edit(
         this.bot.client.user.username,
@@ -147,18 +70,130 @@ class OnReadyHandle extends Handler {
         }],
       });
     }
-    this.bot.MessageManager = new MessageManager(this.bot);
-    await this.settings.ensureData(this.client);
-    this.bot.readyToExecute = true;
+  }
 
-    const self = this;
-    setInterval(checkPrivateRooms, self.channelTimeout, self);
-    updatePresence(this);
-    setInterval(updatePresence, 60000, self);
+  setupMessageManager() {
+    this.bot.MessageManager = new MessageManager(this.bot);
+  }
+
+  setupAdditionalHandlers() {
+    setInterval(this.updatePresence.bind(this), cycleTimeout);
+    setInterval(this.checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
+  }
+
+  setupNotifiers() {
     this.bot.feedNotifier = new FeedsNotifier(this.bot);
     this.bot.twitchNotifier = new TwitchNotifier(this.bot);
     this.bot.twitchNotifier.start();
+  }
+
+  setupGiveaways() {
+    if (!games.includes('GIVEAWAYS')) {
+      this.logger.debug('No init: giveaways. Feature flag disabled.');
+      return;
+    }
+    giveaways.launch(this.bot.client, {
+      updateCountdownEvery: 5000,
+      botsCanWin: false,
+      ignoreIfHasPermission: [],
+      embedColor: '#748BD7',
+      embedColorEnd: '#FF0000',
+      reaction: '🎉',
+      storage: `${__dirname}/giveaways.json`,
+    });
+    this.logger.info('Giveaways initialized!');
+  }
+
+  async getWarframePresence(base) {
+    const cetusState = await this.bot.ws.get('cetusCycle');
+    const vallisState = await this.bot.ws.get('vallisCycle');
+    const outpost = await this.bot.ws.get('sentientOutposts');
+
+    if (vallisState || cetusState) {
+      let vsFromNow = fromNow(new Date(vallisState.expiry));
+      let csFromNow = fromNow(new Date(cetusState.expiry));
+
+      if (vsFromNow < 0) {
+        vsFromNow = (vallisState.isWarm ? max.vallis.cold : max.vallis.warm) + vsFromNow;
+        vallisState.isWarm = !vallisState.isWarm;
+      }
+
+      if (csFromNow < 0) {
+        csFromNow = (cetusState.isDay ? max.cetus.night : max.cetus.day) + csFromNow;
+        cetusState.isDay = !cetusState.isDay;
+      }
+
+      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
+      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
+      return `${ous}${vs}${cs}${base}`;
+    }
+    return base;
+  }
+
+  /**
+   * Set up presence when the bot is ready.
+   * Can flex based on various games.
+   */
+  async updatePresence() {
+    try {
+      const baseMsg = process.env.BASE_PRES_MSG || `@${this.client.user.username} help`;
+      const activity = process.env.BASE_PRES_ACT || 'PLAYING';
+
+      const wfPresence = games.includes('WARFRAME') ? await this.getWarframePresence(baseMsg) : null;
+      const presence = wfPresence || baseMsg;
+      this.client.user.setPresence({
+        status: 'online',
+        afk: false,
+        activity: {
+          name: presence,
+          type: activity,
+        },
+      });
+    } catch (error) {
+      this.logger.debug(error);
+    }
+  }
+
+  /**
+   * Check if private rooms have expired and are empty. If not, do nothing.
+   * If so, delete the corresponding channels.
+   */
+  async checkPrivateRooms() {
+    if (!games.includes('UTIL')) return;
+    this.logger.debug('Checking private rooms...');
+    const privateRooms = await this.settings.getPrivateRooms();
+    this.logger.debug(`Private rooms... ${privateRooms.length}`);
+    privateRooms.forEach(async (room) => {
+      if (room && (room.textChannel || room.category || room.voiceChannel)) {
+        const now = new Date();
+        if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
+            > this.channelTimeout)
+          && (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
+          if (room.textChannel && room.textChannel.deletable) {
+            this.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
+            await room.textChannel.delete();
+          }
+          if (room.voiceChannel && room.voiceChannel.deletable) {
+            this.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
+            await room.voiceChannel.delete();
+          }
+          if (room.category && room.category.deletable) {
+            this.logger.debug(`Deleting category... ${room.category.id}`);
+            await room.category.delete();
+          }
+          this.settings.deletePrivateRoom(room);
+        }
+      } else if (room) {
+        await this.settings.deletePrivateRoom({
+          textChannel: room.textId ? { id: room.textId } : undefined,
+          voiceChannel: { id: room.voiceId },
+          category: { id: room.categoryId },
+          guild: { id: room.guildId },
+        });
+      }
+    });
   }
 }
 

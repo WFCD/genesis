@@ -4,6 +4,13 @@ const moment = require('moment');
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+const expiredC = process.env.LFG_EXPIRED_COLOR
+  ? Number.parseInt(process.env.LFG_EXPIRED_COLOR, 16)
+  : 0xff0000;
+const activeC = process.env.LFG_ACTIVE_COLOR
+  ? Number.parseInt(process.env.LFG_ACTIVE_COLOR, 16)
+  : 0x9370db;
+
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
  * @typedef {Object.<string>} LFG
@@ -24,7 +31,7 @@ class LFGEmbed extends BaseEmbed {
    */
   constructor(bot, lfg) {
     super();
-    this.color = 0x9370db;
+    this.color = lfg.expiry ? activeC : expiredC;
     this.title = `${lfg.types.length ? lfg.types.join(' & ') : 'LFG'} Posted by ${lfg.author.tag}`;
     this.fields = [
       { name: 'Where', value: lfg.location, inline: true },

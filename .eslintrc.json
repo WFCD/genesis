@@ -27,6 +27,7 @@
     "no-await-in-loop": "off",
     "import/no-unresolved": 0,
     "no-useless-escape": 0,
-    "arrow-parens": [2, "as-needed", { "requireForBlockBody": true }]
+    "arrow-parens": [2, "as-needed", { "requireForBlockBody": true }],
+    "global-require": 0
   }
 }

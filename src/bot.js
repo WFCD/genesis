@@ -62,7 +62,7 @@ class Genesis {
         compress: true,
       },
       shards,
-      totalShardCount: process.env.SHARDS || 1,
+      totalShardCount: Number(process.env.SHARDS || 1),
       retryLimit: 2,
       disabledEvents: [
         'VOICE_SERVER_UPDATE',
@@ -200,7 +200,10 @@ class Genesis {
     this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
     this.client.on('error', this.logger.error);
     this.client.on('warn', this.logger.warn);
-    this.client.on('debug', this.logger.debug);
+    this.client.on('debug', (message) => {
+      if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) return;
+      this.logger.debug(message);
+    });
   }
 
   /**

@@ -108,6 +108,7 @@ class AddLFG extends Command {
           lfg.expiry = 0;
           lfg.edited = true;
           msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+          msg.delete({ timeout: 10000 });
         });
 
         collector.on('collect', (reaction, user) => {

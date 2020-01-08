@@ -64,6 +64,7 @@ const platforms = ['pc', 'ps4', 'xb1', 'swi']
  *  * WARFRAME
  *  * CODES
  *  * FUN
+ *  * GIVEAWAYS
  * Default Values:
  *  * CORE
  *  * UTIL
@@ -1002,6 +1003,26 @@ const groupBy = (array, field) => {
   return grouped;
 };
 
+const giveawayDefaults = {
+  messages: {
+    giveaway: `${getEmoji('yay')}  **GIVEAWAY**  ${getEmoji('yay')}`,
+    giveawayEnded: `${getEmoji('yay')}  **GIVEAWAY ENDED**  ${getEmoji('yay')}`,
+    timeRemaining: 'Time remaining: **{duration}**!',
+    inviteToParticipate: 'React with 🎉 to participate!',
+    winMessage: 'Congratulations, {winners}! You won **{prize}**!',
+    embedFooter: 'Giveaways',
+    noWinner: 'Giveaway cancelled, no valid participants.',
+    winners: 'winner(s)',
+    endedAt: 'Ended at',
+    units: {
+      seconds: 's',
+      minutes: 'm',
+      hours: 'h',
+      days: 'd',
+    },
+  },
+};
+
 /**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
@@ -1050,4 +1071,5 @@ module.exports = {
   getMessage,
   groupBy,
   games,
+  giveawayDefaults,
 };
