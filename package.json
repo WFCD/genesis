@@ -41,7 +41,7 @@
     "bluebird": "^3.7.1",
     "colors": "^1.4.0",
     "decache": "^4.5.1",
-    "discord-giveaways": "^2.4.4",
+    "discord-giveaways": "^3.0.0",
     "discord.js": "github:discordjs/discord.js#f56b442e83e4016015c9123d4308dbf9209eea76",
     "greenkeeper-lockfile": "^1.14.0",
     "json-query": "^2.2.2",
