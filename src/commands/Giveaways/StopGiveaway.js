@@ -1,6 +1,5 @@
 'use strict';
 
-const giveaways = require('discord-giveaways');
 const Command = require('../../models/Command.js');
 
 const { captures: { channel: cc } } = require('../../CommonFunctions');
@@ -30,7 +29,7 @@ class StopGiveaway extends Command {
     let mid;
     try {
       [mid] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
-      await giveaways.delete(mid);
+      await this.bot.giveaways.delete(mid);
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

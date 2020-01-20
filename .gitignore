@@ -41,3 +41,6 @@ jspm_packages
 genesis.json
 .idea/
 mypm2.json
+
+# giveaways flatfile
+**/giveaways.json

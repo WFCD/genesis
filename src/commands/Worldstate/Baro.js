@@ -21,7 +21,7 @@ class Baro extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     const pages = [];
-    const embed = new VoidTraderEmbed(this.bot, await this.ws.get('voidTrader', platform, ctx.language), platform);
+    const embed = new VoidTraderEmbed(this.bot, await this.ws.get('voidTrader', platform, ctx.language), platform, true);
     if (embed.fields.length > 25) {
       createGroupedArray(embed.fields, 15).forEach((fieldGroup) => {
         this.logger.debug(fieldGroup);

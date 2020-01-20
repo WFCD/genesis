@@ -1,7 +1,6 @@
 'use strict';
 
 const ms = require('ms');
-const giveaways = require('discord-giveaways');
 
 const Command = require('../../models/Command.js');
 const { captures: { channel: cc }, giveawayDefaults } = require('../../CommonFunctions');
@@ -36,10 +35,10 @@ class StartGiveaway extends Command {
     let time;
     let prize;
     let channel;
-    let winnersCount;
+    let winnerCount;
     let prizeTokens;
     try {
-      [time, winnersCount, channel, ...prizeTokens] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
+      [time, winnerCount, channel, ...prizeTokens] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
       if (channelCap.test(channel)) {
         [, channel] = (channel.match(channelCap) || []);
         if (channel && message.guild.channels.has(channel)) {
@@ -51,8 +50,8 @@ class StartGiveaway extends Command {
       }
       time = ms(time);
       prize = prizeTokens.join(' ');
-      await giveaways.start(channel, {
-        time, prize, winnersCount, ...giveawayDefaults,
+      await this.bot.giveaways.start(channel, {
+        time, prize, winnerCount, ...giveawayDefaults,
       });
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {

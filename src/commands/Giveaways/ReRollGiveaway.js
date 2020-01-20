@@ -1,6 +1,5 @@
 'use strict';
 
-const giveaways = require('discord-giveaways');
 const Command = require('../../models/Command.js');
 
 const { captures: { channel: cc } } = require('../../CommonFunctions');
@@ -31,7 +30,7 @@ class ReRollGiveaway extends Command {
     let mid;
     try {
       [mid] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
-      await giveaways.reroll(mid);
+      await this.bot.giveaways.reroll(mid);
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

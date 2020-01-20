@@ -1,6 +1,6 @@
 'use strict';
 
-const giveaways = require('discord-giveaways');
+const { GiveawaysManager } = require('discord-giveaways');
 
 const Handler = require('../models/BaseEventHandler');
 
@@ -9,7 +9,7 @@ const FeedsNotifier = require('../notifications/FeedsNotifier');
 const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
-const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
+const { timeDeltaToMinutesString, fromNow, games, giveawayDefaults } = require('../CommonFunctions');
 
 const max = {
   cetus: {
@@ -93,14 +93,15 @@ class OnReadyHandle extends Handler {
       this.logger.debug('No init: giveaways. Feature flag disabled.');
       return;
     }
-    giveaways.launch(this.bot.client, {
+    this.bot.giveaways = new GiveawaysManager(this.bot.client, {
       updateCountdownEvery: 5000,
-      botsCanWin: false,
-      ignoreIfHasPermission: [],
-      embedColor: '#748BD7',
-      embedColorEnd: '#FF0000',
-      reaction: '🎉',
-      storage: `${__dirname}/giveaways.json`,
+      storage: './giveaways.json',
+      default: {
+        botsCanWin: false,
+        embedColor: '#748BD7',
+        embedColorEnd: '#FF0000',
+        reaction: '🎉',
+      }
     });
     this.logger.info('Giveaways initialized!');
   }

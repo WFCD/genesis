@@ -1,7 +1,9 @@
 'use strict';
 
+const n = require('numeral');
+
 const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+const { assetBase, emojify } = require('../CommonFunctions');
 
 const baroThumb = `${assetBase}/img/baro.png`;
 
@@ -14,15 +16,17 @@ class VoidTraderEmbed extends BaseEmbed {
    * @param {VoidTrader} voidTrader - The current state of the Void Trader
    * @param {string} platform - platform
    */
-  constructor(bot, voidTrader, platform) {
+  constructor(bot, voidTrader, platform, onDemand) {
     super();
 
     this.color = voidTrader.active ? 0x0EC9FF : 0xff6961;
 
     if (voidTrader.active || voidTrader.inventory.length > 0) {
+      const d = `${n(i.ducats).format('0a')}${onDemand ? emojify('ducats') : 'ducats'}`;
+      const cr =  `${n(i.credits).format('0a')}${onDemand ? emojify('credits') : '*cr*'}`;
       this.fields = voidTrader.inventory.map(i => ({
         name: i.item,
-        value: `${i.ducats} ducats + ${i.credits}*cr*`,
+        value: `${d} + ${cr}`,
         inline: true,
       }));
     } else {
