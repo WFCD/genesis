@@ -1,6 +1,8 @@
 'use strict';
 
 const { MessageEmbed } = require('discord.js');
+
+const BaseEmbed = require('../../embeds/BaseEmbed');
 const Command = require('../../models/Command.js');
 const {
   getChannels, setupPages, constructTypeEmbeds, constructItemEmbeds,
@@ -164,6 +166,17 @@ class Settings extends Command {
       const guildParts = guildPermissions
         .map(obj => `**${obj.command}** ${obj.isAllowed ? 'allowed' : 'denied'} for ${this.evalAppliesTo(obj.type, obj.appliesToId, message)}`).join('\n');
       checkAndMergeEmbeds(pages, createChunkedEmbed(guildParts, 'Guild Permissions', '\n'));
+
+      const trackedRoles = await this.settings.getTrackedRoles(message.guild);
+      const trackedRolePage = new BaseEmbed();
+      trackedRolePage.setTitle('Role Stats Channels');
+      Object.keys(trackedRoles).forEach((role) => {
+        trackedRolePage.addField(
+          message.guild.roles.get(role).name,
+          message.guild.channels.get(trackedRoles[role]).name,
+        );
+      });
+      pages.push(trackedRolePage);
 
       pages = pages.filter(page => JSON.stringify(page) !== '{}');
 

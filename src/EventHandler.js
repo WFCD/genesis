@@ -78,7 +78,8 @@ class EventHandler {
    * @returns {Promise} resolution of handlers execution
    */
   async handleEvent(args) {
-    return Promise.all(this.handlers.filter(handler => handler.event === args.event)
+    return Promise.all(this.handlers
+      .filter(handler => handler.event === args.event)
       .map(async handler => handler.execute(...args.args)));
   }
 }

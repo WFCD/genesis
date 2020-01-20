@@ -9,7 +9,7 @@ const FeedsNotifier = require('../notifications/FeedsNotifier');
 const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
-const { timeDeltaToMinutesString, fromNow, games, giveawayDefaults } = require('../CommonFunctions');
+const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
 
 const max = {
   cetus: {
@@ -101,7 +101,7 @@ class OnReadyHandle extends Handler {
         embedColor: '#748BD7',
         embedColorEnd: '#FF0000',
         reaction: '🎉',
-      }
+      },
     });
     this.logger.info('Giveaways initialized!');
   }

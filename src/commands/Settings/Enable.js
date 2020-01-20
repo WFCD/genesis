@@ -1,8 +1,8 @@
 'use strict';
 
 const Command = require('../../models/Command.js');
-const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed.js');
-const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed.js');
+const EnableUsageEmbed = require('../../embeds/EnableUsageEmbed');
+const EnableInfoEmbed = require('../../embeds/EnableInfoEmbed');
 const {
   getTarget, getChannels, captures, createGroupedArray,
 } = require('../../CommonFunctions.js');

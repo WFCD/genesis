@@ -57,7 +57,7 @@ class Genesis {
      * @private
      */
     this.client = new Client({
-      fetchAllMembers: false,
+      fetchAllMembers: true,
       ws: {
         compress: true,
       },
@@ -192,6 +192,7 @@ class Genesis {
     this.client.on('messageDelete', async message => this.eventHandler.handleEvent({ event: 'messageDelete', args: [message] }));
     this.client.on('messageDeleteBulk', async messages => this.eventHandler.handleEvent({ event: 'messageDeleteBulk', args: [messages] }));
 
+    this.client.on('guildMemberUpdate', async (oldMember, newMember) => this.eventHandler.handleEvent({ event: 'guildMemberUpdate', args: [oldMember, newMember] }));
     this.client.on('guildMemberAdd', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberAdd', args: [guildMember] }));
     this.client.on('guildMemberRemove', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberRemove', args: [guildMember] }));
     this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
