@@ -57,9 +57,7 @@ class Broadcaster {
   async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
     const channels = await this.settings.getNotifications(type, platform, items);
     embed.bot = undefined; // eslint-disable-line no-param-reassign
-    // logger.info(`broadcasting ${embed.title} to ${channels.length} channels...`);
-    // logger.info('testing broadcasts...');
-    // logger.info(JSON.stringify(embed));
+
     return Promise.all(channels.map(async (result) => {
       const channel = this.client.channels.get(result.channelId);
 
@@ -105,7 +103,7 @@ class Broadcaster {
     );
 
     if (roles.length) {
-      await makePingsUnmentionable(roles);
+      setTimeout(() => { makePingsUnmentionable(roles) }, 1000);
     }
     return true;
   }

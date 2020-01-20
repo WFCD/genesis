@@ -321,21 +321,8 @@ class MessaageManager {
       ctx.webhook = webhook;
       return this.webhook(ctx, { text, embed });
     }
-    // stop allowing normal embeds
-    if (ctx.message) {
-      if (embed) {
-        return Promise.all(embed.embeds
-          .map(subEmbed => this.embed(ctx.message, undefined, {
-            embed: subEmbed, delCall: ctx.deleteCall, delRes: ctx.deleteResponse,
-          })));
-      }
-      return this.reply(ctx.message, text, {
-        delCall: ctx.deleteCall,
-        delRes: ctx.deleteResponse,
-      });
-    }
-    return Promise.all(embed.embeds
-      .map(subEmbed => this.embedToChannel(ctx.channel, subEmbed, text, ctx.deleteAfterDuration)));
+    // Don't have a fallback to embeds
+    return false;
   }
 
   webhookWrapEmbed(embed, ctx) {
