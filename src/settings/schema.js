@@ -173,4 +173,11 @@ module.exports = [
     uid VARCHAR(255) NOT NULL DEFAULT '0',
     PRIMARY KEY (type, stream_name)
   )`,
+  `CREATE TABLE IF NOT EXISTS role_stats (
+    guild_id VARCHAR(20) NOT NULL,
+    channel_id VARCHAR(20) NOT NULL,
+    role_id VARCHAR(20) NOT NULL,
+    prefix VARCHAR(10) NOT NULL DEFAULT '',
+    PRIMARY KEY (guild_id, channel_id, role_id)
+  )`,
 ];
