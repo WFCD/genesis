@@ -103,7 +103,7 @@ class Broadcaster {
     );
 
     if (roles.length) {
-      setTimeout(() => { makePingsUnmentionable(roles) }, 1000);
+      setTimeout(() => { makePingsUnmentionable(roles); }, 1000);
     }
     return true;
   }
