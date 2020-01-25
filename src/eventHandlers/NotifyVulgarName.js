@@ -29,7 +29,9 @@ class VulgarNameHandle extends Handler {
     const vulgarLogChannel = await this.settings.getGuildSetting(member.guild, 'vulgarLog');
     if (isVulgar && member.guild.channels.has(vulgarLogChannel)) {
       const modRole = await this.settings.getGuildSetting(member.guild, 'modRole');
-      member.guild.channels.get(vulgarLogChannel).send(`Operators ${member.guild.roles.get(modRole) || 'gloriously handling moderation'}, user ${member} has a bad name.\n~~Destroy~~ Please take action accordingly.`);
+      const logChannel = member.guild.channels.get(vulgarLogChannel);
+      const text = `Operators ${member.guild.roles.get(modRole) || 'gloriously handling moderation'}, user ${member} has a bad name.\n~~Destroy~~ Please take action accordingly.`;
+      await this.messageManager.webhook({ channel: logChannel }, { text });
     }
   }
 }

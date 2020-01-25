@@ -295,6 +295,9 @@ class MessaageManager {
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
+    if (!embed.username) {
+      embed = this.webhookWrapEmbed(embed, ctx);
+    }
     if (channelWebhook && channelWebhook.token && channelWebhook.id) {
       // eslint-disable-next-line no-param-reassign
       ctx.webhook = channelWebhook;
