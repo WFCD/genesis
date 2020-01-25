@@ -48,7 +48,7 @@ class LogMessageDelete extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embed: log })
+      await this.messageManager.webhook({ channel: logChannel }, { embed: log });
     }
   }
 }
