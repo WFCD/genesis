@@ -11,7 +11,7 @@ class Unlock extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.unlock', 'unlock', 'Unlock temp room', 'UTIL');
+    super(bot, 'rooms.unlock', 'unlock', 'Unlock temp room', 'ROOMS');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;

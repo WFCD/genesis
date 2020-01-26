@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class RoomShownDefault extends Command {
   constructor(bot) {
-    super(bot, 'settings.defaultroomsshown', 'set rooms shown', 'Set whether or not to the bot should default rooms to being unlocked (public).');
+    super(bot, 'settings.defaultroomsshown', 'set rooms shown', 'Set whether or not to the bot should default rooms to being shown.', 'ROOMS');
     this.usages = [
       { description: 'Change if the bot should create shown channels by default (defaults to off)', parameters: ['shown rooms defaulted'] },
     ];

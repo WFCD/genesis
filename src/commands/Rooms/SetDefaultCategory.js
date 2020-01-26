@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class SetDefaultCategory extends Command {
   constructor(bot) {
-    super(bot, 'settings.defaultcategory', 'set rooms category', 'Set whether or not to the bot should default rooms to being unlocked (public).', 'UTIL');
+    super(bot, 'settings.defaultcategory', 'set rooms category', 'Set whether or not to the bot should default rooms to being unlocked (public).', 'ROOMS');
     this.usages = [
       { description: 'Change the bot\'s default category for temp rooms. Defaults to none.', parameters: ['temp room default'] },
     ];

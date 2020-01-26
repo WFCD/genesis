@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class AllowPrivateRoom extends Command {
   constructor(bot) {
-    super(bot, 'settings.allowprivateroom', 'allow private room', 'Set whether or not to allow the bot to create private rooms.', 'UTIL');
+    super(bot, 'settings.allowprivateroom', 'allow private room', 'Set whether or not to allow the bot to create private rooms.', 'ROOMS');
     this.usages = [
       { description: 'Change if the bot is allowed to create private channels', parameters: ['private rooms allowed'] },
     ];

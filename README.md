@@ -100,6 +100,8 @@ FUN | Fun stuff, like 8Ball and corgis | ✗
 WARFRAME | Warframe functionality, like tracking and Warframe informational Commands | ✗
 DESTINY2 | For an in-progress section allowing people to expand Genesis into Destiny 2 | ✗
 GIVEAWAYS | Giveaway functionality | ✗
+CUST_CMDS | Custom commands - user-generated simple commands | ✗
+ROOMS | Automated & manual room creation | ✗
 
 ### Setting up Twitch
 

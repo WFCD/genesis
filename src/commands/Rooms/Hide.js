@@ -11,7 +11,7 @@ class Hide extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'rooms.hide', 'hide', 'Hide temp room', 'UTIL');
+    super(bot, 'rooms.hide', 'hide', 'Hide temp room', 'ROOMS');
     this.regex = new RegExp(`^${this.call}$`, 'i');
     this.usages = [];
     this.allowDM = false;

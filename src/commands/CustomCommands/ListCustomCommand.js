@@ -5,7 +5,7 @@ const { createGroupedArray, setupPages } = require('../../CommonFunctions.js');
 
 class ListCustomCommand extends Command {
   constructor(bot) {
-    super(bot, 'settings.cc.list', 'list cc', 'List custom commands for this guild', 'UTIL');
+    super(bot, 'settings.cc.list', 'list cc', 'List custom commands for this guild', 'CUST_CMDS');
     this.requiresAuth = false;
     this.allowDM = false;
   }

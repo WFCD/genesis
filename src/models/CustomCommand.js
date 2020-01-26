@@ -16,7 +16,7 @@ class CustomCommand extends Command {
    * @param {string} guildId Guild id for the guild it was created in
    */
   constructor(bot, call, response, guildId) {
-    super(bot, `custom.${call}`, call, `A custom command responding ${response} to ${call}`);
+    super(bot, `custom.${call}`, call, `A custom command responding ${response} to ${call}`, 'CUST_CMDS');
     this.isCustomCommand = true;
     this.response = response;
     this.guildId = guildId;

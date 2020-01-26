@@ -5,7 +5,7 @@ const { getChannel } = require('../../CommonFunctions.js');
 
 class AllowCustomCommands extends Command {
   constructor(bot) {
-    super(bot, 'settings.allowCustom', 'allow custom commands', 'Toggle whether or not custom commands are allowed here.', 'CORE');
+    super(bot, 'settings.allowCustom', 'allow custom commands', 'Toggle whether or not custom commands are allowed here.', 'CUST_CMDS');
     this.usages = [
       { description: 'Change if this channel can use custom commands', parameters: ['custom commands enabled'] },
     ];
