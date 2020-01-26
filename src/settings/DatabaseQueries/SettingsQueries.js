@@ -72,15 +72,18 @@ class SettingsQueries {
   }
 
   async setChannelWebhook(channel, webhook) {
-    const query = SQL`INSERT INTO settings (channel_id, setting, val)
-    VALUES (${channel.id}, 'webhookId', ${webhook.id}),
-    (${channel.id}, 'webhookToken', ${webhook.token}),
-    (${channel.id}, 'webhookName', ${webhook.name}),
-    (${channel.id}, 'webhookAvatar', ${webhook.avatar})
-    ON DUPLICATE KEY UPDATE
-      val = Values(val)`;
+    if (webhook.id && webhook.token && webhook.name && webhook.avatar) {
+      const query = SQL`INSERT INTO settings (channel_id, setting, val)
+      VALUES (${channel.id}, 'webhookId', ${webhook.id}),
+      (${channel.id}, 'webhookToken', ${webhook.token}),
+      (${channel.id}, 'webhookName', ${webhook.name}),
+      (${channel.id}, 'webhookAvatar', ${webhook.avatar})
+      ON DUPLICATE KEY UPDATE
+        val = Values(val)`;
 
-    return this.db.query(query);
+      return this.db.query(query);
+    }
+    return false;
   }
 
   async getChannelWebhook(channel) {

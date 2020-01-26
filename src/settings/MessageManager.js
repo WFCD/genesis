@@ -320,7 +320,11 @@ class MessaageManager {
         .replace('?size=2048', '');
 
       // Make this one query
-      await this.settings.setChannelWebhook(ctx.channel, webhook);
+      const success = await this.settings.setChannelWebhook(ctx.channel, webhook);
+      if (!success) {
+        this.logger.error(`Could not finish adding webhook for ${ctx.channel}`);
+        return false;
+      }
       // eslint-disable-next-line no-param-reassign
       ctx.webhook = webhook;
       return this.webhook(ctx, { text, embed });
