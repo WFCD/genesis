@@ -448,6 +448,7 @@ class Notifier {
 
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
     if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
+      logger.debug(syndicate);
       await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
     }
   }
@@ -458,6 +459,7 @@ class Notifier {
       key, display, prefix, timeout, notifiable,
     } of syndicates) {
       if (notifiable) {
+        logger.debug(`${key}:${prefix}`);
         const embed = new embeds.Syndicate(this.bot, newSyndicates, display, platform);
         const eKey = `${prefix || ''}${key}`;
         const deleteAfter = timeout || fromNow(newSyndicates[0].expiry);

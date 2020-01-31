@@ -38,11 +38,13 @@ class PriceCheck extends Command {
       const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
 
       const result = await this.ws.pricecheck(item, { platform: ctx.platform });
-      if (!result.color) {
-        sentMessage.edit({ embed: {
-          title: 'Pricechecks Temporarily Disabled',
-          description: 'There\'s an issue with our upstream data provider. Please check back for prices later.',
-        }});
+      if (!result[0]) {
+        sentMessage.edit({
+          embed: {
+            title: 'Pricechecks Temporarily Disabled',
+            description: 'There\'s an issue with our upstream data provider. Please check back for prices later.',
+          },
+        });
         return this.messageManager.statuses.FAILURE;
       }
       const embed = new PriceCheckEmbed(this.bot, result, item);
