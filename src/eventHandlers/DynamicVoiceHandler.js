@@ -47,7 +47,7 @@ const clone = async (template, settings, member) => {
     position: template.rawPosition + 1,
   });
 
-  if (nameTemplate) {
+  if (nameTemplate && member.voice.channel) {
     member.voice.setChannel(newChannel);
   }
   return newChannel;
