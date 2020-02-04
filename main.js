@@ -6,9 +6,7 @@ const Genesis = require('./src/bot');
 const localShards = parseInt(process.env.LOCAL_SHARDS, 10) || 1;
 const shardOffset = parseInt(process.env.SHARD_OFFSET, 10) || 0;
 
-if (process.env.NODE_ENV !== 'production' && localShards < 2) {
-  genManifest();
-}
+genManifest();
 const commandManifest = require('./commands.json');
 
 const shards = new Array(localShards)

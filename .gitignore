@@ -44,3 +44,6 @@ mypm2.json
 
 # giveaways flatfile
 **/giveaways.json
+
+# Commands manifest
+commands.json
