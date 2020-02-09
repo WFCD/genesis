@@ -67,10 +67,9 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-function buildNotifiableData(newData, platform) {
+function buildNotifiableData(newData, platform, notified) {
   const data = {
-    acolytes: newData.persistentEnemies
-      .filter(e => between(e.lastDiscoveredAt, platform)),
+    acolytes: newData.persistentEnemies.filter(e => !notified.includes(e.pid)),
     alerts: newData.alerts
       .filter(a => !a.expired && between(a.activation, platform)),
     baro: newData.voidTrader && between(newData.voidTrader.activation, platform)
@@ -200,6 +199,8 @@ class Notifier {
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
+    const notifiedIds = await this.settings.getNotifiedIds(platform);
+
     // Set up data to notify
     const {
       alerts, dailyDeals, events, fissures,
@@ -207,7 +208,7 @@ class Notifier {
       cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
       cetusCycleChange, earthCycleChange, vallisCycleChange,
       featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    } = buildNotifiableData(newData, platform);
+    } = buildNotifiableData(newData, platform, notifiedIds);
 
 
     // Send all notifications
@@ -247,10 +248,12 @@ class Notifier {
     } finally {
       beats[platform].lastUpdate = Date.now();
     }
+    const alreadyNotified = newData.persistentEnemies.map(a => a.pid);
+    this.settings.setNotifiedIds(platform, alreadyNotified);
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Enemy(
+    await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Acolyte(
       this.bot,
       [a], platform,
     ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`, null, 3600000)));
@@ -448,7 +451,6 @@ class Notifier {
 
   async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
     if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      logger.debug(syndicate);
       await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
     }
   }
@@ -459,7 +461,6 @@ class Notifier {
       key, display, prefix, timeout, notifiable,
     } of syndicates) {
       if (notifiable) {
-        logger.debug(`${key}:${prefix}`);
         const embed = new embeds.Syndicate(this.bot, newSyndicates, display, platform);
         const eKey = `${prefix || ''}${key}`;
         const deleteAfter = timeout || fromNow(newSyndicates[0].expiry);
