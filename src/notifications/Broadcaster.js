@@ -1,34 +1,5 @@
 'use strict';
 
-const { resolveRoles } = require('../CommonFunctions');
-
-const makePingsMentionable = async (ping, { guild, client }) => {
-  if (guild.members.get(client.user.id).hasPermission('MANAGE_ROLES', false, true, true)) {
-    const roles = resolveRoles({ content: ping, guild });
-    const alteredRoles = [];
-    await Promise.all(roles.map(async (role) => {
-      if (!role.mentionable) {
-        await role.setMentionable(true, `${role.name} set pingable`);
-        alteredRoles.push(role);
-      }
-    }));
-    return alteredRoles;
-  }
-
-  return [];
-};
-
-const makePingsUnmentionable = async (roles) => {
-  if (Array.isArray(roles)) {
-    for (const role in roles) {
-      if (role && role.mentionable) {
-        // eslint-disable-next-line
-        setTimeout(() => role.setMentionable(false, `${role.name} set unpingable`), 100);
-      }
-    }
-  }
-};
-
 /**
  * Broadcast updates out to subscribing channels
  * @param {Discord.Client} client         bot client
@@ -88,23 +59,11 @@ class Broadcaster {
     const ctx = await this.settings.getCommandContext(channel);
     if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) return false;
     ctx.deleteAfterDuration = deleteAfter;
-    let roles = [];
-    if (prepend && prepend.length) {
-      roles.unshift(await makePingsMentionable(
-        prepend,
-        { client: this.client, guild: channel.guild },
-      ));
-      roles = roles[0].filter(role => typeof role !== 'undefined');
-    }
 
     await this.messageManager.webhook(
       ctx,
       { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
     );
-
-    if (roles.length) {
-      setTimeout(() => { makePingsUnmentionable(roles); }, 1000);
-    }
     return true;
   }
 }
