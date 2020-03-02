@@ -55,7 +55,7 @@
     "ping": "^0.2.2",
     "rss-feed-emitter": "^2.0.1",
     "sql-template-strings": "^2.2.2",
-    "twitch": "^3.5.6",
+    "twitch": "^4.0.6",
     "url-exists": "^1.0.3",
     "warframe-name-generator": "^1.0.2"
   },
