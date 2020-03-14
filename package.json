@@ -47,7 +47,7 @@
     "json-query": "^2.2.2",
     "moment": "^2.24.0",
     "ms": "^2.1.2",
-    "mysql2": "^2.0.0",
+    "mysql2": "^2.1.0",
     "node-fetch": "^2.6.0",
     "node-wikia": "0.0.3",
     "numeral": "^2.0.6",
