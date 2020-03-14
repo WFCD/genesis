@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@sentry/node": "^5.7.1",
-    "@spectacles/rest": "^0.5.2",
+    "@spectacles/rest": "^0.6.1",
     "bluebird": "^3.7.1",
     "colors": "^1.4.0",
     "decache": "^4.5.1",
