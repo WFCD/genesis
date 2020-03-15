@@ -36,7 +36,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@sentry/node": "^5.14.0",
+    "@sentry/node": "^5.14.1",
     "@spectacles/rest": "^0.6.1",
     "bluebird": "^3.7.1",
     "colors": "^1.4.0",
