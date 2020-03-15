@@ -38,7 +38,7 @@
   "dependencies": {
     "@sentry/node": "^5.14.0",
     "@spectacles/rest": "^0.6.1",
-    "bluebird": "^3.7.1",
+    "bluebird": "^3.7.2",
     "colors": "^1.4.0",
     "decache": "^4.5.1",
     "discord-giveaways": "^3.2.3",
