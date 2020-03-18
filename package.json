@@ -51,7 +51,7 @@
     "node-fetch": "^2.6.0",
     "node-wikia": "0.0.3",
     "numeral": "^2.0.6",
-    "parse-duration": "^0.1.1",
+    "parse-duration": "^0.1.2",
     "ping": "^0.2.2",
     "rss-feed-emitter": "^2.0.1",
     "sql-template-strings": "^2.2.2",
