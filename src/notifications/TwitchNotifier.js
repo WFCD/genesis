@@ -78,7 +78,7 @@ class TwitchNotifier {
         .then(data => data.json());
 
       // If the stream query has some results, then the user is live
-      if (response.data.length > 0) {
+      if (response.data && response.data.length > 0) {
         // parse what time the stream started
         const startedAt = moment(response.data[0].started_at);
 
