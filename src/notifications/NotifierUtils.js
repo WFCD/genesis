@@ -32,6 +32,7 @@ const embeds = {
 // };
 
 const { Rest } = require('@spectacles/rest');
+
 const rest = new Rest(process.env.TOKEN);
 
 const logger = require('../Logger');

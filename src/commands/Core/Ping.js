@@ -62,7 +62,7 @@ class Ping extends Command {
     const now = Date.now();
     const msg = await this.messageManager.reply(message, 'Testing Ping', { deleteOriginal: true, deleteResponse: false });
     const afterSend = Date.now();
-    
+
     const updated = new MessageEmbed({
       title: 'PONG',
       type: 'rich',
@@ -77,7 +77,7 @@ class Ping extends Command {
         text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
       },
     });
-    
+
     await msg.edit('', updated);
     return this.messageManager.statuses.SUCCESS;
   }

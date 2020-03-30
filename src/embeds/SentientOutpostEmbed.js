@@ -12,12 +12,11 @@ const current = (outpost) => {
       activation: new Date(defStart),
       expiry: new Date(defEnd),
     };
-  } else {
-    return {
-      activation: new Date(predStart),
-      expiry: new Date(predEnd),
-    };
   }
+  return {
+    activation: new Date(predStart),
+    expiry: new Date(predEnd),
+  };
 };
 
 class SentientOutpostEmbed extends BaseEmbed {
