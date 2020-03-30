@@ -66,6 +66,8 @@ SHARDS | Total number of shards | 1 | 1
 OWNER | ID of the person owning/running the bot, used for checking permissions
 PREFIX | Default prefix to use for the instance | `\` | `\`
 RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
+CONTROL_WH_ID |  Webhook id for the control webhook for system notifications | '0293485092348490834' | N\A
+CONTROL_WH_TOKEN | Webhook token for the control webhook for system notifications | `asdpiofja[ospdj34095u8340wpodfj+_asdf-oja`  |N\A
 
 ### Stats tracking
 Environment Variable | Description | Example | Default
@@ -80,7 +82,7 @@ Environment Variable | Description | Example | Default
 EMBED_URL | Default link that embeds use in their title | `https://warframestat.us` | `https://warframestat.us`
 EMBED_ICON_URL | Default icon URL that embeds use in their footer | `https://warframestat.us/wfcd_logo_color.png` | `https://warframestat.us/wfcd_logo_color.png`
 BASE_PRES_MSG | Default presence message | `@Bot help` | `@Bot help`
-BASE_PRES_ACT | Default presence activity | `WATCHING` | `PLAYING`
+BASE_PRES_ACT | Default presence activity. Must be a valid discord.js value | `WATCHING` | `PLAYING`
 
 ### Feature Flags
 

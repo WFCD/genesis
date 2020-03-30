@@ -158,7 +158,7 @@ class SettingsQueries {
    */
   async deleteGuildSetting(guild, setting) {
     const promises = [];
-    guild.channels.forEach((channel) => {
+    guild.channels.cache.forEach((channel) => {
       promises.push(this.deleteChannelSetting(channel, setting));
     });
     return Promise.all(promises);

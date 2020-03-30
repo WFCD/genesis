@@ -32,7 +32,7 @@ class BlacklistQueries {
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0]
-        .map(result => this.bot.client.users.get(result.user_id))
+        .map(result => this.bot.client.users.cache.get(result.user_id))
         .filter(user => user);
     }
     return [];
