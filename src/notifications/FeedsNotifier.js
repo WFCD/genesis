@@ -12,10 +12,10 @@ class FeedsNotifier {
   constructor({
     client, settings, messageManager,
   }) {
-    this.feeder = new RssFeedEmitter({ userAgent: `${client.user.username} Shard` });
+    this.feeder = new RssFeedEmitter({ userAgent: `RSS Feed Emitter | ${client.user.username}` });
 
     feeds.forEach((feed) => {
-      this.feeder.add({ url: feed.url, timeout: 600000 });
+      this.feeder.add({ url: feed.url, refresh: 3000000 });
     });
 
     this.start = Date.now();

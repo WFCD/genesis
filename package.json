@@ -30,7 +30,7 @@
     "genesis",
     "discord"
   ],
-  "author": "warframe-community-developers",
+  "author": "wfcd",
   "contributors": [
     "tobitenno <tobiah@warframe.gg> (https://github.com/tobitenno)",
     "nspacestd (https://github.com/nspacestd)"
@@ -39,10 +39,12 @@
     "@sentry/node": "^5.15.0",
     "@spectacles/rest": "^0.6.1",
     "bluebird": "^3.7.2",
+    "bufferutil": "^4.0.1",
     "colors": "^1.4.0",
     "decache": "^4.5.1",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "github:discordjs/discord.js#f56b442e83e4016015c9123d4308dbf9209eea76",
+    "discord.js": "^12.0.2",
+    "erlpack": "github:discordapp/erlpack",
     "greenkeeper-lockfile": "^1.14.0",
     "json-query": "^2.2.2",
     "moment": "^2.24.0",
@@ -57,7 +59,9 @@
     "sql-template-strings": "^2.2.2",
     "twitch": "^3.7.1",
     "url-exists": "^1.0.3",
-    "warframe-name-generator": "^1.0.2"
+    "utf-8-validate": "^5.0.2",
+    "warframe-name-generator": "^1.0.2",
+    "zlib-sync": "^0.1.6"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
@@ -66,6 +70,6 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=8.9.2"
+    "node": ">=12.16.1"
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 const ping = require('ping').promise;
+const { MessageEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
 const { timeDeltaToString, games } = require('../../CommonFunctions.js');
 
@@ -61,22 +62,23 @@ class Ping extends Command {
     const now = Date.now();
     const msg = await this.messageManager.reply(message, 'Testing Ping', { deleteOriginal: true, deleteResponse: false });
     const afterSend = Date.now();
-    await msg.edit('', {
-      embed: {
-        title: 'PONG',
-        type: 'rich',
-        fields: [{
-          name: `Response time (shard ${message.guild ? message.guild.shardID + 1 : 1} of ${this.bot.shardTotal})`,
-          value: `${afterSend - now}ms`,
-        },
-        ...results,
-        ],
-        footer: {
-          thumbnail_url: '\u200B',
-          text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
-        },
+    
+    const updated = new MessageEmbed({
+      title: 'PONG',
+      type: 'rich',
+      fields: [{
+        name: `Response time (shard ${message.guild ? message.guild.shardID + 1 : 1} of ${this.bot.shardTotal})`,
+        value: `${afterSend - now}ms`,
+      },
+      ...results,
+      ],
+      footer: {
+        thumbnail_url: '\u200B',
+        text: `Uptime: ${timeDeltaToString(this.bot.client.uptime)}`,
       },
     });
+    
+    await msg.edit('', updated);
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -16,7 +16,7 @@ async function guildLeave(self) {
   const owners = {};
   try {
     guilds.forEach((row) => {
-      if (self.client.guilds.has(row.guild_id)) {
+      if (self.client.guilds.cache.has(row.guild_id)) {
         if (owners[row.owner_id]) {
           owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
           owners[row.owner_id].guilds.push(row.guild_id);
@@ -60,9 +60,9 @@ async function guildLeave(self) {
  * @param {Bot} self the bot
  */
 function guildRatioCheck(self) {
-  const guilds = self.client.guilds.filter((guild) => {
+  const guilds = self.client.guilds.cache.filter((guild) => {
     self.logger.debug(`Checking Guild: ${guild.name} (${guild.id}) Owner: ${guild.ownerID}`);
-    const bots = guild.members.filter(user => user.user.bot);
+    const bots = guild.members.cache.filter(user => user.user.bot);
     return ((bots.size / guild.memberCount) * 100) >= 80;
   });
 
@@ -84,7 +84,7 @@ class OnReadyHandle extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.ready.ratio', 'onReady');
+    super(bot, 'handlers.ready.ratio', 'ready');
   }
 
   /**

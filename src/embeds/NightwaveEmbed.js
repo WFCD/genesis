@@ -40,7 +40,7 @@ class NightwaveEmbed extends BaseEmbed {
             .filter(challenge => challenge.isDaily)
             .map(chString)
             .join('\n'),
-          inline: true,
+          inline: false,
         });
       }
 
@@ -52,7 +52,7 @@ class NightwaveEmbed extends BaseEmbed {
             value: challengeGroup
               .map(chString)
               .join('\n'),
-            inline: true,
+            inline: false,
           });
         });
 
@@ -64,7 +64,7 @@ class NightwaveEmbed extends BaseEmbed {
             value: challengeGroup
               .map(chString)
               .join('\n'),
-            inline: true,
+            inline: false,
           });
         });
 

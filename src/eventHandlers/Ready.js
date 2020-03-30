@@ -35,7 +35,7 @@ class OnReadyHandle extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.onReady', 'onReady');
+    super(bot, 'handlers.onReady', 'ready');
   }
 
   /**

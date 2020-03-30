@@ -31,7 +31,8 @@ const embeds = {
 //   database: process.env.MYSQL_DB || 'genesis',
 // };
 
-const rest = require('@spectacles/rest')(process.env.TOKEN);
+const { Rest } = require('@spectacles/rest');
+const rest = new Rest(process.env.TOKEN);
 
 const logger = require('../Logger');
 

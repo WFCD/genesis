@@ -274,7 +274,7 @@ class Database {
 
       if (context.lfgChannel) {
         context.lfg = {};
-        context.lfg.pc = channel.guild.channels.get(context.lfgChannel);
+        context.lfg.pc = channel.guild.channels.cache.get(context.lfgChannel);
         delete context.lfgChannel;
       }
 

@@ -1,13 +1,31 @@
 'use strict';
 
 const Command = require('../../models/Command');
-const { captures } = require('../../CommonFunctions');
+const { captures, timeDeltaToMinutesString, fromNow } = require('../../CommonFunctions');
 const SentientOutpostEmbed = require('../../embeds/SentientOutpostEmbed');
+
+const next = (outpost) => {
+  const defStart = new Date(outpost.activation).getTime();
+  const defEnd = new Date(outpost.expiry).getTime();
+  const predStart = new Date(outpost.previous.activation).getTime();
+  const predEnd = new Date(outpost.previous.expiry).getTime();
+  if (defStart > predStart) {
+    return {
+      activation: new Date(defStart),
+      expiry: new Date(defEnd),
+    };
+  } else {
+    return {
+      activation: new Date(predStart),
+      expiry: new Date(predEnd),
+    };
+  }
+}
 
 class Outpost extends Command {
   constructor(bot) {
     super(bot, 'warframe.worldstate.rjoutpost', 'outpost', 'Display the activity status of the Sentient Outpost', 'WARFRAME');
-    this.regex = new RegExp(`^${this.call}\\s?(?:on\\s+${captures.platforms})?`, 'i');
+    this.regex = new RegExp(`^(?:${this.call}|anomaly)\\s?(?:on\\s+${captures.platforms})?`, 'i');
   }
 
   async run(message, ctx) {
@@ -18,7 +36,7 @@ class Outpost extends Command {
       const embed = new SentientOutpostEmbed(this.bot, outpost, platform, ctx.i18n);
       this.messageManager.send(message.channel, embed);
     } else {
-      this.messageManager.send(message.channel, ctx.i18n` :warning: No active outpost detected`);
+      this.messageManager.send(message.channel, ctx.i18n` :warning: No active outpost detected. Predicted arrival in **${timeDeltaToMinutesString(fromNow(next(outpost).activation))}**.`);
     }
     return this.messageManager.statuses.SUCCESS;
   }

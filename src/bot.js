@@ -57,25 +57,22 @@ class Genesis {
      * @private
      */
     this.client = new Client({
-      fetchAllMembers: true,
+      fetchAllMembers: false,
       ws: {
         compress: true,
       },
       shards,
-      totalShardCount: Number(process.env.SHARDS || 1),
-      retryLimit: 2,
-      disabledEvents: [
-        'VOICE_SERVER_UPDATE',
-        'PRESENSE_UPDATE',
-        'USER_SETTINGS_UPDATE',
-        'GUILD_INTEGRATIONS_UPDATE',
-        'GUILD_EMOJIS_UPDATE',
-        'GUILD_UPDATE',
-        'CHANNEL_PINS_UPDATE',
-      ],
-      restSweepInterval: 20,
-      messageSweepInterval: 3600,
-      messageCacheLifetime: 3600,
+      shardCount: Number(process.env.SHARDS || 1),
+      // retryLimit: 2,
+      // disabledEvents: [
+      //   'VOICE_SERVER_UPDATE',
+      //   'PRESENSE_UPDATE',
+      //   'USER_SETTINGS_UPDATE',
+      //   'GUILD_INTEGRATIONS_UPDATE',
+      //   'GUILD_EMOJIS_UPDATE',
+      //   'GUILD_UPDATE',
+      //   'CHANNEL_PINS_UPDATE',
+      // ],
       presence: {
         status: 'dnd',
         afk: false,
@@ -181,7 +178,7 @@ class Genesis {
   }
 
   async setupHandlers() {
-    this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'onReady', args: [] }));
+    this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'ready', args: [] }));
     this.client.on('message', async message => this.eventHandler.handleEvent({ event: 'message', args: [message] }));
 
     this.client.on('guildCreate', async guild => this.eventHandler.handleEvent({ event: 'guildCreate', args: [guild] }));

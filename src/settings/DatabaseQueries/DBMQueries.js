@@ -23,8 +23,8 @@ class DBMQueries {
   */
   async ensureData(client) {
     const promises = [];
-    client.guilds.array().forEach((guild) => {
-      if (guild.channels.array().length) {
+    client.guilds.cache.each((guild) => {
+      if (guild.channels.cache.size) {
         promises.push(this.addGuild(guild));
       }
     });
@@ -39,7 +39,7 @@ class DBMQueries {
   addGuild(guild) {
     if (!guild.available) return undefined;
 
-    const channelIDs = guild.channels.filter(c => c.type === 'text').keyArray();
+    const channelIDs = guild.channels.cache.filter(c => c.type === 'text').keyArray();
     if (channelIDs.length) {
       const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
       channelIDs.forEach((id, index) => {
