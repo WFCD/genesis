@@ -34,7 +34,7 @@ class NotifyOwnerJoin extends Handler {
 
     try {
       if (!isOverLimit) {
-        const prefix = await this.settings.getChannelSetting(guild.channels.first(), 'prefix');
+        const prefix = await this.settings.getChannelSetting(guild.channels.cache.first(), 'prefix');
         guild.owner.send(`${this.client.user.username} has been added `
                          + `to ${guild.name} and is ready\n Type `
                          + `\`${prefix}help\` for help`);

@@ -28,8 +28,8 @@ class DeleteTemplateChannel extends Command {
    */
   async run(message) {
     const templateId = message.strippedContent.match(this.regex)[1];
-    if (templateId && this.bot.client.channels.has(templateId.trim())) {
-      const template = this.bot.client.channels.get(templateId.trim());
+    if (templateId && this.bot.client.channels.cache.has(templateId.trim())) {
+      const template = this.bot.client.channels.cache.get(templateId.trim());
       await this.settings.deleteTemplate(template);
       this.messageManager.reply(message, `${template} removed as a template.`, true, true);
       return this.messageManager.statuses.SUCCESS;

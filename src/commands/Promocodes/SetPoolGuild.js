@@ -26,7 +26,7 @@ class SetPoolGuild extends Command {
       this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
       return this.messageManager.statuses.FAILURE;
     }
-    if (guildId && this.bot.client.guilds.has(guildId)) {
+    if (guildId && this.bot.client.guilds.cache.has(guildId)) {
       await this.settings.setPoolGuild(pool, guildId.trim());
       return this.messageManager.statuses.SUCCESS;
     }

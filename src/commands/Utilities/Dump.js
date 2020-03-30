@@ -52,7 +52,7 @@ class Dump extends Command {
         if (channelConfig.target) {
           let target = this.bot.client.channels
             .get(channelConfig.target.channel || message.channel.id);
-          if (!(message.guild && message.guild.channels.has(target.id))) {
+          if (!(message.guild && message.guild.channels.cache.has(target.id))) {
             message.reply('Channel Not Accessible');
             message.delete({ timeout: 30000 });
             return this.messageManager.statuses.FAILURE;
@@ -70,7 +70,7 @@ class Dump extends Command {
           }
 
           if (channelConfig.cleanFirst) {
-            const chnl = this.bot.client.channels.get(channelConfig.target.channel);
+            const chnl = this.bot.client.channels.cache.get(channelConfig.target.channel);
             if (chnl.messages.size > 1) {
               await chnl.bulkDelete(tokens.length);
             }

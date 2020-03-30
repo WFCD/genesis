@@ -116,10 +116,10 @@ class Create extends Command {
       shown = ctx.defaultShown;
     }
 
-    const modRole = message.guild.roles.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
-    const useModRole = modRole && modRole.id ? message.guild.roles.has(modRole.id) : false;
+    const modRole = message.guild.roles.cache.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
+    const useModRole = modRole && modRole.id ? message.guild.cache.roles.has(modRole.id) : false;
 
-    if (ctx.tempCategory || (message.guild && message.guild.channels.has(ctx.tempCategory))) {
+    if (ctx.tempCategory || (message.guild && message.guild.channels.cache.has(ctx.tempCategory))) {
       useText = false;
     }
 
@@ -161,7 +161,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
             });
             let category;
             if (!ctx.tempCategory
-              || !(message.guild && message.guild.channels.has(ctx.tempCategory.id))) {
+              || !(message.guild && message.guild.channels.cache.has(ctx.tempCategory.id))) {
               category = await message.guild.channels.create(name, {
                 name,
                 type: 'category',

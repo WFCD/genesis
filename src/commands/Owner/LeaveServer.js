@@ -30,8 +30,8 @@ class LeaveServer extends Command {
    */
   async run(message) {
     const serverid = message.strippedContent.match(this.regex)[1];
-    if (this.bot.client.guilds.has(serverid)) {
-      const guild = await this.bot.client.guilds.get(serverid).leave();
+    if (this.bot.client.guilds.cache.has(serverid)) {
+      const guild = await this.bot.client.guilds.cache.get(serverid).leave();
       this.messageManager.reply(message, `Left ${guild.name}`, true, true);
       return this.messageManager.statuses.SUCCESS;
     }

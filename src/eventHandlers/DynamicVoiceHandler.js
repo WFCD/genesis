@@ -20,7 +20,7 @@ const generator = new Generator();
 
 const getRelayName = async (guild, retries = 0) => {
   const name = relays[Math.floor(Math.random() * relays.length)];
-  const alreadyUsed = guild.channels.find(channel => channel.name === name);
+  const alreadyUsed = guild.channels.cache.find(channel => channel.name === name);
   if (retries > relays.length - 1 && alreadyUsed) {
     return name;
   }
@@ -101,8 +101,8 @@ class DynamicVoiceHandler {
     const templates = await this.settings.getTemplates([guild]);
 
     templates.forEach(async (template) => {
-      if (this.client.channels.has(template)) {
-        const templateChannel = this.client.channels.get(template);
+      if (this.client.channels.cache.has(template)) {
+        const templateChannel = this.client.channels.cache.get(template);
         const { remainingEmpty } = await this.settings.getInstances(templateChannel);
         if (remainingEmpty < 1) {
           this.addChannel(templateChannel, member);

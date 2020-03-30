@@ -48,8 +48,8 @@ class DynamicVoiceQueries {
     res[0]
       .map(instance => instance.instance_id)
       .forEach((channelId) => {
-        if (template.guild.channels.has(channelId)) {
-          const channel = template.guild.channels.get(channelId);
+        if (template.guild.channels.cache.has(channelId)) {
+          const channel = template.guild.channels.cache.get(channelId);
           if (channel.members.size) {
             instances.push(channel);
           } else {

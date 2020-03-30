@@ -26,8 +26,8 @@ class LogMemberRemove extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     let logChannel = await this.settings.getGuildSetting(member.guild, 'memberRemoveLog');
-    if (member.guild.channels.has(logChannel)) {
-      logChannel = member.guild.channels.get(logChannel);
+    if (member.guild.channels.cache.has(logChannel)) {
+      logChannel = member.guild.channels.cache.get(logChannel);
     } else {
       logChannel = undefined;
     }

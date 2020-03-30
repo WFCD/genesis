@@ -13,14 +13,14 @@ class JoinableRole {
   }
 
   get requiredRole() {
-    if (this.guild && this.guild.roles.has(this.id) && this.guild.roles.has(this.requiredRoleId)) {
+    if (this.guild && this.guild.roles.cache.has(this.id) && this.guild.roles.cache.has(this.requiredRoleId)) {
       return this.requiredRoleId;
     }
     return undefined;
   }
 
   set requiredRole(role) {
-    if (role && this.guild && this.guild.roles.has(role.id) && this.guild.roles.has(this.id)) {
+    if (role && this.guild && this.guild.roles.cache.has(role.id) && this.guild.roles.cache.has(this.id)) {
       this.requiredRoleId = role.id;
     }
   }

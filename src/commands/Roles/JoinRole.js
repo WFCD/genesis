@@ -10,7 +10,7 @@ const Command = require('../../models/Command.js');
  */
 const getRoleForString = (string, message) => {
   const trimmedString = string.trim();
-  const roleFromId = message.guild.roles.get(trimmedString);
+  const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {
     roleFromName = message.guild.roles
@@ -66,11 +66,11 @@ class JoinRole extends Command {
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
 
     const botIsHigher = message.guild.me
-      .roles.highest.comparePositionTo(message.guild.roles.get(role.id));
+      .roles.highest.comparePositionTo(message.guild.roles.cache.get(role.id));
 
     const botHasPerm = message.channel.permissionsFor(this.bot.client.user.id).has('MANAGE_ROLES');
 
-    const userHasRole = message.member.roles.get(role.id);
+    const userHasRole = message.member.roles.cache.get(role.id);
 
     const userHasMinimumRole = (filteredRoles[0] && filteredRoles[0].requiredRole
       ? message.member.roles.has(filteredRoles[0].requiredRole)

@@ -36,7 +36,7 @@ class UntrackRole extends Command {
       .replace('>', '');
 
     if (!roleId) return this.messageManager.statuses.FAILURE;
-    const role = guild.roles.get(roleId);
+    const role = guild.roles.cache.get(roleId);
     if (!role) return this.messageManager.statuses.FAILURE;
 
     await this.settings.untrackRole(guild, role);

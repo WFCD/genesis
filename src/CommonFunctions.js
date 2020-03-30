@@ -774,9 +774,9 @@ const getChannels = (channelsParam, message) => {
   let channels = [];
   // handle it for strings
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
-    channels.push(message.guild.channels.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
+    channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
   } else if (channelsParam === 'all' || channelsParam === '*') {
-    channels = channels.concat(message.guild.channels.array().filter(channel => channel.type === 'text'));
+    channels = channels.concat(message.guild.channels.cache.filter(channel => channel.type === 'text').array());
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
   }
@@ -803,8 +803,8 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
     target = userMention;
     target.type = 'User';
   } else {
-    const userTarget = message.guild.members.get(targetParam);
-    const roleTarget = message.guild.roles.get(targetParam);
+    const userTarget = message.guild.members.cache.get(targetParam);
+    const roleTarget = message.guild.roles.cache.get(targetParam);
     if (targetParam === '*') {
       target = message.guild.roles.everyone;
       target.type = 'Role';
@@ -831,8 +831,8 @@ const resolveRoles = ({ mentions = undefined, content = '', guild = undefined })
   if (matches && matches.length) {
     matches.slice(0, 1);
     matches = matches.map((match) => {
-      if (guild.roles.has(match)) {
-        return guild.roles.get(match);
+      if (guild.roles.cache.has(match)) {
+        return guild.roles.cache.get(match);
       }
       return undefined;
     }).filter(match => typeof match !== 'undefined');

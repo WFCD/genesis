@@ -22,7 +22,7 @@ class SetUnBanLog extends Command {
    */
   async run(message) {
     const logChannel = message.strippedContent.match(this.regex)[1];
-    if (logChannel && this.bot.client.channels.has(logChannel.trim())) {
+    if (logChannel && this.bot.client.channels.cache.has(logChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'unbanLog', logChannel);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

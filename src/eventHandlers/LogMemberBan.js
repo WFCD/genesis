@@ -26,8 +26,8 @@ class LogMemberBan extends Handler {
     if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
     let logChannel = await this.settings.getGuildSetting(guild, 'banLog');
-    if (guild.channels.has(logChannel)) {
-      logChannel = guild.channels.get(logChannel);
+    if (guild.channels.cache.has(logChannel)) {
+      logChannel = guild.channels.cache.get(logChannel);
     } else {
       logChannel = undefined;
     }

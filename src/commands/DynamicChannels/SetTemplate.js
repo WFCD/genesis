@@ -30,8 +30,8 @@ class SetTemplate extends Command {
     if (!templateChannelId || !nameTemplate) {
       return this.sendToggleUsage(message, ctx, []);
     }
-    if (templateChannelId && this.bot.client.channels.has(templateChannelId.trim())) {
-      const template = this.bot.client.channels.get(templateChannelId.trim());
+    if (templateChannelId && this.bot.client.channels.cache.has(templateChannelId.trim())) {
+      const template = this.bot.client.channels.cache.get(templateChannelId.trim());
       if (await this.settings.isTemplate(template)) {
         await this.settings.setDynTemplate(template.id, nameTemplate);
         this.messageManager.reply(message, `\`${nameTemplate}\` set as ${template}'s name template'.`, true, true);

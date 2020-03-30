@@ -205,7 +205,7 @@ class MessaageManager {
   }
 
   async sendDirectEmbedToOwner(embed) {
-    return this.send(await this.client.users.get(this.owner), undefined, { msgOpts: { embed } });
+    return this.send(await this.client.users.cache.get(this.owner), undefined, { msgOpts: { embed } });
   }
 
   async sendFileToAuthor(message, file, fileName, delCall) {

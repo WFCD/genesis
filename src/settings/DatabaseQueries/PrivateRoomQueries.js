@@ -44,28 +44,28 @@ class PrivateRoomQueries {
           }
           const parsed = JSON.parse(role);
           if (typeof parsed === 'object') {
-            return typeof guild.roles.has(parsed.id);
+            return typeof guild.roles.cache.has(parsed.id);
           }
           if (typeof parsed === 'number') {
-            return guild.roles.has(String(parsed));
+            return guild.roles.cache.has(String(parsed));
           }
           return undefined;
         })
         .filter(role => role)
         .map((role) => {
           const parsed = JSON.parse(role);
-          if (typeof parsed === 'object' && guild.roles.has(parsed.id)) {
-            const joinable = new JoinableRole(guild.roles.get(parsed.id));
+          if (typeof parsed === 'object' && guild.roles.cache.has(parsed.id)) {
+            const joinable = new JoinableRole(guild.roles.cache.get(parsed.id));
             if (typeof parsed.requiredRole !== 'undefined') {
-              joinable.requiredRole = guild.roles.has(parsed.requiredRole)
-                ? guild.roles.get(parsed.requiredRole)
+              joinable.requiredRole = guild.roles.cache.has(parsed.requiredRole)
+                ? guild.roles.cache.get(parsed.requiredRole)
                 : undefined;
             }
             joinable.isLeaveable = typeof parsed.leaveable !== 'undefined' ? parsed.leavable : true;
             return joinable;
           }
-          if (typeof parsed === 'string' && guild.roles.has(parsed)) {
-            const joinable = new JoinableRole(guild.roles.get(parsed));
+          if (typeof parsed === 'string' && guild.roles.cache.has(parsed)) {
+            const joinable = new JoinableRole(guild.roles.cache.get(parsed));
             joinable.requiredRole = undefined;
             joinable.isLeaveable = true;
             return joinable;
@@ -107,11 +107,11 @@ class PrivateRoomQueries {
     const res = await this.db.query(query);
     if (res[0]) {
       return {
-        guild: this.bot.client.guilds.get(res[0][0].guild_id),
+        guild: this.bot.client.guilds.cache.get(res[0][0].guild_id),
         textChannel: res[0][0].text_id
-          ? this.bot.client.channels.get(res[0][0].text_id) : undefined,
-        voiceChannel: this.bot.client.channels.get(res[0][0].voice_id),
-        category: this.bot.client.channels.get(res[0][0].category_id),
+          ? this.bot.client.channels.cache.get(res[0][0].text_id) : undefined,
+        voiceChannel: this.bot.client.channels.cache.get(res[0][0].voice_id),
+        category: this.bot.client.channels.cache.get(res[0][0].category_id),
         createdAt: res[0][0].crt_sec,
         guildId: res[0][0].guild_id,
         textId: res[0][0].text_id || undefined,
@@ -130,10 +130,10 @@ class PrivateRoomQueries {
     const res = await this.db.query(query);
     if (res[0]) {
       return res[0].map(value => ({
-        guild: this.bot.client.guilds.get(value.guild_id),
-        textChannel: value.text_id ? this.bot.client.channels.get(value.text_id) : undefined,
-        voiceChannel: this.bot.client.channels.get(value.voice_id),
-        category: this.bot.client.channels.get(value.category_id),
+        guild: this.bot.client.guilds.cache.get(value.guild_id),
+        textChannel: value.text_id ? this.bot.client.channels.cache.get(value.text_id) : undefined,
+        voiceChannel: this.bot.client.channels.cache.get(value.voice_id),
+        category: this.bot.client.channels.cache.get(value.category_id),
         createdAt: value.crt_sec,
         guildId: value.guild_id,
         textId: value.text_id || undefined,

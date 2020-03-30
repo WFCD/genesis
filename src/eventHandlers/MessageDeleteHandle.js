@@ -27,8 +27,8 @@ class LogMessageDelete extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     let logChannel = await this.settings.getGuildSetting(message.guild, 'msgDeleteLog');
-    if (message.guild && message.guild.channels.has(logChannel)) {
-      logChannel = message.guild.channels.get(logChannel);
+    if (message.guild && message.guild.channels.cache.has(logChannel)) {
+      logChannel = message.guild.channels.cache.get(logChannel);
     } else {
       logChannel = undefined;
     }

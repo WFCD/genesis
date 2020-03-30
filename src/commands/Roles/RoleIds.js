@@ -20,7 +20,7 @@ class Roles extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    const roles = message.guild.roles.array().sort((a, b) => {
+    const roles = message.guild.roles.cache.array().sort((a, b) => {
       if (a.name < b.name) {
         return -1;
       }

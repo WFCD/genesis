@@ -26,7 +26,7 @@ class AddManager extends Command {
       this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
       return this.messageManager.statuses.FAILURE;
     }
-    if (this.bot.client.users.has(user.trim())) {
+    if (this.bot.client.users.cache.has(user.trim())) {
       await this.settings.addPoolManager(pool, user.trim());
       return this.messageManager.statuses.SUCCESS;
     }

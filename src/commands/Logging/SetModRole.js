@@ -22,7 +22,7 @@ class SetModRole extends Command {
    */
   async run(message) {
     const roleId = message.strippedContent.match(this.regex)[1];
-    if (roleId && message.guild.roles.has(roleId.trim())) {
+    if (roleId && message.guild.roles.cache.has(roleId.trim())) {
       await this.settings.setGuildSetting(message.guild, 'modRole', roleId);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

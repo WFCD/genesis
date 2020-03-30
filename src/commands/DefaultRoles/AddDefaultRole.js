@@ -16,7 +16,7 @@ class AddDefaultRole extends Command {
 
   async run(message) {
     const roleId = message.strippedContent.match(this.regex)[1];
-    if (roleId && message.guild.roles.has(roleId.trim())) {
+    if (roleId && message.guild.roles.cache.has(roleId.trim())) {
       const roles = JSON.parse(await this.settings.getGuildSetting(message.guild, 'defaultRoles') || '[]');
       if (!roles.includes(roleId)) {
         roles.push(roleId);

@@ -17,7 +17,7 @@ class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
     guild.roles
       .filter(r => Object.keys(mappedRoles).includes(r.id))
       .each((role) => {
-        const channel = guild.channels.get(mappedRoles[role.id]);
+        const channel = guild.channels.cache.get(mappedRoles[role.id]);
         channel.setName(`${role.name} :: ${role.members.size}`);
       });
   }

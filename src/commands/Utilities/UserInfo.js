@@ -32,7 +32,7 @@ class UserInfo extends Command {
     }
 
     if (params[1] || mention) {
-      user = mention || this.bot.client.users.get(params[1].trim());
+      user = mention || this.bot.client.users.cache.get(params[1].trim());
     } else {
       user = message.author;
     }

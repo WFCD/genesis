@@ -27,8 +27,8 @@ class LogMemberUnban extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     let logChannel = await this.settings.getGuildSetting(guild, 'unbanLog');
-    if (guild.channels.has(logChannel)) {
-      logChannel = guild.channels.get(logChannel);
+    if (guild.channels.cache.has(logChannel)) {
+      logChannel = guild.channels.cache.get(logChannel);
     } else {
       logChannel = undefined;
     }

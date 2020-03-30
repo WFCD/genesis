@@ -24,7 +24,7 @@ class Servers extends Command {
   async run(message) {
     const fileContents = [];
     fileContents.push('"Guild Name","Guild Owner","Guild Id","Member Count","# Human","# Bot"');
-    this.bot.client.guilds.array().forEach((guild) => {
+    this.bot.client.guilds.cache.array().forEach((guild) => {
       fileContents.push(`"${guild.name}","${guild.owner.user.username}#${guild.owner.user.discriminator}","${guild.id}","${guild.members.size}","${guild.members.filter(user => !user.user.bot).size}","${guild.members.filter(user => user.user.bot).size}"`);
     });
 

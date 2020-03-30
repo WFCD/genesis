@@ -62,7 +62,7 @@ class Settings extends Command {
     page.addField('Delete Response', await this.resolveBoolean(channel, 'delete_response', settings), true);
 
     const defaultRoles = JSON.parse(settings.defaultRoles || '[]')
-      .map(roleId => channel.guild.roles.get(roleId) || undefined)
+      .map(roleId => channel.guild.roles.cache.get(roleId) || undefined)
       .filter(role => role)
       .map(role => role.toString())
       .join(', ');
@@ -172,8 +172,8 @@ class Settings extends Command {
       trackedRolePage.setTitle('Role Stats Channels');
       Object.keys(trackedRoles).forEach((role) => {
         trackedRolePage.addField(
-          message.guild.roles.get(role).name,
-          message.guild.channels.get(trackedRoles[role]).name,
+          message.guild.roles.cache.get(role).name,
+          message.guild.channels.cache.get(trackedRoles[role]).name,
         );
       });
       pages.push(trackedRolePage);
@@ -197,12 +197,12 @@ class Settings extends Command {
 
   evalAppliesTo(type, id, message) {
     if (type === 'role') {
-      return message.guild.roles.get(id);
+      return message.guild.roles.cache.get(id);
     }
     if (id === message.guild.id) {
       return 'everyone';
     }
-    return this.bot.client.users.get(id);
+    return this.bot.client.users.cache.get(id);
   }
 }
 

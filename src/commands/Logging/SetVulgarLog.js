@@ -22,7 +22,7 @@ class SetVulgarLog extends Command {
    */
   async run(message) {
     const vulgarLogChannel = message.strippedContent.match(this.regex)[1];
-    if (vulgarLogChannel && this.bot.client.channels.has(vulgarLogChannel.trim())) {
+    if (vulgarLogChannel && this.bot.client.channels.cache.has(vulgarLogChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'vulgarLog', vulgarLogChannel);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

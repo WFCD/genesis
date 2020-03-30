@@ -28,8 +28,8 @@ class LogMessageDelete extends Handler {
 
     const first = messages.first();
     let logChannel = this.settings.getGuildSetting(messages.first().guild, 'messageDeleteLog');
-    if (first.guild.channels.has(logChannel)) {
-      logChannel = first.guild.channels.get(logChannel);
+    if (first.guild.channels.cache.has(logChannel)) {
+      logChannel = first.guild.channels.cache.get(logChannel);
     } else {
       logChannel = undefined;
     }

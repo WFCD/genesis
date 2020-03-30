@@ -27,7 +27,7 @@ class GrantPromocode extends Command {
       this.messageManager.reply(message, 'You can either not manage provided pool, or provided pool doesn\'t exist.');
       return this.messageManager.statuses.FAILURE;
     }
-    if (!user || !this.bot.client.users.has(user)) {
+    if (!user || !this.bot.client.users.cache.has(user)) {
       this.messageManager.reply(message, 'A user to grant to must be specified');
       return this.messageManager.statuses.FAILURE;
     }
@@ -46,7 +46,7 @@ class GrantPromocode extends Command {
 
       await this.settings.grantCode(code, user, message.author.id, platform);
       this.messageManager.reply(message, `Code granted to <@${user}> from ${pool} on ${platform}`);
-      this.messageManager.sendDirectMessageToUser(this.bot.client.users.get(user), `You've been granted a code for ${pool} on ${platform}.
+      this.messageManager.sendDirectMessageToUser(this.bot.client.users.cache.get(user), `You've been granted a code for ${pool} on ${platform}.
         \nUse \`${ctx.prefix}glyphs list claimed\` in this direct message to see your new code.
         \n**If you are receiving this in error, or the code is for the wrong platform,** contact ${message.member} immediately with the code so it can be revoked and a new code granted.`);
       return this.messageManager.statuses.SUCCESS;

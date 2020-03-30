@@ -52,7 +52,7 @@ class BuildQueries {
           body: result.body,
           url: result.image,
           id: result.build_id,
-          owner: this.bot.client.users.get(result.owner_id) || result.owner_id,
+          owner: this.bot.client.users.cache.get(result.owner_id) || result.owner_id,
           ownerId: result.owner_id,
           isPublic: result.is_public === '1',
         };
@@ -80,7 +80,7 @@ class BuildQueries {
             body: result.body,
             url: result.image,
             id: result.build_id,
-            owner: this.bot.client.users.get(result.owner_id) || result.owner_id,
+            owner: this.bot.client.users.cache.get(result.owner_id) || result.owner_id,
             owner_id: result.owner_id,
             isPublic: result.is_public === '1',
           });
@@ -108,7 +108,7 @@ class BuildQueries {
     if (res[0]) {
       return res[0].map(build => ({
         id: build.build_id,
-        owner: this.bot.client.users.get(build.owner_id) || build.owner_id,
+        owner: this.bot.client.users.cache.get(build.owner_id) || build.owner_id,
         title: build.title,
         isPublic: build.is_public === '1',
       }));

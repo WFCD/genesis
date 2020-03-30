@@ -22,7 +22,7 @@ class Roles extends Command {
   async run(message) {
     const roles = (await this.settings.getRolesForGuild(message.guild))
       .filter(role => (role && role.requiredRoleId
-        ? message.member.roles.has(role.requiredRoleId)
+        ? message.member.roles.cache.has(role.requiredRoleId)
         : true));
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
     if (roles.length > 0) {

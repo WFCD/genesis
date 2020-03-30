@@ -162,8 +162,8 @@ class PermissionsQueries {
     }
 
     res[0].sort((a, b) => -Role.comparePositions(
-      channel.guild.roles.get(a.target_id),
-      channel.guild.roles.get(b.target_id),
+      channel.guild.roles.cache.get(a.target_id),
+      channel.guild.roles.cache.get(b.target_id),
     ));
 
     return res[0][0].allowed;

@@ -39,7 +39,7 @@ class WelcomeQueries {
         return res[0].map(value => ({
           isDm: value.is_dm,
           message: value.message,
-          channel: this.bot.client.channels.get(value.channel_id),
+          channel: this.bot.client.channels.cache.get(value.channel_id),
         }));
       }
       return [];

@@ -21,7 +21,7 @@ class SetDefaultCategory extends Command {
    */
   async run(message) {
     const category = message.strippedContent.match(this.regex)[1];
-    if (category && this.bot.client.channels.has(category.trim())) {
+    if (category && this.bot.client.channels.cache.has(category.trim())) {
       await this.settings.setGuildSetting(message.guild, 'tempCategory', category);
       this.messageManager.notifySettingsChange(message, true, true);
       return this.messageManager.statuses.SUCCESS;

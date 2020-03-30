@@ -68,13 +68,13 @@ class AddBuild extends Command {
       }
       let unfoundOwners = [];
       const builds = await this.settings.addNewBuilds(buildsConfig.builds.map((build) => {
-        if ((typeof build.owner !== 'undefined' && this.bot.client.users.get(build.owner)) || typeof build.owner === 'undefined') {
+        if ((typeof build.owner !== 'undefined' && this.bot.client.cache.users.get(build.owner)) || typeof build.owner === 'undefined') {
           return {
             title: build.title,
             body: `${buildsConfig.common.prefix || ''}${build.body}${buildsConfig.common.postfix || ''}`,
             image: build.image,
             ownerId: build.owner || message.author.id,
-            owner: this.bot.client.users.get(build.owner) || build.owner || message.author,
+            owner: this.bot.client.cache.users.get(build.owner) || build.owner || message.author,
             isPublic: build.is_public || false,
           };
         }

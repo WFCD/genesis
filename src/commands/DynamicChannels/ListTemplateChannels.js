@@ -24,8 +24,8 @@ class AddTemplateChannel extends Command {
     const templateIds = await this.settings.getTemplates([message.guild]);
     const templates = [];
     templateIds.forEach((templateId) => {
-      if (message.guild.channels.has(templateId)) {
-        templates.push(message.guild.channels.get(templateId));
+      if (message.guild.channels.cache.has(templateId)) {
+        templates.push(message.guild.channels.cache.get(templateId));
       }
     });
     const embed = new BaseEmbed(this.bot);

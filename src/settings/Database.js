@@ -266,8 +266,8 @@ class Database {
         context.webhook = undefined;
       }
 
-      if (context.tempCategory && channel.guild.channels.has(context.tempCategory.trim())) {
-        context.tempCategory = channel.guild.channels.get(context.tempCategory.trim());
+      if (context.tempCategory && channel.guild.channels.cache.has(context.tempCategory.trim())) {
+        context.tempCategory = channel.guild.channels.cache.get(context.tempCategory.trim());
       } else {
         context.tempCategory = undefined;
       }
@@ -289,21 +289,21 @@ class Database {
         if (!context.lfg) {
           context.lfg = {};
         }
-        context.lfg.ps4 = channel.guild.channels.get(context['lfgChannel.ps4']);
+        context.lfg.ps4 = channel.guild.channels.cache.get(context['lfgChannel.ps4']);
         delete context['lfgChannel.ps4'];
       }
       if (context['lfgChannel.swi']) {
         if (!context.lfg) {
           context.lfg = {};
         }
-        context.lfg.swi = channel.guild.channels.get(context['lfgChannel.swi']);
+        context.lfg.swi = channel.guild.channels.cache.get(context['lfgChannel.swi']);
         delete context['lfgChannel.swi'];
       }
       if (context['lfgChannel.xb1']) {
         if (!context.lfg) {
           context.lfg = {};
         }
-        context.lfg.xb1 = channel.guild.channels.get(context['lfgChannel.xb1']);
+        context.lfg.xb1 = channel.guild.channels.cache.get(context['lfgChannel.xb1']);
         delete context['lfgChannel.xb1'];
       }
 

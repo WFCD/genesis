@@ -10,10 +10,10 @@ const Command = require('../../models/Command.js');
  */
 function getRoleForString(string, message) {
   const trimmedString = string.trim();
-  const roleFromId = message.guild.roles.get(trimmedString);
+  const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {
-    roleFromName = message.guild.roles
+    roleFromName = message.guild.roles.cache
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;
@@ -61,7 +61,7 @@ class RemoveRole extends Command {
         .filter(storedRole => filteredRoles[0].id !== storedRole.id)
         .map(unSelectedRole => unSelectedRole.getSimple()), filteredRoles[0]);
       if (deleteRole) {
-        message.guild.roles.get(filteredRoles[0].id).delete('Deleting role from role remove');
+        message.guild.roles.cache.get(filteredRoles[0].id).delete('Deleting role from role remove');
       }
       return this.messageManager.statuses.SUCCESS;
     }
@@ -105,7 +105,7 @@ class RemoveRole extends Command {
         },
         {
           name: '**Roles:**',
-          value: message.guild.roles.map(r => r.name).join('; '),
+          value: message.guild.roles.cache.map(r => r.name).join('; '),
           inline: true,
         },
       ],

@@ -41,8 +41,8 @@ class StartGiveaway extends Command {
       [time, winnerCount, channel, ...prizeTokens] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
       if (channelCap.test(channel)) {
         [, channel] = (channel.match(channelCap) || []);
-        if (channel && message.guild.channels.has(channel)) {
-          channel = message.guild.channels.get(channel);
+        if (channel && message.guild.channels.cache.has(channel)) {
+          channel = message.guild.channels.cache.get(channel);
         }
       } else {
         prizeTokens.unshift(channel);
