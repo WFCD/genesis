@@ -144,7 +144,7 @@ class SettingsQueries {
   async setGuildSetting(guild, setting, value) {
     if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
     const promises = [];
-    guild.channels.forEach((channel) => {
+    guild.channels.cache.forEach((channel) => {
       promises.push(this.setChannelSetting(channel, setting, value));
     });
     return Promise.all(promises);
