@@ -205,9 +205,18 @@ class MessaageManager {
   }
 
   async sendDirectEmbedToOwner(embed) {
-    return this.send(await this.client.users.cache.get(this.owner), undefined, { msgOpts: { embed } });
+    return this.send(await this.client.users.cache
+      .get(this.owner), undefined, { msgOpts: { embed } });
   }
 
+  /**
+   * Alias for #send with specific information, to the original messages author
+   * @param  {Discord.Message}  message  message to reply/send to author
+   * @param  {Object}  file     file to send
+   * @param  {string}  fileName name of file, with extension
+   * @param  {boolean}  delCall  whether or not to delete the call
+   * @returns {Promise<Discord.Message>}
+   */
   async sendFileToAuthor(message, file, fileName, delCall) {
     return this.send(message.author, undefined, {
       msgOpts: {
