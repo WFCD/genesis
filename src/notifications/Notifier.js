@@ -10,7 +10,7 @@ const Broadcaster = require('./Broadcaster');
 const logger = require('../Logger');
 
 const {
-  createGroupedArray, apiBase, apiCdnBase, platforms, games,
+  createGroupedArray, apiBase, apiCdnBase, platforms, games, captures,
 } = require('../CommonFunctions');
 
 
@@ -23,6 +23,8 @@ const i18ns = {};
 require('../resources/locales.json').forEach((locale) => {
   i18ns[locale] = I18n.use(locale);
 });
+
+const updtReg = new RegExp(captures.updates, 'i');
 
 const beats = {};
 
@@ -90,7 +92,7 @@ function buildNotifiableData(newData, platform, notified) {
       .filter(f => !f.expired && between(f.activation, platform)),
     news: newData.news
       .filter(n => !n.primeAccess
-        && !n.update && !n.stream && between(n.date, platform)),
+        && !n.update && !updtReg.test(n.message) && !n.stream && between(n.date, platform)),
     popularDeals: newData.flashSales
       .filter(d => d.isPopular && between(d.activation, platform)),
     primeAccess: newData.news
@@ -107,7 +109,8 @@ function buildNotifiableData(newData, platform, notified) {
       ? newData.twitter.filter(t => t && between(t.createdAt, platform))
       : [],
     updates: newData.news
-      .filter(n => n.update && !n.stream && between(n.activation, platform)),
+      .filter(n => (n.update || !updtReg.test(n.message))
+        && !n.stream && between(n.activation, platform)),
 
     /* Cycles data */
     cetusCycleChange: between(newData.cetusCycle.activation, platform),
@@ -183,7 +186,7 @@ class Notifier {
     if (games.includes('WARFRAME')) {
       for (const k of Object.keys(this.bot.worldStates)) {
         this.bot.worldStates[k].on('newData', async (platform, newData) => {
-          logger.debug(`[N] Processing new data for ${platform}`);
+          logger.silly(`[N] Processing new data for ${platform}`);
           await this.onNewData(platform, newData);
         });
       }
@@ -213,7 +216,7 @@ class Notifier {
 
     // Send all notifications
     try {
-      logger.debug('[N] sending new data...');
+      logger.silly('[N] sending new data...');
       await this.sendAcolytes(acolytes, platform);
       if (baro) {
         this.sendBaro(baro, platform);

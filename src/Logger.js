@@ -7,6 +7,7 @@ Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
 
 /**
  * A collection of methods for logging
+ * @property {function} silly   - silly level of debugging
  * @property {function} debug   - Logs a debug message
  * @property {function} info    - Logs an info message
  * @property {function} warning - Logs a warning message
@@ -22,6 +23,7 @@ const l = {
   },
 };
 const levels = {
+  SILLY: 'grey',
   DEBUG: 'cyan',
   INFO: 'blue',
   WARN: 'orange',
@@ -39,8 +41,9 @@ const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${(colorify(lev
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     const simple = fmt(level, process.env.SCOPE || 'BOT', message);
-    if ((Object.keys(levels).indexOf(level) >= Object.keys(levels)
-      .indexOf(l.logLevel)) && Object.keys(levels).indexOf(level) < 3) {
+    const isActive = Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel);
+    const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
+    if ( isActive && nonError) {
       // eslint-disable-next-line no-console
       console.log(simple);
     }

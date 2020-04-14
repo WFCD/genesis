@@ -42,7 +42,7 @@ class OnReadyHandle extends Handler {
    * Run the ready handle
    */
   async execute() {
-    this.logger.debug(`Running ${this.id} for ${this.event}`);
+    this.logger.silly(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
 
     this.notifyUp();
@@ -90,7 +90,7 @@ class OnReadyHandle extends Handler {
 
   setupGiveaways() {
     if (!games.includes('GIVEAWAYS')) {
-      this.logger.debug('No init: giveaways. Feature flag disabled.');
+      this.logger.silly('No init: giveaways. Feature flag disabled.');
       return;
     }
     this.bot.giveaways = new GiveawaysManager(this.bot.client, {
@@ -153,7 +153,7 @@ class OnReadyHandle extends Handler {
         },
       });
     } catch (error) {
-      this.logger.debug(error);
+      this.logger.silly(error);
     }
   }
 
@@ -163,9 +163,9 @@ class OnReadyHandle extends Handler {
    */
   async checkPrivateRooms() {
     if (!games.includes('UTIL')) return;
-    this.logger.debug('Checking private rooms...');
+    this.logger.silly('Checking private rooms...');
     const privateRooms = await this.settings.getPrivateRooms();
-    this.logger.debug(`Private rooms... ${privateRooms.length}`);
+    this.logger.silly(`Private rooms... ${privateRooms.length}`);
     privateRooms.forEach(async (room) => {
       if (room && (room.textChannel || room.category || room.voiceChannel)) {
         const now = new Date();
@@ -173,15 +173,15 @@ class OnReadyHandle extends Handler {
             > this.channelTimeout)
           && (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
           if (room.textChannel && room.textChannel.deletable) {
-            this.logger.debug(`Deleting text channel... ${room.textChannel.id}`);
+            this.logger.silly(`Deleting text channel... ${room.textChannel.id}`);
             await room.textChannel.delete();
           }
           if (room.voiceChannel && room.voiceChannel.deletable) {
-            this.logger.debug(`Deleting voice channel... ${room.voiceChannel.id}`);
+            this.logger.silly(`Deleting voice channel... ${room.voiceChannel.id}`);
             await room.voiceChannel.delete();
           }
           if (room.category && room.category.deletable) {
-            this.logger.debug(`Deleting category... ${room.category.id}`);
+            this.logger.silly(`Deleting category... ${room.category.id}`);
             await room.category.delete();
           }
           this.settings.deletePrivateRoom(room);

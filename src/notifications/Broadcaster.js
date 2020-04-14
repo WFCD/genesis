@@ -30,7 +30,7 @@ class Broadcaster {
     embed.bot = undefined; // eslint-disable-line no-param-reassign
 
     return Promise.all(channels.map(async (result) => {
-      const channel = this.client.channels.get(result.channelId);
+      const channel = this.client.channels.cache.get(result.channelId);
 
       if (channel) {
         if (channel.type === 'text') {

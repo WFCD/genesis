@@ -83,7 +83,7 @@ class BugReport extends Command {
           };
         }
         try {
-          this.bot.controlHook.send({ embeds: [embed] });
+          this.bot.bugHook.send({ embeds: [embed] });
           this.messageManager.reply(message, 'Bug report sent.', true, true);
           return this.messageManager.statuses.SUCCESS;
         } catch (error) {

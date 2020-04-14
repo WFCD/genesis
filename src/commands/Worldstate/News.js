@@ -22,7 +22,8 @@ class News extends Command {
     const platform = platformParam || ctx.platform;
     const compact = /compact/ig.test(message.strippedContent);
     const news = (await this.ws.get('news', platform, ctx.language))
-      .filter(n => !n.update && !n.primeAccess && n.translations[ctx.language]);
+      .filter(n => !n.update && !n.primeAccess && n.translations[ctx.language])
+      .reverse();
 
     if (compact) {
       await this.messageManager

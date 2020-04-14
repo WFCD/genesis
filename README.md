@@ -68,6 +68,8 @@ PREFIX | Default prefix to use for the instance | `\` | `\`
 RAVEN_URL | DSN url for logging data  to Sentry | `'https://***:***@sentry.io/***'` | N\A
 CONTROL_WH_ID |  Webhook id for the control webhook for system notifications | '0293485092348490834' | N\A
 CONTROL_WH_TOKEN | Webhook token for the control webhook for system notifications | `asdpiofja[ospdj34095u8340wpodfj+_asdf-oja`  |N\A
+BUG_WH_ID |  Webhook id for the bug webhook | '0293485092348490834' | N\A
+BUG_WH_TOKEN | Webhook token for the bug webhook | `asdpiofja[ospdj34095u8340wpodfj+_asdf-oja`  |N\A
 
 ### Stats tracking
 Environment Variable | Description | Example | Default

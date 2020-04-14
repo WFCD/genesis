@@ -63,16 +63,15 @@ class Genesis {
       },
       shards,
       shardCount: Number(process.env.SHARDS || 1),
-      // retryLimit: 2,
-      // disabledEvents: [
-      //   'VOICE_SERVER_UPDATE',
-      //   'PRESENSE_UPDATE',
-      //   'USER_SETTINGS_UPDATE',
-      //   'GUILD_INTEGRATIONS_UPDATE',
-      //   'GUILD_EMOJIS_UPDATE',
-      //   'GUILD_UPDATE',
-      //   'CHANNEL_PINS_UPDATE',
-      // ],
+      disabledEvents: [
+        'VOICE_SERVER_UPDATE',
+        'PRESENSE_UPDATE',
+        'USER_SETTINGS_UPDATE',
+        'GUILD_INTEGRATIONS_UPDATE',
+        'GUILD_EMOJIS_UPDATE',
+        'GUILD_UPDATE',
+        'CHANNEL_PINS_UPDATE',
+      ],
       presence: {
         status: 'dnd',
         afk: false,
@@ -174,6 +173,11 @@ class Genesis {
 
     if (process.env.CONTROL_WH_ID) {
       this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+    }
+    if (process.env.BUG_WH_ID) {
+      this.bugHook = new WebhookClient(process.env.BUG_WH_ID, process.env.BUG_WH_TOKEN);
+    } else if (process.env.CONTROL_WH_ID) {
+      this.bugHook = this.controlHook;
     }
   }
 

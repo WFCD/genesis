@@ -14,7 +14,7 @@ class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
     const { guild } = newMember;
     const mappedRoles = await this.settings.getTrackedRoles(guild);
 
-    guild.roles
+    guild.roles.cache
       .filter(r => Object.keys(mappedRoles).includes(r.id))
       .each((role) => {
         const channel = guild.channels.cache.get(mappedRoles[role.id]);

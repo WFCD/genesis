@@ -9,7 +9,7 @@ class WorldStateClient {
   }
 
   async get(endpoint, platform = 'pc', language = 'en') {
-    this.logger.debug(`fetching ${endpoint} for ${platform} with lang(${language})`);
+    this.logger.silly(`fetching ${endpoint} for ${platform} with lang(${language})`);
     return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}`, {
       headers: {
         platform,
@@ -19,7 +19,7 @@ class WorldStateClient {
   }
 
   async g(endpoint, platform = 'pc', language = 'en') {
-    this.logger.debug(`fetching ${endpoint}`);
+    this.logger.silly(`fetching ${endpoint}`);
     return fetch(`${apiBase}/${endpoint}?language=${language}`, {
       headers: {
         platform,
@@ -29,12 +29,12 @@ class WorldStateClient {
   }
 
   async search(endpoint, query) {
-    this.logger.debug(`searching ${endpoint} for ${query}`);
+    this.logger.silly(`searching ${endpoint} for ${query}`);
     return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query)}`);
   }
 
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
-    this.logger.debug(`pricechecking ${query}`);
+    this.logger.silly(`pricechecking ${query}`);
     return fetch(`${apiBase}/pricecheck/${type}/${query}`, {
       headers: {
         platform,

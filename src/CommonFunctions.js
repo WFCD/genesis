@@ -186,6 +186,7 @@ const captures = {
   user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
   trackables: `(${dyn.join('|')})`,
   platforms: `(${platforms.join('|')})`,
+  updates: '[\\d]{1,3}\\.[\\d]{1,3}\\.?[\\d]{0,3}',
 };
 
 /**
