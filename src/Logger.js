@@ -43,7 +43,7 @@ Object.keys(levels).forEach((level) => {
     const simple = fmt(level, process.env.SCOPE || 'BOT', message);
     const isActive = Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
-    if ( isActive && nonError) {
+    if (isActive && nonError) {
       // eslint-disable-next-line no-console
       console.log(simple);
     }
