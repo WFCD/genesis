@@ -92,7 +92,7 @@ class OnReadyHandle extends Handler {
    */
   async execute() {
     this.logger.silly(`Running ${this.id} for ${this.event}`);
-    // setTimeout(guildRatioCheck, 4000, this);
+    setTimeout(guildRatioCheck, 4000, this);
   }
 }
 

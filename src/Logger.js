@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable no-console */
 const Sentry = require('@sentry/node');
 require('colors');
 
@@ -44,7 +45,6 @@ Object.keys(levels).forEach((level) => {
     const isActive = Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (isActive && nonError) {
-      // eslint-disable-next-line no-console
       console.log(simple);
     }
 
@@ -54,10 +54,8 @@ Object.keys(levels).forEach((level) => {
       process.exit(4);
     }
     if (level.toLowerCase() === 'error') {
-      // eslint-disable-next-line no-console
       console.error(simple);
       if (typeof message === 'object') {
-        // eslint-disable-next-line no-console
         console.error(message);
       }
       if (Sentry) {
