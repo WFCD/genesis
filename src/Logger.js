@@ -48,10 +48,9 @@ Object.keys(levels).forEach((level) => {
       console.log(simple);
     }
 
-    if (level.toLowerCase() === 'fatal' && Sentry) {
-      Sentry.captureMessage(message, {
-        level: 'fatal',
-      });
+    if (level.toLowerCase() === 'fatal') {
+      if (Sentry) Sentry.captureMessage(message, { level: 'fatal' });
+      console.error(simple);
       process.exit(4);
     }
     if (level.toLowerCase() === 'error') {

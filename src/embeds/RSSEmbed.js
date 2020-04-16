@@ -2,7 +2,7 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-const { chunkify } = require('../CommonFunctions');
+const { chunkify, markdinate } = require('../CommonFunctions');
 
 /**
  * Generates daily deal embeds
@@ -15,9 +15,22 @@ class RSSEmbed extends BaseEmbed {
    */
   constructor(feedItem, feed) {
     super();
-    [this.description] = chunkify({
-      string: (feedItem.description || '\u200B').replace(/<(?:.|\n)*?>/gm, '').replace(/\n\n+\s*/gm, '\n\n'),
+    // clean up description, falling back to an empty string
+    const [strippedDesc] = chunkify({
+      string: markdinate((feedItem.description || '\u200B')
+        .replace(new RegExp(`<strong>${feedItem.title}</strong>`, 'gm'), '')),
+      maxLength: 1000,
+      breakChar: '\n',
+      checkTitle: true,
     });
+
+    // strip the last title if it starts with a title
+    // if(strippedDesc.endsWith('**')) {
+    //   const endTitle = strippedDesc.match(/\*\*(.*)\*\*$/g)[1];
+    //   strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
+    // }
+
+    this.description = strippedDesc;
     this.url = feedItem.link;
     this.timestamp = feedItem.pubdate;
     this.title = feedItem.title;
@@ -42,7 +55,6 @@ class RSSEmbed extends BaseEmbed {
       if (first) {
         if (first.startsWith('//')) {
           first = first.replace('//', 'https://');
-
           this.image = {
             url: first,
           };

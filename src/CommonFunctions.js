@@ -356,7 +356,7 @@ const embedDefaults = {
  * @returns {Array.<string>}                  Array of string chunks
  */
 const chunkify = ({
-  string, newStrings = [], breakChar = '; ', maxLength = 1000,
+  string, newStrings = [], breakChar = '; ', maxLength = 1000, checkTitle = false,
 }) => {
   let breakIndex;
   let chunk;
@@ -366,6 +366,16 @@ const chunkify = ({
       // Split message at last break character, if it exists
       chunk = string.substring(0, maxLength);
       breakIndex = chunk.lastIndexOf(breakChar) !== -1 ? chunk.lastIndexOf(breakChar) : maxLength;
+
+      if (checkTitle) {
+        // strip the last title if it starts with a title
+        if (string.endsWith('**')) {
+          const endTitle = string.matches(/\*\*(.*)\*\*$/g)[1];
+          string = string.replace(/\*\*(.*)\*\*$/g, ''); // eslint-disable-line no-param-reassign
+          breakIndex -= endTitle.length;
+        }
+      }
+
       newStrings.push(string.substring(0, breakIndex));
       // Skip char if split on line break
       if (breakIndex !== maxLength) {
@@ -378,6 +388,23 @@ const chunkify = ({
   newStrings.push(string);
   return newStrings;
 };
+
+/**
+ * Convert html string content into semi-similar discord-flavored markdown
+ * @param  {string} htmlString html string to convert
+ * @returns {string}            markdinated string
+ */
+const markdinate = htmlString => htmlString.replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
+  .replace(/\r\n/gm, '\n') // replace CRLF with LF
+  .replace(/<br\s*\/?>/g, '\n')
+  .replace(/\s*<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
+  .replace(/<li>\n/gm, '- ') // strip list items to bullets, replace later with emoji
+  .replace(/<\/li>/gm, '') // strip li end tags
+  .replace(/<(?:.|\n)*?>/gm, '') // replace all other tags, like images and paragraphs... cause they uuugly
+  .replace(/\n\s*\n+\s*/gm, '\n\n') // strip 2+ line endings to max 2
+  .replace(/\*\*\n\n/gm, '**\n') // strip any newlines between headers and content to collapse content
+  .replace(/^- /gm, ':white_small_square: ') // swap bullets for emoji
+  .trim();
 
 /**
  * Check that embeds are valid, and merge values into array
@@ -1073,4 +1100,5 @@ module.exports = {
   groupBy,
   games,
   giveawayDefaults,
+  markdinate,
 };
