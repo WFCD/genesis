@@ -370,8 +370,8 @@ const chunkify = ({
       if (checkTitle) {
         // strip the last title if it starts with a title
         if (string.endsWith('**')) {
-          const endTitle = string.matches(/\*\*(.*)\*\*$/g)[1];
-          string = string.replace(/\*\*(.*)\*\*$/g, ''); // eslint-disable-line no-param-reassign
+          const endTitle = string.matches(/\*\*(.*)\*\*\s*$/g)[1];
+          string = string.replace(/\*\*(.*)\*\*\s*$/g, ''); // eslint-disable-line no-param-reassign
           breakIndex -= endTitle.length;
         }
       }
@@ -394,16 +394,23 @@ const chunkify = ({
  * @param  {string} htmlString html string to convert
  * @returns {string}            markdinated string
  */
-const markdinate = htmlString => htmlString.replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
+const markdinate = htmlString => htmlString
+  .split('\n').map(l => l.trim()).join('\n') // trim lines
   .replace(/\r\n/gm, '\n') // replace CRLF with LF
-  .replace(/<br\s*\/?>/g, '\n')
-  .replace(/\s*<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
-  .replace(/<li>\n/gm, '- ') // strip list items to bullets, replace later with emoji
+  .replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
+  .replace(/<br\s*\/?>/g, '\n') // replace manual breaks with break character
+  .replace(/<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
+  .replace(/<li\s?(?:class=".*")?\s?(?:dir=".*")?>\n/gm, '- ') // strip list items to bullets, replace later with emoji
+  .replace(/ipsnoembed="false" /gm, '') // manually replace ipsnoembed, it causes issues given location
+  .replace(/<a href="(.*)" rel="external nofollow(?: noopener)?"\s?(?:target="_blank")?>(.*)<\/a>/gm, '[$2]($1)')
+  .replace(/&amp;/gm, '&') // replace ampersand entity... it looks weird with some titles
   .replace(/<\/li>/gm, '') // strip li end tags
   .replace(/<(?:.|\n)*?>/gm, '') // replace all other tags, like images and paragraphs... cause they uuugly
+  .replace(/-\s+\n/g, '- ')
   .replace(/\n\s*\n+\s*/gm, '\n\n') // strip 2+ line endings to max 2
   .replace(/\*\*\n\n/gm, '**\n') // strip any newlines between headers and content to collapse content
-  .replace(/^- /gm, ':white_small_square: ') // swap bullets for emoji
+  .replace(/^\s*-\s*\n\s*\[/g, '- [')
+  .replace(/^- /gm, ':white_small_square:') // swap bullets for emoji
   .trim();
 
 /**

@@ -20,6 +20,7 @@ class GetRSSUpdates extends Command {
         && matchingFeeds[0].items && matchingFeeds[0].items[0]
       ? [...matchingFeeds[0].items]
       : [];
+
     if (!updates.length) {
       this.messageManager.reply(message, ctx.i18n`No RSS Updates`, true, true);
       return this.messageManager.statuses.FAILURE;

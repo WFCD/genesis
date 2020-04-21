@@ -16,20 +16,30 @@ class RSSEmbed extends BaseEmbed {
   constructor(feedItem, feed) {
     super();
     // clean up description, falling back to an empty string
-    const [strippedDesc] = chunkify({
-      string: markdinate((feedItem.description || '\u200B')
-        .replace(new RegExp(`<strong>${feedItem.title}</strong>`, 'gm'), '')),
-      maxLength: 1000,
+    let strippedDesc = markdinate((feedItem.description || '\u200B')
+      .replace(new RegExp(`<strong>${feedItem.title}</strong>`, 'gm'), ''));
+    const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
+
+    if (feedItem.title.includes(firstLine)) {
+      const tokens = strippedDesc.split('\n');
+      tokens.shift();
+      strippedDesc = tokens.join('\n');
+    }
+
+
+    [strippedDesc] = chunkify({
+      string: strippedDesc,
+      maxLength: 2000,
       breakChar: '\n',
       checkTitle: true,
     });
 
     // strip the last title if it starts with a title
-    // if(strippedDesc.endsWith('**')) {
-    //   const endTitle = strippedDesc.match(/\*\*(.*)\*\*$/g)[1];
-    //   strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
-    // }
+    if (strippedDesc.endsWith('**')) {
+      strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
+    }
 
+    // this.description = `\`\`\`\n${strippedDesc}\n\`\`\``;
     this.description = strippedDesc;
     this.url = feedItem.link;
     this.timestamp = feedItem.pubdate;

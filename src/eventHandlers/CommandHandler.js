@@ -93,7 +93,7 @@ class CommandHandler extends Handler {
     const botPingId = `<@${this.bot.client.user.id}>`;
     const botNickPing = `<@!${this.bot.client.user.id}>`;
     const ctx = await this.bot.settings.getCommandContext(message.channel, message.author);
-    this.logger.debug(`${message.author.id} is ${ctx.isBlacklisted ? '' : 'not '}blacklisted`);
+    this.logger.silly(`${message.author.id} is ${ctx.isBlacklisted ? '' : 'not '}blacklisted`);
     if (ctx.isBlacklisted) {
       return;
     }
@@ -128,7 +128,7 @@ class CommandHandler extends Handler {
     // set new context objects
     ctx.message = strippedMessage;
     ctx.i18n = I18n.use(ctx.language);
-    this.logger.debug(`Handling \`${content}\``);
+    this.logger.silly(`Handling \`${content}\``);
 
     let done = false;
     commands.forEach(async (command) => {
@@ -137,7 +137,7 @@ class CommandHandler extends Handler {
         // check if it's runnable for the user
         const canAct = await this.checkCanAct(command, strippedMessage);
         if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {
-          this.logger.debug(`Matched ${command.id}`);
+          this.logger.silly(`Matched ${command.id}`);
 
           // load command
           const cmd = await this.bot.commandManager.loadCommand(command);

@@ -46,7 +46,7 @@ class CommandManager {
 
   async loadCommand(manifest) {
     if (this.commandCache[manifest.id]) {
-      this.logger.debug(`Found ${manifest.id} in cache`);
+      this.logger.silly(`Found ${manifest.id} in cache`);
       return this.commandCache[manifest.id];
     }
 
@@ -57,7 +57,7 @@ class CommandManager {
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const Command = require(path.join(commandDir, manifest.path));
     const command = new Command(this.bot);
-    this.logger.debug(`Loading ${command.id}`);
+    this.logger.silly(`Loading ${command.id}`);
     this.commandCache[manifest.id] = command;
     return command;
   }
@@ -78,7 +78,7 @@ class CommandManager {
       });
 
       if (this.commands.length !== 0) {
-        this.logger.debug('Decaching commands');
+        this.logger.silly('Decaching commands');
         files.forEach((f) => {
           decache(path.join(commandDir, f));
         });
