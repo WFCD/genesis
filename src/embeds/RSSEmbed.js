@@ -29,7 +29,7 @@ class RSSEmbed extends BaseEmbed {
 
     [strippedDesc] = chunkify({
       string: strippedDesc,
-      maxLength: 2000,
+      maxLength: 1000,
       breakChar: '\n',
       checkTitle: true,
     });
