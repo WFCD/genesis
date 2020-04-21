@@ -132,3 +132,15 @@ Honestly too many to put here
 ## License
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
+### Private Docker Build!
+
+Want to build your own image? All you (should) need to do is:
+- clone this repo
+- install docker
+- install nodejs (and npm)
+- run `npm run build` (builds the docker image and punishes locally)
+- Copy `docker-compose.example.yaml` and update the environment variables to your needing
+- Run `docker-compose up -d`
+- If you'd like to check logs, use `docker logs genesis --follow`

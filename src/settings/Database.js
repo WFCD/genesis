@@ -101,10 +101,10 @@ class Database {
 
     this.defaults = {
       username: this.scope === 'bot'
-        ? this.bot.client.user.username
+        ? this.bot.client.user && this.bot.client.user.username
         : 'Genesis',
       avatar: this.scope === 'bot'
-        ? this.bot.client.user.displayAvatarURL()
+        ? this.bot.client.user && this.bot.client.user.displayAvatarURL()
           .replace('.webp', '.png')
           .replace('.webm', '.gif')
           .replace('?size=2048', '')
