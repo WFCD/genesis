@@ -14,7 +14,12 @@ class DBMQueries {
    * @returns {Promise}
    */
   createSchema() {
-    return Promise.mapSeries(schema, q => this.db.query(q));
+    try {
+      return Promise.mapSeries(schema, q => this.db.query(q));
+    } catch (e) {
+      this.logger.fatal(e);
+      return undefined;
+    }
   }
 
   /**

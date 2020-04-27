@@ -91,7 +91,7 @@ class OnReadyHandle extends Handler {
    * Run the ready handle
    */
   async execute() {
-    this.logger.debug(`Running ${this.id} for ${this.event}`);
+    this.logger.silly(`Running ${this.id} for ${this.event}`);
     setTimeout(guildRatioCheck, 4000, this);
   }
 }

@@ -203,7 +203,10 @@ class Genesis {
     this.client.on('error', this.logger.error);
     this.client.on('warn', this.logger.warn);
     this.client.on('debug', (message) => {
-      if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) return;
+      if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) {
+        this.logger.silly(message);
+        return;
+      }
       this.logger.debug(message);
     });
   }

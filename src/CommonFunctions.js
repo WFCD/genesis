@@ -356,7 +356,7 @@ const embedDefaults = {
  * @returns {Array.<string>}                  Array of string chunks
  */
 const chunkify = ({
-  string, newStrings = [], breakChar = '; ', maxLength = 1000,
+  string, newStrings = [], breakChar = '; ', maxLength = 1000, checkTitle = false,
 }) => {
   let breakIndex;
   let chunk;
@@ -366,6 +366,16 @@ const chunkify = ({
       // Split message at last break character, if it exists
       chunk = string.substring(0, maxLength);
       breakIndex = chunk.lastIndexOf(breakChar) !== -1 ? chunk.lastIndexOf(breakChar) : maxLength;
+
+      if (checkTitle) {
+        // strip the last title if it starts with a title
+        if (string.endsWith('**')) {
+          const endTitle = string.matches(/\*\*(.*)\*\*\s*$/g)[1];
+          string = string.replace(/\*\*(.*)\*\*\s*$/g, ''); // eslint-disable-line no-param-reassign
+          breakIndex -= endTitle.length;
+        }
+      }
+
       newStrings.push(string.substring(0, breakIndex));
       // Skip char if split on line break
       if (breakIndex !== maxLength) {
@@ -378,6 +388,30 @@ const chunkify = ({
   newStrings.push(string);
   return newStrings;
 };
+
+/**
+ * Convert html string content into semi-similar discord-flavored markdown
+ * @param  {string} htmlString html string to convert
+ * @returns {string}            markdinated string
+ */
+const markdinate = htmlString => htmlString
+  .split('\n').map(l => l.trim()).join('\n') // trim lines
+  .replace(/\r\n/gm, '\n') // replace CRLF with LF
+  .replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
+  .replace(/<br\s*\/?>/g, '\n') // replace manual breaks with break character
+  .replace(/<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
+  .replace(/<li\s?(?:class=".*")?\s?(?:dir=".*")?>\n/gm, '- ') // strip list items to bullets, replace later with emoji
+  .replace(/ipsnoembed="false" /gm, '') // manually replace ipsnoembed, it causes issues given location
+  .replace(/<a href="(.*)" rel="external nofollow(?: noopener)?"\s?(?:target="_blank")?>(.*)<\/a>/gm, '[$2]($1)')
+  .replace(/&amp;/gm, '&') // replace ampersand entity... it looks weird with some titles
+  .replace(/<\/li>/gm, '') // strip li end tags
+  .replace(/<(?:.|\n)*?>/gm, '') // replace all other tags, like images and paragraphs... cause they uuugly
+  .replace(/-\s+\n/g, '- ')
+  .replace(/\n\s*\n+\s*/gm, '\n\n') // strip 2+ line endings to max 2
+  .replace(/\*\*\n\n/gm, '**\n') // strip any newlines between headers and content to collapse content
+  .replace(/^\s*-\s*\n\s*\[/g, '- [')
+  .replace(/^- /gm, ':white_small_square:') // swap bullets for emoji
+  .trim();
 
 /**
  * Check that embeds are valid, and merge values into array
@@ -1073,4 +1107,5 @@ module.exports = {
   groupBy,
   games,
   giveawayDefaults,
+  markdinate,
 };
