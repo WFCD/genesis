@@ -11,9 +11,9 @@ class BlacklistQueries {
     const query = SQL`SELECT COUNT(*) > 0 AS is_blacklisted
       FROM user_blacklist WHERE user_id = ${userId}
         AND (guild_id = ${guildId} OR is_global = true);`;
-    const res = await this.db.query(query);
-    if (res[0]) {
-      return res[0][0].is_blacklisted === '1';
+    const rows = await this.query(query);
+    if (rows) {
+      return rows[0].is_blacklisted === '1';
     }
     return false;
   }
@@ -29,9 +29,9 @@ class BlacklistQueries {
       FROM user_blacklist
       WHERE guild_id = ${guildId}
         AND is_global = ${global};`;
-    const res = await this.db.query(query);
-    if (res[0]) {
-      return res[0]
+    const [rows] = await this.query(query);
+    if (rows) {
+      return rows
         .map(result => this.bot.client.users.cache.get(result.user_id))
         .filter(user => user);
     }
@@ -48,7 +48,7 @@ class BlacklistQueries {
   async addBlacklistedUser(userId, guildId, global) {
     const query = SQL`INSERT IGNORE INTO user_blacklist
       VALUES (${userId}, ${guildId || 0}, ${global});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -63,7 +63,7 @@ class BlacklistQueries {
       WHERE user_id = ${userId}
         AND is_global = ${global}
         AND guild_id = ${guildId};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 }
 

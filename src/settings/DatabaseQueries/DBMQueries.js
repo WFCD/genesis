@@ -15,7 +15,7 @@ class DBMQueries {
    */
   createSchema() {
     try {
-      return Promise.mapSeries(schema, q => this.db.query(q));
+      return Promise.mapSeries(schema, q => this.query(q));
     } catch (e) {
       this.logger.fatal(e);
       return undefined;
@@ -51,7 +51,7 @@ class DBMQueries {
         query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
       });
 
-      return this.db.query(query);
+      return this.query(query);
     }
     return undefined;
   }
@@ -63,7 +63,7 @@ class DBMQueries {
    */
   async addGuildTextChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES (${channel.id}, ${channel.guild.id});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -73,7 +73,7 @@ class DBMQueries {
    */
   async addDMChannel(channel) {
     const query = SQL`INSERT IGNORE INTO channels (id) VALUES (${channel.id});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -83,7 +83,7 @@ class DBMQueries {
    */
   async deleteChannel(channel) {
     const query = SQL`DELETE FROM channels WHERE id = ${channel.id};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -93,7 +93,7 @@ class DBMQueries {
    */
   async removeGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
-    await this.db.query(query);
+    await this.query(query);
     const channelIds = guild.channels.keyArray();
     const results = [];
     channelIds.forEach((channelId) => {

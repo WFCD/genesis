@@ -16,33 +16,33 @@ class SettingsQueries {
   async getGuildSetting(guild, setting) {
     if (guild) {
       const query = SQL`SELECT val FROM settings, channels WHERE channel_id=channels.id and channels.guild_id=${guild.id} and settings.setting=${setting}`;
-      const res = await this.db.query(query);
-      if (res[0].length === 0) {
+      const [rows] = await this.query(query);
+      if (!rows.length) {
         await this.setGuildSetting(guild, setting, this.defaults[`${setting}`]);
         return this.defaults[`${setting}`];
       }
-      await this.setGuildSetting(guild, setting, res[0][0].val);
-      return res[0][0].val;
+      await this.setGuildSetting(guild, setting, rows[0].val);
+      return rows[0].val;
     }
-    return this.defaults[`${setting}`];
+    return this.defaults[setting];
   }
 
   async checkWebhookAndReturn(channel, setting) {
     if (!/webhook/.test(setting)) {
       await this.setChannelSetting(channel, setting, this.defaults[setting]);
-      return this.defaults[`${setting}`];
+      return this.defaults[setting];
     }
     return undefined;
   }
 
   async getChannelSettings(channel, settings) {
     const query = SQL`SELECT val, setting FROM settings WHERE settings.channel_id = ${channel.id} and settings.setting in (${settings})`;
-    const results = await this.db.query(query);
-    if (results[0].length === 0) {
+    const [rows] = await this.query(query);
+    if (!rows.length) {
       return {};
     }
     const values = {};
-    results[0].forEach((row) => {
+    rows.forEach((row) => {
       values[row.setting] = row.val;
     });
     return values;
@@ -57,8 +57,8 @@ class SettingsQueries {
   async getChannelSetting(channel, setting) {
     if (channel) {
       const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
-      const res = await this.db.query(query);
-      if (res[0].length === 0) {
+      const [rows] = await this.query(query);
+      if (!rows.length) {
         if (channel.type === 'text') {
           await this.addGuildTextChannel(channel);
         } else {
@@ -66,7 +66,7 @@ class SettingsQueries {
         }
         return this.checkWebhookAndReturn(channel, setting);
       }
-      return res[0][0].val;
+      return rows[0].val;
     }
     return undefined;
   }
@@ -81,24 +81,26 @@ class SettingsQueries {
       ON DUPLICATE KEY UPDATE
         val = Values(val)`;
 
-      return this.db.query(query);
+      return this.query(query);
     }
     return false;
   }
 
   async getChannelWebhook(channel) {
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
-    const res = await this.db.query(query);
+    const [rows] = await this.query(query);
     let webhook = {};
-    if (res[0]) {
-      res[0].map(row => ({
-        setting: row.setting,
-        value: row.val,
-      })).forEach((row) => {
-        if (row.setting.indexOf('webhook') > -1) {
-          webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
-        }
-      });
+    if (rows) {
+      rows
+        .map(row => ({
+          setting: row.setting,
+          value: row.val,
+        }))
+        .forEach((row) => {
+          if (row.setting.indexOf('webhook') > -1) {
+            webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
+          }
+        });
 
       if (!webhook.avatar) {
         webhook.avatar = this.defaults.avatar;
@@ -125,13 +127,13 @@ class SettingsQueries {
   async setChannelSetting(channel, setting, value) {
     if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
     const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async deleteChannelSetting(channel, setting) {
     if (typeof setting === 'undefined') return false;
     const query = SQL`DELETE FROM settings where channel_id = ${channel.id} and setting=${setting};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -166,12 +168,12 @@ class SettingsQueries {
 
   async removeSettings(channelId) {
     const query = SQL`DELETE FROM settings WHERE settings.channel_id=${channelId};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async deleteWebhooksForChannel(channelId) {
     const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting in ("webhookToken", "webhookId");`;
-    return this.db.query(query);
+    return this.query(query);
   }
 }
 

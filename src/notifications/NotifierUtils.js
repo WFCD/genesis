@@ -23,14 +23,6 @@ const embeds = {
   Outposts: require('../embeds/SentientOutpostEmbed'),
 };
 
-// const dbSettings = {
-//   host: process.env.MYSQL_HOST || 'localhost',
-//   port: process.env.MYSQL_PORT || 3306,
-//   user: process.env.MYSQL_USER || 'genesis',
-//   password: process.env.MYSQL_PASSWORD,
-//   database: process.env.MYSQL_DB || 'genesis',
-// };
-
 const { Rest } = require('@spectacles/rest');
 
 const rest = new Rest(process.env.TOKEN);
@@ -38,7 +30,7 @@ const rest = new Rest(process.env.TOKEN);
 const logger = require('../Logger');
 
 // const Database = require('../settings/Database');
-// const db = new Database(dbSettings);
+// const db = new Database();
 
 module.exports = {
   rest,
