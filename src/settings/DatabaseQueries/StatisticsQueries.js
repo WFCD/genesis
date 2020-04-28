@@ -8,7 +8,7 @@ class StatisticsQueries {
   }
 
   async trackRole(guild, channel, role) {
-    return this.db.query(SQL`
+    return this.query(SQL`
       INSERT IGNORE INTO role_stats
       (guild_id, channel_id, role_id)
       VALUES (${guild.id}, ${channel.id}, ${role.id})
@@ -16,7 +16,7 @@ class StatisticsQueries {
   }
 
   async untrackRole(guild, role) {
-    return this.db.query(SQL`
+    return this.query(SQL`
       DELETE FROM role_stats
       WHERE guild_id = ${guild.id}
         AND role_id = ${role.id}
@@ -26,7 +26,7 @@ class StatisticsQueries {
   async getTrackedRoles(guild) {
     const q = SQL`SELECT role_id, channel_id FROM role_stats WHERE guild_id = ${guild.id}`;
     const map = {};
-    const res = (await this.db.query(q))[0];
+    const res = (await this.query(q))[0];
     res.forEach(({ role_id: roleId, channel_id: channelId }) => {
       map[roleId] = channelId;
     });

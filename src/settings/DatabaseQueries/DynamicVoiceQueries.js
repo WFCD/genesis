@@ -10,26 +10,26 @@ class DynamicVoiceQueries {
   async addTemplate(channel, relay) {
     const query = SQL`INSERT IGNORE INTO dynamic_voice_template VALUES
       (${channel.guild.id}, ${channel.id}, ${relay}, NULL);`;
-    await this.db.query(query);
+    await this.query(query);
     return this.addInstance(channel, channel);
   }
 
   async deleteTemplate(channel) {
     const query = SQL`DELETE FROM dynamic_voice_template
       WHERE channel_id = ${channel.id};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async addInstance(base, instance) {
     const query = SQL`INSERT INTO dynamic_voice_instance VALUES
       (${base.id}, ${instance.id});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async deleteInstance(instance) {
     const query = SQL`DELETE FROM dynamic_voice_instance
       WHERE ${instance.id} = instance_id;`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async getInstances(template) {
@@ -37,16 +37,16 @@ class DynamicVoiceQueries {
       FROM dynamic_voice_instance
       WHERE template_id = ${template.id};`;
 
-    const res = await this.db.query(query);
-    if (res[0].length === 0) {
+    const [rows] = await this.query(query);
+    if (!rows.length) {
       return [];
     }
 
     const instances = [];
     const empties = [];
     let remainingEmpty = 0;
-    res[0]
-      .map(instance => instance.instance_id)
+    rows
+      .map(row => row.instance_id)
       .forEach((channelId) => {
         if (template.guild.channels.cache.has(channelId)) {
           const channel = template.guild.channels.cache.get(channelId);
@@ -96,56 +96,56 @@ class DynamicVoiceQueries {
       FROM dynamic_voice_template
       WHERE guild_id in (${gids});`;
 
-    const res = await this.db.query(query);
-    if (res[0].length === 0) {
+    const [rows] = await this.query(query);
+    if (!rows.length) {
       return [];
     }
-    return res[0].map(result => result.channel_id);
+    return rows.map(row => row.channel_id);
   }
 
   async getDynTemplate(channelId) {
-    const res = await this.db.query(SQL`
+    const [rows] = await this.query(SQL`
       SELECT t.template
       FROM dynamic_voice_template as t
       WHERE t.channel_id = ${channelId}`);
-    return res[0][0].template;
+    return rows[0].template;
   }
 
   async setDynTemplate(channelId, template) {
-    return this.db.query(SQL`
+    return this.query(SQL`
       UPDATE dynamic_voice_template
       SET template = ${template}
       WHERE channel_id = ${channelId}`);
   }
 
   async isRelay(channelId) {
-    const res = await this.db.query(SQL`
+    const [rows] = await this.query(SQL`
       SELECT t.is_relay
       FROM dynamic_voice_template as t,
         dynamic_voice_instance as i
       WHERE t.channel_id = ${channelId}
         OR (t.channel_id = i.template_id
           AND i.instance_id = ${channelId})`);
-    if (!res[0].length) {
+    if (!rows.length) {
       return 'none';
     }
-    return res[0][0].is_relay === '1';
+    return rows[0].is_relay === '1';
   }
 
   async isTemplate(channel) {
-    const res = await this.db.query(SQL`
+    const [rows] = await this.query(SQL`
       SELECT channel_id
       FROM dynamic_voice_template
       WHERE channel_id = ${channel.id}`);
-    return res[0].length;
+    return rows.length;
   }
 
   async isInstance(channel) {
-    const res = await this.db.query(SQL`
+    const [rows] = await this.query(SQL`
       SELECT template_id, instance_id
       FROM dynamic_voice_instance
       WHERE instance_id = ${channel.id}`);
-    return res[0].length;
+    return rows.length;
   }
 }
 

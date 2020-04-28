@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { assetBase } = require('../CommonFunctions');
+const logger = require('../Logger');
 
 const props = (obj) => {
   const p = [];
@@ -86,12 +87,11 @@ const copyChildrenQueries = (queriesClass) => {
  */
 class Database {
   /**
-   * @param {DbConnectionOptions} dbOptions Connection options for the database
    * @param {Genesis} bot Bot to load the settings for
    */
-  constructor(dbOptions, bot) {
+  constructor(bot) {
     this.bot = bot;
-    this.logger = bot.logger;
+    this.logger = logger;
 
     if (bot.client) {
       this.scope = 'bot';
@@ -100,12 +100,14 @@ class Database {
     }
 
     this.defaults = {
-      username: this.bot.client && this.bot.client.user
+      username: this.scope === 'bot'
         ? this.bot.client.user.username
         : 'Genesis',
-      avatar: this.bot.client && this.bot.client.user
-        ? this.bot.client.user.displayAvatarURL().replace('.webp', '.png')
-          .replace('.webm', '.gif').replace('?size=2048', '')
+      avatar: this.scope === 'bot'
+        ? this.bot.client.user.displayAvatarURL()
+          .replace('.webp', '.png')
+          .replace('.webm', '.gif')
+          .replace('?size=2048', '')
         : `${assetBase}/avatar.png`,
     };
 
@@ -113,39 +115,52 @@ class Database {
       supportBigNumbers: true,
       bigNumberStrings: true,
       Promise,
-    };
-    Object.assign(opts, dbOptions);
-    this.db = mysql.createPool(opts);
-
-    this.defaults = {
-      prefix: '/',
-      respond_to_settings: true,
-      platform: 'pc',
-      language: 'en',
-      delete_after_respond: true,
-      delete_response: true,
-      createPrivateChannel: false,
-      deleteExpired: false,
-      allowCustom: false,
-      allowInline: false,
-      defaultRoomsLocked: true,
-      defaultNoText: false,
-      defaultShown: false,
-      tempCategory: false,
-      'settings.cc.ping': true,
+      host: process.env.MYSQL_HOST || 'localhost',
+      port: process.env.MYSQL_PORT || 3306,
+      user: process.env.MYSQL_USER || 'genesis',
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DB || 'genesis',
     };
 
-    const dbRoot = path.join(__dirname, 'DatabaseQueries');
-    fs.readdirSync(dbRoot)
-      .filter(f => f.endsWith('.js'))
-      .forEach((file) => {
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        const QClass = require(path.join(dbRoot, file));
-        const qInstance = new QClass(this.db);
-        copyChildrenQueries(qInstance);
-      });
+    try {
+      this.db = mysql.createPool(opts);
 
-    this.clusterId = process.env.CLUSTER_ID || 0;
+      this.defaults = {
+        prefix: '/',
+        respond_to_settings: true,
+        platform: 'pc',
+        language: 'en',
+        delete_after_respond: true,
+        delete_response: true,
+        createPrivateChannel: false,
+        deleteExpired: false,
+        allowCustom: false,
+        allowInline: false,
+        defaultRoomsLocked: true,
+        defaultNoText: false,
+        defaultShown: false,
+        tempCategory: false,
+        'settings.cc.ping': true,
+      };
+
+      const dbRoot = path.join(__dirname, 'DatabaseQueries');
+      fs.readdirSync(dbRoot)
+        .filter(f => f.endsWith('.js'))
+        .forEach((file) => {
+          // eslint-disable-next-line global-require, import/no-dynamic-require
+          const QClass = require(path.join(dbRoot, file));
+          const qInstance = new QClass(this.db);
+          copyChildrenQueries(qInstance);
+        });
+
+      this.clusterId = process.env.CLUSTER_ID || 0;
+    } catch (e) {
+      this.logger.fatal(e);
+    }
+  }
+
+  async query(query) {
+    return this.db.query(query);
   }
 
   debugQuery(query) {
@@ -165,12 +180,12 @@ class Database {
    * @returns {Promise}
    */
   async getChannelAndGuildCounts() {
-    const query = 'select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;';
-    const res = await this.db.query(query);
-    if (res[0]) {
+    const query = SQL`select count(distinct guild_id) as countGuilds, count(distinct id) as countChannels from channels;`;
+    const [rows] = await this.query(query);
+    if (rows) {
       return {
-        channels: res[0].countChannels,
-        guilds: res[0].countGuilds,
+        channels: rows.countChannels,
+        guilds: rows.countGuilds,
       };
     }
     return {};
@@ -190,12 +205,12 @@ class Database {
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
         'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond');`;
-    const res = await this.db.query(query);
+    const [rows] = await this.query(query);
     let context = {
       webhook: {},
     };
-    if (res[0]) {
-      res[0].map(row => ({
+    if (rows) {
+      rows.map(row => ({
         setting: row.setting,
         value: row.val,
       })).forEach((row) => {

@@ -10,7 +10,7 @@ class PrivateRoomQueries {
 
   async removePrivateChannels(guild) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -23,7 +23,7 @@ class PrivateRoomQueries {
     const query = SQL`INSERT INTO guild_joinable_roles VALUES
       (${guild.id}, JSON_ARRAY(${roles}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${roles});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -35,9 +35,9 @@ class PrivateRoomQueries {
     const query = SQL`SELECT id_list
       FROM guild_joinable_roles
       WHERE guild_id=${guild.id}`;
-    const res = await this.db.query(query);
-    if (res[0][0]) {
-      const validList = res[0][0].id_list
+    const [rows] = await this.query(query);
+    if (rows.length) {
+      const validList = rows[0].id_list
         .filter((role) => {
           if (!role) {
             return undefined;
@@ -85,7 +85,7 @@ class PrivateRoomQueries {
     } else {
       query = SQL`INSERT INTO private_channels (guild_id, text_id, voice_id, category_id, created_by) VALUES (${guild.id}, 0, ${voiceChannel.id}, ${category.id}, ${member.id})`;
     }
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async deletePrivateRoom(room) {
@@ -93,30 +93,30 @@ class PrivateRoomQueries {
       guild, voiceChannel, voiceId,
     } = room;
     const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${voiceChannel ? voiceChannel.id : voiceId}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async userHasRoom(member) {
     const query = SQL`SELECT * FROM private_channels WHERE guild_id = ${member.guild.id} and created_by = ${member.id}`;
-    const res = await this.db.query(query);
-    return res[0].length > 0;
+    const [rows] = await this.query(query);
+    return rows.length;
   }
 
   async getUsersRoom(member) {
     const query = SQL`SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec  FROM private_channels WHERE guild_id = ${member.guild.id} and created_by = ${member.id}`;
-    const res = await this.db.query(query);
-    if (res[0]) {
+    const [rows] = await this.query(query);
+    if (rows) {
       return {
-        guild: this.bot.client.guilds.cache.get(res[0][0].guild_id),
-        textChannel: res[0][0].text_id
-          ? this.bot.client.channels.cache.get(res[0][0].text_id) : undefined,
-        voiceChannel: this.bot.client.channels.cache.get(res[0][0].voice_id),
-        category: this.bot.client.channels.cache.get(res[0][0].category_id),
-        createdAt: res[0][0].crt_sec,
-        guildId: res[0][0].guild_id,
-        textId: res[0][0].text_id || undefined,
-        voiceId: res[0][0].voice_id,
-        categoryId: res[0][0].category_id,
+        guild: this.bot.client.guilds.cache.get(rows[0].guild_id),
+        textChannel: rows[0].text_id
+          ? this.bot.client.channels.cache.get(rows[0].text_id) : undefined,
+        voiceChannel: this.bot.client.channels.cache.get(rows[0].voice_id),
+        category: this.bot.client.channels.cache.get(rows[0].category_id),
+        createdAt: rows[0].crt_sec,
+        guildId: rows[0].guild_id,
+        textId: rows[0].text_id || undefined,
+        voiceId: rows[0].voice_id,
+        categoryId: rows[0].category_id,
       };
     }
     return undefined;
@@ -127,9 +127,9 @@ class PrivateRoomQueries {
       SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec
       FROM private_channels
       WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) in (${shards})`;
-    const res = await this.db.query(query);
-    if (res[0]) {
-      return res[0].map(value => ({
+    const [rows] = await this.query(query);
+    if (rows) {
+      return rows.map(value => ({
         guild: this.bot.client.guilds.cache.get(value.guild_id),
         textChannel: value.text_id ? this.bot.client.channels.cache.get(value.text_id) : undefined,
         voiceChannel: this.bot.client.channels.cache.get(value.voice_id),

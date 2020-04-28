@@ -47,7 +47,7 @@ async function guildLeave(self) {
       });
     });
     if ((results.length - 5) <= 0) {
-      self.logger.debug('No more guilds in "guild_ratio" clearing interval.');
+      self.logger.silly('No more guilds in "guild_ratio" clearing interval.');
       clearInterval(guildCheck);
     }
   } catch (e) {
@@ -61,7 +61,7 @@ async function guildLeave(self) {
  */
 function guildRatioCheck(self) {
   const guilds = self.client.guilds.cache.filter((guild) => {
-    self.logger.debug(`Checking Guild: ${guild.name} (${guild.id}) Owner: ${guild.ownerID}`);
+    self.logger.silly(`Checking Guild: ${guild.name} (${guild.id}) Owner: ${guild.ownerID}`);
     const bots = guild.members.cache.filter(user => user.user.bot);
     return ((bots.size / guild.memberCount) * 100) >= 80;
   });
