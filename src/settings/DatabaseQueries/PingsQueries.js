@@ -17,7 +17,7 @@ class PingsQueries {
   async setItemPing(channel, item, enabled) {
     const query = SQL`UPDATE item_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND item = ${item};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -30,7 +30,7 @@ class PingsQueries {
   async setEventTypePing(channel, type, enabled) {
     const query = SQL`UPDATE type_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
       AND type = ${type};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -43,7 +43,7 @@ class PingsQueries {
   async setPing(guild, itemOrType, text) {
     const query = SQL`INSERT INTO pings VALUES (${guild.id}, ${itemOrType}, ${text})
       ON DUPLICATE KEY UPDATE text = ${text};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -54,7 +54,7 @@ class PingsQueries {
    */
   async getPing(guild, itemsOrTypes) {
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
-    const res = await this.db.query(query);
+    const res = await this.query(query);
     if (res[0].length === 0) {
       return '';
     }
@@ -65,13 +65,11 @@ class PingsQueries {
   async getPingsForGuild(guild) {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
-      const res = await this.db.query(query);
+      const [rows] = await this.query(query);
 
-      if (res[0].length === 0) {
-        return [];
-      }
-      return res[0]
-        .map(result => ({ text: result.text, thing: result.item_or_type }));
+      return rows.length
+        ? rows.map(result => ({ text: result.text, thing: result.item_or_type }))
+        : [];
     }
     return [];
   }
@@ -85,7 +83,7 @@ class PingsQueries {
   async removePing(guild, itemOrType) {
     if (guild) {
       const query = SQL`DELETE FROM pings WHERE guild_id = ${guild.id} AND item_or_type = ${itemOrType};`;
-      return this.db.query(query);
+      return this.query(query);
     }
     return false;
   }
@@ -113,7 +111,7 @@ class PingsQueries {
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
         .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return (await this.db.query(query))[0];
+      return (await this.query(query))[0];
     } catch (e) {
       this.logger.error(e);
       return [];
@@ -144,7 +142,7 @@ class PingsQueries {
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
         .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return (await this.db.query(query))[0];
+      return (await this.query(query))[0];
     } catch (e) {
       this.logger.error(e);
       return [];
@@ -158,7 +156,7 @@ class PingsQueries {
    */
   async removePings(guildId) {
     const query = SQL`DELETE FROM pings WHERE guild_id = ${guildId}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -171,7 +169,7 @@ class PingsQueries {
     const query = SQL`INSERT INTO notified_ids VALUES
       (${this.clusterId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -183,11 +181,8 @@ class PingsQueries {
     const query = SQL`SELECT id_list
       FROM notified_ids
       WHERE shard_id=${this.clusterId} AND platform=${platform};`;
-    const res = await this.db.query(query);
-    if (res[0].length === 0) {
-      return [];
-    }
-    return res[0][0].id_list;
+    const [rows] = await this.query(query);
+    return rows.length ? rows[0].id_list : [];
   }
 }
 

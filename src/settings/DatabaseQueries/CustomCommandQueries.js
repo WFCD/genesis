@@ -10,7 +10,7 @@ class CustomCommandQueries {
 
   async getCustomCommands() {
     const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardTotal} in (${this.bot.shards})`;
-    const res = await this.db.query(query);
+    const res = await this.query(query);
     if (res[0]) {
       return res[0]
         .map(value => new CustomCommand(this.bot, value.command, value.response, value.guild_id));
@@ -22,10 +22,10 @@ class CustomCommandQueries {
     const id = `${call}${guild.id}`;
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id} AND command_id = ${id}`;
 
-    const res = await this.db.query(query);
-    if (res[0]) {
-      const vals = res[0]
-        .map(value => ({ call: value.command, response: value.response, id: value.command_id }));
+    const [rows] = await this.query(query);
+    if (rows) {
+      const vals = rows
+        .map(row => ({ call: row.command, response: row.response, id: row.command_id }));
       this.logger.warn(JSON.stringify(vals));
       return vals[0];
     }
@@ -34,7 +34,7 @@ class CustomCommandQueries {
 
   async updateCustomCommand(guild, { call, response, id }) {
     const newId = `${call}${guild.id}`;
-    return this.db.query(SQL`
+    return this.query(SQL`
       UPDATE custom_commands
       SET command_id = ${newId},
         command = ${call},
@@ -46,10 +46,10 @@ class CustomCommandQueries {
 
   async getCustomCommandsForGuild(guild) {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
-    const res = await this.db.query(query);
-    if (res[0]) {
-      return res[0]
-        .map(value => new CustomCommand(this.bot, value.command, value.response, value.guild_id));
+    const [rows] = await this.query(query);
+    if (rows) {
+      return rows
+        .map(row => new CustomCommand(this.bot, row.command, row.response, row.guild_id));
     }
     return [];
   }
@@ -58,18 +58,18 @@ class CustomCommandQueries {
     const id = `${call}${message.guild.id}`;
     const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
       VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async deleteCustomCommand(message, call) {
     const id = `${call}${message.guild.id}`;
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async removeGuildCustomCommands(guildId) {
     const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 }
 

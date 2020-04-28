@@ -15,7 +15,7 @@ class WelcomeQueries {
    */
   async clearWelcomeForGuild(guild, isDm) {
     const query = SQL`DELETE FROM welcome_messages WHERE guild_id=${guild.id} && is_dm=${isDm}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -28,15 +28,15 @@ class WelcomeQueries {
   async setWelcome(message, isDm, text) {
     const query = SQL`INSERT INTO welcome_messages (guild_id, is_dm, channel_id, message) VALUES (${message.guild.id}, ${isDm}, ${message.channel.id}, ${text})
       ON DUPLICATE KEY UPDATE message = ${text};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   async getWelcomes(guild) {
     if (guild) {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
-      const res = await this.db.query(query);
-      if (res[0]) {
-        return res[0].map(value => ({
+      const [rows] = await this.query(query);
+      if (rows) {
+        return rows.map(value => ({
           isDm: value.is_dm,
           message: value.message,
           channel: this.bot.client.channels.cache.get(value.channel_id),

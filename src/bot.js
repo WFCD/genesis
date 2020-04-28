@@ -126,13 +126,7 @@ class Genesis {
      * Persistent storage for settings
      * @type {Database}
      */
-    this.settings = new Database({
-      host: process.env.MYSQL_HOST || 'localhost',
-      port: process.env.MYSQL_PORT || 3306,
-      user: process.env.MYSQL_USER || 'genesis',
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DB || 'genesis',
-    }, this);
+    this.settings = new Database(this);
 
     /**
      * Objects holding worldState data, one for each platform

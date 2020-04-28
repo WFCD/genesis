@@ -15,7 +15,7 @@ class TrackingQueries {
    */
   async trackItem(channel, item) {
     const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id},${item});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -29,7 +29,7 @@ class TrackingQueries {
     items.forEach((item, index) => {
       query.append(SQL`(${channel.id}, ${item})`).append(index !== (items.length - 1) ? ',' : ';');
     });
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -40,7 +40,7 @@ class TrackingQueries {
    */
   async untrackItem(channel, item) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND item = ${item};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -55,7 +55,7 @@ class TrackingQueries {
       query.append(index > 0 ? '  OR ' : '').append(SQL`item = ${item}`);
     });
     query.append(SQL`);`);
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -66,7 +66,7 @@ class TrackingQueries {
    */
   async trackEventType(channel, type) {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id},${type});`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -82,7 +82,7 @@ class TrackingQueries {
         query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
       }
     });
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -93,7 +93,7 @@ class TrackingQueries {
    */
   async untrackEventType(channel, type) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND type = ${type};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -108,7 +108,7 @@ class TrackingQueries {
       query.append(index > 0 ? '  OR ' : '').append(SQL`type = ${type}`);
     });
     query.append(SQL`);`);
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -118,7 +118,7 @@ class TrackingQueries {
    */
   async getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
-    const res = await this.db.query(query);
+    const res = await this.query(query);
     return res[0].map(r => r.item);
   }
 
@@ -129,8 +129,8 @@ class TrackingQueries {
    */
   async getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
-    const res = await this.db.query(query);
-    return res[0].map(r => r.type);
+    const [rows] = await this.query(query);
+    return rows.map(r => r.type);
   }
 
   /**
@@ -140,7 +140,7 @@ class TrackingQueries {
    */
   async removeItemNotifications(channelId) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -150,7 +150,7 @@ class TrackingQueries {
    */
   async removeTypeNotifications(channelId) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channelId}`;
-    return this.db.query(query);
+    return this.query(query);
   }
 
   /**
@@ -160,7 +160,7 @@ class TrackingQueries {
    */
   async stopTracking(channel) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
-    return this.db.query(query);
+    return this.query(query);
   }
 }
 
