@@ -47,3 +47,6 @@ mypm2.json
 
 # Commands manifest
 commands.json
+
+# Docker
+docker-compose.yaml

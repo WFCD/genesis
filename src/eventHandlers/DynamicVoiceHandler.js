@@ -88,7 +88,7 @@ class DynamicVoiceHandler {
   }
 
   async checkIfShouldFilter(channel, oldMember, newMember) {
-    const templates = await this.settings.getTemplates(this.client.guilds);
+    const templates = await this.settings.getTemplates(this.client.guilds.cache.array());
 
     const shouldFilter = channel.id === oldMember.voiceChannelId
       || channel.id === newMember.voiceChannelId

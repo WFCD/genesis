@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c .github/docs/jsdoc.conf -R README.md -r main.js src/. -d docs",
+    "build": "docker build . -t genesis",
     "lint": "npx eslint main.js src/",
     "lint:fix": "npx eslint main.js src/ --fix",
     "logs": "pm2 logs genesis",
