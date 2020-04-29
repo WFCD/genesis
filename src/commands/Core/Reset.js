@@ -13,7 +13,7 @@ class ResetGuild extends Command {
     try {
       const { guild } = message;
       await this.settings.removeGuild(guild);
-      await Promise.all(guild.channels.map(channel => this.settings.stopTracking(channel)));
+      await Promise.all(guild.channels.cache.map(channel => this.settings.stopTracking(channel)));
     } catch (e) {
       this.logger.error(e.message);
       return this.messageManager.statuses.FAILURE;

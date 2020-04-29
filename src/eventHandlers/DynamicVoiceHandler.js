@@ -76,15 +76,27 @@ class DynamicVoiceHandler {
   async checkManagementApplicable(oldMember, newMember) {
     const templates = await this.settings.getTemplates([oldMember.guild]);
     if (templates.length) {
-      const instances = [];
-      templates.forEach(async (template) => {
-        instances.push(...await this.settings.getInstances(template));
+      const instancePromises = [];
+      templates.forEach((template) => {
+        instancePromises.push(this.settings.getInstances(template));
       });
-      return templates
-        .filter(channel => this.checkIfShouldFilter(channel, oldMember, newMember))
-        .length > 0;
+
+      const instances = [];
+
+      (await Promise.all(instancePromises))
+        .forEach((ip) => {
+          instances.push(...ip.instances);
+        });
+
+      const shouldFilterPromises = [];
+
+      templates.forEach(channel => shouldFilterPromises.push(
+        this.checkIfShouldFilter(channel, oldMember, newMember),
+      ));
+
+      return (await Promise.all(shouldFilterPromises)).filter(p => p).length > 0;
     }
-    return templates.length;
+    return false;
   }
 
   async checkIfShouldFilter(channel, oldMember, newMember) {
