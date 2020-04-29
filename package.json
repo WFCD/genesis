@@ -54,7 +54,7 @@
     "node-wikia": "0.0.3",
     "numeral": "^2.0.6",
     "parse-duration": "^0.3.1",
-    "ping": "^0.2.2",
+    "ping": "^0.2.3",
     "rss-feed-emitter": "^3.1.2",
     "sql-template-strings": "^2.2.2",
     "twitch": "^3.7.1",
