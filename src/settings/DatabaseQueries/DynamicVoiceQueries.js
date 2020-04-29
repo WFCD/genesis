@@ -39,7 +39,7 @@ class DynamicVoiceQueries {
 
     const [rows] = await this.query(query);
     if (!rows.length) {
-      return [];
+      return { instances: [], remainingEmpty: 1 };
     }
 
     const instances = [];

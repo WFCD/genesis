@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
 
-const { assetBase } = require('../CommonFunctions');
+const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
 const props = (obj) => {
@@ -199,12 +199,26 @@ class Database {
    */
   async getCommandContext(channel, user) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
+    const settings = ['platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
+      'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
+      'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
+      'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
+      'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond'];
+
+    if (platforms.length > 4) {
+      platforms.forEach((platform, index) => {
+        if (index > 3) {
+          settings.push(`lfgChannel.${platform}`);
+        }
+      });
+    }
+
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
-      and setting in ('platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
-        'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
-        'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond');`;
+      and setting in (`;
+    settings.forEach((setting, index) => {
+      query.append(index !== (settings.length - 1) ? SQL`${setting}, ` : SQL`${setting}`);
+    });
+    query.append(SQL`);`);
     const [rows] = await this.query(query);
     let context = {
       webhook: {},
@@ -300,27 +314,15 @@ class Database {
         context.deleteCommand = this.defaults.delete_after_respond;
       }
 
-      if (context['lfgChannel.ps4']) {
-        if (!context.lfg) {
-          context.lfg = {};
+      platforms.forEach((platform) => {
+        if (context[`lfgChannel.${platform}`]) {
+          if (!context.lfg) {
+            context.lfg = {};
+          }
+          context.lfg[platform] = channel.guild.channels.cache.get(context[`lfgChannel.${platform}`]);
+          delete context[`lfgChannel.${platform}`];
         }
-        context.lfg.ps4 = channel.guild.channels.cache.get(context['lfgChannel.ps4']);
-        delete context['lfgChannel.ps4'];
-      }
-      if (context['lfgChannel.swi']) {
-        if (!context.lfg) {
-          context.lfg = {};
-        }
-        context.lfg.swi = channel.guild.channels.cache.get(context['lfgChannel.swi']);
-        delete context['lfgChannel.swi'];
-      }
-      if (context['lfgChannel.xb1']) {
-        if (!context.lfg) {
-          context.lfg = {};
-        }
-        context.lfg.xb1 = channel.guild.channels.cache.get(context['lfgChannel.xb1']);
-        delete context['lfgChannel.xb1'];
-      }
+      });
 
       if (typeof context.respond_to_settings === 'undefined') {
         context.respondToSettings = this.defaults.respond_to_settings;

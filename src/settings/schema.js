@@ -5,7 +5,7 @@ module.exports = [
     id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     guild_id BIGINT UNSIGNED,
     language VARCHAR(5) NOT NULL DEFAULT 'en-US',
-    platform VARCHAR(3) NOT NULL DEFAULT 'pc',
+    platform VARCHAR(10) NOT NULL DEFAULT 'pc',
     webhook TEXT,
     respond_to_settings BOOLEAN NOT NULL DEFAULT TRUE,
     prefix VARCHAR(3) NOT NULL DEFAULT '/'
@@ -64,7 +64,7 @@ module.exports = [
   );`,
   `CREATE TABLE IF NOT EXISTS notified_ids (
     shard_id BIGINT UNSIGNED NOT NULL,
-    platform VARCHAR(3) NOT NULL DEFAULT 'pc',
+    platform VARCHAR(10) NOT NULL DEFAULT 'pc',
     id_list JSON NOT NULL,
     PRIMARY KEY (shard_id, platform)
   );`,
