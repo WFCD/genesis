@@ -50,7 +50,7 @@ class Dump extends Command {
       try {
         const tokens = channelConfig.messages;
         if (channelConfig.target) {
-          let target = this.bot.client.channels
+          let target = this.bot.client.channels.cache
             .get(channelConfig.target.channel || message.channel.id);
           if (!(message.guild && message.guild.channels.cache.has(target.id))) {
             message.reply('Channel Not Accessible');
