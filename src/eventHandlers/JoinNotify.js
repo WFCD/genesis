@@ -25,7 +25,7 @@ class JoinNotify extends Handler {
 
     const tokens = [
       `${guild.name} (${guild.id})`,
-      `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})`,
+      guild.owner ? `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})` : '',
       `**Members:** ${guild.memberCount}`,
       `**Bots:** ${bots.size}`,
       `**Percent:** ${((bots.size / (guild.memberCount)) * 100).toFixed(2)}%`,
@@ -36,7 +36,7 @@ class JoinNotify extends Handler {
         embeds: [{
           color: 0x00d62e,
           title: 'Joined Server',
-          description: tokens.join('\n'),
+          description: tokens.filter(a => a).join('\n'),
           thumbnail: {
             url: guild.iconURL(),
           },
