@@ -21,7 +21,7 @@ class LeaveNotify extends Handler {
   async execute(...[guild]) {
     if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
-    const bots = guild.members.filter(member => member.user.bot);
+    const bots = guild.members.cache.filter(member => member.user.bot);
     const tokens = [
       `${guild.name} (${guild.id})`,
       guild.owner ? `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})` : '',
