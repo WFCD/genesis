@@ -78,7 +78,7 @@ class Dump extends Command {
           for (const token of tokens) {
             switch (token.type) {
               case 'text':
-                await target.send(token.content);
+                await target.send(token.content, { allowedMentions: { parse: [] } });
                 break;
               case 'img':
                 await target.send({
