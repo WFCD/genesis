@@ -7,7 +7,7 @@ class DeleteDefaultRole extends Command {
   constructor(bot) {
     super(bot, 'settings.deleteDefaultRole', 'delete default role', 'Delete a default role', 'UTIL');
     this.usages = [
-      { description: 'Add a new default role for persons joining the server.', parameters: ['message'] },
+      { description: 'Delete a default role for persons joining the server.', parameters: ['role mention'] },
     ];
     this.regex = new RegExp(`^${this.call}\\s?${captures.roles}?$`, 'i');
     this.requiresAuth = true;

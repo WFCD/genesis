@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class SetWelcome extends Command {
   constructor(bot) {
-    super(bot, 'settings.setwelcome', 'set welcome message', 'UTIL');
+    super(bot, 'settings.setwelcome', 'set welcome message', 'Set welcome message for this server in this channe', 'UTIL');
     this.usages = [
       { description: 'Set welcome message for this server in this channel', parameters: ['message'] },
     ];
