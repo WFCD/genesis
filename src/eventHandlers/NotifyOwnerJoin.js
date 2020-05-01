@@ -29,7 +29,7 @@ class NotifyOwnerJoin extends Handler {
     if (!guild.available) {
       return;
     }
-    const bots = guild.members.filter(member => member.user.bot);
+    const bots = guild.members.cache.filter(member => member.user.bot);
     const isOverLimit = ((bots.size / guild.memberCount) * 100) >= 80;
 
     try {
