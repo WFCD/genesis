@@ -9,7 +9,7 @@ class DeleteDefaultRole extends Command {
     this.usages = [
       { description: 'Delete a default role for persons joining the server.', parameters: ['role mention'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?${captures.roles}?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.role}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }

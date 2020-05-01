@@ -9,12 +9,12 @@ class AddDefaultRole extends Command {
     this.usages = [
       { description: 'Add a new default role for persons joining the server.', parameters: ['role id'] },
     ];
-    this.regex = new RegExp(`^${this.call}\\s?${captures.roles}?$`, 'i');
+    this.regex = new RegExp(`^${this.call}\\s?${captures.role}?$`, 'i');
     this.requiresAuth = true;
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const roleId = message.strippedContent.match(this.regex)[1];
     if (roleId && message.guild.roles.cache.has(roleId.trim())) {
       const roles = JSON.parse(await this.settings.getGuildSetting(message.guild, 'defaultRoles') || '[]');
