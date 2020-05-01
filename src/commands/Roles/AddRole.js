@@ -11,11 +11,11 @@ const JoinableRole = require('../../models/JoinableRole.js');
  */
 function getRoleForString(string, message) {
   const trimmedString = string.trim();
-  const roleFromId = message.guild.roles.get(trimmedString);
+  const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {
-    roleFromName = message.guild.roles
-      .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
+    roleFromName = message.guild.roles.cache
+      .find(role => role.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;
 }
