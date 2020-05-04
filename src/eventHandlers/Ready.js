@@ -125,10 +125,9 @@ class OnReadyHandle extends Handler {
         cetusState.isDay = !cetusState.isDay;
       }
 
-      const ousRemaining = (((new Date(outpost.expiry).getTime() - Date.now()) / 1000) % 60).toFixed(0);
       const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
       const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
-      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]}: ${ousRemaining}m • ` : '';
+      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
       return `${ous}${vs}${cs}${base}`;
     }
     return base;
