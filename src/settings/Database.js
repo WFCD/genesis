@@ -209,11 +209,15 @@ class Database {
       channel = { id: channel }; // eslint-disable-line no-param-reassign
     }
 
-    const settings = ['platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
-      'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
-      'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-      'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-      'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond'];
+    const settings = ['webhookId',
+      'webhookToken', 'webhookName', 'webhookAvatar'];
+
+    if (this.scope === 'bot') {
+      settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
+        'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
+        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
+    }
 
     if (platforms.length > 4) {
       platforms.forEach((platform, index) => {
