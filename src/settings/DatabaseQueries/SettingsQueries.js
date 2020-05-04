@@ -8,6 +8,25 @@ class SettingsQueries {
   }
 
   /**
+   * Get the guilds stored in the database
+   * @returns {Promise.<Object>} Object of guild entries
+   */
+  async getGuilds() {
+    const [rows] = await this.query(SQL`select id, guild_id from channels;`);
+    const guilds = {};
+    rows.forEach((row) => {
+      if (!guilds[row.guild_id]) {
+        guilds[row.guild_id] = {
+          id: row.guild_id,
+          channels: [],
+        };
+      }
+      guilds[row.guild_id].channels.push(row.id);
+    });
+    return guilds;
+  }
+
+  /**
    * Get a guild-wide setting
    * @param {Discord.Guild} guild to get settings for
    * @param {string} setting setting to fetch
@@ -36,6 +55,9 @@ class SettingsQueries {
   }
 
   async getChannelSettings(channel, settings) {
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
     const query = SQL`SELECT val, setting FROM settings WHERE settings.channel_id = ${channel.id} and settings.setting in (${settings})`;
     const [rows] = await this.query(query);
     if (!rows.length) {
@@ -56,6 +78,9 @@ class SettingsQueries {
    */
   async getChannelSetting(channel, setting) {
     if (channel) {
+      if (!channel.id) {
+        channel = { id: channel }; // eslint-disable-line no-param-reassign
+      }
       const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
       const [rows] = await this.query(query);
       if (!rows.length) {
@@ -72,6 +97,9 @@ class SettingsQueries {
   }
 
   async setChannelWebhook(channel, webhook) {
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
     if (webhook.id && webhook.token && webhook.name && webhook.avatar) {
       const query = SQL`INSERT INTO settings (channel_id, setting, val)
       VALUES (${channel.id}, 'webhookId', ${webhook.id}),
@@ -87,6 +115,9 @@ class SettingsQueries {
   }
 
   async getChannelWebhook(channel) {
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id} and setting in ('webhookId', 'webhookToken', 'webhookName', 'webhookAvatar');`;
     const [rows] = await this.query(query);
     let webhook = {};
@@ -126,12 +157,18 @@ class SettingsQueries {
    */
   async setChannelSetting(channel, setting, value) {
     if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
     const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
     return this.query(query);
   }
 
   async deleteChannelSetting(channel, setting) {
     if (typeof setting === 'undefined') return false;
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
     const query = SQL`DELETE FROM settings where channel_id = ${channel.id} and setting=${setting};`;
     return this.query(query);
   }

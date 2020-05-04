@@ -5,8 +5,6 @@ const { GiveawaysManager } = require('discord-giveaways');
 const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
-const FeedsNotifier = require('../notifications/FeedsNotifier');
-const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
 const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
@@ -53,7 +51,6 @@ class OnReadyHandle extends Handler {
 
     this.updatePresence();
     this.setupAdditionalHandlers();
-    this.setupNotifiers();
     this.setupGiveaways();
   }
 
@@ -80,12 +77,6 @@ class OnReadyHandle extends Handler {
     setInterval(this.updatePresence.bind(this), cycleTimeout);
     setInterval(this.checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
-  }
-
-  setupNotifiers() {
-    this.bot.feedNotifier = new FeedsNotifier(this.bot);
-    this.bot.twitchNotifier = new TwitchNotifier(this.bot);
-    this.bot.twitchNotifier.start();
   }
 
   setupGiveaways() {
@@ -125,8 +116,12 @@ class OnReadyHandle extends Handler {
         cetusState.isDay = !cetusState.isDay;
       }
 
-      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
+      const vs = vallisState
+        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • `
+        : '';
+      const cs = cetusState
+        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • `
+        : '';
       const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
       return `${ous}${vs}${cs}${base}`;
     }

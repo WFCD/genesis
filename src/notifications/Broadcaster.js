@@ -1,5 +1,7 @@
 'use strict';
 
+const logger = require('../Logger');
+
 /**
  * Broadcast updates out to subscribing channels
  * @param {Discord.Client} client         bot client
@@ -25,46 +27,44 @@ class Broadcaster {
    * @param  {number} [deleteAfter=0] Amount of time to delete broadcast after
    * @returns {Array.<Object>} values for successes
    */
-  async broadcast(embed, platform, type, items = [], deleteAfter = 0) {
+  async broadcast(embed, platform, type, items = []) {
     const channels = await this.settings.getNotifications(type, platform, items);
     embed.bot = undefined; // eslint-disable-line no-param-reassign
 
+    const guilds = await this.settings.getGuilds();
+
+
     return Promise.all(channels.map(async (result) => {
-      const channel = this.client.channels.cache.get(result.channelId);
+      // need some way to do this other than getting all channels....
+      // let's try looping over a list of ids
+      const ctx = await this.settings.getCommandContext(result.channelId);
 
-      if (channel) {
-        if (channel.type === 'text') {
-          return this.sendWithPrepend(channel, embed, type, items, deleteAfter);
-        }
-        if (channel.type === 'dm') {
-          return this.messageManager.embedToChannel(channel, embed, '', deleteAfter);
-        }
+      if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) {
+        return false;
       }
-      return undefined;
+
+      let guild;
+
+      Object.entries(guilds).forEach(([, g]) => {
+        if (g.channels.includes(result.channelId)) {
+          guild = g;
+        }
+      });
+
+      const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
+
+      if (!embed.embeds) {
+        return this.messageManager.webhook(
+          ctx,
+          { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
+        );
+      }
+
+      return this.messageManager.webhook(
+        ctx,
+        { text: prepend, embed },
+      );
     }));
-  }
-
-  async sendWithoutPrepend(channel, embed, deleteAfter) {
-    const ctx = await this.settings.getCommandContext(channel);
-    ctx.deleteAfterDuration = deleteAfter;
-    return this.messageManager.webhook(
-      ctx,
-      { embed: this.messageManager.webhookWrapEmbed(embed) },
-    );
-  }
-
-  async sendWithPrepend(channel, embed, type, items, deleteAfter) {
-    const prepend = await this.settings
-      .getPing(channel.guild, (items || []).concat([type]));
-    const ctx = await this.settings.getCommandContext(channel);
-    if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) return false;
-    ctx.deleteAfterDuration = deleteAfter;
-
-    await this.messageManager.webhook(
-      ctx,
-      { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
-    );
-    return true;
   }
 }
 

@@ -2,6 +2,8 @@
 
 const { WebhookClient, User } = require('discord.js');
 
+const logger = require('../Logger');
+
 const defMsgOpts = {
   msgOpts: undefined,
   deleteOriginal: true,
@@ -13,14 +15,13 @@ const defMsgOpts = {
 /**
  * MessageManager for.... sending messages and deleting them and stuff
  */
-class MessaageManager {
+class MessageManager {
   /**
    * Construct a message manager for sending and managing messages
    * @param {Genesis} bot bot containing necessary settings
    */
   constructor(bot) {
     this.client = bot.client;
-    this.logger = bot.logger;
     this.settings = bot.settings;
     this.owner = bot.owner;
 
@@ -45,7 +46,7 @@ class MessaageManager {
     msgOpts, delCall, delRes, deleteAfter, message,
   } = defMsgOpts) {
     if (!target) {
-      this.logger.error('Cannot call #send without a target.');
+      logger.error('Cannot call #send without a target.');
       return undefined;
     }
 
@@ -58,7 +59,7 @@ class MessaageManager {
     if (canSend) {
       try {
         if (!target.client) {
-          this.logger.error('Target is not TextBasedChannel');
+          logger.error('Target is not TextBasedChannel');
         }
         const msg = await target.send(content, msgOpts);
         await this.deleteCallAndResponse(message, msg, delCall, delRes);
@@ -67,13 +68,10 @@ class MessaageManager {
         }
         return msg;
       } catch (e) {
-        this.logger.error(`${e.message} occured while sending.`);
-        if (this.logger.logLevel === 'DEBUG') {
-          this.logger.error(e);
-        }
+        logger.error(`${e.message} occured while sending.`);
       }
     } else {
-      this.logger.debug(`Cannot send in ${target.id}`);
+      logger.debug(`Cannot send in ${target.id}`);
     }
     return undefined;
   }
@@ -106,7 +104,7 @@ class MessaageManager {
     msgOpts, delCall = false, delRes = false, deleteAfter,
   } = defMsgOpts) {
     if (!message.channel) {
-      this.logger.error('Cannot call #send without a target.');
+      logger.error('Cannot call #send without a target.');
       return undefined;
     }
 
@@ -119,7 +117,7 @@ class MessaageManager {
     if (canSend) {
       try {
         if (!message.channel.client) {
-          this.logger.error('Target is not TextBasedChannel');
+          logger.error('Target is not TextBasedChannel');
         }
         const msg = await message.reply(content, msgOpts);
         await this.deleteCallAndResponse(message, msg, delCall, delRes);
@@ -128,13 +126,10 @@ class MessaageManager {
         }
         return msg;
       } catch (e) {
-        this.logger.error(`${e.message} occured while sending.`);
-        if (this.logger.logLevel === 'DEBUG') {
-          this.logger.error(e);
-        }
+        logger.error(`${e.message} occured while sending.`);
       }
     } else {
-      this.logger.debug(`Cannot send in ${message.channel.id}`);
+      logger.debug(`Cannot send in ${message.channel.id}`);
     }
     return undefined;
   }
@@ -288,23 +283,16 @@ class MessaageManager {
         if (ctx.webhook.name) {
           embedCopy.username = ctx.webhook.name;
         }
-        const msg = await client.send(text, embedCopy);
-        if (msg.deletable && ctx.deleteAfterDuration > 0) {
-          const deleteExpired = await this.settings.getChannelSetting(ctx.channel, 'deleteExpired') === '1';
-          if (deleteExpired) {
-            msg.delete({ timeout: ctx.deleteAfterDuration, reason: 'Automated cleanup' });
-          }
-        }
-        return msg;
+        return client.send(text, embedCopy);
       } catch (e) {
-        this.logger.error(e);
+        logger.error(e);
         await this.settings.deleteWebhooksForChannel(ctx.channel.id);
-        this.logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
+        logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
         return false;
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
-    if (!embed.username) {
+    if (!embed.embeds) {
       // eslint-disable-next-line no-param-reassign
       embed = this.webhookWrapEmbed(embed, ctx);
     }
@@ -313,6 +301,8 @@ class MessaageManager {
       ctx.webhook = channelWebhook;
       return this.webhook(ctx, { text, embed });
     }
+
+    // find how to do this with rest instead of a discord client
     if (ctx.channel && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
       const webhooks = await ctx.channel.fetchWebhooks();
       let webhook;
@@ -321,7 +311,7 @@ class MessaageManager {
       } else {
         webhook = await ctx.channel.createWebhook(this.client.user.username);
       }
-      this.logger.debug(`Created and adding ${JSON.stringify(webhook)} to ${ctx.channel}`);
+      logger.debug(`Created and adding ${JSON.stringify(webhook)} to ${ctx.channel}`);
       webhook.name = this.client.user.username;
       webhook.avatar = this.client.user.displayAvatarURL()
         .replace('.webp', '.png')
@@ -331,7 +321,7 @@ class MessaageManager {
       // Make this one query
       const success = await this.settings.setChannelWebhook(ctx.channel, webhook);
       if (!success) {
-        this.logger.error(`Could not finish adding webhook for ${ctx.channel}`);
+        logger.error(`Could not finish adding webhook for ${ctx.channel}`);
         return false;
       }
       // eslint-disable-next-line no-param-reassign
@@ -343,22 +333,32 @@ class MessaageManager {
   }
 
   webhookWrapEmbed(embed, ctx) {
-    return {
-      username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar
-        ? ctx.webhook.avatar : this.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
-      embeds: [embed],
-    };
+    return ctx.webhook && ctx.webhook.avatar
+      ? {
+        username: ctx.webhook.name,
+        avatarURL: ctx.webhook.avatar,
+        embeds: [embed],
+      }
+      : {
+        username: this.settings.defaults.username,
+        avatarURL: this.settings.defaults.avatar,
+        embeds: [embed],
+      };
   }
 
   webhookWrapEmbeds(embeds, ctx) {
-    return {
-      username: ctx.webhoook && ctx.webhook.name ? ctx.webhook.name : this.client.user.username,
-      avatarURL: ctx.webhoook && ctx.webhook.avatar
-        ? ctx.webhook.avatar : this.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
-      embeds,
-    };
+    return ctx.webhook && ctx.webhook.avatar
+      ? {
+        username: ctx.webhook.name,
+        avatarURL: ctx.webhook.avatar,
+        embeds,
+      }
+      : {
+        username: this.settings.defaults.username,
+        avatarURL: this.settings.defaults.avatar,
+        embeds,
+      };
   }
 }
 
-module.exports = MessaageManager;
+module.exports = MessageManager;

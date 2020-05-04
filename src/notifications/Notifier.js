@@ -160,14 +160,16 @@ class Notifier {
    * * Instantiate our own db connection
    * @param {Genesis} bot instance of the bot.... this needs to be refactored/removed
    */
-  constructor(bot) {
-    this.bot = bot;
-    this.settings = bot.settings;
-    this.client = bot.client;
+  constructor({
+    settings, client, messageManager, worldStates,
+  }) {
+    this.settings = settings;
+    this.client = client;
+    this.worldStates = worldStates;
     this.broadcaster = new Broadcaster({
-      client: bot.client,
+      client,
       settings: this.settings,
-      messageManager: bot.messageManager,
+      messageManager,
     });
     logger.info('[N] Ready');
 
@@ -184,12 +186,12 @@ class Notifier {
    */
   async start() {
     if (games.includes('WARFRAME')) {
-      for (const k of Object.keys(this.bot.worldStates)) {
-        this.bot.worldStates[k].on('newData', async (platform, newData) => {
+      Object.entries(this.worldStates).forEach(([, ws]) => {
+        ws.on('newData', async (platform, newData) => {
           logger.silly(`[N] Processing new data for ${platform}`);
           await this.onNewData(platform, newData);
         });
-      }
+      });
     }
   }
 
@@ -257,9 +259,9 @@ class Notifier {
 
   async sendAcolytes(newAcolytes, platform) {
     await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Acolyte(
-      this.bot,
+      { logger },
       [a], platform,
-    ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`, null, 3600000)));
+    ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`)));
   }
 
   async sendAlerts(newAlerts, platform) {
@@ -268,7 +270,7 @@ class Notifier {
 
   async sendAlert(a, platform) {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      const embed = new embeds.Alert(this.bot, [a], platform, i18n);
+      const embed = new embeds.Alert({ logger }, [a], platform, i18n);
       embed.locale = locale;
       try {
         const thumb = await getThumbnailForItem(a.mission.reward.itemString);
@@ -279,7 +281,7 @@ class Notifier {
         logger.error(e);
       } finally {
         // Broadcast even if the thumbnail fails to fetch
-        await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes, fromNow(a.expiry));
+        await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes);
       }
     });
   }
@@ -288,7 +290,7 @@ class Notifier {
     if (!arbitration) return;
 
     for (const [locale, i18n] of i18ns) {
-      const embed = new embeds.Arbitration(this.bot, arbitration, platform, i18n);
+      const embed = new embeds.Arbitration({ logger }, arbitration, platform, i18n);
       embed.locale = locale;
       const type = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
       await this.broadcaster.broadcast(embed, platform, type);
@@ -296,63 +298,60 @@ class Notifier {
   }
 
   async sendBaro(newBaro, platform) {
-    const embed = new embeds.VoidTrader(this.bot, newBaro, platform);
+    const embed = new embeds.VoidTrader({ logger }, newBaro, platform);
     if (embed.fields.length > 25) {
       const fields = createGroupedArray(embed.fields, 15);
       fields.forEach(async (fieldGroup) => {
         const tembed = { ...embed };
         tembed.fields = fieldGroup;
-        await this.broadcaster.broadcast(tembed, platform, 'baro', null);
+        await this.broadcaster.broadcast(tembed, platform, 'baro');
       });
     } else {
-      await this.broadcaster.broadcast(embed, platform, 'baro', null);
+      await this.broadcaster.broadcast(embed, platform, 'baro');
     }
   }
 
   async sendCetusCycle(newCetusCycle, platform, cetusCycleChange) {
     const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
     const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    await this.broadcaster.broadcast(
-      new embeds.Cycle(this.bot, newCetusCycle),
-      platform, type, null, fromNow(newCetusCycle.expiry),
-    );
+    const embed = new embeds.Cycle({ logger }, newCetusCycle);
+    await this.broadcaster.broadcast(embed, platform, type);
   }
 
   async sendConclaveDailies(newDailies, platform) {
     const dailies = newDailies.filter(challenge => challenge.category === 'day');
     if (dailies.length > 0 && dailies[0].activation) {
-      const embed = new embeds.Conclave(this.bot, dailies, 'day', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies', null, fromNow(dailies[0].expiry));
+      const embed = new embeds.Conclave({ logger }, dailies, 'day', platform);
+      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies');
     }
   }
 
   async sendConclaveWeeklies(newWeeklies, platform) {
     const weeklies = newWeeklies.filter(challenge => challenge.category === 'week');
     if (weeklies.length > 0) {
-      const embed = new embeds.Conclave(this.bot, weeklies, 'week', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies', null, fromNow(weeklies[0].expiry));
+      const embed = new embeds.Conclave({ logger }, weeklies, 'week', platform);
+      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies');
     }
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo(this.bot, d, platform), platform, 'darvo', null, fromNow(d.expiry))));
+    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo({ logger }, d, platform), platform, 'darvo')));
   }
 
   async sendEarthCycle(newEarthCycle, platform, earthCycleChange) {
     const minutesRemaining = earthCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
     const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     await this.broadcaster.broadcast(
-      new embeds.Cycle(this.bot, newEarthCycle),
-      platform, type, null, fromNow(newEarthCycle.expiry),
+      new embeds.Cycle({ logger }, newEarthCycle), platform, type,
     );
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents.map(e => this.broadcaster.broadcast(new embeds.Event(this.bot, e, platform), platform, 'operations', null, fromNow(e.expiry))));
+    await Promise.all(newEvents.map(e => this.broadcaster.broadcast(new embeds.Event({ logger }, e, platform), platform, 'operations')));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    await Promise.all(newFeaturedDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.featured', null, fromNow(d.expiry))));
+    await Promise.all(newFeaturedDeals.map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.featured')));
   }
 
   async sendFissures(newFissures, platform) {
@@ -361,10 +360,10 @@ class Notifier {
 
   async sendFissure(fissure, platform) {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      const embed = new embeds.Fissure(this.bot, [fissure], platform, i18n);
+      const embed = new embeds.Fissure({ logger }, [fissure], platform, i18n);
       embed.locale = locale;
       const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase()}`;
-      await this.broadcaster.broadcast(embed, platform, id, null, fromNow(fissure.expiry));
+      await this.broadcaster.broadcast(embed, platform, id);
     });
   }
 
@@ -374,7 +373,7 @@ class Notifier {
 
   async sendInvasion(invasion, platform) {
     Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-      const embed = new embeds.Invasion(this.bot, [invasion], platform, i18n);
+      const embed = new embeds.Invasion({ logger }, [invasion], platform, i18n);
       embed.locale = locale;
       try {
         const reward = invasion.attackerReward.itemString || invasion.defenderReward.itemString;
@@ -385,13 +384,13 @@ class Notifier {
       } catch (e) {
         // do nothing, it happens
       } finally {
-        await this.broadcaster.broadcast(embed, platform, 'invasions', invasion.rewardTypes, 86400000);
+        await this.broadcaster.broadcast(embed, platform, 'invasions', invasion.rewardTypes);
       }
     });
   }
 
   async sendNews(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'news')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'news')));
   }
 
   async sendNightwave(nightwave, platform) {
@@ -412,30 +411,30 @@ class Notifier {
         nightwave.activeChallenges.forEach(async (challenge) => {
           const nwCopy = { ...nightwave };
           nwCopy.activeChallenges = [challenge];
-          const embed = new embeds.Nightwave(this.bot, nwCopy, platform, i18n);
+          const embed = new embeds.Nightwave({ logger }, nwCopy, platform, i18n);
           embed.locale = locale;
           await this.broadcaster.broadcast(embed, platform,
-            makeType(challenge), null, fromNow(challenge.expiry));
+            makeType(challenge));
         });
       } else {
-        const embed = new embeds.Nightwave(this.bot, nightwave, platform, i18n);
+        const embed = new embeds.Nightwave({ logger }, nightwave, platform, i18n);
         embed.locale = locale;
-        await this.broadcaster.broadcast(embed, platform, 'nightwave', null, fromNow(nightwave.expiry));
+        await this.broadcaster.broadcast(embed, platform, 'nightwave');
       }
     });
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    await Promise.all(newPopularDeals.map(d => this.broadcaster.broadcast(new embeds.Sales(this.bot, [d], platform), platform, 'deals.popular', null, 86400000)));
+    await Promise.all(newPopularDeals.map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.popular')));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'primeaccess', platform), platform, 'primeaccess')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
   async sendSortie(newSortie, platform) {
     if (!newSortie) return;
-    const embed = new embeds.Sortie(this.bot, newSortie, platform);
+    const embed = new embeds.Sortie({ logger }, newSortie, platform);
     try {
       const thumb = await getThumbnailForItem(newSortie.boss, true);
       if (thumb) {
@@ -444,49 +443,47 @@ class Notifier {
     } catch (e) {
       logger.error(e);
     } finally {
-      await this.broadcaster.broadcast(embed, platform, 'sorties', null, fromNow(newSortie.expiry));
+      await this.broadcaster.broadcast(embed, platform, 'sorties');
     }
   }
 
   async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], undefined, platform), platform, 'streams')));
+    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'streams')));
   }
 
-  async checkAndSendSyndicate(embed, syndicate, timeout, platform) {
+  async checkAndSendSyndicate(embed, syndicate, platform) {
     if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, syndicate, null, timeout);
+      await this.broadcaster.broadcast(embed, platform, syndicate);
     }
   }
 
   async sendSyndicates(newSyndicates, platform) {
     if (!newSyndicates || !newSyndicates[0]) return;
     for (const {
-      key, display, prefix, timeout, notifiable,
+      key, display, prefix, notifiable,
     } of syndicates) {
       if (notifiable) {
-        const embed = new embeds.Syndicate(this.bot, newSyndicates, display, platform);
+        const embed = new embeds.Syndicate({ logger }, newSyndicates, display, platform);
         const eKey = `${prefix || ''}${key}`;
-        const deleteAfter = timeout || fromNow(newSyndicates[0].expiry);
-        await this.checkAndSendSyndicate(embed, eKey, deleteAfter, platform);
+        await this.checkAndSendSyndicate(embed, eKey, platform);
       }
     }
   }
 
   async sendTweets(newTweets, platform) {
     await Promise.all(newTweets.map(t => this.broadcaster
-      .broadcast(new embeds.Tweet(this.bot, t.tweets[0]), platform, t.id, null, 3600)));
+      .broadcast(new embeds.Tweet({ logger }, t.tweets[0]), platform, t.id)));
   }
 
   async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News(this.bot, [i], 'updates', platform), platform, 'updates')));
+    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
     await this.broadcaster.broadcast(
-      new embeds.Solaris(this.bot, newCycle),
-      platform, type, null, fromNow(newCycle.expiry),
+      new embeds.Solaris({ logger }, newCycle), platform, type,
     );
   }
 
@@ -495,7 +492,7 @@ class Notifier {
       .includes(outpost.id);
     if (outpost.active && !isNotified) {
       Object.entries(i18ns).forEach(async ([locale, i18n]) => {
-        const embed = new embeds.Outposts(this.bot, outpost, platform, i18n);
+        const embed = new embeds.Outposts({ logger }, outpost, platform, i18n);
         embed.locale = locale;
         await this.broadcaster.broadcast(embed, platform, 'outposts');
       });

@@ -93,7 +93,7 @@ class Database {
     this.bot = bot;
     this.logger = logger;
 
-    if (bot.client) {
+    if (bot && bot.client) {
       this.scope = 'bot';
     } else {
       this.scope = 'worker';
@@ -160,7 +160,12 @@ class Database {
   }
 
   async query(query) {
-    return this.db.query(query);
+    try {
+      return this.db.query(query);
+    } catch (e) {
+      logger.error(e);
+      return undefined;
+    }
   }
 
   debugQuery(query) {
@@ -199,6 +204,11 @@ class Database {
    */
   async getCommandContext(channel, user) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
+
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
+
     const settings = ['platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
       'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
       'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
