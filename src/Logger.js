@@ -33,7 +33,7 @@ const levels = {
 };
 const scopes = {
   BOT: 'yellow',
-  WORKER: 'green',
+  WORKER: 'grey',
 };
 
 const colorify = (level, map) => level[map[level] || 'red'];

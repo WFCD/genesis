@@ -31,7 +31,7 @@ const beats = {};
 const between = (activation, platform) => {
   const activationTs = new Date(activation).getTime();
   const isBeforeCurr = activationTs < beats[platform].currCycleStart;
-  const isAfterLast = activationTs > (beats[platform].lastUpdate - 60000);
+  const isAfterLast = activationTs > (beats[platform].lastUpdate - 30000);
   return isBeforeCurr && isAfterLast;
 };
 
@@ -179,6 +179,8 @@ class Notifier {
         currCycleStart: null,
       };
     });
+
+    this.updating = false;
   }
 
   /**
@@ -201,21 +203,25 @@ class Notifier {
    * @param  {json} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
+    await this.updating;
+
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
     const notifiedIds = await this.settings.getNotifiedIds(platform);
 
     // Set up data to notify
-    const {
-      alerts, dailyDeals, events, fissures,
-      invasions, news, acolytes, sortie, syndicateM, baro,
-      cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
-      cetusCycleChange, earthCycleChange, vallisCycleChange,
-      featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    } = buildNotifiableData(newData, platform, notifiedIds);
+    this.updating = this.sendNew(platform, newData,
+      buildNotifiableData(newData, platform, notifiedIds));
+  }
 
-
+  async sendNew(platform, rawData, {
+    alerts, dailyDeals, events, fissures,
+    invasions, news, acolytes, sortie, syndicateM, baro,
+    cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
+    cetusCycleChange, earthCycleChange, vallisCycleChange,
+    featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
+  }) {
     // Send all notifications
     try {
       logger.silly('[N] sending new data...');
@@ -246,15 +252,15 @@ class Notifier {
       this.sendVallisCycle(vallisCycle, platform, vallisCycleChange);
       this.sendUpdates(updates, platform);
       this.sendAlerts(alerts, platform);
-      this.sendSentientOutposts(newData.sentientOutposts, platform);
+      this.sendSentientOutposts(rawData.sentientOutposts, platform);
       await this.sendNightwave(nightwave, platform);
     } catch (e) {
       logger.error(e);
     } finally {
       beats[platform].lastUpdate = Date.now();
     }
-    const alreadyNotified = newData.persistentEnemies.map(a => a.pid);
-    this.settings.setNotifiedIds(platform, alreadyNotified);
+    const alreadyNotified = rawData.persistentEnemies.map(a => a.pid);
+    return this.settings.setNotifiedIds(platform, alreadyNotified);
   }
 
   async sendAcolytes(newAcolytes, platform) {
