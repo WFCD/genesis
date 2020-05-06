@@ -46,6 +46,7 @@ class OnReadyHandle extends Handler {
     this.notifyUp();
     this.setupMessageManager();
 
+    this.settings.init();
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 

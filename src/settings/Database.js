@@ -93,6 +93,8 @@ class Database {
     this.bot = bot;
     this.logger = logger;
 
+    this.clusterId = process.env.CLUSTER_ID || 0;
+
     if (bot && bot.client) {
       this.scope = 'bot';
     } else {
@@ -100,15 +102,21 @@ class Database {
     }
 
     this.defaults = {
-      username: this.scope === 'bot'
-        ? this.bot.client.user && this.bot.client.user.username
-        : 'Genesis',
-      avatar: this.scope === 'bot'
-        ? this.bot.client.user && this.bot.client.user.displayAvatarURL()
-          .replace('.webp', '.png')
-          .replace('.webm', '.gif')
-          .replace('?size=2048', '')
-        : `${assetBase}/avatar.png`,
+      prefix: '/',
+      respond_to_settings: true,
+      platform: 'pc',
+      language: 'en',
+      delete_after_respond: true,
+      delete_response: true,
+      createPrivateChannel: false,
+      deleteExpired: false,
+      allowCustom: false,
+      allowInline: false,
+      defaultRoomsLocked: true,
+      defaultNoText: false,
+      defaultShown: false,
+      tempCategory: false,
+      'settings.cc.ping': true,
     };
 
     const opts = {
@@ -124,39 +132,47 @@ class Database {
 
     try {
       this.db = mysql.createPool(opts);
-
-      this.defaults = {
-        prefix: '/',
-        respond_to_settings: true,
-        platform: 'pc',
-        language: 'en',
-        delete_after_respond: true,
-        delete_response: true,
-        createPrivateChannel: false,
-        deleteExpired: false,
-        allowCustom: false,
-        allowInline: false,
-        defaultRoomsLocked: true,
-        defaultNoText: false,
-        defaultShown: false,
-        tempCategory: false,
-        'settings.cc.ping': true,
-      };
-
-      const dbRoot = path.join(__dirname, 'DatabaseQueries');
-      fs.readdirSync(dbRoot)
-        .filter(f => f.endsWith('.js'))
-        .forEach((file) => {
-          // eslint-disable-next-line global-require, import/no-dynamic-require
-          const QClass = require(path.join(dbRoot, file));
-          const qInstance = new QClass(this.db);
-          copyChildrenQueries(qInstance);
-        });
-
-      this.clusterId = process.env.CLUSTER_ID || 0;
     } catch (e) {
       this.logger.fatal(e);
     }
+
+    this.loadChildren();
+  }
+
+  /**
+   * Dynamically load child query classes
+   *
+   * Avoids lots of manual imports, but can be dangerous on a shared OS.
+   *
+   * Make sure your bot is in a secured folder
+   *  if you're worried about shard space.
+   */
+  loadChildren() {
+    const dbRoot = path.join(__dirname, 'DatabaseQueries');
+    fs.readdirSync(dbRoot)
+      .filter(f => f.endsWith('.js'))
+      .forEach((file) => {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        const QClass = require(path.join(dbRoot, file));
+        const qInstance = new QClass(this.db);
+        copyChildrenQueries(qInstance);
+      });
+  }
+
+  init() {
+    this.defaults = this.scope === 'bot'
+      ? {
+        ...this.defaults,
+        username: this.bot.client.user.username,
+        avatar: this.bot.client.user.displayAvatarURL()
+          .replace('.webp', '.png')
+          .replace('.webm', '.gif')
+          .replace('?size=2048', ''),
+      } : {
+        ...this.defaults,
+        username: 'Genesis',
+        avatar: `${assetBase}/avatar.png`,
+      };
   }
 
   async query(query) {

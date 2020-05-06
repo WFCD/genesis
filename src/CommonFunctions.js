@@ -132,7 +132,7 @@ Object.keys(missionTypes).forEach((type) => {
   }
   kuvaTemp.push(`kuva.${type}`);
 
-  if (missionTypes[type].fissures) {
+  if (missionTypes[type].fissure) {
     // Construct Fissure types
     fissures.tiers.forEach((tier) => {
       const id = `fissures.${tier}.${type}`;
