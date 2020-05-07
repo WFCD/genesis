@@ -35,7 +35,7 @@ class FeedsNotifier {
 
     this.feeder.on('new-item', this.handleNewItem.bind(this));
 
-    logger.debug('[RSS] Notifier ready.');
+    logger.info('[RSS] Ready');
   }
 
   /**
@@ -45,7 +45,7 @@ class FeedsNotifier {
   handleNewItem(item) {
     try {
       if (Object.keys(item.image).length) {
-        logger.debug(JSON.stringify(item.image));
+        logger.debug(`IMAGE: ${JSON.stringify(item.image)}`);
       }
 
       if (new Date(item.pubDate).getTime() > this.start) {

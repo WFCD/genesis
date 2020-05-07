@@ -7,21 +7,21 @@ const BaseEmbed = require('./BaseEmbed.js');
  */
 class TwitchEmbed extends BaseEmbed {
   /**
-   * @param {Object} streamData - a stream result from twitch api
-   * @param {Object} userData   - a user result from twitch api
+   * @param {HelixStream} streamData - a stream result from twitch api
+   * @param {HelixUser} userData   - a user result from twitch api
    */
   constructor(streamData, userData) {
     super();
     this.title = streamData.title;
     if (userData) {
       this.author = {
-        name: userData.display_name,
-        icon_url: userData.profile_image_url,
+        name: streamData.userDisplayName,
+        icon_url: userData.profilePictureUrl,
       };
       this.image = {
-        url: streamData.thumbnail_url.replace('{width}', '580').replace('{height}', '326'),
+        url: streamData.thumbnailUrl.replace('{width}', '580').replace('{height}', '326'),
       };
-      this.url = `https://www.twitch.tv/${userData.login}`;
+      this.url = `https://www.twitch.tv/${userData.name}`;
     }
   }
 }

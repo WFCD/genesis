@@ -1,7 +1,8 @@
 'use strict';
 
-const fetch = require('node-fetch');
-const moment = require('moment');
+const TwitchClient = require('twitch').default;
+const WebHookListener = require('twitch-webhooks').default;
+
 const TwitchEmbed = require('../embeds/TwitchEmbed');
 const Broadcaster = require('./Broadcaster');
 const { platforms } = require('../CommonFunctions');
@@ -21,89 +22,91 @@ class TwitchNotifier {
     });
 
     this.lastStartedAtTime = null;
-    this.user = process.env.TWITCH_USER_LOGIN || 'warframe';
-    this.clientId = process.env.TWITCH_CLIENT_ID;
-    this.validClientInfo = true;
-    if (!(this.user && this.clientId)) {
-      this.validClientInfo = false;
+
+    if (process.env.TWITCH_CLIENT_ID && process.env.TWITCH_CLIENT_SECRET) {
+      const id = process.env.TWITCH_CLIENT_ID;
+      const secret = process.env.TWITCH_CLIENT_SECRET;
+      this.client = TwitchClient.withClientCredentials(id, secret);
+    } else {
       logger.debug('[Twitch] Cannot initialize Twitch Notifier... invalid credentials');
     }
+
+    this.subs = {};
   }
 
   async start() {
-    if (this.validClientInfo) {
-      this.userDetails = await this.getUserDetails();
-      setInterval(this.pollTwitch.bind(this), process.env.TWITCH_POLL_INTERVAL_MS || 60000);
+    if (!this.client) return;
+
+    try {
+      this.listener = await WebHookListener.create(this.client, {
+        host: process.env.TWITCH_HOST || 'localhost',
+        port: 8090,
+        reverseProxy: { port: 443, ssl: true },
+      });
+
+      this.listener.listen();
+
+      await this.listenToStreams();
+    } catch (e) {
+      logger.error(`initialzation error: ${e.message}`);
+      return;
     }
+    logger.info('[Twitch] Ready');
   }
 
   /**
-   * Retrieves the details of the twitch user that we are following
-   * @returns {Object} a twitch api user response object
+   * Set up subscription for twitch user id
+   * @param  {string}  sub twitch user id
+   * @returns {Promise}
    */
-  async getUserDetails() {
-    if (!this.validClientInfo) return undefined;
+  async subscribe(sub) {
+    const user = await this.client.helix.users.getUserByName(sub);
 
-    try {
-      const response = await fetch(`https://api.twitch.tv/helix/users?login=${this.user}`, {
-        method: 'GET',
-        headers: {
-          'Client-ID': process.env.TWITCH_CLIENT_ID,
-        },
-      })
-        .then(data => data.json());
-
-      if (response.data.length > 0) {
-        return response.data[0];
-      }
-    } catch (error) {
-      logger.error(error);
-    }
-    return undefined;
-  }
-
-  /**
-   * Checks the user's stream to see if they are currently live
-   */
-  async pollTwitch() {
-    if (!this.validClientInfo) return;
-
-    try {
-      const response = await fetch(`https://api.twitch.tv/helix/streams?user_login=${this.user}`, {
-        method: 'GET',
-        headers: {
-          'Client-ID': process.env.TWITCH_CLIENT_ID,
-        },
-      })
-        .then(data => data.json());
-
-      // If the stream query has some results, then the user is live
-      if (response.data && response.data.length > 0) {
-        // parse what time the stream started
-        const startedAt = moment(response.data[0].started_at);
-
-        // if we havent seen the stream start yet
-        // OR the stream started after the last time it started, notify
-        if (this.lastStartedAtTime == null || startedAt.isAfter(this.lastStartedAtTime)) {
-          // if we got user details, notify
-          if (this.userDetails) {
-            // create our embed
-            const twitchEmbed = new TwitchEmbed(response.data[0], this.userDetails);
-
-            // broadcast it!
-            platforms.forEach((platform) => {
-              this.broadcaster.broadcast(twitchEmbed, platform, 'twitch');
-            });
-
-            // save the stream started time so we dont continue to send messages
-            // but we will send one the next time a new stream starts
-            this.lastStartedAtTime = startedAt;
+    const subscription = this.listener.subscribeToStreamChanges(user.id, async (stream) => {
+      if (stream) {
+        const twitchEmbed = new TwitchEmbed(stream, user);
+        let id = `${sub}.live`;
+        // add warframe type filtering for ids...
+        if (sub === 'warframe') {
+          if (stream.title.includes('Home Time') || stream.title.includes('Prime Time')) {
+            id = `${sub}.primetime.live`;
+          } else if (stream.title.includes('Devstream')) {
+            id = `${sub}.devstream.live`;
+          } else {
+            id = `${sub}.other.live`;
           }
         }
+
+        // broadcast it!
+        platforms.forEach((platform) => {
+          this.broadcaster.broadcast(twitchEmbed, platform, id);
+        });
       }
-    } catch (error) {
-      logger.error(error);
-    }
+    });
+    this.subs[sub] = subscription;
+    logger.debug(`[Twitch] listening for '${sub}' stream changes...`);
+  }
+
+  /**
+   * Set up listening to streams
+   */
+  async listenToStreams() {
+    if (!(this.client && this.listener)) return;
+
+    const subs = require('../resources/twitch.json');
+
+    const subPromises = [];
+
+    subs.forEach((sub) => {
+      subPromises.push(this.subscribe(sub));
+    });
+
+    await Promise.all(subPromises);
+
+    process.on('exit', () => {
+      Object.entries(subs).forEach(subscription => subscription.stop());
+      logger.debug('[Twitch] Subscriptions unregistered...');
+    });
   }
 }
 

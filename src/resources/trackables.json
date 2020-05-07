@@ -79,7 +79,6 @@
     "nightwave.daily",
     "nightwave.elite",
     "nightwave.weekly",
-    "twitch",
     "outposts"
   ],
   "opts": [
@@ -88,7 +87,8 @@
     "syndicates",
     "clantech",
     "deals",
-    "resources"
+    "resources",
+    "twitch"
   ],
   "fissures": {
     "tiers": [
@@ -170,5 +170,10 @@
       "tobiah",
       "wfdiscord"
     ]
-  }
+  },
+  "twitch": [
+    "warframe.devstream.live",
+    "warframe.primetime.live",
+    "warframe.other.live"
+  ]
 }

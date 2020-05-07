@@ -15,7 +15,7 @@ const welcomes = require('./resources/welcomes.json');
 
 const {
   eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources, nightwave,
+  resources, nightwave, twitch,
 } = require('./resources/trackables.json');
 
 const rssFeeds = require('./resources/rssFeeds');
@@ -102,6 +102,7 @@ const trackableEvents = {
   rss: rssFeeds.map(feed => feed.key),
   arbitration: [],
   kuva: [],
+  twitch,
   opts,
 };
 
@@ -159,6 +160,7 @@ trackableEvents.events.push(
   ...trackableEvents.fissures,
   ...trackableEvents.arbitration,
   ...trackableEvents.kuva,
+  ...trackableEvents.twitch,
 );
 
 const dyn = [
