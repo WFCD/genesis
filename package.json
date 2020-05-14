@@ -42,7 +42,7 @@
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.1",
     "colors": "^1.4.0",
-    "decache": "^4.5.1",
+    "decache": "^4.6.0",
     "discord-giveaways": "^3.2.3",
     "discord.js": "^12.2.0",
     "erlpack": "github:discordapp/erlpack",
