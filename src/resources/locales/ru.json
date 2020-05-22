@@ -21,9 +21,9 @@
   "Weekly, ctd.": "Еженедельно, ещё.",
   "Currently Active": "# Активно",
   "Season {0} • Phase {1}": "Сезон {0} • Эпизод {1}",
-  "No Alerts Active": ":warning: Нет активных тревог",
+  "No Alerts Active": ":warning: Нет активных Тревог",
   "No Fissures Active": ":warning: Нет активных разрывов Бездны",
-  "No Invasions Active": ":warning: Нет активных вторжений",
-  "No Sortie Active": ":warning: Нет активной вылазки",
+  "No Invasions Active": ":warning: Нет активных Вторжений",
+  "No Sortie Active": ":warning: Нет активной Вылазки",
   "{0} against {1}": "{0} vs {1}"
 }
