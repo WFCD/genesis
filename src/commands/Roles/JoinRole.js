@@ -13,7 +13,7 @@ const getRoleForString = (string, message) => {
   const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {
-    roleFromName = message.guild.roles
+    roleFromName = message.guild.roles.cache
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;

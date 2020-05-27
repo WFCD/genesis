@@ -8,7 +8,7 @@ const Command = require('../../models/Command.js');
  * @param  {Message} message    originating message
  * @returns {Role|null}         Role
  */
-function getRoleForString(string, message) {
+const getRoleForString = (string, message) => {
   const trimmedString = string.trim();
   const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
@@ -17,7 +17,7 @@ function getRoleForString(string, message) {
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
   return roleFromId || roleFromName || null;
-}
+};
 
 /**
  * Determine the reason a user can't leave a role
