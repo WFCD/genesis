@@ -16,6 +16,8 @@ const db = new Database();
 
 const deps = {};
 
+let timeout;
+
 class Worker {
   constructor() {
     /**
@@ -24,10 +26,10 @@ class Worker {
      */
     this.worldStates = {};
 
-    const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
+    timeout = process.env.WORLDSTATE_TIMEOUT || 60000;
     ['pc', 'ps4', 'xb1', 'swi']
       .forEach((platform) => {
-        this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
+        this.worldStates[platform] = new WorldStateCache(platform, timeout, this.logger);
       });
   }
 
@@ -40,8 +42,10 @@ class Worker {
       deps.settings = db;
       deps.client = rest;
       deps.worldStates = this.worldStates;
+      deps.timeout = timeout;
 
       await rest.init();
+      await deps.settings.init();
 
       this.messageManager = new MessageManager(deps);
       deps.messageManager = this.messageManager;
@@ -50,9 +54,17 @@ class Worker {
       this.feedNotifier = new FeedsNotifier(deps);
       this.twitchNotifier = new TwitchNotifier(deps);
 
-      await this.notifier.start();
-      this.twitchNotifier.start();
       this.feedNotifier.start();
+      await this.notifier.start();
+      await this.twitchNotifier.start();
+
+      const body = {
+        embeds: [{
+          description: 'Worker ready!',
+          color: 0x2B90EC,
+        }],
+      };
+      rest.controlMessage(body);
     } catch (e) {
       logger.error(e);
     }

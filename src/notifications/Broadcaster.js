@@ -1,7 +1,5 @@
 'use strict';
 
-const logger = require('../Logger');
-
 /**
  * Broadcast updates out to subscribing channels
  * @param {Discord.Client} client         bot client
@@ -24,7 +22,6 @@ class Broadcaster {
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
    * @param  {Array}  [items=[]] Items to broadcast
-   * @param  {number} [deleteAfter=0] Amount of time to delete broadcast after
    * @returns {Array.<Object>} values for successes
    */
   async broadcast(embed, platform, type, items = []) {

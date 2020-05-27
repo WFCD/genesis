@@ -95,11 +95,7 @@ class Database {
 
     this.clusterId = process.env.CLUSTER_ID || 0;
 
-    if (bot && bot.client) {
-      this.scope = 'bot';
-    } else {
-      this.scope = 'worker';
-    }
+    this.scope = (process.env.SCOPE || 'bot').toLowerCase();
 
     this.defaults = {
       prefix: '/',
@@ -170,8 +166,8 @@ class Database {
           .replace('?size=2048', ''),
       } : {
         ...this.defaults,
-        username: 'Genesis',
-        avatar: `${assetBase}/avatar.png`,
+        username: process.env.DEF_USER || 'Genesis',
+        avatar: `${assetBase}/img/avatar.png`,
       };
   }
 

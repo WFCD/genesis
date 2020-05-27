@@ -25,6 +25,8 @@ class MessageManager {
     this.settings = bot.settings;
     this.owner = bot.owner;
 
+    this.scope = process.env.SCOPE || 'worker';
+
     this.statuses = {
       SUCCESS: 'SUCCESS',
       FAILURE: 'FAILURE',
@@ -302,31 +304,56 @@ class MessageManager {
       return this.webhook(ctx, { text, embed });
     }
 
-    // find how to do this with rest instead of a discord client
-    if (ctx.channel && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS')) {
-      const webhooks = await ctx.channel.fetchWebhooks();
-      let webhook;
-      if (webhooks.array().length > 0) {
-        [webhook] = webhooks.array();
-      } else {
-        webhook = await ctx.channel.createWebhook(this.client.user.username);
-      }
-      logger.debug(`Created and adding ${JSON.stringify(webhook)} to ${ctx.channel}`);
-      webhook.name = this.client.user.username;
-      webhook.avatar = this.client.user.displayAvatarURL()
-        .replace('.webp', '.png')
-        .replace('.webm', '.gif')
-        .replace('?size=2048', '');
+    const useBotLogic = this.scope === 'bot' && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS');
 
-      // Make this one query
-      const success = await this.settings.setChannelWebhook(ctx.channel, webhook);
-      if (!success) {
-        logger.error(`Could not finish adding webhook for ${ctx.channel}`);
-        return false;
+    // find how to do this with rest instead of a discord client
+    if (ctx.channel) {
+      if (useBotLogic) {
+        const webhooks = await ctx.channel.fetchWebhooks();
+        let webhook;
+        if (webhooks.array().length > 0) {
+          [webhook] = webhooks.array();
+        } else {
+          webhook = await ctx.channel.createWebhook(this.client.user.username);
+        }
+        logger.debug(`Created and adding ${JSON.stringify(webhook)} to ${ctx.channel}`);
+        webhook.name = this.client.user.username;
+        webhook.avatar = this.client.user.displayAvatarURL()
+          .replace('.webp', '.png')
+          .replace('.webm', '.gif')
+          .replace('?size=2048', '');
+
+        // Make this one query
+        const success = await this.settings.setChannelWebhook(ctx.channel, webhook);
+        if (!success) {
+          logger.error(`Could not finish adding webhook for ${ctx.channel}`);
+          return false;
+        }
+        // eslint-disable-next-line no-param-reassign
+        ctx.webhook = webhook;
+        return this.webhook(ctx, { text, embed });
       }
-      // eslint-disable-next-line no-param-reassign
-      ctx.webhook = webhook;
-      return this.webhook(ctx, { text, embed });
+      logger.debug(`Leveraging worker route for obtaining webhook... ${ctx.channel.id}`);
+      let webhook = await this.client.getWebhook(ctx.channel);
+      if (webhook && webhook.id && webhook.token) {
+        logger.debug(`Got webhook back for ${ctx.channel.id}!`);
+
+        webhook = {
+          id: webhook.id,
+          token: webhook.token,
+          name: webhook.user.username,
+          avatar: this.settings.defaults.avatar,
+        };
+
+        const success = await this.settings.setChannelWebhook(ctx.channel, webhook);
+        if (!success) {
+          logger.debug(`Failed to save webhook for ${ctx.channel.id}!`);
+        }
+
+        ctx.webhook = webhook;
+        return this.webhook(ctx, { text, embed });
+      }
+      logger.error(`Could not create webhook for ${ctx.channel.id}`);
     }
     // Don't have a fallback to embeds
     return false;

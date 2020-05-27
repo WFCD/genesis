@@ -101,7 +101,7 @@ class OnReadyHandle extends Handler {
   async getWarframePresence(base) {
     const cetusState = await this.bot.ws.get('cetusCycle');
     const vallisState = await this.bot.ws.get('vallisCycle');
-    const outpost = await this.bot.ws.get('sentientOutposts');
+    // const outpost = await this.bot.ws.get('sentientOutposts');
 
     if (vallisState || cetusState) {
       let vsFromNow = fromNow(new Date(vallisState.expiry));
@@ -123,8 +123,8 @@ class OnReadyHandle extends Handler {
       const cs = cetusState
         ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • `
         : '';
-      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
-      return `${ous}${vs}${cs}${base}`;
+      // const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
+      return `${vs}${cs}${base}`;
     }
     return base;
   }

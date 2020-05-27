@@ -60,7 +60,7 @@
     "ping": "^0.2.3",
     "rss-feed-emitter": "^3.1.2",
     "sql-template-strings": "^2.2.2",
-    "twitch": "^3.7.1",
+    "twitch": "^4.0.9",
     "twitch-webhooks": "^4.0.9",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.2",
