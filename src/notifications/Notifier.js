@@ -281,7 +281,7 @@ class Notifier {
       ...rawData.weeklyChallenges.map(w => w.id),
       rawData.arbitration && rawData.arbitration.enemy
         ? `arbitration:${new Date(rawData.arbitration.expiry).getTime()}`
-        : `arbitration:0`,
+        : 'arbitration:0',
       ...rawData.twitter.map(t => t.id),
       ...(rawData.nightwave.active ? rawData.nightwave.activeChallenges.map(c => c.id) : []),
     );

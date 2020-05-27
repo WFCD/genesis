@@ -13,8 +13,8 @@ const scope = (process.env.SCOPE || 'worker').toUpperCase();
 const ErrorEmbed = require('./embeds/ErrorEmbed');
 
 let errorHook;
-if (scope === 'worker' && process.env.CONTROL_WH_ID) {
-    errorHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+if (process.env.CONTROL_WH_ID) {
+  errorHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
 }
 
 /**

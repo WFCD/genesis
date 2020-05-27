@@ -785,7 +785,7 @@ const getChannel = (channelsParam, message, channels) => {
   let { channel } = message;
   let channelsColl;
   if (message.guild) {
-    channelsColl = message.guild.channels;
+    channelsColl = message.guild.channels.cache;
   } else {
     channelsColl = new Collection();
     channelsColl.set(message.channel.id, message.channel);
