@@ -1,6 +1,6 @@
 {
-  "{0} | {1} left": "{0} | {1} left",
-  "{0} {1} on {2} \n level {3} - {4}\n​": "{0} {1} on {2} \n level {3} - {4}\n​",
+  "{0} | {1} left": "{0} | 剩下 {1}",
+  "{0} {1} on {2} \n level {3} - {4}\n​": "{0} {1} 在 {2} \n 等級 {3} - {4}\n​",
   "[{0}] Worldstate - Alerts": "[{0}] Worldstate - 警報",
   "[{0}] Worldstate - Nightwave": "[{0}] Worldstate - 午夜電波",
   "[{0}] Worldstate - Elite Nightwave": "[{0}] Worldstate - Elite Nightwave",
