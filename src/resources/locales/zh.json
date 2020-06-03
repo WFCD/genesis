@@ -19,11 +19,11 @@
   "Daily": "每日",
   "Weekly": "每周",
   "Weekly, ctd.": "每周, ctd.",
-  "Currently Active": "# Currently Active",
+  "Currently Active": "# 目前活動",
   "Season {0} • Phase {1}": "系列 {0} • 章節 {1}",
-  "No Alerts Active": ":warning: No Alerts Active",
-  "No Fissures Active": ":warning: No Fissuress Active",
-  "No Invasions Active": ":warning: No Invasions Active",
-  "No Sortie Active": ":warning: No Sortie Active",
+  "No Alerts Active": ":warning: 沒有活動中的警報",
+  "No Fissures Active": ":warning: 沒有活動中的虛空裂縫",
+  "No Invasions Active": ":warning: 沒有活動中的入侵",
+  "No Sortie Active": ":warning: 沒有活動中的突擊",
   "{0} against {1}": "{0} vs {1}"
 }
