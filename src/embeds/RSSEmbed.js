@@ -4,7 +4,7 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const { chunkify, markdinate } = require('../CommonFunctions');
 
-const escapeReserved = (str) => str.replace(/(\(\)\?\+\.)/ig, '\\$1')
+const escapeReserved = str => str.replace(/(\(\)\?\+\.)/ig, '\\$1');
 
 /**
  * Generates daily deal embeds
