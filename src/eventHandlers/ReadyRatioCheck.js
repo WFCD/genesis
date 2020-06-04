@@ -29,7 +29,7 @@ async function guildLeave(self) {
       }
     });
     Object.keys(owners).forEach(async (id) => {
-      const user = await self.client.users.fetch(id);
+      const user = await self.client.users.cache.fetch(id);
       if (user) {
         try {
           await user.send(`Your guild${owners[id].guilds.length > 1 ? 's' : ''}
@@ -41,8 +41,8 @@ async function guildLeave(self) {
         }
       }
       owners[id].guilds.forEach((guild) => {
-        if (guild && self.client.guilds.has(guild)) {
-          self.client.guilds.get(guild).leave();
+        if (guild && self.client.guilds.cache.has(guild)) {
+          self.client.guilds.cache.get(guild).leave();
         }
       });
     });
