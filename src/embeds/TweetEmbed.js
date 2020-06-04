@@ -13,40 +13,40 @@ class TweetEmbed extends BaseEmbed {
   constructor(bot, tweet) {
     super();
     this.color = 33972;
-    this.description = `${tweet.full_text}`;
-    this.timestamp = `${tweet.created_at}`;
-    this.url = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
+    this.description = tweet.text;
+    this.timestamp = new Date(tweet.createdAt);
+    this.url = tweet.url;
 
-    if (tweet.entities.media != null) {
+    if (tweet.mediaUrl) {
       this.image = {
-        url: `${tweet.entities.media[0].media_url}`,
+        url: `${tweet.mediaUrl}`,
       };
     }
 
-    if (tweet.in_reply_to_status_id != null) {
-      this.title = `${tweet.user.name} replied to a Tweet`;
-    } else if (tweet.quoted_status_id != null && tweet.quoted_status) {
-      this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.quoted_status.user.name} (@${tweet.quoted_status.user.screen_name})`;
+    if (tweet.isReply) {
+      this.title = `${tweet.author.name} replied to a Tweet`;
+    } else if (tweet.quote) {
+      this.title = `${tweet.author.name} retweeted a Tweet from ${tweet.quote.author.name} (@${tweet.quote.author.handle})`;
       this.fields.push({
-        name: `${tweet.quoted_status.user.name}`,
-        value: `${tweet.quoted_status.full_text}`,
+        name: `${tweet.quote.author.name}`,
+        value: tweet.quote.text,
       });
-    } else if (tweet.retweeted_status) {
-      this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.retweeted_status.user.name} (@${tweet.retweeted_status.user.screen_name})`;
-      this.description = `${tweet.retweeted_status.full_text}`;
+    } else if (tweet.retweet) {
+      this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.retweet.author.name} (@${tweet.retweet.author.handle})`;
+      this.description = `${tweet.retweet.text}`;
     } else {
       this.title = `${tweet.user.name} Tweeted`;
     }
 
     this.footer = {
-      text: `From @${tweet.user.screen_name}`,
+      text: `From @${tweet.author.handle}`,
       icon_url: 'https://i.imgur.com/CwIRKhh.png',
     };
 
     this.author = {
-      name: `${tweet.user.screen_name}`,
-      icon_url: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`,
-      url: `https://twitter.com/${tweet.user.screen_name}`,
+      name: tweet.author.handle,
+      icon_url: tweet.author.avatar,
+      url: tweet.author.url,
     };
   }
 }

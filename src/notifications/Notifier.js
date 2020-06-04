@@ -100,7 +100,7 @@ function buildNotifiableData(newData, platform, notified) {
     streams: newData.news.filter(n => n.stream && !notified.includes(n.id)),
     syndicateM: newData.syndicateMissions.filter(m => !notified.includes(m.id)),
     tweets: newData.twitter
-      ? newData.twitter.filter(t => t && !notified.includes(t.id))
+      ? newData.twitter.filter(t => t && !notified.includes(t.uniqueId))
       : [],
     updates: newData.news.filter(n => (n.update || !updtReg.test(n.message))
         && !n.stream && !notified.includes(n.id)),
@@ -282,7 +282,7 @@ class Notifier {
       rawData.arbitration && rawData.arbitration.enemy
         ? `arbitration:${new Date(rawData.arbitration.expiry).getTime()}`
         : 'arbitration:0',
-      ...rawData.twitter.map(t => t.id),
+      ...rawData.twitter.map(t => t.uniqueId),
       ...(rawData.nightwave.active ? rawData.nightwave.activeChallenges.map(c => c.id) : []),
     );
 
@@ -516,7 +516,7 @@ class Notifier {
 
   async sendTweets(newTweets, platform) {
     await Promise.all(newTweets.map(t => this.broadcaster
-      .broadcast(new embeds.Tweet({ logger }, t.tweets[0]), platform, t.id)));
+      .broadcast(new embeds.Tweet({ logger }, t), platform, t.id)));
   }
 
   async sendUpdates(newNews, platform) {

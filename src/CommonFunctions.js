@@ -111,7 +111,7 @@ trackableEvents.events.push(...trackableEvents.rss);
 const tTemp = [];
 twitter.types.forEach((type) => {
   twitter.accounts.forEach((account) => {
-    const id = `twitter.${type}.${account}`;
+    const id = `twitter.${account}.${type}`;
     if (!trackableEvents[`twitter.${type}`]) {
       trackableEvents[`twitter.${type}`] = [];
     }
