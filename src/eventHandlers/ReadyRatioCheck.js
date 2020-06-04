@@ -18,11 +18,11 @@ async function guildLeave(self) {
     guilds.forEach((row) => {
       if (self.client.guilds.cache.has(row.guild_id)) {
         if (owners[row.owner_id]) {
-          owners[row.owner_id].message += `, **${self.client.guilds.get(row.guild_id).name}**`;
+          owners[row.owner_id].message += `, **${self.client.guilds.cache.get(row.guild_id).name}**`;
           owners[row.owner_id].guilds.push(row.guild_id);
         } else {
           owners[row.owner_id] = {
-            message: `**${self.client.guilds.get(row.guild_id).name}**`,
+            message: `**${self.client.guilds.cache.get(row.guild_id).name}**`,
             guilds: [row.guild_id],
           };
         }
