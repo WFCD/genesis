@@ -20,7 +20,7 @@
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "npx -p snyk snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "repository": {
@@ -67,8 +67,7 @@
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.2",
     "warframe-name-generator": "^1.0.2",
-    "zlib-sync": "^0.1.6",
-    "snyk": "^1.336.0"
+    "zlib-sync": "^0.1.6"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
