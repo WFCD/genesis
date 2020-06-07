@@ -21,20 +21,12 @@ const embeds = {
   Solaris: require('../embeds/SolarisEmbed'),
   Nightwave: require('../embeds/NightwaveEmbed'),
   Outposts: require('../embeds/SentientOutpostEmbed'),
+  RSS: require('../embeds/RSSEmbed'),
 };
-
-const { Rest } = require('@spectacles/rest');
-
-const rest = new Rest(process.env.TOKEN);
 
 const logger = require('../Logger');
 
-// const Database = require('../settings/Database');
-// const db = new Database();
-
 module.exports = {
-  rest,
   embeds,
-  // db,
   logger,
 };

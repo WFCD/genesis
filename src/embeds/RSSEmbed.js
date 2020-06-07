@@ -4,6 +4,8 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const { chunkify, markdinate } = require('../CommonFunctions');
 
+const escapeReserved = str => str.replace(/(\(\)\?\+\.)/ig, '\\$1');
+
 /**
  * Generates daily deal embeds
  */
@@ -17,7 +19,7 @@ class RSSEmbed extends BaseEmbed {
     super();
     // clean up description, falling back to an empty string
     let strippedDesc = markdinate((feedItem.description || '\u200B')
-      .replace(new RegExp(`<strong>${feedItem.title}</strong>`, 'gm'), ''));
+      .replace(new RegExp(`<strong>${escapeReserved(feedItem.title)}</strong>`.replace(/(\(\)\+)/g, '\\$1'), 'gm'), ''));
     const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
 
     if (feedItem.title.includes(firstLine)) {
@@ -26,21 +28,23 @@ class RSSEmbed extends BaseEmbed {
       strippedDesc = tokens.join('\n');
     }
 
-
-    [strippedDesc] = chunkify({
+    const chunks = chunkify({
       string: strippedDesc,
       maxLength: 1000,
       breakChar: '\n',
       checkTitle: true,
     });
 
-    // strip the last title if it starts with a title
-    if (strippedDesc.endsWith('**')) {
-      strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
+    if (chunks) {
+      [strippedDesc] = chunks;
+      // strip the last title if it starts with a title
+      if (strippedDesc.endsWith('**')) {
+        strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
+      }
+
+      this.description = strippedDesc;
     }
 
-    // this.description = `\`\`\`\n${strippedDesc}\n\`\`\``;
-    this.description = strippedDesc;
     this.url = feedItem.link;
     this.timestamp = feedItem.pubdate;
     this.title = feedItem.title;

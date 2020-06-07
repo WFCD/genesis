@@ -6,6 +6,17 @@ require('colors');
 
 Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
 
+const { WebhookClient } = require('discord.js');
+
+const scope = (process.env.SCOPE || 'worker').toUpperCase();
+
+const ErrorEmbed = require('./embeds/ErrorEmbed');
+
+let errorHook;
+if (process.env.CONTROL_WH_ID) {
+  errorHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+}
+
 /**
  * A collection of methods for logging
  * @property {function} silly   - silly level of debugging
@@ -25,7 +36,7 @@ const l = {
 };
 const levels = {
   SILLY: 'grey',
-  DEBUG: 'cyan',
+  DEBUG: 'brightYellow',
   INFO: 'blue',
   WARN: 'orange',
   ERROR: 'red',
@@ -33,15 +44,15 @@ const levels = {
 };
 const scopes = {
   BOT: 'yellow',
-  WORKER: 'green',
+  WORKER: 'grey',
 };
 
 const colorify = (level, map) => level[map[level] || 'red'];
-const fmt = (level, scope, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
+const fmt = (level, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
-    const simple = fmt(level, process.env.SCOPE || 'BOT', message);
+    const simple = fmt(level, message);
     const isActive = Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (isActive && nonError) {
@@ -54,12 +65,13 @@ Object.keys(levels).forEach((level) => {
       process.exit(4);
     }
     if (level.toLowerCase() === 'error') {
-      console.error(simple);
-      if (typeof message === 'object') {
-        console.error(message);
-      }
       if (Sentry) {
         Sentry.captureException(message);
+      }
+      if (errorHook) {
+        errorHook.send(new ErrorEmbed(message));
+      } else {
+        console.error(simple);
       }
     }
   };

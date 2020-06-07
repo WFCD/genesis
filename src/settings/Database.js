@@ -93,22 +93,26 @@ class Database {
     this.bot = bot;
     this.logger = logger;
 
-    if (bot.client) {
-      this.scope = 'bot';
-    } else {
-      this.scope = 'worker';
-    }
+    this.clusterId = process.env.CLUSTER_ID || 0;
+
+    this.scope = (process.env.SCOPE || 'bot').toLowerCase();
 
     this.defaults = {
-      username: this.scope === 'bot'
-        ? this.bot.client.user && this.bot.client.user.username
-        : 'Genesis',
-      avatar: this.scope === 'bot'
-        ? this.bot.client.user && this.bot.client.user.displayAvatarURL()
-          .replace('.webp', '.png')
-          .replace('.webm', '.gif')
-          .replace('?size=2048', '')
-        : `${assetBase}/avatar.png`,
+      prefix: '/',
+      respond_to_settings: true,
+      platform: 'pc',
+      language: 'en',
+      delete_after_respond: true,
+      delete_response: true,
+      createPrivateChannel: false,
+      deleteExpired: false,
+      allowCustom: false,
+      allowInline: false,
+      defaultRoomsLocked: true,
+      defaultNoText: false,
+      defaultShown: false,
+      tempCategory: false,
+      'settings.cc.ping': true,
     };
 
     const opts = {
@@ -124,43 +128,56 @@ class Database {
 
     try {
       this.db = mysql.createPool(opts);
-
-      this.defaults = {
-        prefix: '/',
-        respond_to_settings: true,
-        platform: 'pc',
-        language: 'en',
-        delete_after_respond: true,
-        delete_response: true,
-        createPrivateChannel: false,
-        deleteExpired: false,
-        allowCustom: false,
-        allowInline: false,
-        defaultRoomsLocked: true,
-        defaultNoText: false,
-        defaultShown: false,
-        tempCategory: false,
-        'settings.cc.ping': true,
-      };
-
-      const dbRoot = path.join(__dirname, 'DatabaseQueries');
-      fs.readdirSync(dbRoot)
-        .filter(f => f.endsWith('.js'))
-        .forEach((file) => {
-          // eslint-disable-next-line global-require, import/no-dynamic-require
-          const QClass = require(path.join(dbRoot, file));
-          const qInstance = new QClass(this.db);
-          copyChildrenQueries(qInstance);
-        });
-
-      this.clusterId = process.env.CLUSTER_ID || 0;
     } catch (e) {
       this.logger.fatal(e);
     }
+
+    this.loadChildren();
+  }
+
+  /**
+   * Dynamically load child query classes
+   *
+   * Avoids lots of manual imports, but can be dangerous on a shared OS.
+   *
+   * Make sure your bot is in a secured folder
+   *  if you're worried about shard space.
+   */
+  loadChildren() {
+    const dbRoot = path.join(__dirname, 'DatabaseQueries');
+    fs.readdirSync(dbRoot)
+      .filter(f => f.endsWith('.js'))
+      .forEach((file) => {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        const QClass = require(path.join(dbRoot, file));
+        const qInstance = new QClass(this.db);
+        copyChildrenQueries(qInstance);
+      });
+  }
+
+  init() {
+    this.defaults = this.scope === 'bot'
+      ? {
+        ...this.defaults,
+        username: this.bot.client.user.username,
+        avatar: this.bot.client.user.displayAvatarURL()
+          .replace('.webp', '.png')
+          .replace('.webm', '.gif')
+          .replace('?size=2048', ''),
+      } : {
+        ...this.defaults,
+        username: process.env.DEF_USER || 'Genesis',
+        avatar: `${assetBase}/img/avatar.png`,
+      };
   }
 
   async query(query) {
-    return this.db.query(query);
+    try {
+      return this.db.query(query);
+    } catch (e) {
+      logger.error(e);
+      return undefined;
+    }
   }
 
   debugQuery(query) {
@@ -199,11 +216,20 @@ class Database {
    */
   async getCommandContext(channel, user) {
     this.getChannelSetting(channel, 'prefix'); // ensure it's set at some point
-    const settings = ['platform', 'prefix', 'allowCustom', 'allowInline', 'webhookId',
-      'webhookToken', 'webhookName', 'webhookAvatar', 'defaultRoomsLocked',
-      'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-      'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-      'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond'];
+
+    if (!channel.id) {
+      channel = { id: channel }; // eslint-disable-line no-param-reassign
+    }
+
+    const settings = ['webhookId',
+      'webhookToken', 'webhookName', 'webhookAvatar'];
+
+    if (this.scope === 'bot') {
+      settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
+        'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
+        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
+    }
 
     if (platforms.length > 4) {
       platforms.forEach((platform, index) => {

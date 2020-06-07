@@ -15,7 +15,7 @@ const welcomes = require('./resources/welcomes.json');
 
 const {
   eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources, nightwave,
+  resources, nightwave, twitch,
 } = require('./resources/trackables.json');
 
 const rssFeeds = require('./resources/rssFeeds');
@@ -102,6 +102,7 @@ const trackableEvents = {
   rss: rssFeeds.map(feed => feed.key),
   arbitration: [],
   kuva: [],
+  twitch,
   opts,
 };
 
@@ -110,7 +111,7 @@ trackableEvents.events.push(...trackableEvents.rss);
 const tTemp = [];
 twitter.types.forEach((type) => {
   twitter.accounts.forEach((account) => {
-    const id = `twitter.${type}.${account}`;
+    const id = `twitter.${account}.${type}`;
     if (!trackableEvents[`twitter.${type}`]) {
       trackableEvents[`twitter.${type}`] = [];
     }
@@ -125,26 +126,28 @@ const arbiTemp = [];
 const kuvaTemp = [];
 Object.keys(missionTypes).forEach((type) => {
   // These will be re-enabled when arbitrations/kuva are ready
-  if (missionTypes[type]) {
+  if (missionTypes[type].arbi) {
     factions.forEach((faction) => {
       arbiTemp.push(`arbitration.${faction}.${type}`);
     });
   }
   kuvaTemp.push(`kuva.${type}`);
 
-  // Construct Fissure types
-  fissures.tiers.forEach((tier) => {
-    const id = `fissures.${tier}.${type}`;
-    if (!trackableEvents[`fissures.${tier}`]) {
-      trackableEvents[`fissures.${tier}`] = [];
-    }
-    trackableEvents[`fissures.${tier}`].push(id);
-    if (!trackableEvents[`fissures.${type}`]) {
-      trackableEvents[`fissures.${type}`] = [];
-    }
-    trackableEvents[`fissures.${type}`].push(id);
-    fTemp.push(id);
-  });
+  if (missionTypes[type].fissure) {
+    // Construct Fissure types
+    fissures.tiers.forEach((tier) => {
+      const id = `fissures.${tier}.${type}`;
+      if (!trackableEvents[`fissures.${tier}`]) {
+        trackableEvents[`fissures.${tier}`] = [];
+      }
+      trackableEvents[`fissures.${tier}`].push(id);
+      if (!trackableEvents[`fissures.${type}`]) {
+        trackableEvents[`fissures.${type}`] = [];
+      }
+      trackableEvents[`fissures.${type}`].push(id);
+      fTemp.push(id);
+    });
+  }
 });
 // gotta make sure this is outside the loop
 // and after it completes so all the generated ones are first
@@ -157,6 +160,7 @@ trackableEvents.events.push(
   ...trackableEvents.fissures,
   ...trackableEvents.arbitration,
   ...trackableEvents.kuva,
+  ...trackableEvents.twitch,
 );
 
 const dyn = [
@@ -781,7 +785,7 @@ const getChannel = (channelsParam, message, channels) => {
   let { channel } = message;
   let channelsColl;
   if (message.guild) {
-    channelsColl = message.guild.channels;
+    channelsColl = message.guild.channels.cache;
   } else {
     channelsColl = new Collection();
     channelsColl.set(message.channel.id, message.channel);

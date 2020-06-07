@@ -2,14 +2,12 @@
 
 const { Client, WebhookClient } = require('discord.js');
 
-const WorldStateCache = require('./WorldStateCache');
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
 // const Tracker = require('./Tracker');
 
 const MessageManager = require('./settings/MessageManager');
-const Notifier = require('./notifications/Notifier');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
 
@@ -128,18 +126,6 @@ class Genesis {
      */
     this.settings = new Database(this);
 
-    /**
-     * Objects holding worldState data, one for each platform
-     * @type {Object.<WorldStateCache>}
-     */
-    this.worldStates = {};
-
-    const worldStateTimeout = process.env.WORLDSTATE_TIMEOUT || 60000;
-    ['pc', 'ps4', 'xb1', 'swi']
-      .forEach((platform) => {
-        this.worldStates[platform] = new WorldStateCache(platform, worldStateTimeout, this.logger);
-      });
-
     this.ws = new WorldStateClient(this.logger);
     this.messageManager = new MessageManager(this);
 
@@ -162,7 +148,6 @@ class Genesis {
     this.shards = shards;
     this.shardTotal = process.env.SHARDS || 1;
     this.clusterId = process.env.CLUSTER_ID || 0;
-    this.notifier = new Notifier(this);
     // this.tracker = new Tracker(this);
 
     if (process.env.CONTROL_WH_ID) {
@@ -218,7 +203,6 @@ class Genesis {
     try {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
-      await this.notifier.start();
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
       if (!unlog.includes(type)) {

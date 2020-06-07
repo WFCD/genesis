@@ -3,6 +3,7 @@
 const EventEmitter = require('events');
 const { apiBase } = require('./CommonFunctions.js');
 const fetch = require('./resources/Fetcher');
+const logger = require('./Logger');
 
 const worldStateURLs = {
   pc: `${apiBase}/pc`,
@@ -12,7 +13,7 @@ const worldStateURLs = {
 };
 
 class WorldStateCache extends EventEmitter {
-  constructor(platform, timeout, logger = console) {
+  constructor(platform, timeout) {
     super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;

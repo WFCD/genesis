@@ -5,8 +5,6 @@ const { GiveawaysManager } = require('discord-giveaways');
 const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
-const FeedsNotifier = require('../notifications/FeedsNotifier');
-const TwitchNotifier = require('../notifications/TwitchNotifier');
 const MessageManager = require('../settings/MessageManager');
 
 const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
@@ -48,12 +46,12 @@ class OnReadyHandle extends Handler {
     this.notifyUp();
     this.setupMessageManager();
 
+    this.settings.init();
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
     this.updatePresence();
     this.setupAdditionalHandlers();
-    this.setupNotifiers();
     this.setupGiveaways();
   }
 
@@ -82,12 +80,6 @@ class OnReadyHandle extends Handler {
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
   }
 
-  setupNotifiers() {
-    this.bot.feedNotifier = new FeedsNotifier(this.bot);
-    this.bot.twitchNotifier = new TwitchNotifier(this.bot);
-    this.bot.twitchNotifier.start();
-  }
-
   setupGiveaways() {
     if (!games.includes('GIVEAWAYS')) {
       this.logger.silly('No init: giveaways. Feature flag disabled.');
@@ -109,7 +101,7 @@ class OnReadyHandle extends Handler {
   async getWarframePresence(base) {
     const cetusState = await this.bot.ws.get('cetusCycle');
     const vallisState = await this.bot.ws.get('vallisCycle');
-    const outpost = await this.bot.ws.get('sentientOutposts');
+    // const outpost = await this.bot.ws.get('sentientOutposts');
 
     if (vallisState || cetusState) {
       let vsFromNow = fromNow(new Date(vallisState.expiry));
@@ -125,10 +117,14 @@ class OnReadyHandle extends Handler {
         cetusState.isDay = !cetusState.isDay;
       }
 
-      const vs = vallisState ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • ` : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • ` : '';
-      const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
-      return `${ous}${vs}${cs}${base}`;
+      const vs = vallisState
+        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • `
+        : '';
+      const cs = cetusState
+        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • `
+        : '';
+      // const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
+      return `${vs}${cs}${base}`;
     }
     return base;
   }

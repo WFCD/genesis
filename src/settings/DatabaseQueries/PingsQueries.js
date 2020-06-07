@@ -53,6 +53,13 @@ class PingsQueries {
    * @returns {Promise.<string>}            Promise of a string to prepend to a message
    */
   async getPing(guild, itemsOrTypes) {
+    if (!guild) {
+      return undefined;
+    }
+
+    if (!guild.id) {
+      guild = { id: guild }; // eslint-disable-line no-param-reassign
+    }
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
     const res = await this.query(query);
     if (res[0].length === 0) {
