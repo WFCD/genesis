@@ -19,7 +19,9 @@
     "start:logs:worker": "npm run start:worker && pm2 logs worker",
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
-    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
+    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -65,7 +67,8 @@
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.2",
     "warframe-name-generator": "^1.0.2",
-    "zlib-sync": "^0.1.6"
+    "zlib-sync": "^0.1.6",
+    "snyk": "^1.336.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -75,5 +78,6 @@
   "license": "Apache-2.0",
   "engines": {
     "node": ">=12.16.1"
-  }
+  },
+  "snyk": true
 }
