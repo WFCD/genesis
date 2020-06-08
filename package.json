@@ -19,7 +19,9 @@
     "start:logs:worker": "npm run start:worker && pm2 logs worker",
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
-    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
+    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start",
+    "snyk-protect": "npx -p snyk snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -75,5 +77,6 @@
   "license": "Apache-2.0",
   "engines": {
     "node": ">=12.16.1"
-  }
+  },
+  "snyk": true
 }
