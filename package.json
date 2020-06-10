@@ -42,7 +42,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@sentry/node": "^5.16.1",
+    "@sentry/node": "^5.17.0",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.1",
