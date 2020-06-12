@@ -67,7 +67,7 @@
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.2",
     "warframe-name-generator": "^1.0.2",
-    "zlib-sync": "^0.1.6"
+    "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
