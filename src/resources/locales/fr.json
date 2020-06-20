@@ -1,6 +1,6 @@
 {
-  "{0} | {1} left": "{0} | {1} left",
-  "{0} {1} on {2} \n level {3} - {4}\n​": "{0} {1} on {2} \n level {3} - {4}\n​",
+  "{0} | {1} left": "{0} | {1} restants",
+  "{0} {1} on {2} \n level {3} - {4}\n​": "{0} {1} sur {2} \n niveau {3} - {4}",
   "[{0}] Worldstate - Arbitration": "[{0}] Worldstate - Arbitration",
   "[{0}] Worldstate - Alerts": "[{0}] Worldstate - Alerts",
   "[{0}] Worldstate - Nightwave": "[{0}] Worldstate - Nightwave",
