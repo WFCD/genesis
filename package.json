@@ -52,7 +52,7 @@
     "discord.js": "^12.2.0",
     "erlpack": "github:discordapp/erlpack",
     "json-query": "^2.2.2",
-    "moment": "^2.26.0",
+    "moment": "^2.27.0",
     "ms": "^2.1.2",
     "mysql2": "^2.1.0",
     "node-fetch": "^2.6.0",
