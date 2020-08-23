@@ -2,6 +2,9 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
+const negate = '✘';
+const affirm = '✓';
+
 /**
  * Generates daily deal thiss
  */
@@ -18,9 +21,9 @@ class UserInfoEmbed extends BaseEmbed {
     super();
 
 
-    const guildString = guilds.filter(guild => guild.members.get(user.id)).map(guild => guild.name).join('; ');
+    // const guildString = guilds.filter(guild => guild.members.cache.get(user.id)).map(guild => guild.name).join('; ');
     this.author = {
-      name: `${user.username}#${user.discriminator} | ${user.id}`,
+      name: `${user.username}#${user.discriminator}`,
       icon_url: user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
     };
     this.thumbnail = {
@@ -33,31 +36,25 @@ class UserInfoEmbed extends BaseEmbed {
         inline: true,
       },
       {
-        name: 'Registered for Discord',
+        name: 'Registered',
         value: user.createdAt.toLocaleString(),
-        inline: true,
-      },
-      {
-        name: 'Shared Servers (on this shard)',
-        value: guildString.length > 0 ? guildString : 'None Shared',
         inline: true,
       },
     ];
     this.footer = {
       icon_url: user.defaultAvatarURL,
-      text: `${user.username} is ${user.bot ? '' : 'not'} a bot`,
+      text: user.id,
     };
 
     if (member) {
+      this.description = member.presence.activities && member.presence.activities[0]
+        ? (member.presence.activities[0].state || member.presence.activities[0].name)
+        : 'No Game';
+
       this.fields = this.fields.concat([
         {
-          name: 'nickname',
-          value: member.displayName || 'none',
-          inline: true,
-        },
-        {
           name: 'Owns the server?',
-          value: member.id === message.guild.ownerID ? 'Yes' : 'No',
+          value: member.id === message.guild.ownerID ? affirm : negate,
           inline: true,
         },
         {
@@ -66,31 +63,24 @@ class UserInfoEmbed extends BaseEmbed {
           inline: true,
         },
         {
-          name: 'Game',
-          value: member.presence.game ? member.presence.game.name : 'No game',
-          inline: true,
-        },
-        {
-          name: 'Joined the Guild',
-          value: member.joinedAt.toLocaleString(),
-          inline: true,
-        },
-        {
           name: 'Current State:',
-          value: `**Deafened:** ${member.deaf ? 'yes' : 'no'}\n`
-                  + `**Kickable (by the bot):** ${member.kickable ? 'yes' : 'no'}\n`
-                  + `**Muted:** ${member.mute ? 'yes' : 'no'}\n`
-                  + `**Speaking:** ${member.speaking ? 'yes' : 'no'}\n`
-                  + `**Guild Muted:** ${member.serverMute ? 'yes' : 'no'}\n`
-                  + `**Guild Deafened:** ${member.serverDeaf ? 'yes' : 'no'}`,
-          inline: true,
+          value: `**Deafened:** ${member.deaf ? affirm : negate}\n`
+                  + `**Kickable:** ${member.kickable ? affirm : negate}\n`
+                  + `**Muted:** ${member.mute ? affirm : negate}\n`
+                  + `**Speaking:** ${member.speaking ? affirm : negate}\n`
+                  + `**Guild Muted:** ${member.serverMute ? affirm : negate}\n`
+                  + `**Guild Deafened:** ${member.serverDeaf ? affirm : negate}`,
+          inline: false,
         },
         {
           name: 'Roles:',
-          value: member.roles.array().length ? member.roles.map(role => role.name).join(', ') : 'User has no roles.',
-          inline: true,
+          value: member.roles.cache.size ? member.roles.cache.map(role => role).join(', ') : 'User has no roles.',
+          inline: false,
         },
       ]);
+
+      this.footer.text = `${this.footer.text} - Joined`;
+      this.timestamp = member.joinedAt;
     }
   }
 }

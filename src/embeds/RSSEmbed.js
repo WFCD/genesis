@@ -4,7 +4,7 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const { chunkify, markdinate } = require('../CommonFunctions');
 
-const escapeReserved = str => str.replace(/(\(\)\?\+\.)/ig, '\\$1');
+const escapeReserved = str => str.replace(/[\(\)\?\+\.]/ig, '\\$1');
 
 /**
  * Generates daily deal embeds
@@ -18,8 +18,8 @@ class RSSEmbed extends BaseEmbed {
   constructor(feedItem, feed) {
     super();
     // clean up description, falling back to an empty string
-    let strippedDesc = markdinate((feedItem.description || '\u200B')
-      .replace(new RegExp(`<strong>${escapeReserved(feedItem.title)}</strong>`.replace(/(\(\)\+)/g, '\\$1'), 'gm'), ''));
+    let strippedDesc = markdinate(escapeReserved((feedItem.description || '\u200B')
+      .replace(/\<\\?string\>/ig, '')));
     const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
 
     if (feedItem.title.includes(firstLine)) {

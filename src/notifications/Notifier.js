@@ -28,7 +28,7 @@ const updtReg = new RegExp(captures.updates, 'i');
 
 const beats = {};
 
-let refreshRate = 60000;
+let refreshRate = process.env.WORLDSTATE_TIMEOUT || 60000;
 
 const between = (activation, platform) => {
   const activationTs = new Date(activation).getTime();
@@ -76,7 +76,7 @@ function buildNotifiableData(newData, platform, notified) {
   const data = {
     acolytes: newData.persistentEnemies.filter(e => !notified.includes(e.pid)),
     alerts: newData.alerts.filter(a => !a.expired && !notified.includes(a.id)),
-    baro: newData.voidTrader && between(newData.voidTrader.activation, platform)
+    baro: newData.voidTrader && !notified.includes(newData.voidTrader.id)
       ? newData.voidTrader
       : undefined,
     conclave: newData.conclaveChallenges
@@ -197,7 +197,10 @@ class Notifier {
    * @param  {json} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
-    await this.updating;
+    // don't wait for the previous to finish, this creates a giant backup,
+    //  adding 4 new entries every few seconds
+    if (this.updating) return;
+    // await this.updating;
 
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
@@ -207,6 +210,9 @@ class Notifier {
     // Set up data to notify
     this.updating = this.sendNew(platform, newData, notifiedIds,
       buildNotifiableData(newData, platform, notifiedIds));
+
+    await this.updating;
+    this.updating = undefined;
   }
 
   async sendNew(platform, rawData, notifiedIds, {
@@ -267,6 +273,7 @@ class Notifier {
     alreadyNotified.push(
       ...rawData.persistentEnemies.map(a => a.pid),
       ...cycleIds,
+      rawData.voidTrader.id,
       ...rawData.fissures.map(f => f.id),
       ...rawData.invasions.map(i => i.id),
       ...rawData.news.map(n => n.id),
@@ -282,7 +289,7 @@ class Notifier {
       rawData.arbitration && rawData.arbitration.enemy
         ? `arbitration:${new Date(rawData.arbitration.expiry).getTime()}`
         : 'arbitration:0',
-      ...rawData.twitter.map(t => t.uniqueId),
+      ...(rawData.twitter ? rawData.twitter.map(t => t.uniqueId) : []),
       ...(rawData.nightwave.active ? rawData.nightwave.activeChallenges.map(c => c.id) : []),
     );
 

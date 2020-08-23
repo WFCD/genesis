@@ -32,10 +32,10 @@ class TweetEmbed extends BaseEmbed {
         value: tweet.quote.text,
       });
     } else if (tweet.retweet) {
-      this.title = `${tweet.user.name} retweeted a Tweet from ${tweet.retweet.author.name} (@${tweet.retweet.author.handle})`;
-      this.description = `${tweet.retweet.text}`;
+      this.title = `${tweet.author.name} retweeted a Tweet from ${tweet.retweet.author.name} (@${tweet.retweet.author.handle})`;
+      this.description = tweet.retweet.text;
     } else {
-      this.title = `${tweet.user.name} Tweeted`;
+      this.title = `${tweet.author.name} Tweeted`;
     }
 
     this.footer = {

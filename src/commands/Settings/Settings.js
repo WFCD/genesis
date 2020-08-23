@@ -32,6 +32,10 @@ class Settings extends Command {
   constructor(bot) {
     super(bot, 'settings.settings', 'settings', 'Get settings', 'CORE');
     this.regex = new RegExp(`^${this.call}(?:\\s*--expand)?(?:\\s+in\\s+((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
+    this.usages = [
+      { description: 'Get current channel settings, in a paginated format', parameters: [] },
+      { description: 'Get current channel settings, all embeds at once', parameters: ['--expand'] },
+    ];
     this.requiresAuth = true;
   }
 

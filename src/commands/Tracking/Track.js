@@ -28,7 +28,6 @@ class Track extends Command {
   }
 
   async run(message, ctx) {
-    this.logger.info('running track....');
     const unsplitItems = getEventsOrItems(message);
     const roomId = new RegExp(`${captures.channel}|here`, 'ig');
 

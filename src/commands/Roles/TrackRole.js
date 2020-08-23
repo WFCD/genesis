@@ -15,7 +15,7 @@ class TrackRole extends Command {
     this.regex = new RegExp(`^${this.call} ${cc} ${rc}`, 'i');
     this.usages = [
       {
-        description: 'Add a new channel <-> role stats binding',
+        description: 'Add a new channel <-> role stats binding. Channel must be a voice channel. Binds voice channel to role count statistics.',
         parameters: ['channel', 'role'],
       },
     ];
@@ -34,7 +34,7 @@ class TrackRole extends Command {
       .replace('>', '');
 
     if (!channelId) return this.messageManager.statuses.FAILURE;
-    const channel = guild.channels.get(channelId);
+    const channel = guild.channels.cache.get(channelId);
     if (!channel) return this.messageManager.statuses.FAILURE;
 
     const roleId = (message.strippedContent.replace(channelId, '')

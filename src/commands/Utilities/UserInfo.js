@@ -37,15 +37,15 @@ class UserInfo extends Command {
       user = message.author;
     }
     if (user && message.guild) {
-      member = message.guild.members.get(user.id);
+      member = message.guild.members.cache.get(user.id);
     }
     if (!user) {
       this.messageManager.reply(message, 'can\'t find that user. Please specify another.', false, false);
       return this.messageManager.statuses.FAILURE;
     }
 
-    const guildsWithUser = this.bot.client.guilds.array()
-      .filter(guild => guild.members.get(user.id));
+    const guildsWithUser = this.bot.client.guilds.cache
+      .filter(guild => guild.members.cache.get(user.id));
 
     const guilds = guildsWithUser.length > 25
       ? guildsWithUser.splice(0, 24)
