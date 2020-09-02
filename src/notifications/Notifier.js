@@ -13,7 +13,6 @@ const {
   createGroupedArray, apiBase, apiCdnBase, platforms, captures,
 } = require('../CommonFunctions');
 
-
 const warframe = new Wikia('warframe');
 
 const syndicates = require('../resources/syndicates.json');

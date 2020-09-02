@@ -26,7 +26,6 @@ class FeedsNotifier {
     this.feeder.on('error', logger.debug);
   }
 
-
   /**
    * Start up and set up event handlers for events
    */

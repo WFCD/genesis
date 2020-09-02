@@ -20,8 +20,8 @@ class UserInfoEmbed extends BaseEmbed {
   constructor(bot, guilds, user, member, message) {
     super();
 
-
-    // const guildString = guilds.filter(guild => guild.members.cache.get(user.id)).map(guild => guild.name).join('; ');
+    // const guildString = guilds.filter(guild
+    // => guild.members.cache.get(user.id)).map(guild => guild.name).join('; ');
     this.author = {
       name: `${user.username}#${user.discriminator}`,
       icon_url: user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),

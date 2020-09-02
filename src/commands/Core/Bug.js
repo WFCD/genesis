@@ -11,7 +11,7 @@ class BugReport extends Command {
    * @param {Bot} bot The bot object
    */
   constructor(bot) {
-    super(bot, 'core.bug', 'bug', 'Send a bug report to the bot owner', 'CORE');
+    super(bot, 'core.bug', 'bug', 'Send a bug report to the bot owner', 'BOT_MGMT');
     this.regex = new RegExp(`^${this.call}\\s*(.*)?`, 'i');
     this.usages = [
       {

@@ -9,7 +9,7 @@ const { captures: { user } } = require('../../CommonFunctions');
  */
 class AddUser extends Command {
   constructor(bot) {
-    super(bot, 'core.blacklist.add', 'bl add', 'Add a user to the blacklist', 'CORE');
+    super(bot, 'core.blacklist.add', 'bl add', 'Add a user to the blacklist', 'BLOCK');
     this.requiresAuth = true;
     this.regex = new RegExp(`^${this.call}\\s?${user}?`);
     this.allowDM = false;

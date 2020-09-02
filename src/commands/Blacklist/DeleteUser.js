@@ -6,7 +6,7 @@ const { captures: { user } } = require('../../CommonFunctions');
 
 class DeleteUser extends Command {
   constructor(bot) {
-    super(bot, 'core.blacklist.remove', 'bl remove', 'Remove a user from the blacklist', 'CORE');
+    super(bot, 'core.blacklist.remove', 'bl remove', 'Remove a user from the blacklist', 'BLOCK');
     this.requiresAuth = true;
     this.regex = new RegExp(`^${this.call}\\s?${user}?`);
     this.allowDM = false;

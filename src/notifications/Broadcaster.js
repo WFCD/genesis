@@ -30,7 +30,6 @@ class Broadcaster {
 
     const guilds = await this.settings.getGuilds();
 
-
     return Promise.all(channels.map(async (result) => {
       // need some way to do this other than getting all channels....
       // let's try looping over a list of ids

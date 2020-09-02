@@ -106,6 +106,9 @@ DESTINY2 | For an in-progress section allowing people to expand Genesis into Des
 GIVEAWAYS | Giveaway functionality | ✗
 CUST_CMDS | Custom commands - user-generated simple commands | ✗
 ROOMS | Automated & manual room creation | ✗
+BLOCK | Enable user disable features | ✗
+CMD_MGMT | Command management | ✗
+BOT_MGMT | Bot Management | ✗
 
 ### Setting up Twitch
 

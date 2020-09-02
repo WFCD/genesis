@@ -6,7 +6,6 @@ const DropsEmbed = require('../../embeds/DropsEmbed');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed');
 const { setupPages, createGroupedArray } = require('../../CommonFunctions');
 
-
 class EnemyStats extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.enemystats', 'enemy', 'Get stats for an enemy', 'WARFRAME');

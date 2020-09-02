@@ -4,7 +4,6 @@ const Command = require('../../models/Command.js');
 const EventEmbed = require('../../embeds/EventEmbed.js');
 const { createPageCollector, captures } = require('../../CommonFunctions');
 
-
 /**
  * Displays the current event statuses
  */

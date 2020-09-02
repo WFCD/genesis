@@ -5,7 +5,7 @@ const { getChannel, captures } = require('../../CommonFunctions');
 
 class RespondToSettings extends Command {
   constructor(bot) {
-    super(bot, 'settings.respondSettings', 'respond to settings', 'Toggle whether or not the bot tells you when settings change from your command.', 'CORE');
+    super(bot, 'settings.respondSettings', 'respond to settings', 'Toggle whether or not the bot tells you when settings change from your command.', 'CMD_MGMT');
     this.usages = [
       { description: 'Change if this channel has settings changes responded in it', parameters: ['response enabled'] },
     ];

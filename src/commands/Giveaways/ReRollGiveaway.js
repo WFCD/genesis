@@ -4,7 +4,6 @@ const Command = require('../../models/Command.js');
 
 const { captures: { channel: cc } } = require('../../CommonFunctions');
 
-
 class ReRollGiveaway extends Command {
   constructor(bot) {
     super(bot, 'giveaways.reroll', 'g reroll', 'ReRoll a Giveaway', 'GIVEAWAYS');

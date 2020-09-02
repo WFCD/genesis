@@ -5,7 +5,7 @@ const { getChannel } = require('../../CommonFunctions.js');
 
 class RespondToSettings extends Command {
   constructor(bot) {
-    super(bot, 'settings.deleteafterrespond', 'delete after respond', 'Set whether or not to allow the bot to delete commands and/or responses after responding.', 'CORE');
+    super(bot, 'settings.deleteafterrespond', 'delete after respond', 'Set whether or not to allow the bot to delete commands and/or responses after responding.', 'CMD_MGMT');
     this.usages = [
       { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
     ];

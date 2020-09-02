@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class AddCustomCommand extends Command {
   constructor(bot) {
-    super(bot, 'customcommands.add', 'add cc', 'CUST_CMDS');
+    super(bot, 'customcommands.add', 'add cc', 'Add a custom command', 'CUST_CMDS');
     this.usages = [
       { description: 'Add a custom command', parameters: ['command call', 'command response'] },
     ];

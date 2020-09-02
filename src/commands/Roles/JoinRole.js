@@ -100,7 +100,6 @@ class JoinRole extends Command {
     }, true, true);
   }
 
-
   async sendCantJoin(message, userHasRole, hasMinimumRole) {
     await this.messageManager.embed(message, {
       title: 'Can\'t Join',

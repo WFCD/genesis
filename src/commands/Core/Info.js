@@ -7,7 +7,7 @@ const Command = require('../../models/Command.js');
  */
 class Info extends Command {
   constructor(bot) {
-    super(bot, 'core.info', 'info', 'Information about the bot', 'CORE');
+    super(bot, 'core.info', 'info', 'Information about the bot', 'BOT_MGMT');
   }
 
   /**

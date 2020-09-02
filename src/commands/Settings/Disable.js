@@ -13,7 +13,7 @@ const appliesToRegex = new RegExp(`(?:\\s+for\\s(${captures.user}|${captures.rol
 
 class Disable extends Command {
   constructor(bot) {
-    super(bot, 'settings.disable', 'disable', 'Disable a command.', 'CORE');
+    super(bot, 'settings.disable', 'disable', 'Disable a command.', 'CMD_MGMT');
     this.usages = [
       { description: 'Disable a command for a role in a channel or channels', parameters: ['command id> in <channel> for <role|user'] },
     ];

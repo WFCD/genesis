@@ -30,7 +30,7 @@ const nonCompact = new RegExp('--expand', 'ig');
 
 class Settings extends Command {
   constructor(bot) {
-    super(bot, 'settings.settings', 'settings', 'Get settings', 'CORE');
+    super(bot, 'settings.settings', 'settings', 'Get settings', 'BOT_MGMT');
     this.regex = new RegExp(`^${this.call}(?:\\s*--expand)?(?:\\s+in\\s+((?:(?:<#)?\\d+(?:>)?)|current|all))?$`, 'i');
     this.usages = [
       { description: 'Get current channel settings, in a paginated format', parameters: [] },

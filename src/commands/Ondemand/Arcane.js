@@ -5,7 +5,6 @@ const Command = require('../../models/Command.js');
 const EnhancementEmbed = require('../../embeds/EnhancementEmbed.js');
 const { apiBase } = require('../../CommonFunctions');
 
-
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
  */

@@ -7,7 +7,7 @@ const Command = require('../../models/Command.js');
  */
 class Untrack extends Command {
   constructor(bot) {
-    super(bot, 'core.support', 'support', 'Support info about the bot', 'CORE');
+    super(bot, 'core.support', 'support', 'Support info about the bot', 'BOT_MGMT');
   }
 
   /**

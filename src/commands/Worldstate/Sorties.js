@@ -7,7 +7,6 @@ const { captures } = require('../../CommonFunctions');
 
 const warframe = new Wikia('warframe');
 
-
 /**
  * Displays the currently active Invasions
  */

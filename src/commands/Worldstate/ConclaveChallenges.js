@@ -6,7 +6,6 @@ const { captures } = require('../../CommonFunctions');
 
 const values = ['all', 'day', 'week'];
 
-
 /**
  * Displays the currently active Invasions
  */

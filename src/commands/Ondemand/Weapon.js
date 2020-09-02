@@ -8,7 +8,6 @@ const RivenStatEmbed = require('../../embeds/RivenStatEmbed.js');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed.js');
 const { setupPages, apiBase, createGroupedArray } = require('../../CommonFunctions');
 
-
 /**
  * Displays the stats for a weapon
  */

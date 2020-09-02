@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class ClearPings extends Command {
   constructor(bot) {
-    super(bot, 'settings.clearpings', 'clear pings', 'Clears all pings for the server', 'CORE');
+    super(bot, 'settings.clearpings', 'clear pings', 'Clears all pings for the server', 'CMD_MGMT');
     this.requiresAuth = true;
     this.allowDM = false;
   }

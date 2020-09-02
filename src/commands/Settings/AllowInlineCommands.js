@@ -3,10 +3,9 @@
 const Command = require('../../models/Command.js');
 const { getChannel } = require('../../CommonFunctions.js');
 
-
 class AllowInlineCommands extends Command {
   constructor(bot) {
-    super(bot, 'settings.allowinline', 'allow inline commands', 'Toggle whether or not inline commands are allowed here.', 'CORE');
+    super(bot, 'settings.allowinline', 'allow inline commands', 'Toggle whether or not inline commands are allowed here.', 'CMD_MGMT');
     this.usages = [
       { description: 'Change if this channel can use inline commands', parameters: ['inline commands enabled'] },
     ];

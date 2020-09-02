@@ -1,6 +1,5 @@
 'use strict';
 
-
 const Command = require('../../models/Command.js');
 const { captures: { role: rc } } = require('../../CommonFunctions');
 

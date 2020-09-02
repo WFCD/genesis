@@ -61,7 +61,6 @@ function armorSimple(armor) {
   ].join('\n');
 }
 
-
 /**
  * Performs armor calculations
  */

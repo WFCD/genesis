@@ -4,7 +4,7 @@ const Command = require('../../models/Command.js');
 
 class ResetGuild extends Command {
   constructor(bot) {
-    super(bot, 'core.reset', 'reset', 'Reset the settings for this guild', 'CORE');
+    super(bot, 'core.reset', 'reset', 'Reset the settings for this guild', 'BOT_MGMT');
     this.requiresAuth = true;
     this.allowDM = false;
   }

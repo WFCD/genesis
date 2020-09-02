@@ -11,6 +11,7 @@ class DeleteExpired extends Command {
     this.regex = new RegExp('^delete\\s?expired\\s?(on|off)?$', 'i');
     this.requiresAuth = true;
     this.allowDM = false;
+    this.enabled = false;
   }
 
   async run(message, ctx) {

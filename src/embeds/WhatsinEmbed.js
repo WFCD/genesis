@@ -42,7 +42,6 @@ class WhatsinEmbed extends BaseEmbed {
       tokens.push(`${rewardName.padEnd(longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
     });
 
-
     this.title = `${tier} ${type}`;
     this.color = 0x3498db;
     this.type = 'rich';

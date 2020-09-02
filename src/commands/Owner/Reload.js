@@ -1,6 +1,5 @@
 'use strict';
 
-
 const decache = require('decache');
 const path = require('path');
 const Command = require('../../models/Command.js');

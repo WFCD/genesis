@@ -4,7 +4,6 @@ const Command = require('../../models/Command.js');
 const SalesEmbed = require('../../embeds/SalesEmbed.js');
 const { createGroupedArray, createPageCollector, captures } = require('../../CommonFunctions');
 
-
 /**
  * Displays current featured deals
  */

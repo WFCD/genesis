@@ -4,7 +4,6 @@ const Command = require('../../models/Command.js');
 
 const { captures: { channel: cc } } = require('../../CommonFunctions');
 
-
 class StopGiveaway extends Command {
   constructor(bot) {
     super(bot, 'giveaways.stop', 'g stop', 'Stop a Giveaway', 'GIVEAWAYS');
