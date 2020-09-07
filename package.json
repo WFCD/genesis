@@ -55,7 +55,7 @@
     "moment": "^2.27.0",
     "ms": "^2.1.2",
     "mysql2": "^2.1.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "node-wikia": "0.0.3",
     "numeral": "^2.0.6",
     "parse-duration": "^0.4.4",
