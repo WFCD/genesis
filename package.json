@@ -63,7 +63,7 @@
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
     "twitch": "^4.2.2",
-    "twitch-webhooks": "^4.2.1",
+    "twitch-webhooks": "^4.2.2",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.2",
     "warframe-name-generator": "^1.0.2",
