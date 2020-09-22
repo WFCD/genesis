@@ -79,7 +79,9 @@
     "nightwave.daily",
     "nightwave.elite",
     "nightwave.weekly",
-    "outposts"
+    "outposts",
+    "cambion.fass",
+    "cambion.vome"
   ],
   "opts": [
     "all",

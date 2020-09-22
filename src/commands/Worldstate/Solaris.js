@@ -15,7 +15,7 @@ class Solaris extends Command {
   }
 
   async run(message, ctx) {
-    const platformParam = message.strippedContent.match(/[pcsxb14]{2,3}/ig);
+    const platformParam = message.strippedContent.match(captures.platforms);
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
     const solaris = (await this.ws.get('syndicateMissions', platform, ctx.language)).filter(m => m.syndicate === 'Solaris United');
     const vallis = await this.ws.get('vallisCycle', platform, ctx.language);
