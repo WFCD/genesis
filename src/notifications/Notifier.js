@@ -75,7 +75,7 @@ function buildNotifiableData(newData, platform, notified) {
   const data = {
     acolytes: newData.persistentEnemies.filter(e => !notified.includes(e.pid)),
     alerts: newData.alerts.filter(a => !a.expired && !notified.includes(a.id)),
-    baro: newData.voidTrader && !notified.includes(newData.voidTrader.id)
+    baro: newData.voidTrader && !notified.includes(`${newData.voidTrader.id}${newData.voidTrader.active ? '1' : '0'}`)
       ? newData.voidTrader
       : undefined,
     conclave: newData.conclaveChallenges
@@ -108,6 +108,8 @@ function buildNotifiableData(newData, platform, notified) {
     cetusCycleChange: between(newData.cetusCycle.activation, platform),
     earthCycleChange: between(newData.earthCycle.activation, platform),
     vallisCycleChange: between(newData.vallisCycle.activation, platform),
+    cambionCycleChange: between(newData.cambionCycle.activation, platform),
+    cambionCycle: newData.cambionCycle,
     cetusCycle: newData.cetusCycle,
     earthCycle: newData.earthCycle,
     vallisCycle: newData.vallisCycle,
@@ -178,9 +180,7 @@ class Notifier {
     refreshRate = timeout;
   }
 
-  /**
-   * Start the notifier
-   */
+  /** Start the notifier */
   async start() {
     Object.entries(this.worldStates).forEach(([, ws]) => {
       ws.on('newData', async (platform, newData) => {
@@ -220,6 +220,7 @@ class Notifier {
     cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
     cetusCycleChange, earthCycleChange, vallisCycleChange,
     featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
+    cambionCycle, cambionCycleChange,
   }) {
     // Send all notifications
     const cycleIds = [];
@@ -256,6 +257,9 @@ class Notifier {
       cycleIds.push(
         await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange, notifiedIds),
       );
+      cycleIds.push(
+        await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds),
+      );
       this.sendUpdates(updates, platform);
       this.sendAlerts(alerts, platform);
       cycleIds.push(
@@ -272,7 +276,7 @@ class Notifier {
     alreadyNotified.push(
       ...rawData.persistentEnemies.map(a => a.pid),
       ...cycleIds,
-      rawData.voidTrader.id,
+      `${rawData.voidTrader.id}${rawData.voidTrader.active ? '1' : '0'}`,
       ...rawData.fissures.map(f => f.id),
       ...rawData.invasions.map(i => i.id),
       ...rawData.news.map(n => n.id),
@@ -281,7 +285,6 @@ class Notifier {
       rawData.sortie.id,
       ...rawData.syndicateMissions.map(m => m.id),
       ...rawData.flashSales.map(s => s.id),
-      rawData.voidTrader.id,
       ...rawData.dailyDeals.map(d => d.id),
       ...rawData.conclaveChallenges.map(cc => cc.id),
       ...rawData.weeklyChallenges.map(w => w.id),
@@ -349,10 +352,21 @@ class Notifier {
     }
   }
 
-  async sendCetusCycle(newCetusCycle, platform, cetusCycleChange, notifiedIds) {
-    const minutesRemaining = cetusCycleChange ? '' : `.${Math.round(fromNow(newCetusCycle.expiry) / 60000)}`;
-    const type = `cetus.${newCetusCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    const embed = new embeds.Cycle({ logger }, newCetusCycle);
+  async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+    const type = `cambion.${newCycle.active}${minutesRemaining}`;
+    if (!notifiedIds.includes(type)) {
+      await this.broadcaster.broadcast(
+        new embeds.Cambion({ logger }, newCycle), platform, type,
+      );
+    }
+    return type;
+  }
+
+  async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+    const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    const embed = new embeds.Cycle({ logger }, newCycle);
     if (!notifiedIds.includes(type)) {
       await this.broadcaster.broadcast(embed, platform, type);
     }
@@ -379,12 +393,12 @@ class Notifier {
     await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo({ logger }, d, platform), platform, 'darvo')));
   }
 
-  async sendEarthCycle(newEarthCycle, platform, earthCycleChange, notifiedIds) {
-    const minutesRemaining = earthCycleChange ? '' : `.${Math.round(fromNow(newEarthCycle.expiry) / 60000)}`;
-    const type = `earth.${newEarthCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+  async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+    const type = `earth.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     if (!notifiedIds.includes(type)) {
       await this.broadcaster.broadcast(
-        new embeds.Cycle({ logger }, newEarthCycle), platform, type,
+        new embeds.Cycle({ logger }, newCycle), platform, type,
       );
     }
     return type;

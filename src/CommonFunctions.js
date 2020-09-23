@@ -94,6 +94,7 @@ const trackableEvents = {
   syndicates,
   conclave,
   deals,
+  cambion: ['cambion.fass', 'cambion.vome'],
   cetus: ['cetus.day', 'cetus.night'],
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
@@ -168,6 +169,8 @@ const dyn = [
   'solaris\\.cold\\.[0-9]?[0-9]',
   'cetus\\.day\\.[0-1]?[0-9]?[0-9]?',
   'cetus\\.night\\.[0-1]?[0-9]?[0-9]?',
+  'cambion\\.fass\\.[0-1]?[0-9]?[0-9]?',
+  'cambion\\.vome\\.[0-1]?[0-9]?[0-9]?',
   ...trackableEvents.rss,
   ...trackableEvents.events,
   ...rewardTypes,
@@ -212,6 +215,7 @@ const termToTrackable = (term) => {
   const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
   const earthCustomTimeRegex = new RegExp('earth\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
   const solarisCustomTimeRegex = new RegExp('solaris\\.(warm|cold)\\.[0-9]?[0-9]?', 'ig');
+  const cambionCustomTimeRegex = new RegExp('cambion\\.(fass|vome)\\.[0-1]?[0-9]?[0-9]?', 'ig');
 
   const trackable = {
     events: [],
@@ -220,7 +224,8 @@ const termToTrackable = (term) => {
 
   if (cetusCustomTimeRegex.test(term)
     || earthCustomTimeRegex.test(term)
-    || solarisCustomTimeRegex.test(term)) {
+    || solarisCustomTimeRegex.test(term)
+    || cambionCustomTimeRegex.test(term)) {
     trackable.events = term;
     return trackable;
   }
@@ -1062,6 +1067,8 @@ const giveawayDefaults = {
   },
 };
 
+const toTitleCase = str => str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+
 /**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
@@ -1112,4 +1119,5 @@ module.exports = {
   games,
   giveawayDefaults,
   markdinate,
+  toTitleCase,
 };

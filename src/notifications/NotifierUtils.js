@@ -5,6 +5,7 @@ const embeds = {
   Alert: require('../embeds/AlertEmbed'),
   Arbitration: require('../embeds/ArbitrationEmbed'),
   Acolyte: require('../embeds/AcolyteEmbed'),
+  Cambion: require('../embeds/CambionEmbed'),
   Conclave: require('../embeds/ConclaveChallengeEmbed'),
   Darvo: require('../embeds/DarvoEmbed'),
   Enemy: require('../embeds/EnemyEmbed'),
