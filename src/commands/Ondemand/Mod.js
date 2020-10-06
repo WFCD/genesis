@@ -37,7 +37,7 @@ class Mod extends Command {
 
     try {
       // Need to search in all lower case. "Blind Rage = blind rage"
-      let url = `${apiBase}/mods/search/${query.toLowerCase()}`;
+      const url = `${apiBase}/mods/search/${query.toLowerCase()}`;
       const results = await fetch(url);
       if (results.length > 0) {
         const pages = [];
