@@ -17,7 +17,8 @@ class Mod extends Command {
    */
   constructor(bot) {
     super(bot, 'warframe.misc.mod', 'mod', 'Search the Warframe Wiki for a mod\'s image', 'WARFRAME');
-    this.regex = new RegExp('^mod(.+)', 'i');
+    // Should match "/mod blind rage, for example"
+    this.regex = new RegExp('^mod (.+)', 'i');
     this.noResultStr = '```haskell\nNo result for search, Operator. Attempt another search query.```';
   }
 
@@ -35,7 +36,9 @@ class Mod extends Command {
     }
 
     try {
-      const results = await fetch(`${apiBase}/mods/search/${query}`);
+      // Need to search in all lower case. "Blind Rage = blind rage"
+      let url = `${apiBase}/mods/search/${query.toLowerCase()}`;
+      const results = await fetch(url);
       if (results.length > 0) {
         const pages = [];
         results.forEach((result) => {

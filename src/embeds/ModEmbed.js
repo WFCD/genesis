@@ -18,7 +18,17 @@ class ModEmbed extends BaseEmbed {
 
     this.title = modData.name;
     this.color = rarity[modData.rarity.toLowerCase()];
-    this.description = `_${emojify(modData.description)}_`;
+    
+    // If we have a description, show it. For stance mods, etc.
+    if (modData.description) {
+      this.description = `_${emojify(modData.description)}_`;
+    }
+
+    // If we have an effect, show the max rank effect. Most mods, other than stances, should have this
+    if (modData.levelStats && modData.levelStats.length > 0) {
+      this.description = `_${emojify(modData.levelStats[modData.levelStats.length-1].stats.join('\n'))}_`;
+    }
+
     this.url = `https://warframe.fandom.com/wiki/${modData.name.replace(/\s/ig, '_')}`;
     this.image = {
       url: `https://cdn.warframestat.us/img/${modData.imageName}`,
