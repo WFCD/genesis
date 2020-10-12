@@ -1,7 +1,7 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
-const { emojify } = require('../CommonFunctions');
+const { emojify, apiCdnBase, wikiBase } = require('../CommonFunctions');
 
 const rarity = {
   common: 0x775448,
@@ -25,15 +25,15 @@ class ModEmbed extends BaseEmbed {
     }
 
     // If we have an effect, show the max rank effect
-    const statsLength = modData.levelStats.length;
-    if (modData.levelStats && statsLength > 0) {
+    const statsLength = modData.levelStats && modData.levelStats.length;
+    if (statsLength > 0) {
       const stats = modData.levelStats[statsLength - 1].stats.join('\n');
       this.description = `_${emojify(stats)}_`;
     }
 
-    this.url = `https://warframe.fandom.com/wiki/${modData.name.replace(/\s/ig, '_')}`;
+    this.url = `${wikiBase}${modData.name.replace(/\s/ig, '_')}`;
     this.image = {
-      url: `https://cdn.warframestat.us/img/${modData.imageName}`,
+      url: `${apiCdnBase}img/${modData.imageName}`,
     };
     this.fields = [{
       name: 'Polarity',
