@@ -442,7 +442,7 @@ const checkAndMergeEmbeds = (original, value) => {
  * @param   {Discord.User}                    author  Calling author
  */
 const createPageCollector = async (msg, pages, author) => {
-  if (pages.length <= 1) return;
+  if (pages.length <= 1 || !msg) return;
 
   let page = 1;
   // await msg.react('⏮');

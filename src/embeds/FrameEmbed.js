@@ -28,11 +28,15 @@ class FrameEmbed extends BaseEmbed {
       }
       this.color = frame.color;
       this.fields = [
-        {
+        (frame.url || frame.prime_url) ? {
           name: 'Profile',
           value: `[Frame Profile](${frame.url})${frame.prime_url ? `\n[Prime Intro](${frame.prime_url})` : ''}`,
           inline: false,
-        },
+        } : false,
+        frame.passiveDescription ? {
+          name: 'Passive',
+          value: `_${frame.passiveDescription}_`,
+        } : false,
         {
           name: 'Minimum Mastery',
           value: frame.masteryReq || 'N/A',
@@ -60,7 +64,7 @@ class FrameEmbed extends BaseEmbed {
         },
         {
           name: 'Conclave',
-          value: frame.conclave || 'N/A',
+          value: emojify((frame.conclave ? 'green_tick' : 'red_tick') || 'N/A'),
           inline: true,
         },
         {
@@ -73,11 +77,14 @@ class FrameEmbed extends BaseEmbed {
           value: emojify(frame.polarities && frame.polarities.length > 0 ? frame.polarities.join(' ') : 'No polarities'),
           inline: true,
         },
-        {
+        { // this is coming out too long, needs to be chunked
           name: 'Abilities',
-          value: frame.abilities.map(ability => `\u200B\t**${ability.name}:**\n\t_${ability.description}_`).join('\n\u200B\n'),
+          value: '**=============**',
         },
       ];
+
+      this.fields.push(...frame.abilities.map(ability => ({ name: ability.name, value: `_${ability.description}_` })));
+      this.fields = this.fields.filter(field => field);
     } else {
       this.title = 'Available Warframes';
       this.fields = [{ name: '\u200B', value: frames.map(stat => stat.name).join('\n') }];
