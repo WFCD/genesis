@@ -5,15 +5,7 @@ const { assetBase } = require('../CommonFunctions');
 
 const darvo = `${assetBase}/img/darvo-md.png`;
 
-/**
- * Generates daily deal embeds
- */
 class DarvoEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {DailyDeal} deal - The deal to be included in the embed
-   * @param {string} platform - platform
-   */
   constructor(bot, deal, platform) {
     super();
 
@@ -24,10 +16,11 @@ class DarvoEmbed extends BaseEmbed {
     };
     this.fields = [
       {
-        name: `${deal.item}, ${deal.salePrice}p - ${deal.total - deal.sold}/${deal.total} left`,
+        name: `${deal.item}, ${deal.salePrice}p`,
         value: `Original price: ${deal.originalPrice}p, expires in ${deal.eta}`,
       },
     ];
+    this.footer.text = `${deal.total - deal.sold}/${deal.total} left`;
   }
 }
 

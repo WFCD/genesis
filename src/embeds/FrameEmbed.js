@@ -39,7 +39,7 @@ class FrameEmbed extends BaseEmbed {
         } : false,
         {
           name: 'Minimum Mastery',
-          value: frame.masteryReq || 'N/A',
+          value: `${frame.masteryReq || 'N/A'} ${emojify('mastery_rank')}`,
           inline: true,
         },
         {

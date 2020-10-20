@@ -1,5 +1,7 @@
 'use strict';
 
+const logger = require('../Logger');
+
 /**
  * Broadcast updates out to subscribing channels
  * @param {Discord.Client} client         bot client
@@ -13,54 +15,46 @@ class Broadcaster {
   }) {
     this.client = client;
     this.settings = settings;
-    this.messageManager = messageManager;
+    this.webhook = messageManager.webhook;
+    this.wrap = messageManager.webhookWrapEmbed;
+    this.shards = Number.parseInt(process.env.SHARDS || '1', 10);
   }
 
   /**
-   * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
-   * @param  {string} platform   Platform of worldstate
-   * @param  {string} type       Type of new data to notify
-   * @param  {Array}  [items=[]] Items to broadcast
-   * @returns {Array.<Object>} values for successes
-   */
+  * Broadcast embed to all channels for a platform and type
+  * @param  {Object} embed      Embed to send to a channel
+  * @param  {string} platform   Platform of worldstate
+  * @param  {string} type       Type of new data to notify
+  * @param  {Array}  [items=[]] Items to broadcast
+  * @returns {Array.<Object>} values for successes
+  */
   async broadcast(embed, platform, type, items = []) {
-    const channels = await this.settings.getNotifications(type, platform, items);
-    embed.bot = undefined; // eslint-disable-line no-param-reassign
-
+    delete embed.bot;
     const guilds = await this.settings.getGuilds();
 
-    return Promise.all(channels.map(async (result) => {
-      // need some way to do this other than getting all channels....
-      // let's try looping over a list of ids
-      const ctx = await this.settings.getCommandContext(result.channelId);
-
-      if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) {
-        return false;
-      }
-
-      let guild;
-
-      Object.entries(guilds).forEach(([, g]) => {
-        if (g.channels.includes(result.channelId)) {
-          guild = g;
+    for (let shard = 0; shard < this.shards; shard += 1) {
+      const channels = await this.settings
+        .getAgnosticNotifications(type, platform, items, { shard, shards: this.shards });
+      for (const result of channels) {
+        const ctx = await this.settings.getCommandContext(result.channelId);
+        if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) {
+          continue;
         }
-      });
 
-      const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
-
-      if (!embed.embeds) {
-        return this.messageManager.webhook(
-          ctx,
-          { text: prepend, embed: this.messageManager.webhookWrapEmbed(embed, ctx) },
-        );
+        const guild = Object.entries(guilds)
+          .filter(([, g]) => g.channels.includes(result.channelId))[0];
+        try {
+          const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
+          if (!embed.embeds) {
+            await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
+          } else {
+            await this.webhook(ctx, { text: prepend, embed });
+          }
+        } catch (e) {
+          logger.error(e);
+        }
       }
-
-      return this.messageManager.webhook(
-        ctx,
-        { text: prepend, embed },
-      );
-    }));
+    }
   }
 }
 

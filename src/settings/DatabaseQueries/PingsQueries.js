@@ -103,9 +103,6 @@ class PingsQueries {
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
   async getNotifications(type, platform, items) {
-    if (this.scope === 'worker') {
-      return this.getAgnosticNotifications(type, platform, items);
-    }
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
@@ -131,9 +128,11 @@ class PingsQueries {
    * @param {string} type The type of the event
    * @param {string} platform The platform of the event
    * @param {Array.<string>} items The items in the reward that is being notified
+   * @param {number} shard Shard id to notify
+   * @param {number} shards Total number of shards
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
-  async getAgnosticNotifications(type, platform, items) {
+  async getAgnosticNotifications(type, platform, items, { shard, shards }) {
     if (this.scope !== 'worker') {
       return this.getNotifications(type, platform, items);
     }
@@ -146,6 +145,7 @@ class PingsQueries {
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
         .append(SQL`
         WHERE type_notifications.type = ${String(type)}
+          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${shards}) = ${shard}
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
         .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);

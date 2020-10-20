@@ -1,6 +1,6 @@
 'use strict';
 
-const TwitchClient = require('twitch').default;
+const { ApiClient } = require('twitch');
 const WebHookListener = require('twitch-webhooks').default;
 
 const TwitchEmbed = require('../embeds/TwitchEmbed');
@@ -26,7 +26,7 @@ class TwitchNotifier {
     if (process.env.TWITCH_CLIENT_ID && process.env.TWITCH_CLIENT_SECRET) {
       const id = process.env.TWITCH_CLIENT_ID;
       const secret = process.env.TWITCH_CLIENT_SECRET;
-      this.client = TwitchClient.withClientCredentials(id, secret);
+      this.client = ApiClient.withClientCredentials(id, secret);
     } else {
       logger.debug('[Twitch] Cannot initialize Twitch Notifier... invalid credentials');
     }

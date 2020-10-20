@@ -20,7 +20,7 @@ class WeaponEmbed extends BaseEmbed {
       this.title = weapon.name;
       this.url = weapon.wikiaUrl || '';
       this.thumbnail = { url: weapon.wikiaThumbnail || '' };
-      this.description = `${weapon.type} ${`• MR ${weapon.masteryReq}`}`;
+      this.description = `${weapon.type} • ${weapon.masteryReq} ${emojify('mastery_rank')}`;
       this.color = weapon.color || 0x7C0A02;
       this.fields = [];
 
