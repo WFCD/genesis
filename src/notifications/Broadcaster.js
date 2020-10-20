@@ -37,21 +37,22 @@ class Broadcaster {
         .getAgnosticNotifications(type, platform, items, { shard, shards: this.shards });
       for (const result of channels) {
         const ctx = await this.settings.getCommandContext(result.channelId);
-        if (embed.locale && ctx.language.toLowerCase() !== embed.locale.toLowerCase()) {
-          continue;
-        }
+        const localeMatch = !(embed.locale
+          && ctx.language.toLowerCase() !== embed.locale.toLowerCase());
 
-        const guild = Object.entries(guilds)
-          .filter(([, g]) => g.channels.includes(result.channelId))[0][1];
-        try {
-          const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
-          if (!embed.embeds) {
-            await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
-          } else {
-            await this.webhook(ctx, { text: prepend, embed });
+        if (localeMatch) {
+          const guild = Object.entries(guilds)
+            .filter(([, g]) => g.channels.includes(result.channelId))[0][1];
+          try {
+            const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
+            if (!embed.embeds) {
+              await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
+            } else {
+              await this.webhook(ctx, { text: prepend, embed });
+            }
+          } catch (e) {
+            logger.error(e);
           }
-        } catch (e) {
-          logger.error(e);
         }
       }
     }

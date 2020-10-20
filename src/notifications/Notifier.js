@@ -228,26 +228,26 @@ class Notifier {
       logger.silly('[N] sending new data...');
       await this.sendAcolytes(acolytes, platform);
       if (baro) {
-        this.sendBaro(baro, platform);
+        await this.sendBaro(baro, platform);
       }
       if (conclave && conclave.length > 0) {
-        this.sendConclaveDailies(conclave, platform);
+        await this.sendConclaveDailies(conclave, platform);
         await this.sendConclaveWeeklies(conclave, platform);
       }
       if (tweets && tweets.length > 0) {
-        this.sendTweets(tweets, platform);
+        await this.sendTweets(tweets, platform);
       }
-      this.sendDarvo(dailyDeals, platform);
-      this.sendEvent(events, platform);
-      this.sendFeaturedDeals(featuredDeals, platform);
-      this.sendFissures(fissures, platform);
-      this.sendNews(news, platform);
-      this.sendStreams(streams, platform);
-      this.sendPopularDeals(popularDeals, platform);
-      this.sendPrimeAccess(primeAccess, platform);
-      this.sendInvasions(invasions, platform);
-      this.sendSortie(sortie, platform);
-      this.sendSyndicates(syndicateM, platform);
+      await this.sendDarvo(dailyDeals, platform);
+      await this.sendEvent(events, platform);
+      await this.sendFeaturedDeals(featuredDeals, platform);
+      await this.sendFissures(fissures, platform);
+      await this.sendNews(news, platform);
+      await this.sendStreams(streams, platform);
+      await this.sendPopularDeals(popularDeals, platform);
+      await this.sendPrimeAccess(primeAccess, platform);
+      await this.sendInvasions(invasions, platform);
+      await this.sendSortie(sortie, platform);
+      await this.sendSyndicates(syndicateM, platform);
       cycleIds.push(
         await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds),
       );
@@ -260,8 +260,8 @@ class Notifier {
       cycleIds.push(
         await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds),
       );
-      this.sendUpdates(updates, platform);
-      this.sendAlerts(alerts, platform);
+      await this.sendUpdates(updates, platform);
+      await this.sendAlerts(alerts, platform);
       cycleIds.push(
         await this.sendSentientOutposts(rawData.sentientOutposts, platform, notifiedIds),
       );
