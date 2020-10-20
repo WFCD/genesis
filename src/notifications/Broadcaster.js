@@ -42,7 +42,7 @@ class Broadcaster {
         }
 
         const guild = Object.entries(guilds)
-          .filter(([, g]) => g.channels.includes(result.channelId))[0];
+          .filter(([, g]) => g.channels.includes(result.channelId))[0][1];
         try {
           const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
           if (!embed.embeds) {
