@@ -335,7 +335,7 @@ class MessageManager {
         return this.webhook(ctx, { text, embed });
       }
       if (!lookupWebhooks) {
-        logger.error(`Could not obtain webhook for ${ctx.channel.id}`);
+        logger.silly(`Could not obtain webhook for ${ctx.channel.id}`);
         return false;
       }
       logger.debug(`Leveraging worker route for obtaining webhook... ${ctx.channel.id}`);
@@ -358,38 +358,10 @@ class MessageManager {
         ctx.webhook = webhook;
         return this.webhook(ctx, { text, embed });
       }
-      logger.error(`Could not create webhook for ${ctx.channel.id}`);
+      logger.debug(`Could not create webhook for ${ctx.channel.id}`);
     }
     // Don't have a fallback to embeds
     return false;
-  }
-
-  webhookWrapEmbed(embed, ctx) {
-    return ctx.webhook && ctx.webhook.avatar
-      ? {
-        username: ctx.webhook.name,
-        avatarURL: ctx.webhook.avatar,
-        embeds: [embed],
-      }
-      : {
-        username: this.settings.defaults.username,
-        avatarURL: this.settings.defaults.avatar,
-        embeds: [embed],
-      };
-  }
-
-  webhookWrapEmbeds(embeds, ctx) {
-    return ctx.webhook && ctx.webhook.avatar
-      ? {
-        username: ctx.webhook.name,
-        avatarURL: ctx.webhook.avatar,
-        embeds,
-      }
-      : {
-        username: this.settings.defaults.username,
-        avatarURL: this.settings.defaults.avatar,
-        embeds,
-      };
   }
 }
 

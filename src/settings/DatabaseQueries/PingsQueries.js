@@ -56,15 +56,20 @@ class PingsQueries {
     if (!guild) {
       return undefined;
     }
+    
+    if (guild['channels']) {
+      delete guild['channels'];
+      guild.id = guild['id'];
+    }
 
     if (!guild.id) {
-      guild = { id: guild }; // eslint-disable-line no-param-reassign
+      console.log(JSON.stringify(Object.keys(guild)));
+      console.log(JSON.stringify(guild['id']));
+      guild = { id: guild };
     }
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
     const res = await this.query(query);
-    if (res[0].length === 0) {
-      return '';
-    }
+    if (!res[0].length) return '';
     return res[0]
       .map(result => result.text).join(', ');
   }
@@ -132,8 +137,8 @@ class PingsQueries {
    * @param {number} shards Total number of shards
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
-  async getAgnosticNotifications(type, platform, items, { shard, shards }) {
-    if (this.scope !== 'worker') {
+  async getAgnosticNotifications(type, platform, items) {
+    if (this.scope.toLowerCase() !== 'worker') {
       return this.getNotifications(type, platform, items);
     }
     try {
@@ -142,11 +147,18 @@ class PingsQueries {
         .append(items && items.length
           ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
         .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
-        .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
+        .append(SQL` INNER JOIN settings as s1 ON channels.id = s1.channel_id`)
+        .append(SQL` INNER JOIN settings as ws1 ON channels.id = ws1.channel_id`)
+        .append(SQL` INNER JOIN settings as ws2 ON channels.id = ws2.channel_id`)
+        .append(SQL` INNER JOIN settings as ws3 ON channels.id = ws1.channel_id`)
+        .append(SQL` INNER JOIN settings as ws4 ON channels.id = ws2.channel_id`)
         .append(SQL`
         WHERE type_notifications.type = ${String(type)}
-          AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${shards}) = ${shard}
-          AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
+          AND s1.setting = "platform"  AND (s1.val = ${platform || 'pc'} OR s1.val IS NULL)
+          and ws1.setting = "webhookToken" AND ws1.val IS NOT NULL
+          and ws2.setting = "webhookId" AND ws2.val IS NOT NULL
+          and ws3.setting = "webhookAvatar" AND ws3.val IS NOT NULL
+          and ws4.setting = "webhookName" AND ws4.val IS NOT NULL`)
         .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return (await this.query(query))[0];

@@ -51,12 +51,12 @@ class Worker {
       deps.messageManager = this.messageManager;
 
       this.notifier = new Notifier(deps);
-      this.feedNotifier = new FeedsNotifier(deps);
-      this.twitchNotifier = new TwitchNotifier(deps);
+      // this.feedNotifier = new FeedsNotifier(deps);
+      // this.twitchNotifier = new TwitchNotifier(deps);
 
-      this.feedNotifier.start();
+      // this.feedNotifier.start();
       await this.notifier.start();
-      await this.twitchNotifier.start();
+      // await this.twitchNotifier.start();
 
       const body = {
         embeds: [{

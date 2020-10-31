@@ -17,7 +17,7 @@ class RESTWrapper {
   }
 
   async init() {
-    this.user = await this.client.get('/users/@me'); // { username: 'Genesis' };
+    this.user = /*await this.client.get('/users/@me');*/ { username: 'Genesis' };
   }
 
   /**

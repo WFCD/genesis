@@ -230,22 +230,22 @@ class Notifier {
       if (baro) {
         await this.sendBaro(baro, platform);
       }
-      if (conclave && conclave.length > 0) {
-        await this.sendConclaveDailies(conclave, platform);
-        await this.sendConclaveWeeklies(conclave, platform);
-      }
-      if (tweets && tweets.length > 0) {
-        await this.sendTweets(tweets, platform);
-      }
-      await this.sendDarvo(dailyDeals, platform);
+      // if (conclave && conclave.length > 0) {
+      //   await this.sendConclaveDailies(conclave, platform);
+      //   await this.sendConclaveWeeklies(conclave, platform);
+      // }
+      // if (tweets && tweets.length > 0) {
+      //   await this.sendTweets(tweets, platform);
+      // }
+      // await this.sendDarvo(dailyDeals, platform);
       await this.sendEvent(events, platform);
-      await this.sendFeaturedDeals(featuredDeals, platform);
+      // await this.sendFeaturedDeals(featuredDeals, platform);
       await this.sendFissures(fissures, platform);
-      await this.sendNews(news, platform);
-      await this.sendStreams(streams, platform);
-      await this.sendPopularDeals(popularDeals, platform);
-      await this.sendPrimeAccess(primeAccess, platform);
-      await this.sendInvasions(invasions, platform);
+      // await this.sendNews(news, platform);
+      // await this.sendStreams(streams, platform);
+      // await this.sendPopularDeals(popularDeals, platform);
+      // await this.sendPrimeAccess(primeAccess, platform);
+      // await this.sendInvasions(invasions, platform);
       await this.sendSortie(sortie, platform);
       await this.sendSyndicates(syndicateM, platform);
       cycleIds.push(
@@ -299,18 +299,24 @@ class Notifier {
   }
 
   async sendAcolytes(newAcolytes, platform) {
-    await Promise.all(newAcolytes.map(async a => this.broadcaster.broadcast(new embeds.Acolyte(
-      { logger },
-      [a], platform,
-    ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`)));
+    for (const acolyte of newAcolytes) {
+      await this.broadcaster.broadcast(new embeds.Acolyte(
+        { logger },
+        [acolyte], platform,
+      ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`)
+    }
+    return true;
   }
 
   async sendAlerts(newAlerts, platform) {
-    await Promise.all(newAlerts.map(async a => this.sendAlert(a, platform)));
+    for (const alert of newAlerts) {
+      await this.sendAlert(alert, platform);
+    }
+    return true;
   }
 
   async sendAlert(a, platform) {
-    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+    for (const [locale, i18n] of Object.entries(i18ns)) {
       const embed = new embeds.Alert({ logger }, [a], platform, i18n);
       embed.locale = locale;
       try {
@@ -324,7 +330,8 @@ class Notifier {
         // Broadcast even if the thumbnail fails to fetch
         await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes);
       }
-    });
+    }
+    return true;
   }
 
   async sendArbitration(arbitration, platform) {
@@ -341,12 +348,12 @@ class Notifier {
   async sendBaro(newBaro, platform) {
     const embed = new embeds.VoidTrader({ logger }, newBaro, platform);
     if (embed.fields.length > 25) {
-      const fields = createGroupedArray(embed.fields, 15);
-      fields.forEach(async (fieldGroup) => {
+      const pages = createGroupedArray(embed.fields, 15);
+      for (const page of pages) {
         const tembed = { ...embed };
-        tembed.fields = fieldGroup;
+        tembed.fields = pageFields;
         await this.broadcaster.broadcast(tembed, platform, 'baro');
-      });
+      }
     } else {
       await this.broadcaster.broadcast(embed, platform, 'baro');
     }
@@ -390,7 +397,9 @@ class Notifier {
   }
 
   async sendDarvo(newDarvoDeals, platform) {
-    await Promise.all(newDarvoDeals.map(d => this.broadcaster.broadcast(new embeds.Darvo({ logger }, d, platform), platform, 'darvo')));
+    for (const deal of newDarvoDeals) {
+      await this.broadcaster.broadcast(new embeds.Darvo({ logger }, deal, platform), platform, 'darvo');
+    }
   }
 
   async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
@@ -405,27 +414,27 @@ class Notifier {
   }
 
   async sendEvent(newEvents, platform) {
-    await Promise.all(newEvents
+    return Promise.all(newEvents
       .map(e => this.broadcaster.broadcast(new embeds.Event({ logger }, e, platform), platform, 'operations')));
   }
 
   async sendFeaturedDeals(newFeaturedDeals, platform) {
-    await Promise.all(newFeaturedDeals
+    return Promise.all(newFeaturedDeals
       .map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.featured')));
   }
 
   async sendFissures(newFissures, platform) {
-    await Promise.all(newFissures
+    return Promise.all(newFissures
       .map(fissure => this.sendFissure(fissure, platform)));
   }
 
   async sendFissure(fissure, platform) {
-    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+    for (const [locale, i18n] of Object.entries(i18ns)) {
       const embed = new embeds.Fissure({ logger }, [fissure], platform, i18n);
       embed.locale = locale;
       const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase()}`;
       await this.broadcaster.broadcast(embed, platform, id);
-    });
+    }
   }
 
   async sendInvasions(newInvasions, platform) {
@@ -434,7 +443,7 @@ class Notifier {
   }
 
   async sendInvasion(invasion, platform) {
-    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+    for (const [locale, i18n] of Object.entries(i18ns)) {
       const embed = new embeds.Invasion({ logger }, [invasion], platform, i18n);
       embed.locale = locale;
       try {
@@ -448,11 +457,11 @@ class Notifier {
       } finally {
         await this.broadcaster.broadcast(embed, platform, 'invasions', invasion.rewardTypes);
       }
-    });
+    }
   }
 
   async sendNews(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'news')));
+    return Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'news')));
   }
 
   async sendNightwave(nightwave, platform) {
@@ -468,7 +477,7 @@ class Notifier {
     };
 
     if (!nightwave) return;
-    Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+    for (const [locale, i18n] of Object.entries(i18ns)) {
       if (nightwave.activeChallenges.length > 1) {
         nightwave.activeChallenges.forEach(async (challenge) => {
           const nwCopy = { ...nightwave };
@@ -483,16 +492,16 @@ class Notifier {
         embed.locale = locale;
         await this.broadcaster.broadcast(embed, platform, 'nightwave');
       }
-    });
+    }
   }
 
   async sendPopularDeals(newPopularDeals, platform) {
-    await Promise.all(newPopularDeals
+    return Promise.all(newPopularDeals
       .map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.popular')));
   }
 
   async sendPrimeAccess(newNews, platform) {
-    await Promise.all(newNews
+    return Promise.all(newNews
       .map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'primeaccess', platform), platform, 'primeaccess')));
   }
 
@@ -512,7 +521,7 @@ class Notifier {
   }
 
   async sendStreams(newStreams, platform) {
-    await Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'streams')));
+    return Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'streams')));
   }
 
   async checkAndSendSyndicate(embed, syndicate, platform) {
@@ -535,12 +544,12 @@ class Notifier {
   }
 
   async sendTweets(newTweets, platform) {
-    await Promise.all(newTweets.map(t => this.broadcaster
+    return Promise.all(newTweets.map(t => this.broadcaster
       .broadcast(new embeds.Tweet({ logger }, t), platform, t.id)));
   }
 
   async sendUpdates(newNews, platform) {
-    await Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'updates', platform), platform, 'updates')));
+    return Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'updates', platform), platform, 'updates')));
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
@@ -556,11 +565,11 @@ class Notifier {
 
   async sendSentientOutposts(outpost, platform, notifiedIds) {
     if (outpost.active && !notifiedIds.includes(outpost.id)) {
-      Object.entries(i18ns).forEach(async ([locale, i18n]) => {
+      for (const [locale, i18n] of Object.entries(i18ns)) {
         const embed = new embeds.Outposts({ logger }, outpost, platform, i18n);
         embed.locale = locale;
         await this.broadcaster.broadcast(embed, platform, 'outposts');
-      });
+      }
     }
     return outpost.id;
   }

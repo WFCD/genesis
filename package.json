@@ -46,6 +46,7 @@
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.1",
+    "byte-size": "^7.0.0",
     "colors": "^1.4.0",
     "decache": "^4.6.0",
     "discord-giveaways": "^3.2.3",
@@ -85,30 +86,43 @@
       "sourceType": "script"
     },
     "rules": {
-      "valid-jsdoc": ["error",
-      {
-        "requireReturn": false,
-        "requireReturnDescription": false,
-        "preferType": {
-          "String": "string",
-          "Number": "number",
-          "Boolean": "boolean",
-          "Function": "function",
-          "object": "Object",
-          "date": "Date",
-          "error": "Error"
-        },
-        "prefer": {
-          "return": "returns"
+      "valid-jsdoc": [
+        "error",
+        {
+          "requireReturn": false,
+          "requireReturnDescription": false,
+          "preferType": {
+            "String": "string",
+            "Number": "number",
+            "Boolean": "boolean",
+            "Function": "function",
+            "object": "Object",
+            "date": "Date",
+            "error": "Error"
+          },
+          "prefer": {
+            "return": "returns"
+          }
         }
-      }],
-      "strict": ["error", "safe"],
+      ],
+      "strict": [
+        "error",
+        "safe"
+      ],
       "linebreak-style": "off",
-      "no-restricted-syntax": ["off"],
+      "no-restricted-syntax": [
+        "off"
+      ],
       "no-await-in-loop": "off",
       "import/no-unresolved": 0,
       "no-useless-escape": 0,
-      "arrow-parens": [2, "as-needed", { "requireForBlockBody": true }],
+      "arrow-parens": [
+        2,
+        "as-needed",
+        {
+          "requireForBlockBody": true
+        }
+      ],
       "global-require": 0,
       "no-param-reassign": "off",
       "no-continue": "off"

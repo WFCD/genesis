@@ -221,22 +221,22 @@ class Database {
       channel = { id: channel }; // eslint-disable-line no-param-reassign
     }
 
-    const settings = ['webhookId',
-      'webhookToken', 'webhookName', 'webhookAvatar'];
+    const settings = ['webhookId', 'webhookToken', 'webhookName',
+      'webhookAvatar', 'language', 'platform'];
 
     if (this.scope === 'bot') {
       settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
         'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
-    }
-
-    if (platforms.length > 4) {
-      platforms.forEach((platform, index) => {
-        if (index > 3) {
-          settings.push(`lfgChannel.${platform}`);
-        }
-      });
+        
+      if (platforms.length > 4) {
+        platforms.forEach((platform, index) => {
+          if (index > 3) {
+            settings.push(`lfgChannel.${platform}`);
+          }
+        });
+      }
     }
 
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
