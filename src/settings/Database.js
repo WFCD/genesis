@@ -229,7 +229,7 @@ class Database {
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
         'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
-        
+
       if (platforms.length > 4) {
         platforms.forEach((platform, index) => {
           if (index > 3) {

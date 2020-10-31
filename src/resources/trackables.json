@@ -65,6 +65,7 @@
     "syndicate.meridian",
     "syndicate.ostrons",
     "syndicate.assassins",
+    "necralisk",
     "updates",
     "primeaccess",
     "streams",
@@ -110,7 +111,8 @@
     "syndicate.meridian",
     "syndicate.ostrons",
     "syndicate.assassins",
-    "solaris"
+    "solaris",
+    "necralisk"
   ],
   "conclave": [
     "conclave.weeklies",

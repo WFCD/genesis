@@ -56,15 +56,13 @@ class PingsQueries {
     if (!guild) {
       return undefined;
     }
-    
-    if (guild['channels']) {
-      delete guild['channels'];
-      guild.id = guild['id'];
+
+    if (guild.channels) {
+      delete guild.channels;
+      guild.id = guild['id']; // eslint-disable-line no-self-assign, dot-notation
     }
 
     if (!guild.id) {
-      console.log(JSON.stringify(Object.keys(guild)));
-      console.log(JSON.stringify(guild['id']));
       guild = { id: guild };
     }
     const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;

@@ -1,9 +1,9 @@
 'use strict';
 
-const logger = require('../Logger');
 const bs = require('byte-size');
+const logger = require('../Logger');
 
-function byteFmt () {
+function byteFmt() {
   return `${this.value}${this.unit}`;
 }
 
@@ -15,12 +15,12 @@ const clean = (channelId, index) => {
       const before = v8.getHeapStatistics();
       global.gc();
       const after = v8.getHeapStatistics();
-      
+
       const entry = {
         b: { u: bs(before.used_heap_size, byteFmt), l: bs(before.heap_size_limit, byteFmt) },
         a: { u: bs(after.used_heap_size, byteFmt), l: bs(after.heap_size_limit, byteFmt) },
       };
-      
+
       logger.silly(`${channelId} ======> ${String(entry.b.u).padEnd(7)} || ${String(entry.a.u).padEnd(7)}`);
     } catch (e) {
       logger.info(e);
@@ -44,7 +44,7 @@ class Broadcaster {
     this.webhook = messageManager.webhook;
     this.shards = process.env.SHARDS;
   }
-  
+
   wrap(embed, ctx) {
     return this.wraps([embed], ctx);
   }

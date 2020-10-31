@@ -11,6 +11,7 @@ const {
   setupPages,
   constructItemEmbeds,
   constructTypeEmbeds,
+  emojify,
 } = require('../../CommonFunctions');
 
 /**
@@ -59,6 +60,37 @@ class Track extends Command {
       await this.notifyCurrent(channel, message);
     }
     this.messageManager.notifySettingsChange(message, true, true);
+
+    if (!ctx.webhook) {
+      if (message.channel.permissionsFor(this.bot.client.user).has('MANAGE_WEBHOOKS')) {
+        let webhook;
+        try {
+          await message.channel.send('Setting up webhook...');
+          const existingWebhooks = (await message.channel.fetchWebhooks())
+            .filter(w => w.type === 'Incoming');
+          if (existingWebhooks.size) {
+            const temp = existingWebhooks.first();
+            webhook = {
+              id: temp.id,
+              token: temp.token,
+              name: this.settings.defaults.username,
+              avatar: this.settings.defaults.avatar,
+            };
+          } else {
+            webhook = await message.channel.createWebhook(this.settings.defaults.username, {
+              avatar: this.settings.defaults.avatar,
+              reason: 'Automated Webhook setup for Notifications',
+            });
+          }
+          this.bot.settings.setChannelWebhook(message.channel, webhook);
+          await message.channel.send(`${emojify('green_tick')} Webhook setup complete.`);
+        } catch (e) {
+          await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: failed to look up.`);
+        }
+      } else {
+        await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
+      }
+    }
     return this.messageManager.statuses.SUCCESS;
   }
 
@@ -73,7 +105,7 @@ class Track extends Command {
     if (pages.length) {
       return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     }
-    return this.messageManager.send(message, { content: 'Nothing Tracked', deleteOriginal: true, deleteResponse: true });
+    return message.channel.send('Nothing Tracked');
   }
 
   async failure(message, prefix) {

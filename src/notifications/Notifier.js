@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-unused-vars */
+
 const Wikia = require('node-wikia');
 const util = require('util');
 
@@ -303,7 +305,7 @@ class Notifier {
       await this.broadcaster.broadcast(new embeds.Acolyte(
         { logger },
         [acolyte], platform,
-      ), platform, `enemies${a.isDiscovered ? '' : '.departed'}`)
+      ), platform, `enemies${acolyte.isDiscovered ? '' : '.departed'}`);
     }
     return true;
   }
@@ -351,7 +353,7 @@ class Notifier {
       const pages = createGroupedArray(embed.fields, 15);
       for (const page of pages) {
         const tembed = { ...embed };
-        tembed.fields = pageFields;
+        tembed.fields = page;
         await this.broadcaster.broadcast(tembed, platform, 'baro');
       }
     } else {

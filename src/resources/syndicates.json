@@ -77,6 +77,13 @@
     "notifiable": true
   },
   {
+    "key": "necralisk",
+    "display": "Entrati",
+    "prefix": false,
+    "timeout": 0,
+    "notifiable": true
+  },
+  {
     "key": "all",
     "display": "all",
     "prefix": false,

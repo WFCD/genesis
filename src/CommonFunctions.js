@@ -94,7 +94,7 @@ const trackableEvents = {
   syndicates,
   conclave,
   deals,
-  cambion: ['cambion.fass', 'cambion.vome'],
+  cambion: ['cambion.fass', 'cambion.vome', 'necralisk'],
   cetus: ['cetus.day', 'cetus.night'],
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
