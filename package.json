@@ -45,7 +45,7 @@
     "@sentry/node": "^5.27.2",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
-    "bufferutil": "^4.0.1",
+    "bufferutil": "^4.0.2",
     "byte-size": "^7.0.0",
     "colors": "^1.4.0",
     "decache": "^4.6.0",
