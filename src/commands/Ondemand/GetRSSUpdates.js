@@ -11,6 +11,7 @@ const { setupPages } = require('../../CommonFunctions');
 class GetRSSUpdates extends Command {
   constructor(bot) {
     super(bot, 'rss.update', 'fupdates', 'Display themost recent RSS Update entries', 'WARFRAME');
+    this.enabled = false;
   }
 
   async run(message, ctx) {
