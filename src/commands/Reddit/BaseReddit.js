@@ -22,11 +22,13 @@ class BaseReddit extends Command {
 
     this.subreddit = subreddit || 'warframememes';
     this.enabled = false;
+    this.url = `https://www.reddit.com/r/${this.subreddit}/random/.json`;
   }
 
   async run(message) {
-    const { permalink, url, title } = (await fetch(`https://www.reddit.com/r/${this.subreddit}/random/.json`))[0].data.children[0].data;
+    const { permalink, url, title } = (await fetch(this.url))[0].data.children[0].data;
     const embed = new Embed();
+    console.log(`url: ${url} | ${title} | ${permalink}`);
     embed.setTitle(title);
     embed.setURL(`https://reddit.com${permalink}`);
     embed.setImage(url);

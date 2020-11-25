@@ -156,8 +156,8 @@ class PingsQueries {
           and ws1.setting = "webhookToken" AND ws1.val IS NOT NULL
           and ws2.setting = "webhookId" AND ws2.val IS NOT NULL
           and ws3.setting = "webhookAvatar" AND ws3.val IS NOT NULL
-          and ws4.setting = "webhookName" AND ws4.val IS NOT NULL`)
-        .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
+          and ws4.setting = "webhookName" AND ws4.val IS NOT NULL `)
+        .append(items && items.length ? SQL` AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return (await this.query(query))[0];
     } catch (e) {

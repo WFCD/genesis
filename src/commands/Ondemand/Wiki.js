@@ -6,6 +6,9 @@ const WikiEmbed = require('../../embeds/WikiEmbed.js');
 
 const warframe = new Wikia('warframe');
 
+const { emojify } = require('../../CommonFunctions');
+const noResult = `${emojify('red_tick')} No result for search, Operator. Attempt another query.`;
+
 /**
  * Returns search results from the Warframe wiki
  */
@@ -23,7 +26,7 @@ class Wiki extends Command {
         parameters: ['topic'],
       },
     ];
-    this.noResult = '```haskell\nNo result for search, Operator. Attempt another search query.```';
+    this.enabled = false;
   }
 
   /**
@@ -35,17 +38,19 @@ class Wiki extends Command {
   async run(message) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
-      this.messageManager.reply(message, this.noResult, true, true);
+      message.channel.send(noResult);
       return this.messageManager.statuses.FAILURE;
     }
     try {
       this.logger.debug(`Searched for query: ${query}`);
       const articles = await warframe.getSearchList({ query: encodeURIComponent(query), limit: 1 });
       const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-      this.messageManager.embed(message, new WikiEmbed(this.bot, details), true, false);
+      const embed = new WikiEmbed(this.bot, details);
+      await message.channel.send(JSON.parse(JSON.stringify(embed)));
       return this.messageManager.statuses.SUCCESS;
     } catch (error) {
-      this.messageManager.reply(message, this.noResult, true, true);
+      console.error(error);
+      message.channel.send(noResult);
       return this.messageManager.statuses.FAILURE;
     }
   }

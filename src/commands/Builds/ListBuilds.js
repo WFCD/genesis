@@ -12,12 +12,8 @@ class ListBuilds extends Command {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'builds.list', 'list builds', 'Create a temporary room.', 'UTIL');
-    this.regex = new RegExp(`^(?:${this.call}|lb)\\s?(.+)?`, 'i');
-
-    this.usages = [
-      { description: 'Display information on an existing build from Genesis. `|` separates title, body, and image. `;` separates sections in the body.', parameters: ['title | body | image'] },
-    ];
+    super(bot, 'builds.list', 'list builds', 'List current builds for requesting user.', 'UTIL');
+    this.regex = new RegExp(`^(?:${this.call}|lb)`, 'i');
   }
 
   async run(message) {

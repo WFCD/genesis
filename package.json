@@ -42,7 +42,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@sentry/node": "^5.27.3",
+    "@sentry/node": "^5.27.4",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.2",
@@ -63,7 +63,7 @@
     "ping": "^0.3.0",
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
-    "twitch": "^4.2.7",
+    "twitch": "^4.3.0",
     "twitch-webhooks": "^4.3.0",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.3",
