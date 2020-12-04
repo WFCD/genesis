@@ -35,8 +35,8 @@ class PriceCheck extends Command {
   async run(message, ctx) {
     try {
       const item = message.strippedContent.match(this.regex)[1];
-      if (item.length > 16 || item.length < 2) {
-        await message.reply('Search has a 16 character limit.');
+      if (!item || item.length > 16 || item.length < 2) {
+        await message.reply('Search has a 16 character limit, with a 3 character minimum');
         return this.messageManager.statuses.FAILURE;
       }
 
