@@ -116,7 +116,7 @@ class PingsQueries {
         .append(SQL` WHERE type_notifications.type = ${String(type)}
           AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardTotal}) in (${this.bot.shards})
           AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
-        .append(items && items.length ? SQL`AND item_notifications.item IN (${items})
+        .append(items && items.length ? SQL` AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
       return (await this.query(query))[0];
     } catch (e) {

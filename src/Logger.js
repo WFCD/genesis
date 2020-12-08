@@ -69,6 +69,8 @@ Object.keys(levels).forEach((level) => {
         Sentry.captureException(message);
       }
       if (errorHook) {
+        // filter out api errors, they're largely unhelpful and unrecoverable
+        if (message.stack && message.stack.startsWith('DiscordAPIError')) return;
         errorHook.send(new ErrorEmbed(message));
       } else {
         console.error(simple);
