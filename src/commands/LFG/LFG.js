@@ -94,8 +94,15 @@ class AddLFG extends Command {
       // save params based on order
       const embed = new LFGEmbed(this.bot, lfg);
       try {
-        const msg = await this.messageManager
-          .embedToChannel(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]], embed);
+        const chn = message.guild.channels
+          .resolve(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]]);
+
+        const msg = await chn.send(embed);
+
+        if (!msg) {
+          message.channel.send('Unknown error. Could not create LFG entry.');
+          return this.messageManager.statuses.FAILURE;
+        }
         msg.delete({ timeout: dehumanize(lfg.expiry) + 10000 });
         msg.react('🔰');
         msg.react('❌');

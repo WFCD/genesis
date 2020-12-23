@@ -138,6 +138,24 @@ class MessageManager {
     return undefined;
   }
 
+  wrap(embed, ctx) {
+    return this.wraps([embed], ctx);
+  }
+
+  wraps(embeds, ctx) {
+    return ctx.webhook && ctx.webhook.avatar
+      ? {
+        username: ctx.webhook.name,
+        avatarURL: ctx.webhook.avatar,
+        embeds,
+      }
+      : {
+        username: this.settings.defaults.username,
+        avatarURL: this.settings.defaults.avatar,
+        embeds,
+      };
+  }
+
   /**
    * Send an embed, with options to delete messages after calling
    * @param {Message} message original message being responded to
@@ -298,7 +316,7 @@ class MessageManager {
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
     if (!embed.embeds) {
       // eslint-disable-next-line no-param-reassign
-      embed = this.webhookWrapEmbed(embed, ctx);
+      embed = this.wrap(embed, ctx);
     }
     if (channelWebhook && channelWebhook.token && channelWebhook.id) {
       // eslint-disable-next-line no-param-reassign

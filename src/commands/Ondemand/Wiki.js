@@ -7,6 +7,7 @@ const WikiEmbed = require('../../embeds/WikiEmbed.js');
 const warframe = new Wikia('warframe');
 
 const { emojify } = require('../../CommonFunctions');
+
 const noResult = `${emojify('red_tick')} No result for search, Operator. Attempt another query.`;
 
 /**
@@ -49,7 +50,6 @@ class Wiki extends Command {
       await message.channel.send(JSON.parse(JSON.stringify(embed)));
       return this.messageManager.statuses.SUCCESS;
     } catch (error) {
-      console.error(error);
       message.channel.send(noResult);
       return this.messageManager.statuses.FAILURE;
     }

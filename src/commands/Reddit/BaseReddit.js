@@ -28,7 +28,6 @@ class BaseReddit extends Command {
   async run(message) {
     const { permalink, url, title } = (await fetch(this.url))[0].data.children[0].data;
     const embed = new Embed();
-    console.log(`url: ${url} | ${title} | ${permalink}`);
     embed.setTitle(title);
     embed.setURL(`https://reddit.com${permalink}`);
     embed.setImage(url);
