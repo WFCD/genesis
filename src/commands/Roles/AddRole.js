@@ -141,7 +141,7 @@ class AddRole extends Command {
         },
         {
           name: '**Roles:**',
-          value: message.guild.roles.map(r => r.name).join('; '),
+          value: message.guild.roles.cache.map(r => r.name).join('; '),
           inline: true,
         },
       ],
