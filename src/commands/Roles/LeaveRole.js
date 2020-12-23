@@ -9,7 +9,9 @@ const Command = require('../../models/Command.js');
  * @returns {Role|null}         Role
  */
 const getRoleForString = (string, message) => {
-  const trimmedString = string.trim();
+  const trimmedString = string.trim()
+    .replace(/^@(.*)/, '$1')
+    .replace(/<@&(.*)>/, '$1');
   const roleFromId = message.guild.roles.cache.get(trimmedString);
   let roleFromName;
   if (typeof roleFromId === 'undefined') {

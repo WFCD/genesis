@@ -37,7 +37,10 @@ class PrivateRoomQueries {
       WHERE guild_id=${guild.id}`;
     const [rows] = await this.query(query);
     if (rows.length) {
-      const validList = rows[0].id_list
+      const rawList = typeof rows[0].id_list === 'string'
+        ? JSON.parse(rows[0].id_list)
+        : rows[0].id_list;
+      const validList = rawList
         .filter((role) => {
           if (!role) {
             return undefined;
