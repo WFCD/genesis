@@ -42,10 +42,10 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@sentry/node": "^5.29.1",
+    "@sentry/node": "^5.29.2",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
-    "bufferutil": "^4.0.2",
+    "bufferutil": "^4.0.3",
     "byte-size": "^7.0.0",
     "colors": "^1.4.0",
     "decache": "^4.6.0",
@@ -64,7 +64,7 @@
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
     "twitch": "^4.3.8",
-    "twitch-webhooks": "^4.3.7",
+    "twitch-webhooks": "^4.3.8",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.3",
     "warframe-name-generator": "^1.0.2",
