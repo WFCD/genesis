@@ -66,7 +66,7 @@
     "twitch": "^4.3.8",
     "twitch-webhooks": "^4.3.8",
     "url-exists": "^1.0.3",
-    "utf-8-validate": "^5.0.3",
+    "utf-8-validate": "^5.0.4",
     "warframe-name-generator": "^1.0.2",
     "zlib-sync": "^0.1.7"
   },
