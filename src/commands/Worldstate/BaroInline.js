@@ -28,7 +28,6 @@ class Baro extends Command {
         const tembed = { ...embed };
         tembed.fields = fieldGroup;
         await this.messageManager.embed(message, tembed, false, true);
-        await this.broadcaster.broadcast(tembed, platform, 'baro', null);
       });
     } else {
       await this.messageManager.embed(message, embed, false, true);
