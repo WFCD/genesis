@@ -5,6 +5,7 @@ const SQL = require('sql-template-strings');
 class PingsQueries {
   constructor(db) {
     this.db = db;
+    this.scope = (process.env.SCOPE || 'worker').toLowerCase();
   }
 
   /**
@@ -144,22 +145,24 @@ class PingsQueries {
           FROM type_notifications`
         .append(items && items.length
           ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
-        .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
-        .append(SQL` INNER JOIN settings as s1 ON channels.id = s1.channel_id`)
-        .append(SQL` INNER JOIN settings as ws1 ON channels.id = ws1.channel_id`)
-        .append(SQL` INNER JOIN settings as ws2 ON channels.id = ws2.channel_id`)
-        .append(SQL` INNER JOIN settings as ws3 ON channels.id = ws1.channel_id`)
-        .append(SQL` INNER JOIN settings as ws4 ON channels.id = ws2.channel_id`)
         .append(SQL`
-        WHERE type_notifications.type = ${String(type)}
-          AND s1.setting = "platform"  AND (s1.val = ${platform || 'pc'} OR s1.val IS NULL)
-          and ws1.setting = "webhookToken" AND ws1.val IS NOT NULL
-          and ws2.setting = "webhookId" AND ws2.val IS NOT NULL
-          and ws3.setting = "webhookAvatar" AND ws3.val IS NOT NULL
-          and ws4.setting = "webhookName" AND ws4.val IS NOT NULL `)
+          INNER JOIN channels ON channels.id = type_notifications.channel_id
+          INNER JOIN settings as s1 ON channels.id = s1.channel_id
+            AND s1.setting = "platform"  AND (s1.val = ${platform || 'pc'} OR s1.val IS NULL)
+          INNER JOIN settings as ws1 ON channels.id = ws1.channel_id
+            AND ws1.setting = "webhookToken" AND ws1.val IS NOT NULL
+          INNER JOIN settings as ws2 ON channels.id = ws2.channel_id
+            AND ws2.setting = "webhookId" AND ws2.val IS NOT NULL
+          INNER JOIN settings as ws3 ON channels.id = ws3.channel_id
+            AND ws3.setting = "webhookAvatar" AND ws3.val IS NOT NULL
+          INNER JOIN settings as ws4 ON channels.id = ws4.channel_id
+            AND ws4.setting = "webhookName" AND ws4.val IS NOT NULL `)
+        .append(SQL` WHERE type_notifications.type = ${String(type)} `)
         .append(items && items.length ? SQL` AND item_notifications.item IN (${items})
           AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
-      return (await this.query(query))[0];
+      return (await this.query(query))[0]
+        .map(o => o.channelId)
+        .filter(o => o);
     } catch (e) {
       this.logger.error(e);
       return [];

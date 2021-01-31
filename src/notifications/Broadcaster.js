@@ -2,6 +2,7 @@
 
 const bs = require('byte-size');
 const logger = require('../Logger');
+const cachedEvents = require('../resources/cachedEvents');
 
 function byteFmt() {
   return `${this.value}${this.unit}`;
@@ -37,12 +38,13 @@ const clean = (channelId, index) => {
  */
 class Broadcaster {
   constructor({
-    client = undefined, settings = undefined, messageManager = undefined,
+    client = undefined, settings = undefined, messageManager = undefined, workerCache = undefined,
   }) {
     this.client = client;
     this.settings = settings;
     this.webhook = messageManager.webhook;
     this.shards = process.env.SHARDS;
+    this.workerCache = workerCache;
   }
 
   wrap(embed, ctx) {
@@ -72,22 +74,31 @@ class Broadcaster {
   * @returns {Array.<Object>} values for successes
   */
   async broadcast(embed, platform, type, items = []) {
+    logger.silly(`broadcasting ${type}`);
     delete embed.bot;
-    const guilds = await this.settings.getGuilds();
 
-    const channels = await this.settings.getAgnosticNotifications(type, platform, items);
-    for (const result of channels) {
-      const index = channels.indexOf(result);
-      const ctx = await this.settings.getCommandContext(result.channelId);
+    const guilds = this.workerCache.getKey('guilds');
+
+    const channels = cachedEvents.includes(type)
+      ? this.workerCache.getKey(`${type}:${platform}`)
+      : await this.settings.getAgnosticNotifications(type, platform, items);
+    if (!channels.length) {
+      logger.silly(`No channels on ${platform} tracking ${type}... continuing`);
+      return;
+    }
+    for (const channelId of channels) {
+      if (typeof channelId === 'undefined' || !channelId.length) continue;
+      const index = channels.indexOf(channelId);
+      const ctx = await this.settings.getCommandContext(channelId);
 
       // localeCompare should return 0 if equal, so non-zero's will be truthy
       if (embed.locale && ctx.language.localeCompare(embed.locale)) {
-        clean(result.channelId, index);
+        clean(channelId, index);
         continue;
       }
 
       const glist = Object.entries(guilds)
-        .filter(([, g]) => g.channels && g.channels.includes(result.channelId))[0];
+        .filter(([, g]) => g.channels && g.channels.includes(channelId))[0];
       const guild = glist && glist.length ? glist[1] : null;
 
       if (!guild) continue;
@@ -99,7 +110,7 @@ class Broadcaster {
         } else {
           await this.webhook(ctx, { text: prepend, embed });
         }
-        clean(result.channelId, index);
+        clean(channelId, index);
       } catch (e) {
         logger.error(e);
       }

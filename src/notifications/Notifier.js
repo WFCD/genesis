@@ -119,6 +119,7 @@ function buildNotifiableData(newData, platform, notified) {
         && !notified.includes(`arbitration:${new Date(newData.arbitration.expiry).getTime()}`)
       ? newData.arbitration
       : undefined,
+    outposts: newData.sentientOutposts.active && !notified.includes(newData.sentientOutposts.id),
   };
 
   const ostron = newData.syndicateMissions.filter(mission => mission.syndicate === 'Ostrons')[0];
@@ -143,22 +144,10 @@ function buildNotifiableData(newData, platform, notified) {
 
 /**
  * Notifier for alerts, invasions, etc.
- *   TODO: remove dependence on 'bot', use something like https://github.com/spec-tacles/rest.js
- *     to leverage direct api routing/calls with ratelimit support
- *     use this in place of bot calls to queue up role changes,
- *     and separate the notifications from the rest of the bot functionality
  */
 class Notifier {
-  /**
-   * * Set up essential notifier dependencies
-   * * Get rid of all external pull-ins
-   * rewrite to not use a bot client, but a direct api router
-   * * Instantiate our own logger
-   * * Instantiate our own db connection
-   * @param {Genesis} bot instance of the bot.... this needs to be refactored/removed
-   */
   constructor({
-    settings, client, messageManager, worldStates, timeout,
+    settings, client, messageManager, worldStates, timeout, workerCache,
   }) {
     this.settings = settings;
     this.client = client;
@@ -167,6 +156,7 @@ class Notifier {
       client,
       settings: this.settings,
       messageManager,
+      workerCache,
     });
     logger.info('[N] Ready');
 
@@ -178,15 +168,14 @@ class Notifier {
     });
 
     this.updating = false;
-
     refreshRate = timeout;
+    this.updating = [];
   }
 
   /** Start the notifier */
   async start() {
     Object.entries(this.worldStates).forEach(([, ws]) => {
       ws.on('newData', async (platform, newData) => {
-        logger.silly(`[N] Processing new data for ${platform}`);
         await this.onNewData(platform, newData);
       });
     });
@@ -200,8 +189,7 @@ class Notifier {
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.updating) return;
-    // await this.updating;
+    if (this.updating.includes(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
@@ -209,11 +197,12 @@ class Notifier {
     const notifiedIds = await this.settings.getNotifiedIds(platform);
 
     // Set up data to notify
-    this.updating = this.sendNew(platform, newData, notifiedIds,
+    this.updating.push(platform);
+
+    await this.sendNew(platform, newData, notifiedIds,
       buildNotifiableData(newData, platform, notifiedIds));
 
-    await this.updating;
-    this.updating = undefined;
+    this.updating.splice(this.updating.indexOf(platform), 1);
   }
 
   async sendNew(platform, rawData, notifiedIds, {
@@ -222,34 +211,41 @@ class Notifier {
     cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
     cetusCycleChange, earthCycleChange, vallisCycleChange,
     featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    cambionCycle, cambionCycleChange,
+    cambionCycle, cambionCycleChange, outposts,
   }) {
     // Send all notifications
     const cycleIds = [];
     try {
-      logger.silly('[N] sending new data...');
-      await this.sendAcolytes(acolytes, platform);
+      logger.silly(`[N] sending new data on ${platform}...`);
+
+      this.sendAcolytes(acolytes, platform);
+
       if (baro) {
-        await this.sendBaro(baro, platform);
+        this.sendBaro(baro, platform);
       }
-      // if (conclave && conclave.length > 0) {
-      //   await this.sendConclaveDailies(conclave, platform);
-      //   await this.sendConclaveWeeklies(conclave, platform);
-      // }
-      // if (tweets && tweets.length > 0) {
-      //   await this.sendTweets(tweets, platform);
-      // }
-      // await this.sendDarvo(dailyDeals, platform);
-      await this.sendEvent(events, platform);
-      // await this.sendFeaturedDeals(featuredDeals, platform);
-      await this.sendFissures(fissures, platform);
-      // await this.sendNews(news, platform);
-      // await this.sendStreams(streams, platform);
-      // await this.sendPopularDeals(popularDeals, platform);
-      // await this.sendPrimeAccess(primeAccess, platform);
-      // await this.sendInvasions(invasions, platform);
-      await this.sendSortie(sortie, platform);
-      await this.sendSyndicates(syndicateM, platform);
+      if (conclave && conclave.length > 0) {
+        this.sendConclaveDailies(conclave, platform);
+        this.sendConclaveWeeklies(conclave, platform);
+      }
+      if (tweets && tweets.length > 0) {
+        this.sendTweets(tweets, platform);
+      }
+      this.sendDarvo(dailyDeals, platform);
+      this.sendEvent(events, platform);
+      this.sendFeaturedDeals(featuredDeals, platform);
+      //this.sendFissures(fissures, platform);
+      this.sendNews(news, platform);
+      this.sendStreams(streams, platform);
+      this.sendPopularDeals(popularDeals, platform);
+      this.sendPrimeAccess(primeAccess, platform);
+      this.sendInvasions(invasions, platform);
+      this.sendSortie(sortie, platform);
+      this.sendSyndicates(syndicateM, platform);
+      this.sendUpdates(updates, platform);
+      this.sendAlerts(alerts, platform);
+      this.sendSentientOutposts(outposts, platform);
+      this.sendNightwave(nightwave, platform);
+      this.sendArbitration(arbitration, platform);
       cycleIds.push(
         await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds),
       );
@@ -262,20 +258,13 @@ class Notifier {
       cycleIds.push(
         await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds),
       );
-      await this.sendUpdates(updates, platform);
-      await this.sendAlerts(alerts, platform);
-      cycleIds.push(
-        await this.sendSentientOutposts(rawData.sentientOutposts, platform, notifiedIds),
-      );
-      await this.sendNightwave(nightwave, platform);
-      await this.sendArbitration(arbitration, platform);
     } catch (e) {
       logger.error(e);
     } finally {
       beats[platform].lastUpdate = Date.now();
     }
-    const alreadyNotified = [];
-    alreadyNotified.push(
+
+    const alreadyNotified = [
       ...rawData.persistentEnemies.map(a => a.pid),
       ...cycleIds,
       `${rawData.voidTrader.id}${rawData.voidTrader.active ? '1' : '0'}`,
@@ -294,10 +283,13 @@ class Notifier {
         ? `arbitration:${new Date(rawData.arbitration.expiry).getTime()}`
         : 'arbitration:0',
       ...(rawData.twitter ? rawData.twitter.map(t => t.uniqueId) : []),
-      ...(rawData.nightwave.active ? rawData.nightwave.activeChallenges.map(c => c.id) : []),
-    );
+      ...(rawData.nightwave && rawData.nightwave.active
+        ? rawData.nightwave.activeChallenges.map(c => c.id)
+        : []),
+      rawData.sentientOutposts.id,
+    ];
 
-    return this.settings.setNotifiedIds(platform, alreadyNotified);
+    await this.settings.setNotifiedIds(platform, alreadyNotified);
   }
 
   async sendAcolytes(newAcolytes, platform) {
@@ -434,7 +426,7 @@ class Notifier {
     for (const [locale, i18n] of Object.entries(i18ns)) {
       const embed = new embeds.Fissure({ logger }, [fissure], platform, i18n);
       embed.locale = locale;
-      const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase()}`;
+      const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase().replace(/\s/g, '')}`;
       await this.broadcaster.broadcast(embed, platform, id);
     }
   }
@@ -565,15 +557,14 @@ class Notifier {
     return type;
   }
 
-  async sendSentientOutposts(outpost, platform, notifiedIds) {
-    if (outpost.active && !notifiedIds.includes(outpost.id)) {
-      for (const [locale, i18n] of Object.entries(i18ns)) {
+  async sendSentientOutposts(outpost, platform) {
+    for (const [locale, i18n] of Object.entries(i18ns)) {
+      if (outpost.mission) {
         const embed = new embeds.Outposts({ logger }, outpost, platform, i18n);
         embed.locale = locale;
         await this.broadcaster.broadcast(embed, platform, 'outposts');
       }
     }
-    return outpost.id;
   }
 }
 

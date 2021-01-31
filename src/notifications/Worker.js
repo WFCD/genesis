@@ -1,5 +1,8 @@
 'use strict';
 
+const flatCache = require('flat-cache');
+const Job = require('cron').CronJob;
+
 const Notifier = require('./Notifier');
 const FeedsNotifier = require('./FeedsNotifier');
 const TwitchNotifier = require('./TwitchNotifier');
@@ -10,6 +13,9 @@ const Rest = require('../tools/RESTWrapper');
 const Database = require('../settings/Database');
 
 const { logger } = require('./NotifierUtils');
+const cachedEvents = require('../resources/cachedEvents');
+
+const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 
 const rest = new Rest();
 const db = new Database();
@@ -17,6 +23,50 @@ const db = new Database();
 const deps = {};
 
 let timeout;
+
+const hydrateGuilds = async () => {
+  if (!deps.workerCache) return;
+  const guilds = await db.getGuilds();
+  if (guilds) {
+    deps.workerCache.setKey('guilds', guilds);
+    deps.workerCache.save(true);
+  }
+};
+
+const hydrateQueries = async () => {
+  if (!deps.workerCache) return;
+  for (const cachedEvent of cachedEvents) {
+    for (const platform of activePlatforms) {
+      deps.workerCache.setKey(`${cachedEvent}:${platform}`,
+        await db.getAgnosticNotifications(cachedEvent, platform));
+    }
+  }
+  deps.workerCache.save(true);
+};
+
+const initCache = async () => {
+  deps.workerCache = flatCache.load('genesis:worker');
+
+  // generate guild cache data if not present
+  const currentGuilds = deps.workerCache.getKey('guilds');
+  if (!currentGuilds) {
+    await hydrateGuilds();
+  }
+
+  let hydrateEvents = false;
+  for (const cachedEvent of cachedEvents) {
+    for (const platform of activePlatforms) {
+      if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
+        hydrateEvents = true;
+      }
+    }
+  }
+  if (hydrateEvents) await hydrateQueries();
+
+  // refresh guild cache every hour... it's a heavy process, we don't want to do it much
+  deps.guildHydration = new Job('0 0 * * * *', hydrateGuilds);
+  deps.queryHydration = new Job('0 */10 * * * *', hydrateQueries);
+};
 
 class Worker {
   constructor() {
@@ -27,9 +77,9 @@ class Worker {
     this.worldStates = {};
 
     timeout = process.env.WORLDSTATE_TIMEOUT || 60000;
-    ['pc', 'ps4', 'xb1', 'swi']
+    activePlatforms
       .forEach((platform) => {
-        this.worldStates[platform] = new WorldStateCache(platform, timeout, this.logger);
+        this.worldStates[platform] = new WorldStateCache(platform, timeout);
       });
   }
 
@@ -46,6 +96,7 @@ class Worker {
 
       await rest.init();
       await deps.settings.init();
+      await initCache();
 
       this.messageManager = new MessageManager(deps);
       deps.messageManager = this.messageManager;
@@ -56,16 +107,14 @@ class Worker {
 
       this.feedNotifier.start();
       this.twitchNotifier.start();
-
       await this.notifier.start();
 
-      const body = {
+      rest.controlMessage({
         embeds: [{
           description: 'Worker ready!',
           color: 0x2B90EC,
         }],
-      };
-      rest.controlMessage(body);
+      });
     } catch (e) {
       logger.error(e);
     }

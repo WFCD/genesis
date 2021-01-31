@@ -18,7 +18,7 @@ class EarthCycleEmbed extends BaseEmbed {
   constructor(bot, state) {
     super();
 
-    this.title = `Worldstate - ${state.isCetus ? 'Plains of Eidolon' : 'Earth'} Cycle - ${state.isDay ? 'Day' : 'Night'}time`;
+    this.title = `Worldstate - ${state.isCetus ? 'PoE' : 'Earth'} - ${state.isDay ? 'Day' : 'Night'}`;
     this.color = state.isDay ? 0xB64624 : 0x000066;
     this.thumbnail = {
       url: state.isCetus ? ostron : earth,

@@ -3,6 +3,7 @@
 const EventEmitter = require('events');
 const { apiBase } = require('./CommonFunctions.js');
 const fetch = require('./resources/Fetcher');
+
 const logger = require('./Logger');
 
 const worldStateURLs = {
@@ -22,7 +23,6 @@ class WorldStateCache extends EventEmitter {
     this.updating = null;
     this.platform = platform;
     this.updateInterval = setInterval(() => this.update(), timeout);
-    this.logger = logger;
     this.update();
   }
 
@@ -42,7 +42,7 @@ class WorldStateCache extends EventEmitter {
       return this.currentData;
     } catch (err) {
       this.updating = undefined;
-      this.logger.error(err);
+      logger.error(err);
     }
     return this.updating;
   }

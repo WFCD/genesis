@@ -1,4 +1,8 @@
 {
+  "assault": {
+    "arbit": false,
+    "fissure": true
+  },
   "excavation": {
     "arbi": true,
     "fissure": true
