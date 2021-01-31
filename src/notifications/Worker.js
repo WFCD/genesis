@@ -45,7 +45,8 @@ const hydrateQueries = async () => {
 };
 
 const initCache = async () => {
-  deps.workerCache = flatCache.load('genesis:worker');
+  deps.workerCache = flatCache.load('worker',
+    require('path').resolve('../../.cache'));
 
   // generate guild cache data if not present
   const currentGuilds = deps.workerCache.getKey('guilds');

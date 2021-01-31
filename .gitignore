@@ -52,3 +52,5 @@ commands.json
 
 # Docker
 docker-compose.yaml
+
+.cache/

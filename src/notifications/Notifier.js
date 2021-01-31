@@ -88,7 +88,7 @@ function buildNotifiableData(newData, platform, notified) {
     featuredDeals: newData.flashSales
       .filter(d => d.isFeatured && !notified.includes(d.id)),
     fissures: newData.fissures
-      .filter(f => !f.expired && !notified.includes(f.id)),
+      .filter(f => f.active && !notified.includes(f.id)),
     news: newData.news
       .filter(n => !n.primeAccess && !n.update
         && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)),
@@ -233,7 +233,7 @@ class Notifier {
       this.sendDarvo(dailyDeals, platform);
       this.sendEvent(events, platform);
       this.sendFeaturedDeals(featuredDeals, platform);
-      //this.sendFissures(fissures, platform);
+      this.sendFissures(fissures, platform);
       this.sendNews(news, platform);
       this.sendStreams(streams, platform);
       this.sendPopularDeals(popularDeals, platform);
