@@ -21,7 +21,7 @@ class Darvo extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     await this.messageManager.embed(message, new DarvoEmbed(this.bot,
-      (await this.ws.get('dailyDeals'))[0], platform, ctx.language), true, false);
+      (await this.ws.get('dailyDeals', platform, ctx.language))[0], platform), true, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }
