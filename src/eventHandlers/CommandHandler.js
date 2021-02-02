@@ -2,7 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 const I18n = require('../settings/I18n');
-const { games } = require('../CommonFunctions');
+const { games, emojify } = require('../CommonFunctions');
 
 /**
  * Checks if the command is callable,
@@ -156,12 +156,12 @@ class CommandHandler extends Handler {
             switch (status) {
               case this.statuses.SUCCESS:
                 if (canReact) {
-                  message.react('✅');
+                  message.react(emojify('green_tick'));
                 }
                 break;
               case this.statuses.FAILURE:
                 if (canReact) {
-                  message.react('❌');
+                  message.react(emojify('red_tick'));
                 }
                 break;
               case this.statuses.NO_ACCESS:

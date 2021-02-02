@@ -3,7 +3,7 @@
 const ping = require('ping').promise;
 const { MessageEmbed } = require('discord.js');
 const Command = require('../../models/Command.js');
-const { timeDeltaToString, games } = require('../../CommonFunctions.js');
+const { timeDeltaToString, games, emojify } = require('../../CommonFunctions.js');
 
 const d2Hosts = [
   'bungie.net',
@@ -49,14 +49,14 @@ class Ping extends Command {
         .then((result) => {
           results.push({
             name: host,
-            value: `${result.alive ? '\\✅' : '\\❎'} ${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '--'}ms`,
+            value: `${result.alive ? emojify('green_tick') : emojify('red_tick')} ${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '--'}ms`,
           });
         });
     });
 
     results.unshift({
       name: 'Discord WS',
-      value: `\\✅ ${this.bot.client.ws.ping.toFixed(2)}ms`,
+      value: `${emojify('green_tick')} ${this.bot.client.ws.ping.toFixed(2)}ms`,
     });
 
     const now = Date.now();

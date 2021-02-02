@@ -15,7 +15,7 @@ class FeedsNotifier {
     this.feeder = new RssFeedEmitter({ userAgent: `RSS Feed Emitter | ${client.user.username}` });
 
     feeds.forEach((feed) => {
-      this.feeder.add({ url: feed.url, refresh: 300000 });
+      this.feeder.add({ url: feed.url, refresh: 900000 });
     });
 
     this.broadcaster = new Broadcaster({
