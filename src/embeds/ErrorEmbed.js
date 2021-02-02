@@ -12,7 +12,7 @@ class BuildEmbed extends BaseEmbed {
   constructor(error) {
     super();
     this.color = 0xFF0000;
-    this.title = 'Error';
+    this.title = `Error - ${process.env.SCOPE}`;
     this.description = error.message || error;
     if (error.stack) {
       const stack = error.stack.replace(new RegExp(

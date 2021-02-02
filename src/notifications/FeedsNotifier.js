@@ -10,7 +10,7 @@ const logger = require('../Logger');
 
 class FeedsNotifier {
   constructor({
-    client, settings, messageManager,
+    client, settings, messageManager, workerCache,
   }) {
     this.feeder = new RssFeedEmitter({ userAgent: `RSS Feed Emitter | ${client.user.username}` });
 
@@ -22,6 +22,7 @@ class FeedsNotifier {
       client,
       settings,
       messageManager,
+      workerCache,
     });
     this.feeder.on('error', logger.debug);
   }

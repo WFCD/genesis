@@ -1,33 +1,7 @@
 'use strict';
 
-const bs = require('byte-size');
 const logger = require('../Logger');
 const cachedEvents = require('../resources/cachedEvents');
-
-function byteFmt() {
-  return `${this.value}${this.unit}`;
-}
-
-const clean = (channelId, index) => {
-  if (index % 1000) return;
-  if (global.gc) {
-    try {
-      const v8 = require('v8');
-      const before = v8.getHeapStatistics();
-      global.gc();
-      const after = v8.getHeapStatistics();
-
-      const entry = {
-        b: { u: bs(before.used_heap_size, byteFmt), l: bs(before.heap_size_limit, byteFmt) },
-        a: { u: bs(after.used_heap_size, byteFmt), l: bs(after.heap_size_limit, byteFmt) },
-      };
-
-      logger.silly(`${channelId} ======> ${String(entry.b.u).padEnd(7)} || ${String(entry.a.u).padEnd(7)}`);
-    } catch (e) {
-      logger.info(e);
-    }
-  }
-};
 
 /**
  * Broadcast updates out to subscribing channels
@@ -88,12 +62,10 @@ class Broadcaster {
     }
     for (const channelId of channels) {
       if (typeof channelId === 'undefined' || !channelId.length) continue;
-      const index = channels.indexOf(channelId);
       const ctx = await this.settings.getCommandContext(channelId);
 
       // localeCompare should return 0 if equal, so non-zero's will be truthy
       if (embed.locale && ctx.language.localeCompare(embed.locale)) {
-        clean(channelId, index);
         continue;
       }
 
@@ -110,7 +82,6 @@ class Broadcaster {
         } else {
           await this.webhook(ctx, { text: prepend, embed });
         }
-        clean(channelId, index);
       } catch (e) {
         logger.error(e);
       }

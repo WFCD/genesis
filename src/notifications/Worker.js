@@ -24,51 +24,6 @@ const deps = {};
 
 let timeout;
 
-const hydrateGuilds = async () => {
-  if (!deps.workerCache) return;
-  const guilds = await db.getGuilds();
-  if (guilds) {
-    deps.workerCache.setKey('guilds', guilds);
-    deps.workerCache.save(true);
-  }
-};
-
-const hydrateQueries = async () => {
-  if (!deps.workerCache) return;
-  for (const cachedEvent of cachedEvents) {
-    for (const platform of activePlatforms) {
-      deps.workerCache.setKey(`${cachedEvent}:${platform}`,
-        await db.getAgnosticNotifications(cachedEvent, platform));
-    }
-  }
-  deps.workerCache.save(true);
-};
-
-const initCache = async () => {
-  deps.workerCache = flatCache.load('worker',
-    require('path').resolve('../../.cache'));
-
-  // generate guild cache data if not present
-  const currentGuilds = deps.workerCache.getKey('guilds');
-  if (!currentGuilds) {
-    await hydrateGuilds();
-  }
-
-  let hydrateEvents = false;
-  for (const cachedEvent of cachedEvents) {
-    for (const platform of activePlatforms) {
-      if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
-        hydrateEvents = true;
-      }
-    }
-  }
-  if (hydrateEvents) await hydrateQueries();
-
-  // refresh guild cache every hour... it's a heavy process, we don't want to do it much
-  deps.guildHydration = new Job('0 0 * * * *', hydrateGuilds);
-  deps.queryHydration = new Job('0 */10 * * * *', hydrateQueries);
-};
-
 class Worker {
   constructor() {
     /**
@@ -84,6 +39,51 @@ class Worker {
       });
   }
 
+  /* eslint-disable-next-line class-methods-use-this */
+  async hydrateGuilds() {
+    const guilds = await db.getGuilds();
+    if (guilds) {
+      deps.workerCache.setKey('guilds', guilds);
+      deps.workerCache.save(true);
+    }
+  }
+
+  /* eslint-disable-next-line class-methods-use-this */
+  async hydrateQueries() {
+    for (const cachedEvent of cachedEvents) {
+      for (const platform of activePlatforms) {
+        deps.workerCache.setKey(`${cachedEvent}:${platform}`,
+          await db.getAgnosticNotifications(cachedEvent, platform));
+      }
+    }
+    deps.workerCache.save(true);
+  }
+
+  async initCache() {
+    deps.workerCache = flatCache.load('worker',
+      require('path').resolve('../../.cache'));
+
+    // generate guild cache data if not present
+    const currentGuilds = deps.workerCache.getKey('guilds');
+    if (!currentGuilds) {
+      await this.hydrateGuilds();
+    }
+
+    let hydrateEvents = false;
+    for (const cachedEvent of cachedEvents) {
+      for (const platform of activePlatforms) {
+        if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
+          hydrateEvents = true;
+        }
+      }
+    }
+    if (hydrateEvents) await this.hydrateQueries();
+
+    // refresh guild cache every hour... it's a heavy process, we don't want to do it much
+    deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this));
+    deps.queryHydration = new Job('0 */10 * * * *', this.hydrateQueries.bind(this));
+  }
+
   /**
    * Start the worker notifier systems
    * @returns {Promise} [description]
@@ -97,7 +97,7 @@ class Worker {
 
       await rest.init();
       await deps.settings.init();
-      await initCache();
+      await this.initCache();
 
       this.messageManager = new MessageManager(deps);
       deps.messageManager = this.messageManager;

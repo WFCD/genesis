@@ -51,16 +51,16 @@ async function getThumbnailForItem(query, fWiki) {
         return url;
       }
     }
-    try {
-      const articles = await warframe.getSearchList({ query: fq, limit: 1 });
-      const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-      const item = Object.values(details.items)[0];
-      return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-    } catch (e) {
-      logger.error(e);
-    }
+    // try {
+    //   const articles = await warframe.getSearchList({ query: fq, limit: 1 });
+    //   const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
+    //   const item = Object.values(details.items)[0];
+    //   return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
+    // } catch (e) {
+    //   logger.error(e);
+    // }
   }
-  return undefined;
+  return '';
 }
 
 /**

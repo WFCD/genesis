@@ -13,12 +13,13 @@ const logger = require('../Logger');
  */
 class TwitchNotifier {
   constructor({
-    client, settings, messageManager,
+    client, settings, messageManager, workerCache,
   }) {
     this.broadcaster = new Broadcaster({
       client,
       settings,
       messageManager,
+      workerCache,
     });
 
     this.lastStartedAtTime = null;
