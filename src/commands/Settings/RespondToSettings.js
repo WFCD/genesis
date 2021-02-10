@@ -7,7 +7,7 @@ class RespondToSettings extends Command {
   constructor(bot) {
     super(bot, 'settings.respondSettings', 'respond to settings', 'Toggle whether or not the bot tells you when settings change from your command.', 'CMD_MGMT');
     this.usages = [
-      { description: 'Change if this channel has settings changes responded in it', parameters: ['response enabled'] },
+      { description: 'Change if this channel has settings changes responded in it', parameters: ['on', 'off'] },
     ];
     this.regex = new RegExp(`^respond(?:\\sto)?\\s?settings\\s?(on|off)?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;

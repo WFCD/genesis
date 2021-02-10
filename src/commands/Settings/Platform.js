@@ -7,7 +7,7 @@ class Platform extends Command {
   constructor(bot) {
     super(bot, 'settings.platform', 'platform', 'Change a channel\'s platform', 'CORE');
     this.usages = [
-      { description: 'Change this channel\'s platform', parameters: ['platform'] },
+      { description: 'Change this channel\'s platform', parameters: platforms, separator: '|' },
     ];
     this.regex = new RegExp(`^${this.call}(?:\\s+(${platforms.join('|')}))?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;

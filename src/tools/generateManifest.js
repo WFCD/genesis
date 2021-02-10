@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const BaseCommand = require('../models/Command');
 const { games } = require('../CommonFunctions');
+const logger = require('../Logger');
 
 const generateManifest = async () => {
   const commandDir = path.join(__dirname, '../commands');
@@ -43,10 +44,7 @@ const generateManifest = async () => {
 
   try {
     fs.writeFileSync('commands.json', JSON.stringify(commands), 'utf8');
-    if (['DEBUG', 'INFO'].some(str => str === process.env.LOG_LEVEL)) {
-      // eslint-disable-next-line no-console
-      console.log('[DEBUG] Wrote command manifest...');
-    }
+    logger.info('Wrote command manifest...');
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

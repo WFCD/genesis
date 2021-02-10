@@ -7,7 +7,7 @@ class AllowInlineCommands extends Command {
   constructor(bot) {
     super(bot, 'settings.allowinline', 'allow inline commands', 'Toggle whether or not inline commands are allowed here.', 'CMD_MGMT');
     this.usages = [
-      { description: 'Change if this channel can use inline commands', parameters: ['inline commands enabled'] },
+      { description: 'Change if this channel can use inline commands', parameters: ['on', 'off'] },
     ];
     this.regex = new RegExp('^allow\\s?inline(?:\\s?commands)?\\s?(on|off)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;

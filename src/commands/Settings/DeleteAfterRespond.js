@@ -7,7 +7,7 @@ class RespondToSettings extends Command {
   constructor(bot) {
     super(bot, 'settings.deleteafterrespond', 'delete after respond', 'Set whether or not to allow the bot to delete commands and/or responses after responding.', 'CMD_MGMT');
     this.usages = [
-      { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['deleting enabled'] },
+      { description: 'Change if the bot to delete commands and/or responses after responding in this channel', parameters: ['all', 'command', 'respond', 'none'] },
     ];
     this.regex = new RegExp('^delete\\s?after\\s?respond\\s?(all|command|respond|none)?(?:\\s+in\\s+((?:\\<\\#)?\\d+(?:\\>)?|here))?$', 'i');
     this.requiresAuth = true;

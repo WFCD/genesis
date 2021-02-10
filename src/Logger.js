@@ -45,20 +45,20 @@ const scopes = {
  * @property {function} fatal   - Logs a fatal message. The program should terminate after such
  *                                 an error
  */
-class Logger {
-  isLoggable(level) {
-    return Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel)
-  }
-}
+class Logger {}
 
 const colorify = (level, map) => level[map[level] || 'red'];
 const fmt = (level, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
+
+Logger.prototype.isLoggable = (level) => {
+  return Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
+}
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     const simple = fmt(level, message);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
-    if (this.isLoggable(level) && nonError) {
+    if (Logger.prototype.isLoggable(level) && nonError) {
       console.log(simple);
     }
 
