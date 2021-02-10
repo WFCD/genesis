@@ -73,10 +73,13 @@ class Broadcaster {
         .filter(([, g]) => g.channels && g.channels.includes(channelId))[0];
       const guild = glist && glist.length ? glist[1] : null;
 
-      if (!guild) continue;
+      if (!guild) {
+        logger.info(`couldn't find guild for ${type} on ${channelId}`);
+        continue;
+      }
 
       try {
-        const prepend = await this.settings.getPing(guild, (items || []).concat([type]));
+        const prepend = ''; // await this.settings.getPing(guild, (items || []).concat([type]));
         if (!embed.embeds) {
           await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
         } else {

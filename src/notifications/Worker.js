@@ -12,7 +12,10 @@ const MessageManager = require('../settings/MessageManager');
 const Rest = require('../tools/RESTWrapper');
 const Database = require('../settings/Database');
 
-const { logger } = require('./NotifierUtils');
+const { logger, platforms } = require('./NotifierUtils');
+
+const { emojify, games } = require('../CommonFunctions');
+
 const cachedEvents = require('../resources/cachedEvents');
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
@@ -103,19 +106,27 @@ class Worker {
       deps.messageManager = this.messageManager;
 
       this.notifier = new Notifier(deps);
-      this.feedNotifier = new FeedsNotifier(deps);
-      this.twitchNotifier = new TwitchNotifier(deps);
 
-      this.feedNotifier.start();
-      this.twitchNotifier.start();
+      if (games.includes("RSS")) {
+        this.feedNotifier = new FeedsNotifier(deps);
+        this.feedNotifier.start();
+      }
+      
+      if (games.includes("TWITCH")) {
+        this.twitchNotifier = new TwitchNotifier(deps);
+        this.twitchNotifier.start();
+      }
+
       await this.notifier.start();
 
-      rest.controlMessage({
-        embeds: [{
-          description: 'Worker ready!',
-          color: 0x2B90EC,
-        }],
-      });
+      if (logger.isLoggable('debug')) {
+        rest.controlMessage({
+          embeds: [{
+            description: `Worker ready on ${platforms}`,
+            color: 0x2B90EC,
+          }],
+        });
+      }
     } catch (e) {
       logger.error(e);
     }

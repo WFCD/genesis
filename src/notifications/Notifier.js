@@ -1,11 +1,6 @@
 'use strict';
 
 /* eslint-disable no-unused-vars */
-
-const Wikia = require('node-wikia');
-const util = require('util');
-
-const exists = util.promisify(require('url-exists'));
 const fetch = require('../resources/Fetcher');
 const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');
@@ -14,8 +9,6 @@ const logger = require('../Logger');
 const {
   createGroupedArray, apiBase, apiCdnBase, platforms, captures,
 } = require('../CommonFunctions');
-
-const warframe = new Wikia('warframe');
 
 const syndicates = require('../resources/syndicates.json');
 const I18n = require('../settings/I18n');
@@ -51,14 +44,6 @@ async function getThumbnailForItem(query, fWiki) {
         return url;
       }
     }
-    // try {
-    //   const articles = await warframe.getSearchList({ query: fq, limit: 1 });
-    //   const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
-    //   const item = Object.values(details.items)[0];
-    //   return item && item.thumbnail ? item.thumbnail.replace(/\/revision\/.*/, '') : undefined;
-    // } catch (e) {
-    //   logger.error(e);
-    // }
   }
   return '';
 }
@@ -290,6 +275,7 @@ class Notifier {
     ];
 
     await this.settings.setNotifiedIds(platform, alreadyNotified);
+    logger.silly(`completed sending notifications for ${platform}`);
   }
 
   async sendAcolytes(newAcolytes, platform) {

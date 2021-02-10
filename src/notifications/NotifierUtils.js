@@ -30,4 +30,5 @@ const logger = require('../Logger');
 module.exports = {
   embeds,
   logger,
+  platforms: process.env.PLATFORMS,
 };

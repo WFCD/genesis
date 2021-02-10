@@ -1,6 +1,7 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+const logger = require('../../Logger');
 
 class PingsQueries {
   constructor(db) {
@@ -66,11 +67,16 @@ class PingsQueries {
     if (!guild.id) {
       guild = { id: guild };
     }
-    const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
-    const res = await this.query(query);
-    if (!res[0].length) return '';
-    return res[0]
-      .map(result => result.text).join(', ');
+    try {
+      const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
+      const res = await this.query(query);
+      if (!res[0].length) return '';
+      return res[0]
+        .map(result => result.text).join(', ');
+    } catch (e) {
+      logger.error(e);
+      return '';
+    }
   }
 
   async getPingsForGuild(guild) {

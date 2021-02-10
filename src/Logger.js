@@ -17,18 +17,6 @@ if (process.env.CONTROL_WH_ID) {
   errorHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
 }
 
-/**
- * A collection of methods for logging
- * @property {function} silly   - silly level of debugging
- * @property {function} debug   - Logs a debug message
- * @property {function} info    - Logs an info message
- * @property {function} warning - Logs a warning message
- * @property {function} error   - Logs an error message
- * @property {function} fatal   - Logs a fatal message. The program should terminate after such
- *                                 an error
- */
-class Logger {}
-
 const l = {
   get logLevel() {
     return process.env.LOG_LEVEL || 'ERROR';
@@ -47,15 +35,30 @@ const scopes = {
   WORKER: 'grey',
 };
 
+/**
+ * A collection of methods for logging
+ * @property {function} silly   - silly level of debugging
+ * @property {function} debug   - Logs a debug message
+ * @property {function} info    - Logs an info message
+ * @property {function} warning - Logs a warning message
+ * @property {function} error   - Logs an error message
+ * @property {function} fatal   - Logs a fatal message. The program should terminate after such
+ *                                 an error
+ */
+class Logger {
+  isLoggable(level) {
+    return Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel)
+  }
+}
+
 const colorify = (level, map) => level[map[level] || 'red'];
 const fmt = (level, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
     const simple = fmt(level, message);
-    const isActive = Object.keys(levels).indexOf(level) >= Object.keys(levels).indexOf(l.logLevel);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
-    if (isActive && nonError) {
+    if (this.isLoggable(level) && nonError) {
       console.log(simple);
     }
 
