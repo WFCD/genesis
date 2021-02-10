@@ -2,6 +2,7 @@
 
 const flatCache = require('flat-cache');
 const Job = require('cron').CronJob;
+require('colors');
 
 const Notifier = require('./Notifier');
 const FeedsNotifier = require('./FeedsNotifier');
@@ -13,9 +14,7 @@ const Rest = require('../tools/RESTWrapper');
 const Database = require('../settings/Database');
 
 const { logger, platforms } = require('./NotifierUtils');
-
 const { emojify, games } = require('../CommonFunctions');
-
 const cachedEvents = require('../resources/cachedEvents');
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
@@ -26,6 +25,10 @@ const db = new Database();
 const deps = {};
 
 let timeout;
+
+const forceHydrate = (process.argv[2] || '').includes('-hydrate');
+
+logger.info(`forceHydrate: ${forceHydrate}`);
 
 class Worker {
   constructor() {
@@ -66,13 +69,12 @@ class Worker {
     deps.workerCache = flatCache.load('worker',
       require('path').resolve('../../.cache'));
 
+    const sDate = Date.now();
     // generate guild cache data if not present
     const currentGuilds = deps.workerCache.getKey('guilds');
-    if (!currentGuilds) {
-      await this.hydrateGuilds();
-    }
+    if (!currentGuilds || forceHydrate) await this.hydrateGuilds();
 
-    let hydrateEvents = false;
+    let hydrateEvents = forceHydrate;
     for (const cachedEvent of cachedEvents) {
       for (const platform of activePlatforms) {
         if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
@@ -81,6 +83,8 @@ class Worker {
       }
     }
     if (hydrateEvents) await this.hydrateQueries();
+    const eDate = Date.now();
+    logger.info(`[${'DB'.brightMagenta}] hydration took ${String(eDate-sDate).red}ms`)
 
     // refresh guild cache every hour... it's a heavy process, we don't want to do it much
     deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this));

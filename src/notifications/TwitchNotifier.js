@@ -8,6 +8,8 @@ const Broadcaster = require('./Broadcaster');
 const { platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
+require('colors');
+
 /**
  * Watches for Twitch go-lives and broadcasts them
  */
@@ -52,7 +54,7 @@ class TwitchNotifier {
       logger.error(`initialzation error: ${e.message}`);
       return;
     }
-    logger.info('[Twitch] Ready');
+    logger.info(`[${'Twitch'.purple}] Ready`);
   }
 
   /**

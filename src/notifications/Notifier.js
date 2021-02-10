@@ -6,6 +6,8 @@ const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');
 const logger = require('../Logger');
 
+require('colors');
+
 const {
   createGroupedArray, apiBase, apiCdnBase, platforms, captures,
 } = require('../CommonFunctions');
@@ -143,7 +145,7 @@ class Notifier {
       messageManager,
       workerCache,
     });
-    logger.info('[N] Ready');
+    logger.info(`[${'N'.cyan}] Ready`);
 
     platforms.forEach((p) => {
       beats[p] = {
