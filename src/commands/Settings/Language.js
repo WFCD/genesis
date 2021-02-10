@@ -9,7 +9,7 @@ class Language extends Command {
   constructor(bot) {
     super(bot, 'settings.language', 'language', 'Set the channel\'s language', 'CORE');
     this.usages = [
-      { description: 'Change this channel\'s language', parameters: languages, separator: '|'},
+      { description: 'Change this channel\'s language', parameters: languages, separator: '|' },
     ];
     this.regex = new RegExp(`^${this.call}\\s?(${languages.join('|')})?(?:\\s+in\\s+(${captures.channel}|here))?$`, 'i');
     this.requiresAuth = true;

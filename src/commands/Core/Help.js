@@ -2,19 +2,26 @@
 
 const BaseEmbed = require('../../embeds/BaseEmbed');
 const Command = require('../../models/Command');
-const { createGroupedArray, setupPages, games } = require('../../CommonFunctions');
+const {
+  createGroupedArray, setupPages, games, assetBase,
+} = require('../../CommonFunctions');
 
 const invalidResultsEmbed = {
   color: 0x00CCFF,
   title: 'No results, please refine query.',
 };
 
-const createEmbedsForCommands = (commandFields, title, color) => {
+const createEmbedsForCommands = (commandFields, title, color, query) => {
   const embed = new BaseEmbed();
   embed.title = title;
   embed.fields = [].concat(...commandFields);
   embed.color = color;
   embed.footer.text = '*Optional Parameter • <> Parameter Replacements';
+
+  const call = embed.fields.length === 1 ? embed.fields[0].call : query;
+  embed.image = {
+    url: `${assetBase}/gif/help/${call}.gif`,
+  };
   return embed;
 };
 
@@ -22,6 +29,7 @@ const mapCommands = (commands, prefix) => commands.map(command => command.usages
   name: `${command.isInline ? '' : prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
   value: u.description || 'No description',
   inline: false,
+  call: command.call,
 })));
 
 const commandSort = (a, b) => {
@@ -119,7 +127,7 @@ class Help extends Command {
     searchableCommands.sort(commandSort);
     const lines = mapCommands(searchableCommands, config.prefix);
     const groups = createGroupedArray(lines, 9);
-    const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD));
+    const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD, query));
     await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }

@@ -14,7 +14,7 @@ const Rest = require('../tools/RESTWrapper');
 const Database = require('../settings/Database');
 
 const { logger, platforms } = require('./NotifierUtils');
-const { emojify, games } = require('../CommonFunctions');
+const { games } = require('../CommonFunctions');
 const cachedEvents = require('../resources/cachedEvents');
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
@@ -84,7 +84,7 @@ class Worker {
     }
     if (hydrateEvents) await this.hydrateQueries();
     const eDate = Date.now();
-    logger.info(`[${'DB'.brightMagenta}] hydration took ${String(eDate-sDate).red}ms`)
+    logger.info(`[${'DB'.brightMagenta}] hydration took ${String(eDate - sDate).red}ms`);
 
     // refresh guild cache every hour... it's a heavy process, we don't want to do it much
     deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this));
@@ -111,12 +111,12 @@ class Worker {
 
       this.notifier = new Notifier(deps);
 
-      if (games.includes("RSS")) {
+      if (games.includes('RSS')) {
         this.feedNotifier = new FeedsNotifier(deps);
         this.feedNotifier.start();
       }
-      
-      if (games.includes("TWITCH")) {
+
+      if (games.includes('TWITCH')) {
         this.twitchNotifier = new TwitchNotifier(deps);
         this.twitchNotifier.start();
       }

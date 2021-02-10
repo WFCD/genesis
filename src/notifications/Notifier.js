@@ -1,6 +1,9 @@
 'use strict';
 
 /* eslint-disable no-unused-vars */
+const util = require('util');
+const exists = util.promisify(require('url-exists'));
+
 const fetch = require('../resources/Fetcher');
 const { embeds } = require('./NotifierUtils');
 const Broadcaster = require('./Broadcaster');

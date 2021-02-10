@@ -50,9 +50,8 @@ class Logger {}
 const colorify = (level, map) => level[map[level] || 'red'];
 const fmt = (level, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
 
-Logger.prototype.isLoggable = (level) => {
-  return Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
-}
+Logger.prototype.isLoggable = level => Object.keys(levels)
+  .indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message) => {
