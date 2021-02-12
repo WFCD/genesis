@@ -9,6 +9,8 @@ const fs = require('fs');
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
+const avatarPrefix = `https://cnd.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
+
 const props = (obj) => {
   const p = [];
   for (; obj != null; obj = Object.getPrototypeOf(obj)) { // eslint-disable-line no-param-reassign
@@ -254,6 +256,10 @@ class Database {
         setting: row.setting,
         value: row.val,
       })).forEach((row) => {
+        if (row.setting === 'webhookAvatar' && !row.value.startsWith('http')) {
+          // handle sending hashes
+          row.value = `${avatarPrefix}/${row.value}.png`;
+        }
         if (row.setting.indexOf('webhook') === -1) {
           context[`${row.setting}`] = row.value;
         } else {
