@@ -57,9 +57,10 @@ class Broadcaster {
       ? this.workerCache.getKey(`${type}:${platform}`)
       : await this.settings.getAgnosticNotifications(type, platform, items);
     if (!channels.length) {
-      logger.silly(`No channels on ${platform} tracking ${type}... continuing`);
+      logger.debug(`No channels on ${platform} tracking ${type}... continuing`);
       return;
     }
+
     for (const channelId of channels) {
       if (typeof channelId === 'undefined' || !channelId.length) continue;
       const ctx = await this.settings.getCommandContext(channelId);

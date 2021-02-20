@@ -262,7 +262,6 @@ class MessageManager {
    * @returns {null|Promise<Message>}
    */
   async notifySettingsChange(message, delCall, delRes) {
-    await message.react('\u2705');
     const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings') === '1';
 
     if (respondToSettings) {

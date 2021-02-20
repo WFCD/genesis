@@ -148,7 +148,7 @@ class Notifier {
       messageManager,
       workerCache,
     });
-    logger.info(`[${'N'.cyan}] Ready`);
+    logger.info('Ready', 'WS');
 
     platforms.forEach((p) => {
       beats[p] = {
@@ -409,8 +409,9 @@ class Notifier {
   }
 
   async sendFissures(newFissures, platform) {
-    return Promise.all(newFissures
-      .map(fissure => this.sendFissure(fissure, platform)));
+    for (const fissure of newFissures) {
+      await this.sendFissure(fissure, platform);
+    }
   }
 
   async sendFissure(fissure, platform) {
@@ -418,7 +419,11 @@ class Notifier {
       const embed = new embeds.Fissure({ logger }, [fissure], platform, i18n);
       embed.locale = locale;
       const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase().replace(/\s/g, '')}`;
-      await this.broadcaster.broadcast(embed, platform, id);
+      try {
+        await this.broadcaster.broadcast(embed, platform, id);
+      } catch (e) {
+        logger.error(e);
+      }
     }
   }
 

@@ -72,7 +72,13 @@
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "@babel/core": "^7.11.0",
+    "@babel/eslint-parser": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/plugin-proposal-private-methods": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@types/flat-cache": "^2.0.0",
+    "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0"
   },
@@ -81,10 +87,21 @@
     "node": ">=12.16.1"
   },
   "snyk": true,
+  "eslintIgnore": [
+    "commands.json",
+    "src/resources/*.json"
+  ],
   "eslintConfig": {
     "extends": "airbnb-base",
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
-      "sourceType": "script"
+      "sourceType": "script",
+      "babelOptions": {
+        "plugins": [
+          "@babel/plugin-proposal-class-properties",
+          "@babel/plugin-proposal-private-methods"
+        ]
+      }
     },
     "rules": {
       "valid-jsdoc": [
@@ -117,6 +134,7 @@
       "no-await-in-loop": "off",
       "import/no-unresolved": 0,
       "no-useless-escape": 0,
+      "func-names": 0,
       "arrow-parens": [
         2,
         "as-needed",
@@ -128,5 +146,14 @@
       "no-param-reassign": "off",
       "no-continue": "off"
     }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-private-methods"
+    ]
   }
 }

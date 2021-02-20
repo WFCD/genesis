@@ -35,6 +35,13 @@ const scopes = {
   WORKER: 'grey',
 };
 
+const contexts = {
+  RSS: 'grey',
+  TWITCH: 'magenta',
+  WS: 'cyan',
+  DB: 'blue',
+};
+
 /**
  * A collection of methods for logging
  * @property {function} silly   - silly level of debugging
@@ -48,14 +55,16 @@ const scopes = {
 class Logger {}
 
 const colorify = (level, map) => level[map[level] || 'red'];
-const fmt = (level, msg) => `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${msg}`;
+const fmt = (level, msg, context) => `[${colorify(scope, scopes)}] ${(colorify(level, levels)
+  || 'ukn').toLowerCase()}: ${context ? `${colorify(context, contexts)
+    || 'ukn'} ` : ''}${msg}`;
 
 Logger.prototype.isLoggable = level => Object.keys(levels)
   .indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
 
 Object.keys(levels).forEach((level) => {
-  Logger.prototype[level.toLowerCase()] = (message) => {
-    const simple = fmt(level, message);
+  Logger.prototype[level.toLowerCase()] = (message, context) => {
+    const simple = fmt(level, message, context);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (Logger.prototype.isLoggable(level) && nonError) {
       console.log(simple);
