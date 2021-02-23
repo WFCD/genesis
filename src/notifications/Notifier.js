@@ -93,7 +93,7 @@ function buildNotifiableData(newData, platform, notified) {
     tweets: newData.twitter
       ? newData.twitter.filter(t => t && !notified.includes(t.uniqueId))
       : [],
-    updates: newData.news.filter(n => (n.update || !updtReg.test(n.message))
+    updates: newData.news.filter(n => (n.update || updtReg.test(n.message))
         && !n.stream && !notified.includes(n.id)),
 
     /* Cycles data */
