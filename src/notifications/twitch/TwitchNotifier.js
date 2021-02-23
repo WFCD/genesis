@@ -6,6 +6,8 @@ const TwitchMonitor = require('./TwitchMonitor');
 const Broadcaster = require('../Broadcaster');
 const logger = require('../../Logger');
 
+const { platforms } = require('../../CommonFunctions');
+
 require('colors');
 
 /**
@@ -19,7 +21,7 @@ class TwitchNotifier {
   #activePlatforms;
 
   constructor({
-    client, settings, messageManager, workerCache, activePlatforms,
+    client, settings, messageManager, workerCache,
   }) {
     this.#broadcaster = new Broadcaster({
       client,
@@ -28,7 +30,7 @@ class TwitchNotifier {
       workerCache,
     });
     this.#monitor = new TwitchMonitor();
-    this.#activePlatforms = activePlatforms;
+    this.#activePlatforms = platforms;
 
     this.enabled = true;
   }

@@ -24,8 +24,12 @@ class NightwaveEmbed extends BaseEmbed {
     };
     this.color = 0x663333;
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Nightwave`;
+
+    const logicalSeason = nightwave.season + 1;
+    const seasonDisplay = `${Math.floor(logicalSeason / 2)}${logicalSeason % 2 === 1 ? ' Intermission' : ''}`;
+
     if (nightwave.activeChallenges.length > 1) {
-      this.description = i18n`Season ${nightwave.season + 1} • Phase ${nightwave.phase + 1}`;
+      this.description = i18n`Season ${seasonDisplay} • Phase ${nightwave.phase + 1}`;
       this.fields = [];
       this.fields.push({
         name: i18n`Currently Active`,
