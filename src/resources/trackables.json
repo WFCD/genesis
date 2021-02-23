@@ -178,6 +178,10 @@
   "twitch": [
     "warframe.devstream.live",
     "warframe.primetime.live",
-    "warframe.other.live"
+    "warframe.other.live",
+    "sherpa.live",
+    "joeyzerotv.live",
+    "de_rebecca.live",
+    "de_steve.live"
   ]
 }

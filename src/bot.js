@@ -2,6 +2,8 @@
 
 const { Client, WebhookClient } = require('discord.js');
 
+// const Feeder = require('rss-feed-emitter');
+
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
@@ -10,6 +12,8 @@ const EventHandler = require('./EventHandler');
 const MessageManager = require('./settings/MessageManager');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
+
+// const feeds = require('./resources/rssFeeds');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
@@ -150,6 +154,8 @@ class Genesis {
     this.clusterId = process.env.CLUSTER_ID || 0;
     // this.tracker = new Tracker(this);
 
+    // this.feeder; // for debugging
+
     if (process.env.CONTROL_WH_ID) {
       this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
     }
@@ -203,6 +209,16 @@ class Genesis {
     try {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
+
+      /* For Debugging:
+      this.feeder = new Feeder({
+        userAgent: `RSS Feed Emitter | ${this.client.user.username}`,
+        skipFirstLoad: true,
+      });
+      feeds.forEach((feed) => {
+        this.feeder.add({ url: feed.url, refresh: 900000 });
+      });
+      */
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
       if (!unlog.includes(type)) {

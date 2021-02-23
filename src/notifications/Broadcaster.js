@@ -57,7 +57,7 @@ class Broadcaster {
       ? this.workerCache.getKey(`${type}:${platform}`)
       : await this.settings.getAgnosticNotifications(type, platform, items);
     if (!channels.length) {
-      logger.debug(`No channels on ${platform} tracking ${type}... continuing`);
+      logger.silly(`No channels on ${platform} tracking ${type}... continuing`, 'WS');
       return;
     }
 

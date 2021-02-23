@@ -15,7 +15,7 @@ const welcomes = require('./resources/welcomes.json');
 
 const {
   eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources, nightwave, twitch,
+  resources, nightwave, twitch
 } = require('./resources/trackables.json');
 
 const rssFeeds = require('./resources/rssFeeds');
@@ -379,7 +379,7 @@ const chunkify = ({
       if (checkTitle) {
         // strip the last title if it starts with a title
         if (string.endsWith('**')) {
-          const endTitle = string.matches(/\*\*(.*)\*\*\s*$/g)[1];
+          const endTitle = (string.match(/\*\*(.*)\*\*\s*$/g)[1] || '');
           string = string.replace(/\*\*(.*)\*\*\s*$/g, ''); // eslint-disable-line no-param-reassign
           breakIndex -= endTitle.length;
         }
@@ -411,6 +411,7 @@ const markdinate = htmlString => htmlString
   .replace(/<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
   .replace(/<li\s?(?:class=".*")?\s?(?:dir=".*")?>\n/gm, '- ') // strip list items to bullets, replace later with emoji
   .replace(/ipsnoembed="false" /gm, '') // manually replace ipsnoembed, it causes issues given location
+  .replace(/ipsnoembed="true" /gm, '') // manually replace ipsnoembed, it causes issues given location
   .replace(/<a href="(.*)" rel="external nofollow(?: noopener)?"\s?(?:target="_blank")?>(.*)<\/a>/gm, '[$2]($1)')
   .replace(/&amp;/gm, '&') // replace ampersand entity... it looks weird with some titles
   .replace(/<\/li>/gm, '') // strip li end tags

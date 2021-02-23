@@ -7,21 +7,40 @@ const BaseEmbed = require('./BaseEmbed.js');
  */
 class TwitchEmbed extends BaseEmbed {
   /**
-   * @param {HelixStream} streamData - a stream result from twitch api
-   * @param {HelixUser} userData   - a user result from twitch api
+   * @param {Object} streamData - a stream result from twitch api
    */
-  constructor(streamData, userData) {
+  constructor(streamData) {
     super();
     this.title = streamData.title;
-    if (userData) {
+    this.url = `https://www.twitch.tv/${streamData.user_login}`;
+
+    this.image = {
+      url: streamData.thumbnail_url
+        .replace('{width}', '1280')
+        .replace('{height}', '720'),
+    };
+
+    this.color = 6570405;
+    this.footer = {
+      text: 'Live @',
+      icon_url: 'https://i.imgur.com/urcKWLO.png',
+    };
+
+    if (streamData.user) {
       this.author = {
-        name: streamData.userDisplayName,
-        icon_url: userData.profilePictureUrl,
+        name: streamData.user.display_name,
+        icon_url: streamData.user.profile_image_url,
       };
-      this.image = {
-        url: streamData.thumbnailUrl.replace('{width}', '580').replace('{height}', '326'),
+
+      this.description = streamData.user.description;
+    }
+
+    if (streamData.game) {
+      this.thumbnail = {
+        url: streamData.game.box_art_url
+          .replace('{width}', '288')
+          .replace('{height}', '384'),
       };
-      this.url = `https://www.twitch.tv/${userData.name}`;
     }
   }
 }

@@ -16,7 +16,7 @@ class GetRSSUpdates extends Command {
 
   async run(message, ctx) {
     const feedUrl = feeds.filter(f => f.key === `forum.updates.${ctx.platform}`)[0].url;
-    const matchingFeeds = this.bot.feedNotifier.feeder.list.filter(f => f.url === feedUrl);
+    const matchingFeeds = this.bot.feeder.list.filter(f => f.url === feedUrl);
     const updates = matchingFeeds && matchingFeeds[0]
         && matchingFeeds[0].items && matchingFeeds[0].items[0]
       ? [...matchingFeeds[0].items]

@@ -6,14 +6,14 @@ require('colors');
 
 const Notifier = require('./Notifier');
 const FeedsNotifier = require('./FeedsNotifier');
-const TwitchNotifier = require('./TwitchNotifier');
+const TwitchNotifier = require('./twitch/TwitchNotifier');
 
 const WorldStateCache = require('../WorldStateCache');
 const MessageManager = require('../settings/MessageManager');
 const Rest = require('../tools/RESTWrapper');
 const Database = require('../settings/Database');
 
-const { logger, platforms } = require('./NotifierUtils');
+const { logger } = require('./NotifierUtils');
 const { games } = require('../CommonFunctions');
 const cachedEvents = require('../resources/cachedEvents');
 
@@ -109,6 +109,7 @@ class Worker {
       deps.client = rest;
       deps.worldStates = this.worldStates;
       deps.timeout = timeout;
+      deps.activePlatforms = activePlatforms;
 
       await rest.init();
       await deps.settings.init();
@@ -133,10 +134,10 @@ class Worker {
 
       await this.notifier.start();
 
-      if (logger.isLoggable('debug')) {
+      if (logger.isLoggable('DEBUG')) {
         rest.controlMessage({
           embeds: [{
-            description: `Worker ready on ${platforms}`,
+            description: `Worker ready on ${activePlatforms}`,
             color: 0x2B90EC,
           }],
         });

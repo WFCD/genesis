@@ -26,7 +26,7 @@ const levels = {
   SILLY: 'grey',
   DEBUG: 'brightYellow',
   INFO: 'blue',
-  WARN: 'orange',
+  WARN: 'brightRed',
   ERROR: 'red',
   FATAL: 'magenta',
 };
@@ -40,6 +40,8 @@ const contexts = {
   TWITCH: 'magenta',
   WS: 'cyan',
   DB: 'blue',
+  TwitchApi: 'magenta',
+  TM: 'yellow',
 };
 
 /**
@@ -79,12 +81,13 @@ Object.keys(levels).forEach((level) => {
       if (Sentry) {
         Sentry.captureException(message);
       }
-      if (errorHook) {
+      if (errorHook && !l.logLevel === 'DEBUG') {
         // filter out api errors, they're largely unhelpful and unrecoverable
         if (message.stack && message.stack.startsWith('DiscordAPIError')) return;
         errorHook.send(new ErrorEmbed(message));
       } else {
         console.error(simple);
+        console.error(message);
       }
     }
   };
