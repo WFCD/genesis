@@ -15,7 +15,7 @@ const welcomes = require('./resources/welcomes.json');
 
 const {
   eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources, nightwave, twitch
+  resources, nightwave, twitch,
 } = require('./resources/trackables.json');
 
 const rssFeeds = require('./resources/rssFeeds');

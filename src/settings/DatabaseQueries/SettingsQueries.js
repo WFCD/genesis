@@ -209,7 +209,7 @@ class SettingsQueries {
   }
 
   async deleteWebhooksForChannel(channelId) {
-    const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting in ("webhookToken", "webhookId");`;
+    const query = SQL`DELETE FROM settings WHERE channel_id=${channelId} and setting in ("webhookToken", "webhookId", "webhookAvatar", "webhookName");`;
     return this.query(query);
   }
 }

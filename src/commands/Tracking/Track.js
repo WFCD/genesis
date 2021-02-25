@@ -33,7 +33,7 @@ class Track extends Command {
     const roomId = new RegExp(`${captures.channel}|here`, 'ig');
 
     if (!unsplitItems.length) {
-      return this.failure(message, ctx.prefix);
+      return this.#failure(message, ctx.prefix);
     }
     const trackables = trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
@@ -57,45 +57,59 @@ class Track extends Command {
       await this.settings.trackItems(channel, trackables.items);
     }
     if (ctx.respondToSettings) {
-      await this.notifyCurrent(channel, message);
+      await this.#notifyCurrent(channel, message);
     }
     this.messageManager.notifySettingsChange(message, true, true);
 
     if (!ctx.webhook) {
-      if (message.channel.permissionsFor(this.bot.client.user).has('MANAGE_WEBHOOKS')) {
-        let webhook;
-        try {
-          await message.channel.send('Setting up webhook...');
-          const existingWebhooks = (await message.channel.fetchWebhooks())
-            .filter(w => w.type === 'Incoming');
-          if (existingWebhooks.size) {
-            const temp = existingWebhooks.first();
-            webhook = {
-              id: temp.id,
-              token: temp.token,
-              name: this.settings.defaults.username,
-              avatar: this.settings.defaults.avatar,
-            };
-          } else {
-            webhook = await message.channel.createWebhook(this.settings.defaults.username, {
-              avatar: this.settings.defaults.avatar,
-              reason: 'Automated Webhook setup for Notifications',
-            });
-          }
-          this.bot.settings.setChannelWebhook(message.channel, webhook);
-          await message.channel.send(`${emojify('green_tick')} Webhook setup complete.`);
-          await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
-        } catch (e) {
-          await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: failed to look up.`);
-        }
-      } else {
-        await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
-      }
+      this.#generateWebhook(message);
     }
     return this.messageManager.statuses.SUCCESS;
   }
 
-  async notifyCurrent(channel, message) {
+  /**
+   * Generate webhook for channel
+   * @param {Discord.Message} message message containing channel context
+   */
+  async #generateWebhook (message) {
+    if (message.channel.permissionsFor(this.bot.client.user).has('MANAGE_WEBHOOKS')) {
+      let webhook;
+      try {
+        await message.channel.send('Setting up webhook...');
+        const existingWebhooks = (await message.channel.fetchWebhooks())
+          .filter(w => w.type === 'Incoming');
+        if (existingWebhooks.size) {
+          const temp = existingWebhooks.first();
+          webhook = {
+            id: temp.id,
+            token: temp.token,
+            name: this.settings.defaults.username,
+            avatar: this.settings.defaults.avatar,
+          };
+        } else {
+          webhook = await message.channel.createWebhook(this.settings.defaults.username, {
+            avatar: this.settings.defaults.avatar,
+            reason: 'Automated Webhook setup for Notifications',
+          });
+        }
+        if (!webhook.avatar.startsWith('http')) webhook.avatar = this.settings.defaults.avatar;
+        this.bot.settings.setChannelWebhook(message.channel, webhook);
+        await message.channel.send(`${emojify('green_tick')} Webhook setup complete.`);
+        await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
+      } catch (e) {
+        await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: failed to look up.`);
+      }
+    } else {
+      await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
+    }
+  }
+
+  /**
+   * Notify the origin channel of the currently tracked trackables
+   * @param {Discord.TextChannel} channel channel to notify
+   * @param {Discord.Message} message message to respond to
+   */
+  async #notifyCurrent (channel, message) {
     const pages = [];
     const items = await this.settings.getTrackedItems(channel);
     const trackedItems = constructItemEmbeds(items);
@@ -109,7 +123,12 @@ class Track extends Command {
     return message.channel.send('Nothing Tracked');
   }
 
-  async failure(message, prefix) {
+  /**
+   * Notify channel of trackable instructions
+   * @param {Discord.Message} message message to respond do
+   * @param {string} prefix configured channel prefix
+   */
+  async #failure (message, prefix) {
     await sendTrackInstructionEmbeds({
       message,
       prefix,

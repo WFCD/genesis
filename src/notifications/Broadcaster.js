@@ -87,7 +87,12 @@ class Broadcaster {
           await this.webhook(ctx, { text: prepend, embed });
         }
       } catch (e) {
-        logger.error(e);
+        if (e.message && e.message.includes('Unknown Webhook')) {
+          logger.warn(`Wiping webhook context for ${channelId}`);
+          await this.settings.deleteWebhooksForChannel(channelId);
+        } else {
+          logger.error(e);
+        }
       }
     }
   }

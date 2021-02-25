@@ -9,7 +9,7 @@ const fs = require('fs');
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
-const avatarPrefix = `https://cnd.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
+const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
 
 const props = (obj) => {
   const p = [];
@@ -162,10 +162,7 @@ class Database {
       ? {
         ...this.defaults,
         username: this.bot.client.user.username,
-        avatar: this.bot.client.user.displayAvatarURL()
-          .replace('.webp', '.png')
-          .replace('.webm', '.gif')
-          .replace('?size=2048', ''),
+        avatar: `${assetBase}/img/avatar.png`,
       } : {
         ...this.defaults,
         username: process.env.DEF_USER || 'Genesis',
