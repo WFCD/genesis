@@ -37,7 +37,7 @@ const scopes = {
 
 const contexts = {
   RSS: 'grey',
-  TWITCH: 'magenta',
+  Twitch: 'magenta',
   WS: 'cyan',
   DB: 'blue',
   TwitchApi: 'magenta',

@@ -26,40 +26,30 @@ const haveEqualValues = (a, b) => {
   return true;
 };
 
+const TEN_MINUTES = 1000 * 60 * 10;
+
 const refreshRate = Number.parseInt(process.env.TWITCH_REFRESH || 60000, 10);
 
 const forceHydrate = (process.argv[2] || '').includes('--hydrate');
 
 class TwitchMonitor extends EventEmitter {
-  #userDb;
-
-  #gameDb;
-
-  #statesDb;
-
-  #pendingUserRefresh = true;
-
-  #pendingGameRefresh;
-
-  #watchingGameIds;
-
-  #lastUserRefresh;
-
-  #lastGameRefresh;
-
-  #userData;
-
-  #gameData;
-
-  #activeStreams;
-
-  #streamData;
-
-  #channelLiveCallbacks;
-
-  #channelOfflineCallbacks;
-
   static #MIN_POLL_INTERVAL_MS = 30000;
+
+  #userDb;
+  #gameDb;
+  #statesDb;
+  #pendingUserRefresh = true;
+  #pendingGameRefresh;
+  #watchingGameIds;
+  #lastUserRefresh;
+  #lastGameRefresh;
+  #userData;
+  #gameData;
+  #activeStreams;
+  #streamData;
+  #channelLiveCallbacks;
+  #channelOfflineCallbacks;
+  #recentLive = [];
 
   constructor() {
     super();
@@ -79,6 +69,10 @@ class TwitchMonitor extends EventEmitter {
     this.#channelOfflineCallbacks = [];
   }
 
+  /**
+   * Start the Twitch monitor
+   * @returns {Promise}
+   */
   async start() {
     if (!channels.length) {
       logger.warn('No channels configured', 'TM');
@@ -195,17 +189,16 @@ class TwitchMonitor extends EventEmitter {
     this.#gameDb.save(true);
   }
 
+  #emptyRecentStreams (stream) {
+    this.#recentLive = this.#recentLive.filter(s => s !== stream);
+  }
+
   async #handleStreamList (streams) {
     // Index channel data & build list of stream IDs now online
-    const nextOnlineList = [];
     const nextGameIdList = [];
 
     for (const stream of streams) {
       const channelName = stream.user_name.toLowerCase();
-
-      if (stream.type === 'live') {
-        nextOnlineList.push(channelName);
-      }
 
       // logger.debug(`${channelName} last seen as ${this.#statesDb.getKey(channelName)}`);
 
@@ -260,8 +253,10 @@ class TwitchMonitor extends EventEmitter {
     let success = true;
 
     try {
-      if (isOnline) {
+      if (isOnline && !this.#recentLive.includes(streamData.user_name)) {
         this.emit('live', streamData);
+        this.#recentLive.push(streamData.user_name);
+        setTimeout(() => { this.#emptyRecentStreams(streamData.user_name); }, TEN_MINUTES);
       } else {
         this.emit('offline', streamData);
       }

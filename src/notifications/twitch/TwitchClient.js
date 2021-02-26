@@ -129,16 +129,18 @@ class TwitchClient {
         const initAccessToken = (await res.json()).access_token;
         this.#refreshToken = initAccessToken;
         this.#accessToken = initAccessToken;
-        return;
+        return true;
       }
-      logger.error(`error refreshing refresh token: ${res.statusText}`, 'TWITCH');
+      const error = await res.json();
+      logger.error(`error refreshing refresh token: ${error.message}`, 'Twitch');
+      return false;
     }
 
     const params = [
       { key: 'client_id', val: process.env.TWITCH_CLIENT_ID },
       { key: 'client_secret', val: process.env.TWITCH_CLIENT_SECRET },
       { key: 'grant_type', val: 'refresh_token' },
-      { key: 'refresh_token', val: this.refreshToken },
+      { key: 'refresh_token', val: encodeURIComponent(this.refreshToken) },
     ];
     const url = `${urls.token}?${params.map(({ key, val }) => `${key}=${val}`).join('&')}`;
 
@@ -147,15 +149,23 @@ class TwitchClient {
 
       if (res.ok) {
         const token = (await res.json()).access_token;
-        logger.info(token, 'TWITCH');
+        logger.info(token, 'Twitch');
         this.#accessToken = token;
-      } else {
-        logger.error(`error retrieving refreshing token: ${res.statusText}`, 'TWITCH');
-        logger.debug(url);
+        return true;
+      }
+      const error = await res.json();
+      logger.error(`error retrieving refresh token: ${error.message}`, 'Twitch');
+      logger.warn(url);
+
+      if (error.message === 'Invalid refresh token') {
+        this.#refreshToken = null;
+        return this.hydrateToken();
       }
     } catch (e) {
-      logger.error(e, 'TWITCH');
+      logger.error(e, 'Twitch');
     }
+
+    return false;
   }
 
   static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), null, true);

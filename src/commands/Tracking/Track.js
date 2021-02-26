@@ -92,10 +92,10 @@ class Track extends Command {
             reason: 'Automated Webhook setup for Notifications',
           });
         }
-        if (!webhook.avatar.startsWith('http')) webhook.avatar = this.settings.defaults.avatar;
-        this.bot.settings.setChannelWebhook(message.channel, webhook);
         await message.channel.send(`${emojify('green_tick')} Webhook setup complete.`);
         await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
+        if (!webhook.avatar.startsWith('http')) webhook.avatar = this.settings.defaults.avatar;
+        this.bot.settings.setChannelWebhook(message.channel, webhook);
       } catch (e) {
         await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: failed to look up.`);
       }
