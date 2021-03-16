@@ -64,7 +64,7 @@
     "ping": "^0.4.0",
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
-    "topgg-autoposter": "^1.1.7",
+    "topgg-autoposter": "^1.1.9",
     "twitch": "^4.4.1",
     "twitch-webhooks": "^4.3.8",
     "url-exists": "^1.0.3",
