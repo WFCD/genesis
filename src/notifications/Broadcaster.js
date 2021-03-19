@@ -80,7 +80,7 @@ class Broadcaster {
       }
 
       try {
-        const prepend = ''; // await this.settings.getPing(guild, (items || []).concat([type]));
+        const prepend = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || ''; // await this.settings.getPing(guild, (items || []).concat([type]));
         if (!embed.embeds) {
           await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
         } else {

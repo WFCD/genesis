@@ -2,6 +2,7 @@
 
 const SQL = require('sql-template-strings');
 const logger = require('../../Logger');
+const pingLists = require('../../resources/pingables.json');
 
 class PingsQueries {
   constructor(db) {
@@ -77,6 +78,44 @@ class PingsQueries {
       logger.error(e);
       return '';
     }
+  }
+  
+  async getAllPings() {
+    console.log(pingLists.length);
+    
+    let globalPings = {};
+    for (const plist of pingLists) {
+      const plistPings = await this.getGroupPings(plist);
+      // console.log(JSON.stringify(plistPings));
+      globalPings = {
+        ...globalPings,
+        ...plistPings,
+      };
+    }
+    return globalPings;
+  }
+  
+  async getGroupPings(plist) {
+    const pings = {};
+    // console.log(plist.split(','))
+    const query = SQL`SELECT guild_id, GROUP_CONCAT(text SEPARATOR ',') as ping
+      FROM pings
+      WHERE item_or_type in (${plist.split(',')})
+      GROUP by guild_id
+      ORDER by item_or_type asc`;
+    const res = await this.query(query);
+    const [rows] = res;
+
+    if (rows) {
+      // console.log(rows);
+      
+      rows.forEach(row => {
+        const id = `${row.guild_id}:${plist}`;
+        pings[id] = row.ping;
+      });
+    }
+    
+    return pings;
   }
 
   async getPingsForGuild(guild) {

@@ -47,8 +47,19 @@ class Worker {
         });
     }
   }
-
+  
   /* eslint-disable-next-line class-methods-use-this */
+  async hydratePings() {
+    const sDate = Date.now();
+    const pings = await db.getAllPings();
+    if (pings) {
+      deps.workerCache.setKey('pings', pings);
+      deps.workerCache.save(true);
+    }
+    const eDate = Date.now();
+    logger.info(`ping hydration took ${String(eDate - sDate).red}ms`, 'DB');
+  }
+
   async hydrateGuilds() {
     const sDate = Date.now();
     const guilds = await db.getGuilds();
@@ -58,6 +69,8 @@ class Worker {
     }
     const eDate = Date.now();
     logger.info(`guild hydration took ${String(eDate - sDate).red}ms`, 'DB');
+    
+    await this.hydratePings();
   }
 
   /* eslint-disable-next-line class-methods-use-this */
@@ -82,6 +95,9 @@ class Worker {
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
       if (!currentGuilds || forceHydrate) await this.hydrateGuilds();
+      
+      const currentPings = deps.workerCache.getKey('pings');
+      if (!(currentPings && Object.keys(currentPings).length) || forceHydrate) await this.hydratePings();
 
       let hydrateEvents = forceHydrate;
       for (const cachedEvent of cachedEvents) {
