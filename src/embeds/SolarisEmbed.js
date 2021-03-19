@@ -37,7 +37,7 @@ class SolarisEmbed extends BaseEmbed {
   constructor(bot, state) {
     super();
 
-    this.title = `Worldstate - Orb Vallis Cycle - ${state.isWarm ? 'Warm' : 'Cold'}`;
+    this.title = `Orb Vallis - ${state.isWarm ? 'Warm' : 'Cold'}`;
     this.color = state.isWarm ? 0xB64624 : 0x000066;
     this.thumbnail = {
       url: solaris,

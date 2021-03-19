@@ -79,14 +79,11 @@ class PingsQueries {
       return '';
     }
   }
-  
+
   async getAllPings() {
-    console.log(pingLists.length);
-    
     let globalPings = {};
     for (const plist of pingLists) {
       const plistPings = await this.getGroupPings(plist);
-      // console.log(JSON.stringify(plistPings));
       globalPings = {
         ...globalPings,
         ...plistPings,
@@ -94,10 +91,9 @@ class PingsQueries {
     }
     return globalPings;
   }
-  
+
   async getGroupPings(plist) {
     const pings = {};
-    // console.log(plist.split(','))
     const query = SQL`SELECT guild_id, GROUP_CONCAT(text SEPARATOR ',') as ping
       FROM pings
       WHERE item_or_type in (${plist.split(',')})
@@ -107,14 +103,12 @@ class PingsQueries {
     const [rows] = res;
 
     if (rows) {
-      // console.log(rows);
-      
-      rows.forEach(row => {
+      rows.forEach((row) => {
         const id = `${row.guild_id}:${plist}`;
         pings[id] = row.ping;
       });
     }
-    
+
     return pings;
   }
 
