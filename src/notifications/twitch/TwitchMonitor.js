@@ -267,17 +267,18 @@ class TwitchMonitor extends EventEmitter {
     return success;
   }
 
-  async #spotLoadGame (gameId) {
+  async spotLoadGame(gameId) {
     this.#handleGameList(await TwitchApi.fetchGames([gameId]));
     return this.#gameData[gameId];
   }
 
-  async #spotLoadStream (channel) {
+  async spotLoadStream(channel) {
     return this.#handleStreamList(await TwitchApi.fetchStreams([channel]));
   }
 
-  async #spotLoadUser (user) {
-    return this.#handleUserList(await TwitchApi.fetchUsers([user]));
+  async spotLoadUser(user) {
+    await this.#handleUserList(await TwitchApi.fetchUsers([user]));
+    return this.#userData[user];
   }
 }
 

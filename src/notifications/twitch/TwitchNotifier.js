@@ -44,8 +44,12 @@ class TwitchNotifier {
     }
     logger.info('Ready', 'Twitch');
 
-    this.#monitor.on('live', (streamData) => {
+    this.#monitor.on('live', async (streamData) => {
       if (this.enabled) {
+        if (!streamData.user.display_name) {
+          streamData.user = await this.#monitor.spotLoadUser(streamData.user_name);
+        }
+
         const embed = new TwitchEmbed(streamData);
         let id = `${streamData.user_login}.live`;
         // add warframe type filtering for ids...
@@ -61,6 +65,7 @@ class TwitchNotifier {
             id = `${streamData.user_login}.other.live`;
           }
         }
+
         for (const platform of this.#activePlatforms) {
           this.#broadcaster.broadcast(embed, platform, id);
         }

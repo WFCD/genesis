@@ -51,8 +51,8 @@ const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@
  * Allowed platforms
  * @type {Array.<string>}
  */
-const platforms = ['pc', 'ps4', 'xb1', 'swi']
-  .concat((process.env.PLATFORMS || '').split(',').filter(p => p));
+const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
+  .concat((process.env.PLATFORMS || '').split(',').filter(p => p))));
 
 /**
  * Games to enable.
