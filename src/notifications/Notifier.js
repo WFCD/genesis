@@ -53,6 +53,14 @@ async function getThumbnailForItem(query, fWiki) {
   return '';
 }
 
+const asId = (event, label) => {
+  const uppedTime = new Date(event.expiry);
+  uppedTime.setMilliseconds(0);
+  uppedTime.setSeconds(0);
+
+  return `${label}:${uppedTime.getTime()}`;
+};
+
 /**
  * Returns the number of milliseconds between now and a given date
  * @param   {string} d         The date from which the current time will be subtracted
@@ -89,6 +97,10 @@ function buildNotifiableData(newData, platform, notified) {
       ? newData.sortie
       : undefined,
     streams: newData.news.filter(n => n.stream && !notified.includes(n.id)),
+    steelPath: newData.steelPath.currentReward
+      && !notified.includes(asId(newData.steelPath, 'steelpath'))
+      ? newData.steelPath
+      : undefined,
     syndicateM: newData.syndicateMissions.filter(m => !notified.includes(m.id)),
     tweets: newData.twitter
       ? newData.twitter.filter(t => t && !notified.includes(t.uniqueId))
@@ -106,7 +118,7 @@ function buildNotifiableData(newData, platform, notified) {
     earthCycle: newData.earthCycle,
     vallisCycle: newData.vallisCycle,
     arbitration: newData.arbitration && newData.arbitration.enemy
-        && !notified.includes(`arbitration:${new Date(newData.arbitration.expiry).getTime()}`)
+        && !notified.includes(asId(newData.arbitration, 'arbitration'))
       ? newData.arbitration
       : undefined,
     outposts: newData.sentientOutposts.active && !notified.includes(newData.sentientOutposts.id),
@@ -201,7 +213,7 @@ class Notifier {
     cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
     cetusCycleChange, earthCycleChange, vallisCycleChange,
     featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    cambionCycle, cambionCycleChange, outposts,
+    cambionCycle, cambionCycleChange, outposts, steelPath,
   }) {
     // Send all notifications
     const cycleIds = [];
@@ -236,6 +248,7 @@ class Notifier {
       this.sendSentientOutposts(outposts, platform);
       this.sendNightwave(nightwave, platform);
       this.sendArbitration(arbitration, platform);
+      this.sendSteelPath(steelPath, platform);
       cycleIds.push(
         await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds),
       );
@@ -270,14 +283,17 @@ class Notifier {
       ...rawData.conclaveChallenges.map(cc => cc.id),
       ...rawData.weeklyChallenges.map(w => w.id),
       rawData.arbitration && rawData.arbitration.enemy
-        ? `arbitration:${new Date(rawData.arbitration.expiry).getTime()}`
+        ? asId(rawData.arbitration, 'arbitration')
         : 'arbitration:0',
       ...(rawData.twitter ? rawData.twitter.map(t => t.uniqueId) : []),
       ...(rawData.nightwave && rawData.nightwave.active
         ? rawData.nightwave.activeChallenges.map(c => c.id)
         : []),
       rawData.sentientOutposts.id,
-    ];
+      rawData.steelPath && rawData.steelPath.expiry
+        ? asId(rawData.steelPath, 'steelpath')
+        : 'steelpath:0',
+    ].filter(a => a);
 
     await this.settings.setNotifiedIds(platform, alreadyNotified);
     logger.silly(`completed sending notifications for ${platform}`);
@@ -507,6 +523,19 @@ class Notifier {
       logger.error(e);
     } finally {
       await this.broadcaster.broadcast(embed, platform, 'sorties');
+    }
+  }
+
+  async sendSteelPath(steelPath, platform) {
+    if (!steelPath || !steelPath.currentReward) return;
+
+    for (const [locale, i18n] of Object.entries(i18ns)) {
+      const embed = new embeds.SteelPath({ logger }, steelPath, { isCommand: false, i18n });
+      embed.locale = locale;
+      if (steelPath.currentReward.name && steelPath.currentReward.name.includes('Umbra')) {
+        await this.broadcaster.broadcast(embed, platform, 'steelpath.umbra');
+      }
+      await this.broadcaster.broadcast(embed, platform, 'steelpath');
     }
   }
 

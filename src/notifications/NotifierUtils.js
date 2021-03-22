@@ -22,6 +22,7 @@ const embeds = {
   Solaris: require('../embeds/SolarisEmbed'),
   Nightwave: require('../embeds/NightwaveEmbed'),
   Outposts: require('../embeds/SentientOutpostEmbed'),
+  SteelPath: require('../embeds/SteelPathEmbed'),
   RSS: require('../embeds/RSSEmbed'),
 };
 

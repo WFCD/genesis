@@ -82,7 +82,8 @@
     "nightwave.weekly",
     "outposts",
     "cambion.fass",
-    "cambion.vome"
+    "cambion.vome",
+    "steelpath"
   ],
   "opts": [
     "all",
