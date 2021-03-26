@@ -20,6 +20,8 @@ const {
 
 const rssFeeds = require('./resources/rssFeeds');
 
+const logger = require('./Logger');
+
 /**
  * API base path
  * @type {string]}
@@ -436,6 +438,8 @@ const checkAndMergeEmbeds = (original, value) => {
   }
 };
 
+const nav = ['◀', '▶', '⏮', '⏭', '🛑'];
+
 /**
  * Create a page collector for the given message and pages
  * @param   {Discord.Message}                 msg     Message to start the page collector from
@@ -451,7 +455,9 @@ const createPageCollector = async (msg, pages, author) => {
   // await msg.react('🛑');
   await msg.react('▶');
   // await msg.react('⏭');
-  const collector = msg.createReactionCollector((reaction, user) => ((['◀', '▶', '⏮', '⏭', '🛑'].includes(reaction.emoji.name)) && user.id === author.id), { time: 600000 });
+
+  const rColl = (reaction, user) => (nav.includes(reaction.emoji.name) && user.id === author.id);
+  const collector = msg.createReactionCollector(rColl, { time: 600000 });
   const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
 
   collector.on('collect', async (reaction) => {
@@ -499,7 +505,11 @@ const createPageCollector = async (msg, pages, author) => {
       } else {
         newPage.footer = { text: pageInd };
       }
-      msg.edit({ embed: newPage });
+      try {
+        msg.edit({ embed: newPage });
+      } catch (err) {
+        logger.error(`${err.message} while editing to ${newPage.title}`);
+      }
     } else if (page < 1) {
       page = 1;
     } else if (page > pages.length) {

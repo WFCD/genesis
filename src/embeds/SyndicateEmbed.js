@@ -88,8 +88,18 @@ class SyndicateEmbed extends BaseEmbed {
           this.timestamp = syndMissions[0].expiry;
         }
         if (syndMissions.length < 2) {
-          this.description = makeMissionValue(syndMissions[0], syndMissions);
-          this.fields = undefined;
+          const missionValue = makeMissionValue(syndMissions[0], syndMissions);
+
+          if (missionValue.length < 2000) {
+            this.description = missionValue;
+            this.fields = undefined;
+          } else {
+            this.fields = missionValue.split('\n\n').map(spv => ({
+              name: '\u200B',
+              value: spv,
+              inline: false,
+            }));
+          }
         } else {
           this.fields = syndMissions.map(m => ({
             name: syndMissions.length < 2 ? '\u200B' : m.syndicate,
