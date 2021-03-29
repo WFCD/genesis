@@ -13,12 +13,12 @@ class DeleteCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
       this.messageManager.embed(message, {
-        title: 'Delete Custom Command',
-        fields: [{ name: '\u200B', value: `**${this.call}**\n**command call**: command trigger to delete` }],
+        title: ctx.i18n`Delete Custom Command`,
+        fields: [{ name: '\u200B', value: `**${this.call}**\n${ctx.i18n`**command call**: command trigger to delete`}` }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }

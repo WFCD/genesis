@@ -25,9 +25,9 @@ const createEmbedsForCommands = (commandFields, title, color, query) => {
   return embed;
 };
 
-const mapCommands = (commands, prefix) => commands.map(command => command.usages.map(u => ({
+const mapCommands = (commands, prefix, i18n) => commands.map(command => command.usages.map(u => ({
   name: `${command.isInline ? '' : prefix}${command.call} ${u.parameters.map(p => `${u.delimBefore || '<'}${p}${u.delimAfter || '>'}`.trim()).join(u.separator || ' ')}`,
-  value: u.description || 'No description',
+  value: u.description || i18n`No description`,
   inline: false,
   call: command.call,
 })));
@@ -125,9 +125,9 @@ class Help extends Command {
       }
     }
     searchableCommands.sort(commandSort);
-    const lines = mapCommands(searchableCommands, config.prefix);
+    const lines = mapCommands(searchableCommands, config.prefix, ctx.i18n);
     const groups = createGroupedArray(lines, 9);
-    const embeds = groups.map(group => createEmbedsForCommands(group, 'Help!', 0x4068BD, query));
+    const embeds = groups.map(group => createEmbedsForCommands(group, ctx.i18n`Help!`, 0x4068BD, query));
     await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
     return this.messageManager.statuses.SUCCESS;
   }

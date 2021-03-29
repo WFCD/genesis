@@ -10,7 +10,7 @@ class ListCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const ccs = [];
     const gcc = await this.settings.getCustomCommandsForGuild(message.guild);
     gcc.forEach((cc) => {
@@ -24,12 +24,12 @@ class ListCustomCommand extends Command {
     const metaGroups = createGroupedArray(ccs, 10);
     const pages = [];
     metaGroups.forEach((metaGroup) => {
-      pages.push({ color: 0x301934, fields: metaGroup, title: 'Custom Commands' });
+      pages.push({ color: 0x301934, fields: metaGroup, title: ctx.i18n`Custom Commands` });
     });
     if (pages.length) {
       await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     } else {
-      await this.messageManager.embed(message, { color: 0x301934, description: 'No Custom Commands', title: 'Custom Commands' }, true, true);
+      await this.messageManager.embed(message, { color: 0x301934, description: ctx.i18n`No Custom Commands`, title: ctx.i18n`Custom Commands` }, true, true);
     }
 
     return this.messageManager.statuses.SUCCESS;

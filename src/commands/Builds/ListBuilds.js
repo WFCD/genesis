@@ -33,7 +33,7 @@ class ListBuilds extends Command {
       const embeds = [];
       tokenGroups.forEach((tokenGroup) => {
         const fields = tokenGroup;
-        fields[0].value = `\`Build ID | ${'Title'.padEnd(titleLen, '\u2003')} | Owner\`\n${tokenGroup[0].value}`;
+        fields[0].value = `\`${ctx.i18n`Build ID`} | ${ctx.i18n`Title`.padEnd(titleLen, '\u2003')} | ${ctx.i18n`Owner`}\`\n${tokenGroup[0].value}`;
         embeds.push({
           color: 0xcda2a3,
           fields,

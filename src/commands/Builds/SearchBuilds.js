@@ -35,14 +35,14 @@ class GetBuild extends Command {
 
         const tokens = buildGroups.map(buildGroup => ({
           name: '\u200B',
-          value: buildGroup.map(build => `\`${build.id} | ${build.title.padEnd(titleLen, '\u2003')} | Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}\``).join('\n'),
+          value: buildGroup.map(build => `\`${build.id} | ${build.title.padEnd(titleLen, '\u2003')} | ${ctx.i18n`Added by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`}\``).join('\n'),
         }));
 
         const tokenGroups = createGroupedArray(tokens, 5);
         const embeds = [];
         tokenGroups.forEach((tokenGroup) => {
           const fields = tokenGroup;
-          fields[0].value = `\`Build ID | ${'Title'.padEnd(titleLen, '\u2003')} | Owner\`\n${tokenGroup[0].value}`;
+          fields[0].value = `\`${ctx.i18n`Build ID`} | ${ctx.i18n`Title`.padEnd(titleLen, '\u2003')} | ${ctx.i18n`Owner`}\`\n${tokenGroup[0].value}`;
           embeds.push({
             color: 0xcda2a3,
             fields,
@@ -61,7 +61,7 @@ class GetBuild extends Command {
         this.messageManager.embed(message, embed, true, true);
         return this.messageManager.statuses.SUCCESS;
       }
-      await this.messageManager.embed(message, { color: 0xcda2a3, title: `No builds for query: **${query}**` }, true, true);
+      await this.messageManager.embed(message, { color: 0xcda2a3, title: ctx.i18n`No builds for query: **${query}**` }, true, true);
     } catch (e) {
       this.logger.error(e);
       return this.messageManager.statuses.FAILURE;

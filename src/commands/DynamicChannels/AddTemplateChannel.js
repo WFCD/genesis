@@ -22,19 +22,13 @@ class AddTemplateChannel extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
-  async run(message) {
+  async run(message, ctx) {
     const newTemplateChannelId = message.strippedContent.match(this.regex)[1];
     const isRelay = relayRegex.test(message.strippedContent);
     if (newTemplateChannelId && this.bot.client.channels.cache.has(newTemplateChannelId.trim())) {
       const newTemplateChannel = this.bot.client.channels.cache.get(newTemplateChannelId.trim());
       await this.settings.addTemplate(newTemplateChannel, isRelay);
-      this.messageManager.reply(message, `${newTemplateChannel} added as a template.`, true, true);
+      this.messageManager.reply(message, ctx.i18n`${newTemplateChannel} added as a template.`, true, true);
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.FAILURE;

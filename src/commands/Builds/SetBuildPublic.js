@@ -40,7 +40,7 @@ class SetBuildsPublic extends Command {
     this.logger.debug(ownedBuilds);
     try {
       await this.settings.setBuildPublicity(ownedBuilds, (onOrOff.trim() === 'on') ? '1' : '0');
-      await this.messageManager.sendMessage(message, `**Builds set to __${onOrOff === 'on' ? 'public' : 'private'}__**\n${ownedBuilds.join('\n')}`, true, true);
+      await this.messageManager.sendMessage(message, `${ctx.i18n`**Builds set to __${onOrOff === 'on' ? ctx.i18n`public` : ctx.i18n`private`}__**`}\n${ownedBuilds.join('\n')}`, true, true);
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

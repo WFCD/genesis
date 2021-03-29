@@ -15,14 +15,8 @@ class Invitation extends Command {
     this.regex = new RegExp(`^${this.call}$`, 'ig');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
-  async run(message) {
-    this.messageManager.reply(message, process.env.INVITE_URL || 'No Invite Set', true, false);
+  async run(message, ctx) {
+    this.messageManager.reply(message, process.env.INVITE_URL || ctx.i18n`No Invite Set`, true, false);
     return this.messageManager.statuses.SUCCESS;
   }
 }

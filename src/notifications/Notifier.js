@@ -287,7 +287,7 @@ class Notifier {
         : 'arbitration:0',
       ...(rawData.twitter ? rawData.twitter.map(t => t.uniqueId) : []),
       ...(rawData.nightwave && rawData.nightwave.active
-        ? rawData.nightwave.activeChallenges.map(c => c.id)
+        ? rawData.nightwave.activeChallenges.filter(c => c.active).map(c => c.id)
         : []),
       rawData.sentientOutposts.id,
       rawData.steelPath && rawData.steelPath.expiry
@@ -484,7 +484,7 @@ class Notifier {
 
     if (!nightwave) return;
     for (const [locale, i18n] of Object.entries(i18ns)) {
-      if (nightwave.activeChallenges.length > 1) {
+      if (nightwave.activeChallenges.length) {
         nightwave.activeChallenges.forEach(async (challenge) => {
           const nwCopy = { ...nightwave };
           nwCopy.activeChallenges = [challenge];

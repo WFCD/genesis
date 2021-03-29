@@ -14,7 +14,7 @@ class DeleteDefaultRole extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const roleId = message.strippedContent.match(this.regex)[1];
     if (roleId && message.guild.roles.cache.has(roleId.trim())) {
       const roles = JSON.parse(await this.settings.getGuildSetting(message.guild, 'defaultRoles') || '[]');
@@ -25,7 +25,7 @@ class DeleteDefaultRole extends Command {
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    await this.messageManager.reply(message, 'you must provide a valid role id that corresponds to a role that is already added.');
+    await this.messageManager.reply(message, ctx.i18n`you must provide a valid role id that corresponds to a role that is already added.`);
     return this.messageManager.statuses.FAILURE;
   }
 }

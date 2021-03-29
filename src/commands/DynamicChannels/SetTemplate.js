@@ -34,7 +34,7 @@ class SetTemplate extends Command {
       const template = this.bot.client.channels.cache.get(templateChannelId.trim());
       if (await this.settings.isTemplate(template)) {
         await this.settings.setDynTemplate(template.id, nameTemplate);
-        this.messageManager.reply(message, `\`${nameTemplate}\` set as ${template}'s name template'.`, true, true);
+        this.messageManager.reply(message, ctx.i18n`\`${nameTemplate}\` set as ${template}'s name template.`, true, true);
         return this.messageManager.statuses.SUCCESS;
       }
     }

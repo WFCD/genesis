@@ -53,7 +53,7 @@ class AddBuild extends Command {
       }
 
       if (firstAttach.name.indexOf('.json') === -1) {
-        this.messageManager.reply(message, 'Invalid file. Check here (<https://pastebin.com/raw/EU9ZX1uQ>)', true, true);
+        this.messageManager.reply(message, ctx.i18n`Invalid file. Check here (<https://pastebin.com/raw/EU9ZX1uQ>)`, true, true);
         return this.messageManager.statuses.FAILURE;
       }
       let buildsConfig;
@@ -61,7 +61,7 @@ class AddBuild extends Command {
       try {
         buildsConfig = await fetch(firstAttach.url);
       } catch (e) {
-        message.reply('Couldn\'t get file.');
+        message.reply('');
         this.logger.error(e);
         message.delete({ timeout: 30000 });
         return this.messageManager.statuses.FAILURE;
@@ -84,7 +84,7 @@ class AddBuild extends Command {
 
       unfoundOwners = Array.from(new Set(unfoundOwners));
       if (unfoundOwners.length) {
-        this.messageManager.reply(message, `Could not find users for ownership:\n${unfoundOwners.map(id => `${id}`).join('\n')}`);
+        this.messageManager.reply(message, `${ctx.i18n`Could not find users for ownership:`}\n${unfoundOwners.map(id => `${id}`).join('\n')}`);
         return this.messageManager.statuses.FAILURE;
       }
 

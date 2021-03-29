@@ -25,13 +25,7 @@ class StartGiveaway extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
-  async run(message) {
+  async run(message, ctx) {
     let time;
     let prize;
     let channel;

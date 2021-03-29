@@ -25,7 +25,7 @@ class ReRollGiveaway extends Command {
    *                          or perform an action based on parameters.
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     let mid;
     try {
       [mid] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
@@ -33,7 +33,7 @@ class ReRollGiveaway extends Command {
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      message.reply(`Giveaway \`${mid}\` failed to reroll or doesn't exist`);
+      message.reply(ctx.i18n`Giveaway \`${mid}\` failed to reroll or doesn't exist`);
       return this.messageManager.statuses.FAILURE;
     }
   }

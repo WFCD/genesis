@@ -15,16 +15,16 @@ class UpdateCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const params = message.strippedContent.match(this.regex);
     if (params[1].length < 4 || !allowedParams.includes(params[1].toLowerCase())) {
       this.messageManager.embed(message, {
         title: 'Update Custom Command',
         fields: [{
           name: '\u200B', value: `**${this.call}**
-        \n**param**: 'call' or 'response', part of the custom command to edit
-        \n**command call**: command trigger to delete
-        \n**new param value**: new value for param`,
+        \n${ctx.i18n`**param**: 'call' or 'response', part of the custom command to edit`}
+        \n${ctx.i18n`**command call**: command trigger to edit`}
+        \n${ctx.i18n`**new param value**: new value for param`}`,
         }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;
@@ -37,7 +37,7 @@ class UpdateCustomCommand extends Command {
     this.logger.warn(JSON.stringify(cc));
 
     if (!cc) {
-      this.messageManager.reply(message, `Command \`${call}\` is an invalid command`);
+      this.messageManager.reply(message, ctx.i18n`Command \`${call}\` is an invalid command`);
       return this.messageManager.statuses.FAILURE;
     }
 

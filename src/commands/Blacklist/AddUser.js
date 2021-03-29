@@ -34,7 +34,7 @@ class AddUser extends Command {
     const matches = message.strippedContent.replace('--global', '').replace('-g', '').trim().match(new RegExp(user, 'i'));
 
     if (!matches || !matches.length) {
-      this.messageManager.reply(message, 'No user provided.', true, true);
+      this.messageManager.reply(message, ctx.i18n`No user provided.`, true, true);
       return this.messageManager.statuses.FAILURE;
     }
     const userId = matches[1];
@@ -43,7 +43,7 @@ class AddUser extends Command {
       await this.settings.addBlacklistedUser(userId, message.guild ? message.guild.id : 0, global);
       return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.reply(message, 'No such user.', true, true);
+    this.messageManager.reply(message, ctx.i18n`No such user.`, true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

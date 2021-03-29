@@ -67,7 +67,7 @@ class AddBuild extends Command {
   }
 
   async failure(message, buildId) {
-    this.messageManager.embed(message, { title: `You couldn't edit build ${buildId}.`, color: 0x83181b }, true, true);
+    this.messageManager.embed(message, { title: ctx.i18n`You couldn't edit build ${buildId}`, color: 0x83181b }, true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

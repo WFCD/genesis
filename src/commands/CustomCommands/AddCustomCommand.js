@@ -13,16 +13,16 @@ class AddCustomCommand extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1] || !params[2]) {
       this.messageManager.embed(message, {
-        title: 'Adding Custom Commands',
+        title: ctx.i18n`Adding Custom Commands`,
         fields: [{
           name: '\u200B',
           value: `**${this.call}**\n`
-            + '**command call**: command trigger\n'
-            + '**command response**: response to the trigger',
+            + `${ctx.i18n`**command call**: command trigger`}\n`
+            + `${ctx.i18n`**command response**: response to the trigger`}`,
         }],
       }, true, false);
       return this.messageManager.statuses.FAILURE;

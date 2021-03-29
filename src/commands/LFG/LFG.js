@@ -45,9 +45,9 @@ class AddLFG extends Command {
 
       const lfg = {
         author: message.author,
-        location: (params[0] || 'Anywhere').replace(lookingForGroup, '').replace(hosting, '').replace(lookingForMore, '').trim(),
-        duration: (params[1] || 'Any Time').trim(),
-        goal: (params[2] || 'Anything').trim(),
+        location: (params[0] || ctx.i18n`Anywhere`).replace(lookingForGroup, '').replace(hosting, '').replace(lookingForMore, '').trim(),
+        duration: (params[1] || ctx.i18n`Any Time`).trim(),
+        goal: (params[2] || ctx.i18n`Anything`).trim(),
         platform: (params[3] || ctx.platform).trim().toLowerCase(),
         expiry: params[4] || '30m',
         expiryTs: Date.now() + dehumanize(params[4] || '30m'),
