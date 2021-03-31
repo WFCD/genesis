@@ -32,12 +32,6 @@ class Ping extends Command {
     super(bot, 'core.ping', 'ping', 'Ping Genesis to test connectivity', 'CORE');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message, ctx) {
     const hosts = ['discordapp.com']
       .concat(games.includes('WARFRAME') ? wfHosts : [])

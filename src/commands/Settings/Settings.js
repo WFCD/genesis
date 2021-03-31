@@ -175,10 +175,13 @@ class Settings extends Command {
       const trackedRolePage = new BaseEmbed();
       trackedRolePage.setTitle('Role Stats Channels');
       Object.keys(trackedRoles).forEach((role) => {
-        trackedRolePage.addField(
-          message.guild.roles.cache.get(role).name,
-          message.guild.channels.cache.get(trackedRoles[role]).name,
-        );
+        const roleName = message.guild.roles.cache.has(role)
+          ? message.guild.roles.cache.get(role).name
+          : '???';
+        const channelName = message.guild.channels.cache.has(trackedRoles[role])
+          ? message.guild.channels.cache.get(trackedRoles[role]).name
+          : '???';
+        trackedRolePage.addField(roleName, channelName);
       });
       pages.push(trackedRolePage);
 

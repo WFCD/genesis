@@ -26,7 +26,7 @@ class AddBuild extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const type = message.strippedContent.match(this.regex)[1];
     const params = (message.strippedContent.match(this.regex)[2] || '').split('|');
     if (!type) {
@@ -48,10 +48,10 @@ class AddBuild extends Command {
       } else if (type === 'image') {
         [, image] = params;
       } else {
-        return this.failure(message, buildId);
+        return this.failure(message, buildId, ctx);
       }
     } else {
-      return this.failure(message, buildId);
+      return this.failure(message, buildId, ctx);
     }
 
     // save params based on order
@@ -66,7 +66,7 @@ class AddBuild extends Command {
     return this.failure(message, buildId);
   }
 
-  async failure(message, buildId) {
+  async failure(message, buildId, ctx) {
     this.messageManager.embed(message, { title: ctx.i18n`You couldn't edit build ${buildId}`, color: 0x83181b }, true, true);
     return this.messageManager.statuses.FAILURE;
   }

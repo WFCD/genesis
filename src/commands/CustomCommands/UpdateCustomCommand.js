@@ -21,7 +21,8 @@ class UpdateCustomCommand extends Command {
       this.messageManager.embed(message, {
         title: 'Update Custom Command',
         fields: [{
-          name: '\u200B', value: `**${this.call}**
+          name: '\u200B',
+          value: `**${this.call}**
         \n${ctx.i18n`**param**: 'call' or 'response', part of the custom command to edit`}
         \n${ctx.i18n`**command call**: command trigger to edit`}
         \n${ctx.i18n`**new param value**: new value for param`}`,

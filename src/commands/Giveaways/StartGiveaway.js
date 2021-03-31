@@ -50,7 +50,7 @@ class StartGiveaway extends Command {
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      message.reply(`Message parameters \`[${time}, ${winnerCount}, ${channel}, ${prize}]\` were invalid. Please retry.`);
+      message.reply(ctx.i18n`Message parameters \`[${time}, ${winnerCount}, ${channel}, ${prize}]\` were invalid. Please retry.`);
       return this.messageManager.statuses.FAILURE;
     }
   }

@@ -38,7 +38,7 @@ class BugReport extends Command {
    * @param {string} prefix  Prefix to call the bot in this channel with
    * @returns{boolean} success status
    */
-  async run(message, { prefix }) {
+  async run(message, { i18n, prefix }) {
     const bugReport = message.strippedContent.match(this.regex)[1];
 
     if (this.bot.owner) {
@@ -84,11 +84,11 @@ class BugReport extends Command {
         }
         try {
           this.bot.bugHook.send({ embeds: [embed] });
-          this.messageManager.reply(message, ctx.i18n`Bug report sent.`, true, true);
+          this.messageManager.reply(message, i18n`Bug report sent.`, true, true);
           return this.messageManager.statuses.SUCCESS;
         } catch (error) {
           this.logger.error(error);
-          this.messageManager.reply(message, ctx.i18n`Failed to submit bug report`, true, true);
+          this.messageManager.reply(message, i18n`Failed to submit bug report`, true, true);
           return this.messageManager.statuses.FAILURE;
         }
       }
@@ -97,9 +97,9 @@ class BugReport extends Command {
           icon_url: message.author.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
           name: `${message.author.username}#${message.author.discriminator}`,
         },
-        title: ctx.i18n`Bug Report | ${message.author}`,
-        fields: [{ name: '\u200B', value: ctx.i18n`Need to provide a bug report, see \`${prefix}help\` for syntax.` }],
-        footer: { text: ctx.i18n`Add Tobiah#0001 as a friend so he can respond to your bug report` },
+        title: i18n`Bug Report | ${message.author}`,
+        fields: [{ name: '\u200B', value: i18n`Need to provide a bug report, see \`${prefix}help\` for syntax.` }],
+        footer: { text: i18n`Add Tobiah#0001 as a friend so he can respond to your bug report` },
       };
       this.messageManager.embed(message, embed, true, false);
       return this.messageManager.statuses.FAILURE;

@@ -38,7 +38,7 @@ class AddBuild extends Command {
     this.allowDM = false;
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const matches = message.strippedContent.match(this.regex)[1];
     const params = (matches || '').split('|');
 

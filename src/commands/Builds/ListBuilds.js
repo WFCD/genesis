@@ -16,7 +16,7 @@ class ListBuilds extends Command {
     this.regex = new RegExp(`^(?:${this.call}|lb)`, 'i');
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const useAll = message.strippedContent.match(this.regex)[1] === 'all' && this.bot.owner === message.author.id;
     const builds = await this.settings.getBuilds(useAll, message.author);
     if (builds.length > 0) {
@@ -42,7 +42,7 @@ class ListBuilds extends Command {
       await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(message, { color: 0xcda2a3, title: 'No builds for user' }, true, true);
+    await this.messageManager.embed(message, { color: 0xcda2a3, title: ctx.i18n`No builds for user` }, true, true);
     return this.messageManager.statuses.FAILURE;
   }
 }

@@ -76,12 +76,7 @@ class Help extends Command {
     this.helpReplyMsg = process.env.HELP_REPLY || ' check your direct messages for help.';
   }
 
-  /**
-   * Send help message
-   * @param {Message} message Message to reply to
-   * @returns{boolean} success status
-   */
-  async run(message) {
+  async run(message, ctx) {
     let query = message.strippedContent.match(this.regex)[1];
 
     const config = {

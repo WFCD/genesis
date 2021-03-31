@@ -82,5 +82,6 @@
   "Giveaway `{0}` failed to stop or doesn't exist": "Giveaway `{0}` failed to stop or doesn't exist",
   "Anywhere": "Anywhere", 
   "Any Time": "Any Time",
-  "Anything": "Anything"
+  "Anything": "Anything",
+  "No builds for user": "No builds for user"
 }

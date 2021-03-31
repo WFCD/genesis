@@ -2,7 +2,7 @@
 
 const { games } = require('../CommonFunctions');
 
-class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
+module.exports = class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
   constructor(bot) {
     super(bot, 'handlers.statsupdate', 'guildMemberUpdate');
   }
@@ -18,9 +18,11 @@ class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
       .filter(r => Object.keys(mappedRoles).includes(r.id))
       .each((role) => {
         const channel = guild.channels.cache.get(mappedRoles[role.id]);
-        channel.setName(`${role.name} :: ${role.members.size}`);
+        if (channel.permissionsFor(this.bot.client.user).has(['MANAGE_CHANNELS', 'MANAGE_ROLES'])) {
+          channel.setName(`${role.name} :: ${role.members.size}`);
+        } else {
+          this.logger.debug(`bot doesn't have permissions to update ${channel.id}`);
+        }
       });
   }
-}
-
-module.exports = UpdateGuildStatistics;
+};

@@ -21,7 +21,7 @@ class GetBuild extends Command {
     ];
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query || query.length < 1) {
       return this.messageManager.statuses.FAILURE;

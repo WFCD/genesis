@@ -19,7 +19,7 @@ class DeleteBuild extends Command {
     ];
   }
 
-  async run(message) {
+  async run(message, ctx) {
     const buildId = message.strippedContent.match(this.regex)[1];
 
     if (buildId.length > 0) {
