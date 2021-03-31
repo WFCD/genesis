@@ -274,6 +274,7 @@ class Database {
 
       if (!context.language) {
         context.language = this.defaults.language.substr(0, 2);
+        this.setChannelSetting(channel, 'language', this.defaults.language.substr(0, 2));
       } else if (context.language.length > 2) {
         this.setChannelSetting(channel, 'language', context.language.substr(0, 2));
         context.language = context.language.substr(0, 2);

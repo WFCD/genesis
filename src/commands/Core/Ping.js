@@ -38,7 +38,7 @@ class Ping extends Command {
    *                          or perform an action based on parameters.
    * @returns {string} success status
    */
-  async run(message) {
+  async run(message, ctx) {
     const hosts = ['discordapp.com']
       .concat(games.includes('WARFRAME') ? wfHosts : [])
       .concat(games.includes('DESTINY2') ? d2Hosts : []);
