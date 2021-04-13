@@ -65,8 +65,6 @@
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
     "topgg-autoposter": "^1.1.10",
-    "twitch": "^4.4.1",
-    "twitch-webhooks": "^4.3.8",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.4",
     "warframe-name-generator": "^1.0.2",
