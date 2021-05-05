@@ -66,7 +66,7 @@
     "sql-template-strings": "^2.2.2",
     "topgg-autoposter": "^1.1.10",
     "url-exists": "^1.0.3",
-    "utf-8-validate": "^5.0.4",
+    "utf-8-validate": "^5.0.5",
     "warframe-name-generator": "^1.0.2",
     "zlib-sync": "^0.1.7"
   },
