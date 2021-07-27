@@ -77,7 +77,9 @@ class Track extends Command {
       try {
         await message.channel.send('Setting up webhook...');
         const existingWebhooks = (await message.channel.fetchWebhooks())
-          .filter(w => w.type === 'Incoming');
+            .filter(w => w.type === 'Incoming'
+              && w?.owner?.id === message?.client?.user?.id
+              && !!w.token);
         if (existingWebhooks.size) {
           const temp = existingWebhooks.first();
           webhook = {
