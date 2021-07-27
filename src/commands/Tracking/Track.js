@@ -74,35 +74,55 @@ class Track extends Command {
   async #generateWebhook (message) {
     if (message.channel.permissionsFor(this.bot.client.user).has('MANAGE_WEBHOOKS')) {
       let webhook;
+      let existingWebhooks;
+      let setupMsg;
       try {
-        await message.channel.send('Setting up webhook...');
-        const existingWebhooks = (await message.channel.fetchWebhooks())
-            .filter(w => w.type === 'Incoming'
-              && w?.owner?.id === message?.client?.user?.id
-              && !!w.token);
-        if (existingWebhooks.size) {
-          const temp = existingWebhooks.first();
-          webhook = {
-            id: temp.id,
-            token: temp.token,
-            name: this.settings.defaults.username,
-            avatar: this.settings.defaults.avatar,
-          };
-        } else {
+        setupMsg = await message.reply('Setting up webhook...');
+        existingWebhooks = (await message.channel.fetchWebhooks())
+          .filter(w => w.type === 'Incoming'
+            && w?.owner?.id === message?.client?.user?.id
+            && !!w.token);
+      } catch (e) {
+        this.logger.error(e);
+        await message.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to get existing.`);
+      }
+
+      if (existingWebhooks.size) {
+        const temp = existingWebhooks.first();
+        webhook = {
+          id: temp.id,
+          token: temp.token,
+          name: this.settings.defaults.username,
+          avatar: this.settings.defaults.avatar,
+        };
+        setupMsg.delete();
+      } else {
+        try {
           webhook = await message.channel.createWebhook(this.settings.defaults.username, {
             avatar: this.settings.defaults.avatar,
             reason: 'Automated Webhook setup for Notifications',
           });
+          this.logger.error(webhook.url);
+        } catch (e) {
+          this.logger.error(e);
+          await message.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to make new.`);
         }
-        await message.channel.send(`${emojify('green_tick')} Webhook setup complete.`);
-        await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
-        if (!webhook.avatar.startsWith('http')) webhook.avatar = this.settings.defaults.avatar;
-        this.bot.settings.setChannelWebhook(message.channel, webhook);
-      } catch (e) {
-        await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: failed to look up.`);
       }
+      if (webhook.url) {
+        try {
+          await message.reply(`${emojify('green_tick')} Webhook setup complete.`);
+          await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
+          if (!webhook.avatar.startsWith('http')) webhook.avatar = this.settings.defaults.avatar;
+        } catch (e) {
+          this.logger.error(e);
+          await message.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to send.`);
+        }
+      } else {
+        this.logger.debug(`webhook for ${message.channel.id} already set up...`);
+      }
+      this.bot.settings.setChannelWebhook(message.channel, webhook);
     } else {
-      await message.channel.send(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
+      await message.reply(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }
   }
 
@@ -122,7 +142,7 @@ class Track extends Command {
     if (pages.length) {
       return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     }
-    return message.channel.send('Nothing Tracked');
+    return message.reply('Nothing Tracked');
   }
 
   /**

@@ -137,7 +137,7 @@ class PermissionsQueries {
    * @returns {Promise}
    */
   async getChannelPermissionForUserRoles(channel, user, commandId) {
-    const userRoles = channel.type === 'text' ? channel.guild.member(user).roles.cache : {};
+    const userRoles = channel.type === 'text' ? (await channel.guild.members.fetch(user)).roles.cache : {};
     const userRoleIds = Array.from(userRoles.array());
     const query = SQL`SELECT target_id, is_user, allowed
         FROM channel_permissions

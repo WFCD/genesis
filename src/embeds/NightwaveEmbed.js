@@ -1,6 +1,5 @@
 'use strict';
 
-const BaseEmbed = require('./BaseEmbed.js');
 const { timeDeltaToString, createGroupedArray } = require('../CommonFunctions');
 
 const chString = challenge => `:white_small_square: **${challenge.title}** _(${challenge.reputation})_\n\u2003\t❯ ${challenge.desc}`;
@@ -9,7 +8,7 @@ const chStringSingle = challenge => `**${challenge.title}** _(${challenge.reputa
 /**
  * Generates alert embeds
  */
-class NightwaveEmbed extends BaseEmbed {
+module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Nightwave} nightwave - The nightwave data for the current season
@@ -33,7 +32,7 @@ class NightwaveEmbed extends BaseEmbed {
       this.fields = [];
       this.fields.push({
         name: i18n`Currently Active`,
-        value: nightwave.activeChallenges.length,
+        value: String(nightwave.activeChallenges.length),
         inline: false,
       });
 
@@ -43,7 +42,7 @@ class NightwaveEmbed extends BaseEmbed {
           value: nightwave.activeChallenges
             .filter(challenge => challenge.isDaily)
             .map(chString)
-            .join('\n'),
+            .join('\n') || '__',
           inline: false,
         });
       }
@@ -55,7 +54,7 @@ class NightwaveEmbed extends BaseEmbed {
             name: index > 0 ? i18n`Weekly, ctd.` : i18n`Weekly`,
             value: challengeGroup
               .map(chString)
-              .join('\n'),
+              .join('\n') || '__',
             inline: false,
           });
         });
@@ -67,7 +66,7 @@ class NightwaveEmbed extends BaseEmbed {
             name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
             value: challengeGroup
               .map(chString)
-              .join('\n'),
+              .join('\n') || '__',
             inline: false,
           });
         });
@@ -84,6 +83,4 @@ class NightwaveEmbed extends BaseEmbed {
       this.timestamp = challenge.expiry;
     }
   }
-}
-
-module.exports = NightwaveEmbed;
+};

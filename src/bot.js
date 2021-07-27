@@ -1,20 +1,14 @@
 'use strict';
 
-const { Client, WebhookClient } = require('discord.js');
-
-// const Feeder = require('rss-feed-emitter');
+const { Client, WebhookClient, Intents } = require('discord.js');
 
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
-// const Tracker = require('./Tracker');
 
 const MessageManager = require('./settings/MessageManager');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
-
-// const feeds = require('./resources/rssFeeds');
-
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
 /**
@@ -77,10 +71,17 @@ class Genesis {
       presence: {
         status: 'dnd',
         afk: false,
-        activity: {
+        activities: [{
           name: 'Starting...',
-        },
+        }],
       },
+      allowedMentions: { parse: ['users', 'roles'], repliedUser: false },
+      intents: [
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_INTEGRATIONS,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+      ]
     });
 
     /**
@@ -184,6 +185,8 @@ class Genesis {
     this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
     this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
 
+    this.client.on('interaction', async (interaction) => this.eventHandler.handleEvent({event: 'interaction', args: [interaction]}));
+
     this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
     this.client.on('error', this.logger.error);
     this.client.on('warn', this.logger.warn);
@@ -209,16 +212,6 @@ class Genesis {
     try {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
-
-      /* For Debugging:
-      this.feeder = new Feeder({
-        userAgent: `RSS Feed Emitter | ${this.client.user.username}`,
-        skipFirstLoad: true,
-      });
-      feeds.forEach((feed) => {
-        this.feeder.add({ url: feed.url, refresh: 900000 });
-      });
-      */
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
       if (!unlog.includes(type)) {

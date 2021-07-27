@@ -143,10 +143,10 @@ class OnReadyHandle extends Handler {
       this.client.user.setPresence({
         status: 'online',
         afk: false,
-        activity: {
+        activities: [{
           name: presence,
           type: activity,
-        },
+        }],
       });
     } catch (error) {
       this.logger.silly(error);

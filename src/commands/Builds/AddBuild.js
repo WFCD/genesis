@@ -63,7 +63,7 @@ class AddBuild extends Command {
       } catch (e) {
         message.reply('');
         this.logger.error(e);
-        message.delete({ timeout: 30000 });
+        setTimeout(message.delete, 30000);
         return this.messageManager.statuses.FAILURE;
       }
       let unfoundOwners = [];

@@ -72,7 +72,7 @@ class Ping extends Command {
       },
     });
 
-    await msg.edit('', updated);
+    msg.edit({ embeds: [updated] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

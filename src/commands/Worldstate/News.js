@@ -2,7 +2,7 @@
 
 const Command = require('../../models/Command.js');
 const NewsEmbed = require('../../embeds/NewsEmbed.js');
-const { captures, setupPages } = require('../../CommonFunctions');
+const { captures, setupPages, createGroupedArray } = require('../../CommonFunctions');
 
 /**
  * Displays the currently active warframe news
@@ -18,16 +18,18 @@ class News extends Command {
   }
 
   async run(message, ctx) {
-    const platformParam = message.strippedContent.match(this.regex)[1];
+    const platformParam = message.strippedContent.match(new RegExp(`(?:on\\s?${captures.platforms})`, 'ig'));
     const platform = platformParam || ctx.platform;
     const compact = /compact/ig.test(message.strippedContent);
-    const news = (await this.ws.get('news', platform, ctx.language))
+    const news = (await this.ws.get('news', platform, ctx.language) || [])
       .filter(n => !n.update && !n.primeAccess && n.translations[ctx.language])
       .reverse();
 
     if (compact) {
-      await this.messageManager
-        .embed(message, new NewsEmbed(this.bot, news, undefined, platform), true, true);
+      const pages = createGroupedArray(news, 10)
+        .map(group => new NewsEmbed(this.bot, group, undefined, platform));
+      
+      await message.reply({ embeds: pages});
     } else {
       const pages = [];
       news.forEach((article) => {

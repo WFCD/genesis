@@ -30,6 +30,7 @@ class FissureEmbed extends BaseEmbed {
       url: fissureThumb,
     };
     if (fissures.length > 1) {
+      this.description = '_ _'
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
       this.fields = fissures.map(f => ({
@@ -37,10 +38,7 @@ class FissureEmbed extends BaseEmbed {
         value: i18n`[${f.eta}] ${f.node} against ${f.enemy}`,
       }));
     } else if (fissures.length === 0) {
-      this.fields = {
-        name: i18n`Currently no fissures`,
-        value: '\u200B',
-      };
+      this.description = i18n`Currently no fissures`;
     } else {
       const f = fissures[0];
       this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;

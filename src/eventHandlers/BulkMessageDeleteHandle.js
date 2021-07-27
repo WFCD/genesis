@@ -27,13 +27,13 @@ class LogMessageDelete extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
     const first = messages.first();
-    let logChannel = this.settings.getGuildSetting(messages.first().guild, 'messageDeleteLog');
-    if (first.guild.channels.cache.has(logChannel)) {
-      logChannel = first.guild.channels.cache.get(logChannel);
+    let channel = this.settings.getGuildSetting(messages.first().guild, 'messageDeleteLog');
+    if (first.guild.channels.cache.has(channel)) {
+      channel = first.guild.channels.cache.get(channel);
     } else {
-      logChannel = undefined;
+      channel = undefined;
     }
-    if (logChannel && logChannel.type === 'text') {
+    if (channel?.type === 'text') {
       const log = new LogEmbed(this.bot, {
         color: 0xFF5A36,
         title: 'Message Deleted',
@@ -48,7 +48,7 @@ class LogMessageDelete extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embed: log });
+      await this.messageManager.webhook({ channel }, { embeds: [log] });
     }
   }
 }

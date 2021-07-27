@@ -19,9 +19,7 @@
     "start:logs:worker": "npm run start:worker && npm run logs:worker",
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
-    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start",
-    "snyk-protect": "npx -p snyk snyk protect",
-    "prepare": "npm run snyk-protect"
+    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
   },
   "repository": {
     "type": "git",
@@ -50,7 +48,7 @@
     "cron": "^1.8.2",
     "decache": "^4.6.0",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "^12.5.3",
+    "discord.js": "github:discordjs/discord.js#master",
     "erlpack": "github:discordapp/erlpack",
     "flat-cache": "^3.0.4",
     "json-query": "^2.2.2",
@@ -85,7 +83,6 @@
   "engines": {
     "node": ">=12.16.1"
   },
-  "snyk": true,
   "eslintIgnore": [
     "commands.json",
     "src/resources/*.json"

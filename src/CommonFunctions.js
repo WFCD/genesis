@@ -506,7 +506,7 @@ const createPageCollector = async (msg, pages, author) => {
         newPage.footer = { text: pageInd };
       }
       try {
-        msg.edit({ embed: newPage });
+        msg.edit({ embeds: [newPage] });
       } catch (err) {
         logger.error(`${err.message} while editing to ${newPage.title}`);
       }
@@ -527,11 +527,11 @@ const createPageCollector = async (msg, pages, author) => {
  */
 const setupPages = async (pages, { message, settings, mm }) => {
   if (pages.length) {
-    const msg = await mm.embed(message, pages[0], false, false);
+    const msg = await message.reply({ embeds: [pages[0]]});
     await createPageCollector(msg, pages, message.author);
   }
   if (parseInt(await settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-    message.delete({ timeout: 10000 });
+    setTimeout(message.delete, 10000);
   }
 };
 

@@ -9,6 +9,8 @@ const fs = require('fs');
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
+const I18n = require('./I18n');
+
 const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
 
 const props = (obj) => {
@@ -381,6 +383,7 @@ class Database {
       context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;
+    context.i18n = I18n.use(context.language);
     return context;
   }
 }

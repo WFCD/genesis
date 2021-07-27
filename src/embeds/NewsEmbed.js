@@ -33,7 +33,29 @@ class NewsEmbed extends BaseEmbed {
     });
 
     this.color = news.length > 0 ? 0x779ecb : 0xff6961;
-    let value = createGroupedArray(news.map(n => n.asString), 7);
+    let value = createGroupedArray(news
+      .filter(n => {
+        if (type) {
+          return (type === 'update' && n.update)
+            || (type === 'primeaccess' && n.primeAccess)
+            || (type === 'stream' && n.stream);
+        }
+        return true;
+      })
+      .map(n => {
+        const etaChunks = n.eta.split(' ');
+        const timeTokens = [
+          etaChunks[0],
+          etaChunks[1],
+          etaChunks[1] !== etaChunks[etaChunks.length - 1]
+            ? etaChunks[etaChunks.length - 1]
+            : null
+          ]
+          .filter(a => !!a)
+          .join(' ');
+        const betterNews = `[${timeTokens}] [${n.message}](${n.link.split('?')[0]})`;
+        return betterNews;
+      }), 7);
     if (type) {
       if (type === 'update') {
         value = value.length > 0 ? value : ['No Update News Currently'];

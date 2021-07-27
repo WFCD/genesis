@@ -76,7 +76,7 @@ class Diagnostics extends Command {
     embed.setTimestamp(new Date());
     embed.setFooter(`Uptime: ${timeDeltaToString(this.bot.client.uptime)} `);
 
-    await message.channel.send(embed);
+    await message.channel.send({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

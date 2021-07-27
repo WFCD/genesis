@@ -7,6 +7,7 @@
   "[{0}] Elite Nightwave": "[{0}] Elite Nightwave",
   "[{0}] Worldstate - Invasions": "[{0}] Invasions",
   "[{0}] Worldstate - Fissures": "[{0}] Fissures",
+  "[{0}] Worldstate - Void Fissures": "[{0}] Fissures",
   "[{0}] Worldstate - Sortie": "[{0}] Sortie",
   "[{0}] {1}": "[{0}] {1}",
   "{0} Credits": "{0} Credits",
@@ -83,5 +84,6 @@
   "Anywhere": "Anywhere", 
   "Any Time": "Any Time",
   "Anything": "Anything",
-  "No builds for user": "No builds for user"
+  "No builds for user": "No builds for user",
+  "No field": "You somehow didn't provide the worldsate field you're looking for..."
 }

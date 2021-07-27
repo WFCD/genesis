@@ -4,6 +4,8 @@ const Handler = require('../models/BaseEventHandler');
 const I18n = require('../settings/I18n');
 const { games, emojify } = require('../CommonFunctions');
 
+const { Permissions } = require('discord.js');
+
 /**
  * Checks if the command is callable,
  * checking if the user has authorization, if custom is allowed
@@ -40,9 +42,11 @@ const stripContent = (content, prefix, ping, pingId, botNickPing) => {
   return c;
 };
 
-const hasAuth = message => message.channel.permissionsFor(message.author).has('MANAGE_ROLES')
-    || (message.member.hasPermission('MANAGE_GUILD')
-    || message.member.hasPermission('MANAGE_ROLES'));
+const hasAuth = message => {
+  return message?.channel?.permissionsFor(message.author)?.has(Permissions.FLAGS.MANAGE_ROLES)
+    || message?.channel?.permissionsFor(message.author)?.has(Permissions.FLAGS.MANAGE_GUILD)
+    || message?.channel?.permissionsFor(message.author)?.has(Permissions.FLAGS.MANAGE_ROLES)
+  };
 
 /**
  * Describes a handler
@@ -71,11 +75,7 @@ class CommandHandler extends Handler {
       && message.author.id !== this.bot.client.user.id
       && !message.author.bot;
 
-    const canReply = message.channel.type === 'dm'
-      || (
-        message.channel.permissionsFor(message.guild.me).has('VIEW_CHANNEL')
-        && message.channel.permissionsFor(message.guild.me).has('SEND_MESSAGES')
-        && message.channel.permissionsFor(message.guild.me).has('ADD_REACTIONS'));
+    const canReply = message.channel.type === 'dm' || hasAuth(message);
 
     if (!(passesInitial && canReply)) {
       return;
@@ -127,7 +127,6 @@ class CommandHandler extends Handler {
 
     // set new context objects
     ctx.message = strippedMessage;
-    ctx.i18n = I18n.use(ctx.language);
     this.logger.silly(`Handling \`${content}\``);
 
     let done = false;
@@ -152,7 +151,12 @@ class CommandHandler extends Handler {
             // react based on result
             const canReact = (message.channel.type === 'dm'
                   || (message.channel.permissionsFor(this.bot.client.user.id)
-                    .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+                    .has([
+                      Permissions.FLAGS.ADD_REACTIONS,
+                      Permissions.FLAGS.VIEW_CHANNEL,
+                      Permissions.FLAGS.SEND_MESSAGES,
+                      Permissions.FLAGS.EMBED_LINKS
+                    ]))) && !command.isInline;
             switch (status) {
               case this.statuses.SUCCESS:
                 if (canReact) {

@@ -42,7 +42,7 @@ class LogMemberRemove extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embed: log });
+      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }

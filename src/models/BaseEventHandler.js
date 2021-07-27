@@ -4,6 +4,8 @@
  * Describes a handler
  */
 class BaseEventHandler {
+  static deferred = false;
+
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object

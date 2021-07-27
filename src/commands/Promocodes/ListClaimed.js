@@ -37,7 +37,7 @@ class ListClaimed extends Command {
       }
     }
     if (parseInt(await this.settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {
-      message.delete({ timeout: 10000 });
+      setTimeout(message.delete, 10000);
     }
     return codes.length > 0
       ? this.messageManager.statuses.SUCCESS

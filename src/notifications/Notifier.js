@@ -221,7 +221,7 @@ class Notifier {
       logger.silly(`[N] sending new data on ${platform}...`);
 
       this.sendAcolytes(acolytes, platform);
-
+      
       if (baro) {
         this.sendBaro(baro, platform);
       }

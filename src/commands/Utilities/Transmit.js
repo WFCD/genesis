@@ -39,7 +39,7 @@ class Transmit extends Command {
       } catch (e) {
         message.reply('Couldn\'t get file.');
         this.logger.error(e);
-        message.delete({ timeout: 30000 });
+        this.bot.client.setTimeout(message.delete, 30000);
         return this.messageManager.statuses.FAILURE;
       }
 
@@ -50,7 +50,7 @@ class Transmit extends Command {
             .get(channelConfig.target.channel || message.channel.id);
           if (!(message.guild && message.guild.channels.cache.has(target.id))) {
             message.reply('Channel Not Accessible');
-            message.delete({ timeout: 30000 });
+            this.bot.client.setTimeout(message.delete, 30000);
             return this.messageManager.statuses.FAILURE;
           }
           this.logger.debug(`has config: ${channelConfig.target.webhook
@@ -65,7 +65,7 @@ class Transmit extends Command {
             }
           } else {
             message.reply('Webhook required');
-            message.delete({ timeout: 30000 });
+            this.bot.client.setTimeout(message.delete, 30000);
             return this.messageManager.statuses.FAILURE;
           }
 
@@ -123,10 +123,10 @@ class Transmit extends Command {
       } catch (e) {
         this.logger.error(e.message);
         message.reply('Bad File');
-        message.delete({ timeout: 30000 });
+        this.bot.client.setTimeout(message.delete, 30000);
         return this.messageManager.statuses.FAILURE;
       }
-      message.delete({ timeout: 30000 });
+      this.bot.client.setTimeout(message.delete, 30000);
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.FAILURE;

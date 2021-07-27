@@ -23,11 +23,10 @@ class Arbitration extends Command {
     const arbi = (await this.ws.get('arbitration', platform, ctx.language));
 
     if (!arbi) {
-      this.messageManager.reply(message, ctx.i18n`No Arbitration Mission Active`, true, true);
+      message.reply(message, ctx.i18n`No Arbitration Mission Active`, true, true);
     }
 
-    await this.messageManager
-      .embed(message, new ArbitrationEmbed(this.bot, arbi, platform, ctx.i18n), true, true);
+    await message.reply({ embeds: [ new ArbitrationEmbed(this.bot, arbi, platform, ctx.i18n) ]});
 
     return this.messageManager.statuses.SUCCESS;
   }
