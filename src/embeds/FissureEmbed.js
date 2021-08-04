@@ -30,7 +30,7 @@ class FissureEmbed extends BaseEmbed {
       url: fissureThumb,
     };
     if (fissures.length > 1) {
-      this.description = '_ _'
+      this.description = '_ _';
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
       this.fields = fissures.map(f => ({

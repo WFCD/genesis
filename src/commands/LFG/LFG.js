@@ -103,7 +103,7 @@ class AddLFG extends Command {
           message.channel.send('Unknown error. Could not create LFG entry.');
           return this.messageManager.statuses.FAILURE;
         }
-        let deleteTimeout  = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
+        let deleteTimeout = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
         msg.react('🔰');
         msg.react('❌');
 

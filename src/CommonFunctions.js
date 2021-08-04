@@ -525,9 +525,9 @@ const createPageCollector = async (msg, pages, author) => {
  * @param  {Settings}                     settings Settings
  * @param  {MessageManager}               mm      Message manager for interacting with messages
  */
-const setupPages = async (pages, { message, settings, mm }) => {
+const setupPages = async (pages, { message, settings }) => {
   if (pages.length) {
-    const msg = await message.reply({ embeds: [pages[0]]});
+    const msg = await message.reply({ embeds: [pages[0]] });
     await createPageCollector(msg, pages, message.author);
   }
   if (parseInt(await settings.getChannelSetting(message.channel, 'delete_after_respond'), 10) && message.deletable) {

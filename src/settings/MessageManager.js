@@ -14,7 +14,7 @@ const defMsgOpts = {
 
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
 
-const minPerms = [ Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES ];
+const minPerms = [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES];
 
 /**
  * MessageManager for.... sending messages and deleting them and stuff
@@ -188,22 +188,21 @@ class MessageManager {
   }
 
   async webhook(ctx, { content, embeds = undefined }) {
-    // eslint-disable-next-line no-param-resassign
+    // eslint-disable-next-line no-param-reassign
     embeds = Array.isArray(embeds) ? embeds : [embeds];
     if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
-
       const client = new WebhookClient(ctx.webhook.id, ctx.webhook.token);
       const opts = {
-          avatarURL: ctx?.webhook?.avatar,
-          username: ctx?.webhook?.name,
-          embeds,
-        };
+        avatarURL: ctx?.webhook?.avatar,
+        username: ctx?.webhook?.name,
+        embeds,
+      };
       try {
         return content?.length
-          ? client.send({ 
-              ...opts,
-              content,
-            })
+          ? client.send({
+            ...opts,
+            content,
+          })
           : client.send(opts);
       } catch (e) {
         logger.error(e);

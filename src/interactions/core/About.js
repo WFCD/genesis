@@ -2,14 +2,14 @@
 
 const { ApplicationCommand, MessageEmbed } = require('discord.js');
 
-module.exports = class About extends require('../models/Interaction') {
+module.exports = class About extends require('../../models/Interaction') {
   static enabled = true;
-  
+
   static command = {
     name: 'about',
-    description: 'Tell me about the bot!'
+    description: 'Tell me about the bot!',
   };
-  
+
   static async commandHandler(interaction, ctx) {
     return interaction.reply({
       embeds: [{
@@ -56,4 +56,4 @@ module.exports = class About extends require('../models/Interaction') {
       ephemeral: true,
     });
   }
-}
+};

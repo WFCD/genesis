@@ -1,7 +1,5 @@
 'use strict';
 
-const { ApplicationCommand, MessageEmbed } = require('discord.js');
-
 const jokes = [
   'Joke\'s on you. Try again next time',
   'Lotus says it is certain',
@@ -26,9 +24,9 @@ const jokes = [
   'Very doubtful',
 ];
 
-module.exports = class EightBall extends require('../models/Interaction') {
+module.exports = class EightBall extends require('../../models/Interaction') {
   static enabled = true;
-  
+
   static command = {
     name: '8ball',
     description: 'Get your 8Ball question answered!',
@@ -36,13 +34,13 @@ module.exports = class EightBall extends require('../models/Interaction') {
       type: 'STRING',
       name: 'question',
       description: 'What do you want the all-knowing machine to answer?',
-      required: true
-    }]
+      required: true,
+    }],
   };
-  
-  static async commandHandler(interaction, ctx) {
+
+  static async commandHandler(interaction) {
     return interaction.reply({
       content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]}`,
     });
   }
-}
+};

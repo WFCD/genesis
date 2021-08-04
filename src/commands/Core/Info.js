@@ -18,7 +18,7 @@ class Info extends Command {
    * @returns {string} success status
    */
   async run(message, ctx) {
-    this.messageManager.embed(message, {
+    await message.reply({embeds: [{
       title: 'Cephalon Genesis',
       fields: [
         {
@@ -45,7 +45,7 @@ class Info extends Command {
       footer: {
         text: 'Cephalon Genesis, now on more than 26,000 guilds!',
       },
-    }, true, false);
+    }]});
     return this.messageManager.statuses.SUCCESS;
   }
 }

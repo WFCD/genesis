@@ -1,11 +1,10 @@
 'use strict';
 
-const { MessageEmbed } = require('discord.js');
+const {
+  games, createGroupedArray,
+} = require('../../CommonFunctions.js');
 
-const { timeDeltaToString, games, createGroupedArray, emojify } = require('../CommonFunctions.js');
-const logger = require('../Logger');
-
-const platformChoices = require('../resources/platformMap');
+const platformChoices = require('../../resources/platformMap');
 
 const aliases = {
   arbi: 'arbitration',
@@ -22,26 +21,29 @@ const aliases = {
   steelpath: 'steelPath',
 };
 
+const embedsd = '../../embeds';
+
+/* eslint-disable import/no-dynamic-require */
 const embeds = {
-  arbitration: require('../embeds/ArbitrationEmbed'),
-  alerts: require('../embeds/AlertEmbed'),
-  cambionCycle: require('../embeds/CambionEmbed'),
-  cetusCycle: require('../embeds/EarthCycleEmbed'),
-  conclaveChallenges: require('../embeds/ConclaveChallengeEmbed'),
-  constructionProgress: require('../embeds/ConstructionEmbed'),
-  dailyDeals: require('../embeds/DarvoEmbed'),
-  earthCycle: require('../embeds/EarthCycleEmbed'),
-  events: require('../embeds/EventEmbed'),
-  fissures: require('../embeds/FissureEmbed'),
-  invasions: require('../embeds/InvasionEmbed'),
-  news: require('../embeds/NewsEmbed'),
-  nightwave: require('../embeds/NightwaveEmbed'),
-  flashSales: require('../embeds/SalesEmbed'),
-  sentientOutposts: require('../embeds/SentientOutpostEmbed'),
-  steelPath: require('../embeds/SteelPathEmbed'),
-  syndicate: require('../embeds/SyndicateEmbed'),
-  vallisCycle: require('../embeds/SolarisEmbed'),
-  voidTrader: require('../embeds/VoidTraderEmbed'),
+  arbitration: require(`${embedsd}/ArbitrationEmbed`),
+  alerts: require(`${embedsd}/AlertEmbed`),
+  cambionCycle: require(`${embedsd}/CambionEmbed`),
+  cetusCycle: require(`${embedsd}/EarthCycleEmbed`),
+  conclaveChallenges: require(`${embedsd}/ConclaveChallengeEmbed`),
+  constructionProgress: require(`${embedsd}/ConstructionEmbed`),
+  dailyDeals: require(`${embedsd}/DarvoEmbed`),
+  earthCycle: require(`${embedsd}/EarthCycleEmbed`),
+  events: require(`${embedsd}/EventEmbed`),
+  fissures: require(`${embedsd}/FissureEmbed`),
+  invasions: require(`${embedsd}/InvasionEmbed`),
+  news: require(`${embedsd}/NewsEmbed`),
+  nightwave: require(`${embedsd}/NightwaveEmbed`),
+  flashSales: require(`${embedsd}/SalesEmbed`),
+  sentientOutposts: require(`${embedsd}/SentientOutpostEmbed`),
+  steelPath: require(`${embedsd}/SteelPathEmbed`),
+  syndicate: require(`${embedsd}/SyndicateEmbed`),
+  vallisCycle: require(`${embedsd}/SolarisEmbed`),
+  voidTrader: require(`${embedsd}/VoidTraderEmbed`),
 };
 
 const platformable = [{
@@ -72,12 +74,14 @@ const places = [{
 const compactable = [...platformable, {
   type: 'BOOLEAN',
   name: 'compact',
-  description: 'Should all data be in one embed?'
+  description: 'Should all data be in one embed?',
 }];
 
-module.exports = class WorldState extends require('../models/Interaction') {
+const get = (options, name) => options?.find(o => o.name === name);
+
+module.exports = class WorldState extends require('../../models/Interaction') {
   static enabled = games.includes('WARFRAME');
-  
+
   static command = {
     name: 'ws',
     description: 'Get Warframe Worldstate Information',
@@ -101,21 +105,21 @@ module.exports = class WorldState extends require('../models/Interaction') {
       name: 'conclave',
       description: 'Get Current Conclave Challenges',
       options: [{
-          type: 'STRING',
-          name: 'category',
-          description: 'Which conclave challenge category?',
-          choices: [{
-            name: 'All',
-            value: 'all',
-          }, {
-            name: 'Daily',
-            value: 'day',
-          }, {
-            name: 'Weekly',
-            value: 'week',
-          }],
-        },
-        ...platformable,
+        type: 'STRING',
+        name: 'category',
+        description: 'Which conclave challenge category?',
+        choices: [{
+          name: 'All',
+          value: 'all',
+        }, {
+          name: 'Daily',
+          value: 'day',
+        }, {
+          name: 'Weekly',
+          value: 'week',
+        }],
+      },
+      ...platformable,
       ],
     }, {
       type: 'SUB_COMMAND',
@@ -127,13 +131,13 @@ module.exports = class WorldState extends require('../models/Interaction') {
       name: 'cycle',
       description: 'Get current Time Cycle',
       options: [{
-          type: 'STRING',
-          name: 'place',
-          description: 'Where do you want to know about?',
-          choices: places,
-          required: true
-        },
-        ...platformable,
+        type: 'STRING',
+        name: 'place',
+        description: 'Where do you want to know about?',
+        choices: places,
+        required: true,
+      },
+      ...platformable,
       ],
     }, {
       type: 'SUB_COMMAND',
@@ -175,7 +179,7 @@ module.exports = class WorldState extends require('../models/Interaction') {
           value: 'primeaccess',
         }, {
           name: 'Streams',
-          value: 'stream'
+          value: 'stream',
         }],
       }, ...platformable,
       ],
@@ -201,31 +205,32 @@ module.exports = class WorldState extends require('../models/Interaction') {
       options: compactable,
     }],
   };
-  
+
   static async commandHandler(interaction, ctx) {
     // args
     const language = ctx.language || 'en';
-    const options = interaction.options?.first?.()?.options;
-    const platform = options?.get('platform')?.value || ctx.platform || 'pc';
-    const compact = options?.get('compact')?.value || false;
-    const ephemeral = typeof options?.get('hidden')?.value !== 'undefined'
-      ? options?.get('hidden')?.value
+    const subcommand = interaction.options.data[0];
+    const options = subcommand?.options;
+    const platform = get(options, 'platform')?.value || ctx.platform || 'pc';
+    const compact = get(options, 'compact')?.value || false;
+    const ephemeral = typeof get(options, 'hidden')?.value !== 'undefined'
+      ? get(options, 'hidden')?.value
       : true;
-    
-    let category = options?.get('category')?.value || 'all';
-    const place = options?.get('place')?.value || false;
-    const field = aliases[`${interaction.options?.first()?.name}${place ? `::${place}` : ''}`]
-      || interaction.options?.first()?.name
-      || null;
+
+    let category = get(options, 'category')?.value || 'all';
+    const place = get(options, 'place')?.value;
+
+    const key = `${subcommand?.name}${place ? `::${place}` : ''}`;
+    const field = aliases[key] || subcommand?.name || null;
 
     // validation
     if (!field) {
       return interaction.reply(ctx.i18n`No field`);
     }
-    
+
     await interaction.defer({ ephemeral });
     const data = await ctx.ws.get(String(field), platform, language);
-    
+
     switch (field) {
       case 'alerts':
       case 'fissures':
@@ -276,9 +281,9 @@ module.exports = class WorldState extends require('../models/Interaction') {
         break;
       default:
         break;
-    }    
+    }
     return interaction.replied || interaction.deferred
       ? false
       : interaction.reply({ content: 'got it', ephemeral: true });
   }
-}
+};

@@ -11,4 +11,4 @@ module.exports = class Interaction {
   static buttonHandler;
   static msgComponentHandler;
   static selectMenuHandler;
-}
+};

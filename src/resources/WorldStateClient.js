@@ -10,7 +10,7 @@ const { apiBase } = require('../CommonFunctions');
 module.exports = class WorldStateClient {
   /**
    * Create a worldstate client
-   * @param {Console} logger 
+   * @param {Console} logger logger for debugging requests
    */
   constructor(logger = console) {
     this.logger = logger;
@@ -43,8 +43,8 @@ module.exports = class WorldStateClient {
 
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
     this.logger.info(`pricechecking ${query}`);
-    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${platform || 'pc'}`
-    this.logger.info(`fetching ${url}`)
+    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${platform || 'pc'}`;
+    this.logger.info(`fetching ${url}`);
     return fetch(url, {
       headers: {
         platform,

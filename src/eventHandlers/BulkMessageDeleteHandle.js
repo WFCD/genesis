@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
 const { games } = require('../CommonFunctions');
@@ -15,7 +17,7 @@ class LogMessageDelete extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.logMessageDeleteBulk', 'messageDeleteBulk');
+    super(bot, 'handlers.logMessageDeleteBulk', Events.MESSAGE_DELETE_BULK);
   }
 
   /**

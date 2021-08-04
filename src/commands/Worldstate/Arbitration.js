@@ -26,7 +26,7 @@ class Arbitration extends Command {
       message.reply(message, ctx.i18n`No Arbitration Mission Active`, true, true);
     }
 
-    await message.reply({ embeds: [ new ArbitrationEmbed(this.bot, arbi, platform, ctx.i18n) ]});
+    await message.reply({ embeds: [new ArbitrationEmbed(this.bot, arbi, platform, ctx.i18n)] });
 
     return this.messageManager.statuses.SUCCESS;
   }

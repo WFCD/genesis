@@ -1,10 +1,12 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const { games } = require('../CommonFunctions');
 
 module.exports = class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
   constructor(bot) {
-    super(bot, 'handlers.statsupdate', 'guildMemberUpdate');
+    super(bot, 'handlers.statsupdate', Events.GUILD_MEMBER_UPDATE);
   }
 
   async execute(...[, newMember]) {

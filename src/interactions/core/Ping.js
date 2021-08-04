@@ -1,9 +1,9 @@
 'use strict';
 
-const { ApplicationCommand, MessageEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const ping = require('ping').promise;
 
-const { timeDeltaToString, games, emojify } = require('../CommonFunctions.js');
+const { timeDeltaToString, games, emojify } = require('../../CommonFunctions.js');
 
 const d2Hosts = [
   'bungie.net',
@@ -20,28 +20,27 @@ const wfHosts = [
   'drops.warframestat.us',
 ];
 
-
-module.exports = class Ping extends require('../models/Interaction') {
+module.exports = class Ping extends require('../../models/Interaction') {
   static enabled = true;
-  
+
   static command = {
     name: 'ping',
-    description: 'ping some stuff'
+    description: 'ping some stuff',
   };
-  
+
   static async commandHandler(interaction, ctx) {
     if (!interaction.isCommand()) return;
-    
+
     const now = Date.now();
-    await interaction.reply({content: 'Testing Ping', ephemeral: true});
+    await interaction.reply({ content: 'Testing Ping', ephemeral: true });
     const afterSend = Date.now();
-    
+
     const hosts = ['discordapp.com']
       .concat(games.includes('WARFRAME') ? wfHosts : [])
       .concat(games.includes('DESTINY2') ? d2Hosts : []);
     const results = [];
 
-    for(const host of hosts) {
+    for (const host of hosts) {
       const result = await ping.probe(host);
       results.push({
         name: host,
@@ -68,7 +67,7 @@ module.exports = class Ping extends require('../models/Interaction') {
         text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}`,
       },
     });
-    
-    interaction.editReply({ content: null, embeds: [ updated ] });
+
+    interaction.editReply({ content: null, embeds: [updated] });
   }
-}
+};

@@ -34,7 +34,7 @@ class NewsEmbed extends BaseEmbed {
 
     this.color = news.length > 0 ? 0x779ecb : 0xff6961;
     let value = createGroupedArray(news
-      .filter(n => {
+      .filter((n) => {
         if (type) {
           return (type === 'update' && n.update)
             || (type === 'primeaccess' && n.primeAccess)
@@ -42,15 +42,15 @@ class NewsEmbed extends BaseEmbed {
         }
         return true;
       })
-      .map(n => {
+      .map((n) => {
         const etaChunks = n.eta.split(' ');
         const timeTokens = [
           etaChunks[0],
           etaChunks[1],
           etaChunks[1] !== etaChunks[etaChunks.length - 1]
             ? etaChunks[etaChunks.length - 1]
-            : null
-          ]
+            : null,
+        ]
           .filter(a => !!a)
           .join(' ');
         const betterNews = `[${timeTokens}] [${n.message}](${n.link.split('?')[0]})`;

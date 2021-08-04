@@ -28,8 +28,8 @@ class News extends Command {
     if (compact) {
       const pages = createGroupedArray(news, 10)
         .map(group => new NewsEmbed(this.bot, group, undefined, platform));
-      
-      await message.reply({ embeds: pages});
+
+      await message.reply({ embeds: pages });
     } else {
       const pages = [];
       news.forEach((article) => {

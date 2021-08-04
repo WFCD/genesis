@@ -83,8 +83,8 @@ class RSSEmbed extends BaseEmbed {
         };
       }
     }
-    
-    if (!this.description?.length) this.description = '_ _'
+
+    if (!this.description?.length) this.description = '_ _';
   }
 }
 

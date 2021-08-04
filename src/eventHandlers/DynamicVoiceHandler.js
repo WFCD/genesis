@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const { Generator } = require('warframe-name-generator');
 
 const relays = [
@@ -59,14 +61,14 @@ class DynamicVoiceHandler {
     this.logger = logger;
     this.settings = settings;
 
-    client.on('voiceStateUpdate', async (oldMember, newMember) => {
+    client.on(Events.VOICE_STATE_UPDATE, async (oldMember, newMember) => {
       const applicable = await this.checkManagementApplicable(oldMember, newMember);
       if (applicable) {
         this.checkAllChannels(oldMember.guild, newMember.member);
       }
     });
 
-    client.on('channelDelete', (channel) => {
+    client.on(Events.CHANNEL_DELETE, (channel) => {
       this.removeChannel(channel);
     });
 

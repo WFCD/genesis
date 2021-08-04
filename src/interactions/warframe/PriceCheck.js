@@ -1,11 +1,8 @@
 'use strict';
 
-const { ApplicationCommand, MessageEmbed } = require('discord.js');
+const platformChoices = require('../../resources/platformMap.json');
 
-const { timeDeltaToString, games, emojify } = require('../CommonFunctions.js');
-const platformChoices = require('../resources/platformMap.json');
-
-module.exports = class PriceCheck extends require('../models/Interaction') {
+module.exports = class PriceCheck extends require('../../models/Interaction') {
   static enabled = true;
 
   static command = {
@@ -23,14 +20,14 @@ module.exports = class PriceCheck extends require('../models/Interaction') {
       choices: platformChoices,
     }],
   };
-  
+
   static async commandHandler(interaction, ctx) {
-    const options = interaction.options;
+    const { options } = interaction;
     const platform = options?.get('platform')?.value || ctx.platform || 'pc';
     const query = options?.get('query')?.value;
-    
+
     interaction.defer({ ephemeral: true });
     const embeds = await ctx.ws.pricecheck(query, { platform });
     interaction.editReply({ embeds });
   }
-}
+};

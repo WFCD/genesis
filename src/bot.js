@@ -1,6 +1,8 @@
 'use strict';
 
-const { Client, WebhookClient, Intents } = require('discord.js');
+const {
+  Client, WebhookClient, Intents, Constants: { Events },
+} = require('discord.js');
 
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
@@ -9,6 +11,7 @@ const EventHandler = require('./EventHandler');
 const MessageManager = require('./settings/MessageManager');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
+
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
 /**
@@ -81,7 +84,7 @@ class Genesis {
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_INTEGRATIONS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      ]
+      ],
     });
 
     /**
@@ -168,29 +171,55 @@ class Genesis {
   }
 
   async setupHandlers() {
-    this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'ready', args: [] }));
-    this.client.on('message', async message => this.eventHandler.handleEvent({ event: 'message', args: [message] }));
+    this.client.on('ready',
+      async () => this.eventHandler.handleEvent({ event: 'ready', args: [] }));
+    this.client.on(Events.MESSAGE_CREATE,
+      async message => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
 
-    this.client.on('guildCreate', async guild => this.eventHandler.handleEvent({ event: 'guildCreate', args: [guild] }));
-    this.client.on('guildDelete', async guild => this.eventHandler.handleEvent({ event: 'guildDelete', args: [guild] }));
-    this.client.on('channelCreate', async channel => this.eventHandler.handleEvent({ event: 'channelCreate', args: [channel] }));
-    this.client.on('channelDelete', async channel => this.eventHandler.handleEvent({ event: 'channelDelete', args: [channel] }));
+    this.client.on(Events.GUILD_CREATE,
+      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] }));
+    this.client.on(Events.GUILD_DELETE,
+      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_DELETE, args: [guild] }));
+    this.client.on(Events.CHANNEL_CREATE,
+      async channel => this.eventHandler
+        .handleEvent({ event: Events.CHANNEL_CREATE, args: [channel] }));
+    this.client.on(Events.CHANNEL_DELETE,
+      async channel => this.eventHandler
+        .handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] }));
 
-    this.client.on('messageDelete', async message => this.eventHandler.handleEvent({ event: 'messageDelete', args: [message] }));
-    this.client.on('messageDeleteBulk', async messages => this.eventHandler.handleEvent({ event: 'messageDeleteBulk', args: [messages] }));
+    this.client.on(Events.MESSAGE_DELETE,
+      async message => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_DELETE, args: [message] }));
+    this.client.on(Events.MESSAGE_DELETE_BULK,
+      async messages => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_DELETE_BULK, args: [messages] }));
 
-    this.client.on('guildMemberUpdate', async (oldMember, newMember) => this.eventHandler.handleEvent({ event: 'guildMemberUpdate', args: [oldMember, newMember] }));
-    this.client.on('guildMemberAdd', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberAdd', args: [guildMember] }));
-    this.client.on('guildMemberRemove', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberRemove', args: [guildMember] }));
-    this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
-    this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
+    this.client.on(Events.GUILD_MEMBER_UPDATE,
+      async (oldMember, newMember) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_UPDATE, args: [oldMember, newMember] }));
+    this.client.on(Events.GUILD_MEMBER_ADD,
+      async guildMember => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_ADD, args: [guildMember] }));
+    this.client.on(Events.GUILD_MEMBER_REMOVE,
+      async guildMember => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_REMOVE, args: [guildMember] }));
+    this.client.on(Events.GUILD_BAN_ADD,
+      async (guild, user) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_BAN_ADD, args: [guild, user] }));
+    this.client.on(Events.GUILD_BAN_REMOVE,
+      async (guild, user) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_BAN_REMOVE, args: [guild, user] }));
 
-    this.client.on('interaction', async (interaction) => this.eventHandler.handleEvent({event: 'interaction', args: [interaction]}));
+    this.client.on(Events.INTERACTION_CREATE,
+      async interaction => this.eventHandler
+        .handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] }));
 
-    this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
-    this.client.on('error', this.logger.error);
-    this.client.on('warn', this.logger.warn);
-    this.client.on('debug', (message) => {
+    this.client.on(Events.DISCONNECT,
+      (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
+    this.client.on(Events.ERROR, this.logger.error);
+    this.client.on(Events.WARN, this.logger.warn);
+    this.client.on(Events.DEBUG, (message) => {
       if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) {
         this.logger.silly(message);
         return;

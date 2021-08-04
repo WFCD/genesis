@@ -1,12 +1,10 @@
 'use strict';
 
-const { MessageEmbed } = require('discord.js');
+const { games } = require('../../CommonFunctions.js');
+const logger = require('../../Logger');
 
-const { timeDeltaToString, games, createGroupedArray, emojify } = require('../CommonFunctions.js');
-const logger = require('../Logger');
-
-const platformChoices = require('../resources/platformMap.json');
-const localeChoices = require('../resources/localeMap.json');
+const platformChoices = require('../../resources/platformMap.json');
+const localeChoices = require('../../resources/localeMap.json');
 
 const hideable = {
   type: 'BOOLEAN',
@@ -18,6 +16,12 @@ const globalable = {
   name: 'global',
   description: 'Should this value be set for every channel in the server?',
 };
+const platformable = {
+  type: 'STRING',
+  name: 'platform',
+  description: 'Platform to check for data',
+  choices: platformChoices,
+};
 
 const allowCustomCommand = {
   type: 'SUB_COMMAND',
@@ -27,10 +31,9 @@ const allowCustomCommand = {
     type: 'BOOLEAN',
     name: 'value',
     description: 'Should this channel allow custom commands?',
-    required: true
+    required: true,
   }, globalable, hideable],
 };
-
 const allowInlineCommand = {
   type: 'SUB_COMMAND',
   name: 'allowinline',
@@ -39,39 +42,53 @@ const allowInlineCommand = {
     type: 'BOOLEAN',
     name: 'value',
     description: 'Should this channel allow inline commands?',
-    required: true
+    required: true,
   }, globalable, hideable],
+};
+const setLFG = {
+  type: 'SUB_COMMAND',
+  name: 'setlfg',
+  description: 'Set LFG Channel for a Platform',
+  options: [{
+    type: 'CHANNEL',
+    name: 'channel',
+    description: 'Channel to set LFG to post in',
+    required: true,
+  }],
 };
 
 const settingsCommands = [{
-    type: 'SUB_COMMAND',
-    name: 'language',
-    description: 'Set a language for the server',
-    options: [{
-      type: 'STRING',
-      name: 'value',
-      description: 'What language do you want to use for this server?',
-      choices: localeChoices,
-      required: true,
-    }, globalable, hideable],
-  }, {
-    type: 'SUB_COMMAND',
-    name: 'platform',
-    description: 'Set the platform for the channel',
-    options: [{
-      type: 'STRING',
-      name: 'value',
-      description: 'What platform is this channel?',
-      choices: platformChoices,
-      required: true,
-    }, globalable, hideable],
-  },
-  ...(games.includes('CUST_CMDS')
-    ? [allowCustomCommand, allowInlineCommand]
-    : []),
+  type: 'SUB_COMMAND',
+  name: 'language',
+  description: 'Set a language for the server',
+  options: [{
+    type: 'STRING',
+    name: 'value',
+    description: 'What language do you want to use for this server?',
+    choices: localeChoices,
+    required: true,
+  }, globalable, hideable],
+}, {
+  type: 'SUB_COMMAND',
+  name: 'platform',
+  description: 'Set the platform for the channel',
+  options: [{
+    type: 'STRING',
+    name: 'value',
+    description: 'What platform is this channel?',
+    choices: platformChoices,
+    required: true,
+  }, globalable, hideable],
+},
+...(games.includes('CUST_CMDS')
+  ? [allowCustomCommand, allowInlineCommand]
+  : []),
+...(games.includes('UTIL')
+  ? [setLFG]
+  : []),
 ].filter(s => s);
 
-module.exports = class Settings extends require('../models/Interaction') {
+module.exports = class Settings extends require('../../models/Interaction') {
   static elevated = true;
   static command = {
     name: 'settings',
@@ -96,23 +113,24 @@ module.exports = class Settings extends require('../models/Interaction') {
       }],
     }],
   };
-  
+
   static async commandHandler(interaction, ctx) {
     // args
     const options = interaction.options?.first?.()?.options;
+    const platform = options?.get?.('platfomr')?.value || ctx.platform;
     const ephemeral = typeof options?.get('hidden')?.value !== 'undefined'
       ? options?.get('hidden')?.value
       : true;
 
     const field = interaction.options?.first()?.name;
-    
+    logger.info(`${options} || ${field}`);
     const setOptions = options?.first?.()?.options;
 
     // validation
     if (!field) {
       return interaction.reply(ctx.i18n`No field`);
     }
-    
+
     switch (field) {
       case 'pings':
       case 'permissions':
@@ -122,6 +140,7 @@ module.exports = class Settings extends require('../models/Interaction') {
           case 'language':
           case 'allowinline':
           case 'allowcustom':
+
           default:
             logger.info(options?.first?.()?.name);
             break;
@@ -131,8 +150,8 @@ module.exports = class Settings extends require('../models/Interaction') {
       default:
         break;
     }
-    
-    await interaction.defer({ephemeral});
-    interaction.editReply({ content: 'got it', ephemeral });
+
+    await interaction.defer({ ephemeral });
+    return interaction.editReply({ content: 'got it', ephemeral });
   }
-}
+};
