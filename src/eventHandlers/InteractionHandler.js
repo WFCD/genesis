@@ -4,64 +4,15 @@ const fs = require('fs');
 const path = require('path');
 const decache = require('decache');
 
-const Permissions = require('discord.js').Permissions.FLAGS;
-
-const { Events } = require('discord.js').Constants;
-
+const Discord = require('discord.js');
 const Interaction = require('../models/Interaction');
+
 const WorldStateClient = require('../resources/WorldStateClient');
 
+const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
 const whitelistedGuilds = ['146691885363232769', '563140046031683585'];
 
 const ws = new WorldStateClient(require('../Logger'));
-
-const loadFiles = async (loadedCommands, logger) => {
-  const handlersDir = path.join(__dirname, '../interactions');
-  let reloadedCommands = loadedCommands || [];
-
-  let files = fs.readdirSync(handlersDir);
-  const categories = files.filter?.(f => !f.endsWith('.js'));
-  files = files.filter?.(f => f.endsWith('.js'));
-
-  categories.forEach((category) => {
-    files = files.concat(fs.readdirSync(path.join(handlersDir, category))
-      .map(f => path.join(handlersDir, category, f)));
-  });
-
-  if (reloadedCommands.length > 0) {
-    files?.forEach(f => decache(path.join(handlersDir, f)));
-  }
-
-  reloadedCommands = files.map((f) => {
-    try {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      const Handler = require(f);
-      return Handler.prototype instanceof Interaction ? Handler : null;
-    } catch (e) {
-      logger.error(e);
-      return null;
-    }
-  })
-    .filter(h => h);
-
-  return reloadedCommands;
-};
-
-const deleteExisting = async (commands) => {
-  for (const [cmdId] of commands?.cache.entries()) {
-    await commands.delete(cmdId);
-  }
-};
-
-const loadCommands = async (commands, loadedFiles, logger) => {
-  for (const gid of whitelistedGuilds) {
-    try {
-      await commands.set(loadedFiles.map(cmd => cmd.command), gid);
-    } catch (e) {
-      logger.error(e);
-    }
-  }
-};
 
 /**
  * Describes a handler
@@ -72,8 +23,6 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.interactions', Events.INTERACTION_CREATE);
@@ -82,16 +31,66 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     this.init();
   }
 
+  static async loadFiles(loadedCommands, logger) {
+    const handlersDir = path.join(__dirname, '../interactions');
+    let reloadedCommands = loadedCommands || [];
+
+    let files = fs.readdirSync(handlersDir);
+    const categories = files.filter?.(f => !f.endsWith('.js'));
+    files = files.filter?.(f => f.endsWith('.js'));
+
+    categories.forEach((category) => {
+      files = files.concat(fs.readdirSync(path.join(handlersDir, category))
+        .map(f => path.join(handlersDir, category, f)));
+    });
+
+    if (reloadedCommands.length > 0) {
+      files?.forEach(f => decache(f));
+    }
+
+    reloadedCommands = files.map((f) => {
+      try {
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        const Handler = require(f);
+        return Handler.prototype instanceof Interaction ? Handler : null;
+      } catch (e) {
+        logger.error(e);
+        return null;
+      }
+    })
+      .filter(h => h);
+
+    return reloadedCommands;
+  }
+
+  static async deleteExisting(commands) {
+    for (const [cmdId] of commands?.cache.entries()) {
+      await commands.delete(cmdId);
+    }
+  }
+
+  static async loadCommands(commands, loadedFiles, logger) {
+    for (const gid of whitelistedGuilds) {
+      try {
+        await commands.set(loadedFiles.map(cmd => cmd.command), gid);
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+  }
+
   async init() {
     this.commands = this.client.application?.commands;
 
     this.logger.debug('Initing InteractionHandler');
-    this.loadedCommands = await loadFiles(this.loadedCommands, this.logger);
+    this.loadedCommands = await InteractionHandler.loadFiles(
+      this.loadedCommands, this.logger,
+    );
     // await deleteExisting(this.commands);
-    await loadCommands(this.commands, this.loadedCommands, this.logger);
+    await InteractionHandler.loadCommands(this.commands, this.loadedCommands, this.logger);
     this.ready = true;
   }
-  
+
   async setupPerms() {
     this.permissions = this.client.application?.permissions;
     for (const guild of this.client.guilds) {
@@ -111,6 +110,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     const ctx = await this.settings.getCommandContext(interaction.channel, interaction.user);
     ctx.settings = this.settings;
     ctx.ws = ws;
+    ctx.handler = this;
 
     const noAccess = (match?.elevated
         && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))

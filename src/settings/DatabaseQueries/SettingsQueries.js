@@ -1,6 +1,8 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 class SettingsQueries {
   constructor(db) {

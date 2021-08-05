@@ -1,8 +1,10 @@
 'use strict';
 
+const Discord = require('discord.js');
+
 const {
   Client, WebhookClient, Intents, Constants: { Events },
-} = require('discord.js');
+} = Discord;
 
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
@@ -38,11 +40,9 @@ class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
-   * @param  {Object}           [options]            Bot options
-   * @param  {string}           [options.prefix]     Prefix for calling the bot
-   * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
-   * @param  {number[]}         [options.shards]     Ids of shards to control
-   * @param  {Object}           [options.commandManifest] Manifest of commands
+   * @param  {string}           [prefix]     Prefix for calling the bot
+   * @param  {number[]}         [shards]     Ids of shards to control
+   * @param  {Object}           [commandManifest] Manifest of commands
    */
   constructor(discordToken, {
     prefix = process.env.PREFIX,

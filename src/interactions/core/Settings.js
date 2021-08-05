@@ -16,12 +16,6 @@ const globalable = {
   name: 'global',
   description: 'Should this value be set for every channel in the server?',
 };
-const platformable = {
-  type: 'STRING',
-  name: 'platform',
-  description: 'Platform to check for data',
-  choices: platformChoices,
-};
 
 const allowCustomCommand = {
   type: 'SUB_COMMAND',
@@ -47,13 +41,19 @@ const allowInlineCommand = {
 };
 const setLFG = {
   type: 'SUB_COMMAND',
-  name: 'setlfg',
+  name: 'lfg',
   description: 'Set LFG Channel for a Platform',
   options: [{
     type: 'CHANNEL',
     name: 'channel',
     description: 'Channel to set LFG to post in',
     required: true,
+  }, {
+    type: 'STRING',
+    name: 'platform',
+    description: 'Platform to set channel for',
+    required: true,
+    choices: platformChoices,
   }],
 };
 
@@ -88,6 +88,12 @@ const settingsCommands = [{
   : []),
 ].filter(s => s);
 
+const aliases = {
+  allowinline: 'allowInline',
+  allowcustom: 'allowCustom',
+  lfg: 'lfgChannel',
+};
+
 module.exports = class Settings extends require('../../models/Interaction') {
   static elevated = true;
   static command = {
@@ -114,33 +120,47 @@ module.exports = class Settings extends require('../../models/Interaction') {
     }],
   };
 
+  /**
+   * Handle the copmmand interaction
+   * @param {CommandInteraction} interaction interaction to handle
+   * @param {Object} ctx interaction context
+   * @returns {Promise<Message|APIMessage|*>}
+   */
   static async commandHandler(interaction, ctx) {
     // args
-    const options = interaction.options?.first?.()?.options;
-    const platform = options?.get?.('platfomr')?.value || ctx.platform;
-    const ephemeral = typeof options?.get('hidden')?.value !== 'undefined'
+    const options = interaction.options.first();
+    const ephemeral = typeof options?.get?.('hidden')?.value !== 'undefined'
       ? options?.get('hidden')?.value
       : true;
 
-    const field = interaction.options?.first()?.name;
-    logger.info(`${options} || ${field}`);
-    const setOptions = options?.first?.()?.options;
+    const action = options.name;
+    let field = options.options?.first?.()?.name;
+    const valOpt = options?.options?.first?.()?.options;
+    const value = valOpt?.get?.('value')?.value || valOpt?.get?.('channel')?.value;
+    const platform = options?.options?.first?.()?.options?.get?.('platform')?.value;
 
     // validation
-    if (!field) {
-      return interaction.reply(ctx.i18n`No field`);
-    }
+    if (!action) return interaction.reply(ctx.i18n`No action`);
+    if (!field) return interaction.reply(ctx.i18n`No field`);
+    if (!value) return interaction.reply(ctx.i18n`No value`);
 
-    switch (field) {
+    switch (action) {
       case 'pings':
       case 'permissions':
       case 'set':
-        switch (options?.first?.()?.name) {
-          case 'platform':
-          case 'language':
+        switch (field) {
+          case 'lfg':
+            field = aliases[field];
+            field = platform === 'pc' ? field : `${field}.${platform}`;
           case 'allowinline':
           case 'allowcustom':
-
+            field = aliases[field] || field;
+          case 'platform':
+            await ctx.settings.setChannelSetting(ctx.channel, field, value);
+            return interaction.reply({ content: `set ${field} to ${value}`, ephemeral });
+          case 'language':
+            await ctx.settings.setGuildSetting(interaction.guild, field, value);
+            return interaction.reply({ content: `set ${field} to ${value}`, ephemeral });
           default:
             logger.info(options?.first?.()?.name);
             break;
@@ -152,6 +172,6 @@ module.exports = class Settings extends require('../../models/Interaction') {
     }
 
     await interaction.defer({ ephemeral });
-    return interaction.editReply({ content: 'got it', ephemeral });
+    return interaction.editReply({ content: 'not happening', ephemeral });
   }
 };

@@ -1,6 +1,7 @@
 'use strict';
 
-const moment = require('moment');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 const BaseEmbed = require('./BaseEmbed.js');
 
@@ -41,17 +42,24 @@ class LFGEmbed extends BaseEmbed {
       { name: 'Need', value: `${lfg.membersNeeded - lfg.members.length}`, inline: true },
       { name: 'Members', value: lfg.members.map(id => `<@!${id}>`).join(', '), inline: true },
     ];
-    this.footer.text = lfg.expiry === 0
-      ? `Expired • ${lfg.edited ? 'Edited' : 'Posted'}`
-      : `Expires in ${moment.duration(lfg.expiryTs - Date.now()).humanize()} • ${lfg.edited ? 'Edited' : 'Posted'}`;
 
     if (lfg.vc.channel) {
       this.fields.push({
         name: 'Voice Chat',
-        value: `[Join](https://discordapp.com/channels/${lfg.vc.channel.guild.id}/${lfg.vc.channel.id})`,
+        value: `<#${lfg.vc.channel.id}>`,
         inline: true,
       });
     }
+
+    if (lfg.expiry !== 0) {
+      this.fields.push({
+        name: '_ _',
+        value: `Expires <t:${(lfg.expiryTs / 1000).toFixed(0)}:R>`,
+        inline: false,
+      });
+    }
+    const ed = lfg.edited ? 'Edited' : 'Posted';
+    this.footer.text = lfg.expiry === 0 ? `Expired • ${ed}` : ed;
   }
 }
 

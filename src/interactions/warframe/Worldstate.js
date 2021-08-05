@@ -209,16 +209,16 @@ module.exports = class WorldState extends require('../../models/Interaction') {
   static async commandHandler(interaction, ctx) {
     // args
     const language = ctx.language || 'en';
-    const subcommand = interaction.options.data[0];
+    const subcommand = interaction.options.first();
     const options = subcommand?.options;
-    const platform = get(options, 'platform')?.value || ctx.platform || 'pc';
-    const compact = get(options, 'compact')?.value || false;
-    const ephemeral = typeof get(options, 'hidden')?.value !== 'undefined'
-      ? get(options, 'hidden')?.value
+    const platform = options?.get?.('platform')?.value || ctx.platform || 'pc';
+    // const compact = options?.get?.('compact')?.value || false;
+    const ephemeral = typeof options?.get?.('hidden')?.value !== 'undefined'
+      ? options?.get?.('hidden')?.value
       : true;
 
-    let category = get(options, 'category')?.value || 'all';
-    const place = get(options, 'place')?.value;
+    let category = options?.get?.('category')?.value || 'all';
+    const place = options?.get?.('place')?.value;
 
     const key = `${subcommand?.name}${place ? `::${place}` : ''}`;
     const field = aliases[key] || subcommand?.name || null;

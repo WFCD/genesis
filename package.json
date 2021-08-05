@@ -13,7 +13,7 @@
     "test": "npx eslint main.js src/",
     "restart": "pm2 delete genesis && npm start && npm run logs",
     "setup": "npm i",
-    "start": "pm2 start genesis.json",
+    "start": "pm2 start genesis.json --only genesis",
     "start:logs": "npm start && npm run logs",
     "start:worker": "pm2 start worker.json",
     "start:logs:worker": "npm run start:worker && npm run logs:worker",
@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/wfcd/genesis.git"
+    "url": "https://github.com/wfcd/genesis.git"
   },
   "bugs": {
-    "url": "http://github.com/wfcd/genesis/issues"
+    "url": "https://github.com/wfcd/genesis/issues"
   },
-  "homepage": "http://genesis.warframestat.us",
+  "homepage": "https://genesis.warframestat.us",
   "keywords": [
     "warframe",
     "genesis",
@@ -48,7 +48,7 @@
     "cron": "^1.8.2",
     "decache": "^4.6.0",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "github:discordjs/discord.js#master",
+    "discord.js": "github:discordjs/discord.js#3a718d8c625ab45bc9f4dfcd9d6bbdef67ae75b4",
     "erlpack": "github:discordapp/erlpack",
     "flat-cache": "^3.0.4",
     "json-query": "^2.2.2",
@@ -141,7 +141,8 @@
       "global-require": 0,
       "no-param-reassign": "off",
       "no-continue": "off",
-      "lines-between-class-members": "off"
+      "lines-between-class-members": "off",
+      "no-fallthrough": "off"
     }
   },
   "babel": {

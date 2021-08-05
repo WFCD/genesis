@@ -1,5 +1,8 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
+
 /**
  * Describes a handler
  */
@@ -59,8 +62,8 @@ class BaseEventHandler {
 
   /**
    * Run the handle
-   * @param {GuildMember|Guild|User} event Event param to handle
-   * @param {GuildMember|Guild|User} event2 Second event param to handle
+   * @param {GuildMember|Guild|User|Interaction} event Event param to handle
+   * @param {GuildMember|Guild|User|Interaction} event2 Second event param to handle
    */
   async execute(event, event2) {
     this.logger.debug(`Handled ${event} & ${event2}`);

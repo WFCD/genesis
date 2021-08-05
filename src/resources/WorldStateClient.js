@@ -10,7 +10,7 @@ const { apiBase } = require('../CommonFunctions');
 module.exports = class WorldStateClient {
   /**
    * Create a worldstate client
-   * @param {Console} logger logger for debugging requests
+   * @param {Logger} logger logger for debugging requests
    */
   constructor(logger = console) {
     this.logger = logger;
