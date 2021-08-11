@@ -111,6 +111,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     ctx.settings = this.settings;
     ctx.ws = ws;
     ctx.handler = this;
+    ctx.logger = this.logger;
 
     const noAccess = (match?.elevated
         && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))

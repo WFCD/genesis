@@ -1,5 +1,7 @@
 'use strict';
 
+const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+
 const {
   games, createGroupedArray,
 } = require('../../CommonFunctions.js');
@@ -47,12 +49,12 @@ const embeds = {
 };
 
 const platformable = [{
-  type: 'STRING',
+  type: Types.STRING,
   name: 'platform',
   description: 'Platform to check for data',
   choices: platformChoices,
 }, {
-  type: 'BOOLEAN',
+  type: Types.BOOLEAN,
   name: 'hidden',
   description: 'Should the response be hidden from others?',
 }];
@@ -72,12 +74,10 @@ const places = [{
 }];
 
 const compactable = [...platformable, {
-  type: 'BOOLEAN',
+  type: Types.BOOLEAN,
   name: 'compact',
   description: 'Should all data be in one embed?',
 }];
-
-const get = (options, name) => options?.find(o => o.name === name);
 
 module.exports = class WorldState extends require('../../models/Interaction') {
   static enabled = games.includes('WARFRAME');
@@ -86,26 +86,26 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     name: 'ws',
     description: 'Get Warframe Worldstate Information',
     options: [{
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'alerts',
       description: 'Get WorldState Alerts',
       options: compactable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'arbi',
       description: 'Get WorldState Arbitrations',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'baro',
       description: 'Get Current Void Trader Inventory',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'conclave',
       description: 'Get Current Conclave Challenges',
       options: [{
-        type: 'STRING',
+        type: Types.STRING,
         name: 'category',
         description: 'Which conclave challenge category?',
         choices: [{
@@ -122,16 +122,16 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       ...platformable,
       ],
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'construction',
       description: 'Get Construction Progress',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'cycle',
       description: 'Get current Time Cycle',
       options: [{
-        type: 'STRING',
+        type: Types.STRING,
         name: 'place',
         description: 'Where do you want to know about?',
         choices: places,
@@ -140,31 +140,31 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       ...platformable,
       ],
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'darvo',
       description: 'Get Darvo\'s Deals',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'events',
       description: 'Get Active Events',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'fissures',
       description: 'Get WorldState Fissures',
       options: compactable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'invasions',
       description: 'Get WorldState Invasions',
       options: compactable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'news',
       description: 'Get Current news',
       options: [{
-        type: 'STRING',
+        type: Types.STRING,
         name: 'category',
         description: 'Which news do you want?',
         required: true,
@@ -184,22 +184,22 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       }, ...platformable,
       ],
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'nightwave',
       description: 'Get Current Nightwave Challenges',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'sales',
       description: 'Get Current Sales',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'outposts',
       description: 'Get Current Sentient Outposts',
       options: platformable,
     }, {
-      type: 'SUB_COMMAND',
+      type: Types.SUB_COMMAND,
       name: 'steelpath',
       description: 'Get Current Steel Path Offerings',
       options: compactable,

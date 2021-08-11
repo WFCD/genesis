@@ -2,7 +2,6 @@
 
 const SQL = require('sql-template-strings');
 const mysql = require('mysql2/promise');
-const Promise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
 
@@ -56,7 +55,7 @@ const copyChildrenQueries = (queriesClass) => {
 
 /**
   * Command Context
-  * @type {Object} CommandContext
+  * @typedef {Object} CommandContext
   * @property {string} platform The channel's configured platform
   * @property {string} prefix The channel's configured command prefix
   * @property {string} language Language to localize, if possible
@@ -125,7 +124,6 @@ class Database {
     const opts = {
       supportBigNumbers: true,
       bigNumberStrings: true,
-      Promise,
       host: process.env.MYSQL_HOST || 'localhost',
       port: process.env.MYSQL_PORT || 3306,
       user: process.env.MYSQL_USER || 'genesis',
@@ -175,6 +173,11 @@ class Database {
       };
   }
 
+  /**
+   * Query the database
+   * @param {string} query query string
+   * @returns {mysql.Connection.query}
+   */
   async query(query) {
     try {
       return this.db.query(query);

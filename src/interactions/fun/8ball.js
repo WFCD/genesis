@@ -1,5 +1,7 @@
 'use strict';
 
+const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+
 const jokes = [
   'Joke\'s on you. Try again next time',
   'Lotus says it is certain',
@@ -31,7 +33,7 @@ module.exports = class EightBall extends require('../../models/Interaction') {
     name: '8ball',
     description: 'Get your 8Ball question answered!',
     options: [{
-      type: 'STRING',
+      type: Types.STRING,
       name: 'question',
       description: 'What do you want the all-knowing machine to answer?',
       required: true,

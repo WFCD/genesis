@@ -1,5 +1,7 @@
 'use strict';
 
+const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+
 const { games } = require('../../CommonFunctions.js');
 const logger = require('../../Logger');
 
@@ -7,40 +9,40 @@ const platformChoices = require('../../resources/platformMap.json');
 const localeChoices = require('../../resources/localeMap.json');
 
 const hideable = {
-  type: 'BOOLEAN',
+  type: Types.BOOLEAN,
   name: 'hidden',
   description: 'Should the response be hidden from others?',
 };
 const globalable = {
-  type: 'BOOLEAN',
+  type: Types.BOOLEAN,
   name: 'global',
   description: 'Should this value be set for every channel in the server?',
 };
 
 const allowCustomCommand = {
-  type: 'SUB_COMMAND',
+  type: Types.SUB_COMMAND,
   name: 'allowcustom',
   description: 'Set allowance of custom commands',
   options: [{
-    type: 'BOOLEAN',
+    type: Types.BOOLEAN,
     name: 'value',
     description: 'Should this channel allow custom commands?',
     required: true,
   }, globalable, hideable],
 };
 const allowInlineCommand = {
-  type: 'SUB_COMMAND',
+  type: Types.SUB_COMMAND,
   name: 'allowinline',
   description: 'Set allowance of inline commands',
   options: [{
-    type: 'BOOLEAN',
+    type: Types.BOOLEAN,
     name: 'value',
     description: 'Should this channel allow inline commands?',
     required: true,
   }, globalable, hideable],
 };
 const setLFG = {
-  type: 'SUB_COMMAND',
+  type: Types.SUB_COMMAND,
   name: 'lfg',
   description: 'Set LFG Channel for a Platform',
   options: [{
@@ -49,7 +51,7 @@ const setLFG = {
     description: 'Channel to set LFG to post in',
     required: true,
   }, {
-    type: 'STRING',
+    type: Types.STRING,
     name: 'platform',
     description: 'Platform to set channel for',
     required: true,
@@ -58,22 +60,22 @@ const setLFG = {
 };
 
 const settingsCommands = [{
-  type: 'SUB_COMMAND',
+  type: Types.SUB_COMMAND,
   name: 'language',
   description: 'Set a language for the server',
   options: [{
-    type: 'STRING',
+    type: Types.STRING,
     name: 'value',
     description: 'What language do you want to use for this server?',
     choices: localeChoices,
     required: true,
   }, globalable, hideable],
 }, {
-  type: 'SUB_COMMAND',
+  type: Types.SUB_COMMAND,
   name: 'platform',
   description: 'Set the platform for the channel',
   options: [{
-    type: 'STRING',
+    type: Types.STRING,
     name: 'value',
     description: 'What platform is this channel?',
     choices: platformChoices,
@@ -100,22 +102,22 @@ module.exports = class Settings extends require('../../models/Interaction') {
     name: 'settings',
     description: 'Interact with Settings',
     options: [{
-      type: 'SUB_COMMAND_GROUP',
+      type: Types.SUB_COMMAND_GROUP,
       name: 'set',
       description: 'Set a setting',
       options: settingsCommands,
     }, {
-      type: 'SUB_COMMAND_GROUP',
+      type: Types.SUB_COMMAND_GROUP,
       name: 'clear',
       description: 'Clear certain settings',
       options: [{
         name: 'permissions',
         description: 'Clear command usage permissions',
-        type: 'SUB_COMMAND',
+        type: Types.SUB_COMMAND,
       }, {
         name: 'pings',
         description: 'Clear tracking pings',
-        type: 'SUB_COMMAND',
+        type: Types.SUB_COMMAND,
       }],
     }],
   };
