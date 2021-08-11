@@ -24,7 +24,7 @@ const logger = require('./Logger');
 
 /**
  * API base path
- * @type {string]}
+ * @type {string}
  */
 const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
 /**

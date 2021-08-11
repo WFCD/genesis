@@ -2,7 +2,6 @@
 
 const { Permissions, Constants: { Events } } = require('discord.js');
 const Handler = require('../models/BaseEventHandler');
-const I18n = require('../settings/I18n');
 const { games, emojify } = require('../CommonFunctions');
 
 /**
@@ -48,7 +47,7 @@ const minPerms = [
   Permissions.FLAGS.EMBED_LINKS,
 ];
 
-const authPerms = [ 
+const authPerms = [
   Permissions.FLAGS.MANAGE_ROLES,
   Permissions.FLAGS.MANAGE_GUILD,
   Permissions.FLAGS.MANAGE_CHANNELS,
@@ -88,7 +87,7 @@ class CommandHandler extends Handler {
     if (!(passesInitial && canReply)) {
       return;
     }
-    
+
     let { content } = message;
     let botping;
     if (message.guild) {

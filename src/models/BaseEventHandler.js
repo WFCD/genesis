@@ -62,11 +62,10 @@ class BaseEventHandler {
 
   /**
    * Run the handle
-   * @param {GuildMember|Guild|User|Interaction} event Event param to handle
-   * @param {GuildMember|Guild|User|Interaction} event2 Second event param to handle
+   * @param {*} event Event param to handle
    */
-  async execute(event, event2) {
-    this.logger.debug(`Handled ${event} & ${event2}`);
+  async execute(event) {
+    this.logger.debug(`Handled ${event}`);
   }
 }
 

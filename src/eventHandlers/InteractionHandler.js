@@ -5,10 +5,12 @@ const path = require('path');
 const decache = require('decache');
 
 const Discord = require('discord.js');
-const Interaction = require('../models/Interaction');
 
+const Interaction = require('../models/Interaction');
 const WorldStateClient = require('../resources/WorldStateClient');
 
+// eslint-disable-next-line no-unused-vars
+const { CommandInteraction, ButtonInteraction } = Discord;
 const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
 const whitelistedGuilds = ['146691885363232769', '563140046031683585'];
 
@@ -93,17 +95,16 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
 
   async setupPerms() {
     this.permissions = this.client.application?.permissions;
-    for (const guild of this.client.guilds) {
-      if (!guild.commands) {}
-    }
   }
 
   /**
    * Handle dat interaction!
-   * @param {Discord.Interaction} interaction interaction that will be handled
+   * @param {CommandInteraction|ButtonInteraction} interaction interaction that will be handled
    */
   async execute(interaction) {
     if (!this.ready) return;
+    if (!(interaction instanceof CommandInteraction)) return;
+
     this.logger.debug(`Running ${interaction.id} for ${this.event}`);
 
     const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
@@ -122,7 +123,9 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       await interaction.deleteReply();
     }
 
-    if (interaction.isCommand()) await match?.commandHandler?.(interaction, ctx);
+    if (interaction instanceof CommandInteraction) {
+      await match?.commandHandler?.(interaction, ctx);
+    }
     // if (interaction.isButton()) await match?.buttonHandler?.(interaction);
     // if (interaction.isMessageComponent()) await match?.msgComponentHandler?.(interaction);
     // if (interaction.isSelectMenu()) await match?.selectMenuHandler?.(interaction);

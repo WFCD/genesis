@@ -8,7 +8,7 @@ const darvo = `${assetBase}/img/darvo-md.png`;
 class DarvoEmbed extends BaseEmbed {
   constructor(bot, deal, platform) {
     super();
-    if (Array.isArray(deal)) deal = deal[0];
+    if (Array.isArray(deal)) [deal] = deal;
     this.color = 0x0000ff;
     this.title = `[${platform.toUpperCase()}] Darvo Deal`;
     this.thumbnail = {

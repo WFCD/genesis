@@ -57,7 +57,7 @@ class ModEmbed extends BaseEmbed {
       inline: true,
     }, {
       name: 'Tradeable',
-      value: modData.tradable ? '✅' : '❌',
+      value: emojify(modData.tradable ? 'green_tick' : 'red_tick'),
       inline: true,
     }];
   }

@@ -1,7 +1,5 @@
 'use strict';
 
-const { ApplicationCommand, MessageEmbed } = require('discord.js');
-
 module.exports = class About extends require('../../models/Interaction') {
   static enabled = true;
 

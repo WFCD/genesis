@@ -8,6 +8,8 @@ const fs = require('fs');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 
+/* eslint-disable-next-line no-unused-vars */
+const WorldStateClient = require('../resources/WorldStateClient');
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
@@ -86,6 +88,9 @@ const copyChildrenQueries = (queriesClass) => {
   *   calling the command is blacklisted from the bot
   * @property {boolean} isOwner whether or not the user
   *   calling the command is blacklisted from the bot
+ *  @property {WorldStateClient?} ws Worldstate Client
+ *  @property {Logger} logger Logger
+ *  @property {I18n} i18n internationalization string handler
   */
 
 /**
