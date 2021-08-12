@@ -72,9 +72,10 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
   }
 
   static async loadCommands(commands, loadedFiles, logger) {
+    const cmds = loadedFiles.map(cmd => cmd.command);
     for (const gid of whitelistedGuilds) {
       try {
-        await commands.set(loadedFiles.map(cmd => cmd.command), gid);
+        await commands.set(cmds, gid);
       } catch (e) {
         logger.error(e);
       }

@@ -21,7 +21,7 @@ const embeds = {
   Riven: require('../../embeds/RivenStatEmbed'),
 };
 
-module.exports = class WorldState extends require('../../models/Interaction') {
+module.exports = class Lookup extends require('../../models/Interaction') {
   static enabled = games.includes('WARFRAME');
 
   static command = {

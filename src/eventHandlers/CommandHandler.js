@@ -194,8 +194,6 @@ class CommandHandler extends Handler {
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
    * @param   {Message} message Discord message object
-   * @param   {boolean} allowCustom Whether or not to allow custom commands
-   * @param   {boolean} allowInline Whether or not to allow inline commands
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
   async checkCanAct(command, message) {
@@ -233,10 +231,7 @@ class CommandHandler extends Handler {
       }
       return memberHasPermForNonAuthCommand;
     }
-    if (message.channel.type === 'dm' && command.allowDM) {
-      return true;
-    }
-    return false;
+    return message.channel.type === 'dm' && command.allowDM;
   }
 }
 

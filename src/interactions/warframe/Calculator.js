@@ -30,7 +30,7 @@ const smoothstep = (currentLevel, baseLevel) => {
   return 3 * (t * t) - 2 * (t * t * t);
 };
 
-module.exports = class WorldState extends require('../../models/Interaction') {
+module.exports = class Calculator extends require('../../models/Interaction') {
   static enabled = games.includes('WARFRAME');
 
   static command = {

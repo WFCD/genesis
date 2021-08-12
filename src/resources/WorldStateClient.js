@@ -3,6 +3,12 @@
 const fetch = require('./Fetcher');
 const { apiBase } = require('../CommonFunctions');
 
+const relicBase = 'https://drops.warframestat.us/data/relics';
+
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
+
 /**
  * WorldState interaction client
  * @type {Object}
@@ -128,7 +134,7 @@ module.exports = class WorldStateClient {
    */
   async search(endpoint, query) {
     this.logger.silly(`searching ${endpoint} for ${query}`);
-    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query)}`);
+    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}`);
   }
 
   /**
@@ -141,7 +147,7 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Object>}
    */
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
-    this.logger.info(`pricechecking ${query}`);
+    this.logger.silly(`pricechecking ${query}`);
     const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${platform || 'pc'}`;
     this.logger.info(`fetching ${url}`);
     return fetch(url, {
@@ -150,5 +156,16 @@ module.exports = class WorldStateClient {
         'Accept-Language': language,
       },
     });
+  }
+
+  /**
+   * Retrieve data for a particular relic for drops, etc.
+   * @param {string} tier Relic era (Lith, Neo, etc.)
+   * @param {string} name Relic name (A1, etc.)
+   * @returns {Promise<Object>}
+   */
+  async relic(tier, name) {
+    this.logger.silly(`fetching ${tier} ${name}`);
+    return fetch(`${relicBase}/${toTitleCase(tier)}/${toTitleCase(name)}.json`);
   }
 };
