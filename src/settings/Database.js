@@ -62,6 +62,8 @@ const props = (obj) => {
  *  @property {Logger} logger Logger
  *  @property {I18n} i18n internationalization string handler
  *  @property {Database} settings interface for the database
+ *  @property {boolean} ephemerate whether or not to hide (make ephemeral) interaction responses
+ *  @property {InteractionHandler|CommandHandler} handler access to a command's handler
   */
 
 /**
@@ -82,7 +84,7 @@ const props = (obj) => {
  * @mixes WelcomeQueries
  * @class
  */
-class Database {
+module.exports = class Database {
   /**
    * @param {Genesis} bot Bot to load the settings for
    */
@@ -110,6 +112,7 @@ class Database {
       defaultShown: false,
       tempCategory: false,
       'settings.cc.ping': true,
+      ephemerate: true,
     };
 
     const opts = {
@@ -241,7 +244,7 @@ class Database {
       settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond', 'ephemerate']);
 
       if (platforms.length > 4) {
         platforms.forEach((platform, index) => {
@@ -374,6 +377,9 @@ class Database {
         context.respondToSettings = context.respond_to_settings === '1';
         delete context.respond_to_settings;
       }
+
+      if (typeof context.ephemerate === 'undefined') context.ephemerate = true;
+      else context.ephemerate = context.ephemerate === '1';
     } else {
       context = {
         platform: this.defaults.platform,
@@ -387,6 +393,7 @@ class Database {
         'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
         respondToSettings: this.defaults.respond_to_settings,
         deleteCommand: this.defaults.delete_after_respond,
+        ephemerate: true,
       };
     }
     if (user) {
@@ -399,5 +406,3 @@ class Database {
     return context;
   }
 }
-
-module.exports = Database;

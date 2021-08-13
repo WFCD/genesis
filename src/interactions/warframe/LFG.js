@@ -82,25 +82,26 @@ module.exports = class LFG extends require('../../models/Interaction') {
       edited: false,
     };
 
-    const embed = new LFGEmbed(undefined, lfg);
+    const embed = new LFGEmbed(null, lfg);
     const chn = interaction.guild.channels
       .resolve((ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]]).id);
     const msg = await chn.send({ embeds: [embed] });
     if (!msg) {
-      return interaction.reply('Unknown error. Could not create LFG entry.');
+      return interaction.reply({ content: 'Unknown error. Could not create LFG entry.', ephemeral: true });
     }
     let deleteTimeout = interaction.client.setTimeout(msg.delete, dehumanize(lfg.expiry));
     msg.react('🔰');
     msg.react('❌');
 
-    const collector = msg.createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
+    const collector = msg
+        .createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
       { time: dehumanize(lfg.expiry), dispose: true });
 
     collector.on('end', () => {
       msg.reactions.removeAll();
       lfg.expiry = 0;
       lfg.edited = true;
-      msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+      msg.edit({ embed: new LFGEmbed(null, lfg) });
       clearTimeout(deleteTimeout);
       deleteTimeout = setTimeout(msg.delete, 10000);
     });
@@ -110,13 +111,13 @@ module.exports = class LFG extends require('../../models/Interaction') {
         lfg.members.push(user.id);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+        msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
       }
       if (user.id === interaction.member.id) {
         if (reaction.emoji.name === '❌') {
           lfg.expiry = 0;
           lfg.edited = true;
-          msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+          msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
           collector.stop();
         }
         try {
@@ -132,9 +133,9 @@ module.exports = class LFG extends require('../../models/Interaction') {
         lfg.members.splice(lfg.members.indexOf(user.id), 1);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+        msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
       }
     });
-    return interaction.reply({ content: 'gl;hf', ephemeral: true });
+    return interaction.reply({ content: 'gl;hf', ephemeral: ctx.ephemerate });
   }
 };

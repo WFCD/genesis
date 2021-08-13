@@ -22,7 +22,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   };
 
   static async commandHandler(interaction, ctx) {
-    const command = interaction.options?.first?.()?.name;
+    const command = interaction.options.getSubcommand();
     const ephemeral = true;
     let commands;
     let commandFiles;
@@ -34,7 +34,6 @@ module.exports = class Settings extends require('../../models/Interaction') {
         break;
       case 'reload':
         await interaction.deferReply({ ephemeral });
-        ({ commands } = interaction.client.application);
         commandFiles = await InteractionHandler.loadFiles(ctx.handler.loadedCommands, logger);
         await InteractionHandler.loadCommands(commands, commandFiles, logger);
         return interaction.editReply('doneski');

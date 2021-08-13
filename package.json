@@ -50,7 +50,7 @@
     "decache": "^4.6.0",
     "discord-api-types": "^0.22.0",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "^13.0.1",
+    "discord.js": "^13.1.0",
     "flat-cache": "^3.0.4",
     "json-query": "^2.2.2",
     "moment": "^2.29.1",

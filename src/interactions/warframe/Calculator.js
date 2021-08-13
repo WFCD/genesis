@@ -62,8 +62,8 @@ module.exports = class Calculator extends require('../../models/Interaction') {
    */
   static async commandHandler(interaction, ctx) {
     // args
-    const subcommand = interaction.options.first();
-    const options = subcommand?.options;
+    const subcommand = interaction.options.getSubcommand();
+    const options = interaction.options;
 
     const base = options.get('base_level').value;
     const current = options.get('current_level').value;
@@ -77,14 +77,14 @@ module.exports = class Calculator extends require('../../models/Interaction') {
       + (f2() * smoothstep(current, base))) * Number(val || 1)).toFixed(2);
 
     /* eslint-disable no-case-declarations */
-    switch (subcommand.name) {
+    switch (subcommand) {
       case 'shields':
         f1 = () => 1 + (0.02 * (range ** 1.75));
         f2 = () => 1 + (1.6 * (range ** 0.75));
         const shields = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${shields} shields`,
-          ephemeral: true,
+          ephemeral: ctx.ephemerate,
         });
       case 'health':
         f1 = () => 1 + (0.015 * (range ** 2));
@@ -92,7 +92,7 @@ module.exports = class Calculator extends require('../../models/Interaction') {
         const health = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${health} health`,
-          ephemeral: true,
+          ephemeral: ctx.ephemerate,
         });
       case 'armor':
         f1 = () => 1 + (0.005 * (range ** 1.75));
@@ -100,10 +100,10 @@ module.exports = class Calculator extends require('../../models/Interaction') {
         const armor = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${armor} armor`,
-          ephemeral: true,
+          ephemeral: ctx.ephemerate,
         });
       default:
-        return interaction.reply('ok');
+        return interaction.reply({ content: 'ok', ephemeral: ctx.ephemerate });
     }
   }
 };

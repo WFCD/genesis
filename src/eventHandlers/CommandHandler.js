@@ -66,8 +66,6 @@ class CommandHandler extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.command', Events.MESSAGE_CREATE);
@@ -79,7 +77,7 @@ class CommandHandler extends Handler {
 
   /**
    * Handle a message for commands
-   * @param {Message} message message to check for commands
+   * @param {Discord.Message} message message to check for commands
    */
   async execute(...[message]) {
     const passesInitial = this.bot.readyToExecute
@@ -94,7 +92,7 @@ class CommandHandler extends Handler {
     let { content } = message;
     let botping;
     if (message.guild) {
-      if (message.guild.members.me) {
+      if (message.guild.me) {
         botping = `@${message.guild.me.displayName}`;
       }
     }

@@ -63,48 +63,48 @@ module.exports = class Lookup extends require('../../models/Interaction') {
    */
   static async commandHandler(interaction, ctx) {
     // args
-    const subcommand = interaction.options.first();
-    const options = subcommand?.options;
+    const subcommand = interaction.options.getSubcommand();
+    const options = interaction.options;
     const query = options.get('query').value;
     let data;
     let embed;
 
     /* eslint-disable no-case-declarations */
-    switch (subcommand.name) {
+    switch (subcommand) {
       case 'arcane':
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);
-        if (!data.length) return interaction.editReply({ content: 'None found' });
+        if (!data.length) return interaction.editReply('None found');
         embed = new embeds.Arcane(null, data[0], ctx.i18n);
         break;
       case 'weapon':
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
-        if (!data.length) return interaction.editReply({ content: 'None found' });
+        if (!data.length) return interaction.editReply('None found');
         embed = new embeds.Weapon(null, data[0], ctx.i18n);
         break;
       case 'warframe':
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
-        if (!data.length) return interaction.editReply({ content: 'None found' });
+        if (!data.length) return interaction.editReply('None found');
         embed = new embeds.Warframe(null, data[0], ctx.i18n);
         break;
       case 'riven':
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
-        if (!data.length) return interaction.editReply({ content: 'None found' });
+        if (!data.length) return interaction.editReply('None found');
         embed = new embeds.Riven(null, data[Object.keys(data)[0]], ctx.i18n);
         break;
       case 'mod':
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query))
           .filter(m => typeof m.baseDrain !== 'undefined');
-        if (!data.length) return interaction.editReply({ content: 'None found' });
+        if (!data.length) return interaction.editReply('None found');
         embed = new embeds.Mod(null, data[0], ctx.i18n);
         break;
       default:
         return interaction.reply('ok');
     }
-    return interaction.editReply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [ new MessageEmbed(embed) ] });
   }
 };

@@ -57,7 +57,7 @@ class Genesis {
      */
     this.client = new Client({
       allowedMentions: { parse: ['users', 'roles'], repliedUser: false },
-      shards: 'auto',
+      shards,
       shardCount: Number(process.env.SHARDS || 1),
       presence: {
         status: 'dnd',
@@ -204,7 +204,7 @@ class Genesis {
     this.client.on(Events.ERROR, this.logger.error);
     this.client.on(Events.WARN, this.logger.warn);
     this.client.on(Events.DEBUG, (message) => {
-      if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) {
+      if (/(heartbeat|Latency of|voice|HELLO timeout|CONNECT|Spawning)/i.test(message)) {
         this.logger.silly(message);
         return;
       }
@@ -221,7 +221,7 @@ class Genesis {
     await this.commandManager.loadCustomCommands();
     await this.eventHandler.loadHandles();
 
-    this.setupHandlers();
+    await this.setupHandlers();
     try {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');

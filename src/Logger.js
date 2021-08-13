@@ -4,7 +4,7 @@
 const Sentry = require('@sentry/node');
 require('colors');
 
-Sentry.init(process.env.RAVEN_URL, { autoBreadcrumbs: true });
+Sentry.init({ dsn: process.env.RAVEN_URL, autoBreadcrumbs: true });
 
 const { WebhookClient } = require('discord.js');
 
@@ -76,7 +76,7 @@ Object.keys(levels).forEach((level) => {
     }
 
     if (level.toLowerCase() === 'fatal') {
-      if (Sentry) Sentry.captureMessage(message, { level: 'fatal' });
+      if (Sentry) Sentry.captureMessage(message, { level: Sentry.Severity.Fatal });
       console.error(simple);
       process.exit(4);
     }
@@ -84,7 +84,7 @@ Object.keys(levels).forEach((level) => {
       if (Sentry) {
         Sentry.captureException(message);
       }
-      if (errorHook && !l.logLevel === 'DEBUG') {
+      if (errorHook && l.logLevel !== 'DEBUG') {
         // filter out api errors, they're largely unhelpful and unrecoverable
         if (message.stack && message.stack.startsWith('DiscordAPIError')) return;
         errorHook.send(new ErrorEmbed(message));

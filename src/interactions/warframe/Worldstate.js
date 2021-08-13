@@ -53,10 +53,6 @@ const platformable = [{
   name: 'platform',
   description: 'Platform to check for data',
   choices: platformChoices,
-}, {
-  type: Types.BOOLEAN,
-  name: 'hidden',
-  description: 'Should the response be hidden from others?',
 }];
 
 const places = [{
@@ -213,9 +209,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     const { options } = interaction;
     const platform = options?.get?.('platform')?.value || ctx.platform || 'pc';
     // const compact = options?.get?.('compact')?.value || false;
-    const ephemeral = typeof options?.get?.('hidden')?.value !== 'undefined'
-      ? options?.get?.('hidden')?.value
-      : true;
+    const ephemeral = ctx.ephemerate;
 
     let category = options?.get?.('category')?.value || 'all';
     const place = options?.get?.('place')?.value;
@@ -246,39 +240,35 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       case 'nightwave':
       case 'sentientOutposts':
         if (!data.length && !Object.keys(data).length) {
-          interaction.editReply({ content: ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`, ephemeral: true });
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         } else {
           const embed = new embeds[field](null, data, platform, ctx.i18n);
-          interaction.editReply({ ephemeral, embeds: [embed] });
+          return interaction.editReply({ embeds: [embed] });
         }
-        break;
       case 'news':
         category = category === 'news' ? null : category;
       case 'conclaveChallenges':
         if (!data.length && !Object.keys(data).length) {
-          interaction.editReply({ content: ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`, ephemeral: true });
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         } else {
           const pages = createGroupedArray(data, 20)
             .map(group => new embeds[field](null, group, category, platform, ctx.i18n));
-          interaction.editReply({ ephemeral, embeds: pages });
+          return interaction.editReply({ embeds: pages });
         }
-        break;
       case 'events':
         if (!data.length && !Object.keys(data).length) {
-          interaction.editReply({ content: ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`, ephemeral: true });
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         } else {
           const pages = data.map(datum => new embeds[field](null, datum, platform, ctx.i18n));
-          interaction.editReply({ ephemeral, embeds: pages });
+          return interaction.editReply({ embeds: pages });
         }
-        break;
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {
-          interaction.editReply({ content: ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`, ephemeral: true });
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         } else {
           const embed = new embeds[field](null, data, ctx);
-          interaction.editReply({ ephemeral, embeds: [embed] });
+          return interaction.editReply({ embeds: [embed] });
         }
-        break;
       default:
         break;
     }

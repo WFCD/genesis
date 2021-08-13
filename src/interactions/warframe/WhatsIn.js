@@ -51,7 +51,7 @@ module.exports = class WhatsIn extends require('../../models/Interaction') {
   /**
    * Handle a discord interaction
    * @param {Discord.CommandInteraction} interaction interaction to handle
-   * @param {Object} ctx context object
+   * @param {CommandContext} ctx context object
    * @returns {Promise<*>}
    */
   static async commandHandler(interaction, ctx) {
@@ -61,6 +61,6 @@ module.exports = class WhatsIn extends require('../../models/Interaction') {
     const data = await ctx.ws.relic(tier, query);
     if (!data || !Object.keys(data).length) return interaction.reply('Sorry, no such relic');
     const embed = new WhatsInEmbed(null, data, tier, query);
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
   }
 };

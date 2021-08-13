@@ -3,7 +3,7 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 // eslint-disable-next-line no-unused-vars
-const { Message, APIMessage } = Discord;
+const { Message, APIMessage, CommandInteraction } = Discord;
 
 module.exports = class Interaction {
   static enabled = false;
@@ -22,9 +22,10 @@ module.exports = class Interaction {
 
   /**
    *Handle a command interaction
-   * @param interaction
+   * @param {CommandInteraction} interaction interaction to handle
+   * @param {CommandContext} ctx command context
    * @returns {Promise<Message | APIMessage>}
    */
   // eslint-disable-next-line no-unused-vars,no-empty-function
-  static async commandHandler(interaction) {}
+  static async commandHandler(interaction, ctx) {}
 };

@@ -352,7 +352,6 @@ const fieldLimit = 5;
  */
 const embedDefaults = {
   color: 0x77dd77,
-  url: 'https://warframestat.us/',
   footer: {
     text: 'Sent',
     icon_url: 'https://warframestat.us/wfcd_logo_color.png',

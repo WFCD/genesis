@@ -40,9 +40,10 @@ module.exports = class EightBall extends require('../../models/Interaction') {
     }],
   };
 
-  static async commandHandler(interaction) {
+  static async commandHandler(interaction, ctx) {
     return interaction.reply({
-      content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]}`,
+      content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]} | ||_${interaction.options.getString('question')}_||`,
+      ephemeral: ctx.ephemerate,
     });
   }
 };

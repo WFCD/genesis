@@ -1,7 +1,8 @@
 'use strict';
 
-const Promise = require('bluebird');
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const { Snowflake } = require('discord-api-types/v9');
 const schema = require('../schema.js');
 
 /**
@@ -92,7 +93,7 @@ class DBMQueries {
 
   /**
    * Remove guild from database
-   * @param  {snowflake} guild Guild to be removed from database
+   * @param  {Snowflake} guild Guild to be removed from database
    * @returns {Promise.<string>} status of removal
    */
   async removeGuild(guild) {

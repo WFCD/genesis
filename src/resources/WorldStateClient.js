@@ -15,19 +15,27 @@ function toTitleCase(str) {
  */
 module.exports = class WorldStateClient {
   /**
+   * @type {Logger} logger for tracing
+   */
+  #logger;
+
+  /**
    * Create a worldstate client
    * @param {Logger} logger logger for debugging requests
    */
   constructor(logger = console) {
-    this.logger = logger;
+    this.#logger = logger;
   }
 
   /**
    * Enum for WorldState endpoints
    * @readonly
-   * @enum {string}
    */
   static ENDPOINTS = {
+    /**
+     * Enumerated worldstate endpoints
+     * @enum {string}
+     */
     WORLDSTATE: {
       TIMESTAMP: 'timestamp',
       NEWS: 'news',
@@ -57,6 +65,10 @@ module.exports = class WorldStateClient {
       SENTIENT_OUTPOSTS: 'sentientOutposts',
       STEEL_PATH: 'steelPath',
     },
+    /**
+     * Enumerated search endpoints
+     * @enum {string}
+     */
     SEARCH: {
       ARCANES: 'arcanes',
       CONCLAVE: 'conclave',
@@ -82,15 +94,15 @@ module.exports = class WorldStateClient {
 
   /**
    * Get platform-specific worldstate data
-   * @param {WorldStateClient.ENDPOINTS.WORLDSTATE} endpoint worldstate endpoint to fetch
+   * @param {string<WorldStateClient.ENDPOINTS.WORLDSTATE>} endpoint worldstate endpoint to fetch
    * @param {string} platform platform to fetch from
    * @param {string} language language to fetch
    * @returns {Promise<Object>|undefined}
    */
   async get(endpoint, platform = 'pc', language = 'en') {
-    this.logger.silly(`fetching ${endpoint} for ${platform} with lang(${language})`);
+    this.#logger.silly(`fetching ${endpoint} for ${platform} with lang(${language})`);
     if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE).includes(endpoint)) {
-      this.logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
+      this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
       return undefined;
     }
     return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}`, {
@@ -102,9 +114,9 @@ module.exports = class WorldStateClient {
   }
 
   async g(endpoint, platform = 'pc', language = 'en') {
-    this.logger.silly(`fetching ${endpoint}`);
+    this.#logger.silly(`fetching ${endpoint}`);
     if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE).includes(endpoint)) {
-      this.logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
+      this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
       return undefined;
     }
     return fetch(`${apiBase}/${endpoint}`, {
@@ -122,7 +134,7 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Array<Object>>}
    */
   async riven(query, platform) {
-    this.logger.silly(`searching rivens for ${query}`);
+    this.#logger.silly(`searching rivens for ${query}`);
     return fetch(`${apiBase}/${platform}/rivens/search/${encodeURIComponent(query)}`);
   }
 
@@ -133,7 +145,7 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Object>}
    */
   async search(endpoint, query) {
-    this.logger.silly(`searching ${endpoint} for ${query}`);
+    this.#logger.silly(`searching ${endpoint} for ${query}`);
     return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}`);
   }
 
@@ -147,9 +159,9 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Object>}
    */
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
-    this.logger.silly(`pricechecking ${query}`);
+    this.#logger.silly(`pricechecking ${query}`);
     const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${platform || 'pc'}`;
-    this.logger.info(`fetching ${url}`);
+    this.#logger.info(`fetching ${url}`);
     return fetch(url, {
       headers: {
         platform,
@@ -165,7 +177,7 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Object>}
    */
   async relic(tier, name) {
-    this.logger.silly(`fetching ${tier} ${name}`);
+    this.#logger.silly(`fetching ${tier} ${name}`);
     return fetch(`${relicBase}/${toTitleCase(tier)}/${toTitleCase(name)}.json`);
   }
 };
