@@ -11,6 +11,10 @@ const makeId = (len = 8) => {
   return tokens.join('');
 };
 
+/**
+ * Database Mixin for Build queries
+ * @mixin
+ */
 class BuildQueries {
   constructor(db) {
     this.db = db;

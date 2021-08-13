@@ -1,10 +1,14 @@
 'use strict';
 
+const Discord = require('discord.js');
+
 const BaseEmbed = require('../../embeds/BaseEmbed');
 const Command = require('../../models/Command');
 const {
   createGroupedArray, setupPages, games, assetBase,
 } = require('../../CommonFunctions');
+
+const { Permissions } = Discord;
 
 const invalidResultsEmbed = {
   color: 0x00CCFF,
@@ -82,9 +86,9 @@ class Help extends Command {
     const config = {
       prefix: await this.settings.getGuildSetting(message.guild, 'prefix'),
       isOwner: message.author.id === this.bot.owner,
-      hasAuth: message.channel.type === 'dm' || message.channel
+      hasAuth: message.channel.type === 'DM' || message.channel
         .permissionsFor(message.author)
-        .has('MANAGE_ROLES'),
+        .has(Permissions.FLAGS.MANAGE_ROLES),
     };
 
     let searchableCommands = [];
@@ -130,10 +134,8 @@ class Help extends Command {
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
-   * @param   {Message} message Discord message object
-   * @param   {boolean} allowCustom Whether or not to allow custom commands
-   * @param   {boolean} allowInline Whether or not to allow inline commands
-   * @returns {Promise<boolean>} Whether or not the current command can be called by the author
+   * @param   {Discord.Message} message Discord message object
+   * @returns {boolean} Whether or not the current command can be called by the author
    */
   checkCanAct(command, message) {
     if (!command.enabled) {
@@ -142,13 +144,11 @@ class Help extends Command {
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
       return false;
     }
-    if (message.channel.type === 'text' && games.includes(command.game)) {
-      return (command.requiresAuth && message.channel.permissionsFor(message.author).has('MANAGE_ROLES')) || !command.requiresAuth;
+    if (message.channel.type === 'GUILD_TEXT' && games.includes(command.game)) {
+      return (command.requiresAuth && message.channel.permissionsFor(message.author)
+        .has(Discord.Permissions.FLAGS.MANAGE_ROLES)) || !command.requiresAuth;
     }
-    if (message.channel.type === 'dm' && command.allowDM) {
-      return true;
-    }
-    return false;
+    return message.channel.type === 'DM' && command.allowDM;
   }
 }
 

@@ -5,6 +5,8 @@ const path = require('path');
 const decache = require('decache');
 
 const Discord = require('discord.js');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 
 const Interaction = require('../models/Interaction');
 const WorldStateClient = require('../resources/WorldStateClient');
@@ -65,17 +67,11 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     return reloadedCommands;
   }
 
-  static async deleteExisting(commands) {
-    for (const [cmdId] of commands?.cache.entries()) {
-      await commands.delete(cmdId);
-    }
-  }
-
-  static async loadCommands(commands, loadedFiles, logger) {
+  static async loadCommands(rest, loadedFiles, logger) {
     const cmds = loadedFiles.map(cmd => cmd.command);
     for (const gid of whitelistedGuilds) {
       try {
-        await commands.set(cmds, gid);
+        await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, gid), { body: cmds });
       } catch (e) {
         logger.error(e);
       }
@@ -83,19 +79,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
   }
 
   async init() {
-    this.commands = this.client.application?.commands;
+    const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
     this.logger.debug('Initing InteractionHandler');
     this.loadedCommands = await InteractionHandler.loadFiles(
       this.loadedCommands, this.logger,
     );
-    // await deleteExisting(this.commands);
-    await InteractionHandler.loadCommands(this.commands, this.loadedCommands, this.logger);
+    await InteractionHandler.loadCommands(rest, this.loadedCommands, this.logger);
     this.ready = true;
-  }
-
-  async setupPerms() {
-    this.permissions = this.client.application?.permissions;
   }
 
   /**
@@ -120,7 +111,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
 
     if (noAccess) {
-      await interaction.defer({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: true });
       await interaction.deleteReply();
     }
 

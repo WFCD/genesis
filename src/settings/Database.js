@@ -5,11 +5,6 @@ const mysql = require('mysql2/promise');
 const path = require('path');
 const fs = require('fs');
 
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-
-/* eslint-disable-next-line no-unused-vars */
-const WorldStateClient = require('../resources/WorldStateClient');
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
 
@@ -29,31 +24,6 @@ const props = (obj) => {
     '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'valueOf', '__proto__',
     'toLocaleString'].includes(thing));
 };
-
-/**
- * Copy functions from class to this class... theoretically
- * @param {Object} queriesClass class instance
- * @returns {undefined} doesn't return anything
- */
-const copyChildrenQueries = (queriesClass) => {
-  const keys = props(queriesClass);
-  keys.forEach((key) => {
-    if (key !== 'db') {
-      // eslint-disable-next-line no-use-before-define
-      Database.prototype[key] = queriesClass[key];
-    }
-  });
-};
-
-/**
- * Connection options for the database
- * @typedef {Object} DbConnectionOptions
- * @property {string} [host=localhost] - The hostname of the database
- * @property {number} [port=3306] - The port number to connect to
- * @property {string} user - The user to authenticate as
- * @property {string} password - The password for that user
- * @property {string} database - The database to use
- */
 
 /**
   * Command Context
@@ -91,10 +61,26 @@ const copyChildrenQueries = (queriesClass) => {
  *  @property {WorldStateClient?} ws Worldstate Client
  *  @property {Logger} logger Logger
  *  @property {I18n} i18n internationalization string handler
+ *  @property {Database} settings interface for the database
   */
 
 /**
  * Persistent storage for the bot
+ * @mixes BlacklistQueries
+ * @mixes BuildQueries
+ * @mixes CustomCommandQueries
+ * @mixes DBMQueries
+ * @mixes DynamicVoiceQueries
+ * @mixes PermissionsQueries
+ * @mixes PingsQueries
+ * @mixes PromocodeQueries
+ * @mixes RatioQueries
+ * @mixes SettingsQueries
+ * @mixes StatisticsQueries
+ * @mixes StreamQueries
+ * @mixes TrackingQueries
+ * @mixes WelcomeQueries
+ * @class
  */
 class Database {
   /**
@@ -142,7 +128,22 @@ class Database {
       this.logger.fatal(e);
     }
 
-    this.loadChildren();
+    this.#loadChildren();
+  }
+
+  /**
+   * Copy functions from class to this class... theoretically
+   * @param {Object} queriesClass class instance
+   * @returns {undefined} doesn't return anything
+   */
+  static #copyChildQueries (queriesClass) {
+    const keys = props(queriesClass);
+    keys.forEach((key) => {
+      if (key !== 'db') {
+        // eslint-disable-next-line no-use-before-define
+        Database.prototype[key] = queriesClass[key];
+      }
+    });
   }
 
   /**
@@ -153,7 +154,7 @@ class Database {
    * Make sure your bot is in a secured folder
    *  if you're worried about shard space.
    */
-  loadChildren() {
+  #loadChildren () {
     const dbRoot = path.join(__dirname, 'DatabaseQueries');
     fs.readdirSync(dbRoot)
       .filter(f => f.endsWith('.js'))
@@ -161,7 +162,7 @@ class Database {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         const QClass = require(path.join(dbRoot, file));
         const qInstance = new QClass(this.db);
-        copyChildrenQueries(qInstance);
+        Database.#copyChildQueries(qInstance);
       });
   }
 

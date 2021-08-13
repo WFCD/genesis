@@ -209,8 +209,8 @@ module.exports = class WorldState extends require('../../models/Interaction') {
   static async commandHandler(interaction, ctx) {
     // args
     const language = ctx.language || 'en';
-    const subcommand = interaction.options.first();
-    const options = subcommand?.options;
+    const subcommand = interaction.options.getSubcommand();
+    const { options } = interaction;
     const platform = options?.get?.('platform')?.value || ctx.platform || 'pc';
     // const compact = options?.get?.('compact')?.value || false;
     const ephemeral = typeof options?.get?.('hidden')?.value !== 'undefined'
@@ -220,15 +220,15 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     let category = options?.get?.('category')?.value || 'all';
     const place = options?.get?.('place')?.value;
 
-    const key = `${subcommand?.name}${place ? `::${place}` : ''}`;
-    const field = aliases[key] || subcommand?.name || null;
+    const key = `${subcommand}${place ? `::${place}` : ''}`;
+    const field = aliases[key] || subcommand || null;
 
     // validation
     if (!field) {
       return interaction.reply(ctx.i18n`No field`);
     }
 
-    await interaction.defer({ ephemeral });
+    await interaction.deferReply({ ephemeral });
     const data = await ctx.ws.get(String(field), platform, language);
 
     switch (field) {

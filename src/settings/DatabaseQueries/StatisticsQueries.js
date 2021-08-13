@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for role statistics queries
+ * @mixin
+ */
 class StatisticsQueries {
   constructor(db) {
     this.db = db;

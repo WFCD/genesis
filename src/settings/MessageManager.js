@@ -103,12 +103,12 @@ class MessageManager {
       return undefined;
     }
 
-    const isDM = message.channel instanceof User || message.channel.type === 'dm';
+    const isDM = message.channel instanceof User || message.channel.type === 'DM';
     let perms = [...minPerms];
     if (msgOpts && msgOpts.embed) {
       perms = [Permissions.FLAGS.EMBED_LINKS, ...minPerms];
     }
-    const canSend = isDM || (message.channel.type === 'text' && message.channel.permissionsFor(this.client.user.id).has(perms));
+    const canSend = isDM || (message.channel.type === 'GUILD_TEXT' && message.channel.permissionsFor(this.client.user.id).has(perms));
 
     if (canSend) {
       try {

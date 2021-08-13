@@ -14,7 +14,7 @@ class SettingsEmbed extends BaseEmbed {
   constructor(bot, channel, tokens) {
     super();
     this.color = 0x77dd77;
-    if (channel.type === 'text') {
+    if (channel.type === 'GUILD_TEXT') {
       this.title = `Settings for ${channel.name}`;
     } else {
       this.title = `Settings for DM with ${channel.recipient.username}`;

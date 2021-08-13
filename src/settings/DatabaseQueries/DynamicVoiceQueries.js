@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for dynamic voice queries
+ * @mixin
+ */
 class DynamicVoiceQueries {
   constructor(db) {
     this.db = db;

@@ -4,6 +4,10 @@ const SQL = require('sql-template-strings');
 const logger = require('../../Logger');
 const pingLists = require('../../resources/pingables.json');
 
+/**
+ * Database Mixin for Pings queries
+ * @mixin
+ */
 class PingsQueries {
   constructor(db) {
     this.db = db;

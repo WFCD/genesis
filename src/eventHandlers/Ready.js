@@ -2,12 +2,15 @@
 
 const { GiveawaysManager } = require('discord-giveaways');
 
+const Discord = require('discord.js');
 const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 const MessageManager = require('../settings/MessageManager');
 
 const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
+
+const { Constants: { Events } } = Discord;
 
 const max = {
   cetus: {
@@ -33,7 +36,7 @@ class OnReadyHandle extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.onReady', 'ready');
+    super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
 
   /**
@@ -43,14 +46,14 @@ class OnReadyHandle extends Handler {
     this.logger.silly(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
 
-    this.notifyUp();
+    await this.notifyUp();
     this.setupMessageManager();
 
     this.settings.init();
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
-    this.updatePresence();
+    await this.updatePresence();
     this.setupAdditionalHandlers();
     this.setupGiveaways();
   }

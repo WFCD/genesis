@@ -33,7 +33,7 @@ class LogMemberBan extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'text') {
+    if (logChannel && logChannel.type === 'GUILD_TEXT') {
       const log = new LogEmbed(this.bot, {
         color: 0xCC0000,
         title: 'Member Banned',

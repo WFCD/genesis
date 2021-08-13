@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for Welcome queries
+ * @mixin
+ */
 class WelcomeQueries {
   constructor(db) {
     this.db = db;

@@ -24,12 +24,12 @@ class Prefix extends Command {
       return this.sendToggleUsage(message, ctx, ['prefix']);
     }
     if (prefix === 'reset') {
-      if (message.channel.type === 'text') {
+      if (message.channel.type === 'GUILD_TEXT') {
         await this.settings.setGuildSetting(message.channel.guild, 'prefix', this.bot.prefix);
       } else {
         await this.settings.setChannelSetting(message.channel, 'prefix', this.bot.prefix);
       }
-    } else if (message.channel.type === 'text') {
+    } else if (message.channel.type === 'GUILD_TEXT') {
       await this.settings.setGuildSetting(message.channel.guild, 'prefix', prefix);
     } else {
       await this.settings.setChannelSetting(message.channel, 'prefix', prefix);

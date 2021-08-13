@@ -14,7 +14,10 @@ const ErrorEmbed = require('./embeds/ErrorEmbed');
 
 let errorHook;
 if (process.env.CONTROL_WH_ID) {
-  errorHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+  errorHook = new WebhookClient({
+    id: process.env.CONTROL_WH_ID,
+    token: process.env.CONTROL_WH_TOKEN,
+  });
 }
 
 const l = {

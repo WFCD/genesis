@@ -23,7 +23,7 @@ class DeleteChannel extends Handler {
   async execute(...[channel]) {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    if (channel.type === 'voice') {
+    if (channel.type === 'GUILD_VOICE') {
       return;
     }
     await this.settings.deleteChannel(channel);

@@ -1,6 +1,8 @@
 'use strict';
 
-const { Collection, MessageEmbed } = require('discord.js');
+const Discord = require('discord.js');
+
+const { Collection, MessageEmbed } = Discord;
 /**
  * Map of emoji names to full types
  * @type {Object}
@@ -831,7 +833,7 @@ const getChannels = (channelsParam, message) => {
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
     channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
   } else if (channelsParam === 'all' || channelsParam === '*') {
-    channels = channels.concat(message.guild.channels.cache.filter(channel => channel.type === 'text').array());
+    channels = channels.concat(message.guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').array());
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
   }
@@ -844,7 +846,7 @@ const getChannels = (channelsParam, message) => {
  * @param {string} targetParam string from the command to determine the user or role
  * @param {Array<Role>} roleMentions role mentions from the command
  * @param {Array<User>} userMentions user mentions from the command
- * @param {Message} message message to get information on users and roles
+ * @param {Discord.Message} message message to get information on users and roles
  * @returns {Role|User} target or user to disable commands for
  */
 const getTarget = (targetParam, roleMentions, userMentions, message) => {

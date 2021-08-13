@@ -4,6 +4,10 @@ const Promise = require('bluebird');
 const SQL = require('sql-template-strings');
 const schema = require('../schema.js');
 
+/**
+ * Database Mixin for DBM queries
+ * @mixin
+ */
 class DBMQueries {
   constructor(db) {
     this.db = db;
@@ -44,7 +48,7 @@ class DBMQueries {
   addGuild(guild) {
     if (!guild.available) return undefined;
 
-    const channelIDs = guild.channels.cache.filter(c => c.type === 'text').keyArray();
+    const channelIDs = guild.channels.cache.filter(c => c.type === 'text').keys();
     if (channelIDs.length) {
       const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
       channelIDs.forEach((id, index) => {

@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for guild ratio queries
+ * @mixin
+ */
 class RatioQueries {
   constructor(db) {
     this.db = db;

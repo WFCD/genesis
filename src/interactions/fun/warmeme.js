@@ -12,7 +12,7 @@ module.exports = class Reddit extends require('../../models/Interaction') {
   };
 
   static async commandHandler(interaction) {
-    await interaction.defer();
+    await interaction.deferReply();
     const base = `https://reddit.com/r/${Reddit.subreddit}/random/.json`;
     const {
       permalink, url, title, subreddit_name_prefixed: srn, created_utc: ts,

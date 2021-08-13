@@ -3,6 +3,10 @@
 const SQL = require('sql-template-strings');
 const CustomCommand = require('../../models/CustomCommand.js');
 
+/**
+ * Database Mixin for custom command queries
+ * @mixin
+ */
 class CustomCommandQueries {
   constructor(db) {
     this.db = db;

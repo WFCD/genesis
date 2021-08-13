@@ -3,6 +3,10 @@
 const SQL = require('sql-template-strings');
 const JoinableRole = require('../../models/JoinableRole');
 
+/**
+ * Database Mixin for private room queries
+ * @mixin
+ */
 class PrivateRoomQueries {
   constructor(db) {
     this.db = db;

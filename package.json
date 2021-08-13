@@ -40,6 +40,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "@sentry/node": "^5.30.0",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
@@ -47,9 +48,9 @@
     "colors": "^1.4.0",
     "cron": "^1.8.2",
     "decache": "^4.6.0",
+    "discord-api-types": "^0.22.0",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "github:discordjs/discord.js#3a718d8c625ab45bc9f4dfcd9d6bbdef67ae75b4",
-    "erlpack": "github:discordapp/erlpack",
+    "discord.js": "^13.0.1",
     "flat-cache": "^3.0.4",
     "json-query": "^2.2.2",
     "moment": "^2.29.1",
@@ -65,7 +66,10 @@
     "topgg-autoposter": "^1.1.10",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.5",
-    "warframe-name-generator": "^1.0.2",
+    "warframe-name-generator": "^1.0.2"
+  },
+  "optionalDependencies": {
+    "erlpack": "github:discord/erlpack",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {

@@ -33,7 +33,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         process.exit(0);
         break;
       case 'reload':
-        await interaction.defer({ ephemeral });
+        await interaction.deferReply({ ephemeral });
         ({ commands } = interaction.client.application);
         commandFiles = await InteractionHandler.loadFiles(ctx.handler.loadedCommands, logger);
         await InteractionHandler.loadCommands(commands, commandFiles, logger);
@@ -45,7 +45,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         break;
     }
 
-    await interaction.defer({ ephemeral });
+    await interaction.deferReply({ ephemeral });
     return interaction.editReply({ content: 'got it', ephemeral });
   }
 };

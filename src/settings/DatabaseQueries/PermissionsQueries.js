@@ -3,6 +3,10 @@
 const SQL = require('sql-template-strings');
 const { Role } = require('discord.js');
 
+/**
+ * Database Mixin for dynamic voice queries
+ * @mixin
+ */
 class PermissionsQueries {
   constructor(db) {
     this.db = db;

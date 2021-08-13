@@ -4,6 +4,10 @@ const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 
+/**
+ * Database Mixin for managing settings
+ * @mixin
+ */
 class SettingsQueries {
   constructor(db) {
     this.db = db;
@@ -86,7 +90,7 @@ class SettingsQueries {
       const query = SQL`SELECT val FROM settings WHERE settings.channel_id=${channel.id} and settings.setting=${setting};`;
       const [rows] = await this.query(query);
       if (!rows.length) {
-        if (channel.type === 'text') {
+        if (channel.type === 'GUILD_TEXT') {
           await this.addGuildTextChannel(channel);
         } else {
           await this.addDMChannel(channel);

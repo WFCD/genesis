@@ -1,8 +1,11 @@
 'use strict';
 
-const { Permissions, Constants: { Events } } = require('discord.js');
+const Discord = require('discord.js');
+
 const Handler = require('../models/BaseEventHandler');
 const { games, emojify } = require('../CommonFunctions');
+
+const { Permissions, Constants: { Events } } = Discord;
 
 /**
  * Checks if the command is callable,
@@ -83,7 +86,7 @@ class CommandHandler extends Handler {
       && message.author.id !== this.bot.client.user.id
       && !message.author.bot;
 
-    const canReply = message.channel.type === 'dm' || hasBasic(message);
+    const canReply = message.channel.type === 'DM' || hasBasic(message);
     if (!(passesInitial && canReply)) {
       return;
     }
@@ -137,10 +140,9 @@ class CommandHandler extends Handler {
     ctx.message = strippedMessage;
     this.logger.debug(`Handling \`${content}\``);
 
-    let done = false;
-    commands.forEach(async (command) => {
+    for (const command of commands) {
       // only run the first matching command
-      if (games.includes(command.game) && command.regex.test(content) && !done) {
+      if (games.includes(command.game) && command.regex.test(content)) {
         // check if it's runnable for the user
         const canAct = await this.checkCanAct(command, strippedMessage);
         this.logger.debug(`${command.id} :: ${canAct}`);
@@ -158,9 +160,9 @@ class CommandHandler extends Handler {
             const status = await cmd.run(strippedMessage, ctx);
 
             // react based on result
-            const canReact = (message.channel.type === 'dm'
-                  || (message.channel.permissionsFor(this.bot.client.user.id)
-                    .has(minPerms))) && !command.isInline;
+            const canReact = (message.channel.type === 'DM'
+              || (message.channel.permissionsFor(this.bot.client.user.id)
+                .has(minPerms))) && !command.isInline;
             switch (status) {
               case this.statuses.SUCCESS:
                 if (canReact) {
@@ -178,22 +180,20 @@ class CommandHandler extends Handler {
             }
           } catch (error) {
             this.logger.error(error);
-          } finally {
-            // make sure we don't run more
-            done = true;
           }
+          break;
         }
       }
       // force last index to 0 for any global checkers
       // eslint-disable-next-line no-param-reassign
       command.regex.lastIndex = 0;
-    });
+    }
   }
 
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
-   * @param   {Message} message Discord message object
+   * @param   {Discord.Message} message Discord message object
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
   async checkCanAct(command, message) {
@@ -231,7 +231,7 @@ class CommandHandler extends Handler {
       }
       return memberHasPermForNonAuthCommand;
     }
-    return message.channel.type === 'dm' && command.allowDM;
+    return message.channel.type === 'DM' && command.allowDM;
   }
 }
 

@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for Blacklist queries
+ * @mixin
+ */
 class BlacklistQueries {
   constructor(db) {
     this.db = db;

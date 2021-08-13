@@ -56,21 +56,9 @@ class Genesis {
      * @private
      */
     this.client = new Client({
-      fetchAllMembers: false,
-      ws: {
-        compress: true,
-      },
-      shards,
+      allowedMentions: { parse: ['users', 'roles'], repliedUser: false },
+      shards: 'auto',
       shardCount: Number(process.env.SHARDS || 1),
-      disabledEvents: [
-        'VOICE_SERVER_UPDATE',
-        'PRESENSE_UPDATE',
-        'USER_SETTINGS_UPDATE',
-        'GUILD_INTEGRATIONS_UPDATE',
-        'GUILD_EMOJIS_UPDATE',
-        'GUILD_UPDATE',
-        'CHANNEL_PINS_UPDATE',
-      ],
       presence: {
         status: 'dnd',
         afk: false,
@@ -78,7 +66,6 @@ class Genesis {
           name: 'Starting...',
         }],
       },
-      allowedMentions: { parse: ['users', 'roles'], repliedUser: false },
       intents: [
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILDS,
@@ -100,13 +87,6 @@ class Genesis {
      * @private
      */
     this.logger = logger;
-
-    /**
-     * Prefix for calling the bot, for use with matching strings.
-     * @type {string}
-     * @private
-     */
-    this.escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
     /**
      * Prefix for calling the bot, for use with messages.
@@ -158,21 +138,25 @@ class Genesis {
     this.clusterId = process.env.CLUSTER_ID || 0;
     // this.tracker = new Tracker(this);
 
-    // this.feeder; // for debugging
-
     if (process.env.CONTROL_WH_ID) {
-      this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+      this.controlHook = new WebhookClient({
+        id: process.env.CONTROL_WH_ID,
+        token: process.env.CONTROL_WH_TOKEN,
+      });
     }
     if (process.env.BUG_WH_ID) {
-      this.bugHook = new WebhookClient(process.env.BUG_WH_ID, process.env.BUG_WH_TOKEN);
+      this.bugHook = new WebhookClient({
+        id: process.env.BUG_WH_ID,
+        token: process.env.BUG_WH_TOKEN,
+      });
     } else if (process.env.CONTROL_WH_ID) {
       this.bugHook = this.controlHook;
     }
   }
 
   async setupHandlers() {
-    this.client.on('ready',
-      async () => this.eventHandler.handleEvent({ event: 'ready', args: [] }));
+    this.client.on(Events.CLIENT_READY, async () => this.eventHandler
+      .handleEvent({ event: Events.CLIENT_READY, args: [] }));
     this.client.on(Events.MESSAGE_CREATE,
       async message => this.eventHandler
         .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
@@ -191,9 +175,9 @@ class Genesis {
     this.client.on(Events.MESSAGE_DELETE,
       async message => this.eventHandler
         .handleEvent({ event: Events.MESSAGE_DELETE, args: [message] }));
-    this.client.on(Events.MESSAGE_DELETE_BULK,
+    this.client.on(Events.MESSAGE_BULK_DELETE,
       async messages => this.eventHandler
-        .handleEvent({ event: Events.MESSAGE_DELETE_BULK, args: [messages] }));
+        .handleEvent({ event: Events.MESSAGE_BULK_DELETE, args: [messages] }));
 
     this.client.on(Events.GUILD_MEMBER_UPDATE,
       async (oldMember, newMember) => this.eventHandler
@@ -215,8 +199,8 @@ class Genesis {
       async interaction => this.eventHandler
         .handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] }));
 
-    this.client.on(Events.DISCONNECT,
-      (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
+    this.client.on(Events.SHARD_DISCONNECT,
+      (event) => { this.logger.error(`Disconnected with close event: ${event.code}`); });
     this.client.on(Events.ERROR, this.logger.error);
     this.client.on(Events.WARN, this.logger.warn);
     this.client.on(Events.DEBUG, (message) => {

@@ -32,12 +32,12 @@ class ServerInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Text Channels:',
-        value: guild.channels.filter(channel => channel.type === 'text').size || 0,
+        value: guild.channels.filter(channel => channel.type === 'GUILD_TEXT').size || 0,
         inline: true,
       },
       {
         name: 'Voice Channels:',
-        value: guild.channels.filter(channel => channel.type === 'voice').size || 0,
+        value: guild.channels.filter(channel => channel.type === 'GUILD_VOICE').size || 0,
         inline: true,
       },
       {

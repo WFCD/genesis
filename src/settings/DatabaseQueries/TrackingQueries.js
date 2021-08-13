@@ -2,6 +2,10 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for notification system tracking queries
+ * @mixin
+ */
 class TrackingQueries {
   constructor(db) {
     this.db = db;
