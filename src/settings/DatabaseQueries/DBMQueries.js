@@ -1,5 +1,6 @@
 'use strict';
 
+const Promise = require('bluebird');
 const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const { Snowflake } = require('discord-api-types/v9');
