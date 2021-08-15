@@ -7,10 +7,6 @@ const SQL = require('sql-template-strings');
  * @mixin
  */
 class DynamicVoiceQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async addTemplate(channel, relay) {
     const query = SQL`INSERT IGNORE INTO dynamic_voice_template VALUES
       (${channel.guild.id}, ${channel.id}, ${relay}, NULL);`;

@@ -794,8 +794,8 @@ const fromNow = (d, now = Date.now) => d.getTime() - now();
 /**
  * Get the list of channels to enable commands in based on the parameters
  * @param {string|Array<Channel>} channelsParam parameter for determining channels
- * @param {Message} message Discord message to get information on channels
- * @param {Collection.<Channel>} channels Channels allowed to be searched through
+ * @param {Discord.Message} message Discord message to get information on channels
+ * @param {Collection.<Discord.Channel>} channels Channels allowed to be searched through
  * @returns {Array<string>} channel ids to enable commands in
  */
 const getChannel = (channelsParam, message, channels) => {
@@ -823,7 +823,7 @@ const getChannel = (channelsParam, message, channels) => {
 /**
  * Get the list of channels to enable commands in based on the parameters
  * @param {string|Array<Channel>} channelsParam parameter for determining channels
- * @param {Message} message Discord message to get information on channels
+ * @param {Discord.Message} message Discord message to get information on channels
  * @returns {Array<string>} channel ids to enable commands in
  */
 const getChannels = (channelsParam, message) => {
@@ -843,8 +843,8 @@ const getChannels = (channelsParam, message) => {
  * Get the target role or user from the parameter string
  *    or role mentions or user mentions, preferring the latter 2.
  * @param {string} targetParam string from the command to determine the user or role
- * @param {Array<Role>} roleMentions role mentions from the command
- * @param {Array<User>} userMentions user mentions from the command
+ * @param {Collection<Role>} roleMentions role mentions from the command
+ * @param {Collection<User>} userMentions user mentions from the command
  * @param {Discord.Message} message message to get information on users and roles
  * @returns {Role|User} target or user to disable commands for
  */
@@ -909,7 +909,7 @@ const usersInRole = role => role.members.map(member => member.user);
 
 /**
  * Gets the list of users from the mentions in the call
- * @param {Message} message Channel message
+ * @param {Discord.Message} message Channel message
  * @param {boolean} excludeAuthor whether or not to exclude the author in the list
  * @returns {Array.<User>} Array of users to send message
  */

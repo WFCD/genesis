@@ -1,21 +1,22 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
-const { Role } = require('discord.js');
+const Discord = require('discord.js');
+// eslint-disable-next-line no-unused-vars
+const { Snowflake } = require('discord-api-types/v9');
+
+const { Role } = Discord;
 
 /**
  * Database Mixin for dynamic voice queries
  * @mixin
+ * @mixes Database
  */
 class PermissionsQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   /**
    * Enables or disables a command for an individual member in a channel
-   * @param {GuildChannel|string} channel - A discord guild channel
-   * @param {GuildMember|string} member - A discord guild member
+   * @param {Discord.TextChannel} channel - A discord guild channel
+   * @param {Discord.GuildMember} member - A discord guild member
    * @param {string|string[]} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
@@ -42,7 +43,7 @@ class PermissionsQueries {
 
   /**
    * Enables or disables a command for a role in a channel
-   * @param {GuildChannel} channel - A discord guild channel
+   * @param {Discord.GuildChannel} channel - A discord guild channel
    * @param {Role} role - A discord role
    * @param {string|string[]} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
@@ -65,8 +66,8 @@ class PermissionsQueries {
 
   /**
    * Enables or disables a command for an individual member in a guild
-   * @param {Guild} guild - A discord guild
-   * @param {GuildMember} member - A discord guild member
+   * @param {Discord.Guild} guild - A discord guild
+   * @param {Discord.GuildMember} member - A discord guild member
    * @param {string} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
@@ -80,8 +81,8 @@ class PermissionsQueries {
 
   /**
    * Enables or disables a command for a role in a channel
-   * @param {Guild} guild - A discord guild
-   * @param {Role} role - A discord role
+   * @param {Discord.Guild} guild - A discord guild
+   * @param {Discord.Role} role - A discord role
    * @param {string} commandId - The ID of the command to set the permission for
    * @param {boolean} allowed - Whether this member should be allowed to use this command
    * @returns {Promise}
@@ -95,7 +96,7 @@ class PermissionsQueries {
 
   /**
    * Gets whether or not a user is allowed to use a particular command in a channel
-   * @param {Channel} channel - A Discord channel
+   * @param {Discord.TextChannel} channel - A Discord channel
    * @param {string} memberId - String representing a user identifier
    * @param {string} commandId - String representing a command identifier
    * @returns {Promise}
@@ -114,7 +115,7 @@ class PermissionsQueries {
 
   /**
    * Gets whether or not a role is allowed to use a particular command in a channel
-   * @param {Channel} channel A Discord channel
+   * @param {Discord.TextChannel} channel A Discord channel
    * @param {string} role String representing a user identifier
    * @param {string} commandId String representing a command identifier
    * @returns {Promise}
@@ -134,7 +135,7 @@ class PermissionsQueries {
   /**
    * Gets whether or not a role in the user's
    * roles allows the user to use a particular command in a channel
-   * @param {Channel} channel - A Discord channel
+   * @param {Discord.TextChannel} channel - A Discord channel
    * @param {User} user - A Discord user
    * @param {string} commandId - A command id for designating
    *                           a command to check permissions for
@@ -175,7 +176,7 @@ class PermissionsQueries {
 
   /**
    * Gets whether or not a user is allowed to use a particular command in a guild
-   * @param {Guild} guild - A Discord guild
+   * @param {Discord.Guild} guild - A Discord guild
    * @param {string} memberId - String representing a user identifier
    * @param {string} commandId - String representing a command identifier
    * @returns {Promise}
@@ -194,7 +195,7 @@ class PermissionsQueries {
 
   /**
    * Gets whether or not a role is allowed to use a particular command in a guild
-   * @param {Guild} guild - A Discord guild
+   * @param {Discord.Guild} guild - A Discord guild
    * @param {string} role String representing a user identifier
    * @param {string} commandId String representing a command identifier
    * @returns {Promise}
@@ -213,7 +214,7 @@ class PermissionsQueries {
 
   /**
    * Remove permissions corresponding to the guild id
-   * @param  {snowflake} guildId guild identifier for removal
+   * @param  {Snowflake} guildId guild identifier for removal
    * @returns {Promise.<string>} status of removal
    */
   async removeGuildPermissions(guildId) {
@@ -223,7 +224,7 @@ class PermissionsQueries {
 
   /**
    * Remove permissions corresponding to the guild id
-   * @param  {snowflake} channelId channel identifier for removal
+   * @param  {Snowflake} channelId channel identifier for removal
    * @returns {Promise.<string>} status of removal
    */
   async removeChannelPermissions(channelId) {
@@ -233,7 +234,7 @@ class PermissionsQueries {
 
   /**
    * Get a dump of allowed and denied permissions
-   * @param  {Guild} guild guild to fetch settings for
+   * @param  {Discord.Guild} guild guild to fetch settings for
    * @returns {Object}       Data about allowed data
    */
   async permissionsForGuild(guild) {

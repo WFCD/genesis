@@ -7,12 +7,10 @@ const Discord = require('discord.js');
 /**
  * Database Mixin for managing settings
  * @mixin
+ * @mixes Database
+ * @mixes DBMQueries
  */
 class SettingsQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   /**
    * Get the guilds stored in the database
    * @returns {Promise.<Object>} Object of guild entries
@@ -60,6 +58,12 @@ class SettingsQueries {
     return undefined;
   }
 
+  /**
+   * Get all of the provided settings based on the provided channel
+   * @param {Discord.TextChannel|string|Object} channel channel to look up settings for
+   * @param {Array<string>} settings list of settings to look up
+   * @returns {Promise<{}>}
+   */
   async getChannelSettings(channel, settings) {
     if (!channel.id) {
       channel = { id: channel }; // eslint-disable-line no-param-reassign
@@ -78,7 +82,7 @@ class SettingsQueries {
 
   /**
    * Get a setting for a particular channel
-   * @param {Channel} channel channel to get the setting for
+   * @param {Discord.TextChannel|string|Object} channel channel to get the setting for
    * @param {string} setting name of the setting to get
    * @returns {Promise} setting
    */
@@ -156,7 +160,7 @@ class SettingsQueries {
 
   /**
    * Get a setting for a particular channel
-   * @param {Channel} channel channel to get the setting for
+   * @param {Discord.TextChannel|string|Object} channel channel to get the setting for
    * @param {string} setting name of the setting to set
    * @param {string|boolean} value value of the setting to be set
    * @returns {Promise} setting
@@ -181,7 +185,7 @@ class SettingsQueries {
 
   /**
    * Resets the custom prefix for this guild to the bot's globally configured prefix
-   * @param {Guild} guild The Discord guild for which to set the response setting
+   * @param {Discord.Guild} guild The Discord guild for which to set the response setting
    * @param {string} setting Name of the setting to set
    * @param {string|boolean} value value of the setting to be set
    * @returns {Promise}
@@ -198,7 +202,7 @@ class SettingsQueries {
   /**
    * Delete a guild setting
    * @param  {Discord.Guild}  guild   guild to delete for
-   * @param  {strimg}  setting string key
+   * @param  {string}  setting string key
    * @returns {Promise}         resolution of deletion
    */
   async deleteGuildSetting(guild, setting) {

@@ -6,12 +6,9 @@ const SQL = require('sql-template-strings');
  * Database Mixin for Streams queries
  * @mixin
  * @deprecated
+ * @mixes Database
  */
 module.exports = class StreamQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   addStream(type, username, uid) {
     let q;
     if (uid) {

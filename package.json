@@ -6,11 +6,11 @@
   "scripts": {
     "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c .github/docs/jsdoc.conf -R README.md -r main.js src/. -d docs",
     "build": "docker build . -t genesis",
-    "lint": "npx eslint main.js src/",
-    "lint:fix": "npx eslint main.js src/ --fix",
+    "lint": "eslint main.js src/",
+    "lint:fix": "eslint main.js src/ --fix",
     "logs": "pm2 logs genesis",
     "logs:worker": "pm2 logs /worker.*/",
-    "test": "npx eslint main.js src/",
+    "test": "eslint main.js src/",
     "restart": "pm2 delete genesis && npm start && npm run logs",
     "setup": "npm i",
     "start": "pm2 start genesis.json --only genesis",
@@ -85,7 +85,7 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=12.16.1"
+    "node": ">=16.6.2"
   },
   "eslintIgnore": [
     "commands.json",

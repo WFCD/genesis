@@ -4,6 +4,8 @@ const SQL = require('sql-template-strings');
 const mysql = require('mysql2/promise');
 const path = require('path');
 const fs = require('fs');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
@@ -39,8 +41,10 @@ const props = (obj) => {
   * @property {boolean} createPrivateChannel Whether or not private chats
   *  are allowed to be created here
   * @property {boolean} defaultShown Whether or not private chats created here are shown by default
-  * @property {string} tempCategory Temp category to put private chats in when created.
-  *   Makes text chats not be created.
+  * @property {Discord.CategoryChannel|string} tempCategory Temp category to put private chats in
+ *    when created. Makes text chats not be created.
+ *  @property {Discord.TextChannel|string} tempChannel Channel to create threads in.
+ *    Must have a parent of tempCategory
   * @property {boolean} settings.cc.ping Whether or not to ping in custom commands called here
   * @property {boolean} respondToSettings Whether or not to respond to settings changes.
   *  Changes are applied no matter the value.
@@ -61,9 +65,10 @@ const props = (obj) => {
  *  @property {WorldStateClient?} ws Worldstate Client
  *  @property {Logger} logger Logger
  *  @property {I18n} i18n internationalization string handler
- *  @property {Database} settings interface for the database
- *  @property {boolean} ephemerate whether or not to hide (make ephemeral) interaction responses
- *  @property {InteractionHandler|CommandHandler} handler access to a command's handler
+ *  @property {Database?} settings interface for the database
+ *  @property {boolean?} ephemerate whether or not to hide (make ephemeral) interaction responses
+ *  @property {InteractionHandler|CommandHandler?} handler access to a command's handler
+ *  @property {Role|string} modRole designated moderator role for the server
   */
 
 /**
@@ -89,6 +94,10 @@ module.exports = class Database {
    * @param {Genesis} bot Bot to load the settings for
    */
   constructor(bot) {
+    /**
+     * Bot
+     * @type {Genesis}
+     */
     this.bot = bot;
     this.logger = logger;
 
@@ -184,7 +193,7 @@ module.exports = class Database {
 
   /**
    * Query the database
-   * @param {string} query query string
+   * @param {string|SQL.SQLStatement} query query string
    * @returns {mysql.Connection.query}
    */
   async query(query) {
@@ -226,7 +235,7 @@ module.exports = class Database {
 
   /**
    * Get context (including settings) for a command in a channel
-   * @param {Discord.Channel} channel channel to get settings for
+   * @param {Discord.TextChannel} channel channel to get settings for
    * @param {Discord.User} user user to check for specific settings for
    * @returns {CommandContext} context
    */
@@ -244,7 +253,8 @@ module.exports = class Database {
       settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond', 'ephemerate']);
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond',
+        'ephemerate', 'modRole', 'tempChannel']);
 
       if (platforms.length > 4) {
         platforms.forEach((platform, index) => {
@@ -348,6 +358,12 @@ module.exports = class Database {
         context.tempCategory = undefined;
       }
 
+      if (context.tempChannel && channel.guild.channels.cache.has(context.tempChannel.trim())) {
+        context.tempChannel = channel.guild.channels.cache.get(context.tempChannel.trim());
+      } else {
+        context.tempChannel = undefined;
+      }
+
       if (context.lfgChannel) {
         context.lfg = {};
         context.lfg.pc = channel.guild.channels.cache.get(context.lfgChannel);
@@ -380,6 +396,10 @@ module.exports = class Database {
 
       if (typeof context.ephemerate === 'undefined') context.ephemerate = true;
       else context.ephemerate = context.ephemerate === '1';
+
+      if (context.modRole && channel.guild) {
+        context.modRole = await channel.guild.roles.fetch(context.modRole);
+      }
     } else {
       context = {
         platform: this.defaults.platform,
@@ -405,4 +425,4 @@ module.exports = class Database {
     context.i18n = I18n.use(context.language);
     return context;
   }
-}
+};

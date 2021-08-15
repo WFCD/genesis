@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const { games } = require('../../CommonFunctions.js');
 const { ENDPOINTS } = require('../../resources/WorldStateClient');
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
+const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = Discord;
 const queryOpt = [{
   type: Types.STRING,
   name: 'query',
@@ -64,7 +64,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
   static async commandHandler(interaction, ctx) {
     // args
     const subcommand = interaction.options.getSubcommand();
-    const options = interaction.options;
+    const { options } = interaction;
     const query = options.get('query').value;
     let data;
     let embed;
@@ -105,6 +105,6 @@ module.exports = class Lookup extends require('../../models/Interaction') {
       default:
         return interaction.reply('ok');
     }
-    return interaction.editReply({ embeds: [ new MessageEmbed(embed) ] });
+    return interaction.editReply({ embeds: [new MessageEmbed(embed)] });
   }
 };

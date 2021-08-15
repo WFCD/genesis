@@ -1,12 +1,13 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const { isVulgarCheck } = require('../../CommonFunctions');
 
 /**
  * Rename user's temp room
  */
-class Rename extends Command {
+class Rename extends require('../../models/Command.js') {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -20,16 +21,16 @@ class Rename extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
+   * @param {CommandContext} ctx Command context for calling commands
    * @returns {string} success status
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.settings.userHasRoom(message.member);
+      const userHasRoom = await ctx.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.settings.getUsersRoom(message.member);
+        const room = await ctx.settings.getUsersRoom(message.member);
         const newName = message.strippedContent.replace(this.call, '').replace(isVulgarCheck, '').trim(); // remove vulgar
         if (newName.length) {
           if (room.textChannel) {
@@ -41,11 +42,11 @@ class Rename extends Command {
           if (room.category) {
             await room.category.setName(newName, `New name for ${room.textChannel}.`);
           }
-          await this.messageManager.reply(message, 'Done');
+          await message.reply('Done');
           return this.messageManager.statuses.SUCCESS;
         }
       }
-      await this.messageManager.reply(message, `you haven't created a channel. Only the creator of a channel can modify a channel's name.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
+      await message.reply(`you haven't created a channel. Only the creator of a channel can modify a channel's name.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`);
     }
     return this.messageManager.statuses.FAILURE;
   }

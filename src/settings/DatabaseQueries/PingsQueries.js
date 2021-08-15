@@ -1,22 +1,23 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
+// eslint-disable-next-line no-unused-vars
+const { Snowflake } = require('discord-api-types/v9');
+
 const logger = require('../../Logger');
 const pingLists = require('../../resources/pingables.json');
 
 /**
  * Database Mixin for Pings queries
  * @mixin
+ * @mixes Database
  */
 class PingsQueries {
-  constructor(db) {
-    this.db = db;
-    this.scope = (process.env.SCOPE || 'worker').toLowerCase();
-  }
-
   /**
    * Enables or disables pings for an item in a channel
-   * @param {TextChannel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} item The item to set ping status for
    * @param {boolean} enabled true to enable pinging, false to disable
    * @returns {Promise}
@@ -29,7 +30,7 @@ class PingsQueries {
 
   /**
    * Enables or disables pings for an event type in a channel
-   * @param {TextChannel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} type The event type to set ping status for
    * @param {boolean} enabled true to enable pinging, false to disable
    * @returns {Promise}
@@ -42,7 +43,7 @@ class PingsQueries {
 
   /**
    * Sets a ping message for an item or event type in a guild
-   * @param {Guild} guild The guild
+   * @param {Discord.Guild} guild The guild
    * @param {string} itemOrType The item or event type to set the ping message for
    * @param {string} text The text of the ping message
    * @returns {Promise}
@@ -55,7 +56,7 @@ class PingsQueries {
 
   /**
    * Get all pings for a guild for the provided event types and items
-   * @param  {Guild} guild                 Guild to get pings for
+   * @param  {Discord.Guild|string|Object} guild                 Guild to get pings for
    * @param  {Array.<string>} itemsOrTypes array of strings corresponding to event and reward types
    * @returns {Promise.<string>}            Promise of a string to prepend to a message
    */
@@ -175,8 +176,6 @@ class PingsQueries {
    * @param {string} type The type of the event
    * @param {string} platform The platform of the event
    * @param {Array.<string>} items The items in the reward that is being notified
-   * @param {number} shard Shard id to notify
-   * @param {number} shards Total number of shards
    * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
    */
   async getAgnosticNotifications(type, platform, items) {
@@ -214,7 +213,7 @@ class PingsQueries {
 
   /**
    * Remove pings corresponding to the guild id
-   * @param  {snowflake} guildId guild identifier for removal
+   * @param  {Snowflake} guildId guild identifier for removal
    * @returns {Promise.<string>} status of removal
    */
   async removePings(guildId) {

@@ -119,7 +119,7 @@ class CommandHandler extends Handler {
       }
     }
 
-    let commands = [];
+    let commands;
     if (checkOnlyInlines) {
       commands = this.commandManager.inlineCommands;
     } else if (ctx.allowCustom) {
@@ -136,6 +136,7 @@ class CommandHandler extends Handler {
 
     // set new context objects
     ctx.message = strippedMessage;
+    ctx.settings = this.bot.settings;
     this.logger.debug(`Handling \`${content}\``);
 
     for (const command of commands) {

@@ -8,10 +8,6 @@ const CustomCommand = require('../../models/CustomCommand.js');
  * @mixin
  */
 class CustomCommandQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async getCustomCommands() {
     const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardTotal} in (${this.bot.shards})`;
     const res = await this.query(query);

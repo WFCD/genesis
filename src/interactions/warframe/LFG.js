@@ -94,8 +94,8 @@ module.exports = class LFG extends require('../../models/Interaction') {
     msg.react('❌');
 
     const collector = msg
-        .createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
-      { time: dehumanize(lfg.expiry), dispose: true });
+      .createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
+        { time: dehumanize(lfg.expiry), dispose: true });
 
     collector.on('end', () => {
       msg.reactions.removeAll();
@@ -111,13 +111,13 @@ module.exports = class LFG extends require('../../models/Interaction') {
         lfg.members.push(user.id);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
+        msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
       }
       if (user.id === interaction.member.id) {
         if (reaction.emoji.name === '❌') {
           lfg.expiry = 0;
           lfg.edited = true;
-          msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
+          msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
           collector.stop();
         }
         try {
@@ -133,7 +133,7 @@ module.exports = class LFG extends require('../../models/Interaction') {
         lfg.members.splice(lfg.members.indexOf(user.id), 1);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embeds: [ new LFGEmbed(null, lfg) ] });
+        msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
       }
     });
     return interaction.reply({ content: 'gl;hf', ephemeral: ctx.ephemerate });

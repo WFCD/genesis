@@ -63,7 +63,7 @@ module.exports = class Calculator extends require('../../models/Interaction') {
   static async commandHandler(interaction, ctx) {
     // args
     const subcommand = interaction.options.getSubcommand();
-    const options = interaction.options;
+    const { options } = interaction;
 
     const base = options.get('base_level').value;
     const current = options.get('current_level').value;

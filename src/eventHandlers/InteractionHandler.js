@@ -68,7 +68,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
   }
 
   static async loadCommands(rest, loadedFiles, logger) {
-    const cmds = loadedFiles.map(cmd => cmd.command);
+    const cmds = loadedFiles.filter(cmd => cmd.enabled).map(cmd => cmd.command);
+    // logger.error(JSON.stringify(cmds));
     for (const gid of whitelistedGuilds) {
       try {
         await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, gid), { body: cmds });

@@ -4,17 +4,21 @@ const Promise = require('bluebird');
 const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const { Snowflake } = require('discord-api-types/v9');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const schema = require('../schema.js');
 
 /**
  * Database Mixin for DBM queries
  * @mixin
+ * @mixes Database
+ * @mixes PermissionsQueries
+ * @mixes CustomCommandQueries
+ * @mixes PingsQueries
+ * @mixes SettingsQueries
+ * @mixes PrivateRoomQueries
  */
 class DBMQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   /**
    * Creates the required tables in the database
    * @returns {Promise}
@@ -64,7 +68,7 @@ class DBMQueries {
 
   /**
    * Adds a new guild text channel to the database
-   * @param {TextChannel} channel A discord guild text channel
+   * @param {Discord.TextChannel} channel A discord guild text channel
    * @returns {Promise}
    */
   async addGuildTextChannel(channel) {
@@ -74,7 +78,7 @@ class DBMQueries {
 
   /**
    * Adds a new DM or group DM channel to the database
-   * @param {DMChannel|GroupDMChannel} channel A discord DM or group DM channel
+   * @param {Discord.DMChannel} channel A discord DM or group DM channel
    * @returns {Promise}
    */
   async addDMChannel(channel) {
@@ -94,13 +98,13 @@ class DBMQueries {
 
   /**
    * Remove guild from database
-   * @param  {Snowflake} guild Guild to be removed from database
+   * @param  {Discord.Guild} guild Guild to be removed from database
    * @returns {Promise.<string>} status of removal
    */
   async removeGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
     await this.query(query);
-    const channelIds = guild.channels.cache.keyArray();
+    const channelIds = guild.channels.cache.keys();
     const results = [];
     channelIds.forEach((channelId) => {
       results.push(this.removeChannelPermissions(channelId));

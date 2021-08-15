@@ -8,11 +8,10 @@ const { Message, APIMessage, CommandInteraction } = Discord;
 module.exports = class Interaction {
   static enabled = false;
   /**
-   *
    * @type {Discord.ApplicationCommandData}
    */
   static command = {
-    name: 'Interaction',
+    name: 'interaction',
     description: 'Base interaction class',
     options: [],
   };

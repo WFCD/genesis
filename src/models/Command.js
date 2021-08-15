@@ -1,5 +1,9 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const { Message } = require('discord.js');
+// eslint-disable-next-line no-unused-vars
+const Database = require('../settings/Database');
 const BaseEmbed = require('../embeds/BaseEmbed');
 
 /**
@@ -37,7 +41,7 @@ class Command {
     this.regex = new RegExp(`^${call}s?$`, 'i');
     /**
      * Help command for documenting the function or purpose of a command.
-     * @type {string}
+     * @type {Array<Object>}
      */
     this.usages = [
       { description, parameters: [] },
@@ -45,7 +49,7 @@ class Command {
 
     /**
      * Game scope in which this command is allowed.
-     * @type {[type]}
+     * @type {string}
      */
     this.game = game || 'CORE';
 
@@ -142,16 +146,20 @@ class Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
+   * @param {CommandContext} ctx command context for running command
+   * @returns {Promise<string>}
    */
-  async run(message) {
+  // eslint-disable-next-line no-unused-vars
+  async run(message, ctx) {
     const msg = await message.reply('This is a basic Command');
     this.logger.debug(`Sent ${msg}`);
+    return this.messageManager.statuses.SUCCESS;
   }
 
   /**
    * Send Usage for a toggle command
-   * @param {Discord.Message} message message to respond to
-   * @param {Object} ctx Context object containing common elements,
+   * @param {Message} message message to respond to
+   * @param {CommandContext} ctx Context object containing common elements,
    *    such as channel settings, caller info
    * @param {Array.<string>} options optional replacement for args
    * @returns {string} failure status.

@@ -1,6 +1,9 @@
 'use strict';
 
-const { Permissions } = require('discord.js');
+const {
+  // eslint-disable-next-line no-unused-vars
+  Permissions, Message, RoleResolvable, VoiceChannel, PermissionsOverwrites,
+} = require('discord.js');
 const Command = require('../../models/Command.js');
 const { getUsersForCall, isVulgarCheck } = require('../../CommonFunctions');
 
@@ -85,7 +88,7 @@ class Create extends Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
+   * @param {CommandContext} ctx Command context for calling commands
    * @returns {string} success status
    */
   async run(message, ctx) {
@@ -117,7 +120,7 @@ class Create extends Command {
     }
 
     const modRole = message.guild.roles.cache.get(await this.settings.getGuildSetting(message.guild, 'modRole'));
-    const useModRole = modRole && modRole.id ? message.guild.cache.roles.has(modRole.id) : false;
+    const useModRole = modRole && modRole.id ? message.guild.roles.cache.has(modRole.id) : false;
 
     if (ctx.tempCategory || (message.guild && message.guild.channels.cache.has(ctx.tempCategory))) {
       useText = false;
@@ -128,8 +131,10 @@ class Create extends Command {
     const userHasRoom = await this.settings.userHasRoom(message.member);
 
     let optName = (namingResults ? namingResults[0] : '')
-      .replace('-n ', '').replace('--public', '')
-      .replace('--locked', '').replace('--no-text', '')
+      .replace('-n ', '')
+      .replace('--public', '')
+      .replace('--locked', '')
+      .replace('--no-text', '')
       .replace('--text', '')
       .replace('--shown', '')
       .replace('--hidden', '')
@@ -199,14 +204,18 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
             // set room limits
             this.setLimits(voiceChannel, roomType);
             this.makeInteractable(textChannel, message);
-            this.messageManager.embed(message, {
-              title: 'Channels created',
-              fields: [{
-                name: '\u200B',
-                value: `Voice Channel: ${voiceChannel.name}${
-                  textChannel ? `\nText Channel: ${textChannel}` : ''}`,
-              }],
-            }, false, false);
+            await message.reply({
+              embeds: [
+                {
+                  title: 'Channels created',
+                  fields: [{
+                    name: '\u200B',
+                    value: `Voice Channel: ${voiceChannel.name}${
+                      textChannel ? `\nText Channel: ${textChannel}` : ''}`,
+                  }],
+                },
+              ],
+            });
             return this.messageManager.statuses.SUCCESS;
           }
           let msg = '';
@@ -216,16 +225,13 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
           } else {
             msg = 'that room already exists.';
           }
-          await this.messageManager.reply(message, msg, true, true);
+          await message.reply(msg);
           return this.messageManager.statuses.FAILURE;
         }
       } else {
-        await this.messageManager.reply(
-          message, '```haskell\n'
-            + 'Sorry, you need to specify what you want to create. Right now these are available to create:'
-            + `\n* ${useable.join('\n* ')}\n\`\`\``,
-          true, false,
-        );
+        await message.reply('```haskell\n'
+          + 'Sorry, you need to specify what you want to create. Right now these are available to create:'
+          + `\n* ${useable.join('\n* ')}\n\`\`\``);
         return this.messageManager.statuses.FAILURE;
       }
     }
@@ -256,7 +262,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
    * @param {boolean} shown                 Whether or not this channel will be visible
    * @param {boolean} useModRole            Whether or not to leverage the mod role
    * @param {boolean} modRole               Moderator role that can manage the channel
-   * @returns {Array.<PermissionsOVerwrites>}
+   * @returns {Array.<PermissionsOverwrites>}
    */
   createOverwrites({
     users, everyone, author, isPublic, shown, useModRole, modRole,
@@ -268,7 +274,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
     if (!isPublic) {
       const evOverwrites = [Permissions.FLAGS.CONNECT];
       if (!shown) {
-        evOverwrites.push(Permissions.FLAGS.CONNECT);
+        evOverwrites.push(Permissions.FLAGS.VIEW_CHANNEL);
       }
       overwrites.push({
         id: everyone,
@@ -347,7 +353,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
 
   /**
    * Set user limit for channel
-   * @param  {Discord.VoiceChannel}  voiceChannel voice channel to mutate limit
+   * @param  {VoiceChannel}  voiceChannel voice channel to mutate limit
    * @param  {string}  type         level of voice channel, determines limit
    */
   async setLimits(voiceChannel, type) {
@@ -373,8 +379,8 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
   /**
    * Allows the creator of the channel to call room commands in the text channel,
    *  if one exits
-   * @param  {Discord.VoiceChannel}  textChannel text channel to allow commands in
-   * @param  {Discord.Message}  message     message to copy and use to call command
+   * @param  {VoiceChannel}  textChannel text channel to allow commands in
+   * @param  {Message}  message     message to copy and use to call command
    */
   async makeInteractable(textChannel, message) {
     if (!textChannel) return;

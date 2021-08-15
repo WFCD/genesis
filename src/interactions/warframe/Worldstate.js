@@ -1,6 +1,6 @@
 'use strict';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = require('discord.js');
 
 const {
   games, createGroupedArray,
@@ -224,7 +224,8 @@ module.exports = class WorldState extends require('../../models/Interaction') {
 
     await interaction.deferReply({ ephemeral });
     const data = await ctx.ws.get(String(field), platform, language);
-
+    let pages;
+    let embed;
     switch (field) {
       case 'alerts':
       case 'fissures':
@@ -241,34 +242,34 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       case 'sentientOutposts':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
-        } else {
-          const embed = new embeds[field](null, data, platform, ctx.i18n);
-          return interaction.editReply({ embeds: [embed] });
         }
+        embed = new MessageEmbed(new embeds[field](null, data, platform, ctx.i18n));
+        return interaction.editReply({ embeds: [embed] });
+
       case 'news':
         category = category === 'news' ? null : category;
       case 'conclaveChallenges':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
-        } else {
-          const pages = createGroupedArray(data, 20)
-            .map(group => new embeds[field](null, group, category, platform, ctx.i18n));
-          return interaction.editReply({ embeds: pages });
         }
+        pages = createGroupedArray(data, 20)
+          .map(group => new embeds[field](null, group, category, platform, ctx.i18n));
+        return interaction.editReply({ embeds: pages });
       case 'events':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
-        } else {
-          const pages = data.map(datum => new embeds[field](null, datum, platform, ctx.i18n));
-          return interaction.editReply({ embeds: pages });
         }
+        pages = data.map(datum => new MessageEmbed(
+          new embeds[field](null, datum, platform, ctx.i18n),
+        ));
+        return interaction.editReply({ embeds: pages });
+
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
-        } else {
-          const embed = new embeds[field](null, data, ctx);
-          return interaction.editReply({ embeds: [embed] });
         }
+        embed = new embeds[field](null, data, ctx);
+        return interaction.editReply({ embeds: [embed] });
       default:
         break;
     }

@@ -5,12 +5,9 @@ const SQL = require('sql-template-strings');
 /**
  * Database Mixin for role statistics queries
  * @mixin
+ * @mixes Database
  */
 class StatisticsQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async trackRole(guild, channel, role) {
     return this.query(SQL`
       INSERT IGNORE INTO role_stats

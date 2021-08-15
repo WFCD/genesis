@@ -1,21 +1,34 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const JoinableRole = require('../../models/JoinableRole');
 
 /**
  * Database Mixin for private room queries
  * @mixin
+ * @mixes Database
  */
 class PrivateRoomQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async removePrivateChannels(guild) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
     return this.query(query);
   }
+
+  /**
+   * Room params
+   * @typedef {Object} Room
+   * @property {Discord.Guild} guild guild containing room
+   * @property {Discord.VoiceChannel} voiceChannel corresponding voice channel
+   * @property {Discord.TextChannel} textChannel corresponding text channel
+   * @property {Discord.CategoryChannel} category Category containing other channels
+   * @property {Discord.Snowflake} voiceId identifier for voice channel
+   * @property {Discord.Snowflake} guildId identifier for guild
+   * @property {Discord.Snowflake} textId identifier for text channel
+   * @property {Discord.Snowflake} categoryId identifier for category
+   * @property {string} createdAt timestamp string
+   */
 
   /**
    * Set the joinable roles for a guild
@@ -44,7 +57,7 @@ class PrivateRoomQueries {
       const rawList = typeof rows[0].id_list === 'string'
         ? JSON.parse(rows[0].id_list)
         : rows[0].id_list;
-      const validList = rawList
+      return rawList
         .filter((role) => {
           if (!role) {
             return undefined;
@@ -80,7 +93,6 @@ class PrivateRoomQueries {
           return undefined;
         })
         .filter(role => role);
-      return validList;
     }
     return [];
   }
@@ -95,6 +107,11 @@ class PrivateRoomQueries {
     return this.query(query);
   }
 
+  /**
+   * Delete a given room
+   * @param {Room} room room to delete
+   * @returns {Promise<mysql.Connection.query>}
+   */
   async deletePrivateRoom(room) {
     const {
       guild, voiceChannel, voiceId,
@@ -109,10 +126,18 @@ class PrivateRoomQueries {
     return rows.length;
   }
 
+  /**
+   * Get the existing room for a user
+   * @param {Discord.GuildMember} member user to lookup room for
+   * @returns {Promise<Room>}
+   */
   async getUsersRoom(member) {
     const query = SQL`SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec  FROM private_channels WHERE guild_id = ${member.guild.id} and created_by = ${member.id}`;
     const [rows] = await this.query(query);
-    if (rows) {
+    if (rows?.length) {
+      /**
+       * @type {Room}
+       */
       return {
         guild: this.bot.client.guilds.cache.get(rows[0].guild_id),
         textChannel: rows[0].text_id
@@ -129,6 +154,11 @@ class PrivateRoomQueries {
     return undefined;
   }
 
+  /**
+   * Get all private rooms on a shard
+   * @param {Array<number>} shards array to check against pulling rooms
+   * @returns {Promise<Array<Room>>}
+   */
   async getPrivateRooms(shards) {
     const query = SQL`
       SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec

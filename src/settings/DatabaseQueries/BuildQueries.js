@@ -16,10 +16,6 @@ const makeId = (len = 8) => {
  * @mixin
  */
 class BuildQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async addNewBuilds(builds) {
     const rows = [];
     builds.forEach((build) => {

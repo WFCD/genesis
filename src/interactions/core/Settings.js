@@ -2,7 +2,8 @@
 
 const {
   // eslint-disable-next-line no-unused-vars
-  Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed, CommandInteraction,
+  Constants: { ApplicationCommandOptionTypes: Types }, CommandInteraction, TextChannel,
+  MessageEmbed,
 } = require('discord.js');
 
 const {
@@ -107,7 +108,17 @@ const rooms = [{
   options: [{
     type: Types.CHANNEL,
     name: 'value',
-    description: 'Make rooms visible?',
+    description: 'Should be a category',
+    required: true,
+  }],
+}, {
+  name: 'temp_channel',
+  description: 'Set the channel for creating threads in for private rooms',
+  type: Types.SUB_COMMAND,
+  options: [{
+    type: Types.CHANNEL,
+    name: 'value',
+    description: 'Should be a text channel',
     required: true,
   }],
 }];
@@ -165,6 +176,7 @@ const aliases = {
   auto_text: 'defaultNoText',
   auto_shown: 'defaultShown',
   temp_category: 'tempCategory',
+  temp_channel: 'tempChannel',
 };
 
 const negate = '✘';
@@ -198,22 +210,22 @@ const resolveBoolean = async (channel, setting, settings, db) => {
 
 /**
  * Gather settings into one or more embeds
- * @param {Database} db database interface
- * @param {Channel} channel Channel to bind settings from
+ * @param {CommandContext} ctx context object
+ * @param {Discord.TextChannel} channel Channel to bind settings from
  * @returns {Promise<Array<MessageEmbed>>}
  */
-const gather = async (db, channel) => {
+const gather = async (ctx, channel) => {
   const page = new MessageEmbed(embedDefaults);
-  const settings = await db.getChannelSettings(channel, [
+  const settings = await ctx.settings.getChannelSettings(channel, [
     'language', 'platform', 'createPrivateChannel', 'allowInline',
     'allowCustom', 'settings.cc.ping', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown',
     'defaultRoles', 'tempCategory', 'lfgChannel', 'lfgChannel.ps4', 'lfgChannel.xb1', 'lfgChannel.swi',
-    'modRole', 'ephemerate',
+    'modRole', 'ephemerate', 'tempChannel',
   ]);
 
   page.setTitle('General Settings');
-  page.addField('Language', settings.language || db.defaults.language, true);
-  page.addField('Platform', settings.platform || db.defaults.platform, true);
+  page.addField('Language', settings.language || ctx.settings.defaults.language, true);
+  page.addField('Platform', settings.platform || ctx.settings.defaults.platform, true);
   page.addField('Mod Role', wrapRoleValue(settings.modRole || negate), true);
   page.addField('Allow Inline', await resolveBoolean(channel, 'allowInline', settings), true);
   page.addField('Allow Custom', await resolveBoolean(channel, 'allowCustom', settings), true);
@@ -248,15 +260,19 @@ const gather = async (db, channel) => {
     lfgVal = negate;
   }
   page.addField('LFG', lfgVal, false);
-  page.addField('Temp Channel Category', wrapChannelValue(tempCategory), true);
+  page.addField(
+    'Temp Channels',
+    `Category: ${wrapChannelValue(tempCategory)}\nChannel: ${settings.tempChannel ? wrapChannelValue(settings.tempChannel) : negate}`,
+    true,
+  );
 
   const embeds = [page];
 
   // end of page 1
-  const items = await db.getTrackedItems(channel);
+  const items = await ctx.settings.getTrackedItems(channel);
   const trackedItems = constructItemEmbeds(items);
 
-  const events = await db.getTrackedEventTypes(channel);
+  const events = await ctx.settings.getTrackedEventTypes(channel);
   const trackedEvents = constructTypeEmbeds(events);
   checkAndMergeEmbeds(embeds, trackedItems);
   checkAndMergeEmbeds(embeds, trackedEvents);
@@ -265,9 +281,11 @@ const gather = async (db, channel) => {
 
 module.exports = class Settings extends require('../../models/Interaction') {
   static elevated = true;
+  static enabled = true;
   static command = {
     name: 'settings',
     description: 'Interact with Settings',
+    defaultPermission: false,
     options: [{
       type: Types.SUB_COMMAND_GROUP,
       name: 'set',
@@ -280,6 +298,10 @@ module.exports = class Settings extends require('../../models/Interaction') {
       options: [{
         name: 'pings',
         description: 'Clear tracking pings',
+        type: Types.SUB_COMMAND,
+      }, {
+        name: 'temp_category',
+        description: 'Clear temp category for private channels',
         type: Types.SUB_COMMAND,
       }, {
         name: 'all',
@@ -296,7 +318,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   /**
    * Handle the command interaction
    * @param {CommandInteraction} interaction interaction to handle
-   * @param {Object} ctx interaction context
+   * @param {CommandContext} ctx interaction context
    */
   static async commandHandler(interaction, ctx) {
     // args
@@ -315,12 +337,14 @@ module.exports = class Settings extends require('../../models/Interaction') {
       }
     }
     let field = options.getSubcommand();
-    const value = (options.get?.('value') || options?.get?.('channel'))?.value;
+    let value = (options.get?.('value') || options?.get?.('channel'))?.value;
     const platform = options.get?.('platform')?.value;
 
     // validation
     if (!action) return interaction.reply(ctx.i18n`No action`);
     if (['set', 'clear'].includes(action) && !field) return interaction.reply(ctx.i18n`No field`);
+
+    if (field === 'auto_text') value = !value;
 
     switch (action) {
       case 'clear':
@@ -328,6 +352,10 @@ module.exports = class Settings extends require('../../models/Interaction') {
           case 'pings':
             await ctx.settings.removePings(interaction?.guild?.id);
             return interaction.reply({ content: 'pings cleared', ephemeral });
+          case 'temp_category':
+            await ctx.settings.deleteChannelSetting(interaction.channel, 'tempChannel');
+            await ctx.settings.deleteChannelSetting(interaction.channel, 'tempCategory');
+            return interaction.reply({ content: 'cleared temp_category', ephemeral });
           case 'all':
             // wipe settings!!!
             await interaction.deferReply({ ephemeral: true });
@@ -355,6 +383,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
           case 'auto_shown':
           case 'auto_text':
           case 'temp_category':
+          case 'temp_channel':
             field = aliases[field] || field;
           case 'ephemerate':
           case 'platform':
@@ -371,7 +400,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         break;
       case 'get':
         /* eslint-disable no-case-declarations */
-        const pages = (await gather(ctx.settings, interaction.channel));
+        const pages = (await gather(ctx, interaction.channel));
         const pageGroups = createGroupedArray(pages, 10);
         let first = true;
         for (const pageGroup of pageGroups) {

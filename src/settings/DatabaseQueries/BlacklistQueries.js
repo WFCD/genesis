@@ -7,10 +7,6 @@ const SQL = require('sql-template-strings');
  * @mixin
  */
 class BlacklistQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   async isBlacklisted(userId, guildId) {
     const query = SQL`SELECT COUNT(*) > 0 AS is_blacklisted
       FROM user_blacklist WHERE user_id = ${userId}

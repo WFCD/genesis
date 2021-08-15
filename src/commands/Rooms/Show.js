@@ -32,22 +32,23 @@ class Show extends Command {
         const { everyone } = message.guild.roles;
         const connect = room.voiceChannel.permissionsFor(everyone).has('CONNECT');
         const options = { VIEW_CHANNEL: true, CONNECT: connect };
+        const audit = { reason: `Room shown by ${message.author.tag}` };
         try {
           if (room.category) {
-            room.category.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
+            room.category.permissionOverwrites.edit(everyone, options, audit);
           }
           if (room.textChannel) {
-            room.textChannel.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
+            room.textChannel.permissionOverwrites.edit(everyone, options, audit);
           }
-          await room.voiceChannel.updateOverwrite(everyone, options, `Room shown by ${message.author.tag}`);
+          await room.voiceChannel.permissionOverwrites.edit(everyone, options, audit);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to make the channel visible. Please either try again or review your command to ensure it is valid.', true, true);
+          await message.reply('unable to make the channel visible. Please either try again or review your command to ensure it is valid.');
           return this.messageManager.statuses.FAILURE;
         }
       }
-      await this.messageManager.reply(message, `you haven't created a channel. Only the creator of a channel can change the status of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
+      message.reply(`you haven't created a channel. Only the creator of a channel can change the status of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`);
       return this.messageManager.statuses.FAILURE;
     }
     return this.messageManager.statuses.FAILURE;
