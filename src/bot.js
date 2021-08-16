@@ -71,6 +71,7 @@ class Genesis {
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_INTEGRATIONS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.FLAGS.GUILD_VOICE_STATES,
       ],
     });
 

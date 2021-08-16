@@ -10,6 +10,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   static command = {
     name: 'su',
     description: 'Super User',
+    defaultPermission: false,
     options: [{
       name: 'restart',
       description: 'Restart Bot',

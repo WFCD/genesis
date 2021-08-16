@@ -1,6 +1,8 @@
 'use strict';
 
-const { Events } = require('discord.js').Constants;
+const Discord = require('discord.js');
+
+const { Events } = Discord.Constants;
 
 const { Generator } = require('warframe-name-generator');
 
@@ -16,10 +18,18 @@ const relays = [
   'Iron Wake',
   'Solaris',
   'Orb Vallis',
+  'Necralisk',
+  'Cetus 69',
 ];
 
 const generator = new Generator();
 
+/**
+ * Get a relay name that isn't currently used.
+ * @param {Discord.Guild} guild to check
+ * @param {number} retries allowed number of retries before using last used
+ * @returns {Promise<string|*>}
+ */
 const getRelayName = async (guild, retries = 0) => {
   const name = relays[Math.floor(Math.random() * relays.length)];
   const alreadyUsed = guild.channels.cache.find(channel => channel.name === name);
@@ -32,6 +42,13 @@ const getRelayName = async (guild, retries = 0) => {
   return name;
 };
 
+/**
+ * Clone a voice channel
+ * @param {Discord.VoiceChannel} template to clone
+ * @param {Database} settings proxy for database settings
+ * @param {Discord.GuildMember} member server user kicking off this event
+ * @returns {Promise<*>}
+ */
 const clone = async (template, settings, member) => {
   const { guild } = template;
 
@@ -50,45 +67,58 @@ const clone = async (template, settings, member) => {
   });
 
   if (nameTemplate && member.voice.channel) {
-    member.voice.setChannel(newChannel);
+    await member.voice.setChannel(newChannel);
   }
   return newChannel;
 };
 
-class DynamicVoiceHandler {
+module.exports = class DynamicVoiceHandler {
+  /**
+   * Make the handler
+   * @param {Discord.Client} client for interacting with discord
+   * @param {Logger} logger for logging
+   * @param {Database} settings to access bot settings
+   */
   constructor(client, logger, settings) {
     this.client = client;
     this.logger = logger;
+    /** @type Database  */
     this.settings = settings;
 
     client.on(Events.VOICE_STATE_UPDATE, async (oldMember, newMember) => {
       const applicable = await this.checkManagementApplicable(oldMember, newMember);
       if (applicable) {
-        this.checkAllChannels(oldMember.guild, newMember.member);
+        await this.checkAllChannels(oldMember.guild, newMember.member);
       }
     });
 
-    client.on(Events.CHANNEL_DELETE, (channel) => {
-      this.removeChannel(channel);
+    client.on(Events.CHANNEL_DELETE, async (channel) => {
+      await this.removeChannel(channel);
     });
 
     this.logger.debug('Constructed voice handler');
   }
 
+  /**
+   * Check if management should occur
+   * @param {Discord.GuildMember} oldMember pre-change member
+   * @param {Discord.GuildMember} newMember post-change member
+   * @returns {Promise<boolean>}
+   */
   async checkManagementApplicable(oldMember, newMember) {
     const templates = await this.settings.getTemplates([oldMember.guild]);
     if (templates.length) {
-      const instancePromises = [];
-      templates.forEach((template) => {
-        instancePromises.push(this.settings.getInstances(template));
-      });
-
-      const instances = [];
-
-      (await Promise.all(instancePromises))
-        .forEach((ip) => {
-          instances.push(...ip.instances);
-        });
+      // const instancePromises = [];
+      // templates.forEach((template) => {
+      //   instancePromises.push(this.settings.getInstances(template));
+      // });
+      //
+      // const instances = [];
+      //
+      // (await Promise.all(instancePromises))
+      //   .forEach((ip) => {
+      //     instances.push(...ip.instances);
+      //   });
 
       const shouldFilterPromises = [];
 
@@ -101,28 +131,35 @@ class DynamicVoiceHandler {
     return false;
   }
 
+  /**
+   * Check if a channel should be filtered
+   * @param {Discord.VoiceChannel} channel channel to check
+   * @param {Discord.GuildMember} oldMember member data before moving
+   * @param {Discord.GuildMember} newMember member data after moving
+   * @returns {Promise<boolean|boolean>}
+   */
   async checkIfShouldFilter(channel, oldMember, newMember) {
-    const templates = await this.settings.getTemplates(this.client.guilds.cache.array());
+    const templates = await this.settings
+      .getTemplates(Array.from(this.client.guilds.cache.entries()));
 
-    const shouldFilter = channel.id === oldMember.voiceChannelId
-      || channel.id === newMember.voiceChannelId
+    return channel.id === oldMember?.voice?.channel?.id
+      || channel.id === newMember?.voice?.channel?.id
       || templates.includes(channel.id);
-
-    return shouldFilter;
   }
 
   async checkAllChannels(guild, member) {
     const templates = await this.settings.getTemplates([guild]);
 
-    templates.forEach(async (template) => {
+    await Promise.all(templates.map(async (template) => {
       if (this.client.channels.cache.has(template)) {
         const templateChannel = this.client.channels.cache.get(template);
         const { remainingEmpty } = await this.settings.getInstances(templateChannel);
         if (remainingEmpty < 1) {
-          this.addChannel(templateChannel, member);
+          return this.addChannel(templateChannel, member);
         }
       }
-    });
+      return false;
+    }));
   }
 
   async removeChannel(channelToRemove) {
@@ -131,10 +168,16 @@ class DynamicVoiceHandler {
     }
   }
 
+  /**
+   * Add a channel
+   * @param {Discord.VoiceChannel} template template to clone
+   * @param {Discord.GuildMember} member triggering the change
+   * @returns {Promise<undefined|*>}
+   */
   async addChannel(template, member) {
     try {
       const newChannel = await clone(template, this.settings, member);
-      this.settings.addInstance(template, newChannel);
+      await this.settings.addInstance(template, newChannel);
       return newChannel;
     } catch (error) {
       this.logger.debug(error.stack);
@@ -142,6 +185,4 @@ class DynamicVoiceHandler {
       return undefined;
     }
   }
-}
-
-module.exports = DynamicVoiceHandler;
+};

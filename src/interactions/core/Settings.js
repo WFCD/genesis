@@ -211,7 +211,7 @@ const resolveBoolean = async (channel, setting, settings, db) => {
 /**
  * Gather settings into one or more embeds
  * @param {CommandContext} ctx context object
- * @param {Discord.TextChannel} channel Channel to bind settings from
+ * @param {TextChannel} channel Channel to bind settings from
  * @returns {Promise<Array<MessageEmbed>>}
  */
 const gather = async (ctx, channel) => {

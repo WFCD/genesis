@@ -19,7 +19,7 @@ class SetTemplate extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    * @param {Object}  ctx     Context object
    * @returns {string} success status
@@ -32,9 +32,9 @@ class SetTemplate extends Command {
     }
     if (templateChannelId && this.bot.client.channels.cache.has(templateChannelId.trim())) {
       const template = this.bot.client.channels.cache.get(templateChannelId.trim());
-      if (await this.settings.isTemplate(template)) {
-        await this.settings.setDynTemplate(template.id, nameTemplate);
-        this.messageManager.reply(message, ctx.i18n`\`${nameTemplate}\` set as ${template}'s name template.`, true, true);
+      if (await ctx.settings.isTemplate(template)) {
+        await ctx.settings.setDynTemplate(template.id, nameTemplate);
+        await message.reply(ctx.i18n`\`${nameTemplate}\` set as ${template}'s name template.`);
         return this.messageManager.statuses.SUCCESS;
       }
     }

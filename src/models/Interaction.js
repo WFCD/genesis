@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 const { Message, APIMessage, CommandInteraction } = Discord;
 
 module.exports = class Interaction {
-  static enabled = false;
+  static enabled = true;
   /**
    * @type {Discord.ApplicationCommandData}
    */

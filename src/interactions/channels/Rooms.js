@@ -8,7 +8,7 @@ const {
   // eslint-disable-next-line no-unused-vars
   PermissionOverwriteOptions, GuildChannelOverwriteOptions,
 } = require('discord.js');
-const { isVulgarCheck } = require('../../CommonFunctions');
+const { isVulgarCheck, games } = require('../../CommonFunctions');
 
 const GuildChannelOverwriteOptionsType = {
   ROLE: 0,
@@ -224,7 +224,7 @@ const roomSizes = [{
 }];
 
 module.exports = class Rooms extends require('../../models/Interaction') {
-  static enabled = true;
+  static enabled = games.includes('ROOMS');
   static command = {
     name: 'rooms',
     description: 'Manage your private room',
