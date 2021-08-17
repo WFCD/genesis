@@ -71,14 +71,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @param {string?} rolesOverride override instead of fetching guild setting
    * @returns {Promise<void>}
    */
-  async #setGuildPerms(guild, rolesOverride) {
+  async #setGuildPerms (guild, rolesOverride) {
     const guildCommands = Array.from((await guild.commands.fetch())
-        .filter(c => !c.defaultPermission)
-        .values());
+      .filter(c => !c.defaultPermission)
+      .values());
     const owner = guild.ownerId;
     const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
-        .split(',')
-        .filter(s => s.length);
+      .split(',')
+      .filter(s => s.length);
     /** @type SetApplicationCommandPermissionsOptions */
     const data = {
       /** @type Array<Discord.GuildApplicationCommandPermissionData> */
@@ -97,14 +97,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
           type: 'USER',
           permission: true,
         },
-          ...(roles?.length
-                  ? roles.map(id => ({
-                    id,
-                    type: 'ROLE',
-                    permission: true,
-                  }))
-                  : []
-          )],
+        ...(roles?.length
+          ? roles.map(id => ({
+            id,
+            type: 'ROLE',
+            permission: true,
+          }))
+          : []
+        )],
       });
     });
     const su = guildCommands.find(c => c.name === 'su');
@@ -118,7 +118,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         }],
       });
     } else {
-      this.client.application.owner.members.forEach(member => {
+      this.client.application.owner.members.forEach((member) => {
         data.fullPermissions.push({
           id: su.id,
           permissions: [{
@@ -158,14 +158,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @returns {Promise<void>}
    */
   async recalcPerms(value, guild) {
-    await this.#setGuildPerms(guild, value)
+    await this.#setGuildPerms(guild, value);
   }
 
   /**
    * Load commands from files into the command manager
-   * @param {Discord.ApplicationCommandManager} commands
-   * @param loadedFiles
-   * @param logger
+   * @param {Discord.ApplicationCommandManager} commands commands to populate
+   * @param {Array<Interaction>} loadedFiles loaded interactions to make perms
+   * @param {Logger} logger logging interface
    * @returns {Promise<void>}
    */
   static async loadCommands(commands, loadedFiles, logger) {
@@ -174,15 +174,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     if (whitelistedGuilds.length) {
       for (const gid of whitelistedGuilds) {
         try {
-          await commands.set(cmds, gid)
+          await commands.set(cmds, gid);
         } catch (e) {
           logger.error(e);
         }
       }
     } else {
-
+      await commands.set(cmds);
     }
-
   }
 
   async init() {
@@ -190,7 +189,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     this.loadedCommands = await InteractionHandler.loadFiles(
       this.loadedCommands, this.logger,
     );
-    await InteractionHandler.loadCommands(this.client?.application?.commands, this.loadedCommands, this.logger);
+    await InteractionHandler
+      .loadCommands(this.client?.application?.commands, this.loadedCommands, this.logger);
     await this.initPermissions();
     this.ready = true;
   }

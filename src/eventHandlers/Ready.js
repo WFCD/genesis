@@ -54,7 +54,7 @@ class OnReadyHandle extends Handler {
       );
       this.bot.controlHook.send({
         embeds: [{
-          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now()/1000)}:R>`,
+          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now() / 1000)}:R>`,
           color: 0x2B90EC,
         }],
       });

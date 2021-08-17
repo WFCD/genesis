@@ -7,8 +7,8 @@ const {
 } = require('discord.js');
 
 const {
-  games, embedDefaults, constructItemEmbeds, constructTypeEmbeds, checkAndMergeEmbeds, chunkFields, timeDeltaToString,
-  emojify,
+  games, embedDefaults, constructItemEmbeds, constructTypeEmbeds,
+  checkAndMergeEmbeds, chunkFields, timeDeltaToString, emojify,
 } = require('../../CommonFunctions.js');
 const logger = require('../../Logger');
 // eslint-disable-next-line no-unused-vars
@@ -19,11 +19,11 @@ const localeChoices = require('../../resources/localeMap.json');
 const { createGroupedArray } = require('../../CommonFunctions');
 
 const getMentions = (content, guild) => content
-    .trim()
-    .replace(/[<>@&]/ig, ' ')
-    .split(' ')
-    .filter(id => id)
-    .map(id => guild.roles.cache.get(id.trim()));
+  .trim()
+  .replace(/[<>@&]/ig, ' ')
+  .split(' ')
+  .filter(id => id)
+  .map(id => guild.roles.cache.get(id.trim()));
 
 const globalable = {
   type: Types.BOOLEAN,
@@ -337,7 +337,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
     }, {
       name: 'diag',
       type: Types.SUB_COMMAND,
-      description: 'Run diagnostics for the guild'
+      description: 'Run diagnostics for the guild',
     }],
   };
 
@@ -457,9 +457,9 @@ module.exports = class Settings extends require('../../models/Interaction') {
         rolePermTokens.push(`${empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
 
         chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
-            .forEach((field) => {
-              embed.addField(field.name, field.value, false);
-            });
+          .forEach((ef) => {
+            embed.addField(ef.name, ef.value, false);
+          });
 
         // Tracking
         const trackingReadinessTokens = [`${perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${check}  Can` : `${xmark} Cannot`} Manage Webhooks`];
