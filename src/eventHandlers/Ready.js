@@ -25,23 +25,11 @@ const max = {
 
 const cycleTimeout = 60000;
 
-/**
- * Describes a handler
- */
 class OnReadyHandle extends Handler {
-  /**
-   * Base class for bot commands
-   * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
-   */
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
 
-  /**
-   * Run the ready handle
-   */
   async execute() {
     this.logger.silly(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
@@ -66,7 +54,7 @@ class OnReadyHandle extends Handler {
       );
       this.bot.controlHook.send({
         embeds: [{
-          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready`,
+          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now()/1000)}:R>`,
           color: 0x2B90EC,
         }],
       });

@@ -31,7 +31,7 @@ class Diagnostics extends Command {
    */
   async run(message) {
     const embed = new MessageEmbed();
-    embed.setTitle(`Diagnostics for Shard ${message.guild.shardID + 1}/${this.bot.shardTotal}/${this.bot.clusterId}`);
+    embed.setTitle(`Diagnostics for Shard ${message.guild.shardId + 1}/${this.bot.shardTotal}/${this.bot.clusterId}`);
 
     embed.addField('Discord WS', `${check} ${this.bot.client.ws.ping.toFixed(2)}ms`, true);
 
@@ -76,7 +76,7 @@ class Diagnostics extends Command {
     embed.setTimestamp(new Date());
     embed.setFooter(`Uptime: ${timeDeltaToString(this.bot.client.uptime)} `);
 
-    await message.channel.send({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -3,11 +3,12 @@
 const {
   // eslint-disable-next-line no-unused-vars
   Constants: { ApplicationCommandOptionTypes: Types }, CommandInteraction, TextChannel,
-  MessageEmbed,
+  MessageEmbed, Permissions,
 } = require('discord.js');
 
 const {
-  games, embedDefaults, constructItemEmbeds, constructTypeEmbeds, checkAndMergeEmbeds,
+  games, embedDefaults, constructItemEmbeds, constructTypeEmbeds, checkAndMergeEmbeds, chunkFields, timeDeltaToString,
+  emojify,
 } = require('../../CommonFunctions.js');
 const logger = require('../../Logger');
 // eslint-disable-next-line no-unused-vars
@@ -16,6 +17,13 @@ const Database = require('../../settings/Database');
 const platformChoices = require('../../resources/platformMap.json');
 const localeChoices = require('../../resources/localeMap.json');
 const { createGroupedArray } = require('../../CommonFunctions');
+
+const getMentions = (content, guild) => content
+    .trim()
+    .replace(/[<>@&]/ig, ' ')
+    .split(' ')
+    .filter(id => id)
+    .map(id => guild.roles.cache.get(id.trim()));
 
 const globalable = {
   type: Types.BOOLEAN,
@@ -133,7 +141,7 @@ const settingsCommands = [{
     description: 'What language do you want to use for this server?',
     choices: localeChoices,
     required: true,
-  }, globalable],
+  }],
 }, {
   type: Types.SUB_COMMAND,
   name: 'platform',
@@ -144,7 +152,7 @@ const settingsCommands = [{
     description: 'What platform is this channel?',
     choices: platformChoices,
     required: true,
-  }, globalable],
+  }],
 }, {
   type: Types.SUB_COMMAND,
   name: 'ephemerate',
@@ -153,6 +161,16 @@ const settingsCommands = [{
     type: Types.BOOLEAN,
     name: 'value',
     description: 'Make replies from interactions show in this channel?',
+    required: true,
+  }],
+}, {
+  name: 'elevated_roles',
+  type: Types.SUB_COMMAND,
+  description: 'Set elevated roles',
+  options: [{
+    name: 'value',
+    type: Types.STRING,
+    description: 'What roles are elevated?',
     required: true,
   }],
 },
@@ -177,10 +195,14 @@ const aliases = {
   auto_shown: 'defaultShown',
   temp_category: 'tempCategory',
   temp_channel: 'tempChannel',
+  elevated_roles: 'elevatedRoles',
 };
 
 const negate = '✘';
 const affirm = '✓';
+const check = emojify('green_tick');
+const xmark = emojify('red_tick');
+const empty = emojify('empty');
 
 /**
  * Wrap channel value into a string
@@ -312,6 +334,10 @@ module.exports = class Settings extends require('../../models/Interaction') {
       type: Types.SUB_COMMAND,
       name: 'get',
       description: 'Get all the settings',
+    }, {
+      name: 'diag',
+      type: Types.SUB_COMMAND,
+      description: 'Run diagnostics for the guild'
     }],
   };
 
@@ -387,13 +413,17 @@ module.exports = class Settings extends require('../../models/Interaction') {
             field = aliases[field] || field;
           case 'ephemerate':
           case 'platform':
-            await ctx.settings.setChannelSetting(ctx.channel, field, value);
-            return interaction.reply({ content: `set ${field} to ${value}`, ephemeral });
+            await ctx.settings.setChannelSetting(interaction.channel, field, value);
+            return interaction.reply(`set ${field} to \`${value}\``);
+          case 'elevated_roles':
+            field = aliases[field] || field;
+            value = getMentions(value, interaction.guild).map(role => role.id).join(',');
+            ctx.handler.recalcPerms(value, interaction.guild);
           case 'language':
             await ctx.settings.setGuildSetting(interaction.guild, field, value);
-            return interaction.reply({ content: `set ${field} to ${value}`, ephemeral });
+            return interaction.reply({ content: `set ${field} to \`${value}\``, ephemeral });
           default:
-            logger.info(options?.first?.()?.name);
+            interaction.reply(options?.getSubcommand());
             break;
         }
         logger.info(field);
@@ -412,6 +442,44 @@ module.exports = class Settings extends require('../../models/Interaction') {
           } else return interaction.followUp({ embeds, ephemeral });
         }
         return null;
+      case 'diag':
+        const embed = new MessageEmbed();
+        embed.setTitle(`Diagnostics for Shard ${interaction.guild.shardId + 1}/${interaction.client.ws.shards.size}`);
+
+        embed.addField('Discord WS', `${check} ${interaction.client.ws.ping.toFixed(2)}ms`, true);
+
+        // check what permissions the bot has in the current channel
+        const perms = interaction.channel.permissionsFor(interaction.client.user.id);
+
+        // role management
+        const rolePermTokens = [];
+        rolePermTokens.push(`${perms.has(Permissions.FLAGS.MANAGE_ROLES) ? check : xmark} Permission Present`);
+        rolePermTokens.push(`${empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
+
+        chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
+            .forEach((field) => {
+              embed.addField(field.name, field.value, false);
+            });
+
+        // Tracking
+        const trackingReadinessTokens = [`${perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${check}  Can` : `${xmark} Cannot`} Manage Webhooks`];
+
+        const trackables = {
+          events: await ctx.settings.getTrackedEventTypes(interaction.channel),
+          items: await ctx.settings.getTrackedItems(interaction.channel),
+        };
+        trackingReadinessTokens.push(trackables.events.length ? `${check} ${trackables.events.length} Events Tracked` : `${xmark} No Events tracked`);
+        trackingReadinessTokens.push(trackables.items.length ? `${check} ${trackables.items.length} Items Tracked` : `${xmark} No Items tracked`);
+
+        embed.addField('Trackable Ready', trackingReadinessTokens.join('\n'));
+
+        // General
+        embed.addField('General Ids', `Guild: \`${interaction.guild.id}\`\nChannel: \`${interaction.channel.id}\``);
+
+        embed.setTimestamp(new Date());
+        embed.setFooter(`Uptime: ${timeDeltaToString(interaction.client.uptime)} `);
+
+        return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
       default:
         break;
     }

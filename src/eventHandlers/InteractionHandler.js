@@ -5,8 +5,6 @@ const path = require('path');
 const decache = require('decache');
 
 const Discord = require('discord.js');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
 
 const Interaction = require('../models/Interaction');
 const WorldStateClient = require('../resources/WorldStateClient');
@@ -14,7 +12,7 @@ const WorldStateClient = require('../resources/WorldStateClient');
 // eslint-disable-next-line no-unused-vars
 const { CommandInteraction, ButtonInteraction } = Discord;
 const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
-const whitelistedGuilds = ['146691885363232769', '563140046031683585'];
+const whitelistedGuilds = (process.env.WHITELISTED_GUILDS || '').split(',');
 
 const ws = new WorldStateClient(require('../Logger'));
 
@@ -67,26 +65,133 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     return reloadedCommands;
   }
 
-  static async loadCommands(rest, loadedFiles, logger) {
-    const cmds = loadedFiles.filter(cmd => cmd.enabled).map(cmd => cmd.command);
-    // logger.error(JSON.stringify(cmds));
-    for (const gid of whitelistedGuilds) {
-      try {
-        await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, gid), { body: cmds });
-      } catch (e) {
-        logger.error(e);
-      }
+  /**
+   * Set the perms for a single guild
+   * @param {Discord.Guild} guild guild to set perms for
+   * @param {string?} rolesOverride override instead of fetching guild setting
+   * @returns {Promise<void>}
+   */
+  async #setGuildPerms(guild, rolesOverride) {
+    const guildCommands = Array.from((await guild.commands.fetch())
+        .filter(c => !c.defaultPermission)
+        .values());
+    const owner = guild.ownerId;
+    const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
+        .split(',')
+        .filter(s => s.length);
+    /** @type SetApplicationCommandPermissionsOptions */
+    const data = {
+      /** @type Array<Discord.GuildApplicationCommandPermissionData> */
+      fullPermissions: [],
+    };
+    await this.client.application.fetch();
+    guildCommands.filter(c => c.name !== 'su').forEach((command) => {
+      data.fullPermissions.push({
+        id: command.id,
+        permissions: [{
+          id: guild.roles.everyone.id,
+          type: 'ROLE',
+          permission: false,
+        }, {
+          id: owner,
+          type: 'USER',
+          permission: true,
+        },
+          ...(roles?.length
+                  ? roles.map(id => ({
+                    id,
+                    type: 'ROLE',
+                    permission: true,
+                  }))
+                  : []
+          )],
+      });
+    });
+    const su = guildCommands.find(c => c.name === 'su');
+    if (!this.client.application.owner.ownerId) {
+      data.fullPermissions.push({
+        id: su.id,
+        permissions: [{
+          id: this.client.application.owner.id,
+          type: 'USER',
+          permission: true,
+        }],
+      });
+    } else {
+      this.client.application.owner.members.forEach(member => {
+        data.fullPermissions.push({
+          id: su.id,
+          permissions: [{
+            id: member.id,
+            type: 'USER',
+            permission: true,
+          }],
+        });
+      });
+    }
+    await guild.commands.permissions.set(data);
+  }
+
+  /**
+   * Setup permissions for commands in each guild
+   * @returns {Promise<void>}
+   */
+  async initPermissions() {
+    /** @type Discord.GuildManager */
+    const guildManager = this.client.guilds;
+
+    /**
+     * @type {Array<Discord.Guild>}
+     */
+    const guilds = whitelistedGuilds.length
+      ? Array.from(guildManager.cache.filter(g => whitelistedGuilds.includes(g.id)).values())
+      : Array.from(guildManager.cache.values());
+    for (const guild of guilds) {
+      await this.#setGuildPerms(guild);
     }
   }
 
-  async init() {
-    const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+  /**
+   * Recalculate perms for a guild with the provided values
+   * @param {string} value comma-separated value string to set
+   * @param {Guild} guild to set perms for
+   * @returns {Promise<void>}
+   */
+  async recalcPerms(value, guild) {
+    await this.#setGuildPerms(guild, value)
+  }
 
+  /**
+   * Load commands from files into the command manager
+   * @param {Discord.ApplicationCommandManager} commands
+   * @param loadedFiles
+   * @param logger
+   * @returns {Promise<void>}
+   */
+  static async loadCommands(commands, loadedFiles, logger) {
+    const cmds = loadedFiles.filter(cmd => cmd.enabled).map(cmd => cmd.command);
+    // logger.error(JSON.stringify(cmds));
+    if (whitelistedGuilds.length) {
+      for (const gid of whitelistedGuilds) {
+        try {
+          await commands.set(cmds, gid)
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+    } else {
+
+    }
+
+  }
+
+  async init() {
     this.logger.debug('Initing InteractionHandler');
     this.loadedCommands = await InteractionHandler.loadFiles(
       this.loadedCommands, this.logger,
     );
-    await InteractionHandler.loadCommands(rest, this.loadedCommands, this.logger);
+    await InteractionHandler.loadCommands(this.client?.application?.commands, this.loadedCommands, this.logger);
+    await this.initPermissions();
     this.ready = true;
   }
 

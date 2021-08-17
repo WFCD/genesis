@@ -9,11 +9,13 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
+module.exports =
 /**
  * WorldState interaction client
  * @type {Object}
+ * @class
  */
-module.exports = class WorldStateClient {
+class WorldStateClient {
   /**
    * @type {Logger} logger for tracing
    */

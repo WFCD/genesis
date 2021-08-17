@@ -11,6 +11,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
     name: 'su',
     description: 'Super User',
     defaultPermission: false,
+    ownerOnly: true,
     options: [{
       name: 'restart',
       description: 'Restart Bot',
