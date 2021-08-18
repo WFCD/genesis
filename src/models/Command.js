@@ -146,7 +146,7 @@ class Command {
    * Run the command
    * @param {Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {CommandContext} ctx command context for running command
+   * @param {CommandContext=} ctx command context for running command
    * @returns {Promise<string>}
    */
   // eslint-disable-next-line no-unused-vars

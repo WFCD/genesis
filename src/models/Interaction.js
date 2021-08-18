@@ -1,9 +1,11 @@
 'use strict';
 
-// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Message, APIMessage, CommandInteraction } = Discord;
+
+const {
+  // eslint-disable-next-line no-unused-vars
+  Message, APIMessage, CommandInteraction, ButtonInteraction,
+} = Discord;
 
 module.exports = class Interaction {
   static enabled = true;
@@ -15,9 +17,6 @@ module.exports = class Interaction {
     description: 'Base interaction class',
     options: [],
   };
-  static buttonHandler;
-  static msgComponentHandler;
-  static selectMenuHandler;
 
   /**
    *Handle a command interaction

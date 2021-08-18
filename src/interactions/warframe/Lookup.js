@@ -2,10 +2,10 @@
 
 const Discord = require('discord.js');
 
-const { games } = require('../../CommonFunctions.js');
+const { games, createPagedInteractionCollector } = require('../../CommonFunctions.js');
 const { ENDPOINTS } = require('../../resources/WorldStateClient');
 
-const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = Discord;
+const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 const queryOpt = [{
   type: Types.STRING,
   name: 'query',
@@ -67,44 +67,42 @@ module.exports = class Lookup extends require('../../models/Interaction') {
     const { options } = interaction;
     const query = options.get('query').value;
     let data;
-    let embed;
+    let pages;
 
-    /* eslint-disable no-case-declarations */
     switch (subcommand) {
       case 'arcane':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);
         if (!data.length) return interaction.editReply('None found');
-        embed = new embeds.Arcane(null, data[0], ctx.i18n);
-        break;
+        pages = data.map(d => new embeds.Arcane(null, d, ctx.i18n));
+        return createPagedInteractionCollector(interaction, pages, ctx);
       case 'weapon':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
-        embed = new embeds.Weapon(null, data[0], ctx.i18n);
-        break;
+        pages = data.map(d => new embeds.Weapon(null, d, ctx.i18n));
+        return createPagedInteractionCollector(interaction, pages, ctx);
       case 'warframe':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
-        embed = new embeds.Warframe(null, data[0], ctx.i18n);
-        break;
+        pages = data.map(d => new embeds.Warframe(null, d, ctx.i18n));
+        return createPagedInteractionCollector(interaction, pages, ctx);
       case 'riven':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
-        if (!data.length) return interaction.editReply('None found');
-        embed = new embeds.Riven(null, data[Object.keys(data)[0]], ctx.i18n);
-        break;
+        if (!Object.keys(data).length) return interaction.editReply('None found');
+        pages = Object.keys(data).map(d => new embeds.Riven(null, data[d], ctx.i18n));
+        return createPagedInteractionCollector(interaction, pages, ctx);
       case 'mod':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query))
           .filter(m => typeof m.baseDrain !== 'undefined');
         if (!data.length) return interaction.editReply('None found');
-        embed = new embeds.Mod(null, data[0], ctx.i18n);
-        break;
+        pages = Object.keys(data).map(d => new embeds.Mod(null, data[d], ctx.i18n));
+        return createPagedInteractionCollector(interaction, pages, ctx);
       default:
         return interaction.reply('ok');
     }
-    return interaction.editReply({ embeds: [new MessageEmbed(embed)] });
   }
 };

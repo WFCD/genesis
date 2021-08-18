@@ -58,7 +58,7 @@ module.exports = class Ping extends require('../../models/Interaction') {
       title: 'PONG',
       type: 'rich',
       fields: [{
-        name: ctx.i18n`Response time (shard ${interaction.inGuild() ? interaction.guild.shardID + 1 : 1})`,
+        name: ctx.i18n`Response time (shard ${interaction.inGuild() ? interaction.guild.shardId + 1 : 1})`,
         value: `${afterSend - now}ms`,
       },
       ...results,

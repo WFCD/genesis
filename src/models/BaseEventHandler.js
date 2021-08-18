@@ -11,9 +11,9 @@ class BaseEventHandler {
 
   /**
    * Base class for bot commands
-   * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
+   * @param {Genesis?} bot  The bot object
+   * @param {string?}  id   The command's unique id
+   * @param {string?}  event Event to trigger this handler
    */
   constructor(bot, id, event) {
     /**
@@ -50,6 +50,7 @@ class BaseEventHandler {
     /**
      * Database settings wrapper
      * @type {Database}
+     * @instance
      */
     this.settings = bot.settings;
 
@@ -62,7 +63,7 @@ class BaseEventHandler {
 
   /**
    * Run the handle
-   * @param {*} event Event param to handle
+   * @param {*?} event Event param to handle
    */
   async execute(event) {
     this.logger.debug(`Handled ${event}`);

@@ -3,7 +3,6 @@
 const { GiveawaysManager } = require('discord-giveaways');
 
 const Discord = require('discord.js');
-const Handler = require('../models/BaseEventHandler');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 const MessageManager = require('../settings/MessageManager');
@@ -25,7 +24,7 @@ const max = {
 
 const cycleTimeout = 60000;
 
-class OnReadyHandle extends Handler {
+module.exports = class OnReadyHandle extends require('../models/BaseEventHandler') {
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
@@ -48,11 +47,11 @@ class OnReadyHandle extends Handler {
 
   async notifyUp() {
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
-      await this.bot.controlHook.edit(
-        this.bot.client.user.username,
-        this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
-      );
-      this.bot.controlHook.send({
+      await this.bot.controlHook.edit({
+        name: this.bot.client.user.username,
+        avatar: this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
+      });
+      await this.bot.controlHook.send({
         embeds: [{
           description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now() / 1000)}:R>`,
           color: 0x2B90EC,
@@ -153,7 +152,7 @@ class OnReadyHandle extends Handler {
     this.logger.silly('Checking private rooms...');
     const privateRooms = await this.settings.getPrivateRooms();
     this.logger.silly(`Private rooms... ${privateRooms.length}`);
-    privateRooms.forEach(async (room) => {
+    await Promise.all(privateRooms.map(async (room) => {
       if (room && (room.textChannel || room.category || room.voiceChannel)) {
         const now = new Date();
         if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
@@ -181,8 +180,6 @@ class OnReadyHandle extends Handler {
           guild: { id: room.guildId },
         });
       }
-    });
+    }));
   }
-}
-
-module.exports = OnReadyHandle;
+};

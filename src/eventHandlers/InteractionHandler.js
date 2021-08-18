@@ -201,29 +201,29 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    */
   async execute(interaction) {
     if (!this.ready) return;
-    if (!(interaction instanceof CommandInteraction)) return;
 
-    this.logger.debug(`Running ${interaction.id} for ${this.event}`);
-
-    const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
     const ctx = await this.settings.getCommandContext(interaction.channel, interaction.user);
     ctx.settings = this.settings;
     ctx.ws = ws;
     ctx.handler = this;
     ctx.logger = this.logger;
 
-    const noAccess = (match?.elevated
-        && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))
-      || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
-
-    if (noAccess) {
-      await interaction.deferReply({ ephemeral: true });
-      await interaction.deleteReply();
-    }
-
     if (interaction instanceof CommandInteraction) {
+      this.logger.debug(`Running ${interaction.id} for ${this.event}`);
+      const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
+
+      const noAccess = (match?.elevated
+              && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))
+          || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
+
+      if (noAccess) {
+        await interaction.deferReply({ ephemeral: true });
+        await interaction.deleteReply();
+      }
+
       await match?.commandHandler?.(interaction, ctx);
     }
+
     // if (interaction.isButton()) await match?.buttonHandler?.(interaction);
     // if (interaction.isMessageComponent()) await match?.msgComponentHandler?.(interaction);
     // if (interaction.isSelectMenu()) await match?.selectMenuHandler?.(interaction);

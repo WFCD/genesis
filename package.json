@@ -146,7 +146,8 @@
       "no-param-reassign": "off",
       "no-continue": "off",
       "lines-between-class-members": "off",
-      "no-fallthrough": "off"
+      "no-fallthrough": "off",
+      "no-case-declarations": "off"
     }
   },
   "babel": {

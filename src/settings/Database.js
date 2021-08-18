@@ -67,8 +67,9 @@ const props = (obj) => {
  *  @property {I18n} i18n internationalization string handler
  *  @property {Database?} settings interface for the database
  *  @property {boolean?} ephemerate whether or not to hide (make ephemeral) interaction responses
- *  @property {InteractionHandler|CommandHandler?} handler access to a command's handler
+ *  @property {InteractionHandler|CommandHandler} handler access to a command's handler
  *  @property {Role|string} modRole designated moderator role for the server
+ *  @property {Discord.Message=} original original reply to an interaction
   */
 
 /**
