@@ -92,7 +92,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
         if (!Object.keys(data).length) return interaction.editReply('None found');
-        pages = Object.keys(data).map(d => new embeds.Riven(null, data[d], ctx.i18n));
+        pages = Object.keys(data).map(d => new embeds.Riven(null, data[d], query, ctx.i18n));
         return createPagedInteractionCollector(interaction, pages, ctx);
       case 'mod':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
