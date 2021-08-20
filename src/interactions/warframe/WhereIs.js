@@ -2,7 +2,7 @@
 
 const Discord = require('discord.js');
 
-const { games } = require('../../CommonFunctions.js');
+const { games, createPagedInteractionCollector } = require('../../CommonFunctions.js');
 const { ENDPOINTS } = require('../../resources/WorldStateClient');
 
 function toTitleCase(str) {
@@ -93,12 +93,14 @@ module.exports = class WhereIs extends require('../../models/Interaction') {
       .reduce((a, b) => (a.length > b.length ? a : b)) : '';
     query = toTitleCase(query.trim());
 
-    const relics = createGroupedArray(results, 20)[0];
-    const embed = new WhereisEmbed(null,
-      createGroupedArray(relics, 10),
-      query,
-      longestName.length,
-      longestRelic.length);
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    const relics = createGroupedArray(results, 20)
+      .map(rg => new WhereisEmbed(null,
+        createGroupedArray(rg, 10),
+        query,
+        longestName.length,
+        longestRelic.length))
+      .map(e => new Discord.MessageEmbed(e));
+    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    return createPagedInteractionCollector(interaction, relics, ctx);
   }
 };
