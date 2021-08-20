@@ -370,6 +370,7 @@ const embedDefaults = {
  * @param  {Array.<string>}  [newStrings=[]]  Chunked strings
  * @param  {string} [breakChar='; ']          Break character to check for splits on
  * @param  {number} [maxLength=1000]          Maximum length per string
+ * @param {boolean} [checkTitle=false]        Whether or not to check for titles at the end
  * @returns {Array.<string>}                  Array of string chunks
  */
 const chunkify = ({
@@ -527,7 +528,7 @@ const createPageCollector = async (msg, pages, author) => {
 /**
  * Set up pages from an array of embeds
  * @param  {Array.<Object|MessageEmbed>}  pages    Array of embeds to use as pages
- * @param  {Message}                      message  Message for author
+ * @param  {Discord.Message}                      message  Message for author
  * @param  {Settings}                     settings Settings
  * @param  {MessageManager}               mm      Message manager for interacting with messages
  */
@@ -546,7 +547,7 @@ const setupPages = async (pages, { message, settings }) => {
  * @param  {string} stringToChunk string that will be broken up for the fields
  * @param  {string} title         title of the embed
  * @param  {string} breakChar     character to break on
- * @returns {Discord.Embed}               Embed
+ * @returns {Discord.MessageEmbed}               Embed
  */
 const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const embed = new MessageEmbed(embedDefaults);
@@ -588,7 +589,7 @@ const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
   if (!chunkified) {
     return [];
   }
-  const mapped = chunkified
+  return chunkified
     .map((val, ind) => {
       if (val && val.length) {
         return {
@@ -600,7 +601,6 @@ const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
       return undefined;
     })
     .filter(field => field);
-  return mapped;
 };
 
 const constructTypeEmbeds = (types) => {
@@ -835,9 +835,9 @@ const getChannels = (channelsParam, message) => {
   let channels = [];
   // handle it for strings
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
-    channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/(<|>|#)/ig, '')));
+    channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/([<>#])/ig, '')));
   } else if (channelsParam === 'all' || channelsParam === '*') {
-    channels = channels.concat(message.guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').array());
+    channels = channels.concat(Array.from(message.guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT')));
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
   }
@@ -958,7 +958,7 @@ const resolvePool = async (message, settings,
   } else {
     return poolId;
   }
-  const explicitPoolMatches = message.strippedContent.match(/(?:--pool\s+([a-zA-Z0-9-]*))/i);
+  const explicitPoolMatches = message.strippedContent.match(/--pool\s+([a-zA-Z0-9-]*)/i);
 
   if (!poolId && explicitPoolMatches && explicitPoolMatches.length > 1) {
     [, poolId] = explicitPoolMatches;
@@ -1090,10 +1090,6 @@ const navComponents = [
   new MessageActionRow({
     components: [
       new MessageButton({
-        label: 'First',
-        customId: 'first',
-        style: MessageButtonStyles.PRIMARY,
-      }), new MessageButton({
         label: 'Previous',
         customId: 'previous',
         style: MessageButtonStyles.SECONDARY,
@@ -1105,14 +1101,112 @@ const navComponents = [
         label: 'Next',
         customId: 'next',
         style: MessageButtonStyles.SECONDARY,
-      }), new MessageButton({
-        label: 'Last',
-        customId: 'last',
-        style: MessageButtonStyles.PRIMARY,
       }),
     ],
   }),
 ];
+
+/**
+ * Created a selection collector for selecting a page from the list.
+ *   Must have 25 or fewer unique titles.
+ * @param {CommandInteraction} interaction interaction to respond to
+ * @param {Array<MessageEmbed>} pages array of pages to make available
+ * @param {CommandContext} ctx context for command call
+ * @returns {Promise<void>}
+ */
+const createSelectionCollector = async (interaction, pages, ctx) => {
+  if (pages.length === 1) {
+    const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
+    return interaction.deferred || interaction.replied
+      ? interaction.editReply(payload)
+      : interaction.reply(payload);
+  }
+  let page = 1;
+  const pagedPages = pages.map((newPage, index) => {
+    const pageInd = `Page ${index + 1}/${pages.length}`;
+    if (newPage.footer) {
+      if (newPage instanceof MessageEmbed) {
+        if (newPage.footer.text.indexOf('Page') === -1) {
+          newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.iconURL);
+        }
+      } else if (newPage.footer.text) {
+        if (newPage.footer.text.indexOf('Page') === -1) {
+          newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
+        }
+      } else {
+        newPage.footer.text = pageInd;
+      }
+    } else {
+      newPage.footer = { text: pageInd };
+    }
+    return new MessageEmbed(newPage);
+  });
+  const selections = pages.map((embed, index) => ({
+    label: embed.title,
+    value: `${index}`,
+  }));
+
+  const menu = () => [new MessageActionRow({
+    components: [
+      new Discord.MessageSelectMenu({
+        customId: 'select',
+        placeholder: ctx.i18n`Select Page`,
+        minValues: 1,
+        maxValues: 1,
+        options: selections.map((s, i) => ({
+          ...s,
+          default: i === page - 1,
+        })),
+      }),
+    ],
+  })];
+
+  const payload = {
+    ephemeral: ctx.ephemerate,
+    embeds: [pagedPages[page - 1]],
+    components: menu(),
+  };
+  const message = interaction.deferred || interaction.replied
+    ? await interaction.editReply(payload)
+    : await interaction.reply(payload);
+
+  const collector = new InteractionCollector(interaction.client, {
+    interactionType: InteractionTypes.MESSAGE_COMPONENT,
+    componentType: MessageComponentTypes.SELECT_MENU,
+    message,
+    guild: interaction.guild,
+    channel: interaction.channel,
+  });
+
+  /**
+   * Handle a new selection
+   * @param {Discord.SelectMenuInteraction} selection updated selection
+   * @returns {Promise<void>}
+   */
+  const selectionHandler = async (selection) => {
+    await selection.deferUpdate({ ephemeral: ctx.ephemerate });
+    page = Number.parseInt(selection.values[0], 10) + 1;
+    if (page < 1) {
+      page = 1;
+    } else if (page > pagedPages.length) {
+      page = pagedPages.length;
+    }
+    await interaction.editReply({
+      embeds: [pagedPages[page - 1]],
+      ephemeral: ctx.ephemerate,
+      components: menu(),
+    });
+  };
+  collector.on('collect', selectionHandler);
+  const blank = async () => interaction.editReply({
+    embeds: [pagedPages[page - 1]],
+    ephemeral: ctx.ephemerate,
+    components: [],
+  });
+  collector.on('end', blank);
+  collector.on('dispose', blank);
+  return message;
+};
 
 /**
  * Create a paged interaction collector for an interaction & embed pages
@@ -1123,6 +1217,12 @@ const navComponents = [
  */
 const createPagedInteractionCollector = async (interaction, pages, ctx) => {
   let page = 1;
+  if (pages.length === 1) {
+    const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
+    return interaction.deferred || interaction.replied
+      ? interaction.editReply(payload)
+      : interaction.reply(payload);
+  }
   const pagedPages = pages.map((newPage, index) => {
     const pageInd = `Page ${index + 1}/${pages.length}`;
     if (newPage.footer) {
@@ -1168,6 +1268,7 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
    * @returns {Promise<void>}
    */
   const buttonHandler = async (button) => {
+    await button.deferUpdate({ ephemeral: ctx.ephemerate });
     switch (button.customId) {
       case 'previous':
         if (page > 1) page -= 1;
@@ -1206,19 +1307,14 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
     });
   };
   collector.on('collect', buttonHandler);
-  collector.on('end', async (collected, reason) => {
-    ctx.logger.debug(`closed with ${reason}`);
-    // return interaction.editReply({
-    //   embeds: [pagedPages[page - 1]],
-    //   ephemeral: ctx.ephemerate,
-    //   components: [],
-    // });
-  });
-  collector.on('dispose', () => interaction.editReply({
+  collector.on('end', async (collected, reason) => ctx.logger.debug(`closed with ${reason}`));
+  const blank = async () => interaction.editReply({
     embeds: [pagedPages[page - 1]],
     ephemeral: ctx.ephemerate,
     components: [],
-  }));
+  });
+  collector.on('end', blank);
+  collector.on('dispose', blank);
   return message;
 };
 
@@ -1333,4 +1429,5 @@ module.exports = {
   toTitleCase,
   createPagedInteractionCollector,
   createConfirmationCollector,
+  createSelectionCollector,
 };

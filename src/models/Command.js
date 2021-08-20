@@ -182,7 +182,7 @@ class Command {
     embed.addField('Warning', `\`<\`, \`|\`, and \`>\` are used to delimit the beginning of parameter options, separate parameter options, and delimit the end of parameter options.
 If a \`|\` is between \`<\` and \`>\`, it doesn't need to be included when calling the command.\n\u200b`);
 
-    this.messageManager.embed(message, embed, true, true);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 

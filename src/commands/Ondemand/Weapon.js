@@ -29,10 +29,10 @@ class WeaponStats extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    * @param {CommandContext} ctx Context for the command, such as platform, etc.
-   * @returns {string} success status
+   * @returns {Promise<string>} success status
    */
   async run(message, ctx) {
     let weapon = message.strippedContent.match(this.regex)[1];

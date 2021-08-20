@@ -136,7 +136,7 @@ module.exports = class WorldStateClient {
 
   /**
    * Search an endpoint for the given query
-   * @param {ENDPOINTS.SEARCH} endpoint endpoint to search
+   * @param {string<WorldStateClient.ENDPOINTS.SEARCH>} endpoint endpoint to search
    * @param {string} query search query
    * @returns {Promise<Object>}
    */

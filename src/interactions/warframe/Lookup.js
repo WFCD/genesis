@@ -2,7 +2,9 @@
 
 const Discord = require('discord.js');
 
-const { games, createPagedInteractionCollector } = require('../../CommonFunctions.js');
+const {
+  games, createPagedInteractionCollector, createSelectionCollector, createGroupedArray,
+} = require('../../CommonFunctions.js');
 const { ENDPOINTS } = require('../../resources/WorldStateClient');
 
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
@@ -19,6 +21,8 @@ const embeds = {
   Warframe: require('../../embeds/FrameEmbed'),
   Mod: require('../../embeds/ModEmbed'),
   Riven: require('../../embeds/RivenStatEmbed'),
+  Component: require('../../embeds/ComponentEmbed.js'),
+  Patchnote: require('../../embeds/PatchnotesEmbed.js'),
 };
 
 module.exports = class Lookup extends require('../../models/Interaction') {
@@ -67,7 +71,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
     const { options } = interaction;
     const query = options.get('query').value;
     let data;
-    let pages;
+    let pages = [];
 
     switch (subcommand) {
       case 'arcane':
@@ -80,14 +84,48 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
-        pages = data.map(d => new embeds.Weapon(null, d, ctx.i18n));
-        return createPagedInteractionCollector(interaction, pages, ctx);
+        for (const weapon of data) {
+          pages.push(new embeds.Weapon(null, weapon, ctx.i18n));
+          const strippedWeaponN = query.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
+          const rivenResults = await ctx.ws.riven(strippedWeaponN, ctx.platform);
+          if (Object.keys(rivenResults).length > 0) {
+            const strippedRes = weapon.name.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
+            if (rivenResults[strippedRes]) {
+              pages
+                .push(new embeds.Riven(null, rivenResults[strippedRes], weapon.name, ctx.i18n));
+            }
+          }
+
+          if (weapon?.components?.length) pages.push(new embeds.Component(null, weapon.components));
+
+          if (weapon?.patchlogs?.length) {
+            createGroupedArray(weapon.patchlogs, 4)
+              // eslint-disable-next-line no-loop-func
+              .forEach(patchGroup => pages.push(new embeds.Patchnote(this.bot, patchGroup)));
+          }
+        }
+        return pages.length < 25
+          ? createSelectionCollector(interaction, pages, ctx)
+          : createPagedInteractionCollector(interaction, pages, ctx);
       case 'warframe':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
-        pages = data.map(d => new embeds.Warframe(null, d, ctx.i18n));
-        return createPagedInteractionCollector(interaction, pages, ctx);
+        for (const warframe of data) {
+          pages.push(new embeds.Warframe(null, warframe, ctx.i18n));
+          if (warframe.components && warframe.components.length) {
+            pages.push(new embeds.Component(this.bot, warframe.components));
+          }
+          if (warframe.patchlogs && warframe.patchlogs.length) {
+            // eslint-disable-next-line no-loop-func
+            createGroupedArray(warframe.patchlogs, 4).forEach((patchGroup) => {
+              pages.push(new embeds.Patchnote(this.bot, patchGroup));
+            });
+          }
+        }
+        return pages.length < 25
+          ? createSelectionCollector(interaction, pages, ctx)
+          : createPagedInteractionCollector(interaction, pages, ctx);
       case 'riven':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
