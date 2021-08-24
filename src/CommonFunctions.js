@@ -6,12 +6,12 @@ const {
   // eslint-disable-next-line no-unused-vars
   Collection, MessageEmbed, CommandInteraction, MessageButton, MessageActionRow,
   Constants: { MessageButtonStyles, InteractionTypes, MessageComponentTypes },
+  InteractionCollector,
 } = Discord;
 /**
  * Map of emoji names to full types
  * @type {Object}
  */
-const { InteractionCollector } = require('discord.js');
 const emoji = require('./resources/emoji.json');
 
 /**
@@ -114,7 +114,19 @@ const trackableEvents = {
   kuva: [],
   twitch,
   opts,
+  baseEvents: [],
 };
+
+trackableEvents.baseEvents = eventTypes.filter(e => !(
+  trackableEvents.cambion.includes(e)
+    || trackableEvents.cetus.includes(e)
+    || trackableEvents.ostrons.includes(e)
+    || trackableEvents.earth.includes(e)
+    || trackableEvents.vallis.includes(e)
+    || trackableEvents.nightwave.includes(e)
+    || trackableEvents.rss.includes(e)
+    || trackableEvents.twitch.includes(e)
+));
 
 trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
@@ -1048,7 +1060,7 @@ const getMessage = async (message, otherMessageId) => {
 
 /**
  * Group an array by a field value
- * @param  {Object[]} array array of objects to broup
+ * @param  {Object[]} array array of objects to group
  * @param  {string} field field to group by
  * @returns {Object}       [description]
  */

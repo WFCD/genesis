@@ -13,6 +13,32 @@ const { Snowflake } = require('discord-api-types/v9');
  */
 class TrackingQueries {
   /**
+   * Tracking option arrays
+   * @typedef {Object} TrackingOptions
+   * @property {Array<string>} items Tracked Items
+   * @property {Array<string>} events Tracked Events
+   */
+
+  /**
+   * Set all tracking options for a channel
+   * @param {Discord.TextChannel} channel channel to set trackables for
+   * @param {TrackingOptions} opts options to set for provided channel
+   * @returns {Promise<void>}
+   */
+  async setTrackables(channel, opts) {
+    const deleteQuery = SQL`DELETE i, t
+      FROM item_notifications i
+        LEFT JOIN type_notifications t
+          on i.channel_id = t.channel_id 
+      WHERE i.channel_id = ${channel.id}`;
+    await this.query(deleteQuery);
+    if (opts?.events?.length || opts?.items?.length) {
+      await this.trackItems(channel, opts.items);
+      await this.trackEventTypes(channel, opts.events);
+    }
+  }
+
+  /**
    * Enables notifications for an item in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} item The item to track

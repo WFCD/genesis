@@ -341,11 +341,6 @@ module.exports = class Settings extends require('../../models/Interaction') {
     }],
   };
 
-  /**
-   * Handle the command interaction
-   * @param {CommandInteraction} interaction interaction to handle
-   * @param {CommandContext} ctx interaction context
-   */
   static async commandHandler(interaction, ctx) {
     // args
     const { options } = interaction;

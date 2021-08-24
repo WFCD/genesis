@@ -223,9 +223,5 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
 
       await match?.commandHandler?.(interaction, ctx);
     }
-
-    // if (interaction.isButton()) await match?.buttonHandler?.(interaction);
-    // if (interaction.isMessageComponent()) await match?.msgComponentHandler?.(interaction);
-    // if (interaction.isSelectMenu()) await match?.selectMenuHandler?.(interaction);
   }
 };
