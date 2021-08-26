@@ -11,7 +11,7 @@ const {
 } = Discord;
 const { MessageButton } = require('discord.js');
 const {
-  chunkify, trackableEvents, toTitleCase, trackableItems,
+  chunkify, trackableEvents, toTitleCase, trackableItems, trackablesFromParameters,
 } = require('../../CommonFunctions');
 
 /**
@@ -23,8 +23,10 @@ const chunkerate = (track) => {
   const itemString = !track.items.length ? 'None' : track.items.map(i => `\`${i}\``).join(', ');
   const eventString = !track.events.length ? 'None' : track.events.map(m => `\`${m}\``).join(', ');
   const format = `**Current Items:**\n${itemString}\n\n**Current Events:**\n${eventString}`;
-  return chunkify({ string: format, maxLength: 2000 });
+  return chunkify({ string: format, maxLength: 2000, breakChar: ',' });
 };
+
+const subgrouped = ['arbitration', 'fissures', 'twitter'];
 
 module.exports = class Settings extends require('../../models/Interaction') {
   static elevated = true;
@@ -37,9 +39,26 @@ module.exports = class Settings extends require('../../models/Interaction') {
       type: Types.SUB_COMMAND,
       description: 'Manage tracking settings',
     }, {
-      name: 'pings',
+      name: 'custom',
       type: Types.SUB_COMMAND,
-      description: 'Set up pings',
+      description: 'Set up custom trackings and pings',
+      options: [{
+        name: 'add',
+        type: Types.STRING,
+        description: 'Comma-separated list of trackables to add. See website.',
+      }, {
+        name: 'remove',
+        type: Types.STRING,
+        description: 'Comma-separated list of trackables to remove. See website.',
+      }, {
+        name: 'prepend',
+        type: Types.STRING,
+        description: 'Requires \'add\' to be specified. Ignored on remove.',
+      }, {
+        name: 'channel',
+        type: Types.CHANNEL,
+        description: 'Channel (text-based) that this should apply to.',
+      }],
     }],
   }
 
@@ -57,6 +76,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
       let page = 0;
 
       let currentGroup;
+      let currentSubgroup;
       const createGroupsRow = () => {
         const groups = [
           {
@@ -65,49 +85,59 @@ module.exports = class Settings extends require('../../models/Interaction') {
             default: currentGroup === 'items',
           },
           ...(Object.keys(trackableEvents)
-            .filter(e => !['events', 'opts', 'kuva', 'twitter', 'arbitration', 'cetus'].includes(e)
-              && !e.startsWith('fissures')
-              && !e.startsWith('twitter')
-              && !e.startsWith('arbitration'))
+            .filter(e => !['events', 'opts', 'kuva', 'cetus'].includes(e)
+              && !e.startsWith('fissures.')
+              && !e.startsWith('twitter.')
+              && !e.startsWith('arbitration.'))
             .map(e => ({
               label: e === 'baseEvents' ? toTitleCase('events') : toTitleCase(e.split('.').join(' ')),
               value: e,
               default: currentGroup === e,
             }))),
         ];
-        ctx.logger.silly(`groups: ${JSON.stringify(groups)}`);
-        // eslint-disable-next-line no-nested-ternary
-        const groupOptions = currentGroup ? (
-          currentGroup === 'items'
-            ? trackableItems.items.map(i => ({
-              label: toTitleCase(i.split('.').join(' ')),
-              value: i,
-              default: current.items.includes(i),
-            }))
-            : trackableEvents[currentGroup].map(e => ({
+        const subgroups = subgrouped.includes(currentGroup)
+          ? Object.keys(trackableEvents)
+            .filter(e => e.startsWith(`${currentGroup}.`))
+            .map(e => ({
               label: toTitleCase(e.split('.').join(' ')),
               value: e,
-              default: current.events.includes(e),
-            })))
+              default: currentSubgroup === e,
+            }))
+          : null;
+
+        const currentDetermination = subgrouped.includes(currentGroup) && !currentSubgroup
+          ? null
+          : (currentSubgroup || currentGroup);
+
+        const list = currentDetermination === 'items'
+          ? trackableItems.items
+          : trackableEvents[currentDetermination];
+        const groupOptions = list?.length
+          ? list.map(li => ({
+            label: toTitleCase(li.split('.').join(' ')),
+            value: li,
+            default: current.items.includes(li) || current.events.includes(li),
+          }))
           : [{ label: 'N/A', value: 'na', default: false }];
-        ctx.logger.silly(`groupOptions: ${JSON.stringify(groupOptions)}`);
         return ([
-          new MessageActionRow({
+          // paginator
+          chunks.length > 1 ? new MessageActionRow({
             components: [
               new MessageButton({
                 label: 'Previous',
                 customId: 'previous',
                 style: MessageButtonStyles.SECONDARY,
-                disabled: chunks.length > 0,
+                disabled: chunks.length < 1,
               }),
               new MessageButton({
                 label: 'Next',
                 customId: 'next',
                 style: MessageButtonStyles.SECONDARY,
-                disabled: chunks.length > 0,
+                disabled: chunks.length < 1,
               }),
             ],
-          }),
+          }) : null,
+          // group selection
           new MessageActionRow({
             components: [
               new MessageSelectMenu({
@@ -119,6 +149,19 @@ module.exports = class Settings extends require('../../models/Interaction') {
               }),
             ],
           }),
+          // subgroup selection
+          subgrouped.includes(currentGroup) ? new MessageActionRow({
+            components: [
+              new MessageSelectMenu({
+                minValues: 0,
+                maxValues: 1,
+                customId: 'select_sub_group',
+                placeholder: ctx.i18n`Select Tracking Sub-Group`,
+                options: subgroups,
+              }),
+            ],
+          }) : null,
+          // discrete trackable selection
           new MessageActionRow({
             components: [
               new MessageSelectMenu({
@@ -126,10 +169,11 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 customId: 'select_trackables',
                 placeholder: ctx.i18n`Select Trackables`,
                 options: groupOptions,
-                disabled: !currentGroup,
+                disabled: !currentDetermination,
               }),
             ],
           }),
+          // actions (save, all, reset, cancel, clear)
           new MessageActionRow({
             components: [
               new MessageButton({
@@ -159,7 +203,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
               }),
             ],
           }),
-        ]);
+        ].filter(a => a));
       };
       const message = await interaction.editReply({
         content: chunks[page],
@@ -183,6 +227,14 @@ module.exports = class Settings extends require('../../models/Interaction') {
         switch (selection.customId) {
           case 'select_group':
             [currentGroup] = selection.values;
+            currentSubgroup = null;
+            await message.edit({
+              content: chunks[page],
+              components: createGroupsRow(),
+            });
+            break;
+          case 'select_sub_group':
+            [currentSubgroup] = selection.values;
             await message.edit({
               content: chunks[page],
               components: createGroupsRow(),
@@ -194,7 +246,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
               current.items = [...selection.values];
             } else {
               current.events = current.events
-                .filter(e => !trackableEvents[currentGroup].includes(e));
+                .filter(e => !trackableEvents[currentSubgroup || currentGroup].includes(e));
               current.events.push(...selection.values);
             }
             chunks = chunkerate(current);
@@ -290,7 +342,8 @@ module.exports = class Settings extends require('../../models/Interaction') {
             if (currentGroup === 'items') current.items = trackableItems.items;
             else {
               current.events = Array
-                .from(new Set(current.events.concat(trackableEvents[currentGroup])));
+                .from(new Set(current.events
+                  .concat(trackableEvents[currentSubgroup || currentGroup])));
             }
             chunks = chunkerate(current);
             if (page > chunks.length - 1) page = 0;
@@ -317,6 +370,39 @@ module.exports = class Settings extends require('../../models/Interaction') {
         return null;
       };
       buttonCollector.on('collect', buttonHandler);
+    }
+    if (action === 'custom') {
+      await interaction.deferReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
+      const add = trackablesFromParameters((options.getString('add') || '')
+        .split(',')
+        .map(a => a?.trim())
+        .filter(Boolean));
+      const remove = trackablesFromParameters((options.getString('remove') || '')
+        .split(',')
+        .map(a => a?.trim())
+        .filter(Boolean));
+      const prepend = options.getString('prepend');
+      const channel = options?.getChannel('channel')?.type === 'GUILD_TEXT'
+        ? options.getChannel('channel')
+        : interaction.channel;
+
+      if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events);
+      if (add?.items?.length) await ctx.settings.trackItems(channel, add.items);
+      const addString = `Added ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
+      if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events);
+      if (remove?.items?.length) await ctx.settings.untrackItems(channel, remove.items);
+      const removeString = `Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
+      await interaction.editReply({ content: `${addString}\n${removeString}`, ephemeral: ctx.ephemerate });
+
+      if (prepend && (add.items.length || add.events.length)) {
+        await ctx.settings.addPings(interaction.guild, add, prepend);
+        const pingsString = `Adding \`${
+          Discord.Util.escapeMarkdown(Discord.Util.removeMentions(prepend))
+        }\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
+        await interaction.editReply({
+          content: `${addString}\n${removeString}\n${pingsString}`,
+        });
+      }
     }
   }
 };

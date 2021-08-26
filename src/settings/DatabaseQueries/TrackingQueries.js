@@ -11,7 +11,7 @@ const { Snowflake } = require('discord-api-types/v9');
  * @mixin
  * @mixes Database
  */
-class TrackingQueries {
+module.exports = class TrackingQueries {
   /**
    * Tracking option arrays
    * @typedef {Object} TrackingOptions
@@ -32,10 +32,8 @@ class TrackingQueries {
           on i.channel_id = t.channel_id 
       WHERE i.channel_id = ${channel.id}`;
     await this.query(deleteQuery);
-    if (opts?.events?.length || opts?.items?.length) {
-      await this.trackItems(channel, opts.items);
-      await this.trackEventTypes(channel, opts.events);
-    }
+    if (opts?.events?.length) await this.trackEventTypes(channel, opts.events);
+    if (opts?.items?.length) await this.trackItems(channel, opts.items);
   }
 
   /**
@@ -77,7 +75,7 @@ class TrackingQueries {
   /**
    * Disables notifications for items in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} items The items to untrack
+   * @param {Array<string>} items The items to untrack
    * @returns {Promise}
    */
   async untrackItems(channel, items) {
@@ -193,6 +191,4 @@ class TrackingQueries {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.query(query);
   }
-}
-
-module.exports = TrackingQueries;
+};

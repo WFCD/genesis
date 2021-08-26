@@ -286,7 +286,7 @@ const termToTrackable = (term) => {
 /**
  * Find trackables based on the parameters
  * @param {Array<string>} params List of terms to find trackables for
- * @returns {Object}
+ * @returns {TrackingOptions}
  */
 const trackablesFromParameters = (params) => {
   const trackables = {

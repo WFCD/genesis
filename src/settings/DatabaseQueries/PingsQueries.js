@@ -1,5 +1,7 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const mysql = require('mysql2/promise');
 const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
@@ -51,6 +53,23 @@ class PingsQueries {
   async setPing(guild, itemOrType, text) {
     const query = SQL`INSERT INTO pings VALUES (${guild.id}, ${itemOrType}, ${text})
       ON DUPLICATE KEY UPDATE text = ${text};`;
+    return this.query(query);
+  }
+
+  /**
+   * Mass-sets ping messages for items and events specified in {#opts}
+   * @param {Discord.Guild} guild guild to set them for
+   * @param {TrackingOptions} opts containing events & items
+   * @param {string} text prepend text to apply
+   * @returns {Promise<mysql.Connection.query>}
+   */
+  async addPings(guild, opts, text) {
+    const query = SQL`INSERT IGNORE INTO pings VALUES `;
+    const combined = opts.events.concat(opts.items);
+    combined.forEach((eventOrItem, index) => {
+      query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`)
+        .append(index !== (combined.length - 1) ? ',' : ';');
+    });
     return this.query(query);
   }
 

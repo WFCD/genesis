@@ -1,6 +1,14 @@
 'use strict';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+const Discord = require('discord.js');
+
+const {
+  Constants: {
+    ApplicationCommandOptionTypes: Types, MessageButtonStyles,
+    InteractionTypes, MessageComponentTypes,
+  },
+  MessageActionRow, MessageButton, InteractionCollector,
+} = Discord;
 const dehumanize = require('parse-duration');
 const platformChoices = require('../../resources/platformMap.json');
 const LFGEmbed = require('../../embeds/LFGEmbed');
@@ -10,11 +18,11 @@ module.exports = class LFG extends require('../../models/Interaction') {
 
   static command = {
     name: 'lfg',
-    description: 'Price check an item',
+    description: 'Make an LFG post',
     options: [{
       type: Types.STRING,
       name: 'platform',
-      description: 'Platform to check for data',
+      description: 'Platform to recruit for',
       choices: platformChoices,
       required: true,
     }, {
@@ -85,57 +93,82 @@ module.exports = class LFG extends require('../../models/Interaction') {
     const embed = new LFGEmbed(null, lfg);
     const chn = interaction.guild.channels
       .resolve((ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]]).id);
-    const msg = await chn.send({ embeds: [embed] });
-    if (!msg) {
+
+    const buttons = [
+      new MessageActionRow({
+        components: [
+          new MessageButton({
+            style: MessageButtonStyles.PRIMARY,
+            customId: 'lfg_add',
+            emoji: '🔰',
+            label: 'Join',
+          }),
+          new MessageButton({
+            style: MessageButtonStyles.DANGER,
+            customId: 'lfg_end',
+            emoji: '❌',
+            label: 'End',
+          }),
+        ],
+      }),
+    ];
+
+    const message = await chn.send({
+      embeds: [embed],
+      components: buttons,
+    });
+    if (!message) {
       return interaction.reply({ content: 'Unknown error. Could not create LFG entry.', ephemeral: true });
     }
-    let deleteTimeout = interaction.client.setTimeout(msg.delete, dehumanize(lfg.expiry));
-    msg.react('🔰');
-    msg.react('❌');
+    let deleteTimeout = setTimeout(message.delete, dehumanize(lfg.expiry));
 
-    const collector = msg
-      .createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
-        { time: dehumanize(lfg.expiry), dispose: true });
+    const collector = new InteractionCollector(interaction.client, {
+      interactionType: InteractionTypes.MESSAGE_COMPONENT,
+      componentType: MessageComponentTypes.BUTTON,
+      message,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
 
     collector.on('end', () => {
-      msg.reactions.removeAll();
+      message.reactions.removeAll();
       lfg.expiry = 0;
       lfg.edited = true;
-      msg.edit({ embed: new LFGEmbed(null, lfg) });
+      message.edit({ embed: new LFGEmbed(null, lfg), components: [] });
       clearTimeout(deleteTimeout);
-      deleteTimeout = setTimeout(msg.delete, 10000);
+      deleteTimeout = setTimeout(message.delete, 10000);
     });
 
-    collector.on('collect', (reaction, user) => {
-      if (!lfg.members.includes(user.id) && lfg.members.length <= lfg.membersNeeded) {
-        lfg.members.push(user.id);
+    /**
+     * Button interaction handler
+     * @param {Discord.ButtonInteraction} reaction button to handle
+     * @returns {Promise<void>}
+     */
+    const reactionHandler = async (reaction) => {
+      await reaction.deferUpdate();
+      if (!lfg.members.includes(reaction.user.id) && lfg.members.length <= lfg.membersNeeded) {
+        lfg.members.push(reaction.user.id);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
+        await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
       }
-      if (user.id === interaction.member.id) {
-        if (reaction.emoji.name === '❌') {
+      if (reaction.user.id === interaction.member.id) {
+        if (reaction.customId === 'lfg_end') {
           lfg.expiry = 0;
           lfg.edited = true;
-          msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
-          collector.stop();
-        }
-        try {
-          reaction.users.remove(interaction.member.id);
-        } catch (e) {
-          this.logger.debug(e);
+          await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
+          collector.stop('ended');
         }
       }
-    });
-
-    collector.on('remove', (reaction, user) => {
-      if (lfg.members.includes(user.id) && user.id !== interaction.member.id && reaction.emoji.name === '🔰') {
-        lfg.members.splice(lfg.members.indexOf(user.id), 1);
+      if (lfg.members.includes(reaction.user.id) && reaction.user.id !== interaction.member.id) {
+        lfg.members.splice(lfg.members.indexOf(reaction.user.id), 1);
         lfg.vc = interaction.member.voice;
         lfg.edited = true;
-        msg.edit({ embeds: [new LFGEmbed(null, lfg)] });
+        await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
       }
-    });
+    };
+
+    collector.on('collect', reactionHandler);
     return interaction.reply({ content: 'gl;hf', ephemeral: ctx.ephemerate });
   }
 };

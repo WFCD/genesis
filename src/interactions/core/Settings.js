@@ -16,7 +16,7 @@ const Database = require('../../settings/Database');
 
 const platformChoices = require('../../resources/platformMap.json');
 const localeChoices = require('../../resources/localeMap.json');
-const { createGroupedArray } = require('../../CommonFunctions');
+const { createPagedInteractionCollector } = require('../../CommonFunctions');
 
 const getMentions = (content, guild) => content
   .trim()
@@ -425,18 +425,8 @@ module.exports = class Settings extends require('../../models/Interaction') {
         break;
       case 'get':
         /* eslint-disable no-case-declarations */
-        const pages = (await gather(ctx, interaction.channel));
-        const pageGroups = createGroupedArray(pages, 10);
-        let first = true;
-        for (const pageGroup of pageGroups) {
-          const embeds = pageGroup.map(p => new MessageEmbed(p));
-          // ctx.logger.info(JSON.stringify(embeds));
-          if (first) {
-            interaction.reply({ embeds, ephemeral });
-            first = false;
-          } else return interaction.followUp({ embeds, ephemeral });
-        }
-        return null;
+        const pages = await gather(ctx, interaction.channel);
+        return createPagedInteractionCollector(interaction, pages, ctx);
       case 'diag':
         const embed = new MessageEmbed();
         embed.setTitle(`Diagnostics for Shard ${interaction.guild.shardId + 1}/${interaction.client.ws.shards.size}`);
