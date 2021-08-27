@@ -298,6 +298,16 @@ const gather = async (ctx, channel) => {
   const trackedEvents = constructTypeEmbeds(events);
   checkAndMergeEmbeds(embeds, trackedItems);
   checkAndMergeEmbeds(embeds, trackedEvents);
+
+  const stats = await ctx.settings.getGuildStats(channel.guild);
+  embeds.push(new MessageEmbed({
+    title: ctx.i18n`Most Used Commands`,
+    color: 0x444444,
+    description: stats
+      .filter((s, i) => i < 10)
+      .map(s => `\`${s.id.padEnd(25, ' ')} | ${`${s.count}`.padStart(4, ' ')}\``)
+      .join('\n'),
+  }));
   return embeds;
 };
 

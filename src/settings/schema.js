@@ -190,4 +190,10 @@ module.exports = [
       REFERENCES profiles(id)
       ON DELETE CASCADE
   )`,
+  SQL`CREATE TABLE IF NOT EXISTS command_stats (
+    guild_id VARCHAR(20) NOT NULL,
+    command_id VARCHAR(20) NOT NULL,
+    count INT NOT NULL,
+    PRIMARY KEY (guild_id, command_id)
+  )`,
 ];

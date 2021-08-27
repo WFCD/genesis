@@ -48,6 +48,31 @@ module.exports = class Settings extends require('../../models/Interaction') {
         description: 'Guild Id to leave',
         required: true,
       }],
+    }, {
+      name: 'stats',
+      description: 'Get Stats for a given command across servers',
+      type: Types.SUB_COMMAND,
+      options: [{
+        name: 'command_id',
+        type: Types.STRING,
+        description: 'Command identifier (derived by command:subcommandgroup:subcommand)',
+        required: true,
+      }],
+    }, {
+      name: 'clear',
+      description: 'Clear something from a channel',
+      type: Types.SUB_COMMAND_GROUP,
+      options: [{
+        name: 'webhook',
+        type: Types.SUB_COMMAND,
+        description: 'Clear a webhook in a channel',
+        options: [{
+          name: 'channel',
+          type: Types.STRING,
+          description: 'Channel Id for the channel to clear of webhooks',
+          required: true,
+        }],
+      }],
     }],
   };
 
@@ -98,6 +123,23 @@ module.exports = class Settings extends require('../../models/Interaction') {
           components: [],
         });
         return createConfirmationCollector(interaction, onConfirm, onDeny, ctx);
+      case 'stats':
+        const commandId = interaction.options.getString('command_id');
+        const count = await ctx.settings.getGuildStats(null, commandId, true);
+        return interaction.reply({
+          content: `\`${commandId}\` has been used ${count} times`,
+          ephemeral: ctx.ephemerate,
+        });
+      case 'webhook':
+        const clear = !!interaction.options.getSubcommandGroup(false);
+        if (clear && interaction.client.channels.cache.get(interaction.options.getString('channel'))) {
+          onConfirm = async () => {
+            await ctx.settings.deleteWebhooksForChannel(interaction.options.getString('channel'));
+            return interaction.editReply({ content: 'buhleted', components: [], ephemeral: ctx.ephemerate });
+          };
+          onDeny = async () => interaction.editReply({ content: 'canceled', components: [], ephemeral: ctx.ephemerate });
+          return createConfirmationCollector(interaction, onConfirm, onDeny, ctx);
+        }
       default:
         break;
     }

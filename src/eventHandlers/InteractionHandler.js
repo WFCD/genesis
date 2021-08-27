@@ -17,6 +17,23 @@ const whitelistedGuilds = (process.env.WHITELISTED_GUILDS || '').split(',');
 const ws = new WorldStateClient(require('../Logger'));
 
 /**
+ * Give a command id for a command interaction
+ * @param {CommandInteraction} interaction to get id for
+ * @returns {string} command id!
+ */
+const commandId = (interaction) => {
+  try {
+    return `${interaction.commandName}:${interaction.options.getSubcommandGroup() || ''}:${interaction.options.getSubcommand()}`;
+  } catch (e) {
+    try {
+      return `${interaction.commandName}:${interaction.options.getSubcommand()}`;
+    } catch (er) {
+      return interaction.commandName;
+    }
+  }
+};
+
+/**
  * Describes a handler
  */
 module.exports = class InteractionHandler extends require('../models/BaseEventHandler') {
@@ -209,6 +226,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     ctx.logger = this.logger;
 
     if (interaction instanceof CommandInteraction) {
+      if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
       this.logger.debug(`Running ${interaction.id} for ${this.event}`);
       const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
 

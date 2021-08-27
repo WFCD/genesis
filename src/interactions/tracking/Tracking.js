@@ -11,7 +11,7 @@ const {
 } = Discord;
 const { MessageButton } = require('discord.js');
 const {
-  chunkify, trackableEvents, toTitleCase, trackableItems, trackablesFromParameters,
+  chunkify, trackableEvents, toTitleCase, trackableItems, trackablesFromParameters, emojify,
 } = require('../../CommonFunctions');
 
 /**
@@ -282,6 +282,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
           case 'save':
             await ctx.settings.setTrackables(interaction.channel, current);
             buttonCollector.stop('limit');
+            await this.#generateWebhook(interaction, ctx);
             return message.edit({
               content: chunks[page],
               components: [
@@ -403,6 +404,72 @@ module.exports = class Settings extends require('../../models/Interaction') {
           content: `${addString}\n${removeString}\n${pingsString}`,
         });
       }
+      await this.#generateWebhook(interaction, ctx, channel);
+    }
+  }
+
+  /**
+   * Generate webhook for channel
+   * @param {Discord.CommandInteraction} interaction message containing channel context
+   * @param {CommandContext} ctx to set up everything
+   * @param {Discord.TextChannel} [channel] to set up
+   */
+  static async #generateWebhook (interaction, ctx, channel) {
+    channel = channel || interaction.channel;
+    if (channel.permissionsFor(interaction.client.user).has('MANAGE_WEBHOOKS')) {
+      let webhook;
+      let existingWebhooks;
+      let setupMsg;
+      try {
+        setupMsg = await interaction.followUp({
+          content: 'Setting up webhook...',
+          ephemeral: ctx.ephemerate,
+        });
+        existingWebhooks = (await channel.fetchWebhooks())
+          .filter(w => w.type === 'Incoming'
+            && w?.owner?.id === interaction?.client?.user?.id
+            && !!w.token);
+      } catch (e) {
+        ctx.logger.error(e);
+        await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to get existing.`);
+      }
+
+      if (existingWebhooks.size) {
+        const temp = existingWebhooks.first();
+        webhook = {
+          id: temp.id,
+          token: temp.token,
+          name: ctx.settings.defaults.username,
+          avatar: ctx.settings.defaults.avatar,
+        };
+        await setupMsg.delete();
+      } else {
+        try {
+          webhook = await channel.createWebhook(ctx.settings.defaults.username, {
+            avatar: ctx.settings.defaults.avatar,
+            reason: 'Automated Webhook setup for Notifications',
+          });
+          ctx.logger.error(webhook.url);
+        } catch (e) {
+          ctx.logger.error(e);
+          await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to make new.`);
+        }
+      }
+      if (webhook.url) {
+        try {
+          await interaction.reply(`${emojify('green_tick')} Webhook setup complete.`);
+          await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
+          if (!webhook.avatar.startsWith('http')) webhook.avatar = ctx.settings.defaults.avatar;
+        } catch (e) {
+          this.logger.error(e);
+          await interaction.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to send.`);
+        }
+      } else {
+        ctx.logger.debug(`webhook for ${channel.id} already set up...`);
+      }
+      ctx.settings.setChannelWebhook(channel, webhook);
+    } else {
+      await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }
   }
 };
