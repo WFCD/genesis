@@ -27,8 +27,8 @@ module.exports = class PriceCheck extends require('../../models/Interaction') {
     const platform = options?.get('platform')?.value || ctx.platform || 'pc';
     const query = options?.get('query')?.value;
 
-    interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ ephemeral: ctx.ephemerate });
     const embeds = await ctx.ws.pricecheck(query, { platform });
-    return interaction.editReply({ embeds });
+    return interaction.editReply({ embeds, ephemeral: ctx.ephemerate });
   }
 };

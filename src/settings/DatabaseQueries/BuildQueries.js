@@ -2,24 +2,19 @@
 
 const SQL = require('sql-template-strings');
 
-const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-const makeId = (len = 8) => {
-  const tokens = [];
-  for (let i = 0; i < len; i += 1) {
-    tokens.push(possible.charAt(Math.floor(Math.random() * possible.length)));
-  }
-  return tokens.join('');
-};
+const Build = require('../../models/Build.js');
+const WorldStateClient = require('../../resources/WorldStateClient');
 
 /**
  * Database Mixin for Build queries
  * @mixin
+ * @mixes Database
  */
-class BuildQueries {
+module.exports = class BuildQueries {
   async addNewBuilds(builds) {
     const rows = [];
     builds.forEach((build) => {
-      const buildId = makeId();
+      const buildId = Build.makeId();
       build.id = buildId; // eslint-disable-line no-param-reassign
       rows.push([buildId, build.title, build.body, build.image, build.ownerId, build.isPublic]);
     });
@@ -32,7 +27,7 @@ class BuildQueries {
   }
 
   async addNewBuild(title, body, image, owner) {
-    const buildId = makeId();
+    const buildId = Build.makeId();
     const query = SQL`INSERT INTO builds VALUES (${buildId}, ${title}, ${body}, ${image}, ${owner.id}, '0')
       ON DUPLICATE KEY UPDATE title=${title}, body=${body}, image=${image};`;
     await this.query(query);
@@ -41,47 +36,40 @@ class BuildQueries {
     };
   }
 
+  /**
+   * Get a build by id
+   * @param {string} buildId a build id
+   * @returns {Promise<Build>}
+   */
   async getBuild(buildId) {
     if (buildId) {
       const query = SQL`SELECT * FROM builds WHERE build_id=${buildId};`;
       const [rows] = await this.query(query);
       if (rows && rows[0]) {
         const result = rows[0];
-        return {
-          title: result.title,
-          body: result.body,
-          url: result.image,
-          id: result.build_id,
-          owner: this.bot.client.users.cache.get(result.owner_id) || result.owner_id,
-          ownerId: result.owner_id,
-          isPublic: result.is_public === '1',
-        };
+        if (result.owner_id) {
+          result.owner = this.bot.client.users.cache.get(result.owner_id) || result.owner_id;
+        }
+        return new Build(result, new WorldStateClient(require('../../Logger')));
       }
     }
-    return {
-      id: '',
-      title: 'No Such Build',
-      body: '',
-      url: '',
-      owner: '',
-    };
+    return null;
   }
 
+  /**
+   * Search for builds
+   * @param {string} qString query string
+   * @returns {Promise<SimpleBuild>}
+   */
   async getBuildSearch(qString) {
     if (qString) {
       const wrapped = `%${qString}%`;
       const query = SQL`SELECT * FROM builds WHERE (title like ${wrapped} or body like ${wrapped}) and is_public = '1' ;`;
       const [rows] = await this.query(query);
+      const ws = new WorldStateClient(require('../../Logger'));
+
       if (rows) {
-        return rows.map(result => ({
-          title: result.title,
-          body: result.body,
-          url: result.image,
-          id: result.build_id,
-          owner: this.bot.client.users.cache.get(result.owner_id) || result.owner_id,
-          owner_id: result.owner_id,
-          isPublic: result.is_public === '1',
-        }));
+        return rows.map(result => new Build(result, ws));
       }
     }
     return [];
@@ -92,6 +80,13 @@ class BuildQueries {
     return this.query(query);
   }
 
+  /**
+   * Returns list of builds, by owner if specified
+   * @param {boolean} owner whether or not search should be limited to the requestor
+   * @param {User} author requestor of builds
+   * @param {Array<string>} [buildIds] ids of builds to look up
+   * @returns {Promise<Array<SimpleBuild>>}
+   */
   async getBuilds(owner, author, buildIds) {
     let query = '';
     if (buildIds && buildIds.length) {
@@ -99,15 +94,11 @@ class BuildQueries {
     } else {
       query = SQL`SELECT * FROM builds WHERE owner_id LIKE ${owner ? '%' : author.id};`;
     }
+    const ws = new WorldStateClient(require('../../Logger'));
 
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(build => ({
-        id: build.build_id,
-        owner: this.bot.client.users.cache.get(build.owner_id) || build.owner_id,
-        title: build.title,
-        isPublic: build.is_public === '1',
-      }));
+      return rows.map(result => new Build(result, ws));
     }
     return [];
   }
@@ -136,6 +127,39 @@ class BuildQueries {
     const query = SQL`UPDATE builds SET is_public = ${isPublic} WHERE build_id in (${buildIds})`;
     return this.query(query);
   }
-}
 
-module.exports = BuildQueries;
+  /**
+   * Save a build
+   * @param {Build} build to save
+   * @returns {Promise<mysql.Connection.query>}
+   */
+  async saveBuild(build) {
+    const keys = Object.keys(build).filter(k => k !== 'id');
+    let query;
+    const sqlize = (val) => {
+      if (typeof val === 'undefined') return 'NULL';
+      if (typeof val !== 'string' && !val) return 'NULL';
+      return `'${val}'`;
+    };
+    const populate = (key, index) => {
+      if (build[key]?.uniqueName) query.append(`${key} = '${build[key].uniqueName}'`);
+      else query.append(`${key} = ${sqlize(build[key])}`);
+
+      if (index < keys.length - 1) query.append(', ');
+      else query.append(' ');
+    };
+    if (build.id) {
+      if (!keys.length) {
+        return this.query(`DELETE FROM builds WHERE build_id=${build.id}`);
+      }
+      query = SQL`UPDATE builds SET `;
+      keys.forEach(populate);
+      query.append(SQL` WHERE build_id=${build.id};`);
+    } else { // this means it's new
+      query = SQL`INSERT INTO builds SET `;
+      keys.forEach(populate);
+      query.append(SQL`, build_id = ${Build.makeId()};`);
+    }
+    return this.query(query);
+  }
+};

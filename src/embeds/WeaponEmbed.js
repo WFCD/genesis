@@ -6,12 +6,12 @@ const { emojify } = require('../CommonFunctions.js');
 
 const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
 
-const mapDamage = attacks => attacks.map((a, index) => {
+const mapDamage = attacks => (attacks?.map((a, index) => {
   const damage = Object.entries(a.damage)
     .map(([key, value]) => emojify(`\u2003${key} ${value}`))
     .join('\n');
-  return `**${a.name || `Attack ${index + 1}**`}\n${damage}`;
-})
+  return `**${a.name || `Attack ${index + 1}`}**\n${damage}`;
+}) || [])
   .join('\n');
 
 /**
@@ -38,13 +38,13 @@ class WeaponEmbed extends BaseEmbed {
 
       this.fields.push({
         name: 'Rate',
-        value: `${String((weapon.fireRate).toFixed(0) || '-')} unit\\s`,
+        value: `${String((weapon.fireRate || 0).toFixed(0) || '-')} unit\\s`,
         inline: true,
-      }, {
+      }, ...(weapon.attacks ? [{
         name: 'Damage',
         value: mapDamage(weapon.attacks),
         inline: false,
-      }, {
+      }] : []), {
         name: 'Critical Chance',
         value: `${((weapon.criticalChance) * 100).toFixed(2) || '-'}%`,
         inline: true,

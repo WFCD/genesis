@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = class Runway extends require('./Reddit') {
-  static enabled = false;
+  static enabled = true;
   static subreddit = 'warframerunway'
   static command = {
     name: 'fashion',

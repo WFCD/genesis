@@ -83,7 +83,7 @@ class FrameEmbed extends BaseEmbed {
         },
       ];
 
-      this.fields.push(...frame.abilities.map(ability => ({ name: ability.name, value: `_${ability.description}_` })));
+      this.fields.push(...(frame?.abilities?.map(ability => ({ name: ability.name, value: `_${ability.description}_` })) || []));
       this.fields = this.fields.filter(field => field && field?.value?.length);
     } else {
       this.title = 'Available Warframes';

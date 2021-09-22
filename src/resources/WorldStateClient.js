@@ -1,5 +1,7 @@
 'use strict';
 
+const qEngine = require('json-query');
+
 const fetch = require('./Fetcher');
 const { apiBase } = require('../CommonFunctions');
 
@@ -15,12 +17,42 @@ module.exports = class WorldStateClient {
    */
   #logger;
 
+  static #weapons;
+  static #warframes;
+  static #mods;
+
   /**
    * Create a worldstate client
-   * @param {Logger} logger logger for debugging requests
+   * @param {Logger|console} logger logger for debugging requests
    */
   constructor(logger = console) {
     this.#logger = logger;
+    if (!WorldStateClient.#weapons) {
+      (async function init() {
+        if (!WorldStateClient.#weapons) {
+          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons`);
+          const misc = (await fetch(`${apiBase}/items`))
+            .filter(i => i.uniqueName.includes('OperatorAmplifiers'));
+          WorldStateClient.#weapons.push(...misc);
+        }
+      }());
+    }
+
+    if (!WorldStateClient.#warframes) {
+      (async function init() {
+        if (!WorldStateClient.#warframes) {
+          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes`);
+        }
+      }());
+    }
+
+    if (!WorldStateClient.#mods) {
+      (async function init() {
+        if (!WorldStateClient.#mods) {
+          WorldStateClient.#mods = await fetch(`${apiBase}/mods`);
+        }
+      }());
+    }
   }
 
   /**
@@ -175,5 +207,59 @@ module.exports = class WorldStateClient {
   async relic(tier, name) {
     this.#logger.silly(`fetching ${tier} ${name}`);
     return fetch(`${relicBase}/${toTitleCase(tier)}/${toTitleCase(name)}.json`);
+  }
+
+  /**
+   * Query for a weapon from cached weapon data
+   * @param {string} query weapon name or unique id partial
+   * @returns {Array<Object>}
+   */
+  weapon(query) {
+    this.#logger.silly(`searching weapons for ${query}`);
+    if (query?.length < 2) return [];
+    const results = qEngine(`weapons[* uniqueName=${query} || name~/^(${query})/i]`, {
+      data: { weapons: WorldStateClient.#weapons },
+      allowRegexp: true,
+    })?.value;
+    return Array.isArray(results) ? results.map((r) => {
+      delete r.patchlogs;
+      return r;
+    }) : null;
+  }
+
+  /**
+   * Query for a warframe from cached warframe data
+   * @param {string} query warframes name or unique id partial
+   * @returns {Array<Object>}
+   */
+  warframe(query) {
+    this.#logger.silly(`searching warframes for ${query}`);
+    if (query?.length < 2) return [];
+    const results = qEngine(`warframes[* name~/^(${query})/i || uniqueName~/^(${query})/i]`, {
+      data: { warframes: WorldStateClient.#warframes },
+      allowRegexp: true,
+    })?.value;
+    return Array.isArray(results) ? results.map((r) => {
+      delete r.patchlogs;
+      return r;
+    }) : null;
+  }
+
+  /**
+   * Query for a mods from cached warframe data
+   * @param {string} query mods name or unique id partial
+   * @returns {Array<Object>}
+   */
+  mod(query) {
+    this.#logger.silly(`searching mods for ${query}`);
+    if (query?.length < 2) return [];
+    const results = qEngine(`mods[* name~/^(${query})/i || uniqueName~/^(${query})/i]`, {
+      data: { mods: WorldStateClient.#mods },
+      allowRegexp: true,
+    })?.value;
+    return Array.isArray(results) ? results.map((r) => {
+      delete r.patchlogs;
+      return r;
+    }) : null;
   }
 };

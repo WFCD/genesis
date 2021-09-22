@@ -196,4 +196,19 @@ module.exports = [
     count INT NOT NULL,
     PRIMARY KEY (guild_id, command_id)
   )`,
+  SQL`ALTER TABLE builds
+    ADD COLUMN IF NOT EXISTS (
+      warframe TEXT DEFAULT NULL,
+      primus TEXT DEFAULT NULL,
+      secondary TEXT DEFAULT NULL,
+      melee TEXT DEFAULT NULL,
+      archwing TEXT DEFAULT NULL,
+      archgun TEXT DEFAULT NULL,
+      archmelee TEXT DEFAULT NULL,
+      focus TEXT DEFAULT NULL,
+      prism TEXT DEFAULT NULL,
+      necramech TEXT DEFAULT NULL,
+      mods  TEXT DEFAULT NULL,
+      heavy TEXT DEFAULT NULL
+    );`,
 ];
