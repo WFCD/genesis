@@ -1,7 +1,7 @@
 'use strict';
 
 const Discord = require('discord.js');
-const { games } = require('../../CommonFunctions.js');
+const { games, createGroupedArray } = require('../../CommonFunctions.js');
 
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 const BuildEmbed = require('../../embeds/BuildEmbed');
@@ -11,6 +11,10 @@ const WeaponEmbed = require('../../embeds/WeaponEmbed');
 const Build = require('../../models/Build.js');
 
 const buildParts = [{
+  name: 'title',
+  description: 'What do you want to call it?',
+  required: true,
+}, {
   name: 'warframe',
   description: 'Which Warframe?',
   required: true,
@@ -72,6 +76,10 @@ module.exports = class Builds extends require('../../models/Interaction') {
     name: 'builds',
     description: 'Get various pieces of information',
     options: [{
+      name: 'list',
+      type: Types.SUB_COMMAND,
+      description: 'Get all of my builds',
+    }, {
       name: 'get',
       type: Types.SUB_COMMAND,
       description: 'Search builds or get a specific id.',
@@ -188,6 +196,38 @@ module.exports = class Builds extends require('../../models/Interaction') {
     params.owner = interaction.user;
     let build = await ctx.settings.getBuild(query || id);
     switch (action) {
+      case 'list':
+        const builds = await ctx.settings.getBuilds(false, interaction.user);
+        if (builds.length > 0) {
+          const buildGroups = createGroupedArray(builds, 10);
+          let titleLen = (builds.length ? builds.map(result => result.title.trim())
+            .reduce((a, b) => (a.length > b.length ? a : b)) : '').length;
+          titleLen = titleLen < 10 ? 10 : titleLen;
+
+          const tokens = buildGroups.map(buildGroup => ({
+            name: '\u200B',
+            value: buildGroup
+              .map(member => `\`${member.id} | ${(member?.title || '').padEnd(titleLen, '\u2003')} | Added by ${typeof member.owner === 'object' ? member.owner.tag : member.owner}\``).join('\n'),
+          }));
+
+          const tokenGroups = createGroupedArray(tokens, 5);
+          const pages = [];
+          tokenGroups.forEach((tokenGroup) => {
+            const fields = tokenGroup;
+            fields[0].value = `\`${ctx.i18n`Build ID`} | ${ctx.i18n`Title`.padEnd(titleLen, '\u2003')} | ${ctx.i18n`Owner`}\`\n${tokenGroup[0].value}`;
+            pages.push({
+              color: 0xcda2a3,
+              fields,
+            });
+          });
+          // setup pages
+          return createPagedInteractionCollector(interaction, pages, ctx);
+        }
+        return interaction.reply({
+          embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for user` }],
+          ephemeral: ctx.ephemerate,
+        });
+
       case 'get':
         if (build) {
           if (build.body) {
