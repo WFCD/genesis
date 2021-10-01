@@ -138,6 +138,7 @@ module.exports = class BuildQueries {
     let query;
     const sqlize = (val) => {
       if (typeof val === 'undefined') return 'NULL';
+      if (Array.isArray(val)) return `'${JSON.stringify(val)}'`;
       if (typeof val !== 'string' && !val) return 'NULL';
       return `'${val}'`;
     };

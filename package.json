@@ -147,7 +147,8 @@
       "lines-between-class-members": "off",
       "no-fallthrough": "off",
       "no-case-declarations": "off",
-      "default-case": "off"
+      "default-case": "off",
+      "max-classes-per-file": "off"
     }
   },
   "babel": {

@@ -262,4 +262,14 @@ module.exports = class WorldStateClient {
       return r;
     }) : null;
   }
+
+  /**
+   * Get mod types based on list of types
+   * @param {Array<string>} types to filter on
+   * @returns {Array<ItemResolvable>}
+   */
+  modsByType(types) {
+    this.#logger.silly(`filtering mods in ${JSON.stringify(types)}`);
+    return WorldStateClient.#mods.filter(m => types.includes(m.type));
+  }
 };

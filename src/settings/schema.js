@@ -208,6 +208,8 @@ module.exports = [
       focus TEXT DEFAULT NULL,
       prism TEXT DEFAULT NULL,
       necramech TEXT DEFAULT NULL,
+      necramelee TEXT DEFAULT NULL,
+      necragun TEXT DEFAULT NULL,
       mods  TEXT DEFAULT NULL,
       heavy TEXT DEFAULT NULL
     );`,

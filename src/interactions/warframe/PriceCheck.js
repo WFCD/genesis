@@ -7,7 +7,7 @@ module.exports = class PriceCheck extends require('../../models/Interaction') {
   static enabled = true;
 
   static command = {
-    name: 'pricecheck',
+    name: 'pc',
     description: 'Price check an item',
     options: [{
       type: Types.STRING,

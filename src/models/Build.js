@@ -24,16 +24,80 @@
  * @property {string} [heavy] heavy weapon unique id
  * @property {string} [archwing] archwing unique id
  * @property {string} [archgun] archgun unique id
+ * @property {string} [archmelee] archmelee unique id
  * @property {string} [focus] operator focus school name
  * @property {string} [prism] amp prism id
  * @property {string} [necramech] necramech unique Id
+ * @property {string} [necragun] necragun unique Id
+ * @property {string} [necramelee] necramelee unique Id
  * @property {Array<string>} [mods] List of mod Ids
  * @property {User} [owner] User that owns (created) this build
+ */
+
+/**
+ * Build Resolvable
+ * @typedef {SimpleBuild|Build|FullBuild} BuildResolvable
  */
 
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 const typecheck = val => (typeof val === 'undefined' ? null : val);
+
+/**
+ * Build Mod
+ * @typedef {Object} BuildMod
+ * @property {string} target one of the build parts
+ * @property {Array<ItemResolvable>} mods for that build part
+ */
+class Mod {
+  /**
+   * Mod Target
+   * @type {string}
+   */
+  #target;
+  /**
+   * List of mod objects
+   * @type Array<ItemResolvable>
+   */
+  #mods;
+
+  /**
+   * @type {WorldStateClient}
+   */
+  #ws;
+
+  constructor({ target, mods }, ws) {
+    this.#target = target;
+    this.#mods = mods?.flat()?.map((mod) => {
+      if (mod.uniqueName) return mod;
+      return ws.mod(mod);
+    });
+    this.#ws = ws;
+  }
+
+  serialize() {
+    return {
+      target: this.#target,
+      mods: this.#mods.flat().map(mod => mod.uniqueName).filter(m => m),
+    };
+  }
+
+  /**
+   * Get the list of mods
+   * @returns {Array<BuildResolvable>}
+   */
+  get mods() {
+    return this.#mods;
+  }
+
+  /**
+   * Target
+   * @returns {string}
+   */
+  get target() {
+    return this.#target;
+  }
+}
 
 /**
  * Build object
@@ -96,6 +160,10 @@ module.exports = class Build {
    */
   #archgun;
   /**
+   * @type {ItemResolvable}
+   */
+  #archmelee;
+  /**
    * @type {string}
    */
   #focus;
@@ -107,6 +175,8 @@ module.exports = class Build {
    * @type {ItemResolvable}
    */
   #necramech;
+  #necramelee;
+  #necragun;
   #mods;
 
   get title() {
@@ -161,6 +231,10 @@ module.exports = class Build {
     this.#primary = this.#resolve(value, 'weapon');
   }
 
+  get primus() {
+    return this.#primary;
+  }
+
   get secondary() {
     return this.#secondary;
   }
@@ -201,6 +275,14 @@ module.exports = class Build {
     this.#archgun = this.#resolve(value, 'weapon');
   }
 
+  get archmelee() {
+    return this.#archmelee;
+  }
+
+  set archmelee(value) {
+    this.#archmelee = this.#resolve(value, 'weapon');
+  }
+
   get focus() {
     return this.#focus;
   }
@@ -223,6 +305,22 @@ module.exports = class Build {
 
   set necramech(value) {
     this.#necramech = this.#resolve(value, 'warframe');
+  }
+
+  get necragun() {
+    return this.#necragun;
+  }
+
+  set necragun(value) {
+    this.#necragun = this.#necragun(value, 'weapon');
+  }
+
+  get necramelee() {
+    return this.#necramelee;
+  }
+
+  set necramelee(value) {
+    this.#necramelee = this.#resolve(value, 'weapon');
   }
 
   get mods() {
@@ -264,11 +362,6 @@ module.exports = class Build {
   }
 
   /**
-   * Build Resolvable
-   * @typedef {SimpleBuild|Build|FullBuild} BuildResolvable
-   */
-
-  /**
    * Construct a build from data
    * @param {BuildResolvable} data build data
    * @param {WorldStateClient} ws worldstate client
@@ -289,9 +382,12 @@ module.exports = class Build {
     this.#heavy = this.#resolve(data.heavy, 'weapon');
     this.#archwing = this.#resolve(data.archwing, 'warframe');
     this.#archgun = this.#resolve(data.archgun, 'weapon');
+    this.#archmelee = this.#resolve(data.archmelee, 'weapon');
     this.#focus = data.focus;
     this.#prism = this.#resolve(data.prism, 'weapon');
     this.#necramech = this.#resolve(data.necramech, 'warframe');
+    this.#necragun = this.#resolve(data.necragun, 'weapon');
+    this.#necramelee = this.#resolve(data.necramelee, 'weapon');
     this.#mods = this.#resolve(data.mods, 'mods');
   }
 
@@ -317,9 +413,21 @@ module.exports = class Build {
         return this.#ws.warframe(item)?.[0];
       case 'mods':
         if (Array.isArray(item)) {
-          return item.map(m => this.#resolve(m, 'mods'));
+          return item.map((m) => {
+            if (m.target) {
+              return new Mod({
+                target: m.target,
+                mods: m.mods?.map(sub => (sub.uniqueName ? sub : this.#ws.mod(sub))) || [],
+              }, this.#ws);
+            }
+            return this.#ws.mod(m.mods);
+          });
         }
-        return this.#ws.mod(item);
+        try {
+          return this.#resolve(JSON.parse(item), 'mods');
+        } catch (ignored) {
+          return this.#ws.mod(item);
+        }
     }
     return null;
   }
@@ -336,17 +444,18 @@ module.exports = class Build {
       image: typecheck(this.#url) || 'https://cdn.warframestat.us/genesis/img/outage.png',
       owner_id: this.#owner?.id || this.ownerId || this.owner_id,
       is_public: (typeof this.#isPublic === 'undefined' ? false : this.#isPublic) ? '1' : '0',
-      warframe: this.#warframe?.uniqueName || this.#warframe,
-      primus: this.#primary?.uniqueName || this.#primary,
-      secondary: this.#secondary?.uniqueName || this.#secondary,
-      melee: this.#melee?.uniqueName || this.#melee,
-      heavy: this.#heavy?.uniqueName || this.#heavy,
-      archwing: this.#archwing?.uniqueName || this.#archwing,
-      archgun: this.#archgun?.uniqueName || this.#archgun,
+      warframe: typecheck(this.#warframe?.uniqueName || this.#warframe),
+      primus: typecheck(this.#primary?.uniqueName || this.#primary),
+      secondary: typecheck(this.#secondary?.uniqueName || this.#secondary),
+      melee: typecheck(this.#melee?.uniqueName || this.#melee),
+      heavy: typecheck(this.#heavy?.uniqueName || this.#heavy),
+      archwing: typecheck(this.#archwing?.uniqueName || this.#archwing),
+      archgun: typecheck(this.#archgun?.uniqueName || this.#archgun),
       focus: typecheck(this.#focus),
       prism: typecheck(this.#prism?.uniqueName || this.#prism),
       necramech: typecheck(this.#necramech?.uniqueName || this.#necramech),
-      mods: this.#mods?.map(m => m.name) || null,
+      necramelee: typecheck(this.#necramelee?.uniqueName || this.#necramelee),
+      mods: this.#mods?.map(m => m.serialize()) || [],
     };
   }
 };
