@@ -365,7 +365,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
             if (!buildPart) return undefined;
             const modList = mods[k];
             const modStr = modList.map(m => m.name || ctx.ws.mod(m)?.[0]?.name).join('\n\t');
-            const warn = modList.length > buildPart.max ? ' :warning' : '';
+            const warn = modList.length > buildPart.max ? ' :warning:' : '';
             return `**${buildPart.display}**: ${build[k]?.name || ''}${warn}\n\t${modStr}`;
           }
           return undefined;
