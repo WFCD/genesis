@@ -108,12 +108,11 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
       }
 
       const vs = vallisState
-        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • `
+        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄️' : '🔥'} • `
         : '';
       const cs = cetusState
-        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'}`
+        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀️'}`
         : '';
-      // const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
       return `${vs}${cs}`;
     }
     return base;
