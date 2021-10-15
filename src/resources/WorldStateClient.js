@@ -272,4 +272,14 @@ module.exports = class WorldStateClient {
     this.#logger.silly(`filtering mods in ${JSON.stringify(types)}`);
     return WorldStateClient.#mods.filter(m => types.includes(m.type));
   }
+
+  warframesByType(type) {
+    this.#logger.silly(`filtering warframes in ${JSON.stringify(type)}`);
+    return WorldStateClient.#warframes.filter(m => m.type === type);
+  }
+
+  weaponsByType(type) {
+    this.#logger.silly(`filtering weapons in ${JSON.stringify(type)}`);
+    return WorldStateClient.#weapons.filter(m => m.type === type);
+  }
 };
