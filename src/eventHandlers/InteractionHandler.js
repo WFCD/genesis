@@ -12,7 +12,7 @@ const WorldStateClient = require('../resources/WorldStateClient');
 // eslint-disable-next-line no-unused-vars
 const { CommandInteraction, ButtonInteraction } = Discord;
 const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
-const whitelistedGuilds = (process.env.WHITELISTED_GUILDS || '').split(',');
+const whitelistedGuilds = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
 
 const ws = new WorldStateClient(require('../Logger'));
 
@@ -125,7 +125,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       });
     });
     const su = guildCommands.find(c => c.name === 'su');
-    if (!this.client.application.owner.ownerId) {
+    if (!this.client.application.owner.ownerId && su) {
       data.fullPermissions.push({
         id: su.id,
         permissions: [{
@@ -134,8 +134,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
           permission: true,
         }],
       });
-    } else {
-      this.client.application.owner.members.forEach((member) => {
+    } else if (this.client?.application?.owner.members) {
+      this?.client?.application?.owner?.members.forEach((member) => {
         data.fullPermissions.push({
           id: su.id,
           permissions: [{
