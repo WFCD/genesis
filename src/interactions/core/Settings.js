@@ -317,7 +317,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   static command = {
     name: 'settings',
     description: 'Interact with Settings',
-    defaultPermission: false,
+    // defaultPermission: false,
     options: [{
       type: Types.SUB_COMMAND_GROUP,
       name: 'set',

@@ -23,7 +23,7 @@ module.exports = class Templates extends require('../../models/Interaction') {
   static command = {
     name: 'templates',
     description: 'Manage channel templates',
-    defaultPermission: false,
+    // defaultPermission: false,
     options: [{
       name: 'add',
       type: Types.SUB_COMMAND,

@@ -33,7 +33,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   static command = {
     name: 'tracking',
     description: 'Configure tracking options',
-    defaultPermission: false,
+    // defaultPermission: false,
     options: [{
       name: 'manage',
       type: Types.SUB_COMMAND,

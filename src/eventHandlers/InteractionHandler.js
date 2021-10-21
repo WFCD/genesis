@@ -89,10 +89,26 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @returns {Promise<void>}
    */
   async #setGuildPerms (guild, rolesOverride) {
-    const guildCommands = Array.from((await guild.commands.fetch())
-      .filter(c => !c.defaultPermission)
-      .values());
+    const rawCommandsToSet = this.loadedCommands.filter((command) => {
+      const includeIfSu = command.name === 'su' ? guild.id === (process.env?.CONTROL_GUILD_ID) : true;
+      const isElevated = command.name !== 'su' && !command.command.defaultPermission;
+      return includeIfSu || isElevated;
+    });
+
+    // at some point append custom commands as interactions
+    await guild.commands.set(rawCommandsToSet.map(cmd => cmd.command));
+
+    const guildCommands = (await guild.commands.fetch()).filter(c => !c.defaultPermission);
     const owner = guild.ownerId;
+    rolesOverride = rolesOverride || guild.roles.cache.every(role => role.permissions
+      .has(
+        [
+          Permissions.MANAGE_GUILD,
+          Permissions.ADMINISTRATOR,
+          Permissions.MANAGE_CHANNELS,
+          Permissions.MANAGE_ROLES,
+        ],
+      ));
     const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
       .split(',')
       .filter(s => s.length);
@@ -186,7 +202,10 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @returns {Promise<void>}
    */
   static async loadCommands(commands, loadedFiles, logger) {
-    const cmds = loadedFiles.filter(cmd => cmd.enabled).map(cmd => cmd.command);
+    const cmds = loadedFiles.filter(cmd => cmd.enabled && !cmd.ownerOnly).map((cmd) => {
+      cmd.command.defaultPermission = true;
+      return cmd.command;
+    });
     // logger.error(JSON.stringify(cmds));
     if (whitelistedGuilds.length) {
       for (const gid of whitelistedGuilds) {
@@ -197,6 +216,14 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         }
       }
     } else {
+      await commands.client.guilds.fetch();
+      commands.client.guilds.cache.each(async (guild) => {
+        const existing = await guild.commands.fetch();
+        for (/** @type {Discord.ApplicationCommand} */ const [, command] of existing) {
+          logger.silly(`deleting... ${command.id} | ${command.guildId} | ${command.name}`);
+          await command.delete();
+        }
+      });
       await commands.set(cmds);
     }
   }
@@ -208,7 +235,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     );
     await InteractionHandler
       .loadCommands(this.client?.application?.commands, this.loadedCommands, this.logger);
-    await this.initPermissions();
+    // await this.initPermissions();
     this.ready = true;
   }
 
@@ -228,6 +255,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     if (interaction instanceof CommandInteraction) {
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
       this.logger.debug(`Running ${interaction.id} for ${this.event}`);
+
       const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
 
       const noAccess = (match?.elevated

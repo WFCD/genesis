@@ -26,7 +26,7 @@ module.exports = class Ping extends require('../../models/Interaction') {
   static command = {
     name: 'ping',
     description: 'ping some stuff',
-    defaultPermission: false,
+    // defaultPermission: false,
   };
 
   static async commandHandler(interaction, ctx) {
