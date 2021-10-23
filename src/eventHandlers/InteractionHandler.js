@@ -8,6 +8,7 @@ const Discord = require('discord.js');
 
 const Interaction = require('../models/Interaction');
 const WorldStateClient = require('../resources/WorldStateClient');
+const CustomInteraction = require('../models/CustomInteraction');
 
 // eslint-disable-next-line no-unused-vars
 const { CommandInteraction, ButtonInteraction } = Discord;
@@ -38,6 +39,10 @@ const commandId = (interaction) => {
  */
 module.exports = class InteractionHandler extends require('../models/BaseEventHandler') {
   static deferred = true;
+  /** @type {Array<Interaction>} */
+  #loadedCommands;
+  /** @type {Array<Interaction>} */
+  #customCommands;
 
   /**
    * Base class for bot commands
@@ -45,7 +50,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    */
   constructor(bot) {
     super(bot, 'handlers.interactions', Events.INTERACTION_CREATE);
-    this.loadedCommands = [];
+    this.#loadedCommands = [];
+    this.#customCommands = [];
     this.ready = false;
     this.init();
   }
@@ -89,7 +95,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @returns {Promise<void>}
    */
   async #setGuildPerms (guild, rolesOverride) {
-    const rawCommandsToSet = this.loadedCommands.filter((command) => {
+    const rawCommandsToSet = this.#loadedCommands.filter((command) => {
       const includeIfSu = command.name === 'su' ? guild.id === (process.env?.CONTROL_GUILD_ID) : true;
       const isElevated = command.name !== 'su' && !command.command.defaultPermission;
       return includeIfSu || isElevated;
@@ -228,13 +234,44 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     }
   }
 
+  /**
+   * Load custom interactions
+   * @param {Discord.Snowflake} [guildId] guildId
+   * @returns {Promise<void>}
+   */
+  async loadCustomCommands(guildId) {
+    const rawCustomCommands = await this.settings.getRawCustomCommands(guildId);
+    if (guildId) this.#customCommands = this.#customCommands.filter(cc => cc.guildId !== guildId);
+    const added = rawCustomCommands.map(raw => CustomInteraction(raw));
+    this.#customCommands.push(...added);
+    if (guildId) {
+      const guild = await this.client.guilds.fetch(guildId);
+      await guild.commands.set(added.map(cc => cc.command));
+    } else {
+      const grouped = {};
+      added.forEach((ncc) => {
+        if (grouped[ncc.guildId]) grouped[ncc.guildId].push(ncc.command);
+        else grouped[ncc.guildId] = [ncc.command];
+      });
+      for (const gid of Object.keys(grouped)) {
+        if (!gid) continue;
+        const guild = await this.client.guilds.fetch(gid);
+        const guildCCs = grouped[gid];
+        guildCCs.length = 50;
+        await guild.commands.set(guildCCs.filter(c => c));
+      }
+    }
+  }
+
   async init() {
-    this.logger.debug('Initing InteractionHandler');
-    this.loadedCommands = await InteractionHandler.loadFiles(
-      this.loadedCommands, this.logger,
+    this.logger.debug('Initializing InteractionHandler');
+    this.#loadedCommands = await InteractionHandler.loadFiles(
+      this.#loadedCommands, this.logger,
     );
     await InteractionHandler
-      .loadCommands(this.client?.application?.commands, this.loadedCommands, this.logger);
+      .loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
+    // load custom commands
+    await this.loadCustomCommands();
     // await this.initPermissions();
     this.ready = true;
   }
@@ -242,32 +279,38 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
   /**
    * Handle dat interaction!
    * @param {CommandInteraction|ButtonInteraction} interaction interaction that will be handled
+   * @returns {Promise<Discord.Message>|void}
    */
   async execute(interaction) {
     if (!this.ready) return;
 
-    const ctx = await this.settings.getCommandContext(interaction.channel, interaction.user);
-    ctx.settings = this.settings;
-    ctx.ws = ws;
-    ctx.handler = this;
-    ctx.logger = this.logger;
-
     if (interaction instanceof CommandInteraction) {
-      if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
       this.logger.debug(`Running ${interaction.id} for ${this.event}`);
 
-      const match = this.loadedCommands.find(c => c.command.name === interaction.commandName);
+      const match = this.#loadedCommands.find(c => c.command.name === interaction.commandName);
+      const customMatch = this.#customCommands
+        .find(c => c?.command?.name === interaction.commandName
+            && c?.guildId === interaction.guild.id);
 
       const noAccess = (match?.elevated
               && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))
           || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
 
       if (noAccess) {
-        await interaction.deferReply({ ephemeral: true });
-        await interaction.deleteReply();
+        // eslint-disable-next-line consistent-return
+        return interaction.reply({ content: 'No Access', ephemeral: true });
       }
 
-      await match?.commandHandler?.(interaction, ctx);
+      const ctx = await this.settings.getCommandContext(interaction.channel, interaction.user);
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
+      // eslint-disable-next-line no-nested-ternary,consistent-return
+      return match
+        ? match?.commandHandler?.(interaction, ctx)
+        : (customMatch ? customMatch?.commandHandler?.(interaction, ctx) : null);
     }
   }
 };

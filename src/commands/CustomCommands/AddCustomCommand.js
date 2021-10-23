@@ -27,7 +27,9 @@ class AddCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    await this.settings.addCustomCommand(message, params[1], encodeURIComponent(params[2]));
+    await this.settings.addCustomCommand(
+      message.guild, params[1], encodeURIComponent(params[2]), message.author.id,
+    );
     await this.commandManager.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

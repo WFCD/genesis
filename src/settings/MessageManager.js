@@ -191,7 +191,7 @@ class MessageManager {
     // eslint-disable-next-line no-param-reassign
     embeds = Array.isArray(embeds) ? embeds : [embeds];
     if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
-      const client = new WebhookClient(ctx.webhook.id, ctx.webhook.token);
+      const client = new WebhookClient({ id: ctx.webhook.id, token: ctx.webhook.token });
       const opts = {
         avatarURL: ctx?.webhook?.avatar,
         username: ctx?.webhook?.name,

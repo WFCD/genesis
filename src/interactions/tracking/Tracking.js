@@ -423,7 +423,6 @@ module.exports = class Settings extends require('../../models/Interaction') {
       try {
         setupMsg = await interaction.followUp({
           content: 'Setting up webhook...',
-          ephemeral: ctx.ephemerate,
         });
         existingWebhooks = (await channel.fetchWebhooks())
           .filter(w => w.type === 'Incoming'
@@ -442,7 +441,11 @@ module.exports = class Settings extends require('../../models/Interaction') {
           name: ctx.settings.defaults.username,
           avatar: ctx.settings.defaults.avatar,
         };
-        await setupMsg.delete();
+        try {
+          await setupMsg.delete();
+        } catch (e) {
+          ctx.logger.error(e);
+        }
       } else {
         try {
           webhook = await channel.createWebhook(ctx.settings.defaults.username, {
@@ -461,7 +464,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
           await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
           if (!webhook.avatar.startsWith('http')) webhook.avatar = ctx.settings.defaults.avatar;
         } catch (e) {
-          this.logger.error(e);
+          ctx.logger.error(e);
           await interaction.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to send.`);
         }
       } else {
