@@ -4,33 +4,30 @@
   "description": "A Warframe bot for your Discord server or clan :star:",
   "main": "main.js",
   "scripts": {
-    "build-docs": "node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -c .github/docs/jsdoc.conf -R README.md -r main.js src/. -d docs",
-    "build": "docker build . -t genesis",
-    "lint": "npx eslint main.js src/",
-    "lint:fix": "npx eslint main.js src/ --fix",
-    "logs": "pm2 logs genesis",
-    "logs:worker": "pm2 logs /worker.*/",
-    "test": "npx eslint main.js src/",
-    "restart": "pm2 delete genesis && npm start && npm run logs",
+    "lint": "eslint main.js src/",
+    "lint:fix": "eslint main.js src/ --fix",
+    "test": "npm run lint",
     "setup": "npm i",
-    "start": "pm2 start genesis.json",
+    "build": "docker build . -t genesis",
+    "restart": "pm2 delete genesis && npm start && npm run logs",
+    "start": "pm2 start genesis.json --only genesis",
     "start:logs": "npm start && npm run logs",
     "start:worker": "pm2 start worker.json",
     "start:logs:worker": "npm run start:worker && npm run logs:worker",
     "stop": "pm2 delete genesis",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
-    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start",
-    "snyk-protect": "npx -p snyk snyk protect",
-    "prepare": "npm run snyk-protect"
+    "logs": "pm2 logs genesis",
+    "logs:worker": "pm2 logs /worker.*/",
+    "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/wfcd/genesis.git"
+    "url": "https://github.com/wfcd/genesis.git"
   },
   "bugs": {
-    "url": "http://github.com/wfcd/genesis/issues"
+    "url": "https://github.com/wfcd/genesis/issues"
   },
-  "homepage": "http://genesis.warframestat.us",
+  "homepage": "https://genesis.warframestat.us",
   "keywords": [
     "warframe",
     "genesis",
@@ -42,6 +39,7 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "@sentry/node": "^5.30.0",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
@@ -49,9 +47,9 @@
     "colors": "^1.4.0",
     "cron": "^1.8.2",
     "decache": "^4.6.0",
+    "discord-api-types": "^0.22.0",
     "discord-giveaways": "^3.2.3",
-    "discord.js": "^12.5.3",
-    "erlpack": "github:discordapp/erlpack",
+    "discord.js": "^13.2.0",
     "flat-cache": "^3.0.4",
     "json-query": "^2.2.2",
     "moment": "^2.29.1",
@@ -67,7 +65,10 @@
     "topgg-autoposter": "^1.1.10",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.5",
-    "warframe-name-generator": "^1.0.2",
+    "warframe-name-generator": "^1.0.2"
+  },
+  "optionalDependencies": {
+    "erlpack": "github:discord/erlpack",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
@@ -83,9 +84,8 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=12.16.1"
+    "node": ">=16.6.2"
   },
-  "snyk": true,
   "eslintIgnore": [
     "commands.json",
     "src/resources/*.json"
@@ -144,7 +144,11 @@
       "global-require": 0,
       "no-param-reassign": "off",
       "no-continue": "off",
-      "lines-between-class-members": "off"
+      "lines-between-class-members": "off",
+      "no-fallthrough": "off",
+      "no-case-declarations": "off",
+      "default-case": "off",
+      "max-classes-per-file": "off"
     }
   },
   "babel": {

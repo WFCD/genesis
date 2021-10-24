@@ -14,14 +14,8 @@ class AddTemplateChannel extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
-  async run(message) {
-    const templateIds = await this.settings.getTemplates([message.guild]);
+  async run(message, ctx) {
+    const templateIds = await ctx.settings.getTemplates([message.guild]);
     const templates = [];
     templateIds.forEach((templateId) => {
       if (message.guild.channels.cache.has(templateId)) {
@@ -32,10 +26,12 @@ class AddTemplateChannel extends Command {
     const longestName = templates.length ? templates.map(template => template.name).reduce((a, b) => (a.length > b.length ? a : b)) : '';
     embed.description = `\`${'Template'.padEnd(longestName.length, '\u2003')} | ${'# ch'.padStart(5, '\u2003')} | # Empty\`\n`;
     embed.description += (await Promise.all(templates.map(async (template) => {
-      const instancesRes = await this.settings.getInstances(template);
+      const instancesRes = await ctx.settings.getInstances(template);
       return `\`${template.name.padEnd(longestName.length, '\u2003')} | ${String(instancesRes.instances.length).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
     }))).join('\n');
-    this.messageManager.embed(message, embed, true, true);
+    await message.reply({
+      embeds: [embed],
+    });
     return this.messageManager.statuses.SUCCESS;
   }
 }

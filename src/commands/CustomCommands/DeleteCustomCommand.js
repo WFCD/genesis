@@ -22,7 +22,7 @@ class DeleteCustomCommand extends Command {
       }, true, false);
       return this.messageManager.statuses.FAILURE;
     }
-    await this.settings.deleteCustomCommand(message, params[1]);
+    await this.settings.deleteCustomCommand(message.guild, params[1]);
     await this.commandManager.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
     return this.messageManager.statuses.SUCCESS;

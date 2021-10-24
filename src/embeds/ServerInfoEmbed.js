@@ -1,13 +1,32 @@
 'use strict';
 
-const BaseEmbed = require('./BaseEmbed.js');
+const verifications = {
+  NONE: {
+    color: 0x747f8d,
+    msg: 'None',
+  },
+  LOW: {
+    color: 0x43b581,
+    msg: '**Low**\n_Must have a verified email on their Discord Account_',
+  },
+  MEDIUM: {
+    color: 0xfaa61a,
+    msg: '**Medium**\n_Must also be registered on Discord for longer than 5 minutes_',
+  },
+  HIGH: {
+    color: 0xf57731,
+    msg: '**(╯°□°）╯︵ ┻━┻**\n_Must also be a member of this server for longer than 10 minutes._',
+  },
+  VERY_HIGH: {
+    color: 0xf04747,
+    msg: '**Insane: ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻**\n_Must have a verified phone on their Discord Account._',
+  },
+};
 
-const verificationLevels = ['None', 'Low\nMust have a verified email on their Discord Account', 'Medium\nMust also be registered on Discord for longer than 5 minutes', '(╯°□°）╯︵ ┻━┻\nMust also be a member of this server for longer than 10 minutes.', 'Insane: ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻\nMust have a verified phone on their Discord Account.'];
-const verificationColors = [0x747f8d, 0x43b581, 0xfaa61a, 0xf57731, 0xf04747];
 /**
  * Generates daily deal embeds
  */
-class ServerInfoEmbed extends BaseEmbed {
+class ServerInfoEmbed extends require('./BaseEmbed.js') {
   /**
    * @param {Genesis} bot - An instance of Genesis
    * @param {Guild} guild - The sales to be displayed as featured or popular
@@ -16,8 +35,7 @@ class ServerInfoEmbed extends BaseEmbed {
     super();
 
     this.title = guild.name;
-    this.description = `**Region:** ${guild.region}`;
-    this.color = verificationColors[guild.verificationLevel];
+    this.color = verifications[guild.verificationLevel].color;
     this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` };
     this.fields = [
       {
@@ -27,37 +45,37 @@ class ServerInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Owner:',
-        value: `${guild.owner.displayName} (${guild.owner})`,
+        value: `<@${guild.ownerId}>`,
         inline: true,
       },
       {
         name: 'Text Channels:',
-        value: guild.channels.filter(channel => channel.type === 'text').size || 0,
+        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').size || 0}`,
         inline: true,
       },
       {
         name: 'Voice Channels:',
-        value: guild.channels.filter(channel => channel.type === 'voice').size || 0,
+        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').size || 0}`,
         inline: true,
       },
       {
         name: 'Members:',
-        value: `${guild.members.filter(member => member.presence.status === 'online' || member.presence.status === 'idle' || member.presence.status === 'dnd').size}/${guild.memberCount}` || 0,
+        value: `Count: ${guild.memberCount}`,
         inline: true,
       },
       {
         name: 'Emojis:',
-        value: `Count: ${guild.emojis.array().length}`,
+        value: `Count: ${guild.emojis.cache.size}`,
         inline: true,
       },
       {
         name: 'Verification Level:',
-        value: verificationLevels[guild.verificationLevel],
+        value: verifications[guild.verificationLevel].msg,
         inline: true,
       },
       {
         name: 'Roles:',
-        value: `Count: ${guild.roles.array().length}`,
+        value: `Count: ${guild.roles.cache.size}`,
         inline: true,
       },
     ];

@@ -1,11 +1,12 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 /**
  * Change channel visibility
  */
-class Show extends Command {
+class Show extends require('../../models/Command.js') {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -19,28 +20,31 @@ class Show extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
+   * @param {CommandContext} ctx Command context for calling commands
    * @returns {string} success status
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.settings.userHasRoom(message.member);
+      const userHasRoom = await ctx.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.settings.getUsersRoom(message.member);
+        const room = await ctx.settings.getUsersRoom(message.member);
         const { everyone } = message.guild.roles;
         const options = {
           VIEW_CHANNEL: true, CONNECT: true, SPEAK: false, SEND_MESSAGES: false,
         };
+        const audit = {
+          reason: `Room made lurkable by ${message.author.tag}`,
+        };
         try {
           if (room.category) {
-            room.category.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
+            await room.category.permissionOverwrites.edit(everyone, options, audit);
           }
           if (room.textChannel) {
-            room.textChannel.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
+            await room.textChannel.permissionOverwrites.edit(everyone, options, audit);
           }
-          await room.voiceChannel.updateOverwrite(everyone, options, `Room made lurkable by ${message.author.tag}`);
+          await room.voiceChannel.permissionOverwrites.edit(everyone, options, audit);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);

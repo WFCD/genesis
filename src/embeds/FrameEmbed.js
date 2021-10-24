@@ -39,7 +39,7 @@ class FrameEmbed extends BaseEmbed {
         } : false,
         {
           name: 'Minimum Mastery',
-          value: `${frame.masteryReq || 'N/A'} ${emojify('mastery_rank')}`,
+          value: `${frame.masteryReq || 'Unranked'} ${emojify('mastery_rank')}`,
           inline: true,
         },
         {
@@ -83,8 +83,8 @@ class FrameEmbed extends BaseEmbed {
         },
       ];
 
-      this.fields.push(...frame.abilities.map(ability => ({ name: ability.name, value: `_${ability.description}_` })));
-      this.fields = this.fields.filter(field => field);
+      this.fields.push(...(frame?.abilities?.map(ability => ({ name: ability.name, value: `_${ability.description}_` })) || []));
+      this.fields = this.fields.filter(field => field && field?.value?.length);
     } else {
       this.title = 'Available Warframes';
       this.fields = [{ name: '\u200B', value: frames.map(stat => stat.name).join('\n') }];

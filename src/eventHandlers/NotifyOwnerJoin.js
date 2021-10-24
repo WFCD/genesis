@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const { games } = require('../CommonFunctions');
 
@@ -14,7 +16,7 @@ class NotifyOwnerJoin extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.notifyowner', 'guildCreate');
+    super(bot, 'handlers.notifyowner', Events.GUILD_CREATE);
     this.channelTimeout = 60000;
   }
 

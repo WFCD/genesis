@@ -29,6 +29,9 @@ class PatchnotesEmbed extends BaseEmbed {
         value: tokens.join(''),
       };
     });
+    if (patchlogs[0].imgUrl) {
+      this.setImage(patchlogs[0].imgUrl);
+    }
   }
 }
 

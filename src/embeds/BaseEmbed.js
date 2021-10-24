@@ -14,6 +14,7 @@ class BaseEmbed extends MessageEmbed {
   constructor(bot) {
     super({
       url: defaults.url,
+      description: '_ _',
       footer: {
         text: 'Sent',
         icon_url: defaults.icon,

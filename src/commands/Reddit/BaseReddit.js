@@ -32,7 +32,7 @@ class BaseReddit extends Command {
     embed.setURL(`https://reddit.com${permalink}`);
     embed.setImage(url);
 
-    await message.channel.send(embed);
+    await message.channel.send({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

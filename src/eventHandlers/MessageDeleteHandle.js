@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
 const { games } = require('../CommonFunctions');
@@ -15,7 +17,7 @@ class LogMessageDelete extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.logMessageDelete', 'messageDelete');
+    super(bot, 'handlers.logMessageDelete', Events.MESSAGE_DELETE);
   }
 
   /**
@@ -32,7 +34,7 @@ class LogMessageDelete extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'text') {
+    if (logChannel && logChannel.type === 'GUILD_TEXT') {
       let msg;
       if (message.content.length > 1024) {
         msg = `${message.content.slice(1020, message.content.length)}...`;

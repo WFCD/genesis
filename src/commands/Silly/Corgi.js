@@ -1,5 +1,7 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const fetch = require('../../resources/Fetcher');
 const Command = require('../../models/Command.js');
 
@@ -17,14 +19,19 @@ class Corgi extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    * @returns {string} success status
    */
   async run(message) {
     const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random');
     if (corgi) {
-      await this.messageManager.sendFile(message, undefined, corgi.message, `corgi.${corgi.message.split('.').pop()}`, true);
+      await message.reply({
+        files: [{
+          attachment: corgi.message,
+          name: `corgi.${corgi.message.split('.').pop()}`,
+        }],
+      });
       return this.messageManager.statuses.SUCCESS;
     }
     return this.messageManager.statuses.FAILURE;

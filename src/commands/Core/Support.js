@@ -31,7 +31,7 @@ class Untrack extends Command {
         },
         {
           name: 'Authors',
-          value: 'Tobiah/[aliasfalse](https://github.com/aliasfalse) and [nspace](https://github.com/nspacestd)',
+          value: '[Tobiah](https://github.com/tobitenno) and [nspace](https://github.com/nspacestd)',
         },
       ],
       footer: {

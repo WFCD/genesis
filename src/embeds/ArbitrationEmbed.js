@@ -20,7 +20,7 @@ class ArbitrationEmbed extends BaseEmbed {
     this.thumbnail.url = arbiThumb;
     this.color = 0x742725;
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Arbitration`;
-    this.addField(arbitration.node, `${arbitration.type} against ${arbitration.enemy}`);
+    this.addField(arbitration.node, arbitration.type);
 
     this.footer.text = i18n`Expires`;
     this.timestamp = arbitration.expiry;

@@ -2,6 +2,11 @@
 
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for Promocode queries
+ * @mixin
+ * @mixes Database
+ */
 class PromocodeQueries {
   constructor(db) {
     this.db = db;

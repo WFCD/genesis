@@ -2,12 +2,15 @@
 
 const SQL = require('sql-template-strings');
 const mysql = require('mysql2/promise');
-const Promise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 const { assetBase, platforms } = require('../CommonFunctions');
 const logger = require('../Logger');
+
+const I18n = require('./I18n');
 
 const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
 
@@ -25,33 +28,8 @@ const props = (obj) => {
 };
 
 /**
- * Copy functions from class to this class... theoretically
- * @param {Object} queriesClass class instance
- * @returns {undefined} doesn't return anything
- */
-const copyChildrenQueries = (queriesClass) => {
-  const keys = props(queriesClass);
-  keys.forEach((key) => {
-    if (key !== 'db') {
-      // eslint-disable-next-line no-use-before-define
-      Database.prototype[key] = queriesClass[key];
-    }
-  });
-};
-
-/**
- * Connection options for the database
- * @typedef {Object} DbConnectionOptions
- * @property {string} [host=localhost] - The hostname of the database
- * @property {number} [port=3306] - The port number to connect to
- * @property {string} user - The user to authenticate as
- * @property {string} password - The password for that user
- * @property {string} database - The database to use
- */
-
-/**
   * Command Context
-  * @type {Object} CommandContext
+  * @typedef {Object} CommandContext
   * @property {string} platform The channel's configured platform
   * @property {string} prefix The channel's configured command prefix
   * @property {string} language Language to localize, if possible
@@ -63,8 +41,10 @@ const copyChildrenQueries = (queriesClass) => {
   * @property {boolean} createPrivateChannel Whether or not private chats
   *  are allowed to be created here
   * @property {boolean} defaultShown Whether or not private chats created here are shown by default
-  * @property {string} tempCategory Temp category to put private chats in when created.
-  *   Makes text chats not be created.
+  * @property {Discord.CategoryChannel|string} tempCategory Temp category to put private chats in
+ *    when created. Makes text chats not be created.
+ *  @property {Discord.TextChannel|string} tempChannel Channel to create threads in.
+ *    Must have a parent of tempCategory
   * @property {boolean} settings.cc.ping Whether or not to ping in custom commands called here
   * @property {boolean} respondToSettings Whether or not to respond to settings changes.
   *  Changes are applied no matter the value.
@@ -82,16 +62,43 @@ const copyChildrenQueries = (queriesClass) => {
   *   calling the command is blacklisted from the bot
   * @property {boolean} isOwner whether or not the user
   *   calling the command is blacklisted from the bot
+ *  @property {WorldStateClient?} ws Worldstate Client
+ *  @property {Logger} logger Logger
+ *  @property {I18n} i18n internationalization string handler
+ *  @property {Database?} settings interface for the database
+ *  @property {boolean?} ephemerate whether or not to hide (make ephemeral) interaction responses
+ *  @property {InteractionHandler|CommandHandler} handler access to a command's handler
+ *  @property {Role|string} modRole designated moderator role for the server
+ *  @property {Discord.Message=} original original reply to an interaction
   */
 
 /**
  * Persistent storage for the bot
+ * @mixes BlacklistQueries
+ * @mixes BuildQueries
+ * @mixes CustomCommandQueries
+ * @mixes DBMQueries
+ * @mixes DynamicVoiceQueries
+ * @mixes PermissionsQueries
+ * @mixes PingsQueries
+ * @mixes PromocodeQueries
+ * @mixes RatioQueries
+ * @mixes SettingsQueries
+ * @mixes StatisticsQueries
+ * @mixes StreamQueries
+ * @mixes TrackingQueries
+ * @mixes WelcomeQueries
+ * @class
  */
-class Database {
+module.exports = class Database {
   /**
    * @param {Genesis} bot Bot to load the settings for
    */
   constructor(bot) {
+    /**
+     * Bot
+     * @type {Genesis}
+     */
     this.bot = bot;
     this.logger = logger;
 
@@ -115,12 +122,12 @@ class Database {
       defaultShown: false,
       tempCategory: false,
       'settings.cc.ping': true,
+      ephemerate: true,
     };
 
     const opts = {
       supportBigNumbers: true,
       bigNumberStrings: true,
-      Promise,
       host: process.env.MYSQL_HOST || 'localhost',
       port: process.env.MYSQL_PORT || 3306,
       user: process.env.MYSQL_USER || 'genesis',
@@ -134,7 +141,22 @@ class Database {
       this.logger.fatal(e);
     }
 
-    this.loadChildren();
+    this.#loadChildren();
+  }
+
+  /**
+   * Copy functions from class to this class... theoretically
+   * @param {Object} queriesClass class instance
+   * @returns {undefined} doesn't return anything
+   */
+  static #copyChildQueries (queriesClass) {
+    const keys = props(queriesClass);
+    keys.forEach((key) => {
+      if (key !== 'db') {
+        // eslint-disable-next-line no-use-before-define
+        Database.prototype[key] = queriesClass[key];
+      }
+    });
   }
 
   /**
@@ -145,7 +167,7 @@ class Database {
    * Make sure your bot is in a secured folder
    *  if you're worried about shard space.
    */
-  loadChildren() {
+  #loadChildren () {
     const dbRoot = path.join(__dirname, 'DatabaseQueries');
     fs.readdirSync(dbRoot)
       .filter(f => f.endsWith('.js'))
@@ -153,7 +175,7 @@ class Database {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         const QClass = require(path.join(dbRoot, file));
         const qInstance = new QClass(this.db);
-        copyChildrenQueries(qInstance);
+        Database.#copyChildQueries(qInstance);
       });
   }
 
@@ -170,6 +192,11 @@ class Database {
       };
   }
 
+  /**
+   * Query the database
+   * @param {string|SQL.SQLStatement} query query string
+   * @returns {mysql.Connection.query}
+   */
   async query(query) {
     try {
       return this.db.query(query);
@@ -209,7 +236,7 @@ class Database {
 
   /**
    * Get context (including settings) for a command in a channel
-   * @param {Discord.Channel} channel channel to get settings for
+   * @param {Discord.TextChannel} channel channel to get settings for
    * @param {Discord.User} user user to check for specific settings for
    * @returns {CommandContext} context
    */
@@ -227,7 +254,8 @@ class Database {
       settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
         'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
         'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond']);
+        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond',
+        'ephemerate', 'modRole', 'tempChannel']);
 
       if (platforms.length > 4) {
         platforms.forEach((platform, index) => {
@@ -331,6 +359,12 @@ class Database {
         context.tempCategory = undefined;
       }
 
+      if (context.tempChannel && channel.guild.channels.cache.has(context.tempChannel.trim())) {
+        context.tempChannel = channel.guild.channels.cache.get(context.tempChannel.trim());
+      } else {
+        context.tempChannel = undefined;
+      }
+
       if (context.lfgChannel) {
         context.lfg = {};
         context.lfg.pc = channel.guild.channels.cache.get(context.lfgChannel);
@@ -360,6 +394,13 @@ class Database {
         context.respondToSettings = context.respond_to_settings === '1';
         delete context.respond_to_settings;
       }
+
+      if (typeof context.ephemerate === 'undefined') context.ephemerate = true;
+      else context.ephemerate = context.ephemerate === '1';
+
+      if (context.modRole && channel.guild) {
+        context.modRole = await channel.guild.roles.fetch(context.modRole);
+      }
     } else {
       context = {
         platform: this.defaults.platform,
@@ -373,6 +414,7 @@ class Database {
         'settings.cc.ping': this.defaults['settings.cc.ping'] === '1',
         respondToSettings: this.defaults.respond_to_settings,
         deleteCommand: this.defaults.delete_after_respond,
+        ephemerate: true,
       };
     }
     if (user) {
@@ -381,8 +423,7 @@ class Database {
       context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;
+    context.i18n = I18n.use(context.language);
     return context;
   }
-}
-
-module.exports = Database;
+};

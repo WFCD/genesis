@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
 const { games } = require('../CommonFunctions');
@@ -15,7 +17,7 @@ class LogMemberRemove extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.logMemberRemove', 'guildMemberRemove');
+    super(bot, 'handlers.logMemberRemove', Events.GUILD_MEMBER_REMOVE);
   }
 
   /**
@@ -31,7 +33,7 @@ class LogMemberRemove extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'text') {
+    if (logChannel && logChannel.type === 'GUILD_TEXT') {
       const log = new LogEmbed(this.bot, {
         color: 0xffa500,
         title: 'Member Left/Kicked',
@@ -42,7 +44,7 @@ class LogMemberRemove extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embed: log });
+      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }

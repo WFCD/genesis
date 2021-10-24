@@ -1,19 +1,18 @@
 'use strict';
 
-const { Client, WebhookClient } = require('discord.js');
+const Discord = require('discord.js');
 
-// const Feeder = require('rss-feed-emitter');
+const {
+  Client, WebhookClient, Intents, Constants: { Events },
+} = Discord;
 
 const WorldStateClient = require('./resources/WorldStateClient');
 const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
-// const Tracker = require('./Tracker');
 
 const MessageManager = require('./settings/MessageManager');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
-
-// const feeds = require('./resources/rssFeeds');
 
 const unlog = ['WS_CONNECTION_TIMEOUT'];
 
@@ -41,11 +40,9 @@ class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
-   * @param  {Object}           [options]            Bot options
-   * @param  {string}           [options.prefix]     Prefix for calling the bot
-   * @param  {MarkdownSettings} [options.mdConfig]   The markdown settings
-   * @param  {number[]}         [options.shards]     Ids of shards to control
-   * @param  {Object}           [options.commandManifest] Manifest of commands
+   * @param  {string}           [prefix]     Prefix for calling the bot
+   * @param  {number[]}         [shards]     Ids of shards to control
+   * @param  {Object}           [commandManifest] Manifest of commands
    */
   constructor(discordToken, {
     prefix = process.env.PREFIX,
@@ -59,28 +56,23 @@ class Genesis {
      * @private
      */
     this.client = new Client({
-      fetchAllMembers: false,
-      ws: {
-        compress: true,
-      },
+      allowedMentions: { parse: ['users', 'roles'], repliedUser: false },
       shards,
       shardCount: Number(process.env.SHARDS || 1),
-      disabledEvents: [
-        'VOICE_SERVER_UPDATE',
-        'PRESENSE_UPDATE',
-        'USER_SETTINGS_UPDATE',
-        'GUILD_INTEGRATIONS_UPDATE',
-        'GUILD_EMOJIS_UPDATE',
-        'GUILD_UPDATE',
-        'CHANNEL_PINS_UPDATE',
-      ],
       presence: {
         status: 'dnd',
         afk: false,
-        activity: {
+        activities: [{
           name: 'Starting...',
-        },
+        }],
       },
+      intents: [
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_INTEGRATIONS,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.FLAGS.GUILD_VOICE_STATES,
+      ],
     });
 
     /**
@@ -96,13 +88,6 @@ class Genesis {
      * @private
      */
     this.logger = logger;
-
-    /**
-     * Prefix for calling the bot, for use with matching strings.
-     * @type {string}
-     * @private
-     */
-    this.escapedPrefix = prefix.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
     /**
      * Prefix for calling the bot, for use with messages.
@@ -154,41 +139,73 @@ class Genesis {
     this.clusterId = process.env.CLUSTER_ID || 0;
     // this.tracker = new Tracker(this);
 
-    // this.feeder; // for debugging
-
     if (process.env.CONTROL_WH_ID) {
-      this.controlHook = new WebhookClient(process.env.CONTROL_WH_ID, process.env.CONTROL_WH_TOKEN);
+      this.controlHook = new WebhookClient({
+        id: process.env.CONTROL_WH_ID,
+        token: process.env.CONTROL_WH_TOKEN,
+      });
     }
     if (process.env.BUG_WH_ID) {
-      this.bugHook = new WebhookClient(process.env.BUG_WH_ID, process.env.BUG_WH_TOKEN);
+      this.bugHook = new WebhookClient({
+        id: process.env.BUG_WH_ID,
+        token: process.env.BUG_WH_TOKEN,
+      });
     } else if (process.env.CONTROL_WH_ID) {
       this.bugHook = this.controlHook;
     }
   }
 
   async setupHandlers() {
-    this.client.on('ready', async () => this.eventHandler.handleEvent({ event: 'ready', args: [] }));
-    this.client.on('message', async message => this.eventHandler.handleEvent({ event: 'message', args: [message] }));
+    this.client.on(Events.CLIENT_READY, async () => this.eventHandler
+      .handleEvent({ event: Events.CLIENT_READY, args: [] }));
+    this.client.on(Events.MESSAGE_CREATE,
+      async message => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
 
-    this.client.on('guildCreate', async guild => this.eventHandler.handleEvent({ event: 'guildCreate', args: [guild] }));
-    this.client.on('guildDelete', async guild => this.eventHandler.handleEvent({ event: 'guildDelete', args: [guild] }));
-    this.client.on('channelCreate', async channel => this.eventHandler.handleEvent({ event: 'channelCreate', args: [channel] }));
-    this.client.on('channelDelete', async channel => this.eventHandler.handleEvent({ event: 'channelDelete', args: [channel] }));
+    this.client.on(Events.GUILD_CREATE,
+      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] }));
+    this.client.on(Events.GUILD_DELETE,
+      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_DELETE, args: [guild] }));
+    this.client.on(Events.CHANNEL_CREATE,
+      async channel => this.eventHandler
+        .handleEvent({ event: Events.CHANNEL_CREATE, args: [channel] }));
+    this.client.on(Events.CHANNEL_DELETE,
+      async channel => this.eventHandler
+        .handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] }));
 
-    this.client.on('messageDelete', async message => this.eventHandler.handleEvent({ event: 'messageDelete', args: [message] }));
-    this.client.on('messageDeleteBulk', async messages => this.eventHandler.handleEvent({ event: 'messageDeleteBulk', args: [messages] }));
+    this.client.on(Events.MESSAGE_DELETE,
+      async message => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_DELETE, args: [message] }));
+    this.client.on(Events.MESSAGE_BULK_DELETE,
+      async messages => this.eventHandler
+        .handleEvent({ event: Events.MESSAGE_BULK_DELETE, args: [messages] }));
 
-    this.client.on('guildMemberUpdate', async (oldMember, newMember) => this.eventHandler.handleEvent({ event: 'guildMemberUpdate', args: [oldMember, newMember] }));
-    this.client.on('guildMemberAdd', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberAdd', args: [guildMember] }));
-    this.client.on('guildMemberRemove', async guildMember => this.eventHandler.handleEvent({ event: 'guildMemberRemove', args: [guildMember] }));
-    this.client.on('guildBanAdd', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanAdd', args: [guild, user] }));
-    this.client.on('guildBanRemove', async (guild, user) => this.eventHandler.handleEvent({ event: 'guildBanRemove', args: [guild, user] }));
+    this.client.on(Events.GUILD_MEMBER_UPDATE,
+      async (oldMember, newMember) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_UPDATE, args: [oldMember, newMember] }));
+    this.client.on(Events.GUILD_MEMBER_ADD,
+      async guildMember => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_ADD, args: [guildMember] }));
+    this.client.on(Events.GUILD_MEMBER_REMOVE,
+      async guildMember => this.eventHandler
+        .handleEvent({ event: Events.GUILD_MEMBER_REMOVE, args: [guildMember] }));
+    this.client.on(Events.GUILD_BAN_ADD,
+      async (guild, user) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_BAN_ADD, args: [guild, user] }));
+    this.client.on(Events.GUILD_BAN_REMOVE,
+      async (guild, user) => this.eventHandler
+        .handleEvent({ event: Events.GUILD_BAN_REMOVE, args: [guild, user] }));
 
-    this.client.on('disconnect', (event) => { this.logger.fatal(`Disconnected with close event: ${event.code}`); });
-    this.client.on('error', this.logger.error);
-    this.client.on('warn', this.logger.warn);
-    this.client.on('debug', (message) => {
-      if (/(Sending a heartbeat|Latency of|voice)/i.test(message)) {
+    this.client.on(Events.INTERACTION_CREATE,
+      async interaction => this.eventHandler
+        .handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] }));
+
+    this.client.on(Events.SHARD_DISCONNECT,
+      (event) => { this.logger.error(`Disconnected with close event: ${event.code}`); });
+    this.client.on(Events.ERROR, this.logger.error);
+    this.client.on(Events.WARN, this.logger.warn);
+    this.client.on(Events.DEBUG, (message) => {
+      if (/(heartbeat|Latency of|voice|HELLO timeout|CONNECT|Spawning)/i.test(message)) {
         this.logger.silly(message);
         return;
       }
@@ -205,20 +222,10 @@ class Genesis {
     await this.commandManager.loadCustomCommands();
     await this.eventHandler.loadHandles();
 
-    this.setupHandlers();
+    await this.setupHandlers();
     try {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
-
-      /* For Debugging:
-      this.feeder = new Feeder({
-        userAgent: `RSS Feed Emitter | ${this.client.user.username}`,
-        skipFirstLoad: true,
-      });
-      feeds.forEach((feed) => {
-        this.feeder.add({ url: feed.url, refresh: 900000 });
-      });
-      */
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
       if (!unlog.includes(type)) {

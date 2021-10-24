@@ -1,8 +1,11 @@
 'use strict';
 
+const Discord = require('discord.js');
+
 const Handler = require('../models/BaseEventHandler');
-const I18n = require('../settings/I18n');
 const { games, emojify } = require('../CommonFunctions');
+
+const { Permissions, Constants: { Events } } = Discord;
 
 /**
  * Checks if the command is callable,
@@ -40,9 +43,21 @@ const stripContent = (content, prefix, ping, pingId, botNickPing) => {
   return c;
 };
 
-const hasAuth = message => message.channel.permissionsFor(message.author).has('MANAGE_ROLES')
-    || (message.member.hasPermission('MANAGE_GUILD')
-    || message.member.hasPermission('MANAGE_ROLES'));
+const minPerms = [
+  Permissions.FLAGS.ADD_REACTIONS,
+  Permissions.FLAGS.VIEW_CHANNEL,
+  Permissions.FLAGS.SEND_MESSAGES,
+  Permissions.FLAGS.EMBED_LINKS,
+];
+
+const authPerms = [
+  Permissions.FLAGS.MANAGE_ROLES,
+  Permissions.FLAGS.MANAGE_GUILD,
+  Permissions.FLAGS.MANAGE_CHANNELS,
+];
+
+const hasBasic = message => message?.channel?.permissionsFor(message.guild.me)?.has(minPerms);
+const hasAuth = message => message?.channel?.permissionsFor(message.author)?.any(authPerms);
 
 /**
  * Describes a handler
@@ -51,11 +66,9 @@ class CommandHandler extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.command', 'message');
+    super(bot, 'handlers.command', Events.MESSAGE_CREATE);
 
     this.statuses = this.bot.messageManager.statuses;
     this.commandManager = this.bot.commandManager;
@@ -64,26 +77,22 @@ class CommandHandler extends Handler {
 
   /**
    * Handle a message for commands
-   * @param {Message} message message to check for commands
+   * @param {Discord.Message} message message to check for commands
    */
   async execute(...[message]) {
     const passesInitial = this.bot.readyToExecute
       && message.author.id !== this.bot.client.user.id
       && !message.author.bot;
 
-    const canReply = message.channel.type === 'dm'
-      || (
-        message.channel.permissionsFor(message.guild.me).has('VIEW_CHANNEL')
-        && message.channel.permissionsFor(message.guild.me).has('SEND_MESSAGES')
-        && message.channel.permissionsFor(message.guild.me).has('ADD_REACTIONS'));
-
+    const canReply = message.channel.type === 'DM' || hasBasic(message);
     if (!(passesInitial && canReply)) {
       return;
     }
+
     let { content } = message;
     let botping;
     if (message.guild) {
-      if (message.guild.members.me) {
+      if (message.guild.me) {
         botping = `@${message.guild.me.displayName}`;
       }
     }
@@ -110,7 +119,7 @@ class CommandHandler extends Handler {
       }
     }
 
-    let commands = [];
+    let commands;
     if (checkOnlyInlines) {
       commands = this.commandManager.inlineCommands;
     } else if (ctx.allowCustom) {
@@ -127,17 +136,17 @@ class CommandHandler extends Handler {
 
     // set new context objects
     ctx.message = strippedMessage;
-    ctx.i18n = I18n.use(ctx.language);
-    this.logger.silly(`Handling \`${content}\``);
+    ctx.settings = this.bot.settings;
+    this.logger.debug(`Handling \`${content}\``);
 
-    let done = false;
-    commands.forEach(async (command) => {
+    for (const command of commands) {
       // only run the first matching command
-      if (games.includes(command.game) && command.regex.test(content) && !done) {
+      if (games.includes(command.game) && command.regex.test(content)) {
         // check if it's runnable for the user
         const canAct = await this.checkCanAct(command, strippedMessage);
+        this.logger.debug(`${command.id} :: ${canAct}`);
         if (checkInlineCustom(canAct, ctx.allowCustom, ctx.allowInline, command)) {
-          this.logger.silly(`Matched ${command.id}`);
+          this.logger.debug(`Matched ${command.id}`);
 
           // load command
           const cmd = await this.bot.commandManager.loadCommand(command);
@@ -150,9 +159,9 @@ class CommandHandler extends Handler {
             const status = await cmd.run(strippedMessage, ctx);
 
             // react based on result
-            const canReact = (message.channel.type === 'dm'
-                  || (message.channel.permissionsFor(this.bot.client.user.id)
-                    .has(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))) && !command.isInline;
+            const canReact = (message.channel.type === 'DM'
+              || (message.channel.permissionsFor(this.bot.client.user.id)
+                .has(minPerms))) && !command.isInline;
             switch (status) {
               case this.statuses.SUCCESS:
                 if (canReact) {
@@ -170,34 +179,32 @@ class CommandHandler extends Handler {
             }
           } catch (error) {
             this.logger.error(error);
-          } finally {
-            // make sure we don't run more
-            done = true;
           }
+          break;
         }
       }
       // force last index to 0 for any global checkers
       // eslint-disable-next-line no-param-reassign
       command.regex.lastIndex = 0;
-    });
+    }
   }
 
   /**
    * Check if the current command being called is able to be performed for the user calling it.
    * @param   {Command} command  command to process to see if it can be called
-   * @param   {Message} message Discord message object
-   * @param   {boolean} allowCustom Whether or not to allow custom commands
-   * @param   {boolean} allowInline Whether or not to allow inline commands
+   * @param   {Discord.Message} message Discord message object
    * @returns {Promise<boolean>} Whether or not the current command can be called by the author
    */
   async checkCanAct(command, message) {
     if (!command.enabled) {
+      this.logger.debug(`${command.id} is not enabled`);
       return false;
     }
     if (command.ownerOnly && message.author.id !== this.bot.owner) {
+      this.logger.debug(`${command.id} is owner-only`);
       return false;
     }
-    if (message.channel.type === 'text') {
+    if (message.channel.isText()) {
       if (command.requiresAuth) {
         if (hasAuth(message)) {
           const memberHasPermForRequiredAuthCommand = await this.bot.settings
@@ -206,7 +213,7 @@ class CommandHandler extends Handler {
             const roleHasPermForRequiredAuthCommand = await this.bot.settings
               .getChannelPermissionForUserRoles(
                 message.channel,
-                message.author.id, command.id,
+                message.member, command.id,
               );
             return roleHasPermForRequiredAuthCommand;
           }
@@ -218,15 +225,12 @@ class CommandHandler extends Handler {
         .getChannelPermissionForMember(message.channel, message.author.id, command.id);
       if (memberHasPermForNonAuthCommand === 'none') {
         const roleHasPermForNonAuthCommand = await this.bot.settings
-          .getChannelPermissionForUserRoles(message.channel, message.author, command.id);
+          .getChannelPermissionForUserRoles(message.channel, message.member, command.id);
         return roleHasPermForNonAuthCommand;
       }
       return memberHasPermForNonAuthCommand;
     }
-    if (message.channel.type === 'dm' && command.allowDM) {
-      return true;
-    }
-    return false;
+    return message.channel.type === 'DM' && command.allowDM;
   }
 }
 

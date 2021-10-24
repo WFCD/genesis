@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const { games } = require('../CommonFunctions');
 
@@ -11,7 +13,7 @@ class JoinNotify extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.server.join', 'guildCreate');
+    super(bot, 'handlers.server.join', Events.GUILD_CREATE);
   }
 
   /**

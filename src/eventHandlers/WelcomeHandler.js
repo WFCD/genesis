@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const { isVulgarCheck, getRandomWelcome, games } = require('../CommonFunctions');
 
@@ -11,7 +13,7 @@ class WelcomeHandler extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.welcome', 'guildMemberAdd');
+    super(bot, 'handlers.welcome', Events.GUILD_MEMBER_ADD);
   }
 
   /**

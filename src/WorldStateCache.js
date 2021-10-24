@@ -13,7 +13,7 @@ const worldStateURLs = {
   swi: `${apiBase}/swi`,
 };
 
-class WorldStateCache extends EventEmitter {
+module.exports = class WorldStateCache extends EventEmitter {
   constructor(platform, timeout) {
     super();
     this.url = worldStateURLs[platform];
@@ -46,6 +46,4 @@ class WorldStateCache extends EventEmitter {
     }
     return this.updating;
   }
-}
-
-module.exports = WorldStateCache;
+};

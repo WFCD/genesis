@@ -1,11 +1,12 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 /**
  * Rename user's temp room
  */
-class Destroy extends Command {
+class Destroy extends require('../../models/Command.js') {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -19,9 +20,9 @@ class Destroy extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
+   * @param {CommandContext} ctx Command context for calling commands
    * @returns {string} success status
    */
   async run(message, ctx) {

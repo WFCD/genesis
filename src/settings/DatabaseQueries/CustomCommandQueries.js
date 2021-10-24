@@ -1,13 +1,15 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const CustomCommand = require('../../models/CustomCommand.js');
 
-class CustomCommandQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
+/**
+ * Database Mixin for custom command queries
+ * @mixin
+ */
+module.exports = class CustomCommandQueries {
   async getCustomCommands() {
     const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardTotal} in (${this.bot.shards})`;
     const res = await this.query(query);
@@ -18,6 +20,40 @@ class CustomCommandQueries {
     return [];
   }
 
+  /**
+   * Get raw custom commands for specified guild
+   * @param {string} guildId guild identifier
+   * @returns {Promise<Array<CustomCommandData>>}
+   */
+  async getRawCustomCommands(guildId) {
+    const query = guildId
+      ? SQL`SELECT * FROM custom_commands where guild_id = ${guildId};`
+      : SQL`SELECT * FROM custom_commands;`;
+
+    const [rows] = await this.query(query);
+    return rows?.length
+      ? rows.map(row => ({
+        call: row.command,
+        response: decodeURIComponent(row.response),
+        guildId: row.guild_id,
+      }))
+      : null;
+  }
+
+  /**
+   * @typedef {Object} CustomCommandData
+   * @property {Discord.Snowflake} [guildId] guild identifier
+   * @property {string} call command prompt
+   * @property {string} response response to call
+   * @property {string} [id] identifier composed of call and guild id
+   */
+
+  /**
+   * Get raw custom command data
+   * @param {Discord.Guild} guild guild to fetch commands for
+   * @param {string} call command prompt
+   * @returns {Promise<undefined|*>}
+   */
   async getCustomCommandRaw(guild, call) {
     const id = `${call}${guild.id}`;
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id} AND command_id = ${id}`;
@@ -44,6 +80,11 @@ class CustomCommandQueries {
     `);
   }
 
+  /**
+   * Get the custom commands for a guild
+   * @param {Discord.Guild} guild guild to pull commands for
+   * @returns {Promise<*[]|*>}
+   */
   async getCustomCommandsForGuild(guild) {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
     const [rows] = await this.query(query);
@@ -54,23 +95,40 @@ class CustomCommandQueries {
     return [];
   }
 
-  async addCustomCommand(message, call, response) {
-    const id = `${call}${message.guild.id}`;
+  /**
+   * Add a custom command
+   * @param {Discord.Guild} guild guild to delete from
+   * @param {string} call prompt for command
+   * @param {string} response response for command
+   * @param {Discord.Snowflake} creator command creator
+   * @returns {Promise<*>}
+   */
+  async addCustomCommand(guild, call, response, creator) {
+    const id = `${call}${guild.id}`;
     const query = SQL`INSERT INTO custom_commands (command_id, guild_id, command, response, creator_id)
-      VALUES (${id}, ${message.guild.id}, ${call}, ${response}, ${message.author.id})`;
+      VALUES (${id}, ${guild.id}, ${call}, ${response}, ${creator})`;
     return this.query(query);
   }
 
-  async deleteCustomCommand(message, call) {
-    const id = `${call}${message.guild.id}`;
+  /**
+   * Delete custom commands for the guild based on the custom command call
+   * @param {Discord.Guild} guild guild to delete from
+   * @param {string} call call for custom command to delete
+   * @returns {Promise<*>}
+   */
+  async deleteCustomCommand(guild, call) {
+    const id = `${call}${guild.id}`;
     const query = SQL`DELETE FROM custom_commands WHERE command_id = ${id}`;
     return this.query(query);
   }
 
+  /**
+   * Remove all custm commands for a guild based on the id
+   * @param {Discord.Snowflake} guildId guild id
+   * @returns {Promise<*>}
+   */
   async removeGuildCustomCommands(guildId) {
     const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
     return this.query(query);
   }
-}
-
-module.exports = CustomCommandQueries;
+};

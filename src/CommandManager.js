@@ -23,7 +23,7 @@ class CommandManager {
 
     /**
      * Array of command objects that can be called
-     * @type {Array<Command>}
+     * @type {Array<BaseCommand>}
      * @private
      */
     this.commands = commandManifest ? commandManifest.filter(cmd => !cmd.isInline) : [];

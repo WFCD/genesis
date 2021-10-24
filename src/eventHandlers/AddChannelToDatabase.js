@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 
 /**
@@ -13,7 +15,7 @@ class AddChannelToDatabase extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.addChannel', 'channelCreate');
+    super(bot, 'handlers.addChannel', Events.CHANNEL_CREATE);
   }
 
   /**
@@ -23,10 +25,10 @@ class AddChannelToDatabase extends Handler {
   async execute(...[channel]) {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    if (channel.type === 'voice') {
+    if (channel.type === 'GUILD_VOICE') {
       return;
     }
-    if (channel.type === 'text') {
+    if (channel.type === 'GUILD_TEXT') {
       try {
         await this.settings.addGuildTextChannel(channel);
         this.logger.debug(`Text channel ${channel.name} (${channel.id}) created in guild `

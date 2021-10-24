@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 const { isVulgarCheck, games } = require('../CommonFunctions');
 
@@ -11,7 +13,7 @@ class VulgarNameHandle extends Handler {
    * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
-    super(bot, 'handlers.vulgarCheck', 'guildMemberAdd');
+    super(bot, 'handlers.vulgarCheck', Events.GUILD_MEMBER_ADD);
   }
 
   /**

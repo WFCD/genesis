@@ -57,10 +57,17 @@ class EventHandler {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Handler = require(path.join(handlersDir, f));
         if (Handler.prototype instanceof BaseEventHandler) {
-          const handler = new Handler(this.bot);
+          if (Handler.deferred) {
+            this.client.on('ready', () => {
+              const handler = new Handler(this.bot);
+              this.handlers.push(handler);
+            });
+          } else {
+            const handler = new Handler(this.bot);
 
-          this.logger.silly(`Adding ${handler.id}`);
-          return handler;
+            this.logger.silly(`Adding ${handler.id}`);
+            return handler;
+          }
         }
         return null;
       } catch (err) {

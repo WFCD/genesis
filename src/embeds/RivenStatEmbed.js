@@ -94,9 +94,8 @@ class RivenStatEmbed extends BaseEmbed {
       this.description = i18n`No data available`;
     }
 
-    this.title = resultKey;
+    this.title = i18n`Riven: ${resultKey}`;
     this.color = 0x84659F;
-    this.type = 'rich';
   }
 }
 

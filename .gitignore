@@ -54,3 +54,4 @@ commands.json
 docker-compose.yaml
 
 .cache/
+.run

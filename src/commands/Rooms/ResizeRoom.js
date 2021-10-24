@@ -1,11 +1,12 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 
 /**
  * Resize temp channel
  */
-class Resize extends Command {
+module.exports = class Resize extends require('../../models/Command.js') {
   /**
    * Constructs a callable command
    * @param {Genesis} bot  The bot object
@@ -19,16 +20,16 @@ class Resize extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
-   * @param {Object} ctx Command context for calling commands
-   * @returns {string} success status
+   * @param {CommandContext} ctx Command context for calling commands
+   * @returns {Promise<string>} success status
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.settings.userHasRoom(message.member);
+      const userHasRoom = await ctx.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.settings.getUsersRoom(message.member);
+        const room = await ctx.settings.getUsersRoom(message.member);
         const newSize = parseInt(message.strippedContent.replace(this.call, '').trim(), 10);
         try {
           if (newSize && newSize < 100) {
@@ -38,15 +39,13 @@ class Resize extends Command {
           throw new Error('Illegal room size');
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to change channel\'s size. Please either try again or review your invitations to ensure they are valid users.', true, true);
+          await message.reply('unable to change channel\'s size. Please either try again or review your invitations to ensure they are valid users.');
           return this.messageManager.statuses.FAILURE;
         }
       }
-      await this.messageManager.reply(message, `you haven't created a channel. Only the creator of a channel can change the size of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
+      await message.reply(`you haven't created a channel. Only the creator of a channel can change the size of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`);
       return this.messageManager.statuses.FAILURE;
     }
     return this.messageManager.statuses.FAILURE;
   }
-}
-
-module.exports = Resize;
+};

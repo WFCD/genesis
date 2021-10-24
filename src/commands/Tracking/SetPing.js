@@ -21,7 +21,7 @@ class SetPing extends Command {
   async run(message, ctx) {
     const regex = new RegExp(`${captures.trackables}(.+)?`, 'i');
     const match = message.content.match(regex);
-    if (message.channel.type === 'dm') {
+    if (message.channel.type === 'DM') {
       this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
       return this.messageManager.statuses.FAILURE;
     }

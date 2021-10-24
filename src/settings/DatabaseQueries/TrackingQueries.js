@@ -1,15 +1,44 @@
 'use strict';
 
 const SQL = require('sql-template-strings');
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
+// eslint-disable-next-line no-unused-vars
+const { Snowflake } = require('discord-api-types/v9');
 
-class TrackingQueries {
-  constructor(db) {
-    this.db = db;
+/**
+ * Database Mixin for notification system tracking queries
+ * @mixin
+ * @mixes Database
+ */
+module.exports = class TrackingQueries {
+  /**
+   * Tracking option arrays
+   * @typedef {Object} TrackingOptions
+   * @property {Array<string>} items Tracked Items
+   * @property {Array<string>} events Tracked Events
+   */
+
+  /**
+   * Set all tracking options for a channel
+   * @param {Discord.TextChannel} channel channel to set trackables for
+   * @param {TrackingOptions} opts options to set for provided channel
+   * @returns {Promise<void>}
+   */
+  async setTrackables(channel, opts) {
+    const deleteQuery = SQL`DELETE i, t
+      FROM item_notifications i
+        LEFT JOIN type_notifications t
+          on i.channel_id = t.channel_id 
+      WHERE i.channel_id = ${channel.id}`;
+    await this.query(deleteQuery);
+    if (opts?.events?.length) await this.trackEventTypes(channel, opts.events);
+    if (opts?.items?.length) await this.trackItems(channel, opts.items);
   }
 
   /**
    * Enables notifications for an item in a channel
-   * @param {Channel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} item The item to track
    * @returns {Promise}
    */
@@ -20,8 +49,8 @@ class TrackingQueries {
 
   /**
    * Enables notifications for items in a channel
-   * @param {Channel} channel The channel where to enable notifications
-   * @param {string} items The items to track
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
+   * @param {Array.<string>} items The items to track
    * @returns {Promise}
    */
   async trackItems(channel, items) {
@@ -34,7 +63,7 @@ class TrackingQueries {
 
   /**
    * Disables notifications for an item in a channel
-   * @param {Channel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} item The item to track
    * @returns {Promise}
    */
@@ -45,8 +74,8 @@ class TrackingQueries {
 
   /**
    * Disables notifications for items in a channel
-   * @param {Channel} channel The channel where to enable notifications
-   * @param {string} items The items to untrack
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
+   * @param {Array<string>} items The items to untrack
    * @returns {Promise}
    */
   async untrackItems(channel, items) {
@@ -60,7 +89,7 @@ class TrackingQueries {
 
   /**
    * Enables notifications for an event type in a channel
-   * @param {Channel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} type The item to track
    * @returns {Promise}
    */
@@ -71,8 +100,8 @@ class TrackingQueries {
 
   /**
    * Enables notifications for items in a channel
-   * @param {Channel} channel The channel where to enable notifications
-   * @param {string} types The types to track
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
+   * @param {Array<string>} types The types to track
    * @returns {Promise}
    */
   async trackEventTypes(channel, types) {
@@ -87,7 +116,7 @@ class TrackingQueries {
 
   /**
    * Disables notifications for an event type in a channel
-   * @param {Channel} channel The channel where to enable notifications
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {string} type The item to track
    * @returns {Promise}
    */
@@ -98,8 +127,8 @@ class TrackingQueries {
 
   /**
    * Disables notifications for event types in a channel
-   * @param {Channel} channel The channel where to enable notifications
-   * @param {string} types The types to untrack
+   * @param {Discord.TextChannel} channel The channel where to enable notifications
+   * @param {Array<string>} types The types to untrack
    * @returns {Promise}
    */
   async untrackEventTypes(channel, types) {
@@ -113,7 +142,7 @@ class TrackingQueries {
 
   /**
    * Returns the items that the channel is tracking
-   * @param {Channel} channel A Discord channel
+   * @param {Discord.TextChannel} channel A Discord channel
    * @returns {Promise.<Array.<string>>}
    */
   async getTrackedItems(channel) {
@@ -124,7 +153,7 @@ class TrackingQueries {
 
   /**
    * Returns the event types that the channel is tracking
-   * @param {Channel} channel A Discord channel
+   * @param {Discord.TextChannel} channel A Discord channel
    * @returns {Promise.<Array.<string>>}
    */
   async getTrackedEventTypes(channel) {
@@ -135,8 +164,8 @@ class TrackingQueries {
 
   /**
    * Remove item notifications corresponding to the channel id
-   * @param  {snowflake} channelId channel identifier for removal
-   * @returns {Promise.<string>} status of removal
+   * @param  {Snowflake} channelId channel identifier for removal
+   * @returns {Promise.<*>} status of removal
    */
   async removeItemNotifications(channelId) {
     const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channelId}`;
@@ -145,8 +174,8 @@ class TrackingQueries {
 
   /**
    * Remove type notifications corresponding to the channel id
-   * @param  {snowflake} channelId channel identifier for removal
-   * @returns {Promise.<string>} status of removal
+   * @param  {Snowflake} channelId channel identifier for removal
+   * @returns {Promise.<*>} status of removal
    */
   async removeTypeNotifications(channelId) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channelId}`;
@@ -162,6 +191,4 @@ class TrackingQueries {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.query(query);
   }
-}
-
-module.exports = TrackingQueries;
+};

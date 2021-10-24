@@ -2,12 +2,14 @@
 
 const { GiveawaysManager } = require('discord-giveaways');
 
-const Handler = require('../models/BaseEventHandler');
+const Discord = require('discord.js');
 
 const DynamicVoiceHandler = require('./DynamicVoiceHandler');
 const MessageManager = require('../settings/MessageManager');
 
 const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
+
+const { Constants: { Events } } = Discord;
 
 const max = {
   cetus: {
@@ -22,48 +24,36 @@ const max = {
 
 const cycleTimeout = 60000;
 
-/**
- * Describes a handler
- */
-class OnReadyHandle extends Handler {
-  /**
-   * Base class for bot commands
-   * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
-   */
+module.exports = class OnReadyHandle extends require('../models/BaseEventHandler') {
   constructor(bot) {
-    super(bot, 'handlers.onReady', 'ready');
+    super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
 
-  /**
-   * Run the ready handle
-   */
   async execute() {
     this.logger.silly(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
 
-    this.notifyUp();
+    await this.notifyUp();
     this.setupMessageManager();
 
     this.settings.init();
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
-    this.updatePresence();
+    await this.updatePresence();
     this.setupAdditionalHandlers();
     this.setupGiveaways();
   }
 
   async notifyUp() {
     if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
-      await this.bot.controlHook.edit(
-        this.bot.client.user.username,
-        this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
-      );
-      this.bot.controlHook.send({
+      await this.bot.controlHook.edit({
+        name: this.bot.client.user.username,
+        avatar: this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
+      });
+      await this.bot.controlHook.send({
         embeds: [{
-          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready`,
+          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now() / 1000)}:R>`,
           color: 0x2B90EC,
         }],
       });
@@ -118,13 +108,12 @@ class OnReadyHandle extends Handler {
       }
 
       const vs = vallisState
-        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄' : '🔥'} • `
+        ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄️' : '🔥'} • `
         : '';
       const cs = cetusState
-        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀'} • `
+        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀️'}`
         : '';
-      // const ous = outpost.active ? `${outpost.mission.node.split('(')[0]} • ` : '';
-      return `${vs}${cs}${base}`;
+      return `${vs}${cs}`;
     }
     return base;
   }
@@ -143,10 +132,10 @@ class OnReadyHandle extends Handler {
       this.client.user.setPresence({
         status: 'online',
         afk: false,
-        activity: {
+        activities: [{
           name: presence,
           type: activity,
-        },
+        }],
       });
     } catch (error) {
       this.logger.silly(error);
@@ -162,7 +151,7 @@ class OnReadyHandle extends Handler {
     this.logger.silly('Checking private rooms...');
     const privateRooms = await this.settings.getPrivateRooms();
     this.logger.silly(`Private rooms... ${privateRooms.length}`);
-    privateRooms.forEach(async (room) => {
+    await Promise.all(privateRooms.map(async (room) => {
       if (room && (room.textChannel || room.category || room.voiceChannel)) {
         const now = new Date();
         if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
@@ -190,8 +179,6 @@ class OnReadyHandle extends Handler {
           guild: { id: room.guildId },
         });
       }
-    });
+    }));
   }
-}
-
-module.exports = OnReadyHandle;
+};

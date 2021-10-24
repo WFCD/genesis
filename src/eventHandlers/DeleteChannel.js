@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 
 /**
@@ -11,7 +13,7 @@ class DeleteChannel extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.deleteChannel', 'channelDelete');
+    super(bot, 'handlers.deleteChannel', Events.CHANNEL_DELETE);
   }
 
   /**
@@ -21,7 +23,7 @@ class DeleteChannel extends Handler {
   async execute(...[channel]) {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    if (channel.type === 'voice') {
+    if (channel.type === 'GUILD_VOICE') {
       return;
     }
     await this.settings.deleteChannel(channel);

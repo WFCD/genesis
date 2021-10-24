@@ -1,5 +1,7 @@
 'use strict';
 
+const { Events } = require('discord.js').Constants;
+
 const Handler = require('../models/BaseEventHandler');
 
 /**
@@ -11,7 +13,7 @@ class DeleteGuild extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.deleteGuild', 'guildDelete');
+    super(bot, 'handlers.deleteGuild', Events.GUILD_DELETE);
   }
 
   /**

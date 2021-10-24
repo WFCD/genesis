@@ -103,7 +103,7 @@ class AddLFG extends Command {
           message.channel.send('Unknown error. Could not create LFG entry.');
           return this.messageManager.statuses.FAILURE;
         }
-        msg.delete({ timeout: dehumanize(lfg.expiry) + 10000 });
+        let deleteTimeout = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
         msg.react('🔰');
         msg.react('❌');
 
@@ -115,7 +115,8 @@ class AddLFG extends Command {
           lfg.expiry = 0;
           lfg.edited = true;
           msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
-          msg.delete({ timeout: 10000 });
+          clearTimeout(deleteTimeout);
+          deleteTimeout = setTimeout(msg.delete, 10000);
         });
 
         collector.on('collect', (reaction, user) => {
@@ -150,9 +151,8 @@ class AddLFG extends Command {
         });
 
         if (ctx.deleteCommand && message.deletable) {
-          message.delete({ timeout: 10000 });
+          setTimeout(message.delete, 10000);
         }
-
         return this.messageManager.statuses.SUCCESS;
       } catch (e) {
         this.logger.error(e);

@@ -1,6 +1,6 @@
 'use strict';
 
-const { WebhookClient, User } = require('discord.js');
+const { WebhookClient, User, Permissions } = require('discord.js');
 
 const logger = require('../Logger');
 
@@ -13,6 +13,8 @@ const defMsgOpts = {
 };
 
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
+
+const minPerms = [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES];
 
 /**
  * MessageManager for.... sending messages and deleting them and stuff
@@ -55,9 +57,10 @@ class MessageManager {
     }
 
     const isDM = target instanceof User || target.type === 'dm';
-
-    const perms = ['VIEW_CHANNEL', 'SEND_MESSAGES', msgOpts && msgOpts.embed ? 'EMBED_LINKS' : undefined].map(perm => perm);
-
+    let perms = [...minPerms];
+    if (msgOpts && msgOpts.embed) {
+      perms = [Permissions.FLAGS.EMBED_LINKS, ...minPerms];
+    }
     const canSend = isDM || (target.type === 'text' && target.permissionsFor(this.client.user.id).has(perms));
 
     if (canSend) {
@@ -68,7 +71,7 @@ class MessageManager {
         const msg = await target.send(content, msgOpts);
         await this.deleteCallAndResponse(message, msg, delCall, delRes);
         if (deleteAfter) {
-          msg.delete({ timeout: deleteAfter });
+          this.client.setTimeout(msg.delete, deleteAfter);
         }
         return msg;
       } catch (e) {
@@ -78,18 +81,6 @@ class MessageManager {
       logger.debug(`Cannot send in ${target.id}`);
     }
     return undefined;
-  }
-
-  /**
-   * Send a message, with options to delete messages after calling
-   * @param {Message} message original message being responded to
-   * @param {string} content String to send to a channel
-   * @param {boolean} delCall True to delete the original message
-   * @param {boolean} delRes True to delete the sent message after time
-   * @returns {Message} sent message
-   */
-  async sendMessage(message, content, delCall, delRes) {
-    return this.send(message.channel, content, { delCall, delRes, message });
   }
 
   /**
@@ -112,11 +103,12 @@ class MessageManager {
       return undefined;
     }
 
-    const isDM = message.channel instanceof User || message.channel.type === 'dm';
-
-    const perms = ['VIEW_CHANNEL', 'SEND_MESSAGES', msgOpts && msgOpts.embed ? 'EMBED_LINKS' : undefined].map(perm => perm);
-
-    const canSend = isDM || (message.channel.type === 'text' && message.channel.permissionsFor(this.client.user.id).has(perms));
+    const isDM = message.channel instanceof User || message.channel.type === 'DM';
+    let perms = [...minPerms];
+    if (msgOpts && msgOpts.embed) {
+      perms = [Permissions.FLAGS.EMBED_LINKS, ...minPerms];
+    }
+    const canSend = isDM || (message.channel.type === 'GUILD_TEXT' && message.channel.permissionsFor(this.client.user.id).has(perms));
 
     if (canSend) {
       try {
@@ -154,104 +146,6 @@ class MessageManager {
         avatarURL: this.settings.defaults.avatar,
         embeds,
       };
-  }
-
-  /**
-   * Send an embed, with options to delete messages after calling
-   * @param {Message} message original message being responded to
-   * @param {Object} embed Embed object to send
-   * @param {boolean} delCall True to delete the original message
-   * @param {boolean} delRes True to delete the sent message after time
-   * @param {content} content Content of the embed, prepended to the embed.
-   * @returns {null|Promise<Message>}
-   */
-  async embed(message, embed, delCall, delRes, content) {
-    return this.send(message.channel, content, {
-      msgOpts: { embed }, delCall, delRes, message,
-    });
-  }
-
-  /**
-   * Send an embed
-   * @param {Channel} channel channel to send message to
-   * @param {Object} embed Embed object to send
-   * @param {string} prepend String to prepend to the embed
-   * @param {nunber} delRes delete after a specified time
-   *
-   * @returns {Promise<Discord.Message>}
-   */
-  async embedToChannel(channel, embed, prepend, delRes) {
-    return this.send(channel, prepend, {
-      msgOpts: { embed }, delRes,
-    });
-  }
-
-  /**
-   * Send a message, with options to delete messages after calling
-   * @param {Message} message original message being responded to
-   * @param {string} content String to send to a channel
-   * @param {boolean} delRes True to delete the sent message after time
-   * @returns {Promise<Message>}
-   * @deprecated
-   */
-  async sendDirectMessageToAuthor(message, content, delRes) {
-    return this.send(message.author, content, { delRes, message });
-  }
-
-  /**
-   * Send a message, with options to delete messages after calling
-   * @param {TextChannel} user user being sent a message
-   * @param {string} content String to send to a channel
-   * @returns {Promise<Message>}
-   * @deprecated use `#send`
-   */
-  async sendDirectMessageToUser(user, content) {
-    return this.send(user, content);
-  }
-
-  /**
-   * Send a message, with options to delete messages after calling
-   * @param {Message} message original message being responded to
-   * @param {Object} embed Embed object to send
-   * @param {boolean} delRes True to delete the sent message after time
-   * @returns {Promise<Message>}
-   * @deprecated use `#send`
-   */
-  async sendDirectEmbedToAuthor(message, embed, delRes) {
-    return this.send(message.author, undefined, { msgOpts: { embed }, delRes, message });
-  }
-
-  async sendDirectEmbedToOwner(embed) {
-    return this.send(await this.client.users.cache
-      .get(this.owner), undefined, { msgOpts: { embed } });
-  }
-
-  /**
-   * Alias for #send with specific information, to the original messages author
-   * @param  {Discord.Message}  message  message to reply/send to author
-   * @param  {Object}  file     file to send
-   * @param  {string}  fileName name of file, with extension
-   * @param  {boolean}  delCall  whether or not to delete the call
-   * @returns {Promise<Discord.Message>}
-   */
-  async sendFileToAuthor(message, file, fileName, delCall) {
-    return this.send(message.author, undefined, {
-      msgOpts: {
-        files: [{ attachment: file, name: fileName }],
-      },
-      delCall,
-      message,
-    });
-  }
-
-  async sendFile(message, prepend, file, fileName, delCall) {
-    return this.send(message.channel, prepend, {
-      msgOpts: {
-        files: [{ attachment: file, name: fileName }],
-      },
-      delCall,
-      message,
-    });
   }
 
   /**
@@ -293,18 +187,23 @@ class MessageManager {
     return response;
   }
 
-  async webhook(ctx, { text, embed = undefined }) {
+  async webhook(ctx, { content, embeds = undefined }) {
+    // eslint-disable-next-line no-param-reassign
+    embeds = Array.isArray(embeds) ? embeds : [embeds];
     if (ctx.webhook && ctx.webhook.id && ctx.webhook.token) {
-      const client = new WebhookClient(ctx.webhook.id, ctx.webhook.token);
+      const client = new WebhookClient({ id: ctx.webhook.id, token: ctx.webhook.token });
+      const opts = {
+        avatarURL: ctx?.webhook?.avatar,
+        username: ctx?.webhook?.name,
+        embeds,
+      };
       try {
-        const embedCopy = { ...embed };
-        if (ctx.webhook.avatar) {
-          embedCopy.avatarURL = ctx.webhook.avatar;
-        }
-        if (ctx.webhook.name) {
-          embedCopy.username = ctx.webhook.name;
-        }
-        return client.send(text, embedCopy);
+        return content?.length
+          ? client.send({
+            ...opts,
+            content,
+          })
+          : client.send(opts);
       } catch (e) {
         logger.error(e);
         await this.settings.deleteWebhooksForChannel(ctx.channel.id);
@@ -313,14 +212,10 @@ class MessageManager {
       }
     }
     const channelWebhook = await this.settings.getChannelWebhook(ctx.channel);
-    if (!embed.embeds) {
-      // eslint-disable-next-line no-param-reassign
-      embed = this.wrap(embed, ctx);
-    }
     if (channelWebhook && channelWebhook.token && channelWebhook.id) {
       // eslint-disable-next-line no-param-reassign
       ctx.webhook = channelWebhook;
-      return this.webhook(ctx, { text, embed });
+      return this.webhook(ctx, { content, embeds });
     }
 
     const useBotLogic = this.scope === 'bot' && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS');
@@ -349,7 +244,7 @@ class MessageManager {
           return false;
         }
         ctx.webhook = webhook;
-        return this.webhook(ctx, { text, embed });
+        return this.webhook(ctx, { content, embeds });
       }
       if (!lookupWebhooks) {
         logger.silly(`Could not obtain webhook for ${ctx.channel.id}`);
@@ -373,7 +268,7 @@ class MessageManager {
         }
 
         ctx.webhook = webhook;
-        return this.webhook(ctx, { text, embed });
+        return this.webhook(ctx, { content, embeds });
       }
       logger.debug(`Could not create webhook for ${ctx.channel.id}`);
     }

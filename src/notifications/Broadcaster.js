@@ -48,11 +48,10 @@ class Broadcaster {
   * @returns {Array.<Object>} values for successes
   */
   async broadcast(embed, platform, type, items = []) {
-    logger.silly(`broadcasting ${type}`);
+    logger.silly(`broadcasting ${type} on ${platform}`);
     delete embed.bot;
 
     const guilds = this.workerCache.getKey('guilds');
-
     const channels = cachedEvents.includes(type)
       ? this.workerCache.getKey(`${type}:${platform}`)
       : await this.settings.getAgnosticNotifications(type, platform, items);
@@ -80,12 +79,8 @@ class Broadcaster {
       }
 
       try {
-        const prepend = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || ''; // await this.settings.getPing(guild, (items || []).concat([type]));
-        if (!embed.embeds) {
-          await this.webhook(ctx, { text: prepend, embed: this.wrap(embed, ctx) });
-        } else {
-          await this.webhook(ctx, { text: prepend, embed });
-        }
+        const content = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || '';
+        await this.webhook(ctx, { content, embeds: [embed] });
       } catch (e) {
         if (e.message && e.message.includes('Unknown Webhook')) {
           logger.warn(`Wiping webhook context for ${channelId}`);

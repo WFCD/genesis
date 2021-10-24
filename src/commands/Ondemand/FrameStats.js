@@ -29,7 +29,7 @@ class FrameStats extends Command {
 
   /**
    * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
+   * @param {Discord.Message} message Message with a command to handle, reply to,
    *                          or perform an action based on parameters.
    * @returns {string} success status
    */
@@ -57,12 +57,9 @@ class FrameStats extends Command {
         await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
       }
-      const frames = await fetch(`${apiBase}/warframes`);
-      this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
-      return this.messageManager.statuses.FAILURE;
     }
     const frames = await fetch(`${apiBase}/warframes`);
-    this.messageManager.embed(message, new FrameEmbed(this.bot, undefined, frames), true, false);
+    await message.reply({ embeds: [new FrameEmbed(this.bot, undefined, frames)] });
     return this.messageManager.statuses.FAILURE;
   }
 }

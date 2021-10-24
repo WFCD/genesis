@@ -27,9 +27,12 @@ class Invite extends Command {
    */
   async run(message, ctx) {
     if (ctx.createPrivateChannel) {
-      const userHasRoom = await this.settings.userHasRoom(message.member);
+      const userHasRoom = await ctx.settings.userHasRoom(message.member);
       if (userHasRoom) {
-        const room = await this.settings.getUsersRoom(message.member);
+        /**
+         * @type {Room}
+         */
+        const room = await ctx.settings.getUsersRoom(message.member);
         const users = getUsersForCall(message, true);
         const permOverwrite = {
           VIEW_CHANNEL: true,
@@ -50,7 +53,7 @@ class Invite extends Command {
             await Promise.all(users.map(async user => room.textChannel.updateOverwrite(user, permOverwrite, `Invitation from ${message.author.tag}`)));
           }
           // send users invite link to new rooms
-          this.sendInvites(room.voiceChannel, users, message.author);
+          await this.sendInvites(room.voiceChannel, users, message.author);
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);

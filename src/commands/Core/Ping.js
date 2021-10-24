@@ -54,7 +54,7 @@ class Ping extends Command {
     });
 
     const now = Date.now();
-    const msg = await this.messageManager.reply(message, 'Testing Ping', { deleteOriginal: true, deleteResponse: false });
+    const msg = await message.reply('Testing Ping');
     const afterSend = Date.now();
 
     const updated = new MessageEmbed({
@@ -72,7 +72,7 @@ class Ping extends Command {
       },
     });
 
-    await msg.edit('', updated);
+    msg.edit({ embeds: [updated] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

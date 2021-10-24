@@ -2,11 +2,13 @@
 
 const SQL = require('sql-template-strings');
 
-class RatioQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
+/**
+ * Database Mixin for Streams queries
+ * @mixin
+ * @deprecated
+ * @mixes Database
+ */
+module.exports = class StreamQueries {
   addStream(type, username, uid) {
     let q;
     if (uid) {
@@ -32,6 +34,4 @@ class RatioQueries {
 
     return (await this.query(q))[0];
   }
-}
-
-module.exports = RatioQueries;
+};

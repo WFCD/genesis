@@ -1,12 +1,15 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
 const SQL = require('sql-template-strings');
 
+/**
+ * Database Mixin for Welcome queries
+ * @mixin
+ * @mixes Database
+ */
 class WelcomeQueries {
-  constructor(db) {
-    this.db = db;
-  }
-
   /**
    * Clear welcome messages for a guild
    * @param {Guild} guild The guild
@@ -20,7 +23,7 @@ class WelcomeQueries {
 
   /**
    * Sets a ping message for an item or event type in a guild
-   * @param {Message} message Message to derive information for guild and channel
+   * @param {Discord.Message} message Message to derive information for guild and channel
    * @param {boolean} isDm whether or not this is for the dm welcome
    * @param {string} text The text of the ping message
    * @returns {Promise}
@@ -31,6 +34,11 @@ class WelcomeQueries {
     return this.query(query);
   }
 
+  /**
+   * Get welcomes for a guild
+   * @param {Discord.Guild} guild guild to fetch welcomes for
+   * @returns {Promise<*[]|*>}
+   */
   async getWelcomes(guild) {
     if (guild) {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
