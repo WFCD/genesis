@@ -9,10 +9,6 @@ const Discord = require('discord.js');
 const schema = require('../schema.js');
 const integrations = require('../integrations');
 
-const SCHEMA_IND = {
-  BUILD_ADV: 24,
-};
-
 /**
  * Database Mixin for DBM queries
  * @mixin
