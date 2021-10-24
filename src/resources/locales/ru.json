@@ -7,6 +7,7 @@
   "[{0}] Elite Nightwave": "[{0}] Ночная Волна Элитные",
   "[{0}] Worldstate - Invasions": "[{0}] Вторжения",
   "[{0}] Worldstate - Fissures": "[{0}] Разрывы Бездны",
+  "[{0}] Worldstate - Void Fissures": "[{0}] Разрывы Бездны",
   "[{0}] Worldstate - Sortie": "[{0}] Вылазка",
   "[{0}] {1}": "[{0}] {1}",
   "{0} Credits": "{0} Кредитов",
@@ -83,5 +84,6 @@
   "Anywhere": "Anywhere",
   "Any Time": "Any Time",
   "Anything": "Anything",
-  "No builds for user": "No builds for user"
+  "No builds for user": "No builds for user",
+  "No field": "You somehow didn't provide the worldstate field you're looking for..."
 }
