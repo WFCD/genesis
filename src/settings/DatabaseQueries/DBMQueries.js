@@ -7,6 +7,11 @@ const { Snowflake } = require('discord-api-types/v9');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 const schema = require('../schema.js');
+const integrations = require('../integrations');
+
+const SCHEMA_IND = {
+  BUILD_ADV: 24,
+};
 
 /**
  * Database Mixin for DBM queries
@@ -25,7 +30,9 @@ class DBMQueries {
    */
   createSchema() {
     try {
-      return Promise.mapSeries(schema, q => this.query(q));
+      const things = [Promise.mapSeries(schema, q => this.query(q))];
+      things.push(Promise.mapSeries(integrations, integration => integration(this)));
+      return Promise.all(things);
     } catch (e) {
       this.logger.fatal(e);
       return undefined;

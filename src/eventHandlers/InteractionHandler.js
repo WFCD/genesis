@@ -222,14 +222,6 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         }
       }
     } else {
-      await commands.client.guilds.fetch();
-      commands.client.guilds.cache.each(async (guild) => {
-        const existing = await guild.commands.fetch();
-        for (/** @type {Discord.ApplicationCommand} */ const [, command] of existing) {
-          logger.silly(`deleting... ${command.id} | ${command.guildId} | ${command.name}`);
-          await command.delete();
-        }
-      });
       await commands.set(cmds);
     }
   }
