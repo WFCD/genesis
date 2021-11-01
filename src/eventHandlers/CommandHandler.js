@@ -161,7 +161,9 @@ class CommandHandler extends Handler {
             // react based on result
             const canReact = (message.channel.type === 'DM'
               || (message.channel.permissionsFor(this.bot.client.user.id)
-                .has(minPerms))) && !command.isInline;
+                .has(minPerms)))
+              && !command.isInline
+              && !!(await message.fetch(true));
             switch (status) {
               case this.statuses.SUCCESS:
                 if (canReact) {
