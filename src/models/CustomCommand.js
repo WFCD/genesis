@@ -51,8 +51,7 @@ class CustomCommand extends Command {
       );
 
     if (isSingleImg) {
-      await this.messageManager.send(message.channel, undefined, { msgOpts: { files: [msg] } });
-      return;
+      return message.reply({ files: [msg] });
     }
 
     if (ctx['settings.cc.ping']) {

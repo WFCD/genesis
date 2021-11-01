@@ -14,7 +14,10 @@ const MessageManager = require('./settings/MessageManager');
 const Database = require('./settings/Database');
 const logger = require('./Logger');
 
-const unlog = ['WS_CONNECTION_TIMEOUT'];
+const unlog = {
+  debug: ['WS_CONNECTION_TIMEOUT'],
+  error: /^(Unknown Message)/ig,
+};
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -202,7 +205,9 @@ class Genesis {
 
     this.client.on(Events.SHARD_DISCONNECT,
       (event) => { this.logger.error(`Disconnected with close event: ${event.code}`); });
-    this.client.on(Events.ERROR, this.logger.error);
+    this.client.on(Events.ERROR, (error) => {
+      if (!unlog.error.test(error.message)) this.logger.error(error);
+    });
     this.client.on(Events.WARN, this.logger.warn);
     this.client.on(Events.DEBUG, (message) => {
       if (/(heartbeat|Latency of|voice|HELLO timeout|CONNECT|Spawning)/i.test(message)) {
@@ -228,7 +233,7 @@ class Genesis {
       this.logger.debug('Logged in with token.');
     } catch (err) {
       const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
-      if (!unlog.includes(type)) {
+      if (!unlog.debug.includes(type)) {
         this.logger.error(err);
       }
       this.logger.fatal(err);
