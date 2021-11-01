@@ -17,12 +17,6 @@ class Damage extends Command {
     super(bot, 'warframe.misc.damage', 'damage', 'Display Damage 2.0 chart', 'WARFRAME');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const embed = {
       title: 'Legend',

@@ -17,12 +17,6 @@ class Reload extends Command {
     this.ownerOnly = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     this.logger.debug('Reloading modules');
     const precache = Object.keys(this.commandManager.commandCache);
@@ -43,17 +37,11 @@ class Reload extends Command {
     delete this.commandManager.commandCache;
     this.commandManager.commandCache = {};
     const precacheString = precache.length > 0 ? precache.sort().join('\n- ') : 'No Commands decached';
-
-    await this.messageManager.send(message, `**Commands reloaded!**
+    await message.reply(`**Commands reloaded!**
 **Decached**
 \`\`\`diff
 - ${precacheString}
-\`\`\``,
-    {
-      deleteOriginal: true,
-      deleteResponse: true,
-      message,
-    });
+\`\`\``);
     return this.messageManager.statuses.SUCCESS;
   }
 }

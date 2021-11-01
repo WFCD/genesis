@@ -51,12 +51,6 @@ class LeaveRole extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {

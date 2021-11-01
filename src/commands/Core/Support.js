@@ -10,12 +10,6 @@ class Untrack extends Command {
     super(bot, 'core.support', 'support', 'Support info about the bot', 'BOT_MGMT');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     await message.reply({
       embeds: [{

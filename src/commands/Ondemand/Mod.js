@@ -22,12 +22,6 @@ class Mod extends Command {
     this.noResultStr = '```haskell\nNo result for search, Operator. Attempt another search query.```';
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const query = this.regex.exec(message.strippedContent.match(this.regex)[0])[1];
     if (!query) {

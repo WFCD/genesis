@@ -23,12 +23,6 @@ class Diagnostics extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const embed = new MessageEmbed();
     embed.setTitle(`Diagnostics for Shard ${message.guild.shardId + 1}/${this.bot.shardTotal}/${this.bot.clusterId}`);

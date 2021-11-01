@@ -13,12 +13,6 @@ class SetDefaultCategory extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const category = message.strippedContent.match(this.regex)[1];
     if (category && this.bot.client.channels.cache.has(category.trim())) {

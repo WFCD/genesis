@@ -2,12 +2,8 @@
 
 const { MessageEmbed } = require('discord.js');
 const fetch = require('../../resources/Fetcher');
-const Command = require('../../models/Command.js');
 
-/**
- * Add a joinable role
- */
-class Dump extends Command {
+module.exports = class Dump extends require('../../models/Command.js') {
   constructor(bot) {
     super(bot, 'utilities.dump', 'dump', 'Dump message data to a channel', 'UTIL');
     this.usages = [
@@ -17,14 +13,8 @@ class Dump extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
-    if (message.attachments.first() && message.member.hasPermission('ADMINISTRATOR')) {
+    if (message.attachments.first() && message.member.permissions.has('ADMINISTRATOR')) {
       let firstAttach;
       try {
         firstAttach = message.attachments.first();
@@ -107,6 +97,4 @@ class Dump extends Command {
     }
     return this.messageManager.statuses.FAILURE;
   }
-}
-
-module.exports = Dump;
+};

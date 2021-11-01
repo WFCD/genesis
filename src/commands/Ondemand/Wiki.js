@@ -30,16 +30,10 @@ class Wiki extends Command {
     this.enabled = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
-      message.channel.send(noResult);
+      await message.reply(noResult);
       return this.messageManager.statuses.FAILURE;
     }
     try {
@@ -47,10 +41,10 @@ class Wiki extends Command {
       const articles = await warframe.getSearchList({ query: encodeURIComponent(query), limit: 1 });
       const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
       const embed = new WikiEmbed(this.bot, details);
-      await message.channel.send(JSON.parse(JSON.stringify(embed)));
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.SUCCESS;
     } catch (error) {
-      message.channel.send(noResult);
+      await message.reply(noResult);
       return this.messageManager.statuses.FAILURE;
     }
   }

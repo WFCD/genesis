@@ -33,19 +33,13 @@ class Whatsin extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     let tier = message.strippedContent.match(this.regex)[1];
     let relicName = message.strippedContent.match(this.regex)[2];
 
-    const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
+    const sentMessage = await message.reply({ embeds: [inProgressEmbed] });
     if (!(tier && relicName)) {
-      sentMessage.edit('', { embed: noResultsEmbed });
+      await sentMessage.edit({ embeds: [noResultsEmbed] });
       return this.messageManager.statuses.FAILURE;
     }
     tier = toTitleCase(tier.trim());
@@ -53,13 +47,13 @@ class Whatsin extends Command {
     try {
       const relicData = await fetch(`${relicBase}/${tier}/${relicName}.json`);
       if (relicData) {
-        sentMessage.edit('', { embed: new WhatsinEmbed(this.bot, relicData, tier, relicName) });
+        await sentMessage.edit({ embeds: [new WhatsinEmbed(null, relicData, tier, relicName)] });
         return this.messageManager.statuses.SUCCESS;
       }
     } catch (error) {
       this.logger.error(error);
     }
-    sentMessage.edit('', { embed: noResultsEmbed });
+    await sentMessage.edit({ embeds: [noResultsEmbed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

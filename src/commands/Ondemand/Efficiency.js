@@ -17,12 +17,6 @@ class Efficiency extends Command {
     super(bot, 'warframe.misc.efficiency', 'efficiency', 'Display Warframe Efficiency Chart', 'WARFRAME');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     this.messageManager.sendFile(
       message,

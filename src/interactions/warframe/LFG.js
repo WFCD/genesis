@@ -134,7 +134,7 @@ module.exports = class LFG extends require('../../models/Interaction') {
       message.reactions.removeAll();
       lfg.expiry = 0;
       lfg.edited = true;
-      message.edit({ embed: new LFGEmbed(null, lfg), components: [] });
+      message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
       clearTimeout(deleteTimeout);
       deleteTimeout = setTimeout(message.delete, 10000);
     });

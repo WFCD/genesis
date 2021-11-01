@@ -100,37 +100,39 @@ class AddLFG extends Command {
         const msg = await chn.send({ embeds: [embed] });
 
         if (!msg) {
-          message.channel.send('Unknown error. Could not create LFG entry.');
+          await message.reply('Unknown error. Could not create LFG entry.');
           return this.messageManager.statuses.FAILURE;
         }
         let deleteTimeout = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
         msg.react('🔰');
-        msg.react('❌');
+        await msg.react('❌');
 
-        const collector = msg.createReactionCollector((reaction, user) => (['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id,
-          { time: dehumanize(lfg.expiry), dispose: true });
+        const collector = msg.createReactionCollector({
+          filter: (reaction, user) => ((['🔰', '❌'].includes(reaction.emoji.name)) && user.id !== msg.guild.me.id),
+          time: dehumanize(lfg.expiry),
+          dispose: true,
+        });
 
         collector.on('end', () => {
           msg.reactions.removeAll();
           lfg.expiry = 0;
           lfg.edited = true;
-          msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+          msg.edit({ embeds: [new LFGEmbed(this.bot, lfg)] });
           clearTimeout(deleteTimeout);
           deleteTimeout = setTimeout(msg.delete, 10000);
         });
-
         collector.on('collect', (reaction, user) => {
           if (!lfg.members.includes(user.id) && lfg.members.length <= lfg.membersNeeded) {
             lfg.members.push(user.id);
             lfg.vc = message.member.voice;
             lfg.edited = true;
-            msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+            msg.edit({ embeds: [new LFGEmbed(this.bot, lfg)] });
           }
           if (user.id === message.author.id) {
             if (reaction.emoji.name === '❌') {
               lfg.expiry = 0;
               lfg.edited = true;
-              msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+              msg.edit({ embeds: [new LFGEmbed(this.bot, lfg)] });
               collector.stop();
             }
             try {
@@ -140,13 +142,12 @@ class AddLFG extends Command {
             }
           }
         });
-
         collector.on('remove', (reaction, user) => {
           if (lfg.members.includes(user.id) && user.id !== message.author.id && reaction.emoji.name === '🔰') {
             lfg.members.splice(lfg.members.indexOf(user.id), 1);
             lfg.vc = message.member.voice;
             lfg.edited = true;
-            msg.edit({ embed: new LFGEmbed(this.bot, lfg) });
+            msg.edit({ embeds: [new LFGEmbed(this.bot, lfg)] });
           }
         });
 

@@ -1,6 +1,5 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
 const WhereisEmbed = require('../../embeds/WhereisEmbed.js');
 const { createGroupedArray, createPageCollector } = require('../../CommonFunctions.js');
 
@@ -14,7 +13,7 @@ function toTitleCase(str) {
 /**
  * Looks up locations of items
  */
-class Whereis extends Command {
+module.exports = class Whereis extends require('../../models/Command.js') {
   constructor(bot) {
     super(bot, 'warframe.misc.whereis', 'whereis', 'Find where something drops', 'WARFRAME');
     this.regex = new RegExp('^where\\s?(?:is\\s?)?(.+)?', 'i');
@@ -26,18 +25,11 @@ class Whereis extends Command {
       },
     ];
   }
-
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     let query = message.strippedContent.match(this.regex)[1];
-    const sentMessage = await message.channel.send('', { embed: inProgressEmbed });
+    const sentMessage = await message.reply({ embeds: [inProgressEmbed] });
     if (!query) {
-      await sentMessage.edit('', { embed: noResultsEmbed });
+      await sentMessage.edit({ embeds: [noResultsEmbed] });
       return this.messageManager.statuses.FAILURE;
     }
     try {
@@ -111,9 +103,7 @@ class Whereis extends Command {
     } catch (error) {
       this.logger.error(error);
     }
-    await sentMessage.edit('', { embed: noResultsEmbed });
+    await sentMessage.edit({ embeds: [noResultsEmbed] });
     return this.messageManager.statuses.FAILURE;
   }
-}
-
-module.exports = Whereis;
+};

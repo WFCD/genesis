@@ -14,12 +14,6 @@ class SetMemRemoveLog extends Command {
     this.allowDM = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const logChannel = message.strippedContent.match(this.regex)[1];
     if (logChannel && this.bot.client.channels.cache.has(logChannel.trim())) {

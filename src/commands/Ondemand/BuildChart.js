@@ -16,12 +16,6 @@ class BuildChart extends Command {
     super(bot, 'warframe.misc.buildchart', 'buildchart', 'Display Weapon Build Flowchart chart', 'WARFRAME');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const embed = {
       color: 0xBCC9EB,

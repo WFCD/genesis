@@ -87,7 +87,8 @@ Object.keys(levels).forEach((level) => {
       if (errorHook && l.logLevel !== 'DEBUG') {
         // filter out api errors, they're largely unhelpful and unrecoverable
         if (message.stack && message.stack.startsWith('DiscordAPIError')) return;
-        errorHook.send(new ErrorEmbed(message));
+        errorHook.send({ embeds: [new ErrorEmbed(message)] })
+          .catch(() => console.error(simple));
       } else {
         console.error(simple);
         console.error(message);

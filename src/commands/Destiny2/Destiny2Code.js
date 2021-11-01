@@ -38,12 +38,6 @@ class Destiny2Code extends Command {
     super(bot, 'Destiny2.d2code', 'd2code', 'Outputs a random D2 Grimore card to the specified user', 'DESTINY2');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     this.messageManager.sendMessage(message, `\`\`\`haskell\n${d2codes[Math.floor(Math.random() * d2codes.length)]}\n\`\`\``, true, true);
 

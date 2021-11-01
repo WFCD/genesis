@@ -545,7 +545,7 @@ const createPageCollector = async (msg, pages, author) => {
  * @param  {MessageManager}               mm      Message manager for interacting with messages
  */
 const setupPages = async (pages, { message, settings }) => {
-  if (pages.length) {
+  if (pages.length && !!(await message.fetch(true))) {
     const msg = await message.reply({ embeds: [pages[0]] });
     await createPageCollector(msg, pages, message.author);
   }

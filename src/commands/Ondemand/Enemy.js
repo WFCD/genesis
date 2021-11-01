@@ -6,7 +6,7 @@ const DropsEmbed = require('../../embeds/DropsEmbed');
 const PatchnotesEmbed = require('../../embeds/PatchnotesEmbed');
 const { setupPages, createGroupedArray } = require('../../CommonFunctions');
 
-class EnemyStats extends Command {
+module.exports = class EnemyStats extends Command {
   constructor(bot) {
     super(bot, 'warframe.misc.enemystats', 'enemy', 'Get stats for an enemy', 'WARFRAME');
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
@@ -51,7 +51,7 @@ class EnemyStats extends Command {
           });
 
           if (pages.length) {
-            await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+            await setupPages(pages, { message, settings: this.settings });
             return this.messageManager.statuses.SUCCESS;
           }
         }
@@ -59,9 +59,7 @@ class EnemyStats extends Command {
         this.logger.error(e);
       }
     }
-    this.messageManager.send(message.channel, 'No such enemy');
+    await message.reply('No such enemy');
     return this.messageManager.statuses.FAILURE;
   }
-}
-
-module.exports = EnemyStats;
+};

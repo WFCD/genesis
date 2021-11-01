@@ -15,12 +15,6 @@ class Kill extends Command {
     this.ownerOnly = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run() {
     this.logger.fatal('Killing bot shard');
     process.exit(255);

@@ -16,12 +16,6 @@ module.exports = class Jokes extends require('../../models/Command.js') {
     super(bot, 'silly.joke', 'joke', 'Genesis tells a joke', 'FUN');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     await message.reply(`\`\`\`haskell\n${jokes[Math.floor(Math.random() * jokes.length)]}\n\`\`\``);
     return this.messageManager.statuses.SUCCESS;

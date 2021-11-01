@@ -22,12 +22,6 @@ class LeaveServer extends Command {
     ];
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const serverid = message.strippedContent.match(this.regex)[1];
     if (this.bot.client.guilds.cache.has(serverid)) {

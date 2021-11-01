@@ -15,12 +15,6 @@ class Servers extends Command {
     this.ownerOnly = true;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     const fileContents = [];
     fileContents.push('"Guild Name","Guild Owner","Guild Id","Member Count","# Human","# Bot"');

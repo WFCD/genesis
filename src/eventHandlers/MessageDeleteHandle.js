@@ -1,6 +1,8 @@
 'use strict';
 
-const { Events } = require('discord.js').Constants;
+const Discord = require('discord.js');
+
+const { Events } = Discord.Constants;
 
 const Handler = require('../models/BaseEventHandler');
 const LogEmbed = require('../embeds/LogEmbed');
@@ -10,18 +12,12 @@ const { games } = require('../CommonFunctions');
  * Describes a handler
  */
 class LogMessageDelete extends Handler {
-  /**
-   * Base class for bot commands
-   * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
-   */
   constructor(bot) {
     super(bot, 'handlers.logMessageDelete', Events.MESSAGE_DELETE);
   }
 
   /**
-   * add the guild to teh Database
+   * add the guild to the Database
    * @param {Discord.Message} message member to add roles to
    */
   async execute(...[message]) {
@@ -60,7 +56,7 @@ class LogMessageDelete extends Handler {
         ],
         footer: message.id,
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embed: log });
+      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }

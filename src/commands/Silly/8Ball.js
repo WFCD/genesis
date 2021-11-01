@@ -39,12 +39,6 @@ class EightBall extends Command {
     this.regex = /8ball ?(.*)?/;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run(message) {
     if (message.strippedContent.replace(this.call, '').trim().length) {
       const resp = jokes[Math.floor(Math.random() * jokes.length)];

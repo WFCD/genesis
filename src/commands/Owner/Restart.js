@@ -16,12 +16,6 @@ class Restart extends Command {
     this.blacklistable = false;
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @returns {string} success status
-   */
   async run() {
     this.logger.debug('Forcing Restart');
     process.exit(0);
