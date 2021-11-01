@@ -62,7 +62,7 @@ class CustomCommand extends Command {
     } else {
       format = decodeURIComponent(this.response).replace('$mtn', `**${mention.displayName}**`);
     }
-    this.messageManager.sendMessage(message, format, false, false);
+    return message.reply(format);
   }
 }
 
