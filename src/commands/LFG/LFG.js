@@ -95,9 +95,9 @@ class AddLFG extends Command {
       const embed = new LFGEmbed(this.bot, lfg);
       try {
         const chn = message.guild.channels
-          .resolve(ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]]);
+          .resolve(ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)[0]]);
 
-        const msg = await chn.send(embed);
+        const msg = await chn.send({ embeds: [embed] });
 
         if (!msg) {
           message.channel.send('Unknown error. Could not create LFG entry.');
@@ -156,11 +156,11 @@ class AddLFG extends Command {
         return this.messageManager.statuses.SUCCESS;
       } catch (e) {
         this.logger.error(e);
-        await this.messageManager.reply(message, `something failed in sending. You sent: ${params.join(', ')}`, true, true);
+        await message.reply(`something failed in sending. You sent: ${params.join(', ')}`);
         return this.messageManager.statuses.FAILURE;
       }
     }
-    await this.messageManager.reply(message, `please ask your admin to designate a setting for  \`${ctx.prefix}set lfg channel\``, true, true);
+    await message.reply(`please ask your admin to designate a setting for \`${ctx.prefix}set lfg channel\``);
     return this.messageManager.statuses.FAILURE;
   }
 }
