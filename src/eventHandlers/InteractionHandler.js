@@ -262,8 +262,13 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     );
     await InteractionHandler
       .loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
-    // load custom commands
-    await this.loadCustomCommands();
+    // load custom commands, allowed to fail
+    try {
+      await this.loadCustomCommands();
+    } catch (e) {
+      this.logger.error(e);
+    }
+
     // await this.initPermissions();
     this.ready = true;
   }

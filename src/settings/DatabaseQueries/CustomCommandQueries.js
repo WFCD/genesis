@@ -32,11 +32,21 @@ module.exports = class CustomCommandQueries {
 
     const [rows] = await this.query(query);
     return rows?.length
-      ? rows.map(row => ({
-        call: row.command,
-        response: decodeURIComponent(row.response),
-        guildId: row.guild_id,
-      }))
+      ? rows.map((row) => {
+        try {
+          return {
+            call: row.command,
+            response: decodeURIComponent(row.response),
+            guildId: row.guild_id,
+          };
+        } catch (igrored) {
+          return {
+            call: row.command,
+            response: 'unable to parse',
+            guildId: row.guild_id,
+          };
+        }
+      })
       : null;
   }
 
