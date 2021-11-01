@@ -107,9 +107,8 @@ class DBMQueries {
   async removeGuild(guild) {
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
     await this.query(query);
-    const channelIds = guild.channels.cache.keys();
     const results = [];
-    channelIds.forEach((channelId) => {
+    guild.channels.cache.forEach((channel, channelId) => {
       results.push(this.removeChannelPermissions(channelId));
       results.push(this.removeItemNotifications(channelId));
       results.push(this.removeSettings(channelId));
