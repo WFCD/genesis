@@ -93,6 +93,7 @@ class JoinRole extends Command {
     return this.messageManager.statuses.FAILURE;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendJoined(message, role) {
     const embed = {
       title: 'Joined Role',
@@ -103,6 +104,7 @@ class JoinRole extends Command {
     await message.reply({ embeds: [embed] });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendCantJoin(message, userHasRole, hasMinimumRole) {
     const embed = {
       title: 'Can\'t Join',

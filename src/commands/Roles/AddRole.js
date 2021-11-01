@@ -116,6 +116,7 @@ class AddRole extends Command {
     await message.reply({ embeds: [embed] });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendAlreadyAddedEmbed(message) {
     const embed = {
       title: 'Invalid Role',
