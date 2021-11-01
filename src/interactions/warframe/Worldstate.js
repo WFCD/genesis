@@ -46,6 +46,7 @@ const embeds = {
   syndicate: require(`${embedsd}/SyndicateEmbed`),
   vallisCycle: require(`${embedsd}/SolarisEmbed`),
   voidTrader: require(`${embedsd}/VoidTraderEmbed`),
+  sortie: require(`${embedsd}/SortieEmbed`),
 };
 
 const platformable = [{
@@ -199,6 +200,11 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       name: 'steelpath',
       description: 'Get Current Steel Path Offerings',
       options: compactable,
+    }, {
+      type: Types.SUB_COMMAND,
+      name: 'sortie',
+      description: 'Get Sortie Information',
+      options: platformable,
     }],
   };
 
@@ -239,6 +245,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       case 'dailyDeals':
       case 'constructionProgress':
       case 'nightwave':
+      case 'sortie':
       case 'sentientOutposts':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
