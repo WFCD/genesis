@@ -65,9 +65,9 @@ module.exports = class Calculator extends require('../../models/Interaction') {
     const subcommand = interaction.options.getSubcommand();
     const { options } = interaction;
 
-    const base = options.get('base_level').value;
-    const current = options.get('current_level').value;
-    const val = options.get('base').value;
+    const base = options?.getInteger('base_level') || 0;
+    const current = options?.getInteger('current_level') || 1;
+    const val = options?.getInteger('base') || 0;
     const range = current - base;
 
     let f1;
