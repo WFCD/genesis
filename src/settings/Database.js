@@ -353,21 +353,21 @@ module.exports = class Database {
         context.webhook = undefined;
       }
 
-      if (context.tempCategory && channel.guild.channels.cache.has(context.tempCategory.trim())) {
-        context.tempCategory = channel.guild.channels.cache.get(context.tempCategory.trim());
+      if (context.tempCategory && channel?.guild.channels?.cache.has(context.tempCategory.trim())) {
+        context.tempCategory = channel?.guild.channels?.cache.get(context.tempCategory.trim());
       } else {
         context.tempCategory = undefined;
       }
 
-      if (context.tempChannel && channel.guild.channels.cache.has(context.tempChannel.trim())) {
-        context.tempChannel = channel.guild.channels.cache.get(context.tempChannel.trim());
+      if (context.tempChannel && channel?.guild?.channels.cache.has(context.tempChannel.trim())) {
+        context.tempChannel = channel?.guild?.channels.cache.get(context.tempChannel.trim());
       } else {
         context.tempChannel = undefined;
       }
 
       if (context.lfgChannel) {
         context.lfg = {};
-        context.lfg.pc = channel.guild.channels.cache.get(context.lfgChannel);
+        context.lfg.pc = channel?.guild?.channels.cache.get(context.lfgChannel);
         delete context.lfgChannel;
       }
 
@@ -383,7 +383,7 @@ module.exports = class Database {
           if (!context.lfg) {
             context.lfg = {};
           }
-          context.lfg[platform] = channel.guild.channels.cache.get(context[`lfgChannel.${platform}`]);
+          context.lfg[platform] = channel?.guild?.channels.cache.get(context[`lfgChannel.${platform}`]);
           delete context[`lfgChannel.${platform}`];
         }
       });
@@ -395,11 +395,12 @@ module.exports = class Database {
         delete context.respond_to_settings;
       }
 
-      if (typeof context.ephemerate === 'undefined') context.ephemerate = true;
+      if (channel instanceof Discord.User) context.ephemerate = false;
+      else if (typeof context.ephemerate === 'undefined') context.ephemerate = true;
       else context.ephemerate = context.ephemerate === '1';
 
-      if (context.modRole && channel.guild) {
-        context.modRole = await channel.guild.roles.fetch(context.modRole);
+      if (context.modRole && channel?.guild) {
+        context.modRole = await channel?.guild.roles.fetch(context.modRole);
       }
     } else {
       context = {

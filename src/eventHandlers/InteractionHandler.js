@@ -287,7 +287,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       const match = this.#loadedCommands.find(c => c.command.name === interaction.commandName);
       const customMatch = this.#customCommands
         .find(c => c?.command?.name === interaction.commandName
-            && c?.guildId === interaction.guild.id);
+            && c?.guildId === interaction?.guild?.id);
 
       const noAccess = (match?.elevated
               && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))
@@ -298,7 +298,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         return interaction.reply({ content: 'No Access', ephemeral: true });
       }
 
-      const ctx = await this.settings.getCommandContext(interaction.channel, interaction.user);
+      const ctx = await this.settings
+        .getCommandContext(interaction.channel || interaction.user, interaction.user);
       ctx.settings = this.settings;
       ctx.ws = ws;
       ctx.handler = this;
