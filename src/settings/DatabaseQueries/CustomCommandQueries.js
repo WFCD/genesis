@@ -4,6 +4,7 @@ const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 const CustomCommand = require('../../models/CustomCommand.js');
+const logger = require('../../Logger');
 
 /**
  * Database Mixin for custom command queries
@@ -39,7 +40,8 @@ module.exports = class CustomCommandQueries {
             response: decodeURIComponent(row.response),
             guildId: row.guild_id,
           };
-        } catch (igrored) {
+        } catch (ignored) {
+          logger.error(`couldn't decode ${row.response}`);
           return {
             call: row.command,
             response: 'unable to parse',
