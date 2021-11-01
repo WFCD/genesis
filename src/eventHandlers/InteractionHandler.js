@@ -254,7 +254,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         } catch (ignore) { /* Ignored */ }
         const guildCCs = grouped[gid];
         guildCCs.length = 50;
-        await guild.commands.set(guildCCs.filter(c => c));
+        await guild?.commands?.set(guildCCs.filter(c => c));
       }
     }
   }
