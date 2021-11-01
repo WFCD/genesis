@@ -146,26 +146,28 @@ module.exports = class LFG extends require('../../models/Interaction') {
      */
     const reactionHandler = async (reaction) => {
       await reaction.deferUpdate();
-      if (!lfg.members.includes(reaction.user.id) && lfg.members.length <= lfg.membersNeeded) {
-        lfg.members.push(reaction.user.id);
-        lfg.vc = interaction.member.voice;
-        lfg.edited = true;
-        await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
-      }
-      if (reaction.user.id === interaction.member.id) {
-        if (reaction.customId === 'lfg_end') {
-          lfg.expiry = 0;
+      if (reaction.customId === 'lfg_add') {
+        if (!lfg.members.includes(reaction.user.id) && lfg.members.length <= lfg.membersNeeded) {
+          lfg.members.push(reaction.user.id);
+          lfg.vc = interaction.member.voice;
           lfg.edited = true;
-          await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
-          collector.stop('ended');
+          return message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
+        }
+        if (lfg.members.includes(reaction.user.id) && reaction.user.id !== interaction.member.id) {
+          lfg.members.splice(lfg.members.indexOf(reaction.user.id), 1);
+          lfg.vc = interaction.member.voice;
+          lfg.edited = true;
+          return message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
         }
       }
-      if (lfg.members.includes(reaction.user.id) && reaction.user.id !== interaction.member.id) {
-        lfg.members.splice(lfg.members.indexOf(reaction.user.id), 1);
-        lfg.vc = interaction.member.voice;
+      if (reaction.user.id === interaction.member.id && reaction.customId === 'lfg_end') {
+        lfg.expiry = 0;
         lfg.edited = true;
         await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
+        collector.stop('ended');
+        return null;
       }
+      return null;
     };
 
     collector.on('collect', reactionHandler);
