@@ -148,7 +148,8 @@
       "no-fallthrough": "off",
       "no-case-declarations": "off",
       "default-case": "off",
-      "max-classes-per-file": "off"
+      "max-classes-per-file": "off",
+      "consistent-return": "off"
     }
   },
   "babel": {
