@@ -25,7 +25,7 @@ class SetLFGChannel extends Command {
     let matchable = message.strippedContent.replace(this.call, '');
 
     const plm = matchable.match(new RegExp(captures.platforms, 'i'));
-    const platform = (plm[1] || ctx.platform || 'pc').toLowerCase();
+    const platform = (plm?.[1] || ctx.platform || 'pc').toLowerCase();
 
     matchable = matchable.replace(platform);
 
