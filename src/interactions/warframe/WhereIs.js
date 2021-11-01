@@ -87,7 +87,8 @@ module.exports = class WhereIs extends require('../../models/Interaction') {
     results = [...(new Set(results))];
     results.sort((a, b) => b.chanceNum - a.chanceNum);
 
-    const longestName = results.length ? results.map(result => result.item)
+    const longestName = results.length ? results.map(result => result.item
+      .replace('Blueprint', 'BP').replace(' Prime', ' P.'))
       .reduce((a, b) => (a.length > b.length ? a : b)) : '';
     const longestRelic = results.length ? results.map(result => result.place)
       .reduce((a, b) => (a.length > b.length ? a : b)) : '';
