@@ -2,9 +2,11 @@
 
 const Discord = require('discord.js');
 
-const { Events } = Discord.Constants;
+const { Constants: Events, Permissions } = Discord;
 
 const { Generator } = require('warframe-name-generator');
+
+const requiredVCPerms = [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MOVE_MEMBERS];
 
 const relays = [
   'Larunda Relay',
@@ -50,6 +52,7 @@ const getRelayName = async (guild, retries = 0) => {
  * @returns {Promise<*>}
  */
 const clone = async (template, settings, member) => {
+  /** @type {Discord.Guild} */
   const { guild } = template;
 
   const isRelay = await settings.isRelay(template.id);
@@ -61,6 +64,7 @@ const clone = async (template, settings, member) => {
     ? nameTemplate.replace('$username', member.displayName)
     : generatedName;
 
+  // check for perms now?
   const newChannel = await template.clone({
     name,
     position: template.rawPosition + 1,
@@ -153,6 +157,9 @@ module.exports = class DynamicVoiceHandler {
     await Promise.all(templates.map(async (template) => {
       if (this.client.channels.cache.has(template)) {
         const templateChannel = this.client.channels.cache.get(template);
+        if (!template.guild.me.permissions.has(requiredVCPerms)) {
+          return false;
+        }
         const { remainingEmpty } = await this.settings.getInstances(templateChannel);
         if (remainingEmpty < 1) {
           return this.addChannel(templateChannel, member);
