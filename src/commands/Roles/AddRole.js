@@ -107,26 +107,28 @@ class AddRole extends Command {
       message.guild,
       roles.map(role => JSON.stringify(role)),
     );
-    await this.messageManager.embed(message, {
+    const embed = {
       title: 'Added role to joinable list',
       type: 'rich',
       color: 0x779ECB,
       description: newRole,
-    }, true, true);
+    };
+    await message.reply({ embeds: [embed] });
   }
 
   async sendAlreadyAddedEmbed(message) {
-    await this.messageManager.embed(message, {
+    const embed = {
       title: 'Invalid Role',
       type: 'rich',
       color: 0x779ECB,
       description: 'That role is already joinable.',
-    }, true, true);
+    };
+    await message.reply({ embeds: [embed] });
   }
 
   async sendInstructionEmbed(message) {
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-    this.messageManager.embed(message, {
+    const embed = {
       title: 'Usage',
       type: 'rich',
       color: 0x779ECB,
@@ -145,7 +147,8 @@ class AddRole extends Command {
           inline: true,
         },
       ],
-    }, true, true);
+    };
+    await message.reply({ embeds: [embed] });
   }
 }
 

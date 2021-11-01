@@ -190,7 +190,7 @@ class Settings extends Command {
       if (pages.length) {
         if (nonCompact.test(message.strippedContent)) {
           pages.forEach(async (page) => {
-            await this.messageManager.embed(message, page, false, false);
+            await message.reply({ embeds: [page] });
           });
         } else {
           await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });

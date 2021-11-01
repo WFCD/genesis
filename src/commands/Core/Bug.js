@@ -101,7 +101,7 @@ class BugReport extends Command {
         fields: [{ name: '\u200B', value: i18n`Need to provide a bug report, see \`${prefix}help\` for syntax.` }],
         footer: { text: i18n`Add Tobiah#0001 as a friend so he can respond to your bug report` },
       };
-      this.messageManager.embed(message, embed, true, false);
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.FAILURE;
     }
     return this.messageManager.statuses.NO_ACCESS;

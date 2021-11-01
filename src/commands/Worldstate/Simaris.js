@@ -40,10 +40,8 @@ class Simaris extends Command {
 
   async handleSimarisCommmand(message, ctx, platformParam) {
     const platform = platformParam || ctx.platform;
-    await this.messageManager.embed(
-      message,
-      new SimarisEmbed(this.bot, await this.ws.get('simaris', platform, ctx.language), platform), true, false,
-    );
+    const embed = new SimarisEmbed(this.bot, await this.ws.get('simaris', platform, ctx.language), platform);
+    await message.reply({ embeds: [embed] });
   }
 
   async handleTargetCommand(message, targetParam) {
@@ -58,10 +56,8 @@ class Simaris extends Command {
 
     // If there is a single result, show it
     if (results.length === 1) {
-      this.messageManager.embed(
-        message,
-        new SynthesisTargetEmbed(this.bot, results, query), true, false,
-      );
+      const embed = new SynthesisTargetEmbed(this.bot, results, query);
+      await message.reply({ embeds: [embed] });
     } else {
       // If there is more than one result, show a result list and the pages
       const pages = [];

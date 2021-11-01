@@ -37,10 +37,10 @@ class Sorties extends Command {
       if (thumb) {
         embed.thumbnail.url = thumb;
       }
-      await this.messageManager.embed(message, embed, true, false);
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.SUCCESS;
     } catch (err) {
-      await this.messageManager.embed(message, embed, true, false);
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.SUCCESS;
     }
   }

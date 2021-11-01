@@ -31,7 +31,7 @@ class ListClaimed extends Command {
       pages.push(embed);
     });
     if (pages.length) {
-      const msg = await this.messageManager.embed(message, pages[0], false, false);
+      const msg = await message.reply({ embeds: [pages[0]] });
       if (pages.length > 1) {
         await createPageCollector(msg, pages, message.author);
       }

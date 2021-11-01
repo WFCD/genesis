@@ -24,7 +24,8 @@ class Solaris extends Command {
     }
 
     // make the embed
-    this.messageManager.embed(message, new SolarisEmbed(this.bot, vallis), true, true);
+    const embed = new SolarisEmbed(this.bot, vallis);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

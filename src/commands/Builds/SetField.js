@@ -57,17 +57,19 @@ class AddBuild extends Command {
     // save params based on order
     const status = await this.settings.setBuildFields(buildId, { title, body, image });
     if (status) {
-      this.messageManager.embed(message, new BuildEmbed(
-        this.bot,
-        await this.settings.getBuild(buildId),
-      ), true, true);
+      await message.reply({
+        embeds: [new BuildEmbed(
+          this.bot,
+          await this.settings.getBuild(buildId),
+        )],
+      });
       return this.messageManager.statuses.SUCCESS;
     }
     return this.failure(message, buildId);
   }
 
   async failure(message, buildId, ctx) {
-    this.messageManager.embed(message, { title: ctx.i18n`You couldn't edit build ${buildId}`, color: 0x83181b }, true, true);
+    await message.reply({ embeds: [{ title: ctx.i18n`You couldn't edit build ${buildId}`, color: 0x83181b }] });
     return this.messageManager.statuses.FAILURE;
   }
 }

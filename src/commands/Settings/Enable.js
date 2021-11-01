@@ -116,11 +116,11 @@ class Enable extends Command {
     });
     await Promise.all(results);
     // notify info embed
-    const infoEmbed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
+    const embed = new EnableInfoEmbed(this.bot, 1, [commands, channels, target.toString()]);
     const respondToSettings = await this.settings
       .getChannelSetting(message.channel, 'respond_to_settings');
     if (respondToSettings) {
-      this.messageManager.embed(message, infoEmbed, true, false);
+      await message.reply({ embeds: [embed] });
     }
     return this.messageManager.statuses.SUCCESS;
   }
@@ -148,11 +148,12 @@ class Enable extends Command {
   }
 
   async sendToggleUsage(message, ctx, cmdIdResult, channelResult, targetResult) {
-    await this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
+    const embed = new EnableUsageEmbed(this.bot, [
       cmdIdResult,
       channelResult,
       targetResult,
-    ], 1), true, false);
+    ], 1);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

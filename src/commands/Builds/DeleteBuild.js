@@ -27,16 +27,18 @@ class DeleteBuild extends Command {
       const owner = typeof build.owner === 'object' ? build.owner.id : build.owner;
       if (owner === message.author.id || message.author.id === this.bot.owner) {
         await this.settings.deleteBuild(buildId);
-        this.messageManager.embed(message, { title: ctx.i18n`Build ${buildId} deleted.`, color: 0xcda2a3 }, true, true);
+        await message.reply({ embeds: [{ title: ctx.i18n`Build ${buildId} deleted.`, color: 0xcda2a3 }] });
         return this.messageManager.statuses.SUCCESS;
       }
     }
 
-    this.messageManager.embed(message, {
-      title: ctx.i18n`You couldn't delete build ${buildId}.`,
-      description: ctx.i18n`You either don't own it or it doesn't exist`,
-      color: 0x83181b,
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: ctx.i18n`You couldn't delete build ${buildId}.`,
+        description: ctx.i18n`You either don't own it or it doesn't exist`,
+        color: 0x83181b,
+      }],
+    });
     return this.messageManager.statuses.FAILURE;
   }
 }

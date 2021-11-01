@@ -23,12 +23,14 @@ class BuildChart extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    this.messageManager.embed(message, {
+    const embed = {
       color: 0xBCC9EB,
       image: {
         url: buildChart,
       },
-    }, true, false);
+    };
+
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -27,10 +27,10 @@ class Baro extends Command {
       fields.forEach(async (fieldGroup) => {
         const tembed = { ...embed };
         tembed.fields = fieldGroup;
-        await this.messageManager.embed(message, tembed, false, true);
+        await message.reply({ embeds: [tembed] });
       });
     } else {
-      await this.messageManager.embed(message, embed, false, true);
+      await message.reply({ embeds: [embed] });
     }
     return this.messageManager.statuses.SUCCESS;
   }

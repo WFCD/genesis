@@ -41,14 +41,15 @@ class FrameProfile extends Command {
       }
     }
     const tutorials = await this.ws.g('tutorials');
-    this.messageManager.embed(message, {
+    const embed = {
       title: 'Available Tutorials',
       fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
       footer: {
         icon_url: 'https://warframestat.us/wfcd_logo_color.png',
         text: 'Data evaluated by Warframe Community Developers',
       },
-    }, true, false);
+    };
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

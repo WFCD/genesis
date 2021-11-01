@@ -36,6 +36,7 @@ class WeaponStats extends Command {
    */
   async run(message, ctx) {
     let weapon = message.strippedContent.match(this.regex)[1];
+    const embed = new WeaponEmbed(this.bot, undefined);
     if (weapon) {
       weapon = weapon.trim().toLowerCase();
       try {
@@ -70,15 +71,15 @@ class WeaponStats extends Command {
           await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
           return this.messageManager.statuses.SUCCESS;
         }
-        this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
+        await message.reply({ embeds: [embed] });
         return this.messageManager.statuses.FAILURE;
       } catch (e) {
         this.logger.error(e);
-        this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
+        await message.reply({ embeds: [embed] });
         return this.messageManager.statuses.FAILURE;
       }
     }
-    this.messageManager.embed(message, new WeaponEmbed(this.bot, undefined), true, false);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

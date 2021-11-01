@@ -42,10 +42,11 @@ class Raid extends Command {
 
     const url = encodeURI(`https://api.trials.wf/api/player/${ctx.platform}/${query}/completed`);
     const data = await (fetch(url));
-    this.messageManager.embed(message, new RaidEmbed(
+    const embed = new RaidEmbed(
       this.bot,
       data, query, ctx.platform,
-    ), true, true);
+    );
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

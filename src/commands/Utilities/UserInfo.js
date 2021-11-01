@@ -51,7 +51,7 @@ class UserInfo extends Command {
       ? guildsWithUser.splice(0, 24)
       : guildsWithUser;
     const embed = new UserInfoEmbed(this.bot, guilds, user, member, message);
-    this.messageManager.embed(message, embed, true, false);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

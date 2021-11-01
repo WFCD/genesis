@@ -41,7 +41,7 @@ class PriceCheck extends Command {
         },
       ],
     };
-    await this.messageManager.embed(message, embed, true, true);
+    await message.reply({ embeds: [embed] });
   }
 }
 

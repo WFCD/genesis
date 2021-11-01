@@ -23,16 +23,18 @@ class Event extends Command {
     const events = await this.ws.get('events', platform, ctx.language);
     if (events.length > 0) {
       const pages = events.map(event => new EventEmbed(this.bot, event, platform.toUpperCase()));
-      const msg = await this.messageManager.embed(message, pages[0], true, false);
+
+      const msg = await message.reply({ embeds: [pages[0]] });
       if (pages.length > 1) {
         await createPageCollector(msg, pages, message.author);
       }
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(message, new EventEmbed(
+    const embed = new EventEmbed(
       this.bot,
       undefined, platform.toUpperCase(),
-    ), true, true);
+    );
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

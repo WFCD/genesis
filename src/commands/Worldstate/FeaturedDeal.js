@@ -23,7 +23,7 @@ class FeaturedDeal extends Command {
     const sales = (await this.ws.get('flashSales', platform, ctx.language)).filter(popularItem => popularItem.isFeatured);
     const salesGroups = createGroupedArray(sales, 10);
     const pages = salesGroups.map(group => new SalesEmbed(this.bot, group, platform));
-    const msg = await this.messageManager.embed(message, pages[0], true, false);
+    const msg = await message.reply({ embeds: [pages[0]] });
     await createPageCollector(msg, pages, message.author);
     return this.messageManager.statuses.SUCCESS;
   }

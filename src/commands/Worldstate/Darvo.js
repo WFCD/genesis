@@ -20,8 +20,9 @@ class Darvo extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
-    await this.messageManager.embed(message, new DarvoEmbed(this.bot,
-      (await this.ws.get('dailyDeals', platform, ctx.language))[0], platform), true, false);
+    const embed = new DarvoEmbed(this.bot,
+      (await this.ws.get('dailyDeals', platform, ctx.language))[0], platform);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

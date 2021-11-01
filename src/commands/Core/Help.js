@@ -119,7 +119,7 @@ class Help extends Command {
       });
 
       if (searchableCommands.length < 1) {
-        await this.messageManager.embed(message, invalidResultsEmbed, false);
+        await message.reply({ embeds: [invalidResultsEmbed] });
         return this.messageManager.statuses.FAILURE;
       }
     }

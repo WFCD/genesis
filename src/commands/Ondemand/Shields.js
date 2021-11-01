@@ -29,10 +29,11 @@ class Shields extends Command {
    *                          or perform an action based on parameters.
     @returns {string} success status
    */
-  run(message) {
+  async run(message) {
     const pattern3Params = /(\d+\.?\d*)(?:\s+(\d+\.?\d*)\s+(\d+\.?\d*))?$/;
     const params = message.strippedContent.match(pattern3Params);
-    this.messageManager.embed(message, new ShieldEmbed(this.bot, params), true, false);
+    const embed = new ShieldEmbed(this.bot, params);
+    await message.reply({ embeds: [embed] });
     if (params && params.length > 3) {
       return this.messageManager.statuses.SUCCESS;
     }

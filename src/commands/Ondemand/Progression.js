@@ -28,7 +28,7 @@ class Progression extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    this.messageManager.embed(message, embed, true, false, `Operator ${message.author.toString()}, the progression flowchart, at your request.`);
+    await message.reply({ content: `Operator ${message.author.toString()}, the progression flowchart, at your request.`, embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

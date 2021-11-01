@@ -21,7 +21,7 @@ class Construction extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     const embed = new EventEmbed(this.bot, await this.ws.get('constructionProgress', platform, ctx.language), platform);
-    await this.messageManager.embed(message, embed, true, true);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

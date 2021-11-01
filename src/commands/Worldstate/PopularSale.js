@@ -22,10 +22,8 @@ class PopularDeal extends Command {
     const platform = platformParam || ctx.platform;
     const sales = (await this.ws.get('flashSales', platform, ctx.language))
       .filter(popularItem => popularItem.isPopular);
-    await this.messageManager.embed(
-      message,
-      new SalesEmbed(this.bot, sales, platform), true, false,
-    );
+    const embed = new SalesEmbed(this.bot, sales, platform);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

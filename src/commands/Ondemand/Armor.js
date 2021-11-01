@@ -127,11 +127,11 @@ class Armor extends Command {
           icon_url: 'https://warframestat.us/wfcd_logo_color.png',
         },
       };
-      this.messageManager.embed(message, embed, true, false);
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.SUCCESS;
     }
     this.logger.debug('Entered 0-param armor');
-    this.sendUsage(message);
+    await this.sendUsage(message);
     return this.messageManager.statuses.FAILURE;
   }
 
@@ -139,7 +139,7 @@ class Armor extends Command {
    * Replies with details on the command's usage
    * @param {Message} message The message to reply to
    */
-  sendUsage(message) {
+  async sendUsage(message) {
     const embed = {
       color: 0xff0000,
       thumbnail: {
@@ -156,8 +156,7 @@ class Armor extends Command {
         icon_url: 'https://warframestat.us/wfcd_logo_color.png',
       },
     };
-
-    this.messageManager.embed(message, embed, true, false);
+    await message.reply({ embeds: [embed] });
   }
 }
 

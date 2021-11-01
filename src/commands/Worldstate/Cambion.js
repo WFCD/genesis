@@ -21,7 +21,8 @@ class Cambion extends Command {
     }
 
     // make the embed
-    this.messageManager.embed(message, new CambionEmbed(this.bot, cambion), true, true);
+    const embed = new CambionEmbed(this.bot, cambion);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

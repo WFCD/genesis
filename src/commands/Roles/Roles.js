@@ -37,11 +37,8 @@ class Roles extends Command {
       await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.embed(
-      message,
-      new RolesEmbed(this.bot, [], prefix, 0),
-      true, true,
-    );
+    const embed = new RolesEmbed(this.bot, [], prefix, 0);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

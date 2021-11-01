@@ -21,7 +21,8 @@ class PrimeAccess extends Command {
     const platformParam = message.strippedContent.match(this.regex)[1];
     const platform = platformParam || ctx.platform;
     const news = (await this.ws.get('news', platform, ctx.language)).filter(n => n.primeAccess && n.translations.en);
-    await this.messageManager.embed(message, new PrimeAccessEmbed(this.bot, news, 'primeaccess', platform), true, false);
+    const embed = new PrimeAccessEmbed(this.bot, news, 'primeaccess', platform);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

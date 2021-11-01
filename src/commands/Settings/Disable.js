@@ -117,11 +117,11 @@ class Disable extends Command {
 
     await Promise.all(results);
     // notify info embed
-    const infoEmbed = new EnableInfoEmbed(this.bot, 0, [commands, channels, target.toString()]);
+    const embed = new EnableInfoEmbed(this.bot, 0, [commands, channels, target.toString()]);
     const respondToSettings = await this.settings
       .getChannelSetting(message.channel, 'respond_to_settings');
     if (respondToSettings) {
-      this.messageManager.embed(message, infoEmbed, true, false);
+      await message.reply({ embeds: [embed] });
     }
     return this.messageManager.statuses.SUCCESS;
   }
@@ -149,11 +149,13 @@ class Disable extends Command {
   }
 
   async sendToggleUsage(message, ctx, cmdIdResult, channelResult, targetResult) {
-    await this.messageManager.embed(message, new EnableUsageEmbed(this.bot, [
-      cmdIdResult,
-      channelResult,
-      targetResult,
-    ], 1), true, false);
+    await message.reply({
+      embeds: [new EnableUsageEmbed(this.bot, [
+        cmdIdResult,
+        channelResult,
+        targetResult,
+      ], 1)],
+    });
     return this.messageManager.statuses.FAILURE;
   }
 }

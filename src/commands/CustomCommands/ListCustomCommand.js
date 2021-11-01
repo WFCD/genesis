@@ -29,9 +29,9 @@ class ListCustomCommand extends Command {
     if (pages.length) {
       await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
     } else {
-      await this.messageManager.embed(message, { color: 0x301934, description: ctx.i18n`No Custom Commands`, title: ctx.i18n`Custom Commands` }, true, true);
+      const embed = { color: 0x301934, description: ctx.i18n`No Custom Commands`, title: ctx.i18n`Custom Commands` };
+      await message.reply({ embeds: [embed] });
     }
-
     return this.messageManager.statuses.SUCCESS;
   }
 }

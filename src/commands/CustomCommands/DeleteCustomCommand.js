@@ -16,10 +16,11 @@ class DeleteCustomCommand extends Command {
   async run(message, ctx) {
     const params = message.strippedContent.match(this.regex);
     if (!params[1]) {
-      this.messageManager.embed(message, {
+      const embed = {
         title: ctx.i18n`Delete Custom Command`,
         fields: [{ name: '\u200B', value: `**${this.call}**\n${ctx.i18n`**command call**: command trigger to delete`}` }],
-      }, true, false);
+      };
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.FAILURE;
     }
     await this.settings.deleteCustomCommand(message.guild, params[1]);

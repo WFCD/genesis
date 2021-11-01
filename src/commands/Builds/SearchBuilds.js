@@ -58,10 +58,10 @@ class GetBuild extends Command {
       } if (results.length === 1) {
         const build = results[0];
         const embed = new BuildEmbed(this.bot, build);
-        this.messageManager.embed(message, embed, true, true);
+        await message.reply({ embeds: [embed] });
         return this.messageManager.statuses.SUCCESS;
       }
-      await this.messageManager.embed(message, { color: 0xcda2a3, title: ctx.i18n`No builds for query: **${query}**` }, true, true);
+      await message.reply({ embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for query: **${query}**` }] });
     } catch (e) {
       this.logger.error(e);
       return this.messageManager.statuses.FAILURE;

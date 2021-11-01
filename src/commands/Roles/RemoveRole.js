@@ -71,45 +71,51 @@ class RemoveRole extends Command {
 
   async removeAndCommitRoles(message, roles, newRole) {
     await this.settings.setRolesForGuild(message.guild, roles.map(role => JSON.stringify(role)));
-    await this.messageManager.embed(message, {
+    const embed = {
       title: 'Removed role from joinable list',
       type: 'rich',
       color: 0x779ECB,
       description: newRole.guildRole.name,
-    }, true, false);
+    };
+    await message.reply({ embeds: [embed] });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendRoleNotAvailable(message) {
-    await this.messageManager.embed(message, {
-      title: 'Invalid Role',
-      type: 'rich',
-      color: 0x0000ff,
-      description: 'That role is unavailable to be removed.',
-    }, true, false);
+    await message.reply({
+      embeds: [{
+        title: 'Invalid Role',
+        type: 'rich',
+        color: 0x0000ff,
+        description: 'That role is unavailable to be removed.',
+      }],
+    });
   }
 
   async sendInstructionEmbed(message) {
     const prefix = await this.settings.getGuildSetting(message.guild, 'prefix');
-    await this.messageManager.embed(message, {
-      title: 'Usage',
-      type: 'rich',
-      color: 0x0000ff,
-      fields: [
-        {
-          name: `${prefix}${this.call} <role or role id>`,
-          value: 'Role or role id to be disallowed for self-role.',
-        },
-        {
-          name: 'Possible values:',
-          value: '\u200B',
-        },
-        {
-          name: '**Roles:**',
-          value: message.guild.roles.cache.map(r => r.name).join('; '),
-          inline: true,
-        },
-      ],
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: 'Usage',
+        type: 'rich',
+        color: 0x0000ff,
+        fields: [
+          {
+            name: `${prefix}${this.call} <role or role id>`,
+            value: 'Role or role id to be disallowed for self-role.',
+          },
+          {
+            name: 'Possible values:',
+            value: '\u200B',
+          },
+          {
+            name: '**Roles:**',
+            value: message.guild.roles.cache.map(r => r.name).join('; '),
+            inline: true,
+          },
+        ],
+      }],
+    });
   }
 }
 

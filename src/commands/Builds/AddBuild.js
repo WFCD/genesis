@@ -104,7 +104,7 @@ class AddBuild extends Command {
     const image = params[2] || outageThumb;
     const build = await this.settings.addNewBuild(title, body, image, message.author);
     const embed = new BuildEmbed(this.bot, build);
-    this.messageManager.embed(message, embed, true, true);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

@@ -15,7 +15,7 @@ module.exports = class SteelPath extends Command {
       return this.messageManager.statuses.FAILURE;
     }
     const embed = new SteelPathEmbed(this.bot, offering, { isCommand: true, i18n: ctx.i18n });
-    await this.messageManager.embed(message, embed, true, false);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 };

@@ -36,15 +36,14 @@ class Arcane extends Command {
       arcane = arcane.trim().toLowerCase();
       const results = await fetch(`${apiBase}/arcanes/search/${arcane}`);
       if (results.length > 0) {
-        this.messageManager.embed(message, new EnhancementEmbed(this.bot, results[0]), true, false);
+        const embed = new EnhancementEmbed(this.bot, results[0]);
+        await message.reply({ embeds: [embed] });
         return this.messageManager.statuses.SUCCESS;
       }
     }
     const enhancements = await fetch(`${apiBase}/arcanes`);
-    this.messageManager.embed(
-      message,
-      new EnhancementEmbed(this.bot, undefined, enhancements), true, false,
-    );
+    const embed = new EnhancementEmbed(this.bot, undefined, enhancements);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.FAILURE;
   }
 }

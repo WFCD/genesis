@@ -18,7 +18,7 @@ class UpdateCustomCommand extends Command {
   async run(message, ctx) {
     const params = message.strippedContent.match(this.regex);
     if (params[1].length < 4 || !allowedParams.includes(params[1].toLowerCase())) {
-      this.messageManager.embed(message, {
+      const embed = {
         title: 'Update Custom Command',
         fields: [{
           name: '\u200B',
@@ -27,7 +27,8 @@ class UpdateCustomCommand extends Command {
         \n${ctx.i18n`**command call**: command trigger to edit`}
         \n${ctx.i18n`**new param value**: new value for param`}`,
         }],
-      }, true, false);
+      };
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.FAILURE;
     }
 

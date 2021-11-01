@@ -24,7 +24,7 @@ class Damage extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    this.messageManager.embed(message, {
+    const embed = {
       title: 'Legend',
       image: {
         url: damageChart,
@@ -44,7 +44,8 @@ class Damage extends Command {
         { name: 'Toxin', value: '<:toxin:363136256626130946>', inline: true },
         { name: 'Viral', value: '<:viral:363136256747765763>', inline: true },
       ],
-    }, true, false);
+    };
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

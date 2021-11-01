@@ -43,7 +43,7 @@ class EarthCycle extends Command {
       cycleData.bountyExpiry = ostrons.expiry;
     }
     const embed = new EarthCycleEmbed(this.bot, cycleData);
-    await this.messageManager.embed(message, embed, true, true);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

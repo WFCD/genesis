@@ -96,31 +96,40 @@ class LeaveRole extends Command {
     return this.messageManager.statuses.FAILURE;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendLeft(message, role) {
-    await this.messageManager.embed(message, {
-      title: 'Left Role',
-      type: 'rich',
-      color: 0x779ECB,
-      description: role ? role.name : 'No such role.',
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: 'Left Role',
+        type: 'rich',
+        color: 0x779ECB,
+        description: role ? role.name : 'No such role.',
+      }],
+    });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendCantLeave(message, userDoesntHaveRole, leaveable) {
-    await this.messageManager.embed(message, {
-      title: 'Can\'t Leave',
-      description: determineDescription(userDoesntHaveRole, leaveable),
-      type: 'rich',
-      color: 0x779ECB,
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: 'Can\'t Leave',
+        description: determineDescription(userDoesntHaveRole, leaveable),
+        type: 'rich',
+        color: 0x779ECB,
+      }],
+    });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendBotRoleLow(message) {
-    await this.messageManager.embed(message, {
-      title: 'Can\'t Assign Role',
-      description: 'Bot\'s role is too low.\nEnsure it is above role to be added.',
-      type: 'rich',
-      color: 0x779ECB,
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: 'Can\'t Assign Role',
+        description: 'Bot\'s role is too low.\nEnsure it is above role to be added.',
+        type: 'rich',
+        color: 0x779ECB,
+      }],
+    });
   }
 
   async sendInstructionEmbed(message) {
@@ -143,7 +152,7 @@ class LeaveRole extends Command {
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.map(role => role.guildRole.name).join('; ') || 'No roles.';
-    this.messageManager.embed(message, embed, true, false);
+    await message.reply({ embeds: [embed] });
   }
 }
 

@@ -94,30 +94,35 @@ class JoinRole extends Command {
   }
 
   async sendJoined(message, role) {
-    await this.messageManager.embed(message, {
+    const embed = {
       title: 'Joined Role',
       description: role.name,
       type: 'rich',
       color: 0x779ECB,
-    }, true, true);
+    };
+    await message.reply({ embeds: [embed] });
   }
 
   async sendCantJoin(message, userHasRole, hasMinimumRole) {
-    await this.messageManager.embed(message, {
+    const embed = {
       title: 'Can\'t Join',
       description: determineDescription(userHasRole, hasMinimumRole),
       type: 'rich',
       color: 0x779ECB,
-    }, true, true);
+    };
+    await message.reply({ embeds: [embed] });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async sendBotRoleLow(message) {
-    await this.messageManager.embed(message, {
-      title: 'Can\'t Assign Role',
-      description: 'Bot\'s role is too low.\nEnsure it is above role to be added.',
-      type: 'rich',
-      color: 0x779ECB,
-    }, true, true);
+    await message.reply({
+      embeds: [{
+        title: 'Can\'t Assign Role',
+        description: 'Bot\'s role is too low.\nEnsure it is above role to be added.',
+        type: 'rich',
+        color: 0x779ECB,
+      }],
+    });
   }
 
   async sendInstructionEmbed(message) {
@@ -140,7 +145,7 @@ class JoinRole extends Command {
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.length ? roles.map(role => role.guildRole.name).join('; ') : 'No possible roles';
-    this.messageManager.embed(message, embed, true, false);
+    await message.reply({ embeds: [embed] });
   }
 }
 

@@ -29,7 +29,7 @@ class Jokes extends Command {
    * @returns {string} success status
    */
   async run(message) {
-    await this.messageManager.embed(message, promoCodeEmbed, true, true);
+    await message.reply({ embeds: [promoCodeEmbed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }
