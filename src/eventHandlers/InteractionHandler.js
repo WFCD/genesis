@@ -247,7 +247,11 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       });
       for (const gid of Object.keys(grouped)) {
         if (!gid) continue;
-        const guild = await this.client.guilds.fetch(gid);
+        let guild;
+        try {
+          // fetch can fail due to missing access. swallow error.
+          guild = await this.client.guilds.fetch(gid);
+        } catch (ignore) { /* Ignored */ }
         const guildCCs = grouped[gid];
         guildCCs.length = 50;
         await guild.commands.set(guildCCs.filter(c => c));
