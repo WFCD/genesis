@@ -82,9 +82,14 @@ class Broadcaster {
         const content = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || '';
         await this.webhook(ctx, { content, embeds: [embed] });
       } catch (e) {
-        if (e.message && e.message.includes('Unknown Webhook')) {
-          logger.warn(`Wiping webhook context for ${channelId}`);
-          await this.settings.deleteWebhooksForChannel(channelId);
+        if (e.message) {
+          if (e.message.includes('Unknown Webhook')) {
+            logger.warn(`Wiping webhook context for ${channelId}`);
+            await this.settings.deleteWebhooksForChannel(channelId);
+          }
+          if (e.name === 'AbortError') {
+            // ignore
+          }
         } else {
           logger.error(e);
         }
