@@ -21,10 +21,10 @@ class UserInfo extends Command {
     let user;
     let member;
     let mention;
-    if (message.mentions.users) {
-      const { a, b } = message.mentions.users.array();
-      if (message.mentions.users.array().length > 1
-        && message.mentions.users.array()[0].id === this.bot.client.id) {
+    if (message?.mentions?.members) {
+      const [a, b] = message?.mentions?.members.toJSON();
+      if (message?.mentions?.members?.size
+        && message?.mentions?.members.first().id === this.bot.client.user.id) {
         mention = b;
       } else {
         mention = a;
@@ -40,15 +40,15 @@ class UserInfo extends Command {
       member = message.guild.members.cache.get(user.id);
     }
     if (!user) {
-      this.messageManager.reply(message, 'can\'t find that user. Please specify another.', false, false);
+      await message.reply({ content: 'can\'t find that user. Please specify another.' });
       return this.messageManager.statuses.FAILURE;
     }
 
     const guildsWithUser = this.bot.client.guilds.cache
       .filter(guild => guild.members.cache.get(user.id));
 
-    const guilds = guildsWithUser.length > 25
-      ? guildsWithUser.splice(0, 24)
+    const guilds = guildsWithUser.size > 25
+      ? guildsWithUser.toJSON().splice(0, 24)
       : guildsWithUser;
     const embed = new UserInfoEmbed(this.bot, guilds, user, member, message);
     await message.reply({ embeds: [embed] });
