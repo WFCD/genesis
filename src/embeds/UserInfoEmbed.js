@@ -9,14 +9,6 @@ const affirm = '✓';
  * Generates daily deal thiss
  */
 class UserInfoEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Array<Guild>} guilds - The guilds this bot shares on this shard with a user
-   * @param {User} user - The targeted user of the command
-   * @param {GuildMemeber} member - The guild member object for thetargeted user,
-   *                              if called in a guild.
-   * @param {Message} message - Message this derives information from.
-   */
   constructor(bot, guilds, user, member, message) {
     super();
 
@@ -37,7 +29,7 @@ class UserInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Registered',
-        value: user.createdAt.toLocaleString(),
+        value: user?.createdAt?.toLocaleString() || 'N/A',
         inline: true,
       },
     ];
