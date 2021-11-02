@@ -37,7 +37,7 @@ class Track extends Command {
     }
     const trackables = trackablesFromParameters(unsplitItems);
     if (!(trackables.events.length || trackables.items.length)) {
-      return this.failure(message, ctx.prefix);
+      return this.#failure(message, ctx.prefix);
     }
     trackables.events = trackables.events
       .filter((elem, pos) => trackables.events.indexOf(elem) === pos);
