@@ -23,14 +23,14 @@ class AddManager extends Command {
     const user = message.strippedContent.match(/[0-9]{15,20}/i)[0] || 0;
     const pool = await resolvePool(message, this.settings);
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
       return this.messageManager.statuses.FAILURE;
     }
     if (this.bot.client.users.cache.has(user.trim())) {
       await this.settings.addPoolManager(pool, user.trim());
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.reply(message, 'Please specify a valid user ID or mention the user.');
+    await message.reply({ content: 'Please specify a valid user ID or mention the user.' });
     return this.messageManager.statuses.FAILURE;
   }
 }

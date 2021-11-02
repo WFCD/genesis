@@ -39,7 +39,7 @@ class UpdateCustomCommand extends Command {
     this.logger.warn(JSON.stringify(cc));
 
     if (!cc) {
-      this.messageManager.reply(message, ctx.i18n`Command \`${call}\` is an invalid command`);
+      await message.reply({ content: ctx.i18n`Command \`${call}\` is an invalid command` });
       return this.messageManager.statuses.FAILURE;
     }
 

@@ -20,9 +20,8 @@ class Nightwave extends Command {
   async run(message, ctx) {
     const platformParam = message.strippedContent.match(new RegExp(captures.platforms, 'ig'));
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
-    await this.messageManager
-      .embed(message, new NightwaveEmbed(this.bot, await this.ws.get('nightwave', platform, ctx.language), platform, ctx.i18n), true, true);
-
+    const embed = new NightwaveEmbed(this.bot, await this.ws.get('nightwave', platform, ctx.language), platform, ctx.i18n);
+    await message.reply({ embeds: [embed] });
     return this.messageManager.statuses.SUCCESS;
   }
 }

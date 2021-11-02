@@ -44,7 +44,7 @@ class ListUsers extends Command {
       setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
       return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.reply(message, ctx.i18n`Must be in a guild.`, true, true);
+    await message.reply({ content: ctx.i18n`Must be in a guild.` });
     return this.messageManager.statuses.FAILURE;
   }
 }

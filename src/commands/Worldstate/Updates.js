@@ -30,8 +30,8 @@ class Updates extends Command {
     }).reverse();
 
     if (compact) {
-      await this.messageManager
-        .embed(message, new NewsEmbed(this.bot, news, undefined, platform), true, true);
+      const embed = new NewsEmbed(this.bot, news, undefined, platform);
+      await message.reply({ embeds: [embed] });
     } else {
       const pages = [];
       news.forEach((article) => {

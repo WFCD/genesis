@@ -42,7 +42,7 @@ module.exports = class WorldStateCache extends EventEmitter {
       return this.currentData;
     } catch (err) {
       this.updating = undefined;
-      logger.error(err);
+      logger.debug(err);
     }
     return this.updating;
   }

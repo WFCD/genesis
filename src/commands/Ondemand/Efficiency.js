@@ -18,11 +18,10 @@ class Efficiency extends Command {
   }
 
   async run(message) {
-    this.messageManager.sendFile(
-      message,
-      `Operator ${message.author.toString()}, the efficiency table, at your request.`,
-      efficiencyChart, 'efficiency.png', true,
-    );
+    await message.reply({
+      content: `Operator ${message.author.toString()}, the efficiency table, at your request.`,
+      files: [{ attachment: efficiencyChart, name: 'efficiency.png' }],
+    });
     return this.messageManager.statuses.SUCCESS;
   }
 }

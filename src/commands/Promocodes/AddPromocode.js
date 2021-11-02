@@ -15,12 +15,12 @@ const appendIfResponse = async (respondTo, response, messageManager, content) =>
   }
   if (response) {
     if (`${response ? `${response.content}\n============\n\n` : ''}${content}`.length > 1990) {
-      newResponse = await messageManager.sendMessage(respondTo, content);
+      newResponse = await respondTo.reply({ content });
     } else {
-      newResponse = await response.edit(`${response ? `${response.content}\n============\n\n` : ''}${content}`);
+      newResponse = await response.edit({ content: `${response ? `${response.content}\n============\n\n` : ''}${content}` });
     }
   } else {
-    newResponse = await messageManager.sendMessage(respondTo, content);
+    newResponse = await respondTo.reply({ content });
   }
   return newResponse;
 };
@@ -50,7 +50,7 @@ class AddPromocode extends Command {
 
   async run(message) {
     if (message.channel.type !== 'dm') {
-      await this.messageManager.reply(message, 'be careful calling this command in a public server channel, as it exposes the codes being added.');
+      await message.reply({ content: 'be careful calling this command in a public server channel, as it exposes the codes being added.' });
     }
     if (message.attachments.first()) {
       return this.runAttachmentPath(message);
@@ -64,11 +64,11 @@ class AddPromocode extends Command {
     const code = (message.strippedContent.match(/(\w{4}-\w{4}-\w{4}-\w{4})/i) || [])[0];
 
     if (!code) {
-      await this.messageManager.sendMessage(message, '\\❌ No code provided.');
+      await message.reply({ content: '\\❌ No code provided.' });
       return this.messageManager.statuses.FAILURE;
     }
     if (!pool) {
-      await this.messageManager.sendMessage(message, '\\❌ You either can\'t add to the provided pool or you don\'t manage any pools.');
+      await message.reply({ content: '\\❌ You either can\'t add to the provided pool or you don\'t manage any pools.' });
       return this.messageManager.statuses.FAILURE;
     }
     await this.settings.addCode(pool, platform, message.author.id, null, null, code);
@@ -78,7 +78,7 @@ class AddPromocode extends Command {
   async runAttachmentPath(message) {
     const firstAttach = message.attachments.first();
     if (firstAttach.filename.indexOf('.json') === -1 && firstAttach.filename.indexOf('.csv') === -1) {
-      await this.messageManager.reply(message, `\\❌ Hmm, Operator, I need a valid JSON or CSV file. Received: ${firstAttach.filename}`);
+      await message.reply({ content: `\\❌ Hmm, Operator, I need a valid JSON or CSV file. Received: ${firstAttach.filename}` });
       return this.messageManager.statuses.FAILURE;
     }
     let codes;
@@ -91,7 +91,7 @@ class AddPromocode extends Command {
         codes = csvToCodes(reqRes);
       }
     } catch (e) {
-      await this.messageManager.sendMessage(message, '\\❌ Couldn\'t get file.');
+      await message.reply({ content: '\\❌ Couldn\'t get file.' });
       this.logger.debug(e);
       return this.messageManager.statuses.FAILURE;
     }

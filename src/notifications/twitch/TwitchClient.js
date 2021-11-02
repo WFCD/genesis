@@ -67,9 +67,9 @@ class TwitchClient {
     const res = err.response || { };
 
     if (res.data && res.data.message) {
-      logger.error(`API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`, 'TwitchApi');
+      logger.debug(`API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`, 'TwitchApi');
     } else {
-      logger.error(`API request failed with error: ${err.message || err}`, 'TwitchApi');
+      logger.debug(`API request failed with error: ${err.message || err}`, 'TwitchApi');
     }
   }
 

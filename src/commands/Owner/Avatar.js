@@ -26,7 +26,7 @@ class Avatar extends Command {
     const url = message.strippedContent.match(this.regex)[1];
     try {
       await this.bot.client.user.setAvatar(url);
-      this.messageManager.reply(message, 'New avatar set!', true, true);
+      await message.reply({ content: 'New avatar set!' });
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

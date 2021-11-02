@@ -28,8 +28,8 @@ class Alerts extends Command {
     }
 
     if (compact) {
-      await this.messageManager
-        .embed(message, new AlertEmbed(this.bot, alerts, platform, ctx.i18n), true, true);
+      const embed = new AlertEmbed(this.bot, alerts, platform, ctx.i18n);
+      await message.reply({ embeds: [embed] });
     } else {
       const pages = [];
       alerts.forEach((alert) => {

@@ -84,11 +84,11 @@ class BugReport extends Command {
         }
         try {
           this.bot.bugHook.send({ embeds: [embed] });
-          this.messageManager.reply(message, i18n`Bug report sent.`, true, true);
+          await message.reply({ content: i18n`Bug report sent.` });
           return this.messageManager.statuses.SUCCESS;
         } catch (error) {
           this.logger.error(error);
-          this.messageManager.reply(message, i18n`Failed to submit bug report`, true, true);
+          await message.reply({ content: i18n`Failed to submit bug report` });
           return this.messageManager.statuses.FAILURE;
         }
       }

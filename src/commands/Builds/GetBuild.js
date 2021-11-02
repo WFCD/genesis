@@ -28,7 +28,7 @@ class GetBuild extends Command {
     try {
       const build = await this.settings.getBuild(buildId);
       const embed = new BuildEmbed(this.bot, build);
-      await message.channel.send({ embeds: [embed] });
+      await message.reply({ embeds: [embed] });
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

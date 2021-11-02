@@ -39,8 +39,7 @@ class Destiny2Code extends Command {
   }
 
   async run(message) {
-    this.messageManager.sendMessage(message, `\`\`\`haskell\n${d2codes[Math.floor(Math.random() * d2codes.length)]}\n\`\`\``, true, true);
-
+    await message.reply({ content: `\`\`\`haskell\n${d2codes[Math.floor(Math.random() * d2codes.length)]}\n\`\`\`` });
     return this.messageManager.statuses.SUCCESS;
   }
 }

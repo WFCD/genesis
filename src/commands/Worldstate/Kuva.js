@@ -22,11 +22,12 @@ class Kuva extends Command {
     const kuva = (await this.ws.get('kuva', platform, ctx.language));
 
     if (!kuva.length) {
-      this.messageManager.reply(message, ctx.i18n`No Kuva Missions Active`, true, true);
+      await message.reply({ content: ctx.i18n`No Kuva Missions Active` });
+      return this.messageManager.statuses.SUCCESS;
     }
 
-    await this.messageManager
-      .embed(message, new KuvaEmbed(this.bot, kuva, platform, ctx.i18n), true, true);
+    const embed = new KuvaEmbed(this.bot, kuva, platform, ctx.i18n);
+    await message.reply({ embeds: [embed] });
 
     return this.messageManager.statuses.SUCCESS;
   }

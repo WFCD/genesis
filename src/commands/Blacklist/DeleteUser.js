@@ -31,7 +31,7 @@ class DeleteUser extends Command {
     const matches = message.strippedContent.replace('--global', '').replace('-g', '').trim().match(new RegExp(user, 'i'));
 
     if (!matches || !matches.length) {
-      this.messageManager.reply(message, ctx.i18n`No user provided.`, true, true);
+      await message.reply({ content: ctx.i18n`No user provided.` });
       return this.messageManager.statuses.FAILURE;
     }
     const userId = matches[1];
@@ -44,7 +44,7 @@ class DeleteUser extends Command {
       );
       return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.reply(message, ctx.i18n`No such user.`, true, true);
+    await message.reply({ content: ctx.i18n`No such user.` });
     return this.messageManager.statuses.FAILURE;
   }
 }

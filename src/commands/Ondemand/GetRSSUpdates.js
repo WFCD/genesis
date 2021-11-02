@@ -23,7 +23,7 @@ class GetRSSUpdates extends Command {
       : [];
 
     if (!updates.length) {
-      this.messageManager.reply(message, ctx.i18n`No RSS Updates`, true, true);
+      await message.reply({ content: ctx.i18n`No RSS Updates` });
       return this.messageManager.statuses.FAILURE;
     }
 
@@ -31,7 +31,7 @@ class GetRSSUpdates extends Command {
     updates.reverse().forEach((item) => {
       pages.push(new RSSEmbed(item, feeds[0]));
     });
-    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+    await setupPages(pages, { message, settings: this.settings });
 
     return this.messageManager.statuses.SUCCESS;
   }

@@ -22,7 +22,12 @@ class Servers extends Command {
       fileContents.push(`"${guild.name}","${guild.owner.user.username}#${guild.owner.user.discriminator}","${guild.id}","${guild.members.size}","${guild.members.filter(user => !user.user.bot).size}","${guild.members.filter(user => user.user.bot).size}"`);
     });
 
-    await this.messageManager.sendFileToAuthor(message, Buffer.from(fileContents.join('\n'), 'ascii'), 'servers.csv', true);
+    await message.author.send({
+      files: [{
+        name: 'servers.csv',
+        attachment: Buffer.from(fileContents.join('\n'), 'ascii'),
+      }],
+    });
     return this.messageManager.statuses.SUCCESS;
   }
 }

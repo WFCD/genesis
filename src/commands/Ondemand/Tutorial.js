@@ -28,9 +28,7 @@ class FrameProfile extends Command {
       query = query.trim().toLowerCase();
       const results = await this.ws.search('tutorials', query);
       if (results.length > 0) {
-        results.forEach((tutorial) => {
-          this.messageManager.send(message.channel, `Warfame Tutorial | ${tutorial.name}: ${tutorial.url}`);
-        });
+        await Promise.all(results.map(tutorial => message.reply({ content: `Warframe Tutorial | ${tutorial.name}: ${tutorial.url}` })));
         return this.messageManager.statuses.SUCCESS;
       }
     }

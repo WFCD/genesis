@@ -26,7 +26,7 @@ class DeleteWebhook extends Command {
     const channelId = message.strippedContent.match(this.regex)[1];
     try {
       await this.settings.deleteWebhooksForChannel(channelId.trim());
-      this.messageManager.reply(message, 'Done. ', true, true);
+      await message.reply({ content: 'Done.' });
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

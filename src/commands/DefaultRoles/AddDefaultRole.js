@@ -25,7 +25,7 @@ class AddDefaultRole extends Command {
         return this.messageManager.statuses.SUCCESS;
       }
     }
-    await this.messageManager.reply(message, ctx.i18n`you must provide a valid role id that doesn't correspond to a role that is already added.`);
+    await message.reply({ content: ctx.i18n`you must provide a valid role id that doesn't correspond to a role that is already added.` });
     return this.messageManager.statuses.FAILURE;
   }
 }

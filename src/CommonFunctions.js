@@ -540,9 +540,8 @@ const createPageCollector = async (msg, pages, author) => {
 /**
  * Set up pages from an array of embeds
  * @param  {Array.<Object|MessageEmbed>}  pages    Array of embeds to use as pages
- * @param  {Discord.Message}                      message  Message for author
+ * @param  {Discord.Message}              message  Message for author
  * @param  {Settings}                     settings Settings
- * @param  {MessageManager}               mm      Message manager for interacting with messages
  */
 const setupPages = async (pages, { message, settings }) => {
   if (pages.length && !!(await message.fetch(true))) {
