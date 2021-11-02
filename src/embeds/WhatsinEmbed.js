@@ -15,8 +15,8 @@ class WhatsinEmbed extends BaseEmbed {
   constructor(bot, details, tier, type) {
     super();
     const transformedRewards = {};
-    const rewards = [details.rewards.Intact, details.rewards.Exceptional,
-      details.rewards.Flawless, details.rewards.Radiant];
+    const rewards = [details?.rewards?.Intact, details?.rewards?.Exceptional,
+      details?.rewards?.Flawless, details?.rewards?.Radiant];
     rewards
       .forEach((rewardTier) => {
         rewardTier.forEach((reward) => {
