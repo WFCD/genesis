@@ -39,8 +39,8 @@ class UserInfoEmbed extends BaseEmbed {
     };
 
     if (member) {
-      this.description = member.presence.activities && member.presence.activities[0]
-        ? (member.presence.activities[0].state || member.presence.activities[0].name)
+      this.description = member.presence?.activities?.[0]
+        ? (member.presence.activities?.[0].state || member.presence.activities?.[0].name)
         : 'No Game';
 
       this.fields = this.fields.concat([
