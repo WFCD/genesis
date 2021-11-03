@@ -251,11 +251,11 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         try {
           // fetch can fail due to missing access. swallow error.
           guild = await this.client.guilds.fetch(gid);
+          if (!guild) continue; // probably should consider checking if the bot is in the server?
+          const guildCCs = grouped[gid];
+          guildCCs.length = 50;
+          await guild?.commands?.set(guildCCs.filter(c => c));
         } catch (ignore) { /* Ignored */ }
-        if (!guild) continue; // probably should consider checking if the bot is in the server?
-        const guildCCs = grouped[gid];
-        guildCCs.length = 50;
-        await guild?.commands?.set(guildCCs.filter(c => c));
       }
     }
   }
