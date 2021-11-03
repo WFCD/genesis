@@ -33,7 +33,7 @@ class Whatsin extends Command {
     ];
   }
 
-  async run(message) {
+  async run(message, ctx) {
     let tier = message.strippedContent.match(this.regex)[1];
     let relicName = message.strippedContent.match(this.regex)[2];
 
@@ -45,7 +45,7 @@ class Whatsin extends Command {
     tier = toTitleCase(tier.trim());
     relicName = toTitleCase(relicName.trim());
     try {
-      const relicData = await fetch(`${relicBase}/${tier}/${relicName}.json`);
+      const relicData = await ctx.ws.relic(tier, relicName);
       if (relicData) {
         await sentMessage.edit({ embeds: [new WhatsinEmbed(null, relicData, tier, relicName)] });
         return this.messageManager.statuses.SUCCESS;

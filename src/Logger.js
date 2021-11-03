@@ -3,15 +3,11 @@
 /* eslint-disable no-console */
 const Sentry = require('@sentry/node');
 require('colors');
-
-Sentry.init({ dsn: process.env.RAVEN_URL, autoBreadcrumbs: true });
-
 const { WebhookClient } = require('discord.js');
-
-const scope = (process.env.SCOPE || 'worker').toUpperCase();
-
 const ErrorEmbed = require('./embeds/ErrorEmbed');
 
+Sentry.init({ dsn: process.env.RAVEN_URL, autoBreadcrumbs: true });
+const scope = (process.env.SCOPE || 'worker').toUpperCase();
 let errorHook;
 if (process.env.CONTROL_WH_ID) {
   errorHook = new WebhookClient({
@@ -37,7 +33,6 @@ const scopes = {
   BOT: 'yellow',
   WORKER: 'grey',
 };
-
 const contexts = {
   RSS: 'grey',
   Twitch: 'magenta',
@@ -46,6 +41,7 @@ const contexts = {
   TwitchApi: 'magenta',
   TM: 'yellow',
 };
+const ignore = ['CHANNEL_NOT_CACHED', 'Invalid refresh token', 'Failed to load'];
 
 /**
  * A collection of methods for logging
@@ -70,6 +66,9 @@ Logger.prototype.isLoggable = level => Object.keys(levels)
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message, context) => {
     const simple = fmt(level, message, context);
+    for (const term of ignore) {
+      if (simple.includes(term)) return;
+    }
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (Logger.prototype.isLoggable(level) && nonError) {
       console.log(simple);

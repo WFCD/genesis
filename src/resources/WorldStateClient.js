@@ -205,8 +205,12 @@ module.exports = class WorldStateClient {
    * @returns {Promise<Object>}
    */
   async relic(tier, name) {
-    this.#logger.silly(`fetching ${tier} ${name}`);
-    return fetch(`${relicBase}/${toTitleCase(tier)}/${toTitleCase(name)}.json`);
+    try {
+      this.#logger.silly(`fetching ${tier} ${name}`);
+      return fetch(`${relicBase}/${toTitleCase(tier)}/${tier.toLowerCase() === 'requiem' ? name.toUpperCase() : toTitleCase(name)}.json`);
+    } catch (e) {
+      this.#logger.debug(e);
+    }
   }
 
   /**
