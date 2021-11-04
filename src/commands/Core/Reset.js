@@ -16,9 +16,9 @@ class ResetGuild extends Command {
       await Promise.all(guild.channels.cache.map(channel => this.settings.stopTracking(channel)));
     } catch (e) {
       this.logger.error(e.message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

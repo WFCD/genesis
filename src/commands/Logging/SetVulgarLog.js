@@ -19,11 +19,11 @@ class SetVulgarLog extends Command {
     if (vulgarLogChannel && this.bot.client.channels.cache.has(vulgarLogChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'vulgarLog', vulgarLogChannel);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'vulgarLog');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -19,11 +19,11 @@ class SetBanLog extends Command {
     if (logChannel && this.bot.client.channels.cache.has(logChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'banLog', logChannel);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'banLog');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

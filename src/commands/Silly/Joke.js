@@ -18,6 +18,6 @@ module.exports = class Jokes extends require('../../models/Command.js') {
 
   async run(message) {
     await message.reply(`\`\`\`haskell\n${jokes[Math.floor(Math.random() * jokes.length)]}\n\`\`\``);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 };

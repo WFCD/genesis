@@ -23,11 +23,11 @@ class StopGiveaway extends Command {
     try {
       [mid] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
       await this.bot.giveaways.delete(mid);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      message.reply(`Giveaway \`${mid}\` failed to stop or doesn't exist`);
-      return this.messageManager.statuses.FAILURE;
+      await message.reply(`Giveaway \`${mid}\` failed to stop or doesn't exist`);
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

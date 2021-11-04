@@ -24,14 +24,14 @@ class SetPoolGuild extends Command {
     const pool = await resolvePool(message, this.settings);
     if (typeof pool === 'undefined') {
       await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     if (guildId && this.bot.client.guilds.cache.has(guildId)) {
       await this.settings.setPoolGuild(pool, guildId.trim());
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ content: 'Please specify a valid guild.' });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

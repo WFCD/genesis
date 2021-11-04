@@ -75,7 +75,7 @@ class EventHandler {
         return null;
       }
     })
-      .filter(c => c && c !== null);
+      .filter(c => c);
 
     this.statuses = this.bot.messageManager.statuses;
   }

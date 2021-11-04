@@ -37,7 +37,7 @@ class PriceCheck extends Command {
       const item = message.strippedContent.match(this.regex)[1];
       if (!item || item.length > 16 || item.length < 2) {
         await message.reply('Search has a 16 character limit, with a 3 character minimum');
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
 
       const sentMessage = await message.reply({ embeds: [inProgressEmbed] });
@@ -50,15 +50,15 @@ class PriceCheck extends Command {
             description: 'There\'s an issue with our upstream data provider. Please check back for prices later.',
           }],
         });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       const embed = new PriceCheckEmbed(this.bot, result, item);
       await sentMessage.edit({ embeds: [embed] });
       return embed.color === 0xff55ff
-        ? this.messageManager.statuses.FAILURE : this.messageManager.statuses.SUCCESS;
+        ? this.constructor.statuses.FAILURE : this.constructor.statuses.SUCCESS;
     } catch (error) {
       this.logger.error(error);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

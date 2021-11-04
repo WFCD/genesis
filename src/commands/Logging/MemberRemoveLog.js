@@ -19,11 +19,11 @@ class SetMemRemoveLog extends Command {
     if (logChannel && this.bot.client.channels.cache.has(logChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'memberRemoveLog', logChannel);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'memberRemoveLog');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -29,7 +29,7 @@ class FrameProfile extends Command {
       const results = await this.ws.search('tutorials', query);
       if (results.length > 0) {
         await Promise.all(results.map(tutorial => message.reply({ content: `Warframe Tutorial | ${tutorial.name}: ${tutorial.url}` })));
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
     const tutorials = await this.ws.g('tutorials');
@@ -42,7 +42,7 @@ class FrameProfile extends Command {
       },
     };
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

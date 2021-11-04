@@ -35,7 +35,7 @@ class Untrack extends Command {
         },
       }],
     });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

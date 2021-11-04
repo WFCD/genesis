@@ -25,7 +25,7 @@ class FeaturedDeal extends Command {
     const pages = salesGroups.map(group => new SalesEmbed(this.bot, group, platform));
     const msg = await message.reply({ embeds: [pages[0]] });
     await createPageCollector(msg, pages, message.author);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

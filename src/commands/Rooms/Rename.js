@@ -43,12 +43,12 @@ class Rename extends require('../../models/Command.js') {
             await room.category.setName(newName, `New name for ${room.textChannel}.`);
           }
           await message.reply('Done');
-          return this.messageManager.statuses.SUCCESS;
+          return this.constructor.statuses.SUCCESS;
         }
       }
       await message.reply(`you haven't created a channel. Only the creator of a channel can modify a channel's name.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`);
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

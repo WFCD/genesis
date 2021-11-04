@@ -20,7 +20,7 @@ class PriceCheck extends Command {
   }
 
   async run() {
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   async sendUsageEmbed(message) {

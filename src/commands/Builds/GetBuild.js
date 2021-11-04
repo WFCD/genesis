@@ -23,17 +23,17 @@ class GetBuild extends Command {
   async run(message) {
     const buildId = message.strippedContent.match(this.regex)[1];
     if (!buildId || buildId.length < 1) {
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     try {
       const build = await this.settings.getBuild(buildId);
       const embed = new BuildEmbed(this.bot, build);
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

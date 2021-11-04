@@ -30,7 +30,7 @@ class Language extends Command {
     const channel = getChannel(channelParam, message);
     await this.settings.setChannelSetting(channel, 'language', m || language.toLowerCase());
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

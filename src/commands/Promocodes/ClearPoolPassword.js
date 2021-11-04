@@ -22,12 +22,12 @@ class ClearPoolPassword extends Command {
   async run(message) {
     const pool = await resolvePool(message, this.settings);
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
-      return this.messageManager.statuses.FAILURE;
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
+      return this.constructor.statuses.FAILURE;
     }
     await this.settings.clearPoolPassword(pool);
-    this.messageManager.reply(message, 'Cleared.');
-    return this.messageManager.statuses.SUCCESS;
+    await message.reply({ content: 'Cleared.' });
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

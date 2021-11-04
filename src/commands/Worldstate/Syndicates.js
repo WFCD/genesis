@@ -48,10 +48,10 @@ class Syndicates extends Command {
           pages.push(new SyndicateEmbed(this.bot, [mission], mission.syndicate, platform, true));
         }
       });
-      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-      return this.messageManager.statuses.SUCCESS;
+      await setupPages(pages, { message, settings: this.settings });
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

@@ -34,7 +34,7 @@ class Wiki extends Command {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query) {
       await message.reply(noResult);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     try {
       this.logger.debug(`Searched for query: ${query}`);
@@ -42,10 +42,10 @@ class Wiki extends Command {
       const details = await warframe.getArticleDetails({ ids: articles.items.map(i => i.id) });
       const embed = new WikiEmbed(this.bot, details);
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (error) {
       await message.reply(noResult);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

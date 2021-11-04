@@ -32,7 +32,7 @@ class ListCustomCommand extends Command {
       const embed = { color: 0x301934, description: ctx.i18n`No Custom Commands`, title: ctx.i18n`Custom Commands` };
       await message.reply({ embeds: [embed] });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

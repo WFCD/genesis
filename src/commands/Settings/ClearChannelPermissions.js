@@ -25,7 +25,7 @@ class ClearChannelPermissions extends Command {
       await this.settings.removeGuildPermissions(message.guild);
     }
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

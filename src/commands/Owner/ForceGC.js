@@ -24,12 +24,12 @@ class ForceGarbageCollection extends Command {
       if (global.gc) {
         global.gc();
       } else {
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

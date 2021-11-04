@@ -35,9 +35,9 @@ class Shields extends Command {
     const embed = new ShieldEmbed(this.bot, params);
     await message.reply({ embeds: [embed] });
     if (params && params.length > 3) {
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

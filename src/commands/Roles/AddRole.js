@@ -52,7 +52,7 @@ class AddRole extends Command {
       .trim();
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     let role = getRoleForString(stringRole, message);
     if (create && message.guild.me.hasPermission('MANAGE_ROLES')) {
@@ -65,7 +65,7 @@ class AddRole extends Command {
       }, 'Add Role Command with create flag');
     } else if (!role) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const roles = await this.settings.getRolesForGuild(message.guild);
@@ -73,7 +73,7 @@ class AddRole extends Command {
 
     if (filteredRoles.length > 0) {
       await this.sendAlreadyAddedEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const rolesToCommit = roles.map(innerRole => innerRole.getSimple());
@@ -93,7 +93,7 @@ class AddRole extends Command {
     }
     rolesToCommit.push(newRole.getSimple());
     await this.addAndCommitRole(message, rolesToCommit, role.name);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   async addAndCommitRole(message, roles, newRole) {

@@ -65,21 +65,21 @@ class AddPromocode extends Command {
 
     if (!code) {
       await message.reply({ content: '\\❌ No code provided.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     if (!pool) {
       await message.reply({ content: '\\❌ You either can\'t add to the provided pool or you don\'t manage any pools.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     await this.settings.addCode(pool, platform, message.author.id, null, null, code);
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   async runAttachmentPath(message) {
     const firstAttach = message.attachments.first();
     if (firstAttach.filename.indexOf('.json') === -1 && firstAttach.filename.indexOf('.csv') === -1) {
       await message.reply({ content: `\\❌ Hmm, Operator, I need a valid JSON or CSV file. Received: ${firstAttach.filename}` });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     let codes;
     let response;
@@ -93,12 +93,12 @@ class AddPromocode extends Command {
     } catch (e) {
       await message.reply({ content: '\\❌ Couldn\'t get file.' });
       this.logger.debug(e);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     // Check if the user has access to the pools... construct error messages
     if (!codes.length) {
       response = await appendIfResponse(message, response, this.messageManager, '\\❌ No codes to import');
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const poolsInAttach = [];
     codes.forEach((code) => {
@@ -133,11 +133,11 @@ class AddPromocode extends Command {
     try {
       await this.settings.addCodes(codes);
       response = await appendIfResponse(message, response, this.messageManager, '\\✅ Codes successfully added!');
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (error) {
       this.logger.error(error);
       await appendIfResponse(message, response, this.messageManager, '\\❌ Failed to add codes.');
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

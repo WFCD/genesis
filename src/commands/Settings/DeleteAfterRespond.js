@@ -52,7 +52,7 @@ class RespondToSettings extends Command {
       await this.settings.setChannelSetting(channel, 'delete_after_respond', delCall);
       await this.settings.setChannelSetting(channel, 'delete_response', delResponse);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     return this.sendToggleUsage(message, ctx, ['all', 'command', 'respond', 'none']);
   }

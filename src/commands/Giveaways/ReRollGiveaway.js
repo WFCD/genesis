@@ -24,11 +24,11 @@ class ReRollGiveaway extends Command {
     try {
       [mid] = message.strippedContent.replace(this.call, '').trim().split(/ +/g);
       await this.bot.giveaways.reroll(mid);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      message.reply(ctx.i18n`Giveaway \`${mid}\` failed to reroll or doesn't exist`);
-      return this.messageManager.statuses.FAILURE;
+      await message.reply(ctx.i18n`Giveaway \`${mid}\` failed to reroll or doesn't exist`);
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

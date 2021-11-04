@@ -47,7 +47,7 @@ class Raid extends Command {
       data, query, ctx.platform,
     );
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

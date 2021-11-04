@@ -69,8 +69,6 @@ class CommandHandler extends Handler {
    */
   constructor(bot) {
     super(bot, 'handlers.command', Events.MESSAGE_CREATE);
-
-    this.statuses = this.bot.messageManager.statuses;
     this.commandManager = this.bot.commandManager;
     this.logger = bot.logger;
   }
@@ -165,17 +163,17 @@ class CommandHandler extends Handler {
               && !command.isInline
               && !!(await message.fetch(true));
             switch (status) {
-              case this.statuses.SUCCESS:
+              case cmd.constructor.statuses.SUCCESS:
                 if (canReact) {
                   message.react(emojify('green_tick'));
                 }
                 break;
-              case this.statuses.FAILURE:
+              case cmd.constructor.statuses.FAILURE:
                 if (canReact) {
                   message.react(emojify('red_tick'));
                 }
                 break;
-              case this.statuses.NO_ACCESS:
+              case cmd.constructor.statuses.NO_ACCESS:
               default:
                 break;
             }

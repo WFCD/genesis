@@ -26,7 +26,7 @@ class Sorties extends Command {
     const sortie = await this.ws.get('sortie', platform, ctx.language);
     if (sortie.expired) {
       await message.reply({ content: 'There is currently no sortie' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const embed = new SortieEmbed(this.bot, sortie, platform);
     try {
@@ -38,10 +38,10 @@ class Sorties extends Command {
         embed.thumbnail.url = thumb;
       }
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (err) {
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
   }
 }

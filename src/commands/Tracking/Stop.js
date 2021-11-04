@@ -25,7 +25,7 @@ class Untrack extends Command {
     this.settings.removeTypeNotifications(channel.id);
     this.settings.removeItemNotifications(channel.id);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

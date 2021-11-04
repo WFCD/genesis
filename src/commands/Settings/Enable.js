@@ -122,7 +122,7 @@ class Enable extends Command {
     if (respondToSettings) {
       await message.reply({ embeds: [embed] });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   /**
@@ -154,7 +154,7 @@ class Enable extends Command {
       targetResult,
     ], 1);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

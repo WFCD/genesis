@@ -101,7 +101,7 @@ class AddLFG extends Command {
 
         if (!msg) {
           await message.reply('Unknown error. Could not create LFG entry.');
-          return this.messageManager.statuses.FAILURE;
+          return this.constructor.statuses.FAILURE;
         }
         let deleteTimeout = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
         msg.react('🔰');
@@ -154,15 +154,15 @@ class AddLFG extends Command {
         if (ctx.deleteCommand && message.deletable) {
           setTimeout(message.delete, 10000);
         }
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       } catch (e) {
         this.logger.error(e);
         await message.reply(`something failed in sending. You sent: ${params.join(', ')}`);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
     }
     await message.reply(`please ask your admin to designate a setting for \`${ctx.prefix}set lfg channel\``);
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

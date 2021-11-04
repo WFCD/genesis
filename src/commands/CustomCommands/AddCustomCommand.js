@@ -27,14 +27,14 @@ class AddCustomCommand extends Command {
           }],
         }],
       });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     await this.settings.addCustomCommand(
       message.guild, params[1], encodeURIComponent(params[2]), message.author.id,
     );
     await this.commandManager.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

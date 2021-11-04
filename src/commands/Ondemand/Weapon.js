@@ -69,18 +69,18 @@ class WeaponStats extends Command {
           });
 
           await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-          return this.messageManager.statuses.SUCCESS;
+          return this.constructor.statuses.SUCCESS;
         }
         await message.reply({ embeds: [embed] });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       } catch (e) {
         this.logger.error(e);
         await message.reply({ embeds: [embed] });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
     }
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

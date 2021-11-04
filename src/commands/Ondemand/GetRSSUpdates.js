@@ -24,7 +24,7 @@ class GetRSSUpdates extends Command {
 
     if (!updates.length) {
       await message.reply({ content: ctx.i18n`No RSS Updates` });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const pages = [];
@@ -33,7 +33,7 @@ class GetRSSUpdates extends Command {
     });
     await setupPages(pages, { message, settings: this.settings });
 
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

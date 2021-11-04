@@ -17,7 +17,7 @@ class Invitation extends Command {
 
   async run(message, ctx) {
     await message.reply({ content: process.env.INVITE_URL || ctx.i18n`No Invite Set` });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

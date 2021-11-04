@@ -26,11 +26,11 @@ class LeaveServer extends Command {
     const serverid = message.strippedContent.match(this.regex)[1];
     if (this.bot.client.guilds.cache.has(serverid)) {
       const guild = await this.bot.client.guilds.cache.get(serverid).leave();
-      this.messageManager.reply(message, `Left ${guild.name}`, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      await message.reply({ content: `Left ${guild.name}` });
+      return this.constructor.statuses.SUCCESS;
     }
-    message.reply('No such guild cached');
-    return this.messageManager.statuses.FAILURE;
+    await message.reply('No such guild cached');
+    return this.constructor.statuses.FAILURE;
   }
 }
 

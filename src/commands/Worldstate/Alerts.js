@@ -24,7 +24,7 @@ class Alerts extends Command {
     const alerts = (await this.ws.get('alerts', platform, ctx.language)).filter(a => !a.expired);
 
     if (!alerts.length) {
-      message.reply({ content: ctx.i18n`No Alerts Active` });
+      await message.reply({ content: ctx.i18n`No Alerts Active` });
     }
 
     if (compact) {
@@ -35,10 +35,10 @@ class Alerts extends Command {
       alerts.forEach((alert) => {
         pages.push(new AlertEmbed(this.bot, [alert], platform, ctx.i18n));
       });
-      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      await setupPages(pages, { message, settings: this.settings });
     }
 
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

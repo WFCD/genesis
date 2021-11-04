@@ -40,10 +40,10 @@ class ListBuilds extends Command {
         });
       });
       await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for user` }] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

@@ -55,12 +55,12 @@ class LeaveRole extends Command {
     const stringRole = message.strippedContent.replace(`${this.call} `, '');
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const role = getRoleForString(stringRole, message);
     if (!role) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
@@ -75,19 +75,19 @@ class LeaveRole extends Command {
           && !message.member.roles.cache.get(role.id);
     if (!botIsHigher) {
       await this.sendBotRoleLow(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     if (roleRemoveable && filteredRoles[0].leaveable) {
       await message.member.roles.remove(role.id);
       await this.sendLeft(message, role);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.sendCantLeave(
       message,
       userDoesntHaveRole,
       filteredRoles[0] && filteredRoles[0].leaveable,
     );
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   // eslint-disable-next-line class-methods-use-this

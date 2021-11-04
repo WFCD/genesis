@@ -28,7 +28,7 @@ class DeleteBuild extends Command {
       if (owner === message.author.id || message.author.id === this.bot.owner) {
         await this.settings.deleteBuild(buildId);
         await message.reply({ embeds: [{ title: ctx.i18n`Build ${buildId} deleted.`, color: 0xcda2a3 }] });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
 
@@ -39,7 +39,7 @@ class DeleteBuild extends Command {
         color: 0x83181b,
       }],
     });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

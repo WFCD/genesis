@@ -28,7 +28,7 @@ class AllowInlineCommands extends Command {
     }
     await this.settings.setChannelSetting(channel, 'allowInline', allowInline);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

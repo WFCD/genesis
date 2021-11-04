@@ -49,12 +49,12 @@ class AddBuild extends Command {
         firstAttach = message.attachments.first();
       } catch (e) {
         this.logger.error(e);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
 
       if (firstAttach.name.indexOf('.json') === -1) {
         await message.reply({ content: ctx.i18n`Invalid file. Check here (<https://pastebin.com/raw/EU9ZX1uQ>)` });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       let buildsConfig;
 
@@ -64,7 +64,7 @@ class AddBuild extends Command {
         await message.reply('failure');
         this.logger.error(e);
         setTimeout(message.delete, 30000);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       let unfoundOwners = [];
       const builds = await this.settings.addNewBuilds(buildsConfig.builds.map((build) => {
@@ -85,18 +85,18 @@ class AddBuild extends Command {
       unfoundOwners = Array.from(new Set(unfoundOwners));
       if (unfoundOwners.length) {
         await message.reply({ content: `${ctx.i18n`Could not find users for ownership:`}\n${unfoundOwners.map(id => `${id}`).join('\n')}` });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
 
       const pages = builds.map(build => new BuildEmbed(this.bot, build));
       setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
 
     // non-attachment route
     if (params.length < 1) {
       // let them know there's not enough params
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     // save params based on order
     const title = params[0] || 'My Build';
@@ -105,7 +105,7 @@ class AddBuild extends Command {
     const build = await this.settings.addNewBuild(title, body, image, message.author);
     const embed = new BuildEmbed(this.bot, build);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

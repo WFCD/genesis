@@ -41,7 +41,7 @@ class UserInfo extends Command {
     }
     if (!user) {
       await message.reply({ content: 'can\'t find that user. Please specify another.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const guildsWithUser = this.bot.client.guilds.cache
@@ -52,7 +52,7 @@ class UserInfo extends Command {
       : guildsWithUser;
     const embed = new UserInfoEmbed(this.bot, guilds, user, member, message);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

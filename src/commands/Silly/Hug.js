@@ -7,6 +7,6 @@ module.exports = class Hug extends require('../../models/Command.js') {
 
   async run(message) {
     await message.reply('```haskell\nOperator, Cephalons do not g-g-g-give huuuu~~ Screw it. ⊂（♡⌂♡）⊃```');
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 };

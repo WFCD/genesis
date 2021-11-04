@@ -41,11 +41,11 @@ class ListUsers extends Command {
         noDataPage.setTitle(ctx.i18n`No Blacklisted Users`);
         pages.push(noDataPage);
       }
-      setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-      return this.messageManager.statuses.SUCCESS;
+      await setupPages(pages, { message, settings: this.settings });
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ content: ctx.i18n`Must be in a guild.` });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

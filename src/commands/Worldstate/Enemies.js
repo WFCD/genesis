@@ -22,7 +22,7 @@ class Enemies extends Command {
     const platform = platformParam || ctx.platform;
     const embed = new AcolyteEmbed(this.bot, await this.ws.get('persistentEnemies', platform, ctx.language), platform);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

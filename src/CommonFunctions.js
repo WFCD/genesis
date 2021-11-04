@@ -684,7 +684,7 @@ const constructItemEmbeds = (types) => {
 };
 
 async function sendTrackInstructionEmbeds({
-  message, prefix, call, settings, mm,
+  message, prefix, call, settings,
 }) {
   const pages = [];
   pages.push({
@@ -732,7 +732,7 @@ async function sendTrackInstructionEmbeds({
   }
 
   if (pages.length) {
-    return setupPages(pages, { message, settings, mm });
+    return setupPages(pages, { message, settings });
   }
   return undefined;
 }

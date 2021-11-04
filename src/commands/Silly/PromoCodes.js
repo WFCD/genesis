@@ -24,7 +24,7 @@ class Jokes extends Command {
 
   async run(message) {
     await message.reply({ embeds: [promoCodeEmbed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

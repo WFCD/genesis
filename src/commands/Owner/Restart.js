@@ -19,7 +19,7 @@ class Restart extends Command {
   async run() {
     this.logger.debug('Forcing Restart');
     process.exit(0);
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 }
 

@@ -22,7 +22,7 @@ class Efficiency extends Command {
       content: `Operator ${message.author.toString()}, the efficiency table, at your request.`,
       files: [{ attachment: efficiencyChart, name: 'efficiency.png' }],
     });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

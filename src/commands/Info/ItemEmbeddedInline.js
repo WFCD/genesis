@@ -143,7 +143,7 @@ class FrameStatsInline extends Command {
       this.logger.error(error);
     }
 
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 
   /**
@@ -161,7 +161,7 @@ class FrameStatsInline extends Command {
       strippedQueries.forEach(query => this.evalQuery(message, query));
     }
 
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 }
 

@@ -29,7 +29,7 @@ class UpdateCustomCommand extends Command {
         }],
       };
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const [, param, call, newVal] = params;
@@ -40,14 +40,14 @@ class UpdateCustomCommand extends Command {
 
     if (!cc) {
       await message.reply({ content: ctx.i18n`Command \`${call}\` is an invalid command` });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     cc[param.toLowerCase()] = newVal;
     await this.settings.updateCustomCommand(message.guild, cc);
     await this.commandManager.loadCustomCommands();
     await this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

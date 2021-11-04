@@ -18,7 +18,7 @@ class Kill extends Command {
   async run() {
     this.logger.fatal('Killing bot shard');
     process.exit(255);
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 }
 

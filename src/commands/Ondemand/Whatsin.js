@@ -40,7 +40,7 @@ class Whatsin extends Command {
     const sentMessage = await message.reply({ embeds: [inProgressEmbed] });
     if (!(tier && relicName)) {
       await sentMessage.edit({ embeds: [noResultsEmbed] });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     tier = toTitleCase(tier.trim());
     relicName = toTitleCase(relicName.trim());
@@ -48,13 +48,13 @@ class Whatsin extends Command {
       const relicData = await ctx.ws.relic(tier, relicName);
       if (relicData) {
         await sentMessage.edit({ embeds: [new WhatsinEmbed(null, relicData, tier, relicName)] });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     } catch (error) {
       this.logger.error(error);
     }
     await sentMessage.edit({ embeds: [noResultsEmbed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

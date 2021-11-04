@@ -1,5 +1,8 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
+const Discord = require('discord.js');
+
 const Command = require('../../models/Command.js');
 const {
   getEventsOrItems,
@@ -60,11 +63,12 @@ class Track extends Command {
       await this.#notifyCurrent(channel, message);
     }
     this.messageManager.notifySettingsChange(message, true, true);
+    if (message.channel.type !== 'GUILD_TEXT') return this.constructor.statuses.FAILURE;
 
     if (!ctx.webhook) {
-      this.#generateWebhook(message);
+      await this.#generateWebhook(message);
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   /**
@@ -78,16 +82,18 @@ class Track extends Command {
       let setupMsg;
       try {
         setupMsg = await message.reply('Setting up webhook...');
-        existingWebhooks = (await message.channel.fetchWebhooks())
-          .filter(w => w.type === 'Incoming'
+        if (message.guild) {
+          existingWebhooks = (await message.channel.fetchWebhooks())
+            .filter(w => w.type === 'Incoming'
             && w?.owner?.id === message?.client?.user?.id
             && !!w.token);
+        }
       } catch (e) {
         this.logger.error(e);
         await message.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to get existing.`);
       }
 
-      if (existingWebhooks.size) {
+      if (existingWebhooks?.size) {
         const temp = existingWebhooks.first();
         webhook = {
           id: temp.id,
@@ -140,7 +146,7 @@ class Track extends Command {
     checkAndMergeEmbeds(pages, trackedItems);
     checkAndMergeEmbeds(pages, trackedEvents);
     if (pages.length) {
-      return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      return setupPages(pages, { message, settings: this.settings });
     }
     return message.reply('Nothing Tracked');
   }
@@ -158,7 +164,7 @@ class Track extends Command {
       settings: this.settings,
       mm: this.messageManager,
     });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

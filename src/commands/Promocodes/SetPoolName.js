@@ -23,15 +23,15 @@ class SetPoolGuild extends Command {
     const name = message.strippedContent.match(this.regex)[1] || 0;
     const pool = await resolvePool(message, this.settings);
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
-      return this.messageManager.statuses.FAILURE;
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
+      return this.constructor.statuses.FAILURE;
     }
     if (name) {
       await this.settings.setPoolName(pool, name);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
-    await this.messageManager.reply(message, 'Please specify a name.');
-    return this.messageManager.statuses.FAILURE;
+    await message.reply({ content: 'Please specify a name.' });
+    return this.constructor.statuses.FAILURE;
   }
 }
 

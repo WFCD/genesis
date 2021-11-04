@@ -32,8 +32,8 @@ class Baro extends Command {
     } else {
       pages.push(embed);
     }
-    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-    return this.messageManager.statuses.SUCCESS;
+    await setupPages(pages, { message, settings: this.settings });
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -27,22 +27,22 @@ class TrackRole extends Command {
       .replace('<#', '')
       .replace('>', '');
 
-    if (!channelId) return this.messageManager.statuses.FAILURE;
+    if (!channelId) return this.constructor.statuses.FAILURE;
     const channel = guild.channels.cache.get(channelId);
-    if (!channel) return this.messageManager.statuses.FAILURE;
+    if (!channel) return this.constructor.statuses.FAILURE;
 
     const roleId = (message.strippedContent.replace(channelId, '')
       .match(rc) || [])[0]
       .replace('<@&', '')
       .replace('>', '');
 
-    if (!roleId) return this.messageManager.statuses.FAILURE;
+    if (!roleId) return this.constructor.statuses.FAILURE;
     const role = guild.roles.cache.get(roleId);
-    if (!role) return this.messageManager.statuses.FAILURE;
+    if (!role) return this.constructor.statuses.FAILURE;
 
     await this.settings.trackRole(guild, channel, role);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

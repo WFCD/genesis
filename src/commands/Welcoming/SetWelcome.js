@@ -18,9 +18,9 @@ class SetWelcome extends Command {
     if (match) {
       await this.settings.setWelcome(message, false, match.trim());
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

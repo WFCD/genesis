@@ -196,10 +196,10 @@ class Settings extends Command {
           await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         }
       } else {
-        this.messageManager.reply(message, 'Can\'t give you settings. Something went wrong.', true, true);
+        await message.reply({ content: 'Can\'t give you settings. Something went wrong.' });
       }
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   evalAppliesTo(type, id, message) {

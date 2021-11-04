@@ -19,11 +19,11 @@ class SetModRole extends Command {
     if (roleId && message.guild.roles.cache.has(roleId.trim())) {
       await this.settings.setGuildSetting(message.guild, 'modRole', roleId);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'modRole');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

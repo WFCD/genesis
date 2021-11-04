@@ -35,7 +35,7 @@ class Prefix extends Command {
       await this.settings.setChannelSetting(message.channel, 'prefix', prefix);
     }
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -22,8 +22,8 @@ class SetPing extends Command {
     const regex = new RegExp(`${captures.trackables}(.+)?`, 'i');
     const match = message.content.match(regex);
     if (message.channel.type === 'DM') {
-      this.messagemanager.reply(message, 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!');
-      return this.messageManager.statuses.FAILURE;
+      await message.reply({ content: 'Operator, you can\'t do that privately, it\'s the same as directly messaging you anyway!' });
+      return this.constructor.statuses.FAILURE;
     }
     if (match) {
       const trackables = trackablesFromParameters(match[1].trim().split(' '));
@@ -38,7 +38,7 @@ class SetPing extends Command {
           settings: this.settings,
           mm: this.messageManager,
         });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       const results = [];
       eventsAndItems.forEach((eventOrItem) => {
@@ -54,7 +54,7 @@ class SetPing extends Command {
       });
       Promise.all(results);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await sendTrackInstructionEmbeds({
       message,
@@ -63,7 +63,7 @@ class SetPing extends Command {
       settings: this.settings,
       mm: this.messageManager,
     });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

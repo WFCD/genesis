@@ -43,10 +43,10 @@ class EightBall extends Command {
     if (message.strippedContent.replace(this.call, '').trim().length) {
       const resp = jokes[Math.floor(Math.random() * jokes.length)];
       await message.reply({ content: `:8ball: | ${resp}, **${message.member.displayName}**` });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ content: `Gotta ask a question, **${message.member.displayName}**` });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

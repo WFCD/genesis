@@ -33,11 +33,11 @@ class Outpost extends Command {
     const outpost = await this.ws.get('sentientOutposts', platform, ctx.language);
     if (outpost.active) {
       const embed = new SentientOutpostEmbed(this.bot, outpost, platform, ctx.i18n);
-      this.messageManager.send(message.channel, embed);
+      await message.reply({ embeds: [embed] });
     } else {
-      this.messageManager.send(message.channel, ctx.i18n` :warning: No active outpost detected. Predicted arrival in **${timeDeltaToMinutesString(fromNow(next(outpost).activation))}**.`);
+      await message.reply({ content: ctx.i18n` :warning: No active outpost detected. Predicted arrival in **${timeDeltaToMinutesString(fromNow(next(outpost).activation))}**.` });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

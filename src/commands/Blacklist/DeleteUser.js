@@ -32,7 +32,7 @@ class DeleteUser extends Command {
 
     if (!matches || !matches.length) {
       await message.reply({ content: ctx.i18n`No user provided.` });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const userId = matches[1];
 
@@ -42,10 +42,10 @@ class DeleteUser extends Command {
         message.guild ? message.guild.id : 0,
         global,
       );
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ content: ctx.i18n`No such user.` });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

@@ -30,7 +30,7 @@ module.exports = class Whereis extends require('../../models/Command.js') {
     const sentMessage = await message.reply({ embeds: [inProgressEmbed] });
     if (!query) {
       await sentMessage.edit({ embeds: [noResultsEmbed] });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     try {
       query = query.trim().toLowerCase();
@@ -98,12 +98,12 @@ module.exports = class Whereis extends require('../../models/Command.js') {
       });
       await createPageCollector(sentMessage, embeds, message.author);
       if (results.length > 0) {
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     } catch (error) {
       this.logger.error(error);
     }
     await sentMessage.edit({ embeds: [noResultsEmbed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 };

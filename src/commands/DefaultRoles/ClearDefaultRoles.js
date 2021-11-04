@@ -12,7 +12,7 @@ class ClearDefaultRoles extends Command {
   async run(message) {
     await this.settings.deleteGuildSetting(message.guild, 'defaultRoles');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

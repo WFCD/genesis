@@ -123,7 +123,7 @@ class AddRole extends Command {
 
     // TODO: parse out args for each. if it's valid, save it to the db.
     // if not, push it to a "failed" array with reason, and reply to user
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
   /* eslint-enable no-unused-vars */
 }

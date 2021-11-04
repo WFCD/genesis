@@ -85,11 +85,11 @@ class BugReport extends Command {
         try {
           this.bot.bugHook.send({ embeds: [embed] });
           await message.reply({ content: i18n`Bug report sent.` });
-          return this.messageManager.statuses.SUCCESS;
+          return this.constructor.statuses.SUCCESS;
         } catch (error) {
           this.logger.error(error);
           await message.reply({ content: i18n`Failed to submit bug report` });
-          return this.messageManager.statuses.FAILURE;
+          return this.constructor.statuses.FAILURE;
         }
       }
       const embed = {
@@ -102,9 +102,9 @@ class BugReport extends Command {
         footer: { text: i18n`Add Tobiah#0001 as a friend so he can respond to your bug report` },
       };
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 }
 

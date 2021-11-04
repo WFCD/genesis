@@ -27,7 +27,7 @@ class Echo extends Command {
       await message.delete();
     }
     await message.channel.send({ content: message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim() });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

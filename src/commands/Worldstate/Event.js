@@ -28,14 +28,14 @@ class Event extends Command {
       if (pages.length > 1) {
         await createPageCollector(msg, pages, message.author);
       }
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     const embed = new EventEmbed(
       this.bot,
       undefined, platform.toUpperCase(),
     );
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

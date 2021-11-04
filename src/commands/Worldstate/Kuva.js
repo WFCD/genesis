@@ -23,13 +23,13 @@ class Kuva extends Command {
 
     if (!kuva.length) {
       await message.reply({ content: ctx.i18n`No Kuva Missions Active` });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
 
     const embed = new KuvaEmbed(this.bot, kuva, platform, ctx.i18n);
     await message.reply({ embeds: [embed] });
 
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

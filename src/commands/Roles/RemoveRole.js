@@ -40,12 +40,12 @@ class RemoveRole extends Command {
     const stringRole = message.strippedContent.replace(`${this.call} `, '').replace('--delete', '').trim();
     if (!stringRole) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const role = getRoleForString(stringRole, message);
     if (!role) {
       await this.sendInstructionEmbed(message);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const roles = await this.settings.getRolesForGuild(message.guild);
     const filteredRoles = roles.filter(storedRole => role.id === storedRole.id);
@@ -57,10 +57,10 @@ class RemoveRole extends Command {
       if (deleteRole) {
         message.guild.roles.cache.get(filteredRoles[0].id).delete('Deleting role from role remove');
       }
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.sendRoleNotAvailable(message);
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   async removeAndCommitRoles(message, roles, newRole) {

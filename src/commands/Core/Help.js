@@ -120,7 +120,7 @@ class Help extends Command {
 
       if (searchableCommands.length < 1) {
         await message.reply({ embeds: [invalidResultsEmbed] });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
     }
     searchableCommands.sort(commandSort);
@@ -128,7 +128,7 @@ class Help extends Command {
     const groups = createGroupedArray(lines, 9);
     const embeds = groups.map(group => createEmbedsForCommands(group, ctx.i18n`Help!`, 0x4068BD, query));
     await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   /**

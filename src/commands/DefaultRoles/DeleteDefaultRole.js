@@ -22,11 +22,11 @@ class DeleteDefaultRole extends Command {
         roles.splice(roles.indexOf(roleId, 1));
         await this.settings.setGuildSetting(message.guild, 'defaultRoles', JSON.stringify(roles));
         this.messageManager.notifySettingsChange(message, true, true);
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
     await message.reply({ content: ctx.i18n`you must provide a valid role id that corresponds to a role that is already added.` });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

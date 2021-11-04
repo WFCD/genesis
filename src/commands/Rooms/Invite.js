@@ -54,17 +54,17 @@ class Invite extends Command {
           }
           // send users invite link to new rooms
           await this.sendInvites(room.voiceChannel, users, message.author);
-          return this.messageManager.statuses.SUCCESS;
+          return this.constructor.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to invite desired users. Please either try again or review your invitations to ensure they are valid users.', true, true);
-          return this.messageManager.statuses.FAILURE;
+          await message.reply({ content: 'unable to invite desired users. Please either try again or review your invitations to ensure they are valid users.' });
+          return this.constructor.statuses.FAILURE;
         }
       }
-      await this.messageManager.reply(message, `you haven't created a channel. Only the creator of a channel can invite.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
-      return this.messageManager.statuses.FAILURE;
+      await message.reply({ content: `you haven't created a channel. Only the creator of a channel can invite.\nUse \`${ctx.prefix}create\` to view channel creation syntax.` });
+      return this.constructor.statuses.FAILURE;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   /**
@@ -78,7 +78,7 @@ class Invite extends Command {
       if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
         const invite = await voiceChannel.createInvite({ maxUses: users.length });
         for (const user of users) {
-          this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
+          await user.send({ content: `Invite for ${voiceChannel.name} from ${author}: ${invite}` });
         }
       }
     } catch (e) {

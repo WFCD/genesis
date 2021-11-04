@@ -19,11 +19,11 @@ class SetMessageDeleteLog extends Command {
     if (logChannel && this.bot.client.channels.cache.has(logChannel.trim())) {
       await this.settings.setGuildSetting(message.guild, 'msgDeleteLog', logChannel);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'msgDeleteLog');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -47,11 +47,11 @@ class StartGiveaway extends Command {
       await this.bot.giveaways.start(channel, {
         time, prize, winnerCount, ...giveawayDefaults,
       });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      message.reply(ctx.i18n`Message parameters \`[${time}, ${winnerCount}, ${channel}, ${prize}]\` were invalid. Please retry.`);
-      return this.messageManager.statuses.FAILURE;
+      await message.reply(ctx.i18n`Message parameters \`[${time}, ${winnerCount}, ${channel}, ${prize}]\` were invalid. Please retry.`);
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

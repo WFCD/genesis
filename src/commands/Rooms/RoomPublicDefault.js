@@ -28,7 +28,7 @@ class RoomUnlockedDefault extends Command {
     enable = enable.trim();
     await this.settings.setGuildSetting(message.guild, 'defaultRoomsLocked', enable !== 'on');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -28,13 +28,13 @@ class UntrackRole extends Command {
       .replace('<@&', '')
       .replace('>', '');
 
-    if (!roleId) return this.messageManager.statuses.FAILURE;
+    if (!roleId) return this.constructor.statuses.FAILURE;
     const role = guild.roles.cache.get(roleId);
-    if (!role) return this.messageManager.statuses.FAILURE;
+    if (!role) return this.constructor.statuses.FAILURE;
 
     await this.settings.untrackRole(guild, role);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -55,12 +55,12 @@ class FrameStats extends Command {
         });
 
         await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
     const frames = await fetch(`${apiBase}/warframes`);
     await message.reply({ embeds: [new FrameEmbed(this.bot, undefined, frames)] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

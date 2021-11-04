@@ -26,7 +26,7 @@ class ExportPromocodes extends Command {
     }
     if (!pools || pools.length === 0) {
       await message.reply({ content: '**[Denied]** You manage no pools or need to specify because there are multiple.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const codes = await this.settings.getCodesInPools(pools);
     const fileContents = codes.map(code => `"${code.id}","${code.platform}","${code.addedBy}","${code.addedOn}",${code.grantedTo},${code.grantedBy},${code.grantedOn},${code.code}`);
@@ -36,7 +36,7 @@ class ExportPromocodes extends Command {
     const contents = fileContents.join('\n');
     await message.author.send({ files: [{ attachment: Buffer.from(contents, 'ascii'), name: 'codes.csv' }] });
 
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

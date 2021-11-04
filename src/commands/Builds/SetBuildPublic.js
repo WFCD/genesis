@@ -22,7 +22,7 @@ class SetBuildsPublic extends Command {
   async run(message, ctx) {
     const onOrOff = message.strippedContent.match(/on|off/ig)[0];
     if (!onOrOff) {
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const buildIds = message.strippedContent
@@ -32,7 +32,7 @@ class SetBuildsPublic extends Command {
       .map(id => id.trim());
 
     if (!buildIds.length) {
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const ownedBuilds = (await this.settings.getBuilds(ctx.owner, message.author, buildIds))
@@ -41,11 +41,11 @@ class SetBuildsPublic extends Command {
     try {
       await this.settings.setBuildPublicity(ownedBuilds, (onOrOff.trim() === 'on') ? '1' : '0');
       await message.reply({ content: `${ctx.i18n`**Builds set to __${onOrOff === 'on' ? ctx.i18n`public` : ctx.i18n`private`}__**`}\n${ownedBuilds.join('\n')}` });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

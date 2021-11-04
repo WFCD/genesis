@@ -44,8 +44,8 @@ class ListPools extends Command {
     }
 
     return pools.length > 0
-      ? this.messageManager.statuses.SUCCESS
-      : this.messageManager.statuses.FAILURE;
+      ? this.constructor.statuses.SUCCESS
+      : this.constructor.statuses.FAILURE;
   }
 }
 

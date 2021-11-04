@@ -146,7 +146,7 @@ class Create extends Command {
         const err = `you already have a private room registered.
 If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
         await message.reply({ content: err });
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       if (type) {
         const roomType = type.trim();
@@ -216,7 +216,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
                 },
               ],
             });
-            return this.messageManager.statuses.SUCCESS;
+            return this.constructor.statuses.SUCCESS;
           }
           let msg = '';
           if (users.length > 10) {
@@ -226,16 +226,16 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
             msg = 'that room already exists.';
           }
           await message.reply(msg);
-          return this.messageManager.statuses.FAILURE;
+          return this.constructor.statuses.FAILURE;
         }
       } else {
         await message.reply('```haskell\n'
           + 'Sorry, you need to specify what you want to create. Right now these are available to create:'
           + `\n* ${useable.join('\n* ')}\n\`\`\``);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   /**
@@ -248,7 +248,7 @@ If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
     if (voiceChannel.permissionsFor(this.bot.client.user).has('CREATE_INSTANT_INVITE')) {
       const invite = await voiceChannel.createInvite({ maxUses: users.length });
       for (const user of users) {
-        this.messageManager.sendDirectMessageToUser(user, `Invite for ${voiceChannel.name} from ${author}: ${invite}`, false);
+        await user.send({ content: `Invite for ${voiceChannel.name} from ${author}: ${invite}` });
       }
     }
   }

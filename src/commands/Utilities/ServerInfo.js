@@ -17,11 +17,11 @@ class ServerInfo extends require('../../models/Command.js') {
     const { guild } = message;
     if (!guild) {
       await message.reply('Operator, this is a DM, you can\'t do that!');
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const embed = new ServerInfoEmbed(this.bot, guild);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

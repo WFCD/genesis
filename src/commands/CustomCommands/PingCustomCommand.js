@@ -28,7 +28,7 @@ class PingCustomCommand extends Command {
     }
     await this.settings.setChannelSetting(channel, 'settings.cc.ping', allowPing);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

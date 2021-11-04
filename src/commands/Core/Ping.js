@@ -72,8 +72,8 @@ class Ping extends Command {
       },
     });
 
-    msg.edit({ embeds: [updated] });
-    return this.messageManager.statuses.SUCCESS;
+    await msg.edit({ embeds: [updated] });
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

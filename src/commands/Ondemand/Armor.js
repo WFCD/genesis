@@ -122,11 +122,11 @@ class Armor extends Command {
         },
       };
       await message.reply({ embeds: [embed] });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     this.logger.debug('Entered 0-param armor');
     await this.sendUsage(message);
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   /**

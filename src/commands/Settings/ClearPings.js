@@ -12,7 +12,7 @@ class ClearPings extends Command {
   async run(message) {
     await this.settings.removePings(message.guild.id);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

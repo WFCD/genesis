@@ -56,7 +56,7 @@ class Untrack extends Command {
       await this.notifyCurrent(channel, message);
     }
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   async notifyCurrent(channel, message) {
@@ -80,9 +80,8 @@ class Untrack extends Command {
       prefix,
       call: this.call,
       settings: this.settings,
-      mm: this.messageManager,
     });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

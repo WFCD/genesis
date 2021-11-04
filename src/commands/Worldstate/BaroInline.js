@@ -32,7 +32,7 @@ class Baro extends Command {
     } else {
       await message.reply({ embeds: [embed] });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

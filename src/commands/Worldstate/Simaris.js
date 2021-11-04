@@ -35,7 +35,7 @@ class Simaris extends Command {
       await this.handleSimarisCommmand(message, ctx, platformParam);
     }
 
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   async handleSimarisCommmand(message, ctx, platformParam) {
@@ -65,7 +65,7 @@ class Simaris extends Command {
       results.forEach((result) => {
         pages.push(new SynthesisTargetEmbed(this.bot, [result], query));
       });
-      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      await setupPages(pages, { message, settings: this.settings });
     }
   }
 

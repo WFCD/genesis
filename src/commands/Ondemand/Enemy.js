@@ -52,7 +52,7 @@ module.exports = class EnemyStats extends Command {
 
           if (pages.length) {
             await setupPages(pages, { message, settings: this.settings });
-            return this.messageManager.statuses.SUCCESS;
+            return this.constructor.statuses.SUCCESS;
           }
         }
       } catch (e) {
@@ -60,6 +60,6 @@ module.exports = class EnemyStats extends Command {
       }
     }
     await message.reply('No such enemy');
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 };

@@ -39,7 +39,7 @@ class Roles extends Command {
       });
     });
     await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

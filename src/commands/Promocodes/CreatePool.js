@@ -24,14 +24,14 @@ class CreatePool extends Command {
     // Make sure there's a name
     if (name.length === 0) {
       await message.reply({ content: 'Specify a name for the Pool' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     const id = name.toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9-]/g, '');
     await this.settings.addPool(id, name, message.author.id, 'glyph', message.guild);
     await this.settings.addPoolManager(id, message.author.id);
     await message.author.send({ content: `Added new pool ${id} on ${message.guild.name} with name \`${name}\`.` });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

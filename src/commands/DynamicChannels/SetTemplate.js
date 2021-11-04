@@ -35,10 +35,10 @@ class SetTemplate extends Command {
       if (await ctx.settings.isTemplate(template)) {
         await ctx.settings.setDynTemplate(template.id, nameTemplate);
         await message.reply(ctx.i18n`\`${nameTemplate}\` set as ${template}'s name template.`);
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

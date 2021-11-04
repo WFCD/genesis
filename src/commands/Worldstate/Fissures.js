@@ -24,7 +24,7 @@ class Fissures extends Command {
     const fissures = (await this.ws.get('fissures', platform, ctx.language)).sort((a, b) => a.tierNum > b.tierNum);
 
     if (!fissures.length) {
-      this.messageManager.reply(message, ctx.i18n`No Fissures Active`, true, true);
+      await message.reply({ content: ctx.i18n`No Fissures Active` });
     }
 
     const pages = [];
@@ -49,8 +49,8 @@ class Fissures extends Command {
         pages.push(embed);
       });
     }
-    await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-    return this.messageManager.statuses.SUCCESS;
+    await setupPages(pages, { message, settings: this.settings });
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

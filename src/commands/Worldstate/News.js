@@ -35,9 +35,9 @@ class News extends Command {
       news.forEach((article) => {
         pages.push(new NewsEmbed(this.bot, [article], undefined, platform));
       });
-      await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      await setupPages(pages, { message, settings: this.settings });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

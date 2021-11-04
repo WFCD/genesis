@@ -23,7 +23,7 @@ class Darvo extends Command {
     const embed = new DarvoEmbed(this.bot,
       (await this.ws.get('dailyDeals', platform, ctx.language))[0], platform);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

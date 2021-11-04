@@ -20,21 +20,21 @@ class Transmit extends Command {
         firstAttach = message.attachments.first();
       } catch (e) {
         this.logger.error(e);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
 
       if (firstAttach.name.indexOf('.json') === -1) {
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       let channelConfig;
 
       try {
         channelConfig = await fetch(firstAttach.url);
       } catch (e) {
-        message.reply('Couldn\'t get file.');
+        await message.reply('Couldn\'t get file.');
         this.logger.error(e);
         this.bot.client.setTimeout(message.delete, 30000);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
 
       try {
@@ -43,9 +43,9 @@ class Transmit extends Command {
           let target = this.bot.client.channels
             .get(channelConfig.target.channel || message.channel.id);
           if (!(message.guild && message.guild.channels.cache.has(target.id))) {
-            message.reply('Channel Not Accessible');
+            await message.reply('Channel Not Accessible');
             this.bot.client.setTimeout(message.delete, 30000);
-            return this.messageManager.statuses.FAILURE;
+            return this.constructor.statuses.FAILURE;
           }
           this.logger.debug(`has config: ${channelConfig.target.webhook
             && channelConfig.target.webhook.id
@@ -58,9 +58,9 @@ class Transmit extends Command {
               target = wh;
             }
           } else {
-            message.reply('Webhook required');
+            await message.reply('Webhook required');
             this.bot.client.setTimeout(message.delete, 30000);
-            return this.messageManager.statuses.FAILURE;
+            return this.constructor.statuses.FAILURE;
           }
 
           if (channelConfig.cleanFirst) {
@@ -116,14 +116,14 @@ class Transmit extends Command {
         }
       } catch (e) {
         this.logger.error(e.message);
-        message.reply('Bad File');
+        await message.reply('Bad File');
         this.bot.client.setTimeout(message.delete, 30000);
-        return this.messageManager.statuses.FAILURE;
+        return this.constructor.statuses.FAILURE;
       }
       this.bot.client.setTimeout(message.delete, 30000);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

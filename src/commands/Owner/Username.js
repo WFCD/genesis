@@ -27,10 +27,10 @@ class Username extends Command {
     try {
       await this.bot.client.user.setUsername(username);
       await message.reply({ content: 'New Username set!' });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

@@ -12,7 +12,7 @@ class ClearWelcomeDM extends Command {
   async run(message) {
     await this.settings.clearWelcomeForGuild(message.guild, true);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

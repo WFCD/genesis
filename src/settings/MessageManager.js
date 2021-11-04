@@ -30,12 +30,6 @@ class MessageManager {
     this.owner = bot.owner;
 
     this.scope = process.env.SCOPE || 'worker';
-
-    this.statuses = {
-      SUCCESS: 'SUCCESS',
-      FAILURE: 'FAILURE',
-      NO_ACCESS: 'NO ACCESS',
-    };
   }
 
   /**

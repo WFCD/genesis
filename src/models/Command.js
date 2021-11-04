@@ -19,6 +19,12 @@ const BaseEmbed = require('../embeds/BaseEmbed');
  * Describes a callable command
  */
 class Command {
+  static statuses = {
+    SUCCESS: 'SUCCESS',
+    FAILURE: 'FAILURE',
+    NO_ACCESS: 'NO ACCESS',
+  }
+
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
@@ -153,7 +159,7 @@ class Command {
   async run(message, ctx) {
     const msg = await message.reply('This is a basic Command');
     this.logger.debug(`Sent ${msg}`);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   /**
@@ -183,7 +189,7 @@ class Command {
 If a \`|\` is between \`<\` and \`>\`, it doesn't need to be included when calling the command.\n\u200b`);
 
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 
   manifest() {

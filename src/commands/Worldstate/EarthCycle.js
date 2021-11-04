@@ -44,7 +44,7 @@ class EarthCycle extends Command {
     }
     const embed = new EarthCycleEmbed(this.bot, cycleData);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

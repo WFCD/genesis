@@ -24,7 +24,7 @@ class GetBuild extends Command {
   async run(message, ctx) {
     const query = message.strippedContent.match(this.regex)[1];
     if (!query || query.length < 1) {
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     try {
       const results = await this.settings.getBuildSearch(query);
@@ -54,19 +54,19 @@ class GetBuild extends Command {
         });
 
         await setupPages(embeds, { message, settings: this.settings, mm: this.messageManager });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       } if (results.length === 1) {
         const build = results[0];
         const embed = new BuildEmbed(this.bot, build);
         await message.reply({ embeds: [embed] });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
       await message.reply({ embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for query: **${query}**` }] });
     } catch (e) {
       this.logger.error(e);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

@@ -46,17 +46,17 @@ class Hide extends require('../../models/Command.js') {
           if (room?.voiceChannel?.manageable) {
             await room.voiceChannel.permissionOverwrites.edit(everyone, options, audit);
           }
-          return this.messageManager.statuses.SUCCESS;
+          return this.constructor.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
           await message.reply('unable to make the channel visible. Please either try again or review your command to ensure it is valid.');
-          return this.messageManager.statuses.FAILURE;
+          return this.constructor.statuses.FAILURE;
         }
       }
       await message.reply(`you haven't created a channel. Only the creator of a channel can change the status of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

@@ -28,7 +28,7 @@ class Servers extends Command {
         attachment: Buffer.from(fileContents.join('\n'), 'ascii'),
       }],
     });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

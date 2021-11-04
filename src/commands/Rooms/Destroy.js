@@ -44,13 +44,13 @@ class Destroy extends require('../../models/Command.js') {
         }
         await this.settings.deletePrivateRoom(room);
         if (!message.channel.deleted) {
-          await this.messageManager.reply(message, 'done.', true, true);
+          await message.reply({ content: 'done.' });
         }
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
-      await this.messageManager.reply(message, `you haven't created a room. Only the creator of a room can destroy a room.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
+      await message.reply({ content: `you haven't created a room. Only the creator of a room can destroy a room.\nUse \`${ctx.prefix}create\` to view channel creation syntax.` });
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

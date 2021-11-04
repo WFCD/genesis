@@ -27,7 +27,7 @@ class RespondToSettings extends Command {
     }
     await this.settings.setChannelSetting(channel, 'respond_to_settings', enableResponse);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

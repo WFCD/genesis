@@ -28,7 +28,7 @@ class AllowPrivateRoom extends Command {
     enable = enable.trim();
     await this.settings.setGuildSetting(message.guild, 'createPrivateChannel', enable === 'on');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

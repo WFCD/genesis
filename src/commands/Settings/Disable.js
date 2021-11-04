@@ -123,7 +123,7 @@ class Disable extends Command {
     if (respondToSettings) {
       await message.reply({ embeds: [embed] });
     }
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 
   /**
@@ -156,7 +156,7 @@ class Disable extends Command {
         targetResult,
       ], 1)],
     });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

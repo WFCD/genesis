@@ -22,7 +22,7 @@ class Platform extends Command {
     const channel = getChannel(channelParam, message);
     await this.settings.setChannelSetting(channel, 'platform', platform.toLowerCase());
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -46,13 +46,13 @@ class FrameStats extends Command {
         });
 
         await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
       await message.reply({ content: `No results for ${weapon}` });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     await message.reply({ content: 'No query specified' });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

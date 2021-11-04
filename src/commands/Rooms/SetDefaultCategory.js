@@ -18,11 +18,11 @@ class SetDefaultCategory extends Command {
     if (category && this.bot.client.channels.cache.has(category.trim())) {
       await this.settings.setGuildSetting(message.guild, 'tempCategory', category);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, 'tempCategory');
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

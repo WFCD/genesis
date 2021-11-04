@@ -27,10 +27,10 @@ class DeleteWebhook extends Command {
     try {
       await this.settings.deleteWebhooksForChannel(channelId.trim());
       await message.reply({ content: 'Done.' });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
   }
 }

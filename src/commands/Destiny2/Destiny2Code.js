@@ -40,7 +40,7 @@ class Destiny2Code extends Command {
 
   async run(message) {
     await message.reply({ content: `\`\`\`haskell\n${d2codes[Math.floor(Math.random() * d2codes.length)]}\n\`\`\`` });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

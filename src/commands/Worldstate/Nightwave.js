@@ -22,7 +22,7 @@ class Nightwave extends Command {
     const platform = platformParam && platformParam.length ? platformParam[0] : ctx.platform;
     const embed = new NightwaveEmbed(this.bot, await this.ws.get('nightwave', platform, ctx.language), platform, ctx.i18n);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

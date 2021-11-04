@@ -42,7 +42,7 @@ class Reload extends Command {
 \`\`\`diff
 - ${precacheString}
 \`\`\``);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

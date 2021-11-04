@@ -41,13 +41,13 @@ class PollInline extends Command {
             await message.react(letter);
           }
         });
-        return this.messageManager.statuses.NO_ACCESS;
+        return this.constructor.statuses.NO_ACCESS;
       }
       await message.react('👍');
       await message.react('👎');
       await message.react('🤷');
     }
-    return this.messageManager.statuses.NO_ACCESS;
+    return this.constructor.statuses.NO_ACCESS;
   }
 }
 

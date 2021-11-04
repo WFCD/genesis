@@ -24,19 +24,19 @@ class RemoveManager extends Command {
     const pool = await resolvePool(message, this.settings);
     if (user === message.author.id) {
       await message.reply({ content: 'Tenno, you can\'t remove yourself!' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
 
     if (typeof pool === 'undefined') {
       await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     if (this.bot.client.users.cache.has(user.trim())) {
       await this.settings.removePoolManager(pool, user.trim());
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await message.reply({ content: 'Please specify a valid user ID or mention the user.' });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

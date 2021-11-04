@@ -32,13 +32,13 @@ class Arcane extends Command {
       if (results.length > 0) {
         const embed = new EnhancementEmbed(this.bot, results[0]);
         await message.reply({ embeds: [embed] });
-        return this.messageManager.statuses.SUCCESS;
+        return this.constructor.statuses.SUCCESS;
       }
     }
     const enhancements = await fetch(`${apiBase}/arcanes`);
     const embed = new EnhancementEmbed(this.bot, undefined, enhancements);
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

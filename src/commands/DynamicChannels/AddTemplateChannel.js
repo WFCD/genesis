@@ -28,10 +28,10 @@ class AddTemplateChannel extends Command {
     if (newTemplateChannelId && this.bot.client.channels.cache.has(newTemplateChannelId.trim())) {
       const newTemplateChannel = this.bot.client.channels.cache.get(newTemplateChannelId.trim());
       await this.settings.addTemplate(newTemplateChannel, isRelay);
-      message.reply({ content: ctx.i18n`${newTemplateChannel} added as a template.` });
-      return this.messageManager.statuses.SUCCESS;
+      await message.reply({ content: ctx.i18n`${newTemplateChannel} added as a template.` });
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

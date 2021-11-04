@@ -32,9 +32,9 @@ class Corgi extends Command {
           name: `corgi.${corgi.message.split('.').pop()}`,
         }],
       });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

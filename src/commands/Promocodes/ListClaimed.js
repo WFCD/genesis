@@ -40,8 +40,8 @@ class ListClaimed extends Command {
       setTimeout(message.delete, 10000);
     }
     return codes.length > 0
-      ? this.messageManager.statuses.SUCCESS
-      : this.messageManager.statuses.FAILURE;
+      ? this.constructor.statuses.SUCCESS
+      : this.constructor.statuses.FAILURE;
   }
 }
 

@@ -31,7 +31,7 @@ class AddBuild extends Command {
     const params = (message.strippedContent.match(this.regex)[2] || '').split('|');
     if (!type) {
       // let them know there's not enough params
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const buildId = (params[0] || '').trim();
     const build = await this.settings.getBuild(buildId);
@@ -63,14 +63,14 @@ class AddBuild extends Command {
           await this.settings.getBuild(buildId),
         )],
       });
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     return this.failure(message, buildId);
   }
 
   async failure(message, buildId, ctx) {
     await message.reply({ embeds: [{ title: ctx.i18n`You couldn't edit build ${buildId}`, color: 0x83181b }] });
-    return this.messageManager.statuses.FAILURE;
+    return this.constructor.statuses.FAILURE;
   }
 }
 

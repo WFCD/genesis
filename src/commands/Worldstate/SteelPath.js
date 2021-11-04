@@ -12,10 +12,10 @@ module.exports = class SteelPath extends Command {
     const offering = await this.ws.get('steelPath', ctx.platform, ctx.language);
     if (!offering.currentReward) {
       await message.reply({ content: 'There is currently no Steel Path Offering' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     const embed = new SteelPathEmbed(this.bot, offering, { isCommand: true, i18n: ctx.i18n });
     await message.reply({ embeds: [embed] });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 };

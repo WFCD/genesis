@@ -35,11 +35,11 @@ class SetLFGChannel extends Command {
     if (channel && this.bot.client.channels.cache.has(channel.trim())) {
       await this.settings.setGuildSetting(message.guild, `lfgChannel${platform !== 'pc' ? `.${platform}` : ''}`, channel);
       this.messageManager.notifySettingsChange(message, true, true);
-      return this.messageManager.statuses.SUCCESS;
+      return this.constructor.statuses.SUCCESS;
     }
     await this.settings.deleteGuildSetting(message.guild, `lfgChannel${platform !== 'pc' ? `.${platform}` : ''}`);
     this.messageManager.notifySettingsChange(message, true, true);
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

@@ -29,12 +29,12 @@ class SetPoolPublic extends Command {
     const pool = await resolvePool(message, this.settings);
 
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
-      return this.messageManager.statuses.FAILURE;
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
+      return this.constructor.statuses.FAILURE;
     }
     await this.settings.setPoolPublic(pool, enable === 'on');
-    await this.messageManager.reply(message, 'Pool publicity set.');
-    return this.messageManager.statuses.SUCCESS;
+    await message.reply({ content: 'Pool publicity set.' });
+    return this.constructor.statuses.SUCCESS;
   }
 }
 

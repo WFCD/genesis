@@ -24,11 +24,11 @@ class RemovePool extends Command {
     pool = await resolvePool(message, this.settings, { explicitOnly: true, pool });
     if (typeof pool === 'undefined') {
       await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
-      return this.messageManager.statuses.FAILURE;
+      return this.constructor.statuses.FAILURE;
     }
     await this.settings.deletePool(pool);
     await message.reply({ content: `Deleted pool \`${pool}\`.` });
-    return this.messageManager.statuses.SUCCESS;
+    return this.constructor.statuses.SUCCESS;
   }
 }
 
