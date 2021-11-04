@@ -149,7 +149,8 @@
       "no-case-declarations": "off",
       "default-case": "off",
       "max-classes-per-file": "off",
-      "consistent-return": "off"
+      "consistent-return": "off",
+      "class-methods-use-this": "off"
     }
   },
   "babel": {

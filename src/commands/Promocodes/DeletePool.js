@@ -23,11 +23,11 @@ class RemovePool extends Command {
     let pool = message.strippedContent.match(this.regex)[1] || '';
     pool = await resolvePool(message, this.settings, { explicitOnly: true, pool });
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
       return this.messageManager.statuses.FAILURE;
     }
     await this.settings.deletePool(pool);
-    await this.messageManager.reply(message, `Deleted pool \`${pool}\`.`);
+    await message.reply({ content: `Deleted pool \`${pool}\`.` });
     return this.messageManager.statuses.SUCCESS;
   }
 }

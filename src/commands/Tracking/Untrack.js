@@ -69,9 +69,9 @@ class Untrack extends Command {
     checkAndMergeEmbeds(pages, trackedEvents);
 
     if (pages.length) {
-      return setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+      return setupPages(pages, { message, settings: this.settings });
     }
-    return this.messageManager.sendMessage(message, 'Nothing Tracked', true, true);
+    return message.reply({ content: 'Nothing Tracked' });
   }
 
   async failure(message, prefix) {

@@ -12,7 +12,7 @@ class ListClaimed extends Command {
 
   async run(message) {
     if (message.channel.type !== 'dm') {
-      await this.messageManager.reply(message, 'be careful calling this command in a public server channel, as it exposes your codes and links to claim them.');
+      await message.reply({ content: 'be careful calling this command in a public server channel, as it exposes your codes and links to claim them.' });
     }
     const codes = await this.settings.getUserCodes(message.author);
     const groupCodes = createGroupedArray(codes, 27);

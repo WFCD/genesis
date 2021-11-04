@@ -25,7 +25,7 @@ class Sorties extends Command {
     const platform = platformParam || ctx.platform;
     const sortie = await this.ws.get('sortie', platform, ctx.language);
     if (sortie.expired) {
-      await this.messageManager.sendMessage(message, 'There is currently no sortie', true, true);
+      await message.reply({ content: 'There is currently no sortie' });
       return this.messageManager.statuses.FAILURE;
     }
     const embed = new SortieEmbed(this.bot, sortie, platform);

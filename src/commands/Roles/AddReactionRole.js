@@ -118,8 +118,7 @@ class AddRole extends Command {
         const reasons = failure.reasons.map(reason => `:white_small_square: ${reason}`);
         return `**Entry ${failure.index + 1} failled due to:**\n\n${reasons.join('\n')}`;
       }).join('\n\n');
-
-      this.messageManager.sendMessage(message, content, true, true);
+      await message.reply({ content });
     }
 
     // TODO: parse out args for each. if it's valid, save it to the db.

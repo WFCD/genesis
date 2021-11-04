@@ -25,16 +25,16 @@ class ExportPromocodes extends Command {
       pools = [pools];
     }
     if (!pools || pools.length === 0) {
-      this.messageManager.reply(message, '**[Denied]** You manage no pools or need to specify because there are multiple.');
+      await message.reply({ content: '**[Denied]** You manage no pools or need to specify because there are multiple.' });
       return this.messageManager.statuses.FAILURE;
     }
     const codes = await this.settings.getCodesInPools(pools);
     const fileContents = codes.map(code => `"${code.id}","${code.platform}","${code.addedBy}","${code.addedOn}",${code.grantedTo},${code.grantedBy},${code.grantedOn},${code.code}`);
     if (message.channel.type !== 'dm') {
-      this.messageManager.reply(message, 'Check your direct messages for the file.', true, true);
+      await message.reply({ content: 'Check your direct messages for the file.' });
     }
     const contents = fileContents.join('\n');
-    this.messageManager.sendFileToAuthor(message, Buffer.from(contents, 'ascii'), 'codes.csv', true);
+    await message.author.send({ files: [{ attachment: Buffer.from(contents, 'ascii'), name: 'codes.csv' }] });
 
     return this.messageManager.statuses.SUCCESS;
   }

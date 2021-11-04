@@ -11,7 +11,7 @@ module.exports = class SteelPath extends Command {
   async run(message, ctx) {
     const offering = await this.ws.get('steelPath', ctx.platform, ctx.language);
     if (!offering.currentReward) {
-      await this.messageManager.sendMessage(message, 'There is currently no Steel Path Offering', true, true);
+      await message.reply({ content: 'There is currently no Steel Path Offering' });
       return this.messageManager.statuses.FAILURE;
     }
     const embed = new SteelPathEmbed(this.bot, offering, { isCommand: true, i18n: ctx.i18n });

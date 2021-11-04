@@ -145,7 +145,7 @@ class Create extends Command {
       if (userHasRoom) {
         const err = `you already have a private room registered.
 If this is in error, please log a bug report with \`${ctx.prefix}bug\`.`;
-        await this.messageManager.reply(message, err, true, true);
+        await message.reply({ content: err });
         return this.messageManager.statuses.FAILURE;
       }
       if (type) {

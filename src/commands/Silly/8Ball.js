@@ -42,10 +42,10 @@ class EightBall extends Command {
   async run(message) {
     if (message.strippedContent.replace(this.call, '').trim().length) {
       const resp = jokes[Math.floor(Math.random() * jokes.length)];
-      this.messageManager.sendMessage(message, `:8ball: | ${resp}, **${message.member.displayName}**`, true, true);
+      await message.reply({ content: `:8ball: | ${resp}, **${message.member.displayName}**` });
       return this.messageManager.statuses.SUCCESS;
     }
-    this.messageManager.sendMessage(message, `Gotta ask a question, **${message.member.displayName}**`, true, true);
+    await message.reply({ content: `Gotta ask a question, **${message.member.displayName}**` });
     return this.messageManager.statuses.FAILURE;
   }
 }

@@ -25,7 +25,7 @@ class Mod extends Command {
   async run(message) {
     const query = this.regex.exec(message.strippedContent.match(this.regex)[0])[1];
     if (!query) {
-      this.messageManager.reply(message, this.noResultStr, true, false);
+      await message.reply({ content: this.noResultStr });
       return this.messageManager.statuses.FAILURE;
     }
 
@@ -44,14 +44,14 @@ class Mod extends Command {
           }
         });
 
-        await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
+        await setupPages(pages, { message, settings: this.settings });
         return this.messageManager.statuses.SUCCESS;
       }
-      this.messageManager.reply(message, this.noResultStr, true, false);
+      await message.reply({ content: this.noResultStr });
       return this.messageManager.statuses.FAILURE;
     } catch (e) {
       this.logger.error(e);
-      this.messageManager.reply(message, this.noResultStr, true, false);
+      await message.reply({ content: this.noResultStr });
       return this.messageManager.statuses.FAILURE;
     }
   }

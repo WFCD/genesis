@@ -34,20 +34,14 @@ class WelcomeHandler extends Handler {
         if (welcome.message.trim() === 'random') {
           welcome.message = getRandomWelcome(); // eslint-disable-line no-param-reassign
         }
+        const content = welcome.message
+          .replace(/\$username/ig, member.displayName)
+          .replace(/\$usermention/ig, member)
+          .replace(/\$timestamp/ig, new Date().toLocaleString());
         if (welcome.isDm === '1') {
-          this.messageManager.sendDirectMessageToUser(member, welcome.message
-            .replace(/\$username/ig, member.displayName)
-            .replace(/\$usermention/ig, member)
-            .replace(/\$timestamp/ig, new Date().toLocaleString()));
+          member.send({ content });
         } else {
-          this.messageManager
-            .sendMessage(
-              { channel: welcome.channel }, welcome.message
-                .replace(/\$username/ig, member.displayName)
-                .replace(/\$usermention/ig, member)
-                .replace(/\$timestamp/ig, new Date().toLocaleString()),
-              false, false,
-            );
+          welcome.channel.send({ content });
         }
       });
     }

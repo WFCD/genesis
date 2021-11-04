@@ -48,11 +48,11 @@ class Show extends require('../../models/Command.js') {
           return this.messageManager.statuses.SUCCESS;
         } catch (e) {
           this.logger.error(e);
-          await this.messageManager.reply(message, 'unable to make the channel visible. Please either try again or review your command to ensure it is valid.', true, true);
+          await message.reply({ content: 'unable to make the channel visible. Please either try again or review your command to ensure it is valid.' });
           return this.messageManager.statuses.FAILURE;
         }
       }
-      await this.messageManager.reply(message, `you haven't created a channel. Only the creator of a channel can change the status of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.`, true, true);
+      await message.reply({ content: `you haven't created a channel. Only the creator of a channel can change the status of a channel.\nUse \`${ctx.prefix}create\` to view channel creation syntax.` });
       return this.messageManager.statuses.FAILURE;
     }
     return this.messageManager.statuses.FAILURE;

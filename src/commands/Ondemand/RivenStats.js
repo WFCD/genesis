@@ -48,10 +48,10 @@ class FrameStats extends Command {
         await setupPages(pages, { message, settings: this.settings, mm: this.messageManager });
         return this.messageManager.statuses.SUCCESS;
       }
-      this.messageManager.reply(message, `No results for ${weapon}`, true, true);
+      await message.reply({ content: `No results for ${weapon}` });
       return this.messageManager.statuses.FAILURE;
     }
-    this.messageManager.reply(message, 'No query specified', true, true);
+    await message.reply({ content: 'No query specified' });
     return this.messageManager.statuses.FAILURE;
   }
 }

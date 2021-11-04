@@ -26,7 +26,7 @@ class Echo extends Command {
     if (message.deleteable) {
       await message.delete();
     }
-    await this.messageManager.sendMessage(message, message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim(), false, false);
+    await message.channel.send({ content: message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim() });
     return this.messageManager.statuses.SUCCESS;
   }
 }

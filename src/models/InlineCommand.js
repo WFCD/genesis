@@ -18,14 +18,8 @@ class CustomCommand extends Command {
     this.regex = /test/ig;
     this.isInline = true;
   }
-
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   */
   run(message) {
-    this.messageManager.reply(message, 'An inline command');
+    return message.reply({ content: 'An inline command' });
   }
 }
 

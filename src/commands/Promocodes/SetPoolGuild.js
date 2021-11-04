@@ -23,14 +23,14 @@ class SetPoolGuild extends Command {
     const guildId = message.strippedContent.match(/[0-9]{15,20}/i)[0] || 0;
     const pool = await resolvePool(message, this.settings);
     if (typeof pool === 'undefined') {
-      this.messageManager.reply(message, 'You either manage none or too many pools. Please specify the pool ID.');
+      await message.reply({ content: 'You either manage none or too many pools. Please specify the pool ID.' });
       return this.messageManager.statuses.FAILURE;
     }
     if (guildId && this.bot.client.guilds.cache.has(guildId)) {
       await this.settings.setPoolGuild(pool, guildId.trim());
       return this.messageManager.statuses.SUCCESS;
     }
-    await this.messageManager.reply(message, 'Please specify a valid guild.');
+    await message.reply({ content: 'Please specify a valid guild.' });
     return this.messageManager.statuses.FAILURE;
   }
 }

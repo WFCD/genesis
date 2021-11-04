@@ -26,7 +26,7 @@ class Username extends Command {
     const username = message.strippedContent.match(this.regex)[1];
     try {
       await this.bot.client.user.setUsername(username);
-      this.messageManager.reply(message, 'New Username set!', true, true);
+      await message.reply({ content: 'New Username set!' });
       return this.messageManager.statuses.SUCCESS;
     } catch (e) {
       this.logger.error(e);

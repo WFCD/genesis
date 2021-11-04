@@ -24,7 +24,7 @@ class Alerts extends Command {
     const alerts = (await this.ws.get('alerts', platform, ctx.language)).filter(a => !a.expired);
 
     if (!alerts.length) {
-      this.messageManager.reply(message, ctx.i18n`No Alerts Active`, true, true);
+      message.reply({ content: ctx.i18n`No Alerts Active` });
     }
 
     if (compact) {
