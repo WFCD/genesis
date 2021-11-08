@@ -141,7 +141,8 @@ class JoinRole extends Command {
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.length ? roles.map(role => role.guildRole.name).join('; ') : 'No possible roles';
-    await message.reply({ embeds: [embed] });
+    if (!message.channel) return null;
+    return message.reply({ embeds: [embed] });
   }
 }
 

@@ -41,7 +41,7 @@ const contexts = {
   TwitchApi: 'magenta',
   TM: 'yellow',
 };
-const ignore = ['CHANNEL_NOT_CACHED', 'Invalid refresh token', 'Failed to load', 'https://discrd.com/api/webhooks/'];
+const ignore = ['Invalid refresh token', 'Failed to load', 'https://discord.com/api/webhooks/', 'Could not find the channel', 'DiscordAPIError'];
 
 /**
  * A collection of methods for logging

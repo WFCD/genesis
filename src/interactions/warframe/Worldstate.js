@@ -3,7 +3,7 @@
 const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = require('discord.js');
 
 const {
-  games, createGroupedArray,
+  games, createGroupedArray, createDynamicInteractionCollector,
 } = require('../../CommonFunctions.js');
 
 const platformChoices = require('../../resources/platformMap');
@@ -199,7 +199,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       type: Types.SUB_COMMAND,
       name: 'steelpath',
       description: 'Get Current Steel Path Offerings',
-      options: compactable,
+      options: platformable,
     }, {
       type: Types.SUB_COMMAND,
       name: 'sortie',
@@ -213,8 +213,8 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     const language = ctx.language || 'en';
     const subcommand = interaction.options.getSubcommand();
     const { options } = interaction;
-    const platform = options?.get?.('platform')?.value || ctx.platform || 'pc';
-    // const compact = options?.get?.('compact')?.value || false;
+    const platform = options?.getString?.('platform')?.value || ctx.platform || 'pc';
+    const compact = options?.getBoolean?.('compact');
     const ephemeral = ctx.ephemerate;
 
     let category = options?.get?.('category')?.value || 'all';
@@ -233,9 +233,35 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     let pages;
     let embed;
     switch (field) {
-      case 'alerts':
       case 'fissures':
+        if (!compact) {
+          pages = [];
+          const eras = {
+            lith: [],
+            meso: [],
+            neo: [],
+            axi: [],
+            requiem: [],
+          };
+
+          data.forEach((fissure) => {
+            eras?.[fissure.tier.toLowerCase()]?.push(fissure);
+          });
+
+          Object.keys(eras).forEach((eraKey) => {
+            // eslint-disable-next-line new-cap
+            pages.push(new embeds.fissures(null, eras[eraKey],
+              platform, ctx.i18n, eras[eraKey][0].tier));
+          });
+          return createDynamicInteractionCollector(interaction, pages, ctx);
+        }
+      case 'alerts':
       case 'invasions':
+        if (!compact) {
+          return createDynamicInteractionCollector(interaction,
+            // eslint-disable-next-line new-cap
+            data.map(a => new embeds[field](null, [a], platform, ctx.i18n)), ctx);
+        }
       case 'arbitration':
       case 'earthCycle':
       case 'cetusCycle':
@@ -275,7 +301,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new embeds[field](null, data, ctx);
+        embed = new embeds[field](null, data, { isCommand: true, i18n: ctx.i18n });
         return interaction.editReply({ embeds: [embed] });
       default:
         break;

@@ -103,7 +103,7 @@ class AddLFG extends Command {
           await message.reply('Unknown error. Could not create LFG entry.');
           return this.constructor.statuses.FAILURE;
         }
-        let deleteTimeout = this.bot.client.setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
+        let deleteTimeout = setTimeout(msg.delete, dehumanize(lfg.expiry) + 10000);
         msg.react('🔰');
         await msg.react('❌');
 

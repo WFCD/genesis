@@ -113,11 +113,16 @@ module.exports = class Settings extends require('../../models/Interaction') {
           ? trackableItems.items
           : trackableEvents[currentDetermination];
         const groupOptions = list?.length
-          ? list.map(li => ({
-            label: toTitleCase(li.split('.').join(' ')),
-            value: li,
-            default: current.items.includes(li) || current.events.includes(li),
-          }))
+          ? list.map((li, index) => {
+            if (index < 25) {
+              return {
+                label: toTitleCase(li.split('.').join(' ')),
+                value: li,
+                default: current.items.includes(li) || current.events.includes(li),
+              };
+            }
+            return null;
+          }).filter(a => a)
           : [{ label: 'N/A', value: 'na', default: false }];
         return ([
           // paginator
@@ -460,17 +465,17 @@ module.exports = class Settings extends require('../../models/Interaction') {
       }
       if (webhook.url) {
         try {
-          await interaction.reply(`${emojify('green_tick')} Webhook setup complete.`);
+          await interaction.followUp(`${emojify('green_tick')} Webhook setup complete.`);
           await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
           if (!webhook.avatar.startsWith('http')) webhook.avatar = ctx.settings.defaults.avatar;
         } catch (e) {
           ctx.logger.error(e);
-          await interaction.reply(`${emojify('red_tick')} Cannot set up webhooks: failed to send.`);
+          await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to send.`);
         }
       } else {
         ctx.logger.debug(`webhook for ${channel.id} already set up...`);
       }
-      ctx.settings.setChannelWebhook(channel, webhook);
+      await ctx.settings.setChannelWebhook(channel, webhook);
     } else {
       await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }

@@ -1236,6 +1236,7 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
   }
   const pagedPages = pages.map((newPage, index) => {
     const pageInd = `Page ${index + 1}/${pages.length}`;
+    if (!newPage.description) newPage.setDescription('_ _');
     if (newPage.footer) {
       if (newPage instanceof MessageEmbed) {
         if (newPage.footer.text.indexOf('Page') === -1) {
@@ -1253,15 +1254,16 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
     }
     return new MessageEmbed(newPage);
   });
+  const embeds = [pagedPages[page - 1]];
   const message = interaction.deferred || interaction.replied
     ? await interaction.editReply({
       ephemeral: ctx.ephemerate,
-      embeds: [pagedPages[page - 1]],
+      embeds,
       components: navComponents,
     })
     : await interaction.reply({
       ephemeral: ctx.ephemerate,
-      embeds: [pagedPages[page - 1]],
+      embeds,
       components: navComponents,
     });
 
@@ -1328,6 +1330,10 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
   collector.on('dispose', blank);
   return message;
 };
+
+const createDynamicInteractionCollector = async (interaction, pages, ctx) => (pages?.length < 26
+  ? createSelectionCollector(interaction, pages, ctx)
+  : createPagedInteractionCollector(interaction, pages, ctx));
 
 const confirmationComponents = [
   new MessageActionRow({
@@ -1441,4 +1447,5 @@ module.exports = {
   createPagedInteractionCollector,
   createConfirmationCollector,
   createSelectionCollector,
+  createDynamicInteractionCollector,
 };

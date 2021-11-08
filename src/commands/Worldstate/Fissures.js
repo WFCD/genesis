@@ -40,7 +40,7 @@ class Fissures extends Command {
       };
 
       fissures.forEach((fissure) => {
-        eras[fissure.tier.toLowerCase()].push(fissure);
+        eras?.[fissure.tier.toLowerCase()]?.push(fissure);
       });
 
       Object.keys(eras).forEach((eraKey) => {

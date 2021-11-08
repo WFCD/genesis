@@ -310,6 +310,7 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       ctx.handler = this;
       ctx.logger = this.logger;
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
+      if (!interaction) return null;
       // eslint-disable-next-line no-nested-ternary,consistent-return
       return match
         ? match?.commandHandler?.(interaction, ctx)

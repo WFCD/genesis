@@ -49,11 +49,11 @@ class UserInfoEmbed extends BaseEmbed {
           value: member.id === message.guild.ownerID ? affirm : negate,
           inline: true,
         },
-        {
+        member?.presence?.status ? {
           name: 'Status',
           value: member.presence.status,
           inline: true,
-        },
+        } : null,
         {
           name: 'Current State:',
           value: `**Deafened:** ${member.deaf ? affirm : negate}\n`
@@ -69,7 +69,7 @@ class UserInfoEmbed extends BaseEmbed {
           value: member.roles.cache.size ? member.roles.cache.map(role => role).join(', ') : 'User has no roles.',
           inline: false,
         },
-      ]);
+      ].filter(a => a));
 
       this.footer.text = `${this.footer.text} - Joined`;
       this.timestamp = member.joinedAt;

@@ -15,18 +15,12 @@ class Echo extends Command {
     this.regex = new RegExp(`^${this.call}\\s?(.+)?`, 'i');
   }
 
-  /**
-   * Run the command
-   * @param {Message} message Message with a command to handle, reply to,
-   *                          or perform an action based on parameters.
-   * @param {Object} ctx command call context
-   * @returns {string} success status
-   */
   async run(message, ctx) {
     if (message.deleteable) {
       await message.delete();
     }
-    await message.channel.send({ content: message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim() });
+    const content = message.cleanContent.replace(this.call, '').replace(ctx.prefix, '').trim();
+    if (content.length) await message.channel.send({ content });
     return this.constructor.statuses.SUCCESS;
   }
 }

@@ -92,7 +92,7 @@ module.exports = class LFG extends require('../../models/Interaction') {
 
     const embed = new LFGEmbed(null, lfg);
     const chn = interaction.guild.channels
-      .resolve((ctx.lfg[lfg.platform] || ctx.lfg[Object.keys(ctx.lfg)[0]]).id);
+      .resolve((ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]]).id);
 
     const buttons = [
       new MessageActionRow({

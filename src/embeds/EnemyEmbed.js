@@ -30,7 +30,7 @@ class EnemyEmbed extends BaseEmbed {
       inline: true,
     }];
 
-    enemy.resistances.forEach((resistance) => {
+    enemy?.resistances?.forEach((resistance) => {
       const field = {
         name: `Resistances for ${resistance.type} • ${resistance.amount}`,
         value: '',
