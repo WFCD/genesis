@@ -20,6 +20,7 @@ const cachedEvents = require('../resources/cachedEvents');
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 
 const rest = new Rest();
+/** @type {Database} */
 const db = new Database();
 
 const deps = {};
@@ -48,7 +49,6 @@ class Worker {
     }
   }
 
-  /* eslint-disable-next-line class-methods-use-this */
   async hydratePings() {
     const sDate = Date.now();
     const pings = await db.getAllPings();
@@ -73,7 +73,6 @@ class Worker {
     await this.hydratePings();
   }
 
-  /* eslint-disable-next-line class-methods-use-this */
   async hydrateQueries() {
     const sDate = Date.now();
     for (const cachedEvent of cachedEvents) {
