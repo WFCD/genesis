@@ -39,7 +39,6 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {
-    "@discordjs/rest": "^0.1.0-canary.0",
     "@sentry/node": "^6.13.3",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
