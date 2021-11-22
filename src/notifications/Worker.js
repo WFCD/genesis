@@ -4,7 +4,8 @@ const flatCache = require('flat-cache');
 const Job = require('cron').CronJob;
 require('colors');
 
-const Notifier = require('./Notifier');
+const Notifier = require('./worldstate/Notifier');
+const CycleNotifier = require('./worldstate/CycleNotifier');
 const FeedsNotifier = require('./FeedsNotifier');
 const TwitchNotifier = require('./twitch/TwitchNotifier');
 
@@ -136,6 +137,7 @@ class Worker {
 
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);
+        this.cycleNotifier = new CycleNotifier(deps);
       }
 
       if (games.includes('RSS')) {
@@ -149,6 +151,7 @@ class Worker {
       }
 
       await this.notifier.start();
+      await this.cycleNotifier.start();
 
       if (logger.isLoggable('DEBUG')) {
         rest.controlMessage({

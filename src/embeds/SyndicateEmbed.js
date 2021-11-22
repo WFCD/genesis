@@ -45,17 +45,7 @@ const makeMissionValue = (mission, syndMissions) => {
   return value;
 };
 
-/**
- * Generates syndicate embeds
- */
 class SyndicateEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Array.<SyndicateMission>} missions - The missions to be included in the embed
-   * @param {string} syndicate - The syndicate to display the missions for
-   * @param {string} platform - Platform
-   * @param {boolean} skipCheck - True if skipping syndicate validity check.
-   */
   constructor(bot, missions, syndicate, platform, skipCheck) {
     super(bot);
 
@@ -92,7 +82,7 @@ class SyndicateEmbed extends BaseEmbed {
 
           if (missionValue.length < 2000) {
             this.description = missionValue;
-            this.fields = undefined;
+            this.fields = null;
           } else {
             this.fields = missionValue.split('\n\n').map(spv => ({
               name: '\u200B',

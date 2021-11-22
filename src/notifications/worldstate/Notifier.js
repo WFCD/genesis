@@ -1,75 +1,20 @@
 'use strict';
 
-/* eslint-disable no-unused-vars */
-const util = require('util');
-const exists = util.promisify(require('url-exists'));
-
-const fetch = require('../resources/Fetcher');
-const { embeds } = require('./NotifierUtils');
-const Broadcaster = require('./Broadcaster');
-const logger = require('../Logger');
-
-require('colors');
+const {
+  embeds, getThumbnailForItem, between, asId, i18ns, syndicates,
+} = require('../NotifierUtils');
+const Broadcaster = require('../Broadcaster');
+const logger = require('../../Logger');
 
 const {
-  createGroupedArray, apiBase, apiCdnBase, platforms, captures,
-} = require('../CommonFunctions');
-
-const syndicates = require('../resources/syndicates.json');
-const I18n = require('../settings/I18n');
-
-const i18ns = {};
-require('../resources/locales.json').forEach((locale) => {
-  i18ns[locale] = I18n.use(locale);
-});
+  createGroupedArray, platforms, captures,
+} = require('../../CommonFunctions');
 
 const updtReg = new RegExp(captures.updates, 'i');
 
 const beats = {};
 
 let refreshRate = process.env.WORLDSTATE_TIMEOUT || 60000;
-
-const between = (activation, platform) => {
-  const activationTs = new Date(activation).getTime();
-  const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < (beats[platform].currCycleStart);
-  const isAfterLast = activationTs > (beats[platform].lastUpdate - (leeway));
-  return isBeforeCurr && isAfterLast;
-};
-
-async function getThumbnailForItem(query, fWiki) {
-  if (query && !fWiki) {
-    const fq = query
-      .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
-      .trim().toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
-    if (results.length) {
-      const url = `${apiCdnBase}img/${results[0].imageName}`;
-      if (await exists(url)) {
-        return url;
-      }
-    }
-  }
-  return '';
-}
-
-const asId = (event, label) => {
-  const uppedTime = new Date(event.expiry);
-  uppedTime.setMilliseconds(0);
-  uppedTime.setSeconds(0);
-
-  return `${label}:${uppedTime.getTime()}`;
-};
-
-/**
- * Returns the number of milliseconds between now and a given date
- * @param   {string} d         The date from which the current time will be subtracted
- * @param   {function} [now] A function that returns the current UNIX time in milliseconds
- * @returns {number}
- */
-function fromNow(d, now = Date.now) {
-  return new Date(d).getTime() - now();
-}
 
 function buildNotifiableData(newData, platform, notified) {
   const data = {
@@ -109,10 +54,10 @@ function buildNotifiableData(newData, platform, notified) {
         && !n.stream && !notified.includes(n.id)),
 
     /* Cycles data */
-    cetusCycleChange: between(newData.cetusCycle.activation, platform),
-    earthCycleChange: between(newData.earthCycle.activation, platform),
-    vallisCycleChange: between(newData.vallisCycle.activation, platform),
-    cambionCycleChange: between(newData.cambionCycle.activation, platform),
+    cetusCycleChange: between(newData.cetusCycle.activation, platform, refreshRate, beats),
+    earthCycleChange: between(newData.earthCycle.activation, platform, refreshRate, beats),
+    vallisCycleChange: between(newData.vallisCycle.activation, platform, refreshRate, beats),
+    cambionCycleChange: between(newData.cambionCycle.activation, platform, refreshRate, beats),
     cambionCycle: newData.cambionCycle,
     cetusCycle: newData.cetusCycle,
     earthCycle: newData.earthCycle,
@@ -210,15 +155,12 @@ class Notifier {
   async sendNew(platform, rawData, notifiedIds, {
     alerts, arbitration, dailyDeals, events, fissures,
     invasions, news, acolytes, sortie, syndicateM, baro,
-    cetusCycle, earthCycle, vallisCycle, tweets, nightwave,
-    cetusCycleChange, earthCycleChange, vallisCycleChange,
-    featuredDeals, streams, popularDeals, primeAccess, updates, conclave,
-    cambionCycle, cambionCycleChange, outposts, steelPath,
+    tweets, nightwave, featuredDeals, streams, popularDeals,
+    primeAccess, updates, conclave, outposts, steelPath,
   }) {
     // Send all notifications
-    const cycleIds = [];
     try {
-      logger.silly(`[N] sending new data on ${platform}...`);
+      logger.silly(`sending new data on ${platform}...`);
 
       this.sendAcolytes(acolytes, platform);
 
@@ -249,18 +191,6 @@ class Notifier {
       this.sendNightwave(nightwave, platform);
       this.sendArbitration(arbitration, platform);
       this.sendSteelPath(steelPath, platform);
-      cycleIds.push(
-        await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds),
-      );
-      cycleIds.push(
-        await this.sendEarthCycle(earthCycle, platform, earthCycleChange, notifiedIds),
-      );
-      cycleIds.push(
-        await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange, notifiedIds),
-      );
-      cycleIds.push(
-        await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds),
-      );
     } catch (e) {
       logger.error(e);
     } finally {
@@ -269,7 +199,6 @@ class Notifier {
 
     const alreadyNotified = [
       ...rawData.persistentEnemies.map(a => a.pid),
-      ...cycleIds,
       `${rawData.voidTrader.id}${rawData.voidTrader.active ? '1' : '0'}`,
       ...rawData.fissures.map(f => f.id),
       ...rawData.invasions.map(i => i.id),
@@ -360,27 +289,6 @@ class Notifier {
     }
   }
 
-  async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
-    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
-    const type = `cambion.${newCycle.active}${minutesRemaining}`;
-    if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Cambion({ logger }, newCycle), platform, type,
-      );
-    }
-    return type;
-  }
-
-  async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
-    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
-    const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    const embed = new embeds.Cycle({ logger }, newCycle);
-    if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(embed, platform, type);
-    }
-    return type;
-  }
-
   async sendConclaveDailies(newDailies, platform) {
     const dailies = newDailies.filter(challenge => challenge.category === 'day');
     if (dailies.length > 0 && dailies[0].activation) {
@@ -401,17 +309,6 @@ class Notifier {
     for (const deal of newDarvoDeals) {
       await this.broadcaster.broadcast(new embeds.Darvo({ logger }, deal, platform), platform, 'darvo');
     }
-  }
-
-  async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
-    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
-    const type = `earth.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Cycle({ logger }, newCycle), platform, type,
-      );
-    }
-    return type;
   }
 
   async sendEvent(newEvents, platform) {
@@ -544,7 +441,7 @@ class Notifier {
   }
 
   async checkAndSendSyndicate(embed, syndicate, platform) {
-    if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate') {
+    if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate' && embed.fields[0].name !== 'No such Syndicate') {
       await this.broadcaster.broadcast(embed, platform, syndicate);
     }
   }
@@ -569,17 +466,6 @@ class Notifier {
 
   async sendUpdates(newNews, platform) {
     return Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'updates', platform), platform, 'updates')));
-  }
-
-  async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
-    const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
-    const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
-    if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Solaris({ logger }, newCycle), platform, type,
-      );
-    }
-    return type;
   }
 
   async sendSentientOutposts(outpost, platform) {

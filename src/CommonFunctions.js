@@ -1227,6 +1227,7 @@ const createSelectionCollector = async (interaction, pages, ctx) => {
  * @returns {Promise<void>}
  */
 const createPagedInteractionCollector = async (interaction, pages, ctx) => {
+  if (!interaction.deferred) await interaction.deferReply({ ephemeral: ctx.ephemerate });
   let page = 1;
   if (pages.length === 1) {
     const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };

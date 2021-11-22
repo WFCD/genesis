@@ -58,15 +58,19 @@ module.exports = class Settings extends require('../../models/Interaction') {
         name: 'channel',
         type: Types.CHANNEL,
         description: 'Channel (text-based) that this should apply to.',
+      }, {
+        name: 'clear-prepend',
+        type: Types.BOOLEAN,
+        description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.',
       }],
     }],
   }
 
   static async commandHandler(interaction, ctx) {
+    await interaction.deferReply({ ephemeral: ctx.ephemerate });
     const { options } = interaction;
     const action = options?.getSubcommand();
     if (action === 'manage') {
-      await interaction.deferReply();
       const original = Object.freeze({
         items: await ctx.settings.getTrackedItems(interaction.channel),
         events: await ctx.settings.getTrackedEventTypes(interaction.channel),
@@ -388,21 +392,31 @@ module.exports = class Settings extends require('../../models/Interaction') {
         .map(a => a?.trim())
         .filter(Boolean));
       const prepend = options.getString('prepend');
+      const clear = options.getBoolean('clear-prepend');
       const channel = options?.getChannel('channel')?.type === 'GUILD_TEXT'
         ? options.getChannel('channel')
         : interaction.channel;
 
+      if (clear && remove?.length) {
+        for (const unping of remove) {
+          await ctx.settings.removePing(interaction.guild, unping);
+        }
+        return interaction.reply({ content: ctx.i18n`Removed pings for ${remove.length} trackables.`, ephemeral: ctx.ephemerate });
+      }
+      if (clear && !remove?.length) {
+        return interaction.reply({ content: ctx.i18n`Specify trackables to remove the prepend for.`, ephemeral: ctx.ephemerate });
+      }
       if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events);
       if (add?.items?.length) await ctx.settings.trackItems(channel, add.items);
-      const addString = `Added ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
+      const addString = ctx.i18n`Added ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
       if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events);
-      if (remove?.items?.length) await ctx.settings.untrackItems(channel, remove.items);
-      const removeString = `Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
+      if (remove?.items?.length && !clear) await ctx.settings.untrackItems(channel, remove.items);
+      const removeString = ctx.i18n`Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
       await interaction.editReply({ content: `${addString}\n${removeString}`, ephemeral: ctx.ephemerate });
 
       if (prepend && (add.items.length || add.events.length)) {
         await ctx.settings.addPings(interaction.guild, add, prepend);
-        const pingsString = `Adding \`${
+        const pingsString = ctx.i18n`Adding \`${
           Discord.Util.escapeMarkdown(Discord.Util.removeMentions(prepend))
         }\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
         await interaction.editReply({
