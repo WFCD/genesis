@@ -441,7 +441,7 @@ class Notifier {
   }
 
   async checkAndSendSyndicate(embed, syndicate, platform) {
-    if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate' && embed.fields[0].name !== 'No such Syndicate') {
+    if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate' && embed?.fields?.[0].name !== 'No such Syndicate') {
       await this.broadcaster.broadcast(embed, platform, syndicate);
     }
   }
