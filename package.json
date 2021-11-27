@@ -1,6 +1,6 @@
 {
   "name": "genesis",
-  "version": "2.0.0-alpha",
+  "version": "1.0.0",
   "description": "A Warframe bot for your Discord server or clan :star:",
   "main": "main.js",
   "private": true,
@@ -166,11 +166,21 @@
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
-      ["@semantic-release/npm", { "npmPublish": false }],
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
       "@semantic-release/github",
-      ["@semantic-release/git", {
-        "assets": ["package.json"]
-      }],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json"
+          ]
+        }
+      ],
       "@eclass/semantic-release-sentry-releases"
     ],
     "branches": "master"
