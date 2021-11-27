@@ -3,6 +3,7 @@
   "version": "2.0.0-alpha",
   "description": "A Warframe bot for your Discord server or clan :star:",
   "main": "main.js",
+  "private": true,
   "scripts": {
     "lint": "eslint main.js src/",
     "lint:fix": "eslint main.js src/ --fix",
@@ -160,5 +161,18 @@
       "@babel/plugin-proposal-class-properties",
       "@babel/plugin-proposal-private-methods"
     ]
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      ["@semantic-release/npm", { "npmPublish": false }],
+      "@semantic-release/github",
+      ["@semantic-release/git", {
+        "assets": ["package.json"]
+      }],
+      "@eclass/semantic-release-sentry-releases"
+    ],
+    "branches": "master"
   }
 }

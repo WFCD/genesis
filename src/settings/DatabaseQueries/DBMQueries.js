@@ -105,6 +105,7 @@ class DBMQueries {
    * @returns {Promise.<string>} status of removal
    */
   async removeGuild(guild) {
+    if (!guild?.available) return false;
     const query = SQL`DELETE FROM channels WHERE guild_id = ${guild.id}`;
     await this.query(query);
     const results = [];

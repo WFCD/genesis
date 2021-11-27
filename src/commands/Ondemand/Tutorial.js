@@ -26,13 +26,13 @@ class FrameProfile extends Command {
 
     if (query) {
       query = query.trim().toLowerCase();
-      const results = await this.ws.search('tutorials', query);
+      const results = await this.ws.search(this.ws.ENDPOINTS.WORLDSTATE.TUTORIALS, query);
       if (results.length > 0) {
         await Promise.all(results.map(tutorial => message.reply({ content: `Warframe Tutorial | ${tutorial.name}: ${tutorial.url}` })));
         return this.constructor.statuses.SUCCESS;
       }
     }
-    const tutorials = await this.ws.g('tutorials');
+    const tutorials = await this.ws.g(this.ws.ENDPOINTS.WORLDSTATE.TUTORIALS);
     const embed = {
       title: 'Available Tutorials',
       fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],

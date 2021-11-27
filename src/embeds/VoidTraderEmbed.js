@@ -20,10 +20,10 @@ class VoidTraderEmbed extends BaseEmbed {
   constructor(bot, voidTrader, platform, onDemand) {
     super();
 
-    this.color = voidTrader.active ? 0x0EC9FF : 0xff6961;
+    this.color = voidTrader?.active ? 0x0EC9FF : 0xff6961;
 
-    if (voidTrader.active || voidTrader.inventory.length > 0) {
-      this.fields = voidTrader.inventory.map((i) => {
+    if (voidTrader?.active && voidTrader?.inventory?.length > 0) {
+      this.fields = voidTrader?.inventory.map((i) => {
         const d = `${n(i.ducats).format('0a')}${onDemand ? emojify('ducats') : 'ducats'}`;
         const cr = `${n(i.credits).format('0a')}${onDemand ? emojify('credits') : '*cr*'}`;
         return {
@@ -37,7 +37,7 @@ class VoidTraderEmbed extends BaseEmbed {
     }
     this.fields.push({
       name: `Time until ${voidTrader.active ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
-      value: `${voidTrader.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
+      value: `${voidTrader?.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
     });
     this.title = `[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {

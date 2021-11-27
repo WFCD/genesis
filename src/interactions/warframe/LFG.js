@@ -91,8 +91,11 @@ module.exports = class LFG extends require('../../models/Interaction') {
     };
 
     const embed = new LFGEmbed(null, lfg);
+    const rawChn = ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]];
+    if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
     const chn = interaction.guild.channels
-      .resolve((ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]]).id);
+      .resolve(rawChn.id);
+    if (!chn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
 
     const buttons = [
       new MessageActionRow({

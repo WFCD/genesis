@@ -67,7 +67,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   }
 
   static async commandHandler(interaction, ctx) {
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction?.deferReply({ ephemeral: ctx.ephemerate });
     const { options } = interaction;
     const action = options?.getSubcommand();
     if (action === 'manage') {
@@ -147,7 +147,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
             ],
           }) : null,
           // group selection
-          new MessageActionRow({
+          groups?.length ? new MessageActionRow({
             components: [
               new MessageSelectMenu({
                 minValues: 0,
@@ -157,7 +157,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 options: groups,
               }),
             ],
-          }),
+          }) : null,
           // subgroup selection
           subgrouped.includes(currentGroup) ? new MessageActionRow({
             components: [
@@ -171,7 +171,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
             ],
           }) : null,
           // discrete trackable selection
-          new MessageActionRow({
+          groupOptions.length ? new MessageActionRow({
             components: [
               new MessageSelectMenu({
                 maxValues: groupOptions.length,
@@ -181,7 +181,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 disabled: !currentDetermination,
               }),
             ],
-          }),
+          }) : null,
           // actions (save, all, reset, cancel, clear)
           new MessageActionRow({
             components: [
@@ -286,8 +286,8 @@ module.exports = class Settings extends require('../../models/Interaction') {
        * @returns {Promise<null|*>}
        */
       const buttonHandler = async (button) => {
-        await button.deferUpdate();
-        switch (button.customId) {
+        await button?.deferUpdate();
+        switch (button?.customId) {
           case 'save':
             await ctx.settings.setTrackables(interaction.channel, current);
             buttonCollector.stop('limit');
@@ -382,7 +382,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
       buttonCollector.on('collect', buttonHandler);
     }
     if (action === 'custom') {
-      await interaction.deferReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
+      await interaction?.editReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
       const add = trackablesFromParameters((options.getString('add') || '')
         .split(',')
         .map(a => a?.trim())

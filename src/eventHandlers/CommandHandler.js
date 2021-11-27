@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const Handler = require('../models/BaseEventHandler');
 const { games, emojify } = require('../CommonFunctions');
 
-const { Permissions, Constants: { Events } } = Discord;
+const { Permissions, Constants: { Events, ChannelTypes: Types } } = Discord;
 
 /**
  * Checks if the command is callable,
@@ -135,6 +135,7 @@ class CommandHandler extends Handler {
     // set new context objects
     ctx.message = strippedMessage;
     ctx.settings = this.bot.settings;
+    ctx.ws = this.bot.ws;
     this.logger.debug(`Handling \`${content}\``);
 
     for (const command of commands) {
@@ -204,7 +205,8 @@ class CommandHandler extends Handler {
       this.logger.debug(`${command.id} is owner-only`);
       return false;
     }
-    if (message.channel.isText()) {
+    if ([Types.DM, Types.GROUP_DM, Types.GUILD_TEXT, Types.GUILD_PUBLIC_THREAD]
+      .includes(message.channel.type)) {
       if (command.requiresAuth) {
         if (hasAuth(message)) {
           const memberHasPermForRequiredAuthCommand = await this.bot.settings

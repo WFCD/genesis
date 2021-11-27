@@ -1282,7 +1282,7 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
    * @returns {Promise<void>}
    */
   const buttonHandler = async (button) => {
-    await button.deferUpdate({ ephemeral: ctx.ephemerate });
+    await button?.deferUpdate({ ephemeral: ctx.ephemerate });
     switch (button.customId) {
       case 'previous':
         if (page > 1) page -= 1;
