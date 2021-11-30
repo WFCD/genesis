@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const Handler = require('../models/BaseEventHandler');
 const { games, emojify } = require('../CommonFunctions');
 
-const { Permissions, Constants: { Events, ChannelTypes: Types } } = Discord;
+const { Permissions, Constants: { Events } } = Discord;
 
 /**
  * Checks if the command is callable,
@@ -205,7 +205,7 @@ class CommandHandler extends Handler {
       this.logger.debug(`${command.id} is owner-only`);
       return false;
     }
-    if ([Types.DM, Types.GROUP_DM, Types.GUILD_TEXT, Types.GUILD_PUBLIC_THREAD]
+    if (['DM', 'GROUP_DM', 'GUILD_TEXT', 'GUILD_PUBLIC_THREAD']
       .includes(message.channel.type)) {
       if (command.requiresAuth) {
         if (hasAuth(message)) {

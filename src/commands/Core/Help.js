@@ -46,14 +46,7 @@ const commandSort = (a, b) => {
   return 0;
 };
 
-/**
- * Describes the Help command
- */
 class Help extends Command {
-  /**
-   * Constructs a callable command
-   * @param {Genesis} bot  The bot object
-   */
   constructor(bot) {
     super(bot, 'core.help', 'help', 'Display this message', 'CORE');
 
