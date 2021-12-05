@@ -80,7 +80,8 @@
     "@types/flat-cache": "^2.0.0",
     "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-no-null": "^1.0.2"
   },
   "license": "Apache-2.0",
   "engines": {
@@ -93,6 +94,7 @@
   "eslintConfig": {
     "extends": "airbnb-base",
     "parser": "@babel/eslint-parser",
+    "plugins": ["no-null"],
     "parserOptions": {
       "sourceType": "script",
       "babelOptions": {
@@ -150,7 +152,8 @@
       "default-case": "off",
       "max-classes-per-file": "off",
       "consistent-return": "off",
-      "class-methods-use-this": "off"
+      "class-methods-use-this": "off",
+      "no-null/no-null": 2
     }
   },
   "babel": {

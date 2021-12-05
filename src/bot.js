@@ -38,8 +38,13 @@ const unlog = {
 
 /**
  * Class describing Genesis bot
+ * @property {Database} settings
+ * @property {Logger} logger
+ * @property {CommandManager} commandManager
+ * @property {EventHandler} eventHandler
+ * @property {Discord.Client} client
  */
-class Genesis {
+module.exports = class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
@@ -240,6 +245,4 @@ class Genesis {
       process.exit(1);
     }
   }
-}
-
-module.exports = Genesis;
+};

@@ -6,7 +6,22 @@ require('colors');
 const { WebhookClient } = require('discord.js');
 const ErrorEmbed = require('./embeds/ErrorEmbed');
 
-Sentry.init({ dsn: process.env.RAVEN_URL, autoBreadcrumbs: true });
+const ignore = ['Invalid refresh token', 'Failed to load', 'https://discord.com/api/webhooks/', 'Could not find the channel', 'DiscordAPIError'];
+const ignoreReg = new RegExp(`(${ignore.join('|')})`, 'i');
+
+Sentry.init({
+  dsn: process.env.RAVEN_URL,
+  autoBreadcrumbs: true,
+  beforeSend: (event, hint) => {
+    const error = hint.originalException;
+    if (error?.message?.match(ignoreReg)) {
+      return undefined;
+    }
+    if (!error) {
+      return event;
+    }
+  },
+});
 const scope = (process.env.SCOPE || 'worker').toUpperCase();
 let errorHook;
 if (process.env.CONTROL_WH_ID) {
@@ -41,7 +56,6 @@ const contexts = {
   TwitchApi: 'magenta',
   TM: 'yellow',
 };
-const ignore = ['Invalid refresh token', 'Failed to load', 'https://discord.com/api/webhooks/', 'Could not find the channel', 'DiscordAPIError'];
 
 /**
  * A collection of methods for logging
@@ -66,9 +80,6 @@ Logger.prototype.isLoggable = level => Object.keys(levels)
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message, context) => {
     const simple = fmt(level, message, context);
-    for (const term of ignore) {
-      if (simple.includes(term)) return;
-    }
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (Logger.prototype.isLoggable(level) && nonError) {
       console.log(simple);
