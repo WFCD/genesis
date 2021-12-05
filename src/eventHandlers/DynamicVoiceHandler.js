@@ -2,7 +2,7 @@
 
 const Discord = require('discord.js');
 
-const { Constants: Events, Permissions } = Discord;
+const { Constants: { Events }, Permissions } = Discord;
 
 const { Generator } = require('warframe-name-generator');
 
@@ -157,7 +157,7 @@ module.exports = class DynamicVoiceHandler {
     await Promise.all(templates.map(async (template) => {
       if (this.client.channels.cache.has(template)) {
         const templateChannel = this.client.channels.cache.get(template);
-        if (!template.guild.me.permissions.has(requiredVCPerms)) {
+        if (!templateChannel?.guild?.me.permissions.has(requiredVCPerms)) {
           return false;
         }
         const { remainingEmpty } = await this.settings.getInstances(templateChannel);
