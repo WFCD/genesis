@@ -77,10 +77,10 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const Handler = require(f);
-        return Handler.prototype instanceof Interaction ? Handler : null;
+        return Handler.prototype instanceof Interaction ? Handler : undefined;
       } catch (e) {
         logger.error(e);
-        return null;
+        return undefined;
       }
     })
       .filter(h => h);
@@ -310,11 +310,11 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       ctx.handler = this;
       ctx.logger = this.logger;
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
-      if (!interaction) return null;
+      if (!interaction) return undefined;
       // eslint-disable-next-line no-nested-ternary,consistent-return
       return match
         ? match?.commandHandler?.(interaction, ctx)
-        : (customMatch ? customMatch?.commandHandler?.(interaction, ctx) : null);
+        : (customMatch ? customMatch?.commandHandler?.(interaction, ctx) : undefined);
     }
   }
 };

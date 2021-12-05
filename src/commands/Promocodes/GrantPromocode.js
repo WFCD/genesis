@@ -38,7 +38,7 @@ class GrantPromocode extends Command {
       return this.constructor.statuses.FAILURE;
     }
     // eslint-disable-next-line camelcase
-    if (grantedTo === null) {
+    if (!grantedTo) {
       if (await this.settings.hasCodeInPool(message.author, pool)) {
         await message.reply({ content: `<@${message.author.id}> already has a code from ${pool}` });
         return this.constructor.statuses.FAILURE;

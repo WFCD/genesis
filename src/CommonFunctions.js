@@ -1004,8 +1004,8 @@ const resolvePool = async (message, settings,
 };
 
 const safeGetEntry = (entry) => {
-  if (entry === null || typeof entry === 'undefined' || entry === 'null') {
-    return null;
+  if (!!entry || typeof entry === 'undefined' || entry === 'null') {
+    return undefined;
   }
   return entry.replace(/"/g, '');
 };
@@ -1024,7 +1024,7 @@ const csvToCodes = (csv) => {
       grantedOn: safeGetEntry(entries[6]),
       code: safeGetEntry(entries[7]),
     };
-  }).filter(code => code.code !== null);
+  }).filter(code => code.code);
 };
 
 const determineTweetType = (tweet) => {

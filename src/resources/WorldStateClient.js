@@ -228,7 +228,7 @@ module.exports = class WorldStateClient {
     return Array.isArray(results) ? results.map((r) => {
       delete r.patchlogs;
       return r;
-    }) : null;
+    }) : undefined;
   }
 
   /**
@@ -246,7 +246,7 @@ module.exports = class WorldStateClient {
     return Array.isArray(results) ? results.map((r) => {
       delete r.patchlogs;
       return r;
-    }) : null;
+    }) : undefined;
   }
 
   /**
@@ -264,7 +264,7 @@ module.exports = class WorldStateClient {
     return Array.isArray(results) ? results.map((r) => {
       delete r.patchlogs;
       return r;
-    }) : null;
+    }) : undefined;
   }
 
   /**

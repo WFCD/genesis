@@ -364,7 +364,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         action = options?.getSubcommand();
       } catch (ex) {
         ctx.logger.error(ex);
-        return null;
+        return undefined;
       }
     }
     let field = options.getSubcommand();

@@ -53,7 +53,6 @@ module.exports = class Ping extends require('../../models/Interaction') {
       name: 'Discord WS',
       value: `${emojify('green_tick')} ${interaction.client.ws.ping.toFixed(2)}ms`,
     });
-
     const updated = new MessageEmbed({
       title: 'PONG',
       type: 'rich',
@@ -68,7 +67,6 @@ module.exports = class Ping extends require('../../models/Interaction') {
         text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}`,
       },
     });
-
-    interaction.editReply({ content: null, embeds: [updated] });
+    return interaction.editReply({ content: undefined, embeds: [updated] });
   }
 };

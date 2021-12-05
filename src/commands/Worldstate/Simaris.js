@@ -73,7 +73,7 @@ class Simaris extends Command {
     let param;
     const matchIndex = 1;
     const matches = message.strippedContent.match(regex);
-    if (matches !== null) {
+    if (matches) {
       param = matches[matchIndex];
     }
     return param;

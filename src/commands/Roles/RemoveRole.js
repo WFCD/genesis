@@ -16,7 +16,7 @@ function getRoleForString(string, message) {
     roleFromName = message.guild.roles.cache
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
-  return roleFromId || roleFromName || null;
+  return roleFromId || roleFromName || undefined;
 }
 
 const deleteRegex = new RegExp('--delete', 'ig');

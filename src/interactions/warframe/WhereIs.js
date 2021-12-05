@@ -95,7 +95,7 @@ module.exports = class WhereIs extends require('../../models/Interaction') {
     query = toTitleCase(query.trim());
 
     const relics = createGroupedArray(results, 20)
-      .map(rg => new WhereisEmbed(null,
+      .map(rg => new WhereisEmbed(undefined,
         createGroupedArray(rg, 10),
         query,
         longestName.length,

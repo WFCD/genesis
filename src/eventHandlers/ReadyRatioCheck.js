@@ -2,7 +2,7 @@
 
 const Handler = require('../models/BaseEventHandler');
 
-let guildCheck = null; // I don't know where to put this
+let guildCheck; // I don't know where to put this
 
 /**
  * Sends a DM to the owners of all guilds over the ratio

@@ -112,9 +112,9 @@ module.exports = class Settings extends require('../../models/Interaction') {
         id = interaction.options.getString('server_id').trim();
         guild = await interaction.client.guilds.fetch(id);
         onConfirm = async () => interaction.editReply({
-          content: null,
+          content: undefined,
           embeds: [
-            new MessageEmbed(new ServerInfoEmbed(null, guild)),
+            new MessageEmbed(new ServerInfoEmbed(undefined, guild)),
           ],
           components: [],
         });
@@ -125,7 +125,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         return createConfirmationCollector(interaction, onConfirm, onDeny, ctx);
       case 'stats':
         const commandId = interaction.options.getString('command_id');
-        const count = await ctx.settings.getGuildStats(null, commandId, true);
+        const count = await ctx.settings.getGuildStats(undefined, commandId, true);
         return interaction.reply({
           content: `\`${commandId}\` has been used ${count} times`,
           ephemeral: ctx.ephemerate,

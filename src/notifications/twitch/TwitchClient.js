@@ -158,7 +158,7 @@ class TwitchClient {
       logger.warn(url);
 
       if (error.message === 'Invalid refresh token') {
-        this.#refreshToken = null;
+        this.#refreshToken = undefined;
         return this.hydrateToken();
       }
     } catch (e) {
@@ -168,7 +168,7 @@ class TwitchClient {
     return false;
   }
 
-  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), null, true);
+  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), undefined, true);
 
   /**
    * Fetch stream data

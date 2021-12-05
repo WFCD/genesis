@@ -99,7 +99,7 @@ module.exports = class Templates extends require('../../models/Interaction') {
         if (!(await ctx.settings.isTemplate(channel))) {
           return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
         }
-        await ctx.settings.setDynTemplate(channel.id, null);
+        await ctx.settings.setDynTemplate(channel.id, undefined);
         return interaction.reply({ content: ctx.i18n`${channel}'s name template cleared.`, ephemeral: ctx.ephemerate });
       case 'set':
         if (!(await ctx.settings.isTemplate(channel))) {

@@ -41,7 +41,7 @@
 
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-const typecheck = val => (typeof val === 'undefined' ? null : val);
+const typecheck = val => (typeof val === 'undefined' ? undefined : val);
 
 /**
  * Build Mod
@@ -404,7 +404,7 @@ module.exports = class Build {
    * @returns {Object|{id}|*}
    */
   #resolve (item, type) {
-    if (!item) return null;
+    if (!item) return undefined;
     if (item.uniqueName) return item;
     switch (type) {
       case 'weapon':
@@ -429,7 +429,7 @@ module.exports = class Build {
           return this.#ws.mod(item);
         }
     }
-    return null;
+    return undefined;
   }
 
   /**

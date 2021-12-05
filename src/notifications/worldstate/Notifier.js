@@ -110,7 +110,7 @@ class Notifier {
     platforms.forEach((p) => {
       beats[p] = {
         lastUpdate: Date.now(),
-        currCycleStart: null,
+        currCycleStart: undefined,
       };
     });
 

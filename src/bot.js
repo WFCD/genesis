@@ -54,8 +54,8 @@ module.exports = class Genesis {
    */
   constructor(discordToken, {
     prefix = process.env.PREFIX,
-    owner = null,
-    commandManifest = null,
+    owner = undefined,
+    commandManifest = undefined,
     shards = [0],
   } = {}) {
     /**

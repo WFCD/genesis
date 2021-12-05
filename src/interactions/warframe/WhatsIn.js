@@ -60,7 +60,7 @@ module.exports = class WhatsIn extends require('../../models/Interaction') {
     const query = toTitleCase(interaction.options.get('query').value);
     const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
     if (!data || !Object.keys(data).length) return interaction.reply('Sorry, no such relic');
-    const embed = new WhatsInEmbed(null, data, tier, query);
+    const embed = new WhatsInEmbed(undefined, data, tier, query);
     return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
   }
 };

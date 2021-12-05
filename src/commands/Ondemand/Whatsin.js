@@ -44,7 +44,9 @@ class Whatsin extends Command {
     try {
       const relicData = await ctx.ws.relic(tier, relicName);
       if (relicData) {
-        await sentMessage.edit({ embeds: [new WhatsinEmbed(null, relicData, tier, relicName)] });
+        await sentMessage.edit({
+          embeds: [new WhatsinEmbed(undefined, relicData, tier, relicName)],
+        });
         return this.constructor.statuses.SUCCESS;
       }
     } catch (error) {

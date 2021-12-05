@@ -44,7 +44,7 @@ class Disable extends Command {
 
     channels = getChannels(message.mentions.channels.length > 0
       ? message.mentions.channels : channelResult, message);
-    channels = channels.filter(channel => typeof channel !== 'undefined' && channel !== null);
+    channels = channels.filter(channel => typeof channel !== 'undefined' && !!channel);
     if (!channels.length) {
       channels = [message.channel];
     }

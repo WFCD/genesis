@@ -53,7 +53,7 @@ class UserInfoEmbed extends BaseEmbed {
           name: 'Status',
           value: member.presence.status,
           inline: true,
-        } : null,
+        } : undefined,
         {
           name: 'Current State:',
           value: `**Deafened:** ${member.deaf ? affirm : negate}\n`

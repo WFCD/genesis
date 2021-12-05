@@ -50,7 +50,7 @@ class Help extends Command {
   constructor(bot) {
     super(bot, 'core.help', 'help', 'Display this message', 'CORE');
 
-    this.helpEmbed = null;
+    this.helpEmbed = undefined;
 
     this.regex = new RegExp(`^${this.call}(?:\\s(.*)?)?$`, 'i');
 

@@ -203,7 +203,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
           case 'warframe':
           case 'necramech':
             parsed[name] = id?.uniqueName ? id : ctx.ws.warframe(id)?.[0];
-            pages.push(new FrameEmbed(null, parsed[name], null));
+            pages.push(new FrameEmbed(undefined, parsed[name], undefined));
             break;
           case 'prism':
             return;
@@ -213,7 +213,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
             break;
           default:
             parsed[name] = id?.uniqueName ? id : ctx.ws.weapon(id)?.[0];
-            pages.push(new WeaponEmbed(null, parsed[name]));
+            pages.push(new WeaponEmbed(undefined, parsed[name]));
             break;
         }
       }
@@ -221,10 +221,10 @@ module.exports = class Builds extends require('../../models/Interaction') {
     if (parsed.focus || build.prism) {
       const focus = parsed.focus ? `**${ctx.i18n`Focus`}:** ${build.focus}` : '';
       const prism = build.prism
-        ? new WeaponEmbed(null, build.prism?.uniqueName
+        ? new WeaponEmbed(undefined, build.prism?.uniqueName
           ? build.prism
           : ctx.ws.weapon(build.prism)[0])
-        : null;
+        : undefined;
       if (prism) {
         if (focus) {
           prism.description = `${focus}${prism.description}`;
@@ -285,7 +285,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
         if (build) {
           if (build.body) {
             return interaction.reply({
-              embeds: [new BuildEmbed(null, build)],
+              embeds: [new BuildEmbed(undefined, build)],
               ephemeral: ctx.ephemerate,
             });
           }
@@ -298,7 +298,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
         if (results.length) {
           const embeds = [];
           results.forEach((result) => {
-            const embed = new BuildEmbed(null, result);
+            const embed = new BuildEmbed(undefined, result);
             embeds.push(embed);
           });
           return results.length < 26
@@ -352,7 +352,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
         }
         // write something to manage mods like we did with tracking
         // selection for build parts that are populated
-        let current = null;
+        let current;
         const mods = {};
         build?.mods?.forEach((mod) => {
           mods[mod.target] = mod.mods.flat();
@@ -388,7 +388,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
         });
         const availableMods = () => (current
           ? createGroupedArray(ctx.ws.modsByType(current.compat), 25)
-          : null);
+          : undefined);
         let modPage = 0;
         const navComponents = new MessageActionRow({
           components: [
@@ -497,7 +497,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
               build.mods = Object.keys(mods).map(k => (k ? {
                 target: k,
                 mods: mods[k],
-              } : null)).filter(i => i.mods);
+              } : undefined)).filter(i => i.mods);
               await ctx.settings.saveBuild(build.toJson());
               // selection for mods, filtered to compat with that part
               // before saving, error or "warn" if there's more than the type allows
@@ -532,7 +532,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
           });
         };
         modPageCollector.on('collect', modPageHandler);
-        return null;
+        return undefined;
     }
     return interaction.reply({ content: ctx.i18n`Nah.`, ephemeral: ctx.ephemerate });
   }

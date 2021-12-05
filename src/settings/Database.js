@@ -16,7 +16,7 @@ const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_
 
 const props = (obj) => {
   const p = [];
-  for (; obj != null; obj = Object.getPrototypeOf(obj)) { // eslint-disable-line no-param-reassign
+  for (; obj; obj = Object.getPrototypeOf(obj)) { // eslint-disable-line no-param-reassign
     const op = Object.getOwnPropertyNames(obj);
     for (let i = 0; i < op.length; i += 1) {
       if (p.indexOf(op[i]) === -1) { p.push(op[i]); }

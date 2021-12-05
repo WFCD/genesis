@@ -18,7 +18,7 @@ const getRoleForString = (string, message) => {
     roleFromName = message.guild.roles.cache
       .find(item => item.name.toLowerCase() === trimmedString.toLowerCase());
   }
-  return roleFromId || roleFromName || null;
+  return roleFromId || roleFromName || undefined;
 };
 
 const determineDescription = (userHasRole, hasMinimumRole) => {
@@ -141,7 +141,7 @@ class JoinRole extends Command {
     embed.fields[0].name = `${prefix}${this.call} <role or role id>`;
     const roles = await this.settings.getRolesForGuild(message.guild);
     embed.fields[1].value = roles.length ? roles.map(role => role.guildRole.name).join('; ') : 'No possible roles';
-    if (!message.channel) return null;
+    if (!message.channel) return undefined;
     return message.reply({ embeds: [embed] });
   }
 }

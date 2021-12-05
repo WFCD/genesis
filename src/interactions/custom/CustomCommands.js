@@ -87,6 +87,6 @@ module.exports = class CustomCommands extends require('../../models/Interaction'
         const embeds = metaGroups.map(metaGroup => ({ color: 0x301934, fields: metaGroup, title: ctx.i18n`Custom Commands` }));
         return interaction.reply({ embeds, ephemeral });
     }
-    return null;
+    return undefined;
   }
 };

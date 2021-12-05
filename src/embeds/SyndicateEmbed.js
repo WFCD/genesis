@@ -82,7 +82,7 @@ class SyndicateEmbed extends BaseEmbed {
 
           if (missionValue.length < 2000) {
             this.description = missionValue;
-            this.fields = null;
+            this.fields = undefined;
           } else {
             this.fields = missionValue.split('\n\n').map(spv => ({
               name: '\u200B',

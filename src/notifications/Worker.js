@@ -111,8 +111,8 @@ class Worker {
       if (hydrateEvents) await this.hydrateQueries();
 
       // refresh guild cache every hour... it's a heavy process, we don't want to do it much
-      deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this), null, true);
-      deps.queryHydration = new Job('0 */10 * * * *', this.hydrateQueries.bind(this), null, true);
+      deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this), undefined, true);
+      deps.queryHydration = new Job('0 */10 * * * *', this.hydrateQueries.bind(this), undefined, true);
     }
   }
 

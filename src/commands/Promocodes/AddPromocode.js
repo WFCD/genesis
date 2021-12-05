@@ -71,7 +71,7 @@ class AddPromocode extends Command {
       await message.reply({ content: '\\❌ You either can\'t add to the provided pool or you don\'t manage any pools.' });
       return this.constructor.statuses.FAILURE;
     }
-    await this.settings.addCode(pool, platform, message.author.id, null, null, code);
+    await this.settings.addCode(pool, platform, message.author.id, undefined, undefined, code);
     return this.constructor.statuses.FAILURE;
   }
 

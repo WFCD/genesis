@@ -34,7 +34,7 @@ class ClaimPromocode extends Command {
       await message.reply({ content: 'No more codes are available, contact your code provider or the owner of the pool to add more.' });
       return this.constructor.statuses.FAILURE;
     }
-    const passMatch = password === null || userPassword === password;
+    const passMatch = !!password || userPassword === password;
     if (!(passMatch || await this.settings.isPoolPublic(pool))) {
       await message.reply({ content: 'Your password is invalid, or you didn\'t provide one and the pool is not open.' });
       return this.constructor.statuses.FAILURE;
@@ -43,7 +43,7 @@ class ClaimPromocode extends Command {
       await message.reply({ content: `<@${message.author.id}> already has a code from ` });
       return this.constructor.statuses.FAILURE;
     }
-    if (grantedTo === null) {
+    if (!grantedTo) {
       await this.settings.grantCode(code, message.author.id, message.author.id, platform);
       await message.reply({ content: `Code claimed by <@${message.author.id}>` });
       return this.constructor.statuses.SUCCESS;

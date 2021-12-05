@@ -87,7 +87,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);
         if (!data.length) return interaction.editReply('None found');
-        pages = data.map(d => new embeds.Arcane(null, d, ctx.i18n));
+        pages = data.map(d => new embeds.Arcane(undefined, d, ctx.i18n));
         return pages.length < 25
           ? createSelectionCollector(interaction, pages, ctx)
           : createPagedInteractionCollector(interaction, pages, ctx);
@@ -96,23 +96,26 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
         for (const weapon of data) {
-          pages.push(new embeds.Weapon(null, weapon, ctx.i18n));
+          pages.push(new embeds.Weapon(undefined, weapon, ctx.i18n));
           const strippedWeaponN = query.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
           const rivenResults = await ctx.ws.riven(strippedWeaponN, ctx.platform);
           if (Object.keys(rivenResults).length > 0) {
             const strippedRes = weapon.name.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
             if (rivenResults[strippedRes]) {
-              pages
-                .push(new embeds.Riven(null, rivenResults[strippedRes], weapon.name, ctx.i18n));
+              pages.push(
+                new embeds.Riven(undefined, rivenResults[strippedRes], weapon.name, ctx.i18n),
+              );
             }
           }
 
-          if (weapon?.components?.length) pages.push(new embeds.Component(null, weapon.components));
+          if (weapon?.components?.length) {
+            pages.push(new embeds.Component(undefined, weapon.components));
+          }
 
           if (weapon?.patchlogs?.length && enablePatchnotes) {
             createGroupedArray(weapon.patchlogs, 4)
               // eslint-disable-next-line no-loop-func
-              .forEach(patchGroup => pages.push(new embeds.Patchnote(null, patchGroup)));
+              .forEach(patchGroup => pages.push(new embeds.Patchnote(undefined, patchGroup)));
           }
         }
         return pages.length < 25
@@ -123,14 +126,14 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
         for (const warframe of data) {
-          pages.push(new embeds.Warframe(null, warframe, ctx.i18n));
+          pages.push(new embeds.Warframe(undefined, warframe, ctx.i18n));
           if (warframe?.components?.length) {
-            pages.push(new embeds.Component(null, warframe.components));
+            pages.push(new embeds.Component(undefined, warframe.components));
           }
           if (warframe?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func
             createGroupedArray(warframe?.patchlogs, 4).forEach((patchGroup) => {
-              pages.push(new embeds.Patchnote(null, patchGroup));
+              pages.push(new embeds.Patchnote(undefined, patchGroup));
             });
           }
         }
@@ -141,7 +144,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
         if (!Object.keys(data).length) return interaction.editReply('None found');
-        pages = Object.keys(data).map(d => new embeds.Riven(null, data[d], d, ctx.i18n));
+        pages = Object.keys(data).map(d => new embeds.Riven(undefined, data[d], d, ctx.i18n));
         return pages.length < 25
           ? createSelectionCollector(interaction, pages, ctx)
           : createPagedInteractionCollector(interaction, pages, ctx);
@@ -151,15 +154,15 @@ module.exports = class Lookup extends require('../../models/Interaction') {
           .filter(m => typeof m.baseDrain !== 'undefined');
         if (!data.length) return interaction.editReply('None found');
         for (const mod of data) {
-          pages.push(new embeds.Mod(null, mod, ctx.i18n));
+          pages.push(new embeds.Mod(undefined, mod, ctx.i18n));
           if (mod?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func
             createGroupedArray(mod?.patchlogs, 4).forEach((patchGroup) => {
-              pages.push(new embeds.Patchnote(null, patchGroup));
+              pages.push(new embeds.Patchnote(undefined, patchGroup));
             });
           }
         }
-        pages = Object.keys(data).map(d => new embeds.Mod(null, data[d], ctx.i18n));
+        pages = Object.keys(data).map(d => new embeds.Mod(undefined, data[d], ctx.i18n));
         return pages.length < 25
           ? createSelectionCollector(interaction, pages, ctx)
           : createPagedInteractionCollector(interaction, pages, ctx);

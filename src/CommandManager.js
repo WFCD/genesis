@@ -89,14 +89,12 @@ class CommandManager {
           // eslint-disable-next-line import/no-dynamic-require, global-require
           const Cmd = require(path.join(commandDir, f));
           if (Cmd instanceof BaseCommand) {
-            const command = new Cmd(this.bot);
-
-            return command;
+            return new Cmd(this.bot);
           }
-          return null;
+          return undefined;
         } catch (err) {
           this.logger.error(err);
-          return null;
+          return undefined;
         }
       }).filter(c => c);
 

@@ -1,9 +1,9 @@
 'use strict';
 
-const { WebhookClient, User, Permissions } = require('discord.js');
-
+const Discord = require('discord.js');
 const logger = require('../Logger');
 
+const { WebhookClient, User, Permissions } = Discord;
 const defMsgOpts = {
   msgOpts: undefined,
   deleteOriginal: true,
@@ -11,9 +11,7 @@ const defMsgOpts = {
   deleteAfter: false,
   message: undefined,
 };
-
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
-
 const minPerms = [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES];
 
 /**
@@ -40,6 +38,8 @@ class MessageManager {
    *  embeds, attachments, files, etc.
    * @param  {boolean}                delCall         delete the original after sending
    * @param  {boolean}                delRes          delete the response after sending
+   * @param {boolean} deleteAfter delete after done?
+   * @param {Discord.Message} message message to respond to
    * @returns {Promise.<Discord.Message>}              Message Promise
    */
   async send(target, content = '', {
@@ -144,10 +144,10 @@ class MessageManager {
 
   /**
    * Notify channel of settings change if enabled
-   * @param {Message} message Message to reply to and fetch channel settings from
+   * @param {Discord.Message} message Message to reply to and fetch channel settings from
    * @param {boolean} delCall whether or not to delete the original message
    * @param {boolean} delRes whether or not to delete the response message
-   * @returns {null|Promise<Message>}
+   * @returns {null|Promise<Discord.Message>}
    */
   async notifySettingsChange(message, delCall, delRes) {
     const respondToSettings = await this.settings.getChannelSetting(message.channel, 'respond_to_settings') === '1';
@@ -155,13 +155,13 @@ class MessageManager {
     if (respondToSettings) {
       return this.send(message.channel, 'Settings updated', { delCall, delRes });
     }
-    return null;
+    return undefined;
   }
 
   /**
    * Delete call and response for a command, depending on settings
-   * @param  {Message} call           calling command
-   * @param  {Message} response       response message
+   * @param  {Discord.Message} call           calling command
+   * @param  {Discord.Message} response       response message
    * @param  {boolean} delCall        whether or not to delete the calling message
    * @param  {boolean} delRes         whether or not to delete the message response
    * @returns {Discord.Message}       the response

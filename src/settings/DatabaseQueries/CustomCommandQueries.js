@@ -47,7 +47,7 @@ module.exports = class CustomCommandQueries {
           };
         }
       })
-      : null;
+      : undefined;
   }
 
   /**

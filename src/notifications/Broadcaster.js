@@ -71,7 +71,7 @@ class Broadcaster {
 
       const glist = Object.entries(guilds)
         .filter(([, g]) => g.channels && g.channels.includes(channelId))[0];
-      const guild = glist && glist.length ? glist[1] : null;
+      const guild = glist && glist.length ? glist[1] : undefined;
 
       if (!guild) {
         logger.info(`couldn't find guild for ${type} on ${channelId}`);

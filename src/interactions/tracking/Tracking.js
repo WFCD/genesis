@@ -107,10 +107,10 @@ module.exports = class Settings extends require('../../models/Interaction') {
               value: e,
               default: currentSubgroup === e,
             }))
-          : null;
+          : undefined;
 
         const currentDetermination = subgrouped.includes(currentGroup) && !currentSubgroup
-          ? null
+          ? undefined
           : (currentSubgroup || currentGroup);
 
         const list = currentDetermination === 'items'
@@ -125,7 +125,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 default: current.items.includes(li) || current.events.includes(li),
               };
             }
-            return null;
+            return undefined;
           }).filter(a => a)
           : [{ label: 'N/A', value: 'na', default: false }];
         return ([
@@ -145,7 +145,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 disabled: chunks.length < 1,
               }),
             ],
-          }) : null,
+          }) : undefined,
           // group selection
           groups?.length ? new MessageActionRow({
             components: [
@@ -157,7 +157,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 options: groups,
               }),
             ],
-          }) : null,
+          }) : undefined,
           // subgroup selection
           subgrouped.includes(currentGroup) ? new MessageActionRow({
             components: [
@@ -169,7 +169,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 options: subgroups,
               }),
             ],
-          }) : null,
+          }) : undefined,
           // discrete trackable selection
           groupOptions.length ? new MessageActionRow({
             components: [
@@ -181,7 +181,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
                 disabled: !currentDetermination,
               }),
             ],
-          }) : null,
+          }) : undefined,
           // actions (save, all, reset, cancel, clear)
           new MessageActionRow({
             components: [
@@ -236,7 +236,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         switch (selection.customId) {
           case 'select_group':
             [currentGroup] = selection.values;
-            currentSubgroup = null;
+            currentSubgroup = undefined;
             await message.edit({
               content: chunks[page],
               components: createGroupsRow(),
@@ -283,7 +283,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
       /**
        * Handle the buttons!
        * @param {Discord.ButtonInteraction} button button interaction to handle
-       * @returns {Promise<null|*>}
+       * @returns {Promise<undefined|*>}
        */
       const buttonHandler = async (button) => {
         await button?.deferUpdate();
@@ -308,7 +308,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
               ],
             });
           case 'cancel':
-            currentGroup = null;
+            currentGroup = undefined;
             current.events = original.events;
             current.items = original.items;
             chunks = chunkerate(current);
@@ -331,7 +331,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
           case 'clear':
             current.events = [];
             current.items = [];
-            currentGroup = null;
+            currentGroup = undefined;
             chunks = chunkerate(current);
             if (page > chunks.length - 1) page = 0;
             return message.edit({
@@ -377,7 +377,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
           content: chunks[page],
           components: createGroupsRow(),
         });
-        return null;
+        return undefined;
       };
       buttonCollector.on('collect', buttonHandler);
     }

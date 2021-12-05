@@ -107,7 +107,7 @@ class TwitchMonitor extends EventEmitter {
     logger.silly(`Refreshing now (${reason || 'No reason'})`, 'TM');
 
     // Refresh all users periodically
-    if (this.#lastUserRefresh === null || now.diff(moment(this.#lastUserRefresh), 'minutes') >= 10) {
+    if (!this.#lastUserRefresh || now.diff(moment(this.#lastUserRefresh), 'minutes') >= 10) {
       this.#pendingUserRefresh = true;
       try {
         this.#handleUserList(await TwitchApi.fetchUsers(channels));
@@ -212,7 +212,7 @@ class TwitchMonitor extends EventEmitter {
 
       this.#streamData[channelName] = { ...userDataBase, ...prevStreamData, ...stream };
       this.#streamData[channelName].game = (stream.game_id
-        && this.#gameData[stream.game_id]) || null;
+        && this.#gameData[stream.game_id]) || undefined;
       this.#streamData[channelName].user = userDataBase;
 
       if (this.#statesDb.getKey(channelName) !== 'live' && stream.type === 'live') {

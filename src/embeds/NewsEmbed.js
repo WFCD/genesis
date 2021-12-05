@@ -49,7 +49,7 @@ class NewsEmbed extends BaseEmbed {
           etaChunks[1],
           etaChunks[1] !== etaChunks[etaChunks.length - 1]
             ? etaChunks[etaChunks.length - 1]
-            : null,
+            : undefined,
         ]
           .filter(a => !!a)
           .join(' ');

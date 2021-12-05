@@ -33,14 +33,14 @@ const generateManifest = async () => {
           return command;
         }
       }
-      return null;
+      return undefined;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      return null;
+      return undefined;
     }
   })
-    .filter(c => c !== null).map(c => c.manifest());
+    .filter(c => c).map(c => c.manifest());
 
   try {
     fs.writeFileSync('commands.json', JSON.stringify(commands), 'utf8');

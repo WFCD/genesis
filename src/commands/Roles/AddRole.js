@@ -6,7 +6,7 @@ const JoinableRole = require('../../models/JoinableRole.js');
 /**
  * Get a role from the matching string
  * @param  {string} string      String to use to search for role
- * @param  {Message} message    originating message
+ * @param  {Discord.Message} message    originating message
  * @returns {Role|null}         Role
  */
 function getRoleForString(string, message) {
@@ -17,7 +17,7 @@ function getRoleForString(string, message) {
     roleFromName = message.guild.roles.cache
       .find(role => role.name.toLowerCase() === trimmedString.toLowerCase());
   }
-  return roleFromId || roleFromName || null;
+  return roleFromId || roleFromName || undefined;
 }
 
 const createRegex = new RegExp('--create', 'ig');

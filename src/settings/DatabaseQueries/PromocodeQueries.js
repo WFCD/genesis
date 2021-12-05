@@ -136,11 +136,11 @@ class PromocodeQueries {
       return rows.map(row => ({
         id: row.pool_id,
         platform: row.platform,
-        addedBy: row.added_by || null,
-        addedOn: JSON.stringify(new Date(row.added_on)) || null,
-        grantedTo: row.granted_to || null,
-        grantedBy: row.granted_by || null,
-        grantedOn: row.granted_on === null ? null : JSON.stringify(new Date(row.granted_on)),
+        addedBy: row.added_by || undefined,
+        addedOn: JSON.stringify(new Date(row.added_on)) || undefined,
+        grantedTo: row.granted_to || undefined,
+        grantedBy: row.granted_by || undefined,
+        grantedOn: !row.granted_on ? undefined : JSON.stringify(new Date(row.granted_on)),
         code: row.code,
       }));
     }
@@ -200,7 +200,7 @@ class PromocodeQueries {
       JSON.stringify(new Date()),
       code.grantedTo,
       code.grantedBy,
-      code.grantedTo ? JSON.stringify(new Date()) : null,
+      code.grantedTo ? JSON.stringify(new Date()) : undefined,
       code.code,
     ]);
     query.values = [val];

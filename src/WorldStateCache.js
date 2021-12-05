@@ -18,9 +18,9 @@ module.exports = class WorldStateCache extends EventEmitter {
     super();
     this.url = worldStateURLs[platform];
     this.timeout = timeout;
-    this.currentData = null;
-    this.lastUpdated = null;
-    this.updating = null;
+    this.currentData = undefined;
+    this.lastUpdated = undefined;
+    this.updating = undefined;
     this.platform = platform;
     this.updateInterval = setInterval(() => this.update(), timeout);
     this.update();

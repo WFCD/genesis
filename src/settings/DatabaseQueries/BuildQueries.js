@@ -53,7 +53,7 @@ module.exports = class BuildQueries {
         return new Build(result, new WorldStateClient(require('../../Logger')));
       }
     }
-    return null;
+    return undefined;
   }
 
   /**

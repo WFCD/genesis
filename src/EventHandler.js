@@ -69,10 +69,10 @@ class EventHandler {
             return handler;
           }
         }
-        return null;
+        return undefined;
       } catch (err) {
         this.logger.error(err);
-        return null;
+        return undefined;
       }
     })
       .filter(c => c);

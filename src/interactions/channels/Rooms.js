@@ -167,7 +167,7 @@ const create = async (guild, options) => {
       parent: category.id,
       permissionOverwrites: overwrites,
     })
-    : null;
+    : undefined;
   if (!textChannel && options.channel && options.useText) {
     textChannel = await options.channel.threads.create({ name: options.name });
   }
@@ -176,7 +176,7 @@ const create = async (guild, options) => {
     type: 'GUILD_VOICE',
     parent: category,
     permissionOverwrites: overwrites,
-    userLimit: typeof options.limit !== 'undefined' ? options.limit : null,
+    userLimit: typeof options.limit !== 'undefined' ? options.limit : undefined,
   });
 
   await options.settings

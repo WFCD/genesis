@@ -75,10 +75,12 @@ module.exports = class Tracker {
     };
 
     if (config.carbon.token) {
-      this.#jobs.carbonitex = new Job(crons.HOURLY, this.updateCarbonitex.bind(this), null, true);
+      this.#jobs.carbonitex = new Job(
+        crons.HOURLY, this.updateCarbonitex.bind(this), undefined, true,
+      );
     }
     if (config.botsGG.token && config.botsGG.id) {
-      this.#jobs.botsGG = new Job(crons.HOURLY, this.updateBotsGG.bind(this), null, true);
+      this.#jobs.botsGG = new Job(crons.HOURLY, this.updateBotsGG.bind(this), undefined, true);
     }
     if (config.topgg.token) {
       this.#topggAutoposter = new AutoPoster(config.topgg.token, this.bot.client);
@@ -86,13 +88,13 @@ module.exports = class Tracker {
 
     // warframestat.us metrics
     if (config.cachet.host && config.cachet.token && config.cachet.metricId) {
-      this.#jobs.cachet = new Job(crons.MINUTELY, postHeartBeat, null, true);
+      this.#jobs.cachet = new Job(crons.MINUTELY, postHeartBeat, undefined, true);
     }
 
     if (isConfigured.carbonitex || isConfigured.botsGG) {
       this.#jobs.count = new Job(crons.TEN_MINUTELY, () => {
         this.#currentCount = this.bots.client.guilds.cache.size();
-      }, null, true);
+      }, undefined, true);
     }
   }
 
@@ -148,7 +150,6 @@ module.exports = class Tracker {
 
   /**
    * Update all trackers
-   * @param {number} guildsLen Number of guilds that this bot is present on
    */
   #updateAll () {
     this.updateCarbonitex();

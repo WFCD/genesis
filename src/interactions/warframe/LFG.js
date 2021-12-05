@@ -90,7 +90,7 @@ module.exports = class LFG extends require('../../models/Interaction') {
       edited: false,
     };
 
-    const embed = new LFGEmbed(null, lfg);
+    const embed = new LFGEmbed(undefined, lfg);
     const rawChn = ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]];
     if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
     const chn = interaction.guild.channels
@@ -137,7 +137,7 @@ module.exports = class LFG extends require('../../models/Interaction') {
       message.reactions.removeAll();
       lfg.expiry = 0;
       lfg.edited = true;
-      message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
+      message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: [] });
       clearTimeout(deleteTimeout);
       deleteTimeout = setTimeout(message.delete, 10000);
     });
@@ -154,23 +154,23 @@ module.exports = class LFG extends require('../../models/Interaction') {
           lfg.members.push(reaction.user.id);
           lfg.vc = interaction.member.voice;
           lfg.edited = true;
-          return message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
+          return message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: buttons });
         }
         if (lfg.members.includes(reaction.user.id) && reaction.user.id !== interaction.member.id) {
           lfg.members.splice(lfg.members.indexOf(reaction.user.id), 1);
           lfg.vc = interaction.member.voice;
           lfg.edited = true;
-          return message.edit({ embeds: [new LFGEmbed(null, lfg)], components: buttons });
+          return message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: buttons });
         }
       }
       if (reaction.user.id === interaction.member.id && reaction.customId === 'lfg_end') {
         lfg.expiry = 0;
         lfg.edited = true;
-        await message.edit({ embeds: [new LFGEmbed(null, lfg)], components: [] });
+        await message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: [] });
         collector.stop('ended');
-        return null;
+        return undefined;
       }
-      return null;
+      return undefined;
     };
 
     collector.on('collect', reactionHandler);

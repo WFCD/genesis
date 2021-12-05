@@ -127,7 +127,7 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
       const baseMsg = process.env.BASE_PRES_MSG || `@${this.client.user.username} help`;
       const activity = process.env.BASE_PRES_ACT || 'PLAYING';
 
-      const wfPresence = games.includes('WARFRAME') ? await this.getWarframePresence(baseMsg) : null;
+      const wfPresence = games.includes('WARFRAME') ? await this.getWarframePresence(baseMsg) : undefined;
       const presence = wfPresence || baseMsg;
       this.client.user.setPresence({
         status: 'online',
