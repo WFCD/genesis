@@ -1,6 +1,6 @@
 {
   "name": "genesis",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Warframe bot for your Discord server or clan :star:",
   "main": "main.js",
   "private": true,
@@ -94,7 +94,9 @@
   "eslintConfig": {
     "extends": "airbnb-base",
     "parser": "@babel/eslint-parser",
-    "plugins": ["no-null"],
+    "plugins": [
+      "no-null"
+    ],
     "parserOptions": {
       "sourceType": "script",
       "babelOptions": {
