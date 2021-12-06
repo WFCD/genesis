@@ -25,6 +25,7 @@ jobs:
           extra_plugins: |
             @eclass/semantic-release-sentry-releases
             @semantic-release/git
+            @semantic-release/changelog
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
