@@ -179,10 +179,19 @@
       ],
       "@semantic-release/github",
       [
+        "@semantic-release/changelog",
+        {
+          "assets": [
+            "CHANGELOG.md"
+          ]
+        }
+      ],
+      [
         "@semantic-release/git",
         {
           "assets": [
-            "package.json"
+            "package.json",
+            "CHANGELOG.md"
           ]
         }
       ],
