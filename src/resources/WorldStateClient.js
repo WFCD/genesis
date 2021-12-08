@@ -143,8 +143,10 @@ module.exports = class WorldStateClient {
 
   async g(endpoint, platform = 'pc', language = 'en') {
     this.#logger.silly(`fetching ${endpoint}`);
-    if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE).includes(endpoint)) {
-      this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
+    if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE)
+      .concat(Object.values(WorldStateClient.ENDPOINTS.SEARCH))
+      .includes(endpoint)) {
+      this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE or ENDPOINTS.SEARCH`);
       return undefined;
     }
     return fetch(`${apiBase}/${endpoint}`, {
