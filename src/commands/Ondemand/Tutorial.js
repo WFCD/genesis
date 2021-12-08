@@ -1,11 +1,11 @@
 'use strict';
 
-const Command = require('../../models/Command.js');
+const WorldStateClient = require('../../resources/WorldStateClient');
 
 /**
  * Displays the response time for the bot and checks Warframe's servers to see if they are up
  */
-class FrameProfile extends Command {
+module.exports = class FrameProfile extends require('../../models/Command.js') {
   /**
    * Constructs a callable command
    * @param {Genesis} bot The bot object
@@ -26,13 +26,13 @@ class FrameProfile extends Command {
 
     if (query) {
       query = query.trim().toLowerCase();
-      const results = await this.ws.search(this.ws.ENDPOINTS.WORLDSTATE.TUTORIALS, query);
+      const results = await this.ws.search(WorldStateClient.ENDPOINTS.WORLDSTATE.TUTORIALS, query);
       if (results.length > 0) {
         await Promise.all(results.map(tutorial => message.reply({ content: `Warframe Tutorial | ${tutorial.name}: ${tutorial.url}` })));
         return this.constructor.statuses.SUCCESS;
       }
     }
-    const tutorials = await this.ws.g(this.ws.ENDPOINTS.WORLDSTATE.TUTORIALS);
+    const tutorials = await this.ws.g(WorldStateClient.ENDPOINTS.WORLDSTATE.TUTORIALS);
     const embed = {
       title: 'Available Tutorials',
       fields: [{ name: '\u200B', value: tutorials.map(tutorial => tutorial.name).join('\n') }],
@@ -44,6 +44,4 @@ class FrameProfile extends Command {
     await message.reply({ embeds: [embed] });
     return this.constructor.statuses.FAILURE;
   }
-}
-
-module.exports = FrameProfile;
+};

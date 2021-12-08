@@ -395,7 +395,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
             await ctx.settings.removeGuild(guild.id);
             await Promise
               .all(guild.channels.cache
-                .map(channel => this.settings.stopTracking(channel)));
+                .map(channel => ctx.settings.stopTracking(channel)));
             return interaction.editReply('server-wide purge complete');
           default:
             break;

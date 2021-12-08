@@ -471,7 +471,6 @@ module.exports = class Settings extends require('../../models/Interaction') {
             avatar: ctx.settings.defaults.avatar,
             reason: 'Automated Webhook setup for Notifications',
           });
-          ctx.logger.error(webhook.url);
         } catch (e) {
           ctx.logger.error(e);
           await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to make new.`);
