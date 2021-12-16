@@ -32,7 +32,7 @@ module.exports = class WorldStateClient {
         if (!WorldStateClient.#weapons) {
           WorldStateClient.#weapons = await fetch(`${apiBase}/weapons`);
           const misc = (await fetch(`${apiBase}/items`))
-            .filter(i => i.uniqueName.includes('OperatorAmplifiers'));
+            .filter(i => i?.uniqueName?.includes('OperatorAmplifiers'));
           WorldStateClient.#weapons.push(...misc);
         }
       }());
