@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/wfcd/genesis/compare/v1.0.4...v1.0.5) (2021-12-16)
+
+
+### Bug Fixes
+
+* **worldstate:** check for uniqueName ([130531a](https://github.com/wfcd/genesis/commit/130531acd3a4cec42d886360bcf7beda6bb65661))
+
 ## [1.0.4](https://github.com/wfcd/genesis/compare/v1.0.3...v1.0.4) (2021-12-08)
 
 
