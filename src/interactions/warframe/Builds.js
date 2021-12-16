@@ -317,7 +317,6 @@ module.exports = class Builds extends require('../../models/Interaction') {
         } else {
           build = new Build(params, ctx.ws);
         }
-        ctx.logger.info(JSON.stringify(build.toJson()));
         await ctx.settings.saveBuild(build.toJson());
         const pages = this.#buildEmbedsForBuild(build, ctx);
         return pages.length < 26
