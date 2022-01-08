@@ -44,7 +44,7 @@
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.3",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "cron": "^1.8.2",
     "decache": "^4.6.0",
     "discord-api-types": "^0.22.0",
