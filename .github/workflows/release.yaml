@@ -51,7 +51,7 @@ jobs:
             IdentityFile ~/.ssh/prod.key
             StrictHostKeyChecking no
           Host worker
-            HostName $SSH_HOST_HOST
+            HostName $SSH_WORKER_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/prod.key
             StrictHostKeyChecking no
