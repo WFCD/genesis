@@ -398,14 +398,16 @@ module.exports = class Settings extends require('../../models/Interaction') {
         ? options.getChannel('channel')
         : interaction.channel;
 
-      if (clear && remove?.length) {
-        for (const unping of remove) {
-          await ctx.settings.removePing(interaction.guild, unping);
+      if (clear && Object.keys(remove)?.length) {
+        for (const type of Object.keys(remove)) {
+          for (const unping of remove[type]) {
+            await ctx.settings.removePing(interaction.guild, unping);
+          }
         }
-        return interaction.reply({ content: ctx.i18n`Removed pings for ${remove.length} trackables.`, ephemeral: ctx.ephemerate });
+        return interaction?.editReply?.({ content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`, ephemeral: ctx.ephemerate });
       }
       if (clear && !remove?.length) {
-        return interaction.reply({ content: ctx.i18n`Specify trackables to remove the prepend for.`, ephemeral: ctx.ephemerate });
+        return interaction?.editReply?.({ content: ctx.i18n`Specify trackables to remove the prepend for.`, ephemeral: ctx.ephemerate });
       }
       if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events);
       if (add?.items?.length) await ctx.settings.trackItems(channel, add.items);

@@ -16,7 +16,7 @@ const Database = require('../../settings/Database');
 
 const platformChoices = require('../../resources/platformMap.json');
 const localeChoices = require('../../resources/localeMap.json');
-const { createPagedInteractionCollector } = require('../../CommonFunctions');
+const { createPagedInteractionCollector, createChunkedEmbed } = require('../../CommonFunctions');
 
 const getMentions = (content, guild) => content
   .trim()
@@ -296,8 +296,17 @@ const gather = async (ctx, channel) => {
 
   const events = await ctx.settings.getTrackedEventTypes(channel);
   const trackedEvents = constructTypeEmbeds(events);
+
+  // Guild Pings
+  const guildPings = await ctx.settings.getPingsForGuild(channel.guild);
+  const pingParts = guildPings
+    .filter(obj => obj.thing && obj.text)
+    .map(obj => `**${obj.thing}**: ${obj.text}`)
+    .join('\n');
+
   checkAndMergeEmbeds(embeds, trackedItems);
   checkAndMergeEmbeds(embeds, trackedEvents);
+  checkAndMergeEmbeds(embeds, createChunkedEmbed(pingParts, 'Pings', '\n'));
 
   const stats = await ctx.settings.getGuildStats(channel.guild);
   embeds.push(new MessageEmbed({

@@ -153,7 +153,7 @@ Object.keys(missionTypes).forEach((type) => {
       if (!trackableEvents[`arbitration.${faction}`]) trackableEvents[`arbitration.${faction}`] = [];
       trackableEvents[`arbitration.${faction}`].push(`arbitration.${faction}.${type}`);
       if (!trackableEvents[`arbitration.${type}`]) trackableEvents[`arbitration.${type}`] = [];
-      trackableEvents[`arbitration.${faction}`].push(`arbitration.${faction}.${type}`);
+      trackableEvents[`arbitration.${type}`].push(`arbitration.${faction}.${type}`);
 
       arbiTemp.push(`arbitration.${faction}.${type}`);
     });
