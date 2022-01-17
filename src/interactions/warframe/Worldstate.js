@@ -267,7 +267,6 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       case 'cetusCycle':
       case 'vallisCycle':
       case 'cambionCycle':
-      case 'voidTrader':
       case 'dailyDeals':
       case 'constructionProgress':
       case 'nightwave':
@@ -278,7 +277,17 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         }
         embed = new MessageEmbed(new embeds[field](undefined, data, platform, ctx.i18n));
         return interaction.editReply({ embeds: [embed] });
-
+      case 'voidTrader':
+        if (!data.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        embed = new MessageEmbed(new embeds[field](undefined, data, platform, true));
+        pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
+          const tembed = { ...embed };
+          tembed.fields = fieldGroup;
+          return tembed;
+        });
+        return interaction.editReply({ embeds: pages });
       case 'news':
         category = category === 'news' ? undefined : category;
       case 'conclaveChallenges':
