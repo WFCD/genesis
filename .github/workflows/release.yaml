@@ -34,3 +34,47 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
+  deploy:
+    # Built from https://blog.benoitblanchon.fr/github-action-run-ssh-commands/
+    runs-on: ubuntu-latest
+    needs: [ semantic-release ]
+    steps:
+      - name: Configure
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/prod.key
+          chmod 600 ~/.ssh/prod.key
+          cat >>~/.ssh/config <<END
+          Host bot
+            HostName $SSH_BOT_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/prod.key
+            StrictHostKeyChecking no
+          Host worker
+            HostName $SSH_HOST_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/prod.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
+          SSH_WORKER_HOST: ${{ secrets.SSH_BOT_HOST }}
+          DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+      - name: Stop Bot Process
+        run: ssh bot 'source ~/.zshrc && pm2 kill'
+      - name: Update Bot server
+        run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
+      - name: Update Bot dependencies
+        run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
+      - name: Start Bot Process
+        run: ssh bot 'source ~/.zshrc && cd ~/genesis && npm run start'
+      - name: Stop Worker Process
+        run: ssh worker 'source ~/.zshrc && pm2 kill'
+      - name: Update Worker server
+        run: ssh worker 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
+      - name: Update Bot dependencies
+        run: ssh worker 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
+      - name: Start Bot Process
+        run: ssh worker 'source ~/.zshrc && cd ~/genesis && npm run start:worker'
