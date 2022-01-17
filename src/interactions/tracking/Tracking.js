@@ -67,7 +67,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
   }
 
   static async commandHandler(interaction, ctx) {
-    await interaction?.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction?.deferReply({ ephemeral: false });
     const { options } = interaction;
     const action = options?.getSubcommand();
     if (action === 'manage') {
@@ -217,6 +217,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
       const message = await interaction.editReply({
         content: chunks[page],
         components: createGroupsRow(),
+        ephemeral: false,
       });
 
       const groupCollector = new InteractionCollector(interaction.client, {

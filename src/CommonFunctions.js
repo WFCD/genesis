@@ -150,6 +150,11 @@ Object.keys(missionTypes).forEach((type) => {
   // These will be re-enabled when arbitrations/kuva are ready
   if (missionTypes[type].arbi) {
     factions.forEach((faction) => {
+      if (!trackableEvents[`arbitration.${faction}`]) trackableEvents[`arbitration.${faction}`] = [];
+      trackableEvents[`arbitration.${faction}`].push(`arbitration.${faction}.${type}`);
+      if (!trackableEvents[`arbitration.${type}`]) trackableEvents[`arbitration.${type}`] = [];
+      trackableEvents[`arbitration.${faction}`].push(`arbitration.${faction}.${type}`);
+
       arbiTemp.push(`arbitration.${faction}.${type}`);
     });
   }
