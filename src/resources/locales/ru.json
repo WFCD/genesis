@@ -81,9 +81,9 @@
   "Giveaway `{0}` failed to reroll or doesn't exist": "Giveaway `{0}` failed to reroll or doesn't exist",
   "Message parameters `[{0}, {1}, {2}, {3}]` were invalid. Please retry.": "Message parameters `[{0}, {1}, {2}, {3}]` were invalid. Please retry.",
   "Giveaway `{0}` failed to stop or doesn't exist": "Giveaway `{0}` failed to stop or doesn't exist",
-  "Anywhere": "Anywhere",
-  "Any Time": "Any Time",
-  "Anything": "Anything",
-  "No builds for user": "No builds for user",
-  "No field": "You somehow didn't provide the worldstate field you're looking for..."
+  "Anywhere": "Везде",
+  "Any Time": "В любое время",
+  "Anything": "Любой",
+  "No builds for user": "Нет сборки для пользователя",
+  "No field": "Вы почему-то не указали искомое поле worldstate..."
 }
