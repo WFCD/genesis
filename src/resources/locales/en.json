@@ -11,6 +11,8 @@
   "[{0}] Worldstate - Sortie": "[{0}] Sortie",
   "[{0}] Acolytes": "[{0}] Acolytes",
   "[{0}] {1}": "[{0}] {1}",
+  "[{0}] Popular Sales": "[{0}] Popular Sales",
+  "[{0}] Featured Deal": "[{0}] Featured Deal",
   "{0} Credits": "{0} Credits",
   "{0} {1} on {2}": "{0} {1} on {2}",
   "{0} {1}": "{0} {1}",
@@ -202,5 +204,14 @@
   "Riven: {0}": "Riven: {0}",
   "**Use the `{0}join` command to join a role**": "**Use the `{0}join` command to join a role**",
   "Use the `{0}add role <role>` command to make a role joinable.": "Use the `{0}add role <role>` command to make a role joinable.",
-  "Joinable Roles": "Joinable Roles"
+  "Joinable Roles": "Joinable Roles",
+  "{0}, {1} {2}% off": "{0}, {1} {2}% off",
+  "Expires in {0}": "Expires in {0}",
+  "Fades at": "Fades at",
+  "Settings for {0}": "Settings for {0}",
+  "Settings for DM with {0}": "Settings for DM with {0}",
+  "Warframe - Shields": "Warframe - Shields",
+  "Shield calcuclation": "Shield calculation",
+  "At level {0}, your enemy would have {1} shields}": "At level {0}, your enemy would have {1} shields}",
+  "[{0}] Worldstate - Sanctuary": "[{0}] Worldstate - Sanctuary"
 }
