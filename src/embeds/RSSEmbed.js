@@ -10,7 +10,6 @@ const logger = require('../Logger');
  */
 class RSSEmbed extends BaseEmbed {
   /**
-   * @param {Logger} bot.logger - Logger instance for this bot
    * @param {Object} feedItem - feed item
    * @param {Object} feed - Configured Feed details providing the key and defaults
    */
@@ -18,7 +17,7 @@ class RSSEmbed extends BaseEmbed {
     super();
     // clean up description, falling back to an empty string
     let strippedDesc = markdinate((feedItem.description || '\u200B')
-      .replace(/\<\\?string\>/ig, ''));
+      .replace(/<\\?string>/ig, ''));
     const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
 
     if (feedItem.title.includes(firstLine)) {
