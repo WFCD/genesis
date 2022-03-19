@@ -3,23 +3,12 @@
 const SQL = require('sql-template-strings');
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const CustomCommand = require('../../models/CustomCommand.js');
 
 /**
  * Database Mixin for custom command queries
  * @mixin
  */
 module.exports = class CustomCommandQueries {
-  async getCustomCommands() {
-    const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardTotal} in (${this.bot.shards})`;
-    const res = await this.query(query);
-    if (res[0]) {
-      return res[0]
-        .map(value => new CustomCommand(this.bot, value.command, value.response, value.guild_id));
-    }
-    return [];
-  }
-
   /**
    * Get raw custom commands for specified guild
    * @param {string} guildId guild identifier
@@ -100,7 +89,10 @@ module.exports = class CustomCommandQueries {
     const [rows] = await this.query(query);
     if (rows) {
       return rows
-        .map(row => new CustomCommand(this.bot, row.command, row.response, row.guild_id));
+        .map(row => ({
+          call: row.command,
+          response: row.response,
+        }));
     }
     return [];
   }
