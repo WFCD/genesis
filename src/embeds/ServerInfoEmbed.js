@@ -28,10 +28,9 @@ const verifications = {
  */
 class ServerInfoEmbed extends require('./BaseEmbed.js') {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Guild} guild - The sales to be displayed as featured or popular
    */
-  constructor(bot, guild) {
+  constructor(guild) {
     super();
 
     this.title = guild.name;
