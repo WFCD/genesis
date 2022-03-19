@@ -16,13 +16,12 @@ const createGroupedArray = (arr, chunkSize) => {
  */
 class NewsEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<News>} news - The news to be included in the embed
    * @param {string} type - [Optional] type of embed between news, updates,
    *                        or prime access. Not provided for news.
    * @param {string} platform - platform
    */
-  constructor(bot, news, type, platform) {
+  constructor(news, { type, platform }) {
     super();
 
     news.sort((a, b) => {
@@ -53,8 +52,7 @@ class NewsEmbed extends BaseEmbed {
         ]
           .filter(a => !!a)
           .join(' ');
-        const betterNews = `[${timeTokens}] [${n.message}](${n.link.split('?')[0]})`;
-        return betterNews;
+        return `[${timeTokens}] [${n.message}](${n.link.split('?')[0]})`;
       }), 7);
     if (type) {
       if (type === 'update') {

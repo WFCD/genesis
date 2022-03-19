@@ -10,12 +10,11 @@ const invasionThumb = `${assetBase}img/invasion.png`;
  */
 class InvasionEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
    * @param {Object} i18n - internationalization template function
    */
-  constructor(bot, invasions, platform, i18n) {
+  constructor(invasions, { platform, i18n }) {
     super();
 
     this.color = 0x3498db;

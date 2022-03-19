@@ -5,7 +5,7 @@ const { assetBase } = require('../CommonFunctions');
 const arbiThumb = `${assetBase}/img/arbitrations.png`;
 
 module.exports = class ArbitrationEmbed extends require('./BaseEmbed.js') {
-  constructor(bot, arbitration, platform, i18n) {
+  constructor(arbitration, { platform, i18n }) {
     super();
     this.thumbnail.url = arbiThumb;
     this.color = 0x742725;

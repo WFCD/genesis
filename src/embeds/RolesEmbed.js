@@ -5,17 +5,15 @@ const BaseEmbed = require('./BaseEmbed.js');
 /**
  * Generates enemy embeds
  */
-class RolesEmbed extends BaseEmbed {
+module.exports = class RolesEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Array.<Role>>} roleGroups - An array of an array of roles allowed to be used
    * @param {string} prefix - prefix for the command
    * @param {number} longest - length of longest name so that all are aligned
    */
-  constructor(bot, roleGroups, prefix, longest) {
-    super(bot);
-    this.title = 'Joinable Roles';
-    this.type = 'rich';
+  constructor(roleGroups, { prefix, longest, i18n }) {
+    super();
+    this.title = i18n`Joinable Roles`;
     this.color = 0x779ECB;
     this.fields = [];
     roleGroups.forEach((roleGroup) => {
@@ -31,9 +29,7 @@ class RolesEmbed extends BaseEmbed {
 
     this.fields.push({
       name: '\u200B',
-      value: roleGroups.length ? `**Use the \`${prefix}join\` command to join a role**` : `Use the \`${prefix}add role <role>\` command to make a role joinable.`,
+      value: roleGroups.length ? i18n`**Use the \`${prefix}join\` command to join a role**` : i18n`Use the \`${prefix}add role <role>\` command to make a role joinable.`,
     });
   }
-}
-
-module.exports = RolesEmbed;
+};

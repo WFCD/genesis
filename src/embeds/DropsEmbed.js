@@ -4,11 +4,11 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const { createGroupedArray } = require('../CommonFunctions.js');
 
-class DropsEmbed extends BaseEmbed {
-  constructor(bot, drops) {
-    super(bot);
+module.exports = class DropsEmbed extends BaseEmbed {
+  constructor(drops, { i18n }) {
+    super();
     if (!drops || !drops.length) {
-      this.description = 'No drops';
+      this.description = i18n`No drops`;
       return;
     }
     const longest = (drops.length ? drops.map(result => result.location)
@@ -28,6 +28,4 @@ class DropsEmbed extends BaseEmbed {
       inline: false,
     }));
   }
-}
-
-module.exports = DropsEmbed;
+};

@@ -11,15 +11,11 @@ const BaseEmbed = require('./BaseEmbed.js');
  * @property {string} footer         - String for the footer
  */
 
-/**
- * Generates LFG embeds
- */
 class LogEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Log} log - LFG Options
    */
-  constructor(bot, log) {
+  constructor(log) {
     super();
     this.color = log.color;
     this.title = log.title;

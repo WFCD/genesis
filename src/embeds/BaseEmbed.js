@@ -11,7 +11,7 @@ const defaults = {
  * Utility class for making rich embeds
  */
 class BaseEmbed extends MessageEmbed {
-  constructor(bot) {
+  constructor() {
     super({
       url: defaults.url,
       description: '_ _',
@@ -24,9 +24,6 @@ class BaseEmbed extends MessageEmbed {
         url: undefined,
       },
     });
-    if (bot) {
-      this.bot = bot;
-    }
   }
 }
 

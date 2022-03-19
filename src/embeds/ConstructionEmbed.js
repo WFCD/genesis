@@ -7,19 +7,18 @@ const BaseEmbed = require('./BaseEmbed.js');
  */
 class ConstructionEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Construction} constructionProgress - The current construction information
    * @param {string} platform - The platform the event is for
    */
-  constructor(bot, constructionProgress, platform) {
+  constructor(constructionProgress, { platform, i18n }) {
     super();
 
     this.color = 0xff6961;
     this.fields = [{
-      name: `[${platform.toUpperCase()}] Construction Status:`,
-      value: `\`Razorback: ${constructionProgress.razorbackProgress}\`\n`
-      + `\`Fomorian:  ${constructionProgress.fomorianProgress}\`\n`
-      + `\`Unknown:   ${constructionProgress.unknownProgress}\``,
+      name: i18n`[${platform.toUpperCase()}] Construction Status:`,
+      value: i18n`\`Razorback: ${constructionProgress.razorbackProgress}\`
+\`Fomorian:  ${constructionProgress.fomorianProgress}\`
+\`Unknown:   ${constructionProgress.unknownProgress}\``,
     }];
   }
 }

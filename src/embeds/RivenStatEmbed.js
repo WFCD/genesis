@@ -2,17 +2,13 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-/**
- * Generates enemy embeds
- */
-class RivenStatEmbed extends BaseEmbed {
+module.exports = class RivenStatEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Object} rivenResult details to derive data from
    * @param {string} resultKey The query that this search corresponds to
    * @param {fn}  i18n internationalization function to give string in apprpriate language
    */
-  constructor(bot, rivenResult, resultKey, i18n) {
+  constructor(rivenResult, { resultKey, i18n }) {
     super();
     this.thumbnail = {
       url: 'https://i.imgur.com/luKxF3t.png',
@@ -97,6 +93,4 @@ class RivenStatEmbed extends BaseEmbed {
     this.title = i18n`Riven: ${resultKey}`;
     this.color = 0x84659F;
   }
-}
-
-module.exports = RivenStatEmbed;
+};

@@ -8,11 +8,11 @@ const { emojify, assetBase } = require('../CommonFunctions');
  */
 class FrameEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Warframe} frame - The enhancement to send info on
    * @param {Array.<Warframe>} frames - List of available warframes
+   * @param {I18n} i18n internationalization template
    */
-  constructor(bot, frame, frames) {
+  constructor(frame, { frames, i18n }) {
     super();
 
     this.thumbnail = {
@@ -24,61 +24,61 @@ class FrameEmbed extends BaseEmbed {
       this.thumbnail.url = frame.wikiaThumbnail;
       this.description = `_${frame.description}_`;
       if (frame.location) {
-        this.footer = { text: `Drops from: ${frame.location}` };
+        this.footer = { text: i18n`Drops from: ${frame.location}` };
       }
       this.color = frame.color;
       this.fields = [
         (frame.url || frame.prime_url) ? {
-          name: 'Profile',
-          value: `[Frame Profile](${frame.url})${frame.prime_url ? `\n[Prime Intro](${frame.prime_url})` : ''}`,
+          name: i18n`Profile`,
+          value: i18n`[Frame Profile](${frame.url})${frame.prime_url ? i18n`\n[Prime Intro](${frame.prime_url})` : ''}`,
           inline: false,
         } : false,
         frame.passiveDescription ? {
-          name: 'Passive',
+          name: i18n`Passive`,
           value: `_${frame.passiveDescription}_`,
         } : false,
         {
-          name: 'Minimum Mastery',
-          value: `${frame.masteryReq || 'Unranked'} ${emojify('mastery_rank')}`,
+          name: i18n`Minimum Mastery`,
+          value: `${frame.masteryReq || i18n`Unranked`} ${emojify('mastery_rank')}`,
           inline: true,
         },
         {
-          name: 'Health',
+          name: i18n`Health`,
           value: frame.health || 'N/A',
           inline: true,
         },
         {
-          name: 'Shields',
+          name: i18n`Shields`,
           value: frame.shield || 'N/A',
           inline: true,
         },
         {
-          name: 'Armor',
+          name: i18n`Armor`,
           value: frame.armor || 'N/A',
           inline: true,
         },
         {
-          name: 'Power',
+          name: i18n`Power`,
           value: frame.power || 'N/A',
           inline: true,
         },
         {
-          name: 'Conclave',
+          name: i18n`Conclave`,
           value: emojify((frame.conclave ? 'green_tick' : 'red_tick') || 'N/A'),
           inline: true,
         },
         {
-          name: 'Aura',
-          value: emojify(frame.aura || 'No Aura'),
+          name: i18n`Aura`,
+          value: emojify(frame.aura || i18n`No Aura`),
           inline: true,
         },
         {
-          name: 'Polarities',
-          value: emojify(frame.polarities && frame.polarities.length > 0 ? frame.polarities.join(' ') : 'No polarities'),
+          name: i18n`Polarities`,
+          value: emojify(frame.polarities && frame.polarities.length > 0 ? frame.polarities.join(' ') : i18n`No polarities`),
           inline: true,
         },
         { // this is coming out too long, needs to be chunked
-          name: 'Abilities',
+          name: i18n`Abilities`,
           value: '**=============**',
         },
       ];
@@ -86,7 +86,7 @@ class FrameEmbed extends BaseEmbed {
       this.fields.push(...(frame?.abilities?.map(ability => ({ name: ability.name, value: `_${ability.description}_` })) || []));
       this.fields = this.fields.filter(field => field && field?.value?.length);
     } else {
-      this.title = 'Available Warframes';
+      this.title = i18n`Available Warframes`;
       this.fields = [{ name: '\u200B', value: frames.map(stat => stat.name).join('\n') }];
     }
   }

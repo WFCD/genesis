@@ -14,15 +14,14 @@ const compareCCategory = (c, category) => ((c.category === category.toLowerCase(
  */
 class ConclaveChallengeEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<ConclaveChallenge>} challenges - The challenges to be included in the embed
    * @param {string} category - The category of the challenges in the embed
    * @param {string} platform - The platform for the information
    */
-  constructor(bot, challenges, category, platform) {
+  constructor(challenges, { category, platform, i18n }) {
     super();
 
-    const categoryInValues = typeof category !== 'undefined' && values.indexOf(category.toLowerCase()) !== -1;
+    const categoryInValues = category && values.indexOf(category.toLowerCase()) !== -1;
     this.color = categoryInValues ? 0x00ff00 : 0xff0000;
     if (categoryInValues) {
       this.fields = challenges
@@ -33,7 +32,7 @@ class ConclaveChallengeEmbed extends BaseEmbed {
         }));
     } else {
       this.fields = [{
-        name: 'No such conclave category',
+        name: i18n`No such conclave category`,
         value: `Valid values: ${values.join(', ')}`,
       }];
     }

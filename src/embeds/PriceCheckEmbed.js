@@ -7,23 +7,20 @@ const BaseEmbed = require('./BaseEmbed.js');
  */
 class PriceCheckEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Attachment>} result - array of string results or attachments
    * @param {string} query - query that this is a result for
    */
-  constructor(bot, result, query) {
+  constructor(result, { query, i18n }) {
     super();
-    this.description = `Price query for ${query}`;
+    this.description = i18n`Price query for ${query}`;
     if (typeof result[0] === 'string') {
       this.color = 0xff0000;
       this.url = 'http://nexus-stats.com';
-      this.fields = [
-        {
-          name: '\u200B',
-          value: result[0],
-          inline: true,
-        },
-      ];
+      this.fields = [{
+        name: '\u200B',
+        value: result[0],
+        inline: true,
+      }];
       this.footer = {
         icon_url: 'https://staging.nexushub.co/img/brand/nexushub-logo-color.png',
         text: 'Pricechecks provided by Nexus Stats - https://nexus-stats.com',
@@ -31,7 +28,6 @@ class PriceCheckEmbed extends BaseEmbed {
     } else {
       const attachment = result[0];
       this.color = parseInt(attachment.color || '0', 10);
-      this.type = attachment.type;
       this.title = attachment.title;
       this.url = attachment.url;
       this.fields = attachment.fields;
@@ -42,7 +38,7 @@ class PriceCheckEmbed extends BaseEmbed {
       this.fields = [
         {
           name: '\u200B',
-          value: 'Due to the complexity of Riven mod generation and unveiling, price checks are not guaranteed or reliably provided.',
+          value: i18n`Due to the complexity of Riven mod generation and unveiling, price checks are not guaranteed or reliably provided.`,
           inline: true,
         },
       ];

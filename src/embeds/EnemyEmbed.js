@@ -4,35 +4,35 @@ const BaseEmbed = require('./BaseEmbed.js');
 
 const { emojify } = require('../CommonFunctions.js');
 
-class EnemyEmbed extends BaseEmbed {
-  constructor(bot, enemy) {
-    super(bot);
+module.exports = class EnemyEmbed extends BaseEmbed {
+  constructor(enemy, { i18n }) {
+    super();
     if (!enemy || !enemy.health) {
-      this.title = 'Invalid Query';
+      this.title = i18n`Invalid Query`;
       this.color = 0xff6961;
       this.footer = undefined;
       return;
     }
 
-    this.title = `${enemy.name} • ${enemy.type}`;
+    this.title = i18n`${enemy.name} • ${enemy.type}`;
     this.description = enemy.description;
     this.fields = [{
-      name: 'Health Base',
+      name: i18n`Health Base`,
       value: String(enemy.health),
       inline: true,
     }, {
-      name: 'Shield Base',
+      name: i18n`Shield Base`,
       value: String(enemy.shield),
       inline: true,
     }, {
-      name: 'Armor Base',
+      name: i18n`Armor Base`,
       value: String(enemy.armor),
       inline: true,
     }];
 
     enemy?.resistances?.forEach((resistance) => {
       const field = {
-        name: `Resistances for ${resistance.type} • ${resistance.amount}`,
+        name: i18n`Resistances for ${resistance.type} • ${resistance.amount}`,
         value: '',
         inline: true,
       };
@@ -49,6 +49,4 @@ class EnemyEmbed extends BaseEmbed {
       }
     });
   }
-}
-
-module.exports = EnemyEmbed;
+};
