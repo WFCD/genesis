@@ -7,7 +7,6 @@ const {
 } = Discord;
 
 const WorldStateClient = require('./resources/WorldStateClient');
-const CommandManager = require('./CommandManager');
 const EventHandler = require('./EventHandler');
 
 const MessageManager = require('./settings/MessageManager');
@@ -50,12 +49,10 @@ module.exports = class Genesis {
    * @param  {Logger}           logger               The logger object
    * @param  {string}           [prefix]     Prefix for calling the bot
    * @param  {number[]}         [shards]     Ids of shards to control
-   * @param  {Object}           [commandManifest] Manifest of commands
    */
   constructor(discordToken, {
     prefix = process.env.PREFIX,
     owner = undefined,
-    commandManifest = undefined,
     shards = [0],
   } = {}) {
     /**
@@ -125,17 +122,6 @@ module.exports = class Genesis {
 
     this.ws = new WorldStateClient(this.logger);
     this.messageManager = new MessageManager(this);
-
-    /**
-     * Command handler for this Bot
-     * @type {CommandManager}
-     * @private
-     */
-    this.commandManager = new CommandManager(this, commandManifest.map((cmd) => {
-      // eslint-disable-next-line no-param-reassign
-      cmd.regex = new RegExp(cmd.regex.body, cmd.regex.flags);
-      return cmd;
-    }));
 
     /**
      * Handles events, such as member joins, bans, delets, etc.
