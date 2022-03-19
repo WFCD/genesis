@@ -10,13 +10,12 @@ const chStringSingle = challenge => `**${challenge.title}** _(${challenge.reputa
  */
 module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Nightwave} nightwave - The nightwave data for the current season
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(bot, nightwave, platform, i18n) {
-    super(bot);
+  constructor(nightwave, { platform, i18n }) {
+    super();
 
     this.thumbnail = {
       url: 'https://i.imgur.com/yVcWOPp.png',
@@ -71,7 +70,7 @@ module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
           });
         });
 
-      this.footer.text = `${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `;
+      this.footer.text = i18n`${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = nightwave.activeChallenges[0].expiry;
     } else {
       const challenge = nightwave.activeChallenges[0];
@@ -79,7 +78,7 @@ module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
       if (challenge.isElite) {
         this.title = i18n`[${platform.toUpperCase()}] Worldstate - Elite Nightwave`;
       }
-      this.footer.text = `${timeDeltaToString(new Date(challenge.expiry).getTime() - Date.now())} remaining • Expires `;
+      this.footer.text = i18n`${timeDeltaToString(new Date(challenge.expiry).getTime() - Date.now())} remaining • Expires `;
       this.timestamp = challenge.expiry;
     }
   }

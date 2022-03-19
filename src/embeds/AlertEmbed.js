@@ -10,12 +10,11 @@ const alertThumb = `${assetBase}/img/alert.png`;
  */
 class AlertEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Alert>} alerts - The alerts to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(bot, alerts, platform, i18n) {
+  constructor(alerts, { platform, i18n }) {
     super();
 
     this.thumbnail = {
@@ -39,17 +38,17 @@ class AlertEmbed extends BaseEmbed {
 
       this.fields = [];
       if (this.description !== summary) {
-        this.fields.push({ name: 'Mission', value: i18n`${a.mission.faction} ${a.mission.type}`, inline: true });
-        this.fields.push({ name: 'Location', value: a.mission.node, inline: true });
+        this.fields.push({ name: i18n`Mission`, value: i18n`${a.mission.faction} ${a.mission.type}`, inline: true });
+        this.fields.push({ name: i18n`Location`, value: a.mission.node, inline: true });
       }
       this.fields.push({ name: 'Levels:', value: `${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`, inline: true });
 
-      this.fields.push({ name: 'Archwing Required', value: a.mission.archwingRequired ? i18n`Yes` : i18n`No`, inline: true });
+      this.fields.push({ name: i18n`Archwing Required`, value: a.mission.archwingRequired ? i18n`Yes` : i18n`No`, inline: true });
 
       if (this.title.indexOf('Cr') === -1) {
-        this.fields.push({ name: '\u200B', value: `**Credits:** ${a.mission.reward.credits}`, inline: true });
+        this.fields.push({ name: '\u200B', value: i18n`**Credits:** ${a.mission.reward.credits}`, inline: true });
       }
-      this.footer.text = `${a.eta} remaining • Expires `;
+      this.footer.text = i18n`${a.eta} remaining • Expires `;
       this.timestamp = a.expiry;
     }
   }

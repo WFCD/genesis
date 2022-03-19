@@ -13,7 +13,7 @@ const rarity = {
 };
 
 class ModEmbed extends BaseEmbed {
-  constructor(bot, modData) {
+  constructor(modData, { i18n }) {
     super();
 
     this.title = modData.name;
@@ -36,27 +36,27 @@ class ModEmbed extends BaseEmbed {
       url: `${apiCdnBase}img/${modData.imageName}`,
     };
     this.fields = [{
-      name: 'Polarity',
+      name: i18n`Polarity`,
       value: emojify(modData.polarity.toLowerCase()),
       inline: true,
     }, {
-      name: 'Max Rank',
+      name: i18n`Max Rank`,
       value: String(modData.fusionLimit),
       inline: true,
     }, {
-      name: 'Type',
+      name: i18n`Type`,
       value: String(modData.type),
       inline: true,
     }, {
-      name: 'Rarity',
+      name: i18n`Rarity`,
       value: modData.rarity,
       inline: true,
     }, {
-      name: 'Base Drain',
+      name: i18n`Base Drain`,
       value: String(Math.abs(modData.baseDrain)),
       inline: true,
     }, {
-      name: 'Tradeable',
+      name: i18n`Tradable`,
       value: emojify(modData.tradable ? 'green_tick' : 'red_tick'),
       inline: true,
     }];

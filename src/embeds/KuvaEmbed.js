@@ -10,12 +10,11 @@ const kuvaThumb = `${assetBase}/img/kuva.png`;
  */
 class KuvaEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Alert>} kuver - The kuva missions to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(bot, kuver, platform, i18n) {
+  constructor(kuver, { platform, i18n }) {
     super();
 
     this.thumbnail = {
