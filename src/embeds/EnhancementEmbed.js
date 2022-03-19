@@ -11,16 +11,8 @@ const colors = {
   rare: 0xC8BE92,
 };
 
-/**
- * Generates enemy embeds
- */
-class EnhancementEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Enhancement} enhancement - The enhancement to send info on
-   * @param {Array.<Enhancement>} enhancements - The enhancement to send info on
-   */
-  constructor(bot, enhancement, enhancements) {
+module.exports = class EnhancementEmbed extends BaseEmbed {
+  constructor(enhancement, { enhancements }) {
     super();
 
     this.thumbnail = {
@@ -53,6 +45,4 @@ class EnhancementEmbed extends BaseEmbed {
       this.fields = [{ name: '\u200B', value: enhancements.map(profile => profile.name).join('\n') }];
     }
   }
-}
-
-module.exports = EnhancementEmbed;
+};

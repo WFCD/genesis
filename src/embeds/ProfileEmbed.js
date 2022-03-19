@@ -48,10 +48,10 @@ const mrSigil = [
  */
 class ProfileEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Object} player - The enhancement to send info on
+   * @param {I18n} i18n internationalization template
    */
-  constructor(bot, player) {
+  constructor(player, { i18n }) {
     super();
 
     if (player && typeof player !== 'undefined' && player.name) {
@@ -99,34 +99,34 @@ class ProfileEmbed extends BaseEmbed {
 
       this.fields.push(
         {
-          name: 'Mastery',
+          name: i18n`Mastery`,
           value: `${player.mastery.rank.number} - ${player.mastery.rank.name}`,
           inline: true,
         },
         {
-          name: 'Current Mastery',
+          name: i18n`Current Mastery`,
           value: player.mastery.xp,
           inline: true,
         },
         {
-          name: 'Next Rank',
-          value: `${player.mastery.xpUntilNextRank} until **${player.mastery.rank.next}**`,
+          name: i18n`Next Rank`,
+          value: i18n`${player.mastery.xpUntilNextRank} until **${player.mastery.rank.next}**`,
           inline: true,
         },
         {
-          name: 'Clan',
+          name: i18n`Clan`,
           value: player.clan.type ? `${player.clan.name}\nRank **${player.clan.rank}** ${player.clan.type}` : player.clan.name,
           inline: true,
         },
         {
-          name: 'Marked for Death',
-          value: markedTokens.length ? markedTokens.join('') : 'Unmarked',
+          name: i18n`Marked for Death`,
+          value: markedTokens.length ? markedTokens.join('') : i18n`Unmarked`,
           inline: true,
         },
       );
-      this.footer.text = `Last Updated ${new Date(player.updatedAt).toLocaleString()} UTC | Data provided by Nexus-Stats.com`;
+      this.footer.text = i18n`Last Updated ${new Date(player.updatedAt).toLocaleString()} UTC`;
     } else {
-      this.fields = [{ name: '\u200B', value: 'No Such Player' }];
+      this.fields = [{ name: '\u200B', value: i18n`No Such Player` }];
     }
   }
 }

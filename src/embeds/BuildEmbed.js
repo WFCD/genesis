@@ -7,10 +7,9 @@ const BaseEmbed = require('./BaseEmbed.js');
  */
 class BuildEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Build} build - The alerts to be included in the embed
    */
-  constructor(bot, build) {
+  constructor(build) {
     super();
     const sections = build.body.split(';');
     this.color = 0xF1C40F;

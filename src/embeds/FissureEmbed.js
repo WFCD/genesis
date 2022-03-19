@@ -10,14 +10,13 @@ const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissu
  */
 class FissureEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Fissure>} fissures - The fissures to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n internationalization function
    * @param {string} era Era to override title
    */
-  constructor(bot, fissures, platform, i18n, era) {
-    super(bot);
+  constructor(fissures, { platform, i18n, era }) {
+    super();
 
     if (fissures.length > 1) {
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Fissures`;
@@ -44,7 +43,7 @@ class FissureEmbed extends BaseEmbed {
       this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
       this.description = i18n`${f.node} against ${f.enemy}`;
       this.footer.text = i18n`${f.eta} remaining • Expires `;
-      this.timestamp = new Date(f.expiry);
+      this.timestamp = new Date(f.expiry).getTime();
       this.thumbnail.url = fissureThumb;
     }
 
