@@ -10,12 +10,14 @@ const invasionThumb = `${assetBase}img/invasion.png`;
  */
 class InvasionEmbed extends BaseEmbed {
   /**
-   * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
+   * @param {Array.<Invasion>|Invasion} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
    * @param {Object} i18n - internationalization template function
+   * @param {string} locale locale
    */
   constructor(invasions, { platform, i18n, locale }) {
     super(locale);
+    if (!Array.isArray(invasions)) invasions = [invasions];
 
     this.color = 0x3498db;
     this.url = `${wikiBase}Invasion`;
