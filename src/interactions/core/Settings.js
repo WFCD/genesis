@@ -481,7 +481,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
         embed.addField('General Ids', `Guild: \`${interaction.guild.id}\`\nChannel: \`${interaction.channel.id}\``);
 
         embed.setTimestamp(new Date());
-        embed.setFooter(`Uptime: ${timeDeltaToString(interaction.client.uptime)} `);
+        embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });
 
         return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
       default:

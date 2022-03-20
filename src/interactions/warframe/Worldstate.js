@@ -250,8 +250,9 @@ module.exports = class WorldState extends require('../../models/Interaction') {
 
           Object.keys(eras).forEach((eraKey) => {
             // eslint-disable-next-line new-cap
-            pages.push(new embeds.fissures(undefined, eras[eraKey],
-              platform, ctx.i18n, eras[eraKey][0].tier));
+            pages.push(new embeds.fissures(eras[eraKey], {
+              platform, i18n: ctx.i18n, era: eras[eraKey][0].tier,
+            }));
           });
           return createDynamicInteractionCollector(interaction, pages, ctx);
         }
@@ -260,7 +261,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!compact) {
           return createDynamicInteractionCollector(interaction,
             // eslint-disable-next-line new-cap
-            data.map(a => new embeds[field](undefined, [a], platform, ctx.i18n)), ctx);
+            data.map(a => new embeds[field]([a], { platform, i18n: ctx.i18n })), ctx);
         }
       case 'arbitration':
       case 'earthCycle':
@@ -275,13 +276,15 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](undefined, data, platform, ctx.i18n));
+        embed = new MessageEmbed(new embeds[field](data, { platform, i18n: ctx.i18n }));
         return interaction.editReply({ embeds: [embed] });
       case 'voidTrader':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](undefined, data, platform, true));
+        embed = new MessageEmbed(new embeds[field](data, {
+          platform, onDemand: true, i18n: ctx.i18n,
+        }));
         pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
           const tembed = { ...embed };
           tembed.fields = fieldGroup;
@@ -295,14 +298,14 @@ module.exports = class WorldState extends require('../../models/Interaction') {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
         pages = createGroupedArray(data, 20)
-          .map(group => new embeds[field](undefined, group, category, platform, ctx.i18n));
+          .map(group => new embeds[field](group, { category, platform, i18n: ctx.i18n }));
         return interaction.editReply({ embeds: pages });
       case 'events':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
         pages = data.map(datum => new MessageEmbed(
-          new embeds[field](undefined, datum, platform, ctx.i18n),
+          new embeds[field](datum, { platform, i18n: ctx.i18n }),
         ));
         return interaction.editReply({ embeds: pages });
 
@@ -310,7 +313,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new embeds[field](undefined, data, { isCommand: true, i18n: ctx.i18n });
+        embed = new embeds[field](data, { isCommand: true, i18n: ctx.i18n });
         return interaction.editReply({ embeds: [embed] });
       default:
         break;

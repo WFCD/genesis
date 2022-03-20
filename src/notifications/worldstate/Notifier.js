@@ -1,7 +1,7 @@
 'use strict';
 
 const {
-  embeds, getThumbnailForItem, between, asId, i18ns, syndicates,
+  embeds, getThumbnailForItem, between, asId, i18ns, syndicates, perLanguage,
 } = require('../NotifierUtils');
 const Broadcaster = require('../Broadcaster');
 const logger = require('../../Logger');
@@ -11,10 +11,18 @@ const {
 } = require('../../CommonFunctions');
 
 const updtReg = new RegExp(captures.updates, 'i');
-
 const beats = {};
-
 let refreshRate = process.env.WORLDSTATE_TIMEOUT || 60000;
+const makeNightwaveType = (challenge) => {
+  let type = 'daily';
+
+  if (challenge.isElite) {
+    type = 'elite';
+  } else if (!challenge.isDaily) {
+    type = 'weekly';
+  }
+  return `nightwave.${type}`;
+};
 
 function buildNotifiableData(newData, platform, notified) {
   const data = {
@@ -89,19 +97,20 @@ function buildNotifiableData(newData, platform, notified) {
   return data;
 }
 
-/**
- * Notifier for alerts, invasions, etc.
- */
-class Notifier {
+module.exports = class Notifier {
+  #settings;
+  #worldStates;
+  #broadcaster;
+  #updating;
+
   constructor({
     settings, client, messageManager, worldStates, timeout, workerCache,
   }) {
-    this.settings = settings;
-    this.client = client;
-    this.worldStates = worldStates;
-    this.broadcaster = new Broadcaster({
+    this.#settings = settings;
+    this.#worldStates = worldStates;
+    this.#broadcaster = new Broadcaster({
       client,
-      settings: this.settings,
+      settings: this.#settings,
       messageManager,
       workerCache,
     });
@@ -114,16 +123,16 @@ class Notifier {
       };
     });
 
-    this.updating = false;
+    this.#updating = false;
     refreshRate = timeout;
-    this.updating = [];
+    this.#updating = [];
   }
 
   /** Start the notifier */
   async start() {
-    Object.entries(this.worldStates).forEach(([, ws]) => {
+    Object.entries(this.#worldStates).forEach(([, ws]) => {
       ws.on('newData', async (platform, newData) => {
-        await this.onNewData(platform, newData);
+        await this.#onNewData(platform, newData);
       });
     });
   }
@@ -133,26 +142,26 @@ class Notifier {
    * @param  {string} platform Platform to be updated
    * @param  {json} newData  Updated data from the worldstate
    */
-  async onNewData(platform, newData) {
+  async #onNewData (platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.updating.includes(platform)) return;
+    if (this.#updating.includes(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
     if (!(newData && newData.timestamp)) return;
 
-    const notifiedIds = await this.settings.getNotifiedIds(platform);
+    const notifiedIds = await this.#settings.getNotifiedIds(platform);
 
     // Set up data to notify
-    this.updating.push(platform);
+    this.#updating.push(platform);
 
-    await this.sendNew(platform, newData, notifiedIds,
+    await this.#sendNew(platform, newData, notifiedIds,
       buildNotifiableData(newData, platform, notifiedIds));
 
-    this.updating.splice(this.updating.indexOf(platform), 1);
+    this.#updating.splice(this.#updating.indexOf(platform), 1);
   }
 
-  async sendNew(platform, rawData, notifiedIds, {
+  async #sendNew (platform, rawData, notifiedIds, {
     alerts, arbitration, dailyDeals, events, fissures,
     invasions, news, acolytes, sortie, syndicateM, baro,
     tweets, nightwave, featuredDeals, streams, popularDeals,
@@ -162,35 +171,35 @@ class Notifier {
     try {
       logger.silly(`sending new data on ${platform}...`);
 
-      this.sendAcolytes(acolytes, platform);
+      this.#sendAcolytes(acolytes, platform);
 
       if (baro) {
-        this.sendBaro(baro, platform);
+        this.#sendBaro(baro, platform);
       }
       if (conclave && conclave.length > 0) {
-        this.sendConclaveDailies(conclave, platform);
-        this.sendConclaveWeeklies(conclave, platform);
+        this.#sendConclaveDailies(conclave, platform);
+        this.#sendConclaveWeeklies(conclave, platform);
       }
       if (tweets && tweets.length > 0) {
-        this.sendTweets(tweets, platform);
+        this.#sendTweets(tweets, platform);
       }
-      this.sendDarvo(dailyDeals, platform);
-      this.sendEvent(events, platform);
-      this.sendFeaturedDeals(featuredDeals, platform);
-      this.sendFissures(fissures, platform);
-      this.sendNews(news, platform);
-      this.sendStreams(streams, platform);
-      this.sendPopularDeals(popularDeals, platform);
-      this.sendPrimeAccess(primeAccess, platform);
-      this.sendInvasions(invasions, platform);
-      this.sendSortie(sortie, platform);
-      this.sendSyndicates(syndicateM, platform);
-      this.sendUpdates(updates, platform);
-      this.sendAlerts(alerts, platform);
-      this.sendSentientOutposts(outposts, platform);
-      this.sendNightwave(nightwave, platform);
-      this.sendArbitration(arbitration, platform);
-      this.sendSteelPath(steelPath, platform);
+      this.#sendDarvo(dailyDeals, platform);
+      this.#sendEvent(events, platform);
+      this.#sendFeaturedDeals(featuredDeals, platform);
+      this.#sendFissures(fissures, platform);
+      this.#sendNews(news, platform);
+      this.#sendStreams(streams, platform);
+      this.#sendPopularDeals(popularDeals, platform);
+      this.#sendPrimeAccess(primeAccess, platform);
+      this.#sendInvasions(invasions, platform);
+      this.#sendSortie(sortie, platform);
+      this.#sendSyndicates(syndicateM, platform);
+      this.#sendUpdates(updates, platform);
+      this.#sendAlerts(alerts, platform);
+      this.#sendSentientOutposts(outposts, platform);
+      this.#sendNightwave(nightwave, platform);
+      this.#sendArbitration(arbitration, platform);
+      this.#sendSteelPath(steelPath, platform);
     } catch (e) {
       logger.error(e);
     } finally {
@@ -224,259 +233,239 @@ class Notifier {
         : 'steelpath:0',
     ].filter(a => a);
 
-    await this.settings.setNotifiedIds(platform, alreadyNotified);
+    await this.#settings.setNotifiedIds(platform, alreadyNotified);
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
-  async sendAcolytes(newAcolytes, platform) {
-    for (const acolyte of newAcolytes) {
-      await this.broadcaster.broadcast(new embeds.Acolyte(
-        { logger },
-        [acolyte], platform,
-      ), platform, `enemies${acolyte.isDiscovered ? '' : '.departed'}`);
+  async standardBroadcast(sendable, {
+    Embed, type, platform, thumb, items,
+  }) {
+    if (Array.isArray(sendable)) {
+      return Promise.all(sendable.map(subsendable => this
+        .standardBroadcast(subsendable, {
+          Embed, type, platform, thumb, items,
+        })));
     }
-    return true;
+    return perLanguage(async ({ i18n, locale }) => {
+      const embed = new Embed(sendable, { platform, i18n, locale });
+      embed.thumbnail.url = thumb || embed.thumbnail.url;
+      return this.#broadcaster
+        .broadcast(embed, platform, type, items);
+    });
   }
 
-  async sendAlerts(newAlerts, platform) {
-    for (const alert of newAlerts) {
-      await this.sendAlert(alert, platform);
-    }
-    return true;
+  async #sendAcolytes (newAcolytes, platform) {
+    return Promise
+      .all(newAcolytes
+        .map(async acolyte => perLanguage(async ({ i18n, locale }) => this.#broadcaster
+          .broadcast(new embeds.Acolyte(
+            [acolyte], { platform, i18n, locale },
+          ), platform, `enemies${acolyte.isDiscovered ? '' : '.departed'}`))));
   }
 
-  async sendAlert(a, platform) {
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      const embed = new embeds.Alert({ logger }, [a], platform, i18n);
-      embed.locale = locale;
+  async #sendAlerts (newAlerts, platform) {
+    return Promise.all(newAlerts.map(async (alert) => {
+      let thumb;
       try {
-        const thumb = await getThumbnailForItem(a.mission.reward.itemString);
-        if (thumb && !a.rewardTypes.includes('reactor') && !a.rewardTypes.includes('catalyst')) {
-          embed.thumbnail.url = thumb;
-        }
+        thumb = (!(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst'))
+          && await getThumbnailForItem(alert.mission.reward.itemString));
       } catch (e) {
         logger.error(e);
-      } finally {
-        // Broadcast even if the thumbnail fails to fetch
-        await this.broadcaster.broadcast(embed, platform, 'alerts', a.rewardTypes);
       }
-    }
-    return true;
+      return this.standardBroadcast(alert, {
+        platform, Embed: embeds.Alert, type: 'alerts', items: alert.rewardTypes, thumb,
+      });
+    }));
   }
 
-  async sendArbitration(arbitration, platform) {
+  async #sendArbitration (arbitration, platform) {
     if (!arbitration || !arbitration.enemy) return;
-
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      const embed = new embeds.Arbitration({ logger }, arbitration, platform, i18n);
-      embed.locale = locale;
-      const type = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
-      await this.broadcaster.broadcast(embed, platform, type);
-    }
+    const type = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
+    return this.standardBroadcast(arbitration, { Embed: embeds.Arbitration, type, platform });
   }
 
-  async sendBaro(newBaro, platform) {
-    const embed = new embeds.VoidTrader({ logger }, newBaro, platform);
-    if (embed.fields.length > 25) {
-      const pages = createGroupedArray(embed.fields, 15);
-      for (const page of pages) {
-        const tembed = { ...embed };
-        tembed.fields = page;
-        await this.broadcaster.broadcast(tembed, platform, 'baro');
+  async #sendBaro (newBaro, platform) {
+    return perLanguage(async ({ i18n, locale }) => {
+      const embed = new embeds.VoidTrader(newBaro, { platform, i18n, locale });
+      if (embed.fields.length > 25) {
+        const pages = createGroupedArray(embed.fields, 15);
+        for (const page of pages) {
+          const tembed = { ...embed };
+          tembed.fields = page;
+          this.#broadcaster.broadcast(tembed, platform, 'baro');
+        }
+      } else {
+        return this.#broadcaster.broadcast(embed, platform, 'baro');
       }
-    } else {
-      await this.broadcaster.broadcast(embed, platform, 'baro');
-    }
+    });
   }
 
-  async sendConclaveDailies(newDailies, platform) {
+  async #sendConclaveDailies (newDailies, platform) {
     const dailies = newDailies.filter(challenge => challenge.category === 'day');
     if (dailies.length > 0 && dailies[0].activation) {
-      const embed = new embeds.Conclave({ logger }, dailies, 'day', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.dailies');
+      return perLanguage(async ({ i18n, locale }) => {
+        const embed = new embeds.Conclave(dailies, {
+          category: 'day', i18n, locale, platform,
+        });
+        return this.#broadcaster.broadcast(embed, platform, 'conclave.dailies');
+      });
     }
   }
 
-  async sendConclaveWeeklies(newWeeklies, platform) {
+  async #sendConclaveWeeklies (newWeeklies, platform) {
     const weeklies = newWeeklies.filter(challenge => challenge.category === 'week');
     if (weeklies.length > 0) {
-      const embed = new embeds.Conclave({ logger }, weeklies, 'week', platform);
-      await this.broadcaster.broadcast(embed, platform, 'conclave.weeklies');
+      return perLanguage(async ({ i18n, locale }) => {
+        const embed = new embeds.Conclave(weeklies, {
+          category: 'week', platform, i18n, locale,
+        });
+        return this.#broadcaster.broadcast(embed, platform, 'conclave.weeklies');
+      });
     }
   }
 
-  async sendDarvo(newDarvoDeals, platform) {
-    for (const deal of newDarvoDeals) {
-      await this.broadcaster.broadcast(new embeds.Darvo({ logger }, deal, platform), platform, 'darvo');
-    }
+  async #sendDarvo (newDarvoDeals, platform) {
+    return this.standardBroadcast(newDarvoDeals, { platform, Embed: embeds.Darvo, type: 'darvo' });
   }
 
-  async sendEvent(newEvents, platform) {
-    return Promise.all(newEvents
-      .map(e => this.broadcaster.broadcast(new embeds.Event({ logger }, e, platform), platform, 'operations')));
+  async #sendEvent (newEvents, platform) {
+    return this.standardBroadcast(newEvents, { Embed: embeds.Event, platform, type: 'operation' });
   }
 
-  async sendFeaturedDeals(newFeaturedDeals, platform) {
-    return Promise.all(newFeaturedDeals
-      .map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.featured')));
+  async #sendFeaturedDeals (newFeaturedDeals, platform) {
+    return this.standardBroadcast(newFeaturedDeals, { Embed: embeds.Sales, platform, type: 'deals.featuredDeals' });
   }
 
-  async sendFissures(newFissures, platform) {
-    for (const fissure of newFissures) {
-      await this.sendFissure(fissure, platform);
-    }
+  async #sendFissures (newFissures, platform) {
+    return Promise.all(newFissures.map(async fissure => this
+      .standardBroadcast(newFissures, {
+        Embed: embeds.Fissure,
+        type: `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase().replace(/\s/g, '')}`,
+        platform,
+      })));
   }
 
-  async sendFissure(fissure, platform) {
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      const embed = new embeds.Fissure({ logger }, [fissure], platform, i18n);
-      embed.locale = locale;
-      const id = `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase().replace(/\s/g, '')}`;
+  async #sendInvasions (newInvasions, platform) {
+    const type = 'invasions';
+    return Promise.all(newInvasions.map(async (invasion) => {
+      let thumb;
       try {
-        await this.broadcaster.broadcast(embed, platform, id);
+        thumb = !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst'))
+            && await getThumbnailForItem(
+              invasion.attackerReward.itemString || invasion.defenderReward.itemString,
+            );
       } catch (e) {
         logger.error(e);
       }
-    }
+      return this.standardBroadcast(invasion, {
+        Embed: embeds.Invasion,
+        items: invasion.rewardTypes,
+        platform,
+        type,
+        thumb,
+      });
+    }));
   }
 
-  async sendInvasions(newInvasions, platform) {
-    await Promise.all(newInvasions
-      .map(invasion => this.sendInvasion(invasion, platform)));
+  async #sendNews (newNews, platform, type) {
+    type = type || 'news';
+    return this.standardBroadcast(newNews, { Embed: embeds.News, platform, type });
   }
 
-  async sendInvasion(invasion, platform) {
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      const embed = new embeds.Invasion({ logger }, [invasion], platform, i18n);
-      embed.locale = locale;
-      try {
-        const reward = invasion.attackerReward.itemString || invasion.defenderReward.itemString;
-        const thumb = await getThumbnailForItem(reward);
-        if (thumb && !invasion.rewardTypes.includes('reactor') && !invasion.rewardTypes.includes('catalyst')) {
-          embed.thumbnail.url = thumb;
-        }
-      } catch (e) {
-        // do nothing, it happens
-      } finally {
-        await this.broadcaster.broadcast(embed, platform, 'invasions', invasion.rewardTypes);
-      }
-    }
-  }
-
-  async sendNews(newNews, platform) {
-    return Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'news')));
-  }
-
-  async sendNightwave(nightwave, platform) {
-    const makeType = (challenge) => {
-      let type = 'daily';
-
-      if (challenge.isElite) {
-        type = 'elite';
-      } else if (!challenge.isDaily) {
-        type = 'weekly';
-      }
-      return `nightwave.${type}`;
-    };
-
+  async #sendNightwave (nightwave, platform) {
     if (!nightwave) return;
-    for (const [locale, i18n] of Object.entries(i18ns)) {
+    return perLanguage(async ({ i18n, locale }) => {
       if (nightwave.activeChallenges.length) {
-        nightwave.activeChallenges.forEach(async (challenge) => {
+        return Promise.all(nightwave.activeChallenges.map(async (challenge) => {
           const nwCopy = { ...nightwave };
           nwCopy.activeChallenges = [challenge];
-          const embed = new embeds.Nightwave({ logger }, nwCopy, platform, i18n);
+          const embed = new embeds.Nightwave(nwCopy, { platform, i18n, locale });
           embed.locale = locale;
-          await this.broadcaster.broadcast(embed, platform,
-            makeType(challenge));
-        });
-      } else {
-        const embed = new embeds.Nightwave({ logger }, nightwave, platform, i18n);
-        embed.locale = locale;
-        await this.broadcaster.broadcast(embed, platform, 'nightwave');
+          return this.#broadcaster.broadcast(embed, platform,
+            makeNightwaveType(challenge));
+        }));
       }
-    }
-  }
-
-  async sendPopularDeals(newPopularDeals, platform) {
-    return Promise.all(newPopularDeals
-      .map(d => this.broadcaster.broadcast(new embeds.Sales({ logger }, [d], platform), platform, 'deals.popular')));
-  }
-
-  async sendPrimeAccess(newNews, platform) {
-    return Promise.all(newNews
-      .map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'primeaccess', platform), platform, 'primeaccess')));
-  }
-
-  async sendSortie(newSortie, platform) {
-    if (!newSortie) return;
-    const embed = new embeds.Sortie({ logger }, newSortie, platform);
-    try {
-      const thumb = await getThumbnailForItem(newSortie.boss, true);
-      if (thumb) {
-        embed.thumbnail.url = thumb;
-      }
-    } catch (e) {
-      logger.error(e);
-    } finally {
-      await this.broadcaster.broadcast(embed, platform, 'sorties');
-    }
-  }
-
-  async sendSteelPath(steelPath, platform) {
-    if (!steelPath || !steelPath.currentReward) return;
-
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      const embed = new embeds.SteelPath({ logger }, steelPath, { isCommand: false, i18n });
+      const embed = new embeds.Nightwave(nightwave, { platform, i18n, locale });
       embed.locale = locale;
-      if (steelPath.currentReward.name && steelPath.currentReward.name.includes('Umbra')) {
-        await this.broadcaster.broadcast(embed, platform, 'steelpath.umbra');
-      }
-      await this.broadcaster.broadcast(embed, platform, 'steelpath');
-    }
+      return this.#broadcaster.broadcast(embed, platform, 'nightwave');
+    });
   }
 
-  async sendStreams(newStreams, platform) {
-    return Promise.all(newStreams.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], undefined, platform), platform, 'streams')));
+  async #sendPopularDeals (newPopularDeals, platform) {
+    const type = 'deals.popular';
+    return this.standardBroadcast(newPopularDeals, { Embed: embeds.Sales, platform, type });
+  }
+
+  async #sendPrimeAccess (newNews, platform) {
+    return this.#sendNews(newNews, platform, 'primeaccess');
+  }
+
+  async #sendSortie (newSortie, platform) {
+    if (!newSortie) return;
+    const thumb = await getThumbnailForItem(newSortie.boss, true);
+    return this.standardBroadcast(newSortie, {
+      Embed: embeds.Sortie,
+      type: 'sorties',
+      platform,
+      thumb,
+    });
+  }
+
+  async #sendSteelPath (steelPath, platform) {
+    if (!steelPath || !steelPath.currentReward) return;
+    const type = steelPath.currentReward.name
+        && steelPath.currentReward.name.includes('Umbra')
+      ? 'steelpath.umbra'
+      : 'steelpath';
+    return this.standardBroadcast(steelPath, { Embed: embeds.SteelPath, type, platform });
+  }
+
+  async #sendStreams (newStreams, platform) {
+    return this.#sendNews(newStreams, platform, 'streams');
   }
 
   async checkAndSendSyndicate(embed, syndicate, platform) {
     if (embed.description && embed.description.length > 0 && embed.description !== 'No such Syndicate' && embed?.fields?.[0].name !== 'No such Syndicate') {
-      await this.broadcaster.broadcast(embed, platform, syndicate);
+      return this.#broadcaster.broadcast(embed, platform, syndicate);
     }
+    return undefined;
   }
 
-  async sendSyndicates(newSyndicates, platform) {
+  async #sendSyndicates (newSyndicates, platform) {
     if (!newSyndicates || !newSyndicates[0]) return;
     for (const {
       key, display, prefix, notifiable,
     } of syndicates) {
       if (notifiable) {
-        const embed = new embeds.Syndicate({ logger }, newSyndicates, display, platform);
-        const eKey = `${prefix || ''}${key}`;
-        await this.checkAndSendSyndicate(embed, eKey, platform);
+        return perLanguage(async ({ i18n, locale }) => {
+          const embed = new embeds.Syndicate(newSyndicates, {
+            display, platform, i18n, locale,
+          });
+          const eKey = `${prefix || ''}${key}`;
+          return this.checkAndSendSyndicate(embed, eKey, platform);
+        });
       }
     }
   }
 
-  async sendTweets(newTweets, platform) {
-    return Promise.all(newTweets.map(t => this.broadcaster
-      .broadcast(new embeds.Tweet({ logger }, t), platform, t.id)));
+  async #sendTweets (newTweets, platform) {
+    return Promise.all(newTweets.map(t => this
+      .standardBroadcast(newTweets, {
+        Embed: embeds.Tweet, platform, type: t.id,
+      })));
   }
 
-  async sendUpdates(newNews, platform) {
-    return Promise.all(newNews.map(i => this.broadcaster.broadcast(new embeds.News({ logger }, [i], 'updates', platform), platform, 'updates')));
+  async #sendUpdates (newNews, platform) {
+    return this.#sendNews(newNews, platform, 'updates');
   }
 
-  async sendSentientOutposts(outpost, platform) {
+  async #sendSentientOutposts (outpost, platform) {
     for (const [locale, i18n] of Object.entries(i18ns)) {
       if (outpost.mission) {
         const embed = new embeds.Outposts({ logger }, outpost, platform, i18n);
         embed.locale = locale;
-        await this.broadcaster.broadcast(embed, platform, 'outposts');
+        await this.#broadcaster.broadcast(embed, platform, 'outposts');
       }
     }
   }
-}
-
-module.exports = Notifier;
+};

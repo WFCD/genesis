@@ -96,14 +96,14 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
         for (const weapon of data) {
-          pages.push(new embeds.Weapon(undefined, weapon, ctx.i18n));
+          pages.push(new embeds.Weapon(weapon, ctx.i18n));
           const strippedWeaponN = query.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
           const rivenResults = await ctx.ws.riven(strippedWeaponN, ctx.platform);
           if (Object.keys(rivenResults).length > 0) {
             const strippedRes = weapon.name.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
             if (rivenResults[strippedRes]) {
               pages.push(
-                new embeds.Riven(undefined, rivenResults[strippedRes], weapon.name, ctx.i18n),
+                new embeds.Riven(rivenResults[strippedRes], weapon.name, ctx.i18n),
               );
             }
           }
@@ -115,7 +115,7 @@ module.exports = class Lookup extends require('../../models/Interaction') {
           if (weapon?.patchlogs?.length && enablePatchnotes) {
             createGroupedArray(weapon.patchlogs, 4)
               // eslint-disable-next-line no-loop-func
-              .forEach(patchGroup => pages.push(new embeds.Patchnote(undefined, patchGroup)));
+              .forEach(patchGroup => pages.push(new embeds.Patchnote(patchGroup)));
           }
         }
         return pages.length < 25
@@ -126,9 +126,9 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
         for (const warframe of data) {
-          pages.push(new embeds.Warframe(undefined, warframe, ctx.i18n));
+          pages.push(new embeds.Warframe(warframe, ctx.i18n));
           if (warframe?.components?.length) {
-            pages.push(new embeds.Component(undefined, warframe.components));
+            pages.push(new embeds.Component(warframe.components));
           }
           if (warframe?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func

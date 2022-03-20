@@ -29,8 +29,8 @@ class LFGEmbed extends BaseEmbed {
   /**
    * @param {LFG} lfg - LFG Options
    */
-  constructor(lfg, { i18n }) {
-    super();
+  constructor(lfg, { i18n, locale }) {
+    super(locale);
     this.color = lfg.expiry ? activeC : expiredC;
     this.title = i18n`${lfg.types.length ? lfg.types.join(' & ') : i18n`LFG`} Posted by ${lfg.author.tag}`;
     this.fields = [

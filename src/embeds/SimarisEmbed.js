@@ -6,8 +6,8 @@ const { assetBase } = require('../CommonFunctions');
 const simarisThumb = `${assetBase}/img/simaris.png`;
 
 module.exports = class SimarisEmbed extends BaseEmbed {
-  constructor(simaris, { platform, i18n }) {
-    super();
+  constructor(simaris, { platform, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: simarisThumb,

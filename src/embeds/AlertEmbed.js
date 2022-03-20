@@ -5,31 +5,23 @@ const { assetBase } = require('../CommonFunctions');
 
 const alertThumb = `${assetBase}/img/alert.png`;
 
-/**
- * Generates alert embeds
- */
-class AlertEmbed extends BaseEmbed {
-  /**
-   * @param {Array.<Alert>} alerts - The alerts to be included in the embed
-   * @param {string} platform - platform
-   * @param {I18n} i18n - string template function for internationalization
-   */
-  constructor(alerts, { platform, i18n }) {
-    super();
+module.exports = class AlertEmbed extends BaseEmbed {
+  constructor(alerts, { platform, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: alertThumb,
     };
     this.color = 0xF1C40F;
     // compact
-    if (alerts.length > 1) {
+    if (Array.isArray(alerts) && alerts.length > 1) {
       this.fields = alerts.map(a => ({
         name: i18n`${a.mission.reward.asString} | ${a.eta} left`,
         value: i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}\nlevel ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
       }));
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Alerts`;
     } else { // divided
-      const a = alerts[0];
+      const a = Array.isArray(alerts) ? alerts[0] : alerts;
       this.title = i18n`[${platform.toUpperCase()}] ${a.mission.reward.itemString || i18n`${a.mission.reward.credits} Credits`}`;
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;
@@ -52,6 +44,4 @@ class AlertEmbed extends BaseEmbed {
       this.timestamp = a.expiry;
     }
   }
-}
-
-module.exports = AlertEmbed;
+};

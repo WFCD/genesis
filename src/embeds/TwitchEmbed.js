@@ -2,15 +2,9 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-/**
- * Generates a twitch go-live embed
- */
-class TwitchEmbed extends BaseEmbed {
-  /**
-   * @param {Object} streamData - a stream result from twitch api
-   */
-  constructor(streamData) {
-    super();
+module.exports = class TwitchEmbed extends BaseEmbed {
+  constructor(streamData, { i18n, locale }) {
+    super(locale);
     this.title = streamData.title;
     this.url = `https://www.twitch.tv/${streamData.user_login}`;
 
@@ -22,7 +16,7 @@ class TwitchEmbed extends BaseEmbed {
 
     this.color = 6570405;
     this.footer = {
-      text: 'Live @',
+      text: i18n`Live @`,
       icon_url: 'https://i.imgur.com/urcKWLO.png',
     };
 
@@ -43,6 +37,4 @@ class TwitchEmbed extends BaseEmbed {
       };
     }
   }
-}
-
-module.exports = TwitchEmbed;
+};

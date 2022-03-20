@@ -39,7 +39,6 @@ const unlog = {
  * Class describing Genesis bot
  * @property {Database} settings
  * @property {Logger} logger
- * @property {CommandManager} commandManager
  * @property {EventHandler} eventHandler
  * @property {Discord.Client} client
  */
@@ -102,7 +101,7 @@ module.exports = class Genesis {
     this.prefix = prefix;
 
     /**
-     * Whether or not the bot is ready to execute.
+     * Whether the bot is ready to execute.
      * This allows stopping commands before servers and users are ready.
      * @type {boolean}
      */
@@ -152,9 +151,10 @@ module.exports = class Genesis {
   async setupHandlers() {
     this.client.on(Events.CLIENT_READY, async () => this.eventHandler
       .handleEvent({ event: Events.CLIENT_READY, args: [] }));
-    this.client.on(Events.MESSAGE_CREATE,
-      async message => this.eventHandler
-        .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
+    // TODO: continue removing events we don't need
+    // this.client.on(Events.MESSAGE_CREATE,
+    //   async message => this.eventHandler
+    //     .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
 
     this.client.on(Events.GUILD_CREATE,
       async guild => this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] }));
@@ -166,29 +166,6 @@ module.exports = class Genesis {
     this.client.on(Events.CHANNEL_DELETE,
       async channel => this.eventHandler
         .handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] }));
-
-    this.client.on(Events.MESSAGE_DELETE,
-      async message => this.eventHandler
-        .handleEvent({ event: Events.MESSAGE_DELETE, args: [message] }));
-    this.client.on(Events.MESSAGE_BULK_DELETE,
-      async messages => this.eventHandler
-        .handleEvent({ event: Events.MESSAGE_BULK_DELETE, args: [messages] }));
-
-    this.client.on(Events.GUILD_MEMBER_UPDATE,
-      async (oldMember, newMember) => this.eventHandler
-        .handleEvent({ event: Events.GUILD_MEMBER_UPDATE, args: [oldMember, newMember] }));
-    this.client.on(Events.GUILD_MEMBER_ADD,
-      async guildMember => this.eventHandler
-        .handleEvent({ event: Events.GUILD_MEMBER_ADD, args: [guildMember] }));
-    this.client.on(Events.GUILD_MEMBER_REMOVE,
-      async guildMember => this.eventHandler
-        .handleEvent({ event: Events.GUILD_MEMBER_REMOVE, args: [guildMember] }));
-    this.client.on(Events.GUILD_BAN_ADD,
-      async (guild, user) => this.eventHandler
-        .handleEvent({ event: Events.GUILD_BAN_ADD, args: [guild, user] }));
-    this.client.on(Events.GUILD_BAN_REMOVE,
-      async (guild, user) => this.eventHandler
-        .handleEvent({ event: Events.GUILD_BAN_REMOVE, args: [guild, user] }));
 
     this.client.on(Events.INTERACTION_CREATE,
       async interaction => this.eventHandler
@@ -215,7 +192,6 @@ module.exports = class Genesis {
   async start() {
     await this.settings.createSchema(this.client);
     this.logger.debug('Schema created');
-    await this.commandManager.loadCustomCommands();
     await this.eventHandler.loadHandles();
 
     await this.setupHandlers();

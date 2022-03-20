@@ -203,7 +203,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
           case 'warframe':
           case 'necramech':
             parsed[name] = id?.uniqueName ? id : ctx.ws.warframe(id)?.[0];
-            pages.push(new FrameEmbed(undefined, parsed[name], undefined));
+            pages.push(new FrameEmbed(parsed[name], undefined));
             break;
           case 'prism':
             return;
@@ -213,7 +213,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
             break;
           default:
             parsed[name] = id?.uniqueName ? id : ctx.ws.weapon(id)?.[0];
-            pages.push(new WeaponEmbed(undefined, parsed[name]));
+            pages.push(new WeaponEmbed(parsed[name]));
             break;
         }
       }
@@ -221,7 +221,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
     if (parsed.focus || build.prism) {
       const focus = parsed.focus ? `**${ctx.i18n`Focus`}:** ${build.focus}` : '';
       const prism = build.prism
-        ? new WeaponEmbed(undefined, build.prism?.uniqueName
+        ? new WeaponEmbed(build.prism?.uniqueName
           ? build.prism
           : ctx.ws.weapon(build.prism)[0])
         : undefined;

@@ -6,8 +6,8 @@ const { assetBase } = require('../CommonFunctions');
 const darvo = `${assetBase}/img/darvo-md.png`;
 
 module.exports = class DarvoEmbed extends BaseEmbed {
-  constructor(deal, { platform, i18n }) {
-    super();
+  constructor(deal, { platform, i18n, locale }) {
+    super(locale);
     if (Array.isArray(deal)) [deal] = deal;
     this.color = 0x0000ff;
     this.title = i18n`[${platform.toUpperCase()}] Darvo Deal`;

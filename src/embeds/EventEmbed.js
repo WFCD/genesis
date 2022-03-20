@@ -11,8 +11,8 @@ class EventEmbed extends BaseEmbed {
    * @param {string} platform - The platform the event is for
    * @param {I18n} i18n internationalization template
    */
-  constructor(event, { platform, i18n }) {
-    super();
+  constructor(event, { platform, i18n, locale }) {
+    super(locale);
 
     this.color = 0xfdec96;
     if (event) {

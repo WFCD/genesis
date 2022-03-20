@@ -10,8 +10,8 @@ const defaults = {
 /**
  * Utility class for making rich embeds
  */
-class BaseEmbed extends MessageEmbed {
-  constructor() {
+module.exports = class BaseEmbed extends MessageEmbed {
+  constructor(locale) {
     super({
       url: defaults.url,
       description: '_ _',
@@ -24,7 +24,6 @@ class BaseEmbed extends MessageEmbed {
         url: undefined,
       },
     });
+    if (locale) this.locale = locale;
   }
-}
-
-module.exports = BaseEmbed;
+};

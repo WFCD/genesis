@@ -5,8 +5,8 @@ const { assetBase, emojify } = require('../CommonFunctions');
 
 const steelPathThumb = `${assetBase}/img/steelpath.png`;
 module.exports = class SteelPathEmbed extends BaseEmbed {
-  constructor(bot, offering, { isCommand = false, i18n }) {
-    super();
+  constructor(offering, { isCommand = false, i18n, locale }) {
+    super(locale);
     this.description = `${i18n`**Rotating:**`} ${offering.currentReward.name || offering.currentReward}: ${offering.currentReward.cost || '???'}${isCommand ? emojify('steelessence') : i18n` essence`}
     
   ${i18n`**Evergreen:**`}
