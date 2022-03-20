@@ -14,8 +14,8 @@ module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(nightwave, { platform, i18n }) {
-    super();
+  constructor(nightwave, { platform, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: 'https://i.imgur.com/yVcWOPp.png',

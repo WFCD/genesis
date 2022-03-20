@@ -12,8 +12,8 @@ class FrameEmbed extends BaseEmbed {
    * @param {Array.<Warframe>} frames - List of available warframes
    * @param {I18n} i18n internationalization template
    */
-  constructor(frame, { frames, i18n }) {
-    super();
+  constructor(frame, { frames, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: `${assetBase}/img/arcane.png`,

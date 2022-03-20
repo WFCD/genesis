@@ -517,7 +517,7 @@ const createPageCollector = async (msg, pages, author) => {
       if (newPage.footer) {
         if (newPage instanceof MessageEmbed) {
           if (newPage.footer.text.indexOf('Page') === -1) {
-            newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.icon_url);
+            newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.icon_url });
           }
         } else if (newPage.footer.text) {
           if (newPage.footer.text.indexOf('Page') === -1) {
@@ -1143,7 +1143,7 @@ const createSelectionCollector = async (interaction, pages, ctx) => {
     if (newPage.footer) {
       if (newPage instanceof MessageEmbed) {
         if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.iconURL);
+          newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
         }
       } else if (newPage.footer.text) {
         if (newPage.footer.text.indexOf('Page') === -1) {
@@ -1246,7 +1246,7 @@ const createPagedInteractionCollector = async (interaction, pages, ctx) => {
     if (newPage.footer) {
       if (newPage instanceof MessageEmbed) {
         if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.setFooter(`${pageInd} • ${newPage.footer.text}`, newPage.footer.iconURL);
+          newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
         }
       } else if (newPage.footer.text) {
         if (newPage.footer.text.indexOf('Page') === -1) {

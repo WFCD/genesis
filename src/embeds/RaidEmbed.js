@@ -11,8 +11,10 @@ module.exports = class RaidStatEmbed extends BaseEmbed {
    * @param {string} platform - Platform for the query
    * @param {I18n} i18n internationalization template
    */
-  constructor(userStats, { query, platform, i18n }) {
-    super();
+  constructor(userStats, {
+    query, platform, i18n, locale,
+  }) {
+    super(locale);
     this.title = i18n`Raid statistics for ${query}`;
     this.url = encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`);
     this.color = 0xaf5b4b;

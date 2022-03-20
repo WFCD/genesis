@@ -5,8 +5,8 @@ const BaseEmbed = require('./BaseEmbed.js');
 const { emojify } = require('../CommonFunctions.js');
 
 module.exports = class EnemyEmbed extends BaseEmbed {
-  constructor(enemy, { i18n }) {
-    super();
+  constructor(enemy, { i18n, locale }) {
+    super(locale);
     if (!enemy || !enemy.health) {
       this.title = i18n`Invalid Query`;
       this.color = 0xff6961;

@@ -7,15 +7,9 @@ const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js
 const ostron = `${assetBase}/img/ostron-banner.png`;
 const earth = `${assetBase}/img/earth-planet.png`;
 
-/**
- * Generates Earth cycle embeds
- */
 class EarthCycleEmbed extends BaseEmbed {
-  /**
-   * @param {Object} state - The current state of the cycle
-   */
-  constructor(state, { i18n }) {
-    super();
+  constructor(state, { i18n, locale }) {
+    super(locale);
 
     this.title = `${state.isCetus ? 'PoE' : 'Earth'} - ${state.isDay ? 'Day' : 'Night'}`;
     this.color = state.isDay ? 0xB64624 : 0x000066;

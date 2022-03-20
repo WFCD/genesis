@@ -30,8 +30,8 @@ const makeJobs = (mission, i18n) => {
 };
 
 module.exports = class CambionEmbed extends BaseEmbed {
-  constructor(state, { i18n }) {
-    super();
+  constructor(state, { i18n, locale }) {
+    super(locale);
     this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`;
     this.color = state.active === 'fass' ? 0xC6733F : 0x415B9E;
     this.thumbnail = {

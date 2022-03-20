@@ -2,17 +2,13 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-/**
- * Generates enemy embeds
- */
-class WhatsinEmbed extends BaseEmbed {
+module.exports = class WhatsinEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Object} details details to derive data from
    * @param {string} tier Relic tier
    * @param {string} type Relic type
    */
-  constructor(bot, details, tier, type) {
+  constructor(details, tier, type) {
     super();
     const transformedRewards = {};
     const rewards = [details?.rewards?.Intact, details?.rewards?.Exceptional,
@@ -44,9 +40,6 @@ class WhatsinEmbed extends BaseEmbed {
 
     this.title = `${tier} ${type}`;
     this.color = 0x3498db;
-    this.type = 'rich';
     this.description = tokens.map(token => `\`${token}\``).join('\n');
   }
-}
-
-module.exports = WhatsinEmbed;
+};

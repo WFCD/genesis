@@ -5,8 +5,8 @@ const BaseEmbed = require('./BaseEmbed.js');
 const { createGroupedArray } = require('../CommonFunctions.js');
 
 module.exports = class DropsEmbed extends BaseEmbed {
-  constructor(drops, { i18n }) {
-    super();
+  constructor(drops, { i18n, locale }) {
+    super(locale);
     if (!drops || !drops.length) {
       this.description = i18n`No drops`;
       return;
