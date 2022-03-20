@@ -15,8 +15,10 @@ class FissureEmbed extends BaseEmbed {
    * @param {I18n} i18n internationalization function
    * @param {string} era Era to override title
    */
-  constructor(fissures, { platform, i18n, era }) {
-    super();
+  constructor(fissures, {
+    platform, i18n, era, locale,
+  }) {
+    super(locale);
 
     if (fissures.length > 1) {
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Fissures`;

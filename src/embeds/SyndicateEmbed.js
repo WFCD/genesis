@@ -5,7 +5,6 @@ const { assetBase, wikiBase } = require('../CommonFunctions');
 const syndicates = require('../resources/syndicates.json');
 
 const syndicateThumb = `${assetBase}/img/syndicate.png`;
-
 const values = syndicates.map(s => s.display);
 
 const makeJobs = (mission, numSyndMissions) => {
@@ -29,7 +28,6 @@ const makeJobs = (mission, numSyndMissions) => {
   }
   return undefined;
 };
-
 const makeMissionValue = (mission, syndMissions) => {
   if (!mission) {
     return 'No Nodes or Jobs Available';
@@ -46,9 +44,10 @@ const makeMissionValue = (mission, syndMissions) => {
 };
 
 class SyndicateEmbed extends BaseEmbed {
-  constructor(bot, missions, syndicate, platform, skipCheck) {
-    super(bot);
-
+  constructor(missions, {
+    syndicate, platform, skipCheck, i18n, locale,
+  }) {
+    super(locale);
     // Set default fields
     this.color = 0xff0000;
     this.fields = [{
@@ -70,11 +69,11 @@ class SyndicateEmbed extends BaseEmbed {
         syndMissions = missions;
       }
       if (syndMissions.length) {
-        this.title = `[${platform.toUpperCase()}] Syndicates`;
+        this.title = i18n`[${platform.toUpperCase()}] Syndicates`;
         this.color = 0x00ff00;
         if (syndMissions.length < 2) {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
-          this.footer.text = `Expires in ${syndMissions[0].eta}`;
+          this.footer.text = i18n`Expires in ${syndMissions[0].eta}`;
           this.timestamp = syndMissions[0].expiry;
         }
         if (syndMissions.length < 2) {
@@ -84,11 +83,13 @@ class SyndicateEmbed extends BaseEmbed {
             this.description = missionValue;
             this.fields = undefined;
           } else {
-            this.fields = missionValue.split('\n\n').map(spv => ({
-              name: '\u200B',
-              value: spv,
-              inline: false,
-            }));
+            this.fields = missionValue
+              .split('\n\n')
+              .map(spv => ({
+                name: '\u200B',
+                value: spv,
+                inline: false,
+              }));
           }
         } else {
           this.fields = syndMissions.map(m => ({

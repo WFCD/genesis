@@ -14,8 +14,8 @@ class InvasionEmbed extends BaseEmbed {
    * @param {string} platform - platform
    * @param {Object} i18n - internationalization template function
    */
-  constructor(invasions, { platform, i18n }) {
-    super();
+  constructor(invasions, { platform, i18n, locale }) {
+    super(locale);
 
     this.color = 0x3498db;
     this.url = `${wikiBase}Invasion`;

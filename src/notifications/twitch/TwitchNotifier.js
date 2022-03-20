@@ -7,6 +7,7 @@ const Broadcaster = require('../Broadcaster');
 const logger = require('../../Logger');
 
 const { platforms } = require('../../CommonFunctions');
+const { perLanguage } = require('../NotifierUtils');
 
 require('colors');
 
@@ -49,8 +50,6 @@ class TwitchNotifier {
         if (!streamData.user.display_name) {
           streamData.user = await this.#monitor.spotLoadUser(streamData.user_name);
         }
-
-        const embed = new TwitchEmbed(streamData);
         let id = `${streamData.user_login}.live`;
         // add warframe type filtering for ids...
         if (streamData.user_login === 'warframe') {
@@ -66,9 +65,12 @@ class TwitchNotifier {
           }
         }
 
-        for (const platform of this.#activePlatforms) {
-          this.#broadcaster.broadcast(embed, platform, id);
-        }
+        perLanguage(async ({ i18n, locale }) => {
+          const embed = new TwitchEmbed(streamData, { i18n, locale });
+          for (const platform of this.#activePlatforms) {
+            this.#broadcaster.broadcast(embed, platform, id);
+          }
+        });
       }
     });
   }

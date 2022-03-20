@@ -5,26 +5,19 @@ const { assetBase } = require('../CommonFunctions');
 
 const acolyteThumb = `${assetBase}/img/acolyte.png`;
 
-/**
- * Generates enemy embeds
- */
 module.exports = class AcolyteEmbed extends BaseEmbed {
-  /**
-   * @param {Array.<PersistentEnemy>} enemies - The persistentEnemies to be included in the embed
-   * @param {string} platform platform
-   * @param {I18n} i18n internationalization manager
-   */
   constructor(enemies, {
     platform,
     i18n,
+    locale,
   }) {
-    super();
+    super(locale);
 
     this.thumbnail = {
       url: acolyteThumb,
     };
     this.title = i18n`[${platform.toUpperCase()}] Acolytes`;
-    if (enemies.length > 1) {
+    if (Array.isArray(enemies) && enemies.length > 1) {
       this.color = enemies.length > 2 ? 0x00ff00 : 0xff0000;
       this.fields = enemies.map(e => ({
         name: e.agentType,
@@ -32,8 +25,8 @@ module.exports = class AcolyteEmbed extends BaseEmbed {
 It has ${(100 * Number(e.healthPercent)).toFixed(2)}% health remaining
 and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
       }));
-    } else if (enemies.length === 1) {
-      const e = enemies[0];
+    } else if (!Array.isArray(enemies) || enemies.length === 1) {
+      const e = Array.isArray(enemies) ? enemies[0] : enemies;
       this.title = i18n`[${platform.toUpperCase()}] ${e.agentType}`;
       this.description = i18n`Enemy ${e.isDiscovered ? i18n`Discovered` : i18n`Hiding`}!`;
       this.color = 0xaf5b4b;

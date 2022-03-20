@@ -1,35 +1,33 @@
 'use strict';
 
 const BaseEmbed = require('./BaseEmbed.js');
+const { createGroupedArray } = require('../CommonFunctions');
 
-// eslint-disable-next-line no-unused-vars
-const createGroupedArray = (arr, chunkSize) => {
-  const groups = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    groups.push(arr.slice(i, i + chunkSize));
-  }
-  return groups;
+const newsSort = (a, b) => {
+  const date1 = new Date(a.endDate || a.date);
+  const date2 = new Date(b.endDate || b.date);
+
+  return date2.getTime() - date1.getTime();
 };
 
 /**
  * Generates news embeds
  */
-class NewsEmbed extends BaseEmbed {
+module.exports = class NewsEmbed extends BaseEmbed {
   /**
-   * @param {Array.<News>} news - The news to be included in the embed
+   * @param {Array.<News> | News} news - The news to be included in the embed
    * @param {string} type - [Optional] type of embed between news, updates,
    *                        or prime access. Not provided for news.
    * @param {string} platform - platform
+   * @param {string} locale locality of the translation
+   * @param {I18n} i18n internationalizer
    */
-  constructor(news, { type, platform }) {
-    super();
-
-    news.sort((a, b) => {
-      const date1 = new Date(a.endDate || a.date);
-      const date2 = new Date(b.endDate || b.date);
-
-      return date2.getTime() - date1.getTime();
-    });
+  constructor(news, {
+    type, platform, locale, i18n,
+  }) {
+    super(locale);
+    if (!Array.isArray(news)) news = [news];
+    news.sort(newsSort);
 
     this.color = news.length > 0 ? 0x779ecb : 0xff6961;
     let value = createGroupedArray(news
@@ -56,18 +54,18 @@ class NewsEmbed extends BaseEmbed {
       }), 7);
     if (type) {
       if (type === 'update') {
-        value = value.length > 0 ? value : ['No Update News Currently'];
+        value = value.length > 0 ? value : [i18n`No Update News Currently`];
       } else {
-        value = value.length > 0 ? value : ['No Prime Access Currently'];
+        value = value.length > 0 ? value : [i18n`No Prime Access Currently`];
       }
     } else {
-      value = value.length > 0 ? value : ['No News Currently'];
+      value = value.length > 0 ? value : [i18n`No News Currently`];
     }
     const first = news[0];
     if (news.length === 1) {
-      this.title = `[${platform.toUpperCase()}] ${first.message}`;
+      this.title = i18n`[${platform.toUpperCase()}] ${first.message}`;
       this.fields = undefined;
-      this.footer.text = 'Published ';
+      this.footer.text = i18n`Published `;
       this.timestamp = new Date(first.date);
       this.url = first.link;
     } else {
@@ -80,6 +78,4 @@ class NewsEmbed extends BaseEmbed {
     }
     this.image = { url: first ? first.imageLink : '' };
   }
-}
-
-module.exports = NewsEmbed;
+};

@@ -21,7 +21,7 @@ module.exports = class Reddit extends require('../../models/Interaction') {
       embed.setTitle(title);
       embed.setURL(`https://reddit.com${permalink}`);
       embed.setImage(url);
-      embed.setFooter(`${srn} • Posted`, 'https://www.redditinc.com/assets/images/site/reddit-logo.png');
+      embed.setFooter({ text: `${srn} • Posted`, iconURL: 'https://www.redditinc.com/assets/images/site/reddit-logo.png' });
       embed.setTimestamp(ts * 1000);
 
       await interaction.editReply({ embeds: [embed] });

@@ -13,8 +13,8 @@ const rarity = {
 };
 
 class ModEmbed extends BaseEmbed {
-  constructor(modData, { i18n }) {
-    super();
+  constructor(modData, { i18n, locale }) {
+    super(locale);
 
     this.title = modData.name;
     this.color = rarity[modData.rarity.toLowerCase()];

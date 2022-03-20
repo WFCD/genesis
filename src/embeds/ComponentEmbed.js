@@ -2,15 +2,9 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-/**
- * Generates enemy embeds
- */
-class ComponentEmbed extends BaseEmbed {
-  /**
-   * @param {Array.<Component>} components - List of components for an item or weapon
-   */
-  constructor(components, { i18n }) {
-    super();
+module.exports = class ComponentEmbed extends BaseEmbed {
+  constructor(components, { i18n, locale }) {
+    super(locale);
     this.title = 'Components';
     this.color = 0xD3D3D3;
     this.fields = components.map((component) => {
@@ -26,6 +20,4 @@ class ComponentEmbed extends BaseEmbed {
       };
     });
   }
-}
-
-module.exports = ComponentEmbed;
+};

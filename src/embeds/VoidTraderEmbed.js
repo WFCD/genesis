@@ -7,18 +7,11 @@ const { assetBase, emojify } = require('../CommonFunctions');
 
 const baroThumb = `${assetBase}/img/baro.png`;
 
-/**
- * Generates void trader embeds
- */
-class VoidTraderEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {VoidTrader} voidTrader - The current state of the Void Trader
-   * @param {string} platform - platform
-   * @param {boolean} onDemand - Whether or not the embed is created from an onDemand command
-   */
-  constructor(bot, voidTrader, platform, onDemand) {
-    super();
+module.exports = class VoidTraderEmbed extends BaseEmbed {
+  constructor(voidTrader, {
+    platform, onDemand, i18n, locale,
+  }) {
+    super(locale);
 
     this.color = voidTrader?.active ? 0x0EC9FF : 0xff6961;
 
@@ -36,14 +29,12 @@ class VoidTraderEmbed extends BaseEmbed {
       this.fields = [];
     }
     this.fields.push({
-      name: `Time until ${voidTrader.active ? 'departure from' : 'arrival at'} ${voidTrader.location}`,
-      value: `${voidTrader?.active ? voidTrader.endString : voidTrader.startString}` || 'Data Pending',
+      name: i18n`Time until ${voidTrader.active ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location}`,
+      value: `${voidTrader?.active ? voidTrader.endString : voidTrader.startString}` || i18n`Data Pending`,
     });
-    this.title = `[${platform.toUpperCase()}] Worldstate - Void Trader`;
+    this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {
       url: baroThumb,
     };
   }
-}
-
-module.exports = VoidTraderEmbed;
+};

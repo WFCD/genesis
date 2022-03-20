@@ -14,8 +14,8 @@ class KuvaEmbed extends BaseEmbed {
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
    */
-  constructor(kuver, { platform, i18n }) {
-    super();
+  constructor(kuver, { platform, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: kuvaThumb,

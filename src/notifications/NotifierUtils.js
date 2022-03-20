@@ -82,6 +82,12 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
+const perLanguage = async (fn) => {
+  for (const [locale, i18n] of Object.entries(i18ns)) {
+    await fn({ locale, i18n });
+  }
+};
+
 module.exports = {
   embeds,
   logger,
@@ -93,4 +99,5 @@ module.exports = {
   i18ns,
   asId,
   fromNow,
+  perLanguage,
 };

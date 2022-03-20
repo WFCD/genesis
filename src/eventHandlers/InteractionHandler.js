@@ -9,6 +9,8 @@ const Discord = require('discord.js');
 const Interaction = require('../models/Interaction');
 const WorldStateClient = require('../resources/WorldStateClient');
 const CustomInteraction = require('../models/CustomInteraction');
+const I18n = require('../settings/I18n');
+const languages = require('../resources/locales.json');
 
 // eslint-disable-next-line no-unused-vars
 const { CommandInteraction, ButtonInteraction } = Discord;
@@ -309,6 +311,15 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       ctx.ws = ws;
       ctx.handler = this;
       ctx.logger = this.logger;
+
+      const intLang = interaction.locale.slice(0, 2);
+      if (languages.includes(intLang)) {
+        ctx.language = intLang;
+      } else if (!languages.includes(ctx.language)) {
+        ctx.language = 'en';
+      }
+      ctx.i18n = I18n.use(ctx.language);
+
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
       if (!interaction) return undefined;
       // eslint-disable-next-line no-nested-ternary,consistent-return

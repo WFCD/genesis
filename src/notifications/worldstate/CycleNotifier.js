@@ -1,6 +1,8 @@
 'use strict';
 
-const { embeds, between, fromNow } = require('../NotifierUtils');
+const {
+  embeds, between, fromNow, perLanguage,
+} = require('../NotifierUtils');
 const Broadcaster = require('../Broadcaster');
 const logger = require('../../Logger');
 const { platforms } = require('../../CommonFunctions');
@@ -123,45 +125,68 @@ module.exports = class CyclesNotifier {
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
+  // TODO: rethink overrideCycleChanges
   async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const smolRange = fromNow(newCycle.expiry) < refreshRate;
+    if (smolRange && !cycleChange) {
+      cycleChange = true;
+      newCycle.active = newCycle.active === 'fass' ? 'vome' : 'fass';
+    }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cambion.${newCycle.active}${minutesRemaining}`;
     if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Cambion({ logger }, newCycle), platform, type,
-      );
+      await perLanguage(async ({ i18n, locale }) => this.broadcaster.broadcast(
+        new embeds.Cambion(newCycle, { i18n, locale }), platform, type,
+      ));
     }
     return type;
   }
 
   async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const smolRange = fromNow(newCycle.expiry) < refreshRate;
+    if (smolRange && !cycleChange) {
+      cycleChange = true;
+      newCycle.isDay = !newCycle.isDay;
+    }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
-    const embed = new embeds.Cycle({ logger }, newCycle);
+
     if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(embed, platform, type);
+      await perLanguage(async ({ i18n, locale }) => this.broadcaster.broadcast(
+        new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type,
+      ));
     }
     return type;
   }
 
   async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const smolRange = fromNow(newCycle.expiry) < refreshRate;
+    if (smolRange && !cycleChange) {
+      cycleChange = true;
+      newCycle.isDay = !newCycle.isDay;
+    }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `earth.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Cycle({ logger }, newCycle), platform, type,
-      );
+      await perLanguage(async ({ i18n, locale }) => this.broadcaster.broadcast(
+        new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type,
+      ));
     }
     return type;
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const smolRange = fromNow(newCycle.expiry) < refreshRate;
+    if (smolRange && !cycleChange) {
+      cycleChange = true;
+      newCycle.isWarm = !newCycle.isWarm;
+    }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
     if (!notifiedIds.includes(type)) {
-      await this.broadcaster.broadcast(
-        new embeds.Solaris({ logger }, newCycle), platform, type,
-      );
+      await perLanguage(async ({ i18n, locale }) => this.broadcaster.broadcast(
+        new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type,
+      ));
     }
     return type;
   }

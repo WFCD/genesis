@@ -2,16 +2,9 @@
 
 const BaseEmbed = require('./BaseEmbed.js');
 
-/**
- * Generates daily deal embeds
- */
 class ConstructionEmbed extends BaseEmbed {
-  /**
-   * @param {Construction} constructionProgress - The current construction information
-   * @param {string} platform - The platform the event is for
-   */
-  constructor(constructionProgress, { platform, i18n }) {
-    super();
+  constructor(constructionProgress, { platform, i18n, locale }) {
+    super(locale);
 
     this.color = 0xff6961;
     this.fields = [{
