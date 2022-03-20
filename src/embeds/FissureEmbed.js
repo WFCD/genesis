@@ -10,15 +10,17 @@ const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissu
  */
 class FissureEmbed extends BaseEmbed {
   /**
-   * @param {Array.<Fissure>} fissures - The fissures to be included in the embed
+   * @param {Array.<Fissure>|Fissure} fissures - The fissures to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n internationalization function
    * @param {string} era Era to override title
+   * @param {string} locale Locality
    */
   constructor(fissures, {
     platform, i18n, era, locale,
   }) {
     super(locale);
+    if (!Array.isArray(fissures)) fissures = [fissures];
 
     if (fissures.length > 1) {
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Fissures`;
