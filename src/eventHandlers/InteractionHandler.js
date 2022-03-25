@@ -1,23 +1,20 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import I18n from 'i18n-string-templates';
+import decache from 'decache';
+import Discord from 'discord.js';
+import Interaction from '../models/Interaction.js';
+import WorldStateClient from '../utilities/WorldStateClient.js';
+import CustomInteraction from '../models/CustomInteraction.js';
+import BaseHandler from '../models/BaseEventHandler.js';
+import logger from '../utilities/Logger.js';
+import { i18n, locales } from '../resources/index.js';
 
-const fs = require('fs');
-const path = require('path');
-const decache = require('decache');
-
-const Discord = require('discord.js');
-
-const Interaction = require('../models/Interaction');
-const WorldStateClient = require('../resources/WorldStateClient');
-const CustomInteraction = require('../models/CustomInteraction');
-const I18n = require('../settings/I18n');
-const languages = require('../resources/locales.json');
-
-// eslint-disable-next-line no-unused-vars
 const { CommandInteraction, ButtonInteraction } = Discord;
 const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
 const whitelistedGuilds = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
 
-const ws = new WorldStateClient(require('../Logger'));
+const ws = new WorldStateClient(logger);
 
 /**
  * Give a command id for a command interaction
@@ -39,7 +36,7 @@ const commandId = (interaction) => {
 /**
  * Describes a handler
  */
-module.exports = class InteractionHandler extends require('../models/BaseEventHandler') {
+export default class InteractionHandler extends BaseHandler {
   static deferred = true;
   /** @type {Array<Interaction>} */
   #loadedCommands;
@@ -58,8 +55,8 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     this.init();
   }
 
-  static async loadFiles(loadedCommands, logger) {
-    const handlersDir = path.join(__dirname, '../interactions');
+  static async loadFiles(loadedCommands) {
+    const handlersDir = path.join('src/interactions');
     let reloadedCommands = loadedCommands || [];
 
     let files = fs.readdirSync(handlersDir);
@@ -68,23 +65,22 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
 
     categories.forEach((category) => {
       files = files.concat(fs.readdirSync(path.join(handlersDir, category))
-        .map(f => path.join(handlersDir, category, f)));
+        .map(f => path.join(path.resolve(handlersDir, category, f))));
     });
 
     if (reloadedCommands.length > 0) {
       files?.forEach(f => decache(f));
     }
 
-    reloadedCommands = files.map((f) => {
+    reloadedCommands = (await Promise.all(files.map(async (f) => {
       try {
-        // eslint-disable-next-line import/no-dynamic-require, global-require
-        const Handler = require(f);
+        const Handler = (await import(f)).default;
         return Handler.prototype instanceof Interaction ? Handler : undefined;
       } catch (e) {
         logger.error(e);
         return undefined;
       }
-    })
+    })))
       .filter(h => h);
 
     return reloadedCommands;
@@ -120,7 +116,6 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
       .split(',')
       .filter(s => s.length);
-    /** @type SetApplicationCommandPermissionsOptions */
     const data = {
       /** @type Array<Discord.GuildApplicationCommandPermissionData> */
       fullPermissions: [],
@@ -206,10 +201,9 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * Load commands from files into the command manager
    * @param {Discord.ApplicationCommandManager} commands commands to populate
    * @param {Array<Interaction>} loadedFiles loaded interactions to make perms
-   * @param {Logger} logger logging interface
    * @returns {Promise<void>}
    */
-  static async loadCommands(commands, loadedFiles, logger) {
+  static async loadCommands(commands, loadedFiles) {
     const cmds = loadedFiles.filter(cmd => cmd.enabled && !cmd.ownerOnly).map((cmd) => {
       cmd.command.defaultPermission = true;
       return cmd.command;
@@ -313,12 +307,12 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
       ctx.logger = this.logger;
 
       const intLang = interaction.locale.slice(0, 2);
-      if (languages.includes(intLang)) {
+      if (locales.includes(intLang)) {
         ctx.language = intLang;
-      } else if (!languages.includes(ctx.language)) {
+      } else if (!locales.includes(ctx.language)) {
         ctx.language = 'en';
       }
-      ctx.i18n = I18n.use(ctx.language);
+      ctx.i18n = I18n(i18n, ctx.language);
 
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
       if (!interaction) return undefined;
@@ -328,4 +322,4 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
         : (customMatch ? customMatch?.commandHandler?.(interaction, ctx) : undefined);
     }
   }
-};
+}

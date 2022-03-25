@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-class ConstructionEmbed extends BaseEmbed {
+export default class ConstructionEmbed extends BaseEmbed {
   constructor(constructionProgress, { platform, i18n, locale }) {
     super(locale);
 
@@ -15,5 +13,3 @@ class ConstructionEmbed extends BaseEmbed {
     }];
   }
 }
-
-module.exports = ConstructionEmbed;

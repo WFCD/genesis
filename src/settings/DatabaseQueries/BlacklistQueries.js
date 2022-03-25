@@ -1,12 +1,10 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Blacklist queries
  * @mixin
  */
-class BlacklistQueries {
+export default class BlacklistQueries {
   async isBlacklisted(userId, guildId) {
     const query = SQL`SELECT COUNT(*) > 0 AS is_blacklisted
       FROM user_blacklist WHERE user_id = ${userId}
@@ -40,8 +38,8 @@ class BlacklistQueries {
 
   /**
    * Add a blacklisted user
-   * @param  {snowflake}  userId  User id to blacklist
-   * @param  {snowflake}  guildId Guild id or 0 frpom which to blacklist
+   * @param  {Snowflake}  userId  User id to blacklist
+   * @param  {Snowflake}  guildId Guild id or 0 from which to blacklist
    * @param  {boolean}  global  If this is a global blacklist
    * @returns {Promise}
    */
@@ -66,5 +64,3 @@ class BlacklistQueries {
     return this.query(query);
   }
 }
-
-module.exports = BlacklistQueries;

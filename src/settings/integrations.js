@@ -1,10 +1,6 @@
-'use strict';
+import SQL from 'sql-template-strings';
 
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Database = require('./Database');
-
-module.exports = [
+export default [
   /**
    * Add advanced
    * @param {Database} db database to add to

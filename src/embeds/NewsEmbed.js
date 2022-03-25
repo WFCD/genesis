@@ -1,7 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { createGroupedArray } = require('../CommonFunctions');
+import { createGroupedArray } from '../utilities/CommonFunctions.js';
 
 const newsSort = (a, b) => {
   const date1 = new Date(a.endDate || a.date);
@@ -13,7 +12,7 @@ const newsSort = (a, b) => {
 /**
  * Generates news embeds
  */
-module.exports = class NewsEmbed extends BaseEmbed {
+export default class NewsEmbed extends BaseEmbed {
   /**
    * @param {Array.<News> | News} news - The news to be included in the embed
    * @param {string} type - [Optional] type of embed between news, updates,
@@ -78,4 +77,4 @@ module.exports = class NewsEmbed extends BaseEmbed {
     }
     this.image = { url: first ? first.imageLink : '' };
   }
-};
+}

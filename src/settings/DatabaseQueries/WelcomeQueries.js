@@ -1,15 +1,11 @@
-'use strict';
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Welcome queries
  * @mixin
  * @mixes Database
  */
-class WelcomeQueries {
+export default class WelcomeQueries {
   /**
    * Clear welcome messages for a guild
    * @param {Guild} guild The guild
@@ -55,5 +51,3 @@ class WelcomeQueries {
     return [];
   }
 }
-
-module.exports = WelcomeQueries;

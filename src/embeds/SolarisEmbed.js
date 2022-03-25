@@ -1,7 +1,5 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase, fromNow, timeDeltaToString } from '../utilities/CommonFunctions.js';
 
 const solaris = `${assetBase}/img/solarisunitedflag.png`;
 const makeJobs = (mission) => {
@@ -24,7 +22,7 @@ const makeJobs = (mission) => {
   return undefined;
 };
 
-module.exports = class SolarisEmbed extends BaseEmbed {
+export default class SolarisEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
 
@@ -39,4 +37,4 @@ module.exports = class SolarisEmbed extends BaseEmbed {
     this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
     this.timestamp = new Date(state.expiry);
   }
-};
+}

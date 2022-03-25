@@ -1,15 +1,14 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates daily deal embeds
  */
-class EventEmbed extends BaseEmbed {
+export default class EventEmbed extends BaseEmbed {
   /**
    * @param {Event} event - The deal to be included in the embed
    * @param {string} platform - The platform the event is for
    * @param {I18n} i18n internationalization template
+   * @param {string} locale locality
    */
   constructor(event, { platform, i18n, locale }) {
     super(locale);
@@ -64,5 +63,3 @@ class EventEmbed extends BaseEmbed {
     }
   }
 }
-
-module.exports = EventEmbed;

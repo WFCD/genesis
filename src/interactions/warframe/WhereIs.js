@@ -1,14 +1,12 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
+import WhereisEmbed from '../../embeds/WhereisEmbed.js';
+import Collectors from '../../utilities/Collectors.js';
+import { createGroupedArray, games, toTitleCase } from '../../utilities/CommonFunctions.js';
+import WorldStateClient from '../../utilities/WorldStateClient.js';
+import Interaction from '../../models/Interaction.js';
 
-const { games, createPagedInteractionCollector } = require('../../CommonFunctions.js');
-const { ENDPOINTS } = require('../../resources/WorldStateClient');
-
-function toTitleCase(str) {
-  return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
-
+const { ENDPOINTS } = WorldStateClient;
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 const queryOpt = [{
   type: Types.STRING,
@@ -17,10 +15,7 @@ const queryOpt = [{
   required: true,
 }];
 
-const WhereisEmbed = require('../../embeds/WhereisEmbed');
-const { createGroupedArray } = require('../../CommonFunctions');
-
-module.exports = class WhereIs extends require('../../models/Interaction') {
+export default class WhereIs extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   /**
@@ -101,6 +96,6 @@ module.exports = class WhereIs extends require('../../models/Interaction') {
         longestRelic.length))
       .map(e => new Discord.MessageEmbed(e));
     await interaction.deferReply({ ephemeral: ctx.ephemerate });
-    return createPagedInteractionCollector(interaction, relics, ctx);
+    return Collectors.paged(interaction, relics, ctx);
   }
-};
+}

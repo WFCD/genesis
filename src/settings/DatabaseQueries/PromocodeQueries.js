@@ -1,13 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Promocode queries
  * @mixin
  * @mixes Database
  */
-class PromocodeQueries {
+export default class PromocodeQueries {
   constructor(db) {
     this.db = db;
   }
@@ -248,5 +246,3 @@ class PromocodeQueries {
     return (await this.query(query))[0];
   }
 }
-
-module.exports = PromocodeQueries;

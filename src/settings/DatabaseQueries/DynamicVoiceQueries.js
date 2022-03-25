@@ -1,20 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const mysql = require('mysql2/promise');
-// eslint-disable-next-line no-unused-vars
-const Database = require('../Database');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for dynamic voice queries
  * @mixin
  * @mixes Database
  */
-module.exports = class DynamicVoiceQueries {
+export default class DynamicVoiceQueries {
   /**
    * Add a channel as a template
    * @param {Discord.VoiceChannel} channel channel to be added as a template
@@ -213,4 +204,4 @@ module.exports = class DynamicVoiceQueries {
       WHERE instance_id = ${channel.id}`);
     return rows.length;
   }
-};
+}

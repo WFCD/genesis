@@ -1,14 +1,9 @@
-'use strict';
+import Discord from 'discord.js';
+import BaseEmbed from '../../embeds/BaseEmbed.js';
+import { games } from '../../utilities/CommonFunctions.js';
+import Interaction from '../../models/Interaction.js';
 
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const BaseEmbed = require('../../embeds/BaseEmbed');
-const { games } = require('../../CommonFunctions');
-
-const {
-  // eslint-disable-next-line no-unused-vars
-  Message, CommandInteraction, Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
+const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 
 const tc = {
   name: 'template_channel',
@@ -17,7 +12,7 @@ const tc = {
   required: true,
 };
 
-module.exports = class Templates extends require('../../models/Interaction') {
+export default class Templates extends Interaction {
   static elevated = true;
   static enabled = games.includes('ROOMS');
   static command = {
@@ -112,4 +107,4 @@ module.exports = class Templates extends require('../../models/Interaction') {
     }
     return interaction.reply(ctx.i18n`hmmm, something went wrong...`);
   }
-};
+}

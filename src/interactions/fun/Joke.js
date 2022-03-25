@@ -1,6 +1,6 @@
-'use strict';
+import Interaction from '../../models/Interaction.js';
 
-module.exports = class Joke extends require('../../models/Interaction') {
+export default class Joke extends Interaction {
   static enabled = true;
 
   static command = {
@@ -63,4 +63,4 @@ module.exports = class Joke extends require('../../models/Interaction') {
     'Badder than a ceramic dagger fight over primed reach',
     'You should feel bad about that. Let me rub your face in it to help.',
   ];
-};
+}

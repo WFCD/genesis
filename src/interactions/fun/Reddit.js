@@ -1,9 +1,8 @@
-'use strict';
+import fetch from '../../utilities/Fetcher.js';
+import Embed from '../../embeds/BaseEmbed.js';
+import Interaction from '../../models/Interaction.js';
 
-const fetch = require('../../resources/Fetcher');
-const Embed = require('../../embeds/BaseEmbed');
-
-module.exports = class Reddit extends require('../../models/Interaction') {
+export default class Reddit extends Interaction {
     static enabled = false;
     static subreddit = 'funny'
     static command = {
@@ -26,4 +25,4 @@ module.exports = class Reddit extends require('../../models/Interaction') {
 
       await interaction.editReply({ embeds: [embed] });
     }
-};
+}

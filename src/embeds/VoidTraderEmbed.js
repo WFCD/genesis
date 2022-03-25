@@ -1,13 +1,10 @@
-'use strict';
-
-const n = require('numeral');
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, emojify } = require('../CommonFunctions');
+import n from 'numeral';
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase, emojify } from '../utilities/CommonFunctions.js';
 
 const baroThumb = `${assetBase}/img/baro.png`;
 
-module.exports = class VoidTraderEmbed extends BaseEmbed {
+export default class VoidTraderEmbed extends BaseEmbed {
   constructor(voidTrader, {
     platform, onDemand, i18n, locale,
   }) {
@@ -37,4 +34,4 @@ module.exports = class VoidTraderEmbed extends BaseEmbed {
       url: baroThumb,
     };
   }
-};
+}

@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const simarisThumb = `${assetBase}/img/simaris.png`;
 
-module.exports = class SimarisEmbed extends BaseEmbed {
+export default class SimarisEmbed extends BaseEmbed {
   constructor(simaris, { platform, i18n, locale }) {
     super(locale);
 
@@ -16,4 +14,4 @@ module.exports = class SimarisEmbed extends BaseEmbed {
     this.color = simaris.isTargetActive > 2 ? 0x00ff00 : 0xff0000;
     this.description = simaris.asString;
   }
-};
+}

@@ -1,6 +1,4 @@
-'use strict';
-
-const Handler = require('../models/BaseEventHandler');
+import Handler from '../models/BaseEventHandler.js';
 
 let guildCheck; // I don't know where to put this
 
@@ -76,12 +74,10 @@ function guildRatioCheck(self) {
 /**
  * Describes a handler
  */
-class OnReadyHandle extends Handler {
+export default class OnReadyHandle extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.ready.ratio', 'ready');
@@ -95,5 +91,3 @@ class OnReadyHandle extends Handler {
     setTimeout(guildRatioCheck, 4000, this);
   }
 }
-
-module.exports = OnReadyHandle;

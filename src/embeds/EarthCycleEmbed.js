@@ -1,13 +1,10 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase, fromNow, timeDeltaToString } from '../utilities/CommonFunctions.js';
 
 const ostron = `${assetBase}/img/ostron-banner.png`;
 const earth = `${assetBase}/img/earth-planet.png`;
 
-class EarthCycleEmbed extends BaseEmbed {
+export default class EarthCycleEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
 
@@ -22,5 +19,3 @@ class EarthCycleEmbed extends BaseEmbed {
     this.timestamp = new Date(state.expiry);
   }
 }
-
-module.exports = EarthCycleEmbed;

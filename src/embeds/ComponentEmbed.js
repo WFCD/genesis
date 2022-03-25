@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class ComponentEmbed extends BaseEmbed {
+export default class ComponentEmbed extends BaseEmbed {
   constructor(components, { i18n, locale }) {
     super(locale);
     this.title = 'Components';
@@ -20,4 +18,4 @@ module.exports = class ComponentEmbed extends BaseEmbed {
       };
     });
   }
-};
+}

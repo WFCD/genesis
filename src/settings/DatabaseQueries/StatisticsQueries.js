@@ -1,15 +1,13 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 // eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
 /**
  * Database Mixin for role statistics queries
  * @mixin
  * @mixes Database
  */
-module.exports = class StatisticsQueries {
+export default class StatisticsQueries {
   /**
    * Track a role in a guild
    * @param {Discord.Guild} guild guild to track in
@@ -102,4 +100,4 @@ module.exports = class StatisticsQueries {
       count: r.count,
     }));
   }
-};
+}

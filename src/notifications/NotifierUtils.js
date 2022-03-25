@@ -1,46 +1,66 @@
-'use strict';
+import util from 'node:util';
+import I18n from 'i18n-string-templates';
+import urlExists from 'url-exists';
+import { apiBase, apiCdnBase } from '../utilities/CommonFunctions.js';
+import fetch from '../utilities/Fetcher.js';
 
-const util = require('util');
-const exists = util.promisify(require('url-exists'));
+import Alert from '../embeds/AlertEmbed.js';
+import Arbitration from '../embeds/ArbitrationEmbed.js';
+import Acolyte from '../embeds/AcolyteEmbed.js';
+import Cambion from '../embeds/CambionEmbed.js';
+import Conclave from '../embeds/ConclaveChallengeEmbed.js';
+import Darvo from '../embeds/DarvoEmbed.js';
+import Enemy from '../embeds/EnemyEmbed.js';
+import Event from '../embeds/EventEmbed.js';
+import Fissure from '../embeds/FissureEmbed.js';
+import Invasion from '../embeds/InvasionEmbed.js';
+import News from '../embeds/NewsEmbed.js';
+import Sales from '../embeds/SalesEmbed.js';
+import Sortie from '../embeds/SortieEmbed.js';
+import Tweet from '../embeds/TweetEmbed.js';
+import Syndicate from '../embeds/SyndicateEmbed.js';
+import VoidTrader from '../embeds/VoidTraderEmbed.js';
+import Cycle from '../embeds/EarthCycleEmbed.js';
+import Solaris from '../embeds/SolarisEmbed.js';
+import Nightwave from '../embeds/NightwaveEmbed.js';
+import Outposts from '../embeds/SentientOutpostEmbed.js';
+import SteelPath from '../embeds/SteelPathEmbed.js';
+import RSS from '../embeds/RSSEmbed.js';
 
-const embeds = {
-  Alert: require('../embeds/AlertEmbed'),
-  Arbitration: require('../embeds/ArbitrationEmbed'),
-  Acolyte: require('../embeds/AcolyteEmbed'),
-  Cambion: require('../embeds/CambionEmbed'),
-  Conclave: require('../embeds/ConclaveChallengeEmbed'),
-  Darvo: require('../embeds/DarvoEmbed'),
-  Enemy: require('../embeds/EnemyEmbed'),
-  Event: require('../embeds/EventEmbed'),
-  Fissure: require('../embeds/FissureEmbed'),
-  Invasion: require('../embeds/InvasionEmbed'),
-  News: require('../embeds/NewsEmbed'),
-  Sales: require('../embeds/SalesEmbed'),
-  Sortie: require('../embeds/SortieEmbed'),
-  Tweet: require('../embeds/TweetEmbed'),
-  Syndicate: require('../embeds/SyndicateEmbed'),
-  VoidTrader: require('../embeds/VoidTraderEmbed'),
-  Cycle: require('../embeds/EarthCycleEmbed'),
-  Solaris: require('../embeds/SolarisEmbed'),
-  Nightwave: require('../embeds/NightwaveEmbed'),
-  Outposts: require('../embeds/SentientOutpostEmbed'),
-  SteelPath: require('../embeds/SteelPathEmbed'),
-  RSS: require('../embeds/RSSEmbed'),
+export syndicates from '../resources/syndicates.json';
+export const exists = util.promisify(urlExists);
+
+export const embeds = {
+  Alert,
+  Arbitration,
+  Acolyte,
+  Cambion,
+  Conclave,
+  Darvo,
+  Enemy,
+  Event,
+  Fissure,
+  Invasion,
+  News,
+  Sales,
+  Sortie,
+  Tweet,
+  Syndicate,
+  VoidTrader,
+  Cycle,
+  Solaris,
+  Nightwave,
+  Outposts,
+  SteelPath,
+  RSS,
 };
 
-const logger = require('../Logger');
-const fetch = require('../resources/Fetcher');
-const { apiBase, apiCdnBase } = require('../CommonFunctions');
-
-const syndicates = require('../resources/syndicates.json');
-const I18n = require('../settings/I18n');
-
-const i18ns = {};
+export const i18ns = {};
 require('../resources/locales.json').forEach((locale) => {
-  i18ns[locale] = I18n.use(locale);
+  i18ns[locale] = I18n(locale);
 });
 
-const between = (activation, platform, refreshRate, beats) => {
+export const between = (activation, platform, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
   const isBeforeCurr = activationTs < (beats[platform].currCycleStart);
@@ -48,7 +68,7 @@ const between = (activation, platform, refreshRate, beats) => {
   return isBeforeCurr && isAfterLast;
 };
 
-const getThumbnailForItem = async (query, fWiki) => {
+export const getThumbnailForItem = async (query, fWiki) => {
   if (query && !fWiki) {
     const fq = query
       .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
@@ -64,7 +84,7 @@ const getThumbnailForItem = async (query, fWiki) => {
   return '';
 };
 
-const asId = (event, label) => {
+export const asId = (event, label) => {
   const uppedTime = new Date(event.expiry);
   uppedTime.setMilliseconds(0);
   uppedTime.setSeconds(0);
@@ -78,26 +98,12 @@ const asId = (event, label) => {
  * @param   {function} [now] A function that returns the current UNIX time in milliseconds
  * @returns {number}
  */
-function fromNow(d, now = Date.now) {
+export function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-const perLanguage = async (fn) => {
+export const perLanguage = async (fn) => {
   for (const [locale, i18n] of Object.entries(i18ns)) {
     await fn({ locale, i18n });
   }
-};
-
-module.exports = {
-  embeds,
-  logger,
-  platforms: process.env.PLATFORMS,
-  between,
-  getThumbnailForItem,
-  syndicates,
-  I18n,
-  i18ns,
-  asId,
-  fromNow,
-  perLanguage,
 };

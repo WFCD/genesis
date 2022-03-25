@@ -1,6 +1,7 @@
-'use strict';
+import Discord from 'discord.js';
+import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
+const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 
 const jokes = [
   'Joke\'s on you. Try again next time',
@@ -26,7 +27,7 @@ const jokes = [
   'Very doubtful',
 ];
 
-module.exports = class EightBall extends require('../../models/Interaction') {
+export default class EightBall extends Interaction {
   static enabled = true;
 
   static command = {
@@ -46,4 +47,4 @@ module.exports = class EightBall extends require('../../models/Interaction') {
       ephemeral: ctx.ephemerate,
     });
   }
-};
+}

@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class WhereisEmbed extends BaseEmbed {
+export default class WhereisEmbed extends BaseEmbed {
   /**
    * @param {Object} resultsGroups details to derive data from
    * @param {string} query The query that this search corresponds to
@@ -32,4 +30,4 @@ module.exports = class WhereisEmbed extends BaseEmbed {
     this.title = `${query}`;
     this.color = 0x3498db;
   }
-};
+}

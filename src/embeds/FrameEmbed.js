@@ -1,16 +1,16 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { emojify, assetBase } = require('../CommonFunctions');
+import { assetBase, emojify } from '../utilities/CommonFunctions.js';
 
 /**
  * Generates enemy embeds
  */
-class FrameEmbed extends BaseEmbed {
+export default class FrameEmbed extends BaseEmbed {
   /**
    * @param {Warframe} frame - The enhancement to send info on
    * @param {Array.<Warframe>} frames - List of available warframes
    * @param {I18n} i18n internationalization template
+   * @param {string} locale locality
    */
   constructor(frame, { frames, i18n, locale }) {
     super(locale);
@@ -91,5 +91,3 @@ class FrameEmbed extends BaseEmbed {
     }
   }
 }
-
-module.exports = FrameEmbed;

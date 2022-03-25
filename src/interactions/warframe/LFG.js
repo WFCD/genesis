@@ -1,6 +1,8 @@
-'use strict';
-
-const Discord = require('discord.js');
+import Discord from 'discord.js';
+import dehumanize from 'parse-duration';
+import { platformMap as platformChoices } from '../../resources/index.js';
+import LFGEmbed from '../../embeds/LFGEmbed.js';
+import Interaction from '../../models/Interaction.js';
 
 const {
   Constants: {
@@ -9,11 +11,8 @@ const {
   },
   MessageActionRow, MessageButton, InteractionCollector,
 } = Discord;
-const dehumanize = require('parse-duration');
-const platformChoices = require('../../resources/platformMap.json');
-const LFGEmbed = require('../../embeds/LFGEmbed');
 
-module.exports = class LFG extends require('../../models/Interaction') {
+export default class LFG extends Interaction {
   static enabled = true;
 
   static command = {
@@ -176,4 +175,4 @@ module.exports = class LFG extends require('../../models/Interaction') {
     collector.on('collect', reactionHandler);
     return interaction.reply({ content: 'gl;hf', ephemeral: ctx.ephemerate });
   }
-};
+}

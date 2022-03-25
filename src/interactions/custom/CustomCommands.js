@@ -1,15 +1,13 @@
-'use strict';
+import Discord from 'discord.js';
+import { createGroupedArray } from '../../utilities/CommonFunctions.js';
+import Collectors from '../../utilities/Collectors.js';
+import Interaction from '../../models/Interaction.js';
 
-const {
-  // eslint-disable-next-line no-unused-vars
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = require('discord.js');
-const { createGroupedArray } = require('../../CommonFunctions.js');
-const { createConfirmationCollector } = require('../../CommonFunctions');
+const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 
 const nameReg = /^[\w-]{1,32}$/u;
 
-module.exports = class CustomCommands extends require('../../models/Interaction') {
+export default class CustomCommands extends Interaction {
   static enabled = true;
   static elevated = true;
   static command = {
@@ -71,7 +69,7 @@ module.exports = class CustomCommands extends require('../../models/Interaction'
           return interaction.editReply('done');
         };
         const onDeny = async () => interaction.editReply('ok');
-        return createConfirmationCollector(interaction, onConfirm, onDeny, ctx);
+        return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
       case 'list':
         const ccs = [];
         const gcc = await ctx.settings.getCustomCommandsForGuild(interaction.guild);
@@ -89,4 +87,4 @@ module.exports = class CustomCommands extends require('../../models/Interaction'
     }
     return undefined;
   }
-};
+}

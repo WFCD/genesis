@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates settings embeds
  */
-class SettingsEmbed extends BaseEmbed {
+export default class SettingsEmbed extends BaseEmbed {
   /**
    * @param {Channel} channel - The channel for which to send settings
    * @param {Array.<strings>} tokens -  The settings to display
@@ -26,5 +24,3 @@ class SettingsEmbed extends BaseEmbed {
     });
   }
 }
-
-module.exports = SettingsEmbed;

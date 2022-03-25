@@ -1,8 +1,4 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for managing settings
@@ -10,7 +6,7 @@ const Discord = require('discord.js');
  * @mixes Database
  * @mixes DBMQueries
  */
-class SettingsQueries {
+export default class SettingsQueries {
   /**
    * Get the guilds stored in the database
    * @returns {Promise.<Object>} Object of guild entries
@@ -223,5 +219,3 @@ class SettingsQueries {
     return this.query(query);
   }
 }
-
-module.exports = SettingsQueries;

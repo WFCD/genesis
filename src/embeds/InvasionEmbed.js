@@ -1,14 +1,13 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, wikiBase } = require('../CommonFunctions');
+import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
 
 const invasionThumb = `${assetBase}img/invasion.png`;
 
 /**
  * Generates invasion embeds
  */
-class InvasionEmbed extends BaseEmbed {
+export default class InvasionEmbed extends BaseEmbed {
   /**
    * @param {Array.<Invasion>|Invasion} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
@@ -55,5 +54,3 @@ class InvasionEmbed extends BaseEmbed {
     };
   }
 }
-
-module.exports = InvasionEmbed;

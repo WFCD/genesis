@@ -1,16 +1,12 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-const mysql = require('mysql2/promise');
-const path = require('path');
-const fs = require('fs');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-
-const { assetBase, platforms } = require('../CommonFunctions');
-const logger = require('../Logger');
-
-const I18n = require('./I18n');
+import SQL from 'sql-template-strings';
+import mysql from 'mysql2/promise';
+import path from 'node:path';
+import { readdir } from 'node:fs/promises';
+import I18n from 'i18n-string-templates';
+import Discord from 'discord.js';
+import { assetBase, platforms } from '../utilities/CommonFunctions.js';
+import logger from '../utilities/Logger.js';
+import { i18n } from '../resources/index.js';
 
 const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
 
@@ -67,10 +63,14 @@ const props = (obj) => {
  *  @property {I18n} i18n internationalization string handler
  *  @property {Database?} settings interface for the database
  *  @property {boolean?} ephemerate whether or not to hide (make ephemeral) interaction responses
- *  @property {InteractionHandler|CommandHandler} handler access to a command's handler
+ *  @property {InteractionHandler} handler access to a command's handler
  *  @property {Role|string} modRole designated moderator role for the server
  *  @property {Discord.Message=} original original reply to an interaction
   */
+/**
+ * Discord snowflakes are strings
+ * @typedef {string} Snowflake
+ */
 
 /**
  * Persistent storage for the bot
@@ -90,7 +90,7 @@ const props = (obj) => {
  * @mixes WelcomeQueries
  * @class
  */
-module.exports = class Database {
+export default class Database {
   /**
    * @param {Genesis} bot Bot to load the settings for
    */
@@ -141,7 +141,10 @@ module.exports = class Database {
       this.logger.fatal(e);
     }
 
-    this.#loadChildren();
+    return (async () => {
+      await this.#loadChildren();
+      return this;
+    })();
   }
 
   /**
@@ -167,16 +170,15 @@ module.exports = class Database {
    * Make sure your bot is in a secured folder
    *  if you're worried about shard space.
    */
-  #loadChildren () {
-    const dbRoot = path.join(__dirname, 'DatabaseQueries');
-    fs.readdirSync(dbRoot)
+  async #loadChildren () {
+    const dbRoot = path.join(path.resolve('src/settings/DatabaseQueries'));
+    await Promise.all((await readdir(dbRoot))
       .filter(f => f.endsWith('.js'))
-      .forEach((file) => {
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        const QClass = require(path.join(dbRoot, file));
+      .map(async (file) => {
+        const QClass = (await import(path.join(dbRoot, file))).default;
         const qInstance = new QClass(this.db);
         Database.#copyChildQueries(qInstance);
-      });
+      }));
   }
 
   init() {
@@ -424,7 +426,7 @@ module.exports = class Database {
       context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;
-    context.i18n = I18n.use(context.language);
+    context.i18n = I18n(i18n, context.language);
     return context;
   }
-};
+}

@@ -1,16 +1,13 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const Handler = require('../models/BaseEventHandler');
-const { games } = require('../CommonFunctions');
-
-class LeaveNotify extends Handler {
+export default class LeaveNotify extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.server.leave', Events.GUILD_DELETE);
@@ -18,7 +15,7 @@ class LeaveNotify extends Handler {
 
   /**
    * Run the handle
-   * @param {GuildMember} member guildMember to welcome
+   * @param {Discord.GuildMember} member guildMember to welcome
    */
   async execute(...[guild]) {
     if (!games.includes('LOGGING')) return;
@@ -52,5 +49,3 @@ class LeaveNotify extends Handler {
     }
   }
 }
-
-module.exports = LeaveNotify;

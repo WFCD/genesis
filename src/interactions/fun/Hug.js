@@ -1,8 +1,8 @@
-'use strict';
+import Interaction from '../../models/Interaction.js';
 
 const content = '```haskell\nOperator, Cephalons do not g-g-g-give huuuu~~ Screw it. ⊂（♡⌂♡）⊃```';
 
-module.exports = class Hug extends require('../../models/Interaction') {
+export default class Hug extends Interaction {
   static enabled = true;
 
   static command = {
@@ -13,4 +13,4 @@ module.exports = class Hug extends require('../../models/Interaction') {
   static async commandHandler(interaction, ctx) {
     return interaction.reply({ content, ephemeral: ctx.ephemerate });
   }
-};
+}

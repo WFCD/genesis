@@ -1,14 +1,11 @@
-'use strict';
+import Broadcaster from '../Broadcaster.js';
+import logger from '../../utilities/Logger.js';
 
-const {
-  embeds, getThumbnailForItem, between, asId, i18ns, syndicates, perLanguage,
-} = require('../NotifierUtils');
-const Broadcaster = require('../Broadcaster');
-const logger = require('../../Logger');
+import {
+  asId, between, embeds, getThumbnailForItem, i18ns, perLanguage, syndicates,
+} from '../NotifierUtils';
 
-const {
-  createGroupedArray, platforms, captures,
-} = require('../../CommonFunctions');
+import { captures, createGroupedArray, platforms } from '../../utilities/CommonFunctions.js';
 
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
@@ -23,8 +20,7 @@ const makeNightwaveType = (challenge) => {
   }
   return `nightwave.${type}`;
 };
-
-function buildNotifiableData(newData, platform, notified) {
+const buildNotifiableData = (newData, platform, notified) => {
   const data = {
     acolytes: newData.persistentEnemies.filter(e => !notified.includes(e.pid)),
     alerts: newData.alerts.filter(a => !a.expired && !notified.includes(a.id)),
@@ -95,23 +91,22 @@ function buildNotifiableData(newData, platform, notified) {
   }
 
   return data;
-}
+};
 
-module.exports = class Notifier {
+export default class Notifier {
   #settings;
   #worldStates;
   #broadcaster;
   #updating;
 
   constructor({
-    settings, client, messageManager, worldStates, timeout, workerCache,
+    settings, client, worldStates, timeout, workerCache,
   }) {
     this.#settings = settings;
     this.#worldStates = worldStates;
     this.#broadcaster = new Broadcaster({
       client,
       settings: this.#settings,
-      messageManager,
       workerCache,
     });
     logger.info('Ready', 'WS');
@@ -468,4 +463,4 @@ module.exports = class Notifier {
       }
     }
   }
-};
+}

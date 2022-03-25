@@ -1,22 +1,14 @@
-'use strict';
+import SQL from 'sql-template-strings';
 
-// eslint-disable-next-line no-unused-vars
-const mysql = require('mysql2/promise');
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
-
-const logger = require('../../Logger');
-const pingLists = require('../../resources/pingables.json');
+import logger from '../../utilities/Logger.js';
+import { pingables } from '../../resources/index.js';
 
 /**
  * Database Mixin for Pings queries
  * @mixin
  * @mixes Database
  */
-class PingsQueries {
+export default class PingsQueries {
   /**
    * Enables or disables pings for an item in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
@@ -106,7 +98,7 @@ class PingsQueries {
 
   async getAllPings() {
     let globalPings = {};
-    for (const plist of pingLists) {
+    for (const plist of pingables) {
       const plistPings = await this.getGroupPings(plist);
       globalPings = {
         ...globalPings,
@@ -266,5 +258,3 @@ class PingsQueries {
     return rows.length ? rows[0].id_list : [];
   }
 }
-
-module.exports = PingsQueries;

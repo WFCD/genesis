@@ -1,13 +1,7 @@
-'use strict';
-
-const Promise = require('bluebird');
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const schema = require('../schema.js');
-const integrations = require('../integrations');
+import Promise from 'bluebird';
+import SQL from 'sql-template-strings';
+import schema from '../schema.js';
+import integrations from '../integrations.js';
 
 /**
  * Database Mixin for DBM queries
@@ -19,7 +13,7 @@ const integrations = require('../integrations');
  * @mixes SettingsQueries
  * @mixes PrivateRoomQueries
  */
-class DBMQueries {
+export default class DBMQueries {
   /**
    * Creates the required tables in the database
    * @returns {Promise}
@@ -35,9 +29,10 @@ class DBMQueries {
     }
   }
 
+  // eslint-disable-next-line valid-jsdoc
   /**
   * Initialize data for guilds in channels for existing guilds
-  * @param {Client} client for pulling guild information
+  * @param {module:"discord.js".Client} client for pulling guild information
   */
   async ensureData(client) {
     const promises = [];
@@ -122,5 +117,3 @@ class DBMQueries {
     return Promise.all(results);
   }
 }
-
-module.exports = DBMQueries;

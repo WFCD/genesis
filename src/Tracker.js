@@ -1,11 +1,10 @@
-'use strict';
+import fetch from 'node-fetch';
+
+import AutoPoster from 'topgg-autoposter';
+
+import logger from './utilities/Logger.js';
 
 const Job = require('cron').CronJob;
-const fetch = require('node-fetch');
-
-const AutoPoster = require('topgg-autoposter');
-
-const logger = require('./Logger');
 
 const config = {
   carbon: {
@@ -52,7 +51,7 @@ const crons = {
  * Describes a tracking service for updating remote sites
  * with server count for this bot
  */
-module.exports = class Tracker {
+export default class Tracker {
   #currentCount;
   #jobs;
   #bot;
@@ -155,4 +154,4 @@ module.exports = class Tracker {
     this.updateCarbonitex();
     this.updateBotsGG();
   }
-};
+}

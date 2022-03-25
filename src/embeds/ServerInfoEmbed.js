@@ -1,4 +1,4 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
 const verifications = {
   NONE: {
@@ -26,7 +26,7 @@ const verifications = {
 /**
  * Generates daily deal embeds
  */
-class ServerInfoEmbed extends require('./BaseEmbed.js') {
+export default class ServerInfoEmbed extends BaseEmbed {
   /**
    * @param {Guild} guild - The sales to be displayed as featured or popular
    */
@@ -81,5 +81,3 @@ class ServerInfoEmbed extends require('./BaseEmbed.js') {
     this.footer = { text: `Server ID: ${guild.id}` };
   }
 }
-
-module.exports = ServerInfoEmbed;

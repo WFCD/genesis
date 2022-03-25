@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates enemy embeds
  */
-module.exports = class PatchnotesEmbed extends BaseEmbed {
+export default class PatchnotesEmbed extends BaseEmbed {
   /**
    * @param {Array.<Component>} patchlogs - List of components for an item or weapon
    * @param {I18n} i18n internationalization template
@@ -33,4 +31,4 @@ module.exports = class PatchnotesEmbed extends BaseEmbed {
       this.setImage(patchlogs[0].imgUrl);
     }
   }
-};
+}

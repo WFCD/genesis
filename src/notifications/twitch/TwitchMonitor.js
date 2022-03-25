@@ -1,13 +1,11 @@
-'use strict';
+import moment from 'moment';
+import Cache from 'flat-cache';
+import EventEmitter from 'node:events';
+import TwitchApi from './TwitchClient.js';
+import logger from '../../utilities/Logger.js';
+import { twitch as channels } from '../../resources/index.js';
 
-const moment = require('moment');
-const Cache = require('flat-cache');
-require('colors');
-const EventEmitter = require('events');
-
-const TwitchApi = require('./TwitchClient');
-const logger = require('../../Logger');
-const channels = require('../../resources/twitch.json');
+import 'colors';
 
 const haveEqualValues = (a, b) => {
   if (a.length !== b.length) {
@@ -26,14 +24,12 @@ const haveEqualValues = (a, b) => {
   return true;
 };
 
-const TEN_MINUTES = 1000 * 60 * 10;
-
-const refreshRate = Number.parseInt(process.env.TWITCH_REFRESH || 60000, 10);
-
 const forceHydrate = (process.argv[2] || '').includes('--hydrate');
 
-class TwitchMonitor extends EventEmitter {
+export default class TwitchMonitor extends EventEmitter {
   static #MIN_POLL_INTERVAL_MS = 30000;
+  static #TEN_MINUTES = 600000;
+  static #REFRESH_RATE = Number.parseInt(process.env.TWITCH_REFRESH || this.#TEN_MINUTES, 10);
 
   #userDb;
   #gameDb;
@@ -80,14 +76,14 @@ class TwitchMonitor extends EventEmitter {
     }
 
     if (forceHydrate) {
-      await TwitchApi.hydrateToken();
+      TwitchApi.hydrateToken();
     }
 
     // Configure polling interval
-    let checkIntervalMs = refreshRate;
-    if (Number.isNaN(checkIntervalMs) || checkIntervalMs < TwitchMonitor.MIN_POLL_INTERVAL_MS) {
+    let checkIntervalMs = TwitchMonitor.#REFRESH_RATE;
+    if (Number.isNaN(checkIntervalMs) || checkIntervalMs < TwitchMonitor.#MIN_POLL_INTERVAL_MS) {
       // Enforce minimum poll interval to help avoid rate limits
-      checkIntervalMs = TwitchMonitor.MIN_POLL_INTERVAL_MS;
+      checkIntervalMs = TwitchMonitor.#MIN_POLL_INTERVAL_MS;
     }
     setInterval(() => {
       this.refresh('Periodic refresh');
@@ -116,7 +112,7 @@ class TwitchMonitor extends EventEmitter {
       } finally {
         if (this.#pendingUserRefresh) {
           this.#pendingUserRefresh = false;
-          this.refresh('Got Twitch users, need to get streams');
+          await this.refresh('Got Twitch users, need to get streams');
         }
       }
     }
@@ -145,6 +141,16 @@ class TwitchMonitor extends EventEmitter {
     }
   }
 
+  /**
+   * @typedef {Object} TwitchUser
+   * @property {string} id
+   * @property {string} display_name
+   */
+
+  /**
+   * Handle receiving list of users
+   * @param {Array<TwitchUser>} users users received to updated and cache
+   */
   #handleUserList (users) {
     const namesSeen = [];
 
@@ -193,6 +199,11 @@ class TwitchMonitor extends EventEmitter {
     this.#recentLive = this.#recentLive.filter(s => s !== stream);
   }
 
+  /**
+   * Handle parsing the stream list of data
+   * @param {Array<StreamData>} streams streams to handle
+   * @returns {Promise<void>}
+   */
   async #handleStreamList (streams) {
     // Index channel data & build list of stream IDs now online
     const nextGameIdList = [];
@@ -232,7 +243,6 @@ class TwitchMonitor extends EventEmitter {
     for (const channel of channels) {
       if (!streams.find(s => s.user_login === channel)
         && this.#statesDb.getKey(channel) === 'live') {
-        // logger.debug(`${channel} has gone offline`);
         this.#handleChannelLiveUpdate(
           this.#streamData[channel] || { type: 'offline', user_login: channel }, false,
         );
@@ -245,10 +255,25 @@ class TwitchMonitor extends EventEmitter {
       // We need to refresh game info
       this.#watchingGameIds = nextGameIdList;
       this.#pendingGameRefresh = true;
-      this.refresh('Need to request game data');
+      await this.refresh('Need to request game data');
     }
   }
 
+  /**
+   * @typedef {Object} StreamData
+   * @property {string} user_name
+   * @property {string} user_login
+   * @property {string} game_id
+   * @property {string} type
+   * @property {string} user_id
+   */
+
+  /**
+   * Handle updating a channel to be live
+   * @param {StreamData} streamData stream data to set live
+   * @param {boolean} isOnline whether or not the account is now online
+   * @returns {boolean}
+   */
   #handleChannelLiveUpdate (streamData, isOnline) {
     let success = true;
 
@@ -256,7 +281,9 @@ class TwitchMonitor extends EventEmitter {
       if (isOnline && !this.#recentLive.includes(streamData.user_name)) {
         this.emit('live', streamData);
         this.#recentLive.push(streamData.user_name);
-        setTimeout(() => { this.#emptyRecentStreams(streamData.user_name); }, TEN_MINUTES);
+        setTimeout(() => {
+          this.#emptyRecentStreams(streamData.user_name);
+        }, TwitchMonitor.#TEN_MINUTES);
       } else {
         this.emit('offline', streamData);
       }
@@ -281,5 +308,3 @@ class TwitchMonitor extends EventEmitter {
     return this.#userData[user];
   }
 }
-
-module.exports = TwitchMonitor;

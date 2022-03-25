@@ -1,12 +1,7 @@
-'use strict';
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-
 /**
  * Describes a handler
  */
-class BaseEventHandler {
+export default class BaseEventHandler {
   static deferred = false;
 
   /**
@@ -42,12 +37,6 @@ class BaseEventHandler {
     this.event = event;
 
     /**
-     * Message manager
-     * @type {MessageManager}
-     */
-    this.messageManager = bot.messageManager;
-
-    /**
      * Database settings wrapper
      * @type {Database}
      * @instance
@@ -56,7 +45,7 @@ class BaseEventHandler {
 
     /**
      * The bot client
-     * @type {Discord.Client}
+     * @type {module:"discord.js".Client}
      */
     this.client = bot.client;
   }
@@ -69,5 +58,3 @@ class BaseEventHandler {
     this.logger.debug(`Handled ${event}`);
   }
 }
-
-module.exports = BaseEventHandler;

@@ -1,6 +1,13 @@
-'use strict';
-
-const Discord = require('discord.js');
+import Discord, { MessageButton } from 'discord.js';
+import Interaction from '../../models/Interaction.js';
+import {
+  chunkify,
+  emojify,
+  toTitleCase,
+  trackableEvents,
+  trackableItems,
+  trackablesFromParameters,
+} from '../../utilities/CommonFunctions.js';
 
 const {
   Constants: {
@@ -9,10 +16,6 @@ const {
   },
   MessageActionRow, MessageSelectMenu, InteractionCollector,
 } = Discord;
-const { MessageButton } = require('discord.js');
-const {
-  chunkify, trackableEvents, toTitleCase, trackableItems, trackablesFromParameters, emojify,
-} = require('../../CommonFunctions');
 
 /**
  * Generate tracking message strings
@@ -28,7 +31,7 @@ const chunkerate = (track) => {
 
 const subgrouped = ['arbitration', 'fissures', 'twitter'];
 
-module.exports = class Settings extends require('../../models/Interaction') {
+export default class Settings extends Interaction {
   static elevated = true;
   static command = {
     name: 'tracking',
@@ -496,4 +499,4 @@ module.exports = class Settings extends require('../../models/Interaction') {
       await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }
   }
-};
+}
