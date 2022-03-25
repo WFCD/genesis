@@ -1,6 +1,4 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Streams queries
@@ -8,7 +6,7 @@ const SQL = require('sql-template-strings');
  * @deprecated
  * @mixes Database
  */
-module.exports = class StreamQueries {
+export default class StreamQueries {
   addStream(type, username, uid) {
     let q;
     if (uid) {
@@ -34,4 +32,4 @@ module.exports = class StreamQueries {
 
     return (await this.query(q))[0];
   }
-};
+}

@@ -1,8 +1,8 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
-
-const { games } = require('../../CommonFunctions.js');
+import WhatsInEmbed from '../../embeds/WhatsinEmbed.js';
+import Interaction from '../../models/Interaction.js';
+import { games, toTitleCase } from '../../utilities/CommonFunctions.js';
 
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 const queryOpt = [{
@@ -12,10 +12,7 @@ const queryOpt = [{
   required: true,
 }];
 
-const WhatsInEmbed = require('../../embeds/WhatsinEmbed');
-const { toTitleCase } = require('../../CommonFunctions');
-
-module.exports = class WhatsIn extends require('../../models/Interaction') {
+export default class WhatsIn extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   /**
@@ -63,4 +60,4 @@ module.exports = class WhatsIn extends require('../../models/Interaction') {
     const embed = new WhatsInEmbed(data, tier, query);
     return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
   }
-};
+}

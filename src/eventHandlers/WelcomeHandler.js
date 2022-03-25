@@ -1,16 +1,13 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games, getRandomWelcome, isVulgarCheck } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const Handler = require('../models/BaseEventHandler');
-const { isVulgarCheck, getRandomWelcome, games } = require('../CommonFunctions');
-
-class WelcomeHandler extends Handler {
+export default class WelcomeHandler extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.welcome', Events.GUILD_MEMBER_ADD);
@@ -18,7 +15,7 @@ class WelcomeHandler extends Handler {
 
   /**
    * Run the handle
-   * @param {GuildMember} member guildMember to welcome
+   * @param {Discord.GuildMember} member guildMember to welcome
    */
   async execute(...[member]) {
     if (!games.includes('LOGGING')) return;
@@ -47,5 +44,3 @@ class WelcomeHandler extends Handler {
     }
   }
 }
-
-module.exports = WelcomeHandler;

@@ -1,14 +1,10 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for custom command queries
  * @mixin
  */
-module.exports = class CustomCommandQueries {
+export default class CustomCommandQueries {
   /**
    * Get raw custom commands for specified guild
    * @param {string} guildId guild identifier
@@ -133,4 +129,4 @@ module.exports = class CustomCommandQueries {
     const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
     return this.query(query);
   }
-};
+}

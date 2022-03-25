@@ -1,17 +1,14 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
+import WorldStateClient from './utilities/WorldStateClient.js';
+import EventHandler from './eventHandlers/EventHandler.js';
+
+import Database from './settings/Database.js';
+import logger from './utilities/Logger.js';
 
 const {
   Client, WebhookClient, Intents, Constants: { Events },
 } = Discord;
-
-const WorldStateClient = require('./resources/WorldStateClient');
-const EventHandler = require('./EventHandler');
-
-const MessageManager = require('./settings/MessageManager');
-const Database = require('./settings/Database');
-const logger = require('./Logger');
 
 const unlog = {
   debug: ['WS_CONNECTION_TIMEOUT'],
@@ -42,7 +39,7 @@ const unlog = {
  * @property {EventHandler} eventHandler
  * @property {Discord.Client} client
  */
-module.exports = class Genesis {
+export default class Genesis {
   /**
    * @param  {string}           discordToken         The token used to authenticate with Discord
    * @param  {Logger}           logger               The logger object
@@ -113,48 +110,46 @@ module.exports = class Genesis {
      */
     this.owner = owner;
 
-    /**
-     * Persistent storage for settings
-     * @type {Database}
-     */
-    this.settings = new Database(this);
+    return (async () => {
+      /**
+       * Persistent storage for settings
+       * @type {Database}
+       */
+      this.settings = await new Database(this);
 
-    this.ws = new WorldStateClient(this.logger);
-    this.messageManager = new MessageManager(this);
+      this.ws = new WorldStateClient(this.logger);
 
-    /**
-     * Handles events, such as member joins, bans, delets, etc.
-     * @type {EventHandler}
-     */
-    this.eventHandler = new EventHandler(this);
-    this.shards = shards;
-    this.shardTotal = process.env.SHARDS || 1;
-    this.clusterId = process.env.CLUSTER_ID || 0;
-    // this.tracker = new Tracker(this);
+      /**
+       * Handles events, such as member joins, bans, delets, etc.
+       * @type {EventHandler}
+       */
+      this.eventHandler = new EventHandler(this);
+      this.shards = shards;
+      this.shardTotal = process.env.SHARDS || 1;
+      this.clusterId = process.env.CLUSTER_ID || 0;
+      // this.tracker = new Tracker(this);
 
-    if (process.env.CONTROL_WH_ID) {
-      this.controlHook = new WebhookClient({
-        id: process.env.CONTROL_WH_ID,
-        token: process.env.CONTROL_WH_TOKEN,
-      });
-    }
-    if (process.env.BUG_WH_ID) {
-      this.bugHook = new WebhookClient({
-        id: process.env.BUG_WH_ID,
-        token: process.env.BUG_WH_TOKEN,
-      });
-    } else if (process.env.CONTROL_WH_ID) {
-      this.bugHook = this.controlHook;
-    }
+      if (process.env.CONTROL_WH_ID) {
+        this.controlHook = new WebhookClient({
+          id: process.env.CONTROL_WH_ID,
+          token: process.env.CONTROL_WH_TOKEN,
+        });
+      }
+      if (process.env.BUG_WH_ID) {
+        this.bugHook = new WebhookClient({
+          id: process.env.BUG_WH_ID,
+          token: process.env.BUG_WH_TOKEN,
+        });
+      } else if (process.env.CONTROL_WH_ID) {
+        this.bugHook = this.controlHook;
+      }
+      return this;
+    })();
   }
 
   async setupHandlers() {
     this.client.on(Events.CLIENT_READY, async () => this.eventHandler
       .handleEvent({ event: Events.CLIENT_READY, args: [] }));
-    // TODO: continue removing events we don't need
-    // this.client.on(Events.MESSAGE_CREATE,
-    //   async message => this.eventHandler
-    //     .handleEvent({ event: Events.MESSAGE_CREATE, args: [message] }));
 
     this.client.on(Events.GUILD_CREATE,
       async guild => this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] }));
@@ -190,7 +185,7 @@ module.exports = class Genesis {
    * Creates the database schema and logs in the bot to Discord
    */
   async start() {
-    await this.settings.createSchema(this.client);
+    await this.settings.createSchema();
     this.logger.debug('Schema created');
     await this.eventHandler.loadHandles();
 
@@ -199,7 +194,7 @@ module.exports = class Genesis {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
     } catch (err) {
-      const type = ((err && err.toString()) || '').replace(/Error \[(.*)\]: .*/ig, '$1');
+      const type = ((err && err.toString()) || '').replace(/Error \[(.*)]: .*/ig, '$1');
       if (!unlog.debug.includes(type)) {
         this.logger.error(err);
       }
@@ -207,4 +202,4 @@ module.exports = class Genesis {
       process.exit(1);
     }
   }
-};
+}

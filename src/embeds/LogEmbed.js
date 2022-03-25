@@ -1,6 +1,4 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * A collection of configurables for a log
@@ -11,7 +9,7 @@ const BaseEmbed = require('./BaseEmbed.js');
  * @property {string} footer         - String for the footer
  */
 
-class LogEmbed extends BaseEmbed {
+export default class LogEmbed extends BaseEmbed {
   /**
    * @param {Log} log - LFG Options
    */
@@ -23,5 +21,3 @@ class LogEmbed extends BaseEmbed {
     this.footer.text = log.footer;
   }
 }
-
-module.exports = LogEmbed;

@@ -1,7 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { emojify, apiCdnBase, wikiBase } = require('../CommonFunctions');
+import { apiCdnBase, emojify, wikiBase } from '../utilities/CommonFunctions.js';
 
 const rarity = {
   common: 0x775448,
@@ -12,7 +11,7 @@ const rarity = {
   peculiar: 0x626360,
 };
 
-class ModEmbed extends BaseEmbed {
+export default class ModEmbed extends BaseEmbed {
   constructor(modData, { i18n, locale }) {
     super(locale);
 
@@ -62,5 +61,3 @@ class ModEmbed extends BaseEmbed {
     }];
   }
 }
-
-module.exports = ModEmbed;

@@ -1,8 +1,6 @@
-'use strict';
-
-const mysql = require('mysql2/promise');
-const SQL = require('sql-template-strings');
-const Promise = require('bluebird');
+import mysql from 'mysql2/promise';
+import SQL from 'sql-template-strings';
+import Promise from 'bluebird';
 
 const dbOptions = {
   host: process.env.MYSQL_HOST || 'localhost',

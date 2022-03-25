@@ -1,9 +1,7 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
+import logger from '../utilities/Logger.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { chunkify, markdinate } = require('../CommonFunctions');
-const logger = require('../Logger');
+import { chunkify, markdinate } from '../utilities/CommonFunctions.js';
 
 /**
  * Generates daily deal embeds
@@ -87,4 +85,4 @@ class RSSEmbed extends BaseEmbed {
   }
 }
 
-module.exports = RSSEmbed;
+export default RSSEmbed;

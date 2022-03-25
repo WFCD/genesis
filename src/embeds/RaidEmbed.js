@@ -1,15 +1,14 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
+import RaidStat from '../models/RaidStat.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const RaidStat = require('../resources/RaidStat.js');
-const { assetBase } = require('../CommonFunctions');
-
-module.exports = class RaidStatEmbed extends BaseEmbed {
+export default class RaidStatEmbed extends BaseEmbed {
   /**
    * @param {Simaris} userStats - User raid stat json
    * @param {string} query - Query for this embed
    * @param {string} platform - Platform for the query
    * @param {I18n} i18n internationalization template
+   * @param {string} locale embed locale
    */
   constructor(userStats, {
     query, platform, i18n, locale,
@@ -52,4 +51,4 @@ module.exports = class RaidStatEmbed extends BaseEmbed {
 
     this.footer.text = i18n`Evaluated by Cephalon Genesis | Source: trials.wf`;
   }
-};
+}

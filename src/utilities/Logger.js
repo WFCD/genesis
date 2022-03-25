@@ -1,10 +1,9 @@
-'use strict';
-
 /* eslint-disable no-console */
-const Sentry = require('@sentry/node');
-require('colors');
-const { WebhookClient } = require('discord.js');
-const ErrorEmbed = require('./embeds/ErrorEmbed');
+import Sentry from '@sentry/node';
+
+import { WebhookClient } from 'discord.js';
+import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import 'colors';
 
 const ignore = ['Invalid refresh token', 'Failed to load', 'https://discord.com/api/webhooks/', 'Could not find the channel', 'DiscordAPIError', 'CHANNEL_NOT_CACHED'];
 const ignoreReg = new RegExp(`(${ignore.join('|')})`, 'i');
@@ -62,7 +61,7 @@ const contexts = {
  * @property {function} silly   - silly level of debugging
  * @property {function} debug   - Logs a debug message
  * @property {function} info    - Logs an info message
- * @property {function} warning - Logs a warning message
+ * @property {function} warn - Logs a warning message
  * @property {function} error   - Logs an error message
  * @property {function} fatal   - Logs a fatal message. The program should terminate after such
  *                                 an error
@@ -116,4 +115,4 @@ process.on('unhandledRejection', (err) => {
   logger.error(err);
 });
 
-module.exports = logger;
+export default logger;

@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const darvo = `${assetBase}/img/darvo-md.png`;
 
-module.exports = class DarvoEmbed extends BaseEmbed {
+export default class DarvoEmbed extends BaseEmbed {
   constructor(deal, { platform, i18n, locale }) {
     super(locale);
     if (Array.isArray(deal)) [deal] = deal;
@@ -22,4 +20,4 @@ module.exports = class DarvoEmbed extends BaseEmbed {
     ];
     this.footer.text = i18n`${deal.total - deal.sold}/${deal.total} left`;
   }
-};
+}

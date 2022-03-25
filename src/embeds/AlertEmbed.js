@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const alertThumb = `${assetBase}/img/alert.png`;
 
-module.exports = class AlertEmbed extends BaseEmbed {
+export default class AlertEmbed extends BaseEmbed {
   constructor(alerts, { platform, i18n, locale }) {
     super(locale);
 
@@ -44,4 +42,4 @@ module.exports = class AlertEmbed extends BaseEmbed {
       this.timestamp = a.expiry;
     }
   }
-};
+}

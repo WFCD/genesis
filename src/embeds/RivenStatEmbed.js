@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class RivenStatEmbed extends BaseEmbed {
+export default class RivenStatEmbed extends BaseEmbed {
   /**
    * @param {Object} rivenResult details to derive data from
    * @param {string} resultKey The query that this search corresponds to
@@ -93,4 +91,4 @@ module.exports = class RivenStatEmbed extends BaseEmbed {
     this.title = i18n`Riven: ${resultKey}`;
     this.color = 0x84659F;
   }
-};
+}

@@ -1,9 +1,5 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
+import SQL from 'sql-template-strings';
+import Discord from 'discord.js';
 
 const { Role } = Discord;
 
@@ -12,7 +8,7 @@ const { Role } = Discord;
  * @mixin
  * @mixes Database
  */
-class PermissionsQueries {
+export default class PermissionsQueries {
   /**
    * Enables or disables a command for an individual member in a channel
    * @param {Discord.TextChannel} channel - A discord guild channel
@@ -272,5 +268,3 @@ class PermissionsQueries {
     return [];
   }
 }
-
-module.exports = PermissionsQueries;

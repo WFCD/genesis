@@ -1,11 +1,10 @@
-'use strict';
+import Broadcaster from '../Broadcaster.js';
+import logger from '../../utilities/Logger.js';
+import { platforms } from '../../utilities/CommonFunctions.js';
 
 const {
   embeds, between, fromNow, perLanguage,
 } = require('../NotifierUtils');
-const Broadcaster = require('../Broadcaster');
-const logger = require('../../Logger');
-const { platforms } = require('../../CommonFunctions');
 
 const beats = {};
 let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 60000) / 3;
@@ -31,9 +30,9 @@ function buildNotifiableData(newData, platform) {
   return data;
 }
 
-module.exports = class CyclesNotifier {
+export default class CyclesNotifier {
   constructor({
-    settings, client, messageManager, worldStates, timeout, workerCache,
+    settings, client, worldStates, timeout, workerCache,
   }) {
     this.settings = settings;
     this.client = client;
@@ -41,7 +40,6 @@ module.exports = class CyclesNotifier {
     this.broadcaster = new Broadcaster({
       client,
       settings: this.settings,
-      messageManager,
       workerCache,
     });
     logger.info('Ready', 'CY');
@@ -190,4 +188,4 @@ module.exports = class CyclesNotifier {
     }
     return type;
   }
-};
+}

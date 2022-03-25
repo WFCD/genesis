@@ -1,8 +1,7 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
-
-const { games } = require('../../CommonFunctions.js');
+import { games } from '../../utilities/CommonFunctions.js';
+import Interaction from '../../models/Interaction.js';
 
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 
@@ -30,7 +29,7 @@ const smoothstep = (currentLevel, baseLevel) => {
   return 3 * (t * t) - 2 * (t * t * t);
 };
 
-module.exports = class Calculator extends require('../../models/Interaction') {
+export default class Calculator extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   static command = {
@@ -106,4 +105,4 @@ module.exports = class Calculator extends require('../../models/Interaction') {
         return interaction.reply({ content: 'ok', ephemeral: ctx.ephemerate });
     }
   }
-};
+}

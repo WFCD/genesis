@@ -1,10 +1,7 @@
-'use strict';
-
-const EventEmitter = require('events');
-const { apiBase } = require('./CommonFunctions.js');
-const fetch = require('./resources/Fetcher');
-
-const logger = require('./Logger');
+import EventEmitter from 'events';
+import fetch from './Fetcher.js';
+import logger from './Logger.js';
+import { apiBase } from './CommonFunctions.js';
 
 const worldStateURLs = {
   pc: `${apiBase}/pc`,
@@ -13,7 +10,7 @@ const worldStateURLs = {
   swi: `${apiBase}/swi`,
 };
 
-module.exports = class WorldStateCache extends EventEmitter {
+export default class WorldStateCache extends EventEmitter {
   constructor(platform, timeout) {
     super();
     this.url = worldStateURLs[platform];
@@ -46,4 +43,4 @@ module.exports = class WorldStateCache extends EventEmitter {
     }
     return this.updating;
   }
-};
+}

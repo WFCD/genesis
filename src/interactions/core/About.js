@@ -1,6 +1,6 @@
-'use strict';
+import Interaction from '../../models/Interaction.js';
 
-module.exports = class About extends require('../../models/Interaction') {
+export default class About extends Interaction {
   static enabled = true;
 
   static command = {
@@ -54,4 +54,4 @@ module.exports = class About extends require('../../models/Interaction') {
       ephemeral: true,
     });
   }
-};
+}

@@ -1,18 +1,15 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class AddGuildToDatabase extends Handler {
+export default class AddGuildToDatabase extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.addGuild', Events.GUILD_CREATE);
@@ -33,5 +30,3 @@ class AddGuildToDatabase extends Handler {
     this.logger.debug(`Joined guild ${guild} (${guild.id}`);
   }
 }
-
-module.exports = AddGuildToDatabase;

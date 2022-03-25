@@ -1,10 +1,10 @@
-'use strict';
+import Discord from 'discord.js';
+import { games } from '../utilities/CommonFunctions.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const { games } = require('../CommonFunctions');
-
-module.exports = class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
+export default class UpdateGuildStatistics extends Handler {
   constructor(bot) {
     super(bot, 'handlers.statsupdate', Events.GUILD_MEMBER_UPDATE);
   }
@@ -27,4 +27,4 @@ module.exports = class UpdateGuildStatistics extends require('../models/BaseEven
         }
       });
   }
-};
+}

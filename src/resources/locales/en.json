@@ -265,5 +265,7 @@
   "Published ": "Published ",
   "No Update News Currently":"No Update News Currently",
   "No Prime Access Currently": "No Prime Access Currently",
-  "No News Currently": "No News Currently"
+  "No News Currently": "No News Currently",
+  "Are you sure?": "Are you sure?",
+  "⚠️ No {0} active.": "⚠️ No {0} active."
 }

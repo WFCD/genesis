@@ -1,25 +1,19 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class AddChannelToDatabase extends Handler {
-  /**
-   * Base class for bot commands
-   * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
-   */
+export default class AddChannelToDatabase extends Handler {
   constructor(bot) {
     super(bot, 'handlers.addChannel', Events.CHANNEL_CREATE);
   }
 
+  // eslint-disable-next-line valid-jsdoc
   /**
-   * add the guild to teh Database
+   * add the guild to the Database
    * @param {Discord.Channel} channel channel to add to the database
    */
   async execute(...[channel]) {
@@ -43,5 +37,3 @@ class AddChannelToDatabase extends Handler {
     }
   }
 }
-
-module.exports = AddChannelToDatabase;

@@ -1,8 +1,8 @@
-'use strict';
+import Interaction from './Interaction.js';
 
 const URL_RE = /(https?:\/\/[^\s]+)/;
 
-module.exports = ({ call, response, guildId }) => class CustomInteraction extends require('./Interaction') {
+export default ({ call, response, guildId }) => class CustomInteraction extends Interaction {
   static guildId = guildId;
   static command = {
     name: call.toLowerCase().replace(/_-\W\s/, ''),

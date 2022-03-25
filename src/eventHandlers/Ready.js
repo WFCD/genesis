@@ -1,13 +1,7 @@
-'use strict';
-
-const { GiveawaysManager } = require('discord-giveaways');
-
-const Discord = require('discord.js');
-
-const DynamicVoiceHandler = require('./DynamicVoiceHandler');
-const MessageManager = require('../settings/MessageManager');
-
-const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
+import Discord from 'discord.js';
+import DynamicVoiceHandler from './DynamicVoiceHandler.js';
+import { fromNow, games, timeDeltaToMinutesString } from '../utilities/CommonFunctions.js';
+import Handler from '../models/BaseEventHandler.js';
 
 const { Constants: { Events } } = Discord;
 
@@ -24,7 +18,7 @@ const max = {
 
 const cycleTimeout = 60000;
 
-module.exports = class OnReadyHandle extends require('../models/BaseEventHandler') {
+export default class OnReadyHandle extends Handler {
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
@@ -34,7 +28,6 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
     this.logger.info('[Cluster] READY');
 
     await this.notifyUp();
-    this.setupMessageManager();
 
     this.settings.init();
     await this.settings.ensureData(this.client);
@@ -42,7 +35,6 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
 
     await this.updatePresence();
     this.setupAdditionalHandlers();
-    this.setupGiveaways();
   }
 
   async notifyUp() {
@@ -60,32 +52,10 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
     }
   }
 
-  setupMessageManager() {
-    this.bot.MessageManager = new MessageManager(this.bot);
-  }
-
   setupAdditionalHandlers() {
     setInterval(this.updatePresence.bind(this), cycleTimeout);
     setInterval(this.checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
-  }
-
-  setupGiveaways() {
-    if (!games.includes('GIVEAWAYS')) {
-      this.logger.silly('No init: giveaways. Feature flag disabled.');
-      return;
-    }
-    this.bot.giveaways = new GiveawaysManager(this.bot.client, {
-      updateCountdownEvery: 5000,
-      storage: './giveaways.json',
-      default: {
-        botsCanWin: false,
-        embedColor: '#748BD7',
-        embedColorEnd: '#FF0000',
-        reaction: '🎉',
-      },
-    });
-    this.logger.info('Giveaways initialized!');
   }
 
   async getWarframePresence(base) {
@@ -181,4 +151,4 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
       }
     }));
   }
-};
+}

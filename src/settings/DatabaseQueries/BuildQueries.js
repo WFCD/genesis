@@ -1,16 +1,13 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-
-const Build = require('../../models/Build.js');
-const WorldStateClient = require('../../resources/WorldStateClient');
+import SQL from 'sql-template-strings';
+import Build from '../../models/Build.js';
+import WorldStateClient from '../../utilities/WorldStateClient.js';
 
 /**
  * Database Mixin for Build queries
  * @mixin
  * @mixes Database
  */
-module.exports = class BuildQueries {
+export default class BuildQueries {
   async addNewBuilds(builds) {
     const rows = [];
     builds.forEach((build) => {
@@ -50,7 +47,7 @@ module.exports = class BuildQueries {
         if (result.owner_id) {
           result.owner = this.bot.client.users.cache.get(result.owner_id) || result.owner_id;
         }
-        return new Build(result, new WorldStateClient(require('../../Logger')));
+        return new Build(result, new WorldStateClient(require('../../utilities/Logger.js')));
       }
     }
     return undefined;
@@ -66,7 +63,7 @@ module.exports = class BuildQueries {
       const wrapped = `%${qString}%`;
       const query = SQL`SELECT * FROM builds WHERE (title like ${wrapped} or body like ${wrapped}) and is_public = '1' ;`;
       const [rows] = await this.query(query);
-      const ws = new WorldStateClient(require('../../Logger'));
+      const ws = new WorldStateClient(require('../../utilities/Logger.js'));
 
       if (rows) {
         return rows.map(result => new Build(result, ws));
@@ -94,7 +91,7 @@ module.exports = class BuildQueries {
     } else {
       query = SQL`SELECT * FROM builds WHERE owner_id LIKE ${owner ? '%' : author.id};`;
     }
-    const ws = new WorldStateClient(require('../../Logger'));
+    const ws = new WorldStateClient(require('../../utilities/Logger.js'));
 
     const [rows] = await this.query(query);
     if (rows) {
@@ -163,4 +160,4 @@ module.exports = class BuildQueries {
     }
     return this.query(query);
   }
-};
+}

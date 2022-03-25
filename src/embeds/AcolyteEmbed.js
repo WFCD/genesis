@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const acolyteThumb = `${assetBase}/img/acolyte.png`;
 
-module.exports = class AcolyteEmbed extends BaseEmbed {
+export default class AcolyteEmbed extends BaseEmbed {
   constructor(enemies, {
     platform,
     i18n,
@@ -41,4 +39,4 @@ and is currently ${e.isDiscovered ? 'discovered' : 'not discovered'}`,
       }];
     }
   }
-};
+}

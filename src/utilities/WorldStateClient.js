@@ -1,17 +1,11 @@
-'use strict';
-
-const qEngine = require('json-query');
-
-const fetch = require('./Fetcher');
-const { apiBase } = require('../CommonFunctions');
+import qEngine from 'json-query';
+import fetch from './Fetcher.js';
+import { apiBase } from './CommonFunctions.js';
 
 const relicBase = 'https://drops.warframestat.us/data/relics';
+const toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 
-function toTitleCase(str) {
-  return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
-
-module.exports = class WorldStateClient {
+export default class WorldStateClient {
   /**
    * @type {Logger} logger for tracing
    */
@@ -288,4 +282,4 @@ module.exports = class WorldStateClient {
     this.#logger.silly(`filtering weapons in ${JSON.stringify(type)}`);
     return WorldStateClient.#weapons.filter(m => m.type === type);
   }
-};
+}

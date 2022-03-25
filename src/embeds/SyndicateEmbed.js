@@ -1,8 +1,6 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, wikiBase } = require('../CommonFunctions');
-const syndicates = require('../resources/syndicates.json');
+import BaseEmbed from './BaseEmbed.js';
+import { syndicates } from '../resources/index.js';
+import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
 
 const syndicateThumb = `${assetBase}/img/syndicate.png`;
 const values = syndicates.map(s => s.display);
@@ -104,4 +102,4 @@ class SyndicateEmbed extends BaseEmbed {
   }
 }
 
-module.exports = SyndicateEmbed;
+export default SyndicateEmbed;

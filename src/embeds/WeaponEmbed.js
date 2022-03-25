@@ -1,7 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { emojify } = require('../CommonFunctions.js');
+import { emojify } from '../utilities/CommonFunctions.js';
 
 const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
 
@@ -13,7 +12,7 @@ const mapDamage = attacks => (attacks?.map((a, index) => {
 }) || [])
   .join('\n');
 
-module.exports = class WeaponEmbed extends BaseEmbed {
+export default class WeaponEmbed extends BaseEmbed {
   constructor(weapon, { i18n, locale }) {
     super(locale);
     if (weapon && typeof weapon !== 'undefined') {
@@ -187,4 +186,4 @@ module.exports = class WeaponEmbed extends BaseEmbed {
       this.footer = undefined;
     }
   }
-};
+}

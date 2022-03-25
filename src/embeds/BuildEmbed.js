@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates build embeds
  */
-class BuildEmbed extends BaseEmbed {
+export default class BuildEmbed extends BaseEmbed {
   /**
    * @param {Build} build - The alerts to be included in the embed
    */
@@ -26,5 +24,3 @@ class BuildEmbed extends BaseEmbed {
     this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
   }
 }
-
-module.exports = BuildEmbed;

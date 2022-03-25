@@ -1,17 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for notification system tracking queries
  * @mixin
  * @mixes Database
  */
-module.exports = class TrackingQueries {
+export default class TrackingQueries {
   /**
    * Tracking option arrays
    * @typedef {Object} TrackingOptions
@@ -191,4 +185,4 @@ module.exports = class TrackingQueries {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.query(query);
   }
-};
+}

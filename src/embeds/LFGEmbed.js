@@ -1,9 +1,4 @@
-'use strict';
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 const expiredC = process.env.LFG_EXPIRED_COLOR
   ? Number.parseInt(process.env.LFG_EXPIRED_COLOR, 16)
@@ -15,7 +10,7 @@ const activeC = process.env.LFG_ACTIVE_COLOR
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
  * @typedef {Object.<string>} LFG
- * @property {Discord.User} author      - LFG Author
+ * @property {module:"discord.js".User} author      - LFG Author
  * @property {string} location          - Where people would like to group
  * @property {string} duration          - How long to go for
  * @property {string} goal              - Goal to farm for
@@ -25,9 +20,11 @@ const activeC = process.env.LFG_ACTIVE_COLOR
 /**
  * Generates LFG embeds
  */
-class LFGEmbed extends BaseEmbed {
+export default class LFGEmbed extends BaseEmbed {
   /**
    * @param {LFG} lfg - LFG Options
+   * @param {module:i18n-string-templates.I18n} i18n internationalizer
+   * @param {string} locale locality
    */
   constructor(lfg, { i18n, locale }) {
     super(locale);
@@ -61,5 +58,3 @@ class LFGEmbed extends BaseEmbed {
     this.footer.text = lfg.expiry === 0 ? i18n`Expired • ${ed}` : ed;
   }
 }
-
-module.exports = LFGEmbed;

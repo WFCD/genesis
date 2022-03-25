@@ -1,11 +1,10 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const sortieThumb = `${assetBase}/img/sortie.png`;
 
-module.exports = class SortieEmbed extends BaseEmbed {
+export default class SortieEmbed extends BaseEmbed {
   constructor(sortie, { platform, i18n, locale }) {
     super(locale);
 
@@ -24,4 +23,4 @@ module.exports = class SortieEmbed extends BaseEmbed {
       url: sortieThumb,
     };
   }
-};
+}

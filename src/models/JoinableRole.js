@@ -1,9 +1,7 @@
-'use strict';
-
 /**
  * Add a joinable role
  */
-class JoinableRole {
+export default class JoinableRole {
   constructor(guildRole) {
     this.id = guildRole.id;
     this.guild = guildRole.guild;
@@ -45,5 +43,3 @@ class JoinableRole {
     };
   }
 }
-
-module.exports = JoinableRole;

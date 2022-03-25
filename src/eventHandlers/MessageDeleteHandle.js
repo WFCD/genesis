@@ -1,17 +1,17 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
+import Handler from '../models/BaseEventHandler.js';
+import LogEmbed from '../embeds/LogEmbed.js';
+
+import { games } from '../utilities/CommonFunctions.js';
+import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
 const { Events } = Discord.Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const LogEmbed = require('../embeds/LogEmbed');
-const { games } = require('../CommonFunctions');
 
 /**
  * Describes a handler
  */
-class LogMessageDelete extends Handler {
+export default class LogMessageDelete extends Handler {
   constructor(bot) {
     super(bot, 'handlers.logMessageDelete', Events.MESSAGE_DELETE);
   }
@@ -56,9 +56,7 @@ class LogMessageDelete extends Handler {
         ],
         footer: message.id,
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
+      await webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }
-
-module.exports = LogMessageDelete;

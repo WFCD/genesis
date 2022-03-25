@@ -1,13 +1,12 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class DeleteGuild extends Handler {
+export default class DeleteGuild extends Handler {
   /**
    * Construct handle
    * @param {Genesis} bot  The bot object
@@ -30,5 +29,3 @@ class DeleteGuild extends Handler {
     this.logger.debug(`Guild deleted : ${guild.name} (${guild.id})`);
   }
 }
-
-module.exports = DeleteGuild;

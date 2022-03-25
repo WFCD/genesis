@@ -1,22 +1,20 @@
-'use strict';
+import logger from '../utilities/Logger.js';
+import { cachedEvents } from '../resources/index.js';
+import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
-const logger = require('../Logger');
-const cachedEvents = require('../resources/cachedEvents');
-
+// eslint-disable-next-line valid-jsdoc
 /**
  * Broadcast updates out to subscribing channels
- * @param {Discord.Client} client         bot client
+ * @param {module:"discord.js".Client} client         bot client
  * @param {Database} settings settings object for fetching data
  *    information about current channel, guild, and bot settings
- * @param {MessageManager} messageManager manages messages, including sending, deleing, and webhooks
  */
-class Broadcaster {
+export default class Broadcaster {
   constructor({
-    client = undefined, settings = undefined, messageManager = undefined, workerCache = undefined,
+    client = undefined, settings = undefined, workerCache = undefined,
   }) {
     this.client = client;
     this.settings = settings;
-    this.webhook = messageManager.webhook;
     this.shards = process.env.SHARDS;
     this.workerCache = workerCache;
   }
@@ -80,7 +78,7 @@ class Broadcaster {
 
       try {
         const content = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || '';
-        await this.webhook(ctx, { content, embeds: [embed] });
+        await webhook(ctx, { content, embeds: [embed] });
       } catch (e) {
         if (e.message) {
           if (e.message.includes('Unknown Webhook')) {
@@ -97,5 +95,3 @@ class Broadcaster {
     }
   }
 }
-
-module.exports = Broadcaster;

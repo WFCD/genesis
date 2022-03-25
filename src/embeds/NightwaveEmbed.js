@@ -1,6 +1,5 @@
-'use strict';
-
-const { timeDeltaToString, createGroupedArray } = require('../CommonFunctions');
+import { createGroupedArray, timeDeltaToString } from '../utilities/CommonFunctions.js';
+import BaseEmbed from './BaseEmbed.js';
 
 const chString = challenge => `:white_small_square: **${challenge.title}** _(${challenge.reputation})_\n\u2003\t❯ ${challenge.desc}`;
 const chStringSingle = challenge => `**${challenge.title}** _(${challenge.reputation})_\n\u2003❯ ${challenge.desc}`;
@@ -8,11 +7,12 @@ const chStringSingle = challenge => `**${challenge.title}** _(${challenge.reputa
 /**
  * Generates alert embeds
  */
-module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
+export default class NightwaveEmbed extends BaseEmbed {
   /**
    * @param {Nightwave} nightwave - The nightwave data for the current season
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
+   * @param {string} locale locale of the embed
    */
   constructor(nightwave, { platform, i18n, locale }) {
     super(locale);
@@ -82,4 +82,4 @@ module.exports = class NightwaveEmbed extends require('./BaseEmbed.js') {
       this.timestamp = challenge.expiry;
     }
   }
-};
+}

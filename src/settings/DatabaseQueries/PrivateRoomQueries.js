@@ -1,16 +1,12 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const JoinableRole = require('../../models/JoinableRole');
+import SQL from 'sql-template-strings';
+import JoinableRole from '../../models/JoinableRole.js';
 
 /**
  * Database Mixin for private room queries
  * @mixin
  * @mixes Database
  */
-class PrivateRoomQueries {
+export default class PrivateRoomQueries {
   async removePrivateChannels(guild) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
     return this.query(query);
@@ -181,5 +177,3 @@ class PrivateRoomQueries {
     return [];
   }
 }
-
-module.exports = PrivateRoomQueries;
