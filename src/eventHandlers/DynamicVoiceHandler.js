@@ -1,13 +1,8 @@
-'use strict';
-
-const Discord = require('discord.js');
+import Discord from 'discord.js';
+import { Generator } from 'warframe-name-generator';
 
 const { Constants: { Events }, Permissions } = Discord;
-
-const { Generator } = require('warframe-name-generator');
-
 const requiredVCPerms = [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MOVE_MEMBERS];
-
 const relays = [
   'Larunda Relay',
   'Vesper Relay',
@@ -23,7 +18,6 @@ const relays = [
   'Necralisk',
   'Cetus 69',
 ];
-
 const generator = new Generator();
 
 /**
@@ -76,7 +70,7 @@ const clone = async (template, settings, member) => {
   return newChannel;
 };
 
-module.exports = class DynamicVoiceHandler {
+export default class DynamicVoiceHandler {
   /**
    * Make the handler
    * @param {Discord.Client} client for interacting with discord
@@ -192,4 +186,4 @@ module.exports = class DynamicVoiceHandler {
       return undefined;
     }
   }
-};
+}

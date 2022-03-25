@@ -1,7 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const darvo = `${assetBase}/img/darvo-md.png`;
 const makeSale = (sale, i18n) => ({
@@ -9,7 +8,7 @@ const makeSale = (sale, i18n) => ({
   value: i18n`Expires in ${sale.eta}`,
 });
 
-module.exports = class SalesEmbed extends BaseEmbed {
+export default class SalesEmbed extends BaseEmbed {
   constructor(sales, { platform, i18n, locale }) {
     super(locale);
 
@@ -22,4 +21,4 @@ module.exports = class SalesEmbed extends BaseEmbed {
       ? sales.map(sale => makeSale(sale, i18n))
       : [makeSale(sales, i18n)];
   }
-};
+}

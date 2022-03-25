@@ -1,4 +1,6 @@
-'use strict';
+import Discord from 'discord.js';
+import { games, isVulgarCheck } from '../../utilities/CommonFunctions.js';
+import Interaction from '../../models/Interaction.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
@@ -7,8 +9,7 @@ const {
   Guild, User, GuildMember, CategoryChannel, TextChannel,
   // eslint-disable-next-line no-unused-vars
   PermissionOverwriteOptions, GuildChannelOverwriteOptions,
-} = require('discord.js');
-const { isVulgarCheck, games } = require('../../CommonFunctions');
+} = Discord;
 
 const GuildChannelOverwriteOptionsType = {
   ROLE: 0,
@@ -223,7 +224,7 @@ const roomSizes = [{
   value: 0,
 }];
 
-module.exports = class Rooms extends require('../../models/Interaction') {
+export default class Rooms extends Interaction {
   static enabled = games.includes('ROOMS');
   static command = {
     name: 'rooms',
@@ -483,4 +484,4 @@ module.exports = class Rooms extends require('../../models/Interaction') {
 
     return interaction.reply({ content: ctx.i18n`naaah`, ephemeral: ctx.ephemerate });
   }
-};
+}

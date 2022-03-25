@@ -1,5 +1,3 @@
-'use strict';
-
 const ms30d = 2592000000;
 
 /**
@@ -12,8 +10,7 @@ function timeToSeconds(time) {
     return 0;
   }
   const a = time.split(':');
-  const seconds = (((+a[0]) * 60) * 60) + (((+a[1]) * 60) + (+a[2]));
-  return seconds;
+  return (((+a[0]) * 60) * 60) + (((+a[1]) * 60) + (+a[2]));
 }
 
 /**
@@ -70,7 +67,7 @@ function getAverageTime(times) {
   return formatTime(sum / times.length);
 }
 
-class RaidStat {
+export default class RaidStat {
   constructor(userJson, type) {
     this.successes = 0;
     this.completed = 0;
@@ -170,5 +167,3 @@ class RaidStat {
     this.thirty_average = getAverageTime(this.thirty_times);
   }
 }
-
-module.exports = RaidStat;

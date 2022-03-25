@@ -1,12 +1,29 @@
-'use strict';
+import { Constants, MessageEmbed } from 'discord.js';
+import Collectors from '../../utilities/Collectors.js';
+import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
+import Interaction from '../../models/Interaction.js';
+import Alert from '../../embeds/AlertEmbed.js';
+import Arbitration from '../../embeds/ArbitrationEmbed.js';
+import Cambion from '../../embeds/CambionEmbed.js';
+import Conclave from '../../embeds/ConclaveChallengeEmbed.js';
+import Construction from '../../embeds/ConstructionEmbed.js';
+import Cycle from '../../embeds/EarthCycleEmbed.js';
+import Darvo from '../../embeds/DarvoEmbed.js';
+import Event from '../../embeds/EventEmbed.js';
+import Fissure from '../../embeds/FissureEmbed.js';
+import Invasion from '../../embeds/InvasionEmbed.js';
+import News from '../../embeds/NewsEmbed.js';
+import Sales from '../../embeds/SalesEmbed.js';
+import Sortie from '../../embeds/SortieEmbed.js';
+import Syndicate from '../../embeds/SyndicateEmbed.js';
+import VoidTrader from '../../embeds/VoidTraderEmbed.js';
+import Solaris from '../../embeds/SolarisEmbed.js';
+import Nightwave from '../../embeds/NightwaveEmbed.js';
+import Outposts from '../../embeds/SentientOutpostEmbed.js';
+import SteelPath from '../../embeds/SteelPathEmbed.js';
+import { platformMap as platformChoices } from '../../resources/index.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = require('discord.js');
-
-const {
-  games, createGroupedArray, createDynamicInteractionCollector,
-} = require('../../CommonFunctions.js');
-
-const platformChoices = require('../../resources/platformMap');
+const { ApplicationCommandOptionTypes: Types } = Constants;
 
 const aliases = {
   arbi: 'arbitration',
@@ -22,40 +39,34 @@ const aliases = {
   sales: 'flashSales',
   steelpath: 'steelPath',
 };
-
-const embedsd = '../../embeds';
-
-/* eslint-disable import/no-dynamic-require */
 const embeds = {
-  arbitration: require(`${embedsd}/ArbitrationEmbed`),
-  alerts: require(`${embedsd}/AlertEmbed`),
-  cambionCycle: require(`${embedsd}/CambionEmbed`),
-  cetusCycle: require(`${embedsd}/EarthCycleEmbed`),
-  conclaveChallenges: require(`${embedsd}/ConclaveChallengeEmbed`),
-  constructionProgress: require(`${embedsd}/ConstructionEmbed`),
-  dailyDeals: require(`${embedsd}/DarvoEmbed`),
-  earthCycle: require(`${embedsd}/EarthCycleEmbed`),
-  events: require(`${embedsd}/EventEmbed`),
-  fissures: require(`${embedsd}/FissureEmbed`),
-  invasions: require(`${embedsd}/InvasionEmbed`),
-  news: require(`${embedsd}/NewsEmbed`),
-  nightwave: require(`${embedsd}/NightwaveEmbed`),
-  flashSales: require(`${embedsd}/SalesEmbed`),
-  sentientOutposts: require(`${embedsd}/SentientOutpostEmbed`),
-  steelPath: require(`${embedsd}/SteelPathEmbed`),
-  syndicate: require(`${embedsd}/SyndicateEmbed`),
-  vallisCycle: require(`${embedsd}/SolarisEmbed`),
-  voidTrader: require(`${embedsd}/VoidTraderEmbed`),
-  sortie: require(`${embedsd}/SortieEmbed`),
+  arbitration: Arbitration,
+  alerts: Alert,
+  cambionCycle: Cambion,
+  cetusCycle: Cycle,
+  conclaveChallenges: Conclave,
+  constructionProgress: Construction,
+  dailyDeals: Darvo,
+  earthCycle: Cycle,
+  events: Event,
+  fissures: Fissure,
+  invasions: Invasion,
+  news: News,
+  nightwave: Nightwave,
+  flashSales: Sales,
+  sentientOutposts: Outposts,
+  steelPath: SteelPath,
+  syndicate: Syndicate,
+  vallisCycle: Solaris,
+  voidTrader: VoidTrader,
+  sortie: Sortie,
 };
-
 const platformable = [{
   type: Types.STRING,
   name: 'platform',
   description: 'Platform to check for data',
   choices: platformChoices,
 }];
-
 const places = [{
   name: 'Earth',
   value: 'earth',
@@ -69,14 +80,13 @@ const places = [{
   name: 'Cambion Drift',
   value: 'cambion',
 }];
-
 const compactable = [...platformable, {
   type: Types.BOOLEAN,
   name: 'compact',
   description: 'Should all data be in one embed?',
 }];
 
-module.exports = class WorldState extends require('../../models/Interaction') {
+export default class WorldState extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   static command = {
@@ -232,6 +242,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     const data = await ctx.ws.get(String(field), platform, language);
     let pages;
     let embed;
+    if (Array.isArray(data) && !data.length) return interaction.editReply(ctx.i18n`⚠️ No ${field} active.`);
     switch (field) {
       case 'fissures':
         if (!compact) {
@@ -254,14 +265,14 @@ module.exports = class WorldState extends require('../../models/Interaction') {
               platform, i18n: ctx.i18n, era: eras[eraKey][0].tier,
             }));
           });
-          return createDynamicInteractionCollector(interaction, pages, ctx);
+          return Collectors.dynamic(interaction, pages, ctx);
         }
       case 'alerts':
       case 'invasions':
         if (!compact) {
-          return createDynamicInteractionCollector(interaction,
+          return Collectors.dynamic(interaction,
             // eslint-disable-next-line new-cap
-            data.map(a => new embeds[field]([a], { platform, i18n: ctx.i18n })), ctx);
+            data.map(a => new embeds[field](a, { platform, i18n: ctx.i18n })), ctx);
         }
       case 'arbitration':
       case 'earthCycle':
@@ -308,7 +319,6 @@ module.exports = class WorldState extends require('../../models/Interaction') {
           new embeds[field](datum, { platform, i18n: ctx.i18n }),
         ));
         return interaction.editReply({ embeds: pages });
-
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
@@ -322,4 +332,4 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       ? false
       : interaction.reply({ content: 'got it', ephemeral: true });
   }
-};
+}

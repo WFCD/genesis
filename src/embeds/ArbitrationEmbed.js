@@ -1,10 +1,9 @@
-'use strict';
-
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const arbiThumb = `${assetBase}/img/arbitrations.png`;
 
-module.exports = class ArbitrationEmbed extends require('./BaseEmbed.js') {
+export default class ArbitrationEmbed extends BaseEmbed {
   constructor(arbitration, { platform, i18n, locale }) {
     super(locale);
     this.thumbnail.url = arbiThumb;
@@ -15,4 +14,4 @@ module.exports = class ArbitrationEmbed extends require('./BaseEmbed.js') {
     this.footer.text = i18n`Expires`;
     this.timestamp = arbitration.expiry;
   }
-};
+}

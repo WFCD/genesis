@@ -1,14 +1,12 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const decache = require('decache');
-const BaseEventHandler = require('./models/BaseEventHandler');
+import fs from 'node:fs';
+import path from 'node:path';
+import decache from 'decache';
+import BaseEventHandler from '../models/BaseEventHandler.js';
 
 /**
  * Describes a CommandHandler for a bot.
  */
-class EventHandler {
+export default class EventHandler {
   /**
    * Constructs CommandHandler
    * @param {Genesis} bot    Bot to derive prefix for commands from
@@ -31,10 +29,10 @@ class EventHandler {
    * Loads the handles from disk into this.handles
    */
   async loadHandles() {
-    const handlersDir = path.join(__dirname, 'eventHandlers');
+    const handlersDir = path.join(path.resolve('src/eventHandlers'));
     let files = fs.readdirSync(handlersDir);
 
-    const categories = files.filter(f => f.indexOf('.js') === -1);
+    const categories = files.filter(f => f.indexOf('.js') === -1 && !f.startsWith('EventHandler'));
     files = files.filter(f => f.indexOf('.js') > -1);
 
     categories.forEach((category) => {
@@ -52,10 +50,10 @@ class EventHandler {
     this.logger.info('Loading handles');
     this.logger.debug(`${files}`);
 
-    this.handlers = files.map((f) => {
+    this.handlers = (await Promise.all(files.map(async (f) => {
       try {
         // eslint-disable-next-line import/no-dynamic-require, global-require
-        const Handler = require(path.join(handlersDir, f));
+        const Handler = (await import(path.join(handlersDir, f))).default;
         if (Handler.prototype instanceof BaseEventHandler) {
           if (Handler.deferred) {
             this.client.on('ready', () => {
@@ -74,10 +72,7 @@ class EventHandler {
         this.logger.error(err);
         return undefined;
       }
-    })
-      .filter(c => c);
-
-    this.statuses = this.bot.messageManager.statuses;
+    }))).filter(c => c);
   }
 
   /**
@@ -91,5 +86,3 @@ class EventHandler {
       .map(async handler => handler.execute(...args.args)));
   }
 }
-
-module.exports = EventHandler;

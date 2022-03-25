@@ -1,11 +1,18 @@
-'use strict';
+import Discord from 'discord.js';
+import WorldStateClient from '../../utilities/WorldStateClient.js';
+import Interaction from '../../models/Interaction.js';
+import Collectors from '../../utilities/Collectors.js';
+import Arcane from '../../embeds/EnhancementEmbed.js';
+import Weapon from '../../embeds/WeaponEmbed.js';
+import Riven from '../../embeds/RivenStatEmbed.js';
+import Component from '../../embeds/ComponentEmbed.js';
+import Patchnote from '../../embeds/PatchnotesEmbed.js';
+import Warframe from '../../embeds/FrameEmbed.js';
+import Mod from '../../embeds/ModEmbed.js';
 
-const Discord = require('discord.js');
+import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
 
-const {
-  games, createPagedInteractionCollector, createSelectionCollector, createGroupedArray,
-} = require('../../CommonFunctions.js');
-const { ENDPOINTS } = require('../../resources/WorldStateClient');
+const { ENDPOINTS } = WorldStateClient;
 
 const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 const queryOpt = [{
@@ -21,17 +28,7 @@ const patchnotes = {
   required: false,
 };
 
-const embeds = {
-  Arcane: require('../../embeds/EnhancementEmbed'),
-  Weapon: require('../../embeds/WeaponEmbed'),
-  Warframe: require('../../embeds/FrameEmbed'),
-  Mod: require('../../embeds/ModEmbed'),
-  Riven: require('../../embeds/RivenStatEmbed'),
-  Component: require('../../embeds/ComponentEmbed.js'),
-  Patchnote: require('../../embeds/PatchnotesEmbed.js'),
-};
-
-module.exports = class Lookup extends require('../../models/Interaction') {
+export default class Lookup extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   static command = {
@@ -87,87 +84,77 @@ module.exports = class Lookup extends require('../../models/Interaction') {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);
         if (!data.length) return interaction.editReply('None found');
-        pages = data.map(d => new embeds.Arcane(undefined, d, ctx.i18n));
-        return pages.length < 25
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        pages = data.map(d => new Arcane(d, { i18n: ctx.i18n }));
+        return Collectors.dynamic(interaction, pages, ctx);
       case 'weapon':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
         for (const weapon of data) {
-          pages.push(new embeds.Weapon(weapon, ctx.i18n));
+          pages.push(new Weapon(weapon, { i18n: ctx.i18n }));
           const strippedWeaponN = query.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
           const rivenResults = await ctx.ws.riven(strippedWeaponN, ctx.platform);
           if (Object.keys(rivenResults).length > 0) {
             const strippedRes = weapon.name.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
             if (rivenResults[strippedRes]) {
               pages.push(
-                new embeds.Riven(rivenResults[strippedRes], weapon.name, ctx.i18n),
+                new Riven(rivenResults[strippedRes], { resultKey: weapon.name, i18n: ctx.i18n }),
               );
             }
           }
 
           if (weapon?.components?.length) {
-            pages.push(new embeds.Component(undefined, weapon.components));
+            pages.push(new Component(weapon.components, { i18n: ctx.i18n }));
           }
 
           if (weapon?.patchlogs?.length && enablePatchnotes) {
             createGroupedArray(weapon.patchlogs, 4)
               // eslint-disable-next-line no-loop-func
-              .forEach(patchGroup => pages.push(new embeds.Patchnote(patchGroup)));
+              .forEach(patchGroup => pages.push(new Patchnote(patchGroup)));
           }
         }
-        return pages.length < 25
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        return Collectors.dynamic(interaction, pages, ctx);
       case 'warframe':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
         for (const warframe of data) {
-          pages.push(new embeds.Warframe(warframe, ctx.i18n));
+          pages.push(new Warframe(warframe, { i18n: ctx.i18n }));
           if (warframe?.components?.length) {
-            pages.push(new embeds.Component(warframe.components));
+            pages.push(new Component(warframe.components, { i18n: ctx.i18n }));
           }
           if (warframe?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func
             createGroupedArray(warframe?.patchlogs, 4).forEach((patchGroup) => {
-              pages.push(new embeds.Patchnote(undefined, patchGroup));
+              pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
             });
           }
         }
-        return pages.length < 25
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        return Collectors.dynamic(interaction, pages, ctx);
       case 'riven':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
         if (!Object.keys(data).length) return interaction.editReply('None found');
-        pages = Object.keys(data).map(d => new embeds.Riven(undefined, data[d], d, ctx.i18n));
-        return pages.length < 25
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        pages = Object.keys(data).map(d => new Riven(data[d], { resultKey: d, i18n: ctx.i18n }));
+        return Collectors.dynamic(interaction, pages, ctx);
       case 'mod':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query))
           .filter(m => typeof m.baseDrain !== 'undefined');
         if (!data.length) return interaction.editReply('None found');
         for (const mod of data) {
-          pages.push(new embeds.Mod(undefined, mod, ctx.i18n));
+          pages.push(new Mod(mod, { i18n: ctx.i18n }));
           if (mod?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func
             createGroupedArray(mod?.patchlogs, 4).forEach((patchGroup) => {
-              pages.push(new embeds.Patchnote(undefined, patchGroup));
+              pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
             });
           }
         }
-        pages = Object.keys(data).map(d => new embeds.Mod(undefined, data[d], ctx.i18n));
-        return pages.length < 25
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        pages = Object.keys(data).map(d => new Mod(data[d], { i18n: ctx.i18n }));
+        return Collectors.dynamic(interaction, pages, ctx);
       default:
         return interaction.reply('ok');
     }
   }
-};
+}

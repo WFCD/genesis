@@ -1,20 +1,17 @@
-'use strict';
+import TwitchEmbed from '../../embeds/TwitchEmbed.js';
+import TwitchMonitor from './TwitchMonitor.js';
 
-const TwitchEmbed = require('../../embeds/TwitchEmbed');
-const TwitchMonitor = require('./TwitchMonitor');
+import Broadcaster from '../Broadcaster.js';
+import logger from '../../utilities/Logger.js';
 
-const Broadcaster = require('../Broadcaster');
-const logger = require('../../Logger');
-
-const { platforms } = require('../../CommonFunctions');
-const { perLanguage } = require('../NotifierUtils');
-
-require('colors');
+import { platforms } from '../../utilities/CommonFunctions.js';
+import { perLanguage } from '../NotifierUtils.js';
+import 'colors';
 
 /**
  * Watches for Twitch go-lives and broadcasts them
  */
-class TwitchNotifier {
+export default class TwitchNotifier {
   #monitor;
 
   #broadcaster;
@@ -22,12 +19,11 @@ class TwitchNotifier {
   #activePlatforms;
 
   constructor({
-    client, settings, messageManager, workerCache,
+    client, settings, workerCache,
   }) {
     this.#broadcaster = new Broadcaster({
       client,
       settings,
-      messageManager,
       workerCache,
     });
     this.#monitor = new TwitchMonitor();
@@ -75,5 +71,3 @@ class TwitchNotifier {
     });
   }
 }
-
-module.exports = TwitchNotifier;

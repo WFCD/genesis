@@ -1,14 +1,13 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const conclaveThumb = `${assetBase}/img/conclave-lg.png`;
 const values = ['all', 'day', 'week'];
 
 const compareCCategory = (c, category) => ((c.category === category.toLowerCase()) || category.toLowerCase() === 'all') && !c.rootChallenge;
 
-class ConclaveChallengeEmbed extends BaseEmbed {
+export default class ConclaveChallengeEmbed extends BaseEmbed {
   constructor(challenges, {
     category, platform, i18n, locale,
   }) {
@@ -35,5 +34,3 @@ class ConclaveChallengeEmbed extends BaseEmbed {
     };
   }
 }
-
-module.exports = ConclaveChallengeEmbed;

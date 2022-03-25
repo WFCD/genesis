@@ -1,8 +1,6 @@
-'use strict';
-
-const http = require('http');
-const https = require('https');
-const logger = require('../Logger');
+import http from 'node:http';
+import https from 'node:https';
+import logger from './Logger.js';
 
 const retryCodes = [429].concat((process.env.JSON_CACHE_RETRY_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
 const redirectCodes = [302, 301].concat((process.env.JSON_CACHE_REDIRECT_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
@@ -48,4 +46,4 @@ const fetch = (url, { maxRetry = 10, headers } =
   });
 };
 
-module.exports = fetch;
+export default fetch;

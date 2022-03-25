@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Simple Build struct
  * @typedef {Object} SimpleBuild
@@ -102,7 +100,7 @@ class Mod {
 /**
  * Build object
  */
-module.exports = class Build {
+export default class Build {
   /**
    * @type {WorldStateClient}
    */
@@ -124,7 +122,7 @@ module.exports = class Build {
    */
   #url;
   /**
-   * @type {Discord.User}
+   * @type {module:"discord.js".User}
    */
   #owner;
   /**
@@ -458,4 +456,4 @@ module.exports = class Build {
       mods: this.#mods?.map(m => m.serialize()) || [],
     };
   }
-};
+}

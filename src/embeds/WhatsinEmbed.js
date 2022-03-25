@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class WhatsinEmbed extends BaseEmbed {
+export default class WhatsinEmbed extends BaseEmbed {
   /**
    * @param {Object} details details to derive data from
    * @param {string} tier Relic tier
@@ -42,4 +40,4 @@ module.exports = class WhatsinEmbed extends BaseEmbed {
     this.color = 0x3498db;
     this.description = tokens.map(token => `\`${token}\``).join('\n');
   }
-};
+}

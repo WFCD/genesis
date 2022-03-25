@@ -1,7 +1,12 @@
-'use strict';
+import Discord from 'discord.js';
+import BuildEmbed from '../../embeds/BuildEmbed.js';
+import FrameEmbed from '../../embeds/FrameEmbed.js';
+import WeaponEmbed from '../../embeds/WeaponEmbed.js';
+import Build from '../../models/Build.js';
+import Collectors from '../../utilities/Collectors.js';
+import Interaction from '../../models/Interaction.js';
 
-const Discord = require('discord.js');
-const { games, createGroupedArray } = require('../../CommonFunctions.js');
+import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
 
 const {
   Constants: {
@@ -10,11 +15,6 @@ const {
   },
   MessageActionRow, MessageSelectMenu, InteractionCollector, MessageButton,
 } = Discord;
-const BuildEmbed = require('../../embeds/BuildEmbed');
-const { createSelectionCollector, createPagedInteractionCollector } = require('../../CommonFunctions');
-const FrameEmbed = require('../../embeds/FrameEmbed');
-const WeaponEmbed = require('../../embeds/WeaponEmbed');
-const Build = require('../../models/Build.js');
 
 const buildParts = [{
   name: 'title',
@@ -109,7 +109,7 @@ const buildParts = [{
 
 const unmodable = ['id', 'owner_id', 'title', 'body', 'image', 'mods'];
 
-module.exports = class Builds extends require('../../models/Interaction') {
+export default class Builds extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   /**
@@ -275,7 +275,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
             });
           });
           // setup pages
-          return createPagedInteractionCollector(interaction, pages, ctx);
+          return Collectors.paged(interaction, pages, ctx);
         }
         return interaction.reply({
           embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for user` }],
@@ -289,21 +289,17 @@ module.exports = class Builds extends require('../../models/Interaction') {
               ephemeral: ctx.ephemerate,
             });
           }
-          const pages = await this.#buildEmbedsForBuild(build, ctx);
-          return pages.length < 26
-            ? createSelectionCollector(interaction, pages, ctx)
-            : createPagedInteractionCollector(interaction, pages, ctx);
+          const pages = this.#buildEmbedsForBuild(build, ctx);
+          return Collectors.dynamic(interaction, pages, ctx);
         }
         const results = await ctx.settings.getBuildSearch(query);
         if (results.length) {
-          const embeds = [];
+          const pages = [];
           results.forEach((result) => {
-            const embed = new BuildEmbed(undefined, result);
-            embeds.push(embed);
+            const embed = new BuildEmbed(result);
+            pages.push(embed);
           });
-          return results.length < 26
-            ? createSelectionCollector(interaction, embeds, ctx)
-            : createPagedInteractionCollector(interaction, embeds, ctx);
+          return Collectors.dynamic(interaction, pages, ctx);
         }
         return interaction.reply({ content: ctx.i18n`No builds found`, ephemeral: ctx.ephemerate });
       case 'update':
@@ -319,9 +315,7 @@ module.exports = class Builds extends require('../../models/Interaction') {
         }
         await ctx.settings.saveBuild(build.toJson());
         const pages = this.#buildEmbedsForBuild(build, ctx);
-        return pages.length < 26
-          ? createSelectionCollector(interaction, pages, ctx)
-          : createPagedInteractionCollector(interaction, pages, ctx);
+        return Collectors.dynamic(interaction, pages, ctx);
       case 'remove':
         if (build
           && (build.owner.id === interaction.user.id
@@ -535,4 +529,4 @@ module.exports = class Builds extends require('../../models/Interaction') {
     }
     return interaction.reply({ content: ctx.i18n`Nah.`, ephemeral: ctx.ephemerate });
   }
-};
+}

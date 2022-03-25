@@ -1,17 +1,13 @@
-'use strict';
-
-const { Rest } = require('@spectacles/rest');
-
-const logger = require('../Logger');
-
-const { assetBase } = require('../CommonFunctions');
+import { Rest } from '@spectacles/rest';
+import logger from './Logger.js';
+import { assetBase } from './CommonFunctions.js';
 
 const defaults = {
   username: process.env.DEF_USER || 'Genesis',
   avatar: `${assetBase}/avatar.png`,
 };
 
-class RESTWrapper {
+export default class RESTWrapper {
   constructor() {
     this.client = new Rest(process.env.TOKEN, { retryLimit: 1, ua: 'Genesis Notifier' });
   }
@@ -46,5 +42,3 @@ class RESTWrapper {
     return this.client.post(`/webhooks/${process.env.CONTROL_WH_ID}/${process.env.CONTROL_WH_TOKEN}`, body);
   }
 }
-
-module.exports = RESTWrapper;

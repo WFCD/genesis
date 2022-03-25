@@ -1,10 +1,8 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-const {
-  timeDeltaToString, fromNow, assetBase, toTitleCase,
-} = require('../CommonFunctions.js');
+import {
+  assetBase, fromNow, timeDeltaToString, toTitleCase,
+} from '../utilities/CommonFunctions.js';
 
 const fass = `${assetBase}/img/FassBanner.png`;
 const vome = `${assetBase}/img/VomeBanner.png`;
@@ -29,7 +27,7 @@ const makeJobs = (mission, i18n) => {
   return undefined;
 };
 
-module.exports = class CambionEmbed extends BaseEmbed {
+export default class CambionEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
     this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`;
@@ -46,4 +44,4 @@ module.exports = class CambionEmbed extends BaseEmbed {
     this.footer.text = i18n`${next} starts `;
     this.timestamp = new Date(state.expiry).getTime();
   }
-};
+}

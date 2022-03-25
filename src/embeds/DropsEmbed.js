@@ -1,10 +1,7 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
+import { createGroupedArray } from '../utilities/CommonFunctions.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { createGroupedArray } = require('../CommonFunctions.js');
-
-module.exports = class DropsEmbed extends BaseEmbed {
+export default class DropsEmbed extends BaseEmbed {
   constructor(drops, { i18n, locale }) {
     super(locale);
     if (!drops || !drops.length) {
@@ -28,4 +25,4 @@ module.exports = class DropsEmbed extends BaseEmbed {
       inline: false,
     }));
   }
-};
+}

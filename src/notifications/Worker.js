@@ -1,22 +1,17 @@
-'use strict';
+import flatCache from 'flat-cache';
+import cron from 'cron';
+import Notifier from './worldstate/Notifier.js';
+import CycleNotifier from './worldstate/CycleNotifier.js';
+import FeedsNotifier from './FeedsNotifier.js';
+import TwitchNotifier from './twitch/TwitchNotifier.js';
+import WorldStateCache from '../utilities/WorldStateCache.js';
+import Rest from '../utilities/RESTWrapper.js';
+import Database from '../settings/Database.js';
+import { cachedEvents } from '../resources/index.js';
+import logger from '../utilities/Logger.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const flatCache = require('flat-cache');
-const Job = require('cron').CronJob;
-require('colors');
-
-const Notifier = require('./worldstate/Notifier');
-const CycleNotifier = require('./worldstate/CycleNotifier');
-const FeedsNotifier = require('./FeedsNotifier');
-const TwitchNotifier = require('./twitch/TwitchNotifier');
-
-const WorldStateCache = require('../WorldStateCache');
-const MessageManager = require('../settings/MessageManager');
-const Rest = require('../tools/RESTWrapper');
-const Database = require('../settings/Database');
-
-const { logger } = require('./NotifierUtils');
-const { games } = require('../CommonFunctions');
-const cachedEvents = require('../resources/cachedEvents');
+const Job = cron.CronJob;
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 
@@ -131,9 +126,6 @@ class Worker {
       await rest.init();
       await deps.settings.init();
       await this.initCache();
-
-      this.messageManager = new MessageManager(deps);
-      deps.messageManager = this.messageManager;
 
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);

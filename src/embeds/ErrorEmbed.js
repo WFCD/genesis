@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates build embeds
  */
-class BuildEmbed extends BaseEmbed {
+export default class BuildEmbed extends BaseEmbed {
   /**
    * @param {Error} error - Error instance to log
    */
@@ -24,5 +22,3 @@ class BuildEmbed extends BaseEmbed {
     this.timestamp = new Date();
   }
 }
-
-module.exports = BuildEmbed;

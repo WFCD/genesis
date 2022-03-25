@@ -1,18 +1,18 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, groupBy } = require('../CommonFunctions');
+import { assetBase, groupBy } from '../utilities/CommonFunctions.js';
 
 const kuvaThumb = `${assetBase}/img/kuva.png`;
 
 /**
  * Generates Kuva mission embed embeds
  */
-class KuvaEmbed extends BaseEmbed {
+export default class KuvaEmbed extends BaseEmbed {
   /**
    * @param {Array.<Alert>} kuver - The kuva missions to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
+   * @param {string} locale locality
    */
   constructor(kuver, { platform, i18n, locale }) {
     super(locale);
@@ -37,5 +37,3 @@ class KuvaEmbed extends BaseEmbed {
     this.timestamp = kuver[0].expiry;
   }
 }
-
-module.exports = KuvaEmbed;

@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class SentientOutpostEmbed extends BaseEmbed {
+export default class SentientOutpostEmbed extends BaseEmbed {
   constructor(outpost, { platform, i18n, locale }) {
     super(locale);
     this.setTitle(i18n`[${platform.toUpperCase()}] Sentient Outpost`);
@@ -10,4 +8,4 @@ module.exports = class SentientOutpostEmbed extends BaseEmbed {
     this.setFooter({ text: i18n`Fades at` });
     this.setTimestamp(outpost.expiry);
   }
-};
+}

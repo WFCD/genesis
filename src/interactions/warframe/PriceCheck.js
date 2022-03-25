@@ -1,9 +1,10 @@
-'use strict';
+import Discord from 'discord.js';
+import { platformMap } from '../../resources/index.js';
+import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = require('discord.js');
-const platformChoices = require('../../resources/platformMap.json');
+const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
 
-module.exports = class PriceCheck extends require('../../models/Interaction') {
+export default class PriceCheck extends Interaction {
   static enabled = true;
 
   static command = {
@@ -18,7 +19,7 @@ module.exports = class PriceCheck extends require('../../models/Interaction') {
       type: Types.STRING,
       name: 'platform',
       description: 'Platform to check for data',
-      choices: platformChoices,
+      choices: platformMap,
     }],
   };
 
@@ -31,4 +32,4 @@ module.exports = class PriceCheck extends require('../../models/Interaction') {
     const embeds = await ctx.ws.pricecheck(query, { platform });
     return interaction.editReply({ embeds, ephemeral: ctx.ephemerate });
   }
-};
+}

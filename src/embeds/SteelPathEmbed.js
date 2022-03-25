@@ -1,10 +1,9 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, emojify } = require('../CommonFunctions');
+import { assetBase, emojify } from '../utilities/CommonFunctions.js';
 
 const steelPathThumb = `${assetBase}/img/steelpath.png`;
-module.exports = class SteelPathEmbed extends BaseEmbed {
+export default class SteelPathEmbed extends BaseEmbed {
   constructor(offering, { isCommand = false, i18n, locale }) {
     super(locale);
     this.description = `${i18n`**Rotating:**`} ${offering.currentReward.name || offering.currentReward}: ${offering.currentReward.cost || '???'}${isCommand ? emojify('steelessence') : i18n` essence`}
@@ -22,4 +21,4 @@ module.exports = class SteelPathEmbed extends BaseEmbed {
     this.thumbnail.url = steelPathThumb;
     this.color = 0x43464b;
   }
-};
+}

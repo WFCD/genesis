@@ -1,8 +1,6 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-module.exports = class TweetEmbed extends BaseEmbed {
+export default class TweetEmbed extends BaseEmbed {
   constructor(tweet, { i18n, locale }) {
     super(locale);
     this.color = 33972;
@@ -42,4 +40,4 @@ module.exports = class TweetEmbed extends BaseEmbed {
       url: tweet.author.url,
     };
   }
-};
+}

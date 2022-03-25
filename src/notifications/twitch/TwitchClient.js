@@ -1,17 +1,16 @@
-'use strict';
+import path from 'node:path';
+import Cache from 'flat-cache';
+import cron from 'cron';
+import 'colors';
 
-require('colors');
-const fetch = require('node-fetch');
-const Cache = require('flat-cache');
-const Job = require('cron').CronJob;
+import fetch from '../../utilities/Fetcher.js';
+import logger from '../../utilities/Logger.js';
 
-const logger = require('../../Logger');
-
+const { CronJob: Job } = cron;
 const urls = {
   helix: 'https://api.twitch.tv/helix',
   token: 'https://id.twitch.tv/oauth2/token',
 };
-
 const forceHydrate = (process.argv[2] || '').includes('--hydrate');
 
 /**
@@ -19,9 +18,14 @@ const forceHydrate = (process.argv[2] || '').includes('--hydrate');
  *
  * All credit to https://github.com/roydejong/timbot for composition and structure
  */
-class TwitchClient {
-  static #tokenCache = Cache.load('accessToken',
-    require('path').resolve('.cache'));
+export default class TwitchClient {
+  static #tokenCache = Cache.load('accessToken', path.resolve('.cache'));
+
+  /**
+   * Refresh cronjob - self-starting
+   * @type {cron.CronJob}
+   */
+  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), undefined, true);
 
   static get accessToken() {
     return this.#tokenCache.getKey('token');
@@ -60,8 +64,12 @@ class TwitchClient {
   }
 
   /**
+   * @typedef {Error} TwitchError
+   * @property {Object} response response object for errors
+   */
+  /**
    * Handle twitch API errors
-   * @param  {Error} err error reply
+   * @param  {TwitchError} err error reply
    */
   static handleApiError(err) {
     const res = err.response || { };
@@ -75,17 +83,17 @@ class TwitchClient {
 
   /**
    * Get Data from the Twitch API
-   * @param {string} path path to request
+   * @param {string} urlPath path to request
    * @param {string} params query params
    * @private
    * @static
    * @returns {Promise<Array<Object>>}
    */
-  static async #apiGet (path, params) {
+  static async #apiGet (urlPath, params) {
     if (!this.accessToken) await this.hydrateToken();
     if (!this.accessToken && !this.refreshToken) return [];
 
-    const url = `${this.requestOptions.baseURL}/${path}?${params}`;
+    const url = `${this.requestOptions.baseURL}/${urlPath}?${params}`;
     try {
       const res = await fetch(url, {
         headers: {
@@ -109,6 +117,8 @@ class TwitchClient {
   /**
    * Hydrate cache with a new token.
    * @type {Array}
+   * @returns {Promise<boolean>} whether it was updated
+   * @async
    */
   static async hydrateToken() {
     if (!this.refreshToken || forceHydrate) {
@@ -168,8 +178,6 @@ class TwitchClient {
     return false;
   }
 
-  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), undefined, true);
-
   /**
    * Fetch stream data
    * @param {Array<string>} channels list of channels to fetch
@@ -200,5 +208,3 @@ class TwitchClient {
     return TwitchClient.#apiGet('games', params);
   }
 }
-
-module.exports = TwitchClient;

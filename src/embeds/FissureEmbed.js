@@ -1,14 +1,13 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, wikiBase } = require('../CommonFunctions');
+import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
 
 const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissure-sm.png`;
 
 /**
  * Generates fissure embeds
  */
-class FissureEmbed extends BaseEmbed {
+export default class FissureEmbed extends BaseEmbed {
   /**
    * @param {Array.<Fissure>|Fissure} fissures - The fissures to be included in the embed
    * @param {string} platform - platform
@@ -54,5 +53,3 @@ class FissureEmbed extends BaseEmbed {
     this.color = 0x4aa1b2;
   }
 }
-
-module.exports = FissureEmbed;

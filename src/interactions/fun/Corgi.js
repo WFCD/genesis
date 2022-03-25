@@ -1,8 +1,7 @@
-'use strict';
+import Interaction from '../../models/Interaction.js';
+import fetch from '../../utilities/Fetcher.js';
 
-const fetch = require('../../resources/Fetcher');
-
-module.exports = class Corgi extends require('../../models/Interaction') {
+export default class Corgi extends Interaction {
   static enabled = true;
 
   static command = {
@@ -22,4 +21,4 @@ module.exports = class Corgi extends require('../../models/Interaction') {
     }
     return interaction.reply('couldn\'t find a corgi... :(');
   }
-};
+}

@@ -1,10 +1,7 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
+import { emojify } from '../utilities/CommonFunctions.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { emojify } = require('../CommonFunctions.js');
-
-module.exports = class EnemyEmbed extends BaseEmbed {
+export default class EnemyEmbed extends BaseEmbed {
   constructor(enemy, { i18n, locale }) {
     super(locale);
     if (!enemy || !enemy.health) {
@@ -49,4 +46,4 @@ module.exports = class EnemyEmbed extends BaseEmbed {
       }
     });
   }
-};
+}

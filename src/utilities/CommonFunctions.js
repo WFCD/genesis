@@ -1,66 +1,59 @@
-'use strict';
+import Discord from 'discord.js';
+import logger from './Logger.js';
 
-const Discord = require('discord.js');
-
-const {
-  // eslint-disable-next-line no-unused-vars
-  Collection, MessageEmbed, CommandInteraction, MessageButton, MessageActionRow,
-  Constants: { MessageButtonStyles, InteractionTypes, MessageComponentTypes },
-  InteractionCollector,
-} = Discord;
-/**
- * Map of emoji names to full types
- * @type {Object}
- */
-const emoji = require('./resources/emoji.json');
-
-/**
- * Welcomes
- * @type {string[]}
- */
-const welcomes = require('./resources/welcomes.json');
+import {
+  emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes,
+} from '../resources/index.js';
 
 const {
-  eventTypes, rewardTypes, opts, fissures, syndicates, twitter, conclave, deals, clantech,
-  resources, nightwave, twitch,
-} = require('./resources/trackables.json');
+  clantech,
+  conclave,
+  deals,
+  eventTypes,
+  fissures,
+  nightwave,
+  opts,
+  resources,
+  rewardTypes,
+  syndicates,
+  twitch,
+  twitter,
+} = all;
 
-const rssFeeds = require('./resources/rssFeeds');
-
-const logger = require('./Logger');
+const { Collection, MessageEmbed } = Discord;
 
 /**
  * API base path
  * @type {string}
  */
-const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
+export const apiBase = process.env.API_BASE_PATH || 'https://api.warframestat.us';
 /**
  * Genesis asset base URL
  * @type {string}
  */
-const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
+export const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
 /**
  * Warframe Wiki base url
  * @type {string}
  */
-const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
+export const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
 /**
  * API base url for the warframe-items cdn
  * @type {string}
  */
-const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
+export const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat.us/';
 
 /**
  * Regex to check for vulgarity
  * @type {RegExp}
  */
-const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
+export const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
 
 /**
  * Allowed platforms
  * @type {Array.<string>}
  */
-const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
+export const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
   .concat((process.env.PLATFORMS || '').split(',').filter(p => p))));
 
 /**
@@ -79,26 +72,23 @@ const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
  *  * UTIL
  * @type {Array<string>}
  */
-const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter(p => p));
+export const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter(p => p));
 
 /**
  * Duration mapping
  * @type {Object}
  */
-const duration = {
+export const duration = {
   minute: 60,
   hour: 60 * 60,
   day: 60 * 60 * 24,
 };
 
-const missionTypes = require('./resources/missionTypes');
-const factions = require('./resources/factions');
-
 /**
  * Object describing all trackable events
  * @type {Object}
  */
-const trackableEvents = {
+export const trackableEvents = {
   events: eventTypes,
   syndicates,
   conclave,
@@ -190,7 +180,7 @@ trackableEvents.events.push(
   ...trackableEvents.twitch,
 );
 
-const dyn = [
+export const dyn = [
   'solaris\\.warm\\.[0-9]?[0-9]',
   'solaris\\.cold\\.[0-9]?[0-9]',
   'cetus\\.day\\.[0-1]?[0-9]?[0-9]?',
@@ -213,7 +203,7 @@ const dyn = [
  * @property {string} trackables  possible trackables capture body
  * @property {string} platforms   platforms capture body
  */
-const captures = {
+export const captures = {
   channel: '(?:(?:<#)?(\\d{15,20})(?:>)?)',
   role: '(?:(?:<@&)?(\\d{15,20})(?:>)?)',
   user: '(?:(?:<@!?)?(\\d{15,20})(?:>)?)',
@@ -226,7 +216,7 @@ const captures = {
  * Object of all trackable items
  * @type {Object}
  */
-const trackableItems = {
+export const trackableItems = {
   items: rewardTypes,
   clantech,
   resources,
@@ -237,7 +227,7 @@ const trackableItems = {
  * @param {string} term Term to convert to trackable
  * @returns {Object}
  */
-const termToTrackable = (term) => {
+export const termToTrackable = (term) => {
   const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
   const earthCustomTimeRegex = new RegExp('earth\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
   const solarisCustomTimeRegex = new RegExp('solaris\\.(warm|cold)\\.[0-9]?[0-9]?', 'ig');
@@ -293,7 +283,7 @@ const termToTrackable = (term) => {
  * @param {Array<string>} params List of terms to find trackables for
  * @returns {TrackingOptions}
  */
-const trackablesFromParameters = (params) => {
+export const trackablesFromParameters = (params) => {
   const trackables = {
     events: [],
     items: [],
@@ -323,13 +313,13 @@ const trackablesFromParameters = (params) => {
  * RegExp to determine a trackable
  * @type {RegExp}
  */
-const eventsOrItems = new RegExp(captures.trackables, 'ig');
+export const eventsOrItems = new RegExp(captures.trackables, 'ig');
 
 /**
  * Get a randome welcome message
  * @returns {string} welcome string
  */
-const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
+export const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.length)];
 
 /**
  * Create array of arrays from
@@ -337,7 +327,7 @@ const getRandomWelcome = () => welcomes[Math.floor(Math.random() * welcomes.leng
  * @param  {number} chunkSize size of chunk
  * @returns {Array.<any[]>}   Array of arrays of items
  */
-const createGroupedArray = (arr, chunkSize = 10) => {
+export const createGroupedArray = (arr, chunkSize = 10) => {
   const groups = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
     groups.push(arr.slice(i, i + chunkSize));
@@ -350,7 +340,7 @@ const createGroupedArray = (arr, chunkSize = 10) => {
  * @param  {Discord.Message} message message to fetch data from
  * @returns {string[]}         Array of matches
  */
-function getEventsOrItems(message) {
+export function getEventsOrItems(message) {
   const matches = message.strippedContent.match(eventsOrItems);
   return matches || [];
 }
@@ -360,19 +350,19 @@ function getEventsOrItems(message) {
  * @param  {string} chunk String chunk to check
  * @returns {boolean}       Whether or not the string is allowed
  */
-const stringFilter = chunk => chunk && chunk.length;
+export const stringFilter = chunk => chunk && chunk.length;
 
 /**
  * Field limit for chunked embeds
  * @type {Number}
  */
-const fieldLimit = 5;
+export const fieldLimit = 5;
 
 /**
  * Default values for embeds
  * @type {Object}
  */
-const embedDefaults = {
+export const embedDefaults = {
   color: 0x77dd77,
   footer: {
     text: 'Sent',
@@ -390,7 +380,7 @@ const embedDefaults = {
  * @param {boolean} [checkTitle=false]        Whether or not to check for titles at the end
  * @returns {Array.<string>}                  Array of string chunks
  */
-const chunkify = ({
+export const chunkify = ({
   string, newStrings = [], breakChar = '; ', maxLength = 1000, checkTitle = false,
 }) => {
   let breakIndex;
@@ -429,7 +419,7 @@ const chunkify = ({
  * @param  {string} htmlString html string to convert
  * @returns {string}            markdinated string
  */
-const markdinate = htmlString => htmlString
+export const markdinate = htmlString => htmlString
   .split('\n').map(l => l.trim()).join('\n') // trim lines
   .replace(/\r\n/gm, '\n') // replace CRLF with LF
   .replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
@@ -454,7 +444,7 @@ const markdinate = htmlString => htmlString
  * @param  {Array.<any>} original  Original array
  * @param  {Array.<any>|any} value Value to merge into array
  */
-const checkAndMergeEmbeds = (original, value) => {
+export const checkAndMergeEmbeds = (original, value) => {
   if (value instanceof Array) {
     original.push(...value);
   } else {
@@ -470,7 +460,7 @@ const nav = ['◀', '▶', '⏮', '⏭', '🛑'];
  * @param   {(Object|Discord.MessageEmbed)}   pages   Array of possible pages
  * @param   {Discord.User}                    author  Calling author
  */
-const createPageCollector = async (msg, pages, author) => {
+export const createPageCollector = async (msg, pages, author) => {
   if (pages.length <= 1 || !msg) return;
 
   let page = 1;
@@ -548,7 +538,7 @@ const createPageCollector = async (msg, pages, author) => {
  * @param  {Discord.Message}              message  Message for author
  * @param  {Settings}                     settings Settings
  */
-const setupPages = async (pages, { message, settings }) => {
+export const setupPages = async (pages, { message, settings }) => {
   if (pages.length && !!(await message.fetch(true))) {
     const msg = await message.reply({ embeds: [pages[0]] });
     await createPageCollector(msg, pages, message.author);
@@ -565,7 +555,7 @@ const setupPages = async (pages, { message, settings }) => {
  * @param  {string} breakChar     character to break on
  * @returns {Discord.MessageEmbed}               Embed
  */
-const createChunkedEmbed = (stringToChunk, title, breakChar) => {
+export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const embed = new MessageEmbed(embedDefaults);
   embed.setTitle(title);
   const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || [])
@@ -600,7 +590,7 @@ const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   return embed;
 };
 
-const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
+export const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
   const chunkified = chunkify({ string: valArr.join(chunkStr) });
   if (!chunkified) {
     return [];
@@ -619,7 +609,7 @@ const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
     .filter(field => field);
 };
 
-const constructTypeEmbeds = (types) => {
+export const constructTypeEmbeds = (types) => {
   const includedTypes = { ...trackableEvents };
   Object.keys(trackableEvents).forEach((eventType) => {
     includedTypes[eventType] = [];
@@ -659,7 +649,7 @@ const constructTypeEmbeds = (types) => {
   });
 };
 
-const constructItemEmbeds = (types) => {
+export const constructItemEmbeds = (types) => {
   const includedItems = { ...trackableItems };
   Object.keys(trackableItems).forEach((itemType) => {
     includedItems[itemType] = [];
@@ -688,7 +678,7 @@ const constructItemEmbeds = (types) => {
   });
 };
 
-async function sendTrackInstructionEmbeds({
+export async function sendTrackInstructionEmbeds({
   message, prefix, call, settings,
 }) {
   const pages = [];
@@ -742,7 +732,7 @@ async function sendTrackInstructionEmbeds({
   return undefined;
 }
 
-const emojify = (stringWithoutEmoji) => {
+export const emojify = (stringWithoutEmoji) => {
   let stringWithEmoji = stringWithoutEmoji;
   Object.keys(emoji).forEach((identifier) => {
     if (typeof stringWithEmoji === 'string') {
@@ -754,13 +744,13 @@ const emojify = (stringWithoutEmoji) => {
   return stringWithEmoji;
 };
 
-const getEmoji = identifier => emoji[identifier] || '';
+export const getEmoji = identifier => emoji[identifier] || '';
 
 /**
  * @param   {number} millis The number of milliseconds in the time delta
  * @returns {string}
  */
-const timeDeltaToString = (millis) => {
+export const timeDeltaToString = (millis) => {
   if (typeof millis !== 'number') {
     throw new TypeError('millis should be a number');
   }
@@ -789,7 +779,7 @@ const timeDeltaToString = (millis) => {
   return `${prefix}${timePieces.join(' ')}`;
 };
 
-const timeDeltaToMinutesString = (millis) => {
+export const timeDeltaToMinutesString = (millis) => {
   if (typeof millis !== 'number') {
     throw new TypeError('millis should be a number');
   }
@@ -810,7 +800,7 @@ const timeDeltaToMinutesString = (millis) => {
  * @param   {function} [now] A function that returns the current UNIX time in milliseconds
  * @returns {number}
  */
-const fromNow = (d, now = Date.now) => d.getTime() - now();
+export const fromNow = (d, now = Date.now) => d.getTime() - now();
 
 /**
  * Get the list of channels to enable commands in based on the parameters
@@ -819,7 +809,7 @@ const fromNow = (d, now = Date.now) => d.getTime() - now();
  * @param {Collection.<Discord.Channel>} channels Channels allowed to be searched through
  * @returns {Array<string>} channel ids to enable commands in
  */
-const getChannel = (channelsParam, message, channels) => {
+export const getChannel = (channelsParam, message, channels) => {
   let { channel } = message;
   let channelsColl;
   if (message.guild) {
@@ -847,7 +837,7 @@ const getChannel = (channelsParam, message, channels) => {
  * @param {Discord.Message} message Discord message to get information on channels
  * @returns {Array<string>} channel ids to enable commands in
  */
-const getChannels = (channelsParam, message) => {
+export const getChannels = (channelsParam, message) => {
   let channels = [];
   // handle it for strings
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
@@ -869,7 +859,7 @@ const getChannels = (channelsParam, message) => {
  * @param {Discord.Message} message message to get information on users and roles
  * @returns {Role|User} target or user to disable commands for
  */
-const getTarget = (targetParam, roleMentions, userMentions, message) => {
+export const getTarget = (targetParam, roleMentions, userMentions, message) => {
   let target;
   const roleMention = roleMentions.first();
   const userMention = userMentions.first();
@@ -898,7 +888,7 @@ const getTarget = (targetParam, roleMentions, userMentions, message) => {
   return target;
 };
 
-const resolveRoles = ({ mentions = undefined, content = '', guild = undefined }) => {
+export const resolveRoles = ({ mentions = undefined, content = '', guild = undefined }) => {
   let roles = [];
   if (mentions && mentions.roles) {
     roles = roles.concat(mentions.roles.array());
@@ -926,7 +916,7 @@ const resolveRoles = ({ mentions = undefined, content = '', guild = undefined })
  * @param  {Discord.Role} role role to convert members from
  * @returns {Discord.User[]}      array of discord users
  */
-const usersInRole = role => role.members.map(member => member.user);
+export const usersInRole = role => role.members.map(member => member.user);
 
 /**
  * Gets the list of users from the mentions in the call
@@ -934,7 +924,7 @@ const usersInRole = role => role.members.map(member => member.user);
  * @param {boolean} excludeAuthor whether or not to exclude the author in the list
  * @returns {Array.<User>} Array of users to send message
  */
-const getUsersForCall = (message, excludeAuthor) => {
+export const getUsersForCall = (message, excludeAuthor) => {
   const users = [];
   if (message.mentions.roles) {
     message.mentions.roles.forEach(role => users.push(...usersInRole(role)));
@@ -960,7 +950,7 @@ const getUsersForCall = (message, excludeAuthor) => {
   return users;
 };
 
-const resolvePool = async (message, settings,
+export const resolvePool = async (message, settings,
   {
     explicitOnly = false,
     skipManages = false,
@@ -1008,14 +998,14 @@ const resolvePool = async (message, settings,
   return poolId;
 };
 
-const safeGetEntry = (entry) => {
+export const safeGetEntry = (entry) => {
   if (!!entry || typeof entry === 'undefined' || entry === 'null') {
     return undefined;
   }
   return entry.replace(/"/g, '');
 };
 
-const csvToCodes = (csv) => {
+export const csvToCodes = (csv) => {
   const lines = csv.replace(/\r/g, '').split('\n');
   return lines.map((line) => {
     const entries = line.split(',');
@@ -1032,7 +1022,7 @@ const csvToCodes = (csv) => {
   }).filter(code => code.code);
 };
 
-const determineTweetType = (tweet) => {
+export const determineTweetType = (tweet) => {
   if (tweet.in_reply_to_status_id) {
     return ('reply');
   }
@@ -1051,9 +1041,9 @@ const determineTweetType = (tweet) => {
  * @param  {RegExp} regex regex to match
  * @returns {string[]}       Array of matches, potentially empty
  */
-const safeMatch = (str, regex) => str.match(regex) || [];
+export const safeMatch = (str, regex) => str.match(regex) || [];
 
-const getMessage = async (message, otherMessageId) => {
+export const getMessage = async (message, otherMessageId) => {
   const msgResults = [];
   message.guild.channels.each((channel) => {
     msgResults.push(channel.messages.fetch(otherMessageId));
@@ -1068,7 +1058,7 @@ const getMessage = async (message, otherMessageId) => {
  * @param  {string} field field to group by
  * @returns {Object}       [description]
  */
-const groupBy = (array, field) => {
+export const groupBy = (array, field) => {
   const grouped = {};
   array.forEach((item) => {
     const fVal = item[field];
@@ -1100,304 +1090,7 @@ const giveawayDefaults = {
   },
 };
 
-const toTitleCase = str => str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-
-const navComponents = [
-  new MessageActionRow({
-    components: [
-      new MessageButton({
-        label: 'Previous',
-        customId: 'previous',
-        style: MessageButtonStyles.SECONDARY,
-      }), new MessageButton({
-        label: 'Stop',
-        customId: 'stop',
-        style: MessageButtonStyles.DANGER,
-      }), new MessageButton({
-        label: 'Next',
-        customId: 'next',
-        style: MessageButtonStyles.SECONDARY,
-      }),
-    ],
-  }),
-];
-
-/**
- * Created a selection collector for selecting a page from the list.
- *   Must have 25 or fewer unique titles.
- * @param {CommandInteraction} interaction interaction to respond to
- * @param {Array<MessageEmbed>} pages array of pages to make available
- * @param {CommandContext} ctx context for command call
- * @returns {Promise<void>}
- */
-const createSelectionCollector = async (interaction, pages, ctx) => {
-  if (pages.length === 1) {
-    const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
-    return interaction.deferred || interaction.replied
-      ? interaction.editReply(payload)
-      : interaction.reply(payload);
-  }
-  let page = 1;
-  const pagedPages = pages.map((newPage, index) => {
-    const pageInd = `Page ${index + 1}/${pages.length}`;
-    if (newPage.footer) {
-      if (newPage instanceof MessageEmbed) {
-        if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
-        }
-      } else if (newPage.footer.text) {
-        if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
-        }
-      } else {
-        newPage.footer.text = pageInd;
-      }
-    } else {
-      newPage.footer = { text: pageInd };
-    }
-    return new MessageEmbed(newPage);
-  });
-  const selections = pages.map((embed, index) => ({
-    label: embed.title,
-    value: `${index}`,
-  }));
-
-  const menu = () => [new MessageActionRow({
-    components: [
-      new Discord.MessageSelectMenu({
-        customId: 'select',
-        placeholder: ctx.i18n`Select Page`,
-        minValues: 1,
-        maxValues: 1,
-        options: selections.map((s, i) => ({
-          ...s,
-          default: i === page - 1,
-        })),
-      }),
-    ],
-  })];
-
-  const payload = {
-    ephemeral: ctx.ephemerate,
-    embeds: [pagedPages[page - 1]],
-    components: menu(),
-  };
-  const message = interaction.deferred || interaction.replied
-    ? await interaction.editReply(payload)
-    : await interaction.reply(payload);
-
-  const collector = new InteractionCollector(interaction.client, {
-    interactionType: InteractionTypes.MESSAGE_COMPONENT,
-    componentType: MessageComponentTypes.SELECT_MENU,
-    message,
-    guild: interaction.guild,
-    channel: interaction.channel,
-  });
-
-  /**
-   * Handle a new selection
-   * @param {Discord.SelectMenuInteraction} selection updated selection
-   * @returns {Promise<void>}
-   */
-  const selectionHandler = async (selection) => {
-    await selection.deferUpdate({ ephemeral: ctx.ephemerate });
-    page = Number.parseInt(selection.values[0], 10) + 1;
-    if (page < 1) {
-      page = 1;
-    } else if (page > pagedPages.length) {
-      page = pagedPages.length;
-    }
-    await interaction.editReply({
-      embeds: [pagedPages[page - 1]],
-      ephemeral: ctx.ephemerate,
-      components: menu(),
-    });
-  };
-  collector.on('collect', selectionHandler);
-  const blank = async () => interaction.editReply({
-    embeds: [pagedPages[page - 1]],
-    ephemeral: ctx.ephemerate,
-    components: [],
-  });
-  collector.on('end', blank);
-  collector.on('dispose', blank);
-  return message;
-};
-
-/**
- * Create a paged interaction collector for an interaction & embed pages
- * @param {CommandInteraction} interaction to reply to
- * @param {Array<MessageEmbed>} pages embed pages
- * @param {CommandContext} ctx command context
- * @returns {Promise<void>}
- */
-const createPagedInteractionCollector = async (interaction, pages, ctx) => {
-  if (!interaction.deferred) await interaction.deferReply({ ephemeral: ctx.ephemerate });
-  let page = 1;
-  if (pages.length === 1) {
-    const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
-    return interaction.deferred || interaction.replied
-      ? interaction.editReply(payload)
-      : interaction.reply(payload);
-  }
-  const pagedPages = pages.map((newPage, index) => {
-    const pageInd = `Page ${index + 1}/${pages.length}`;
-    if (!newPage.description) newPage.setDescription('_ _');
-    if (newPage.footer) {
-      if (newPage instanceof MessageEmbed) {
-        if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
-        }
-      } else if (newPage.footer.text) {
-        if (newPage.footer.text.indexOf('Page') === -1) {
-          newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
-        }
-      } else {
-        newPage.footer.text = pageInd;
-      }
-    } else {
-      newPage.footer = { text: pageInd };
-    }
-    return new MessageEmbed(newPage);
-  });
-  const embeds = [pagedPages[page - 1]];
-  const message = interaction.deferred || interaction.replied
-    ? await interaction.editReply({
-      ephemeral: ctx.ephemerate,
-      embeds,
-      components: navComponents,
-    })
-    : await interaction.reply({
-      ephemeral: ctx.ephemerate,
-      embeds,
-      components: navComponents,
-    });
-
-  const collector = new InteractionCollector(interaction.client, {
-    interactionType: InteractionTypes.MESSAGE_COMPONENT,
-    componentType: MessageComponentTypes.BUTTON,
-    message,
-    guild: interaction.guild,
-    channel: interaction.channel,
-  });
-
-  /**
-   * Handle button clicks
-   * @param {Discord.ButtonInteraction} button to handle
-   * @returns {Promise<void>}
-   */
-  const buttonHandler = async (button) => {
-    await button?.deferUpdate({ ephemeral: ctx.ephemerate });
-    switch (button.customId) {
-      case 'previous':
-        if (page > 1) page -= 1;
-        break;
-      case 'next':
-        if (page <= pagedPages.length) page += 1;
-        break;
-      case 'first':
-        page = 1;
-        break;
-      case 'last':
-        page = pagedPages.length;
-        break;
-      case 'stop':
-        collector.stop('user');
-        collector.checkEnd();
-        await interaction.editReply({
-          embeds: [pagedPages[page - 1]],
-          ephemeral: ctx.ephemerate,
-          components: [],
-        });
-        return;
-      default:
-        break;
-    }
-
-    if (page < 1) {
-      page = 1;
-    } else if (page > pagedPages.length) {
-      page = pagedPages.length;
-    }
-    await interaction.editReply({
-      embeds: [pagedPages[page - 1]],
-      ephemeral: ctx.ephemerate,
-      components: navComponents,
-    });
-  };
-  collector.on('collect', buttonHandler);
-  collector.on('end', async (collected, reason) => ctx.logger.debug(`closed with ${reason}`));
-  const blank = async () => interaction.editReply({
-    embeds: [pagedPages[page - 1]],
-    ephemeral: ctx.ephemerate,
-    components: [],
-  });
-  collector.on('end', blank);
-  collector.on('dispose', blank);
-  return message;
-};
-
-const createDynamicInteractionCollector = async (interaction, pages, ctx) => (pages?.length < 26
-  ? createSelectionCollector(interaction, pages, ctx)
-  : createPagedInteractionCollector(interaction, pages, ctx));
-
-const confirmationComponents = [
-  new MessageActionRow({
-    components: [
-      new MessageButton({
-        label: 'yes',
-        customId: 'confirm',
-        style: MessageButtonStyles.PRIMARY,
-      }), new MessageButton({
-        label: 'no',
-        customId: 'deny',
-        style: MessageButtonStyles.SECONDARY,
-      }),
-    ],
-  }),
-];
-
-const createConfirmationCollector = async (interaction, onConfirm, onDeny, ctx) => {
-  const message = interaction.deferred || interaction.replied
-    ? await interaction.editReply({
-      content: 'Are you sure?',
-      components: confirmationComponents,
-      ephemeral: ctx.ephemerate,
-    })
-    : await interaction.reply({
-      content: 'Are you sure?',
-      components: confirmationComponents,
-      ephemeral: ctx.ephemerate,
-    });
-
-  const collector = new InteractionCollector(interaction.client, {
-    interactionType: InteractionTypes.MESSAGE_COMPONENT,
-    componentType: MessageComponentTypes.BUTTON,
-    max: 1,
-    message,
-    guild: interaction.guild,
-    channel: interaction.channel,
-  });
-
-  const bh = async (button) => {
-    try {
-      switch (button.customId) {
-        case 'deny':
-          await onDeny();
-          break;
-        case 'confirm':
-          await onConfirm();
-          break;
-        default:
-          break;
-      }
-    } finally {
-      collector.checkEnd();
-    }
-  };
-  collector.on('collect', bh);
-  collector.on('end', (collected, reason) => ctx.logger.debug(`closed with ${reason}`));
-};
+export const toTitleCase = str => str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
 /**
  * Common functions for determining common functions
@@ -1405,7 +1098,7 @@ const createConfirmationCollector = async (interaction, onConfirm, onDeny, ctx) 
  *
  * @property {function} createGroupedArray create an array of arrays grouped to specified amount
  */
-module.exports = {
+export default {
   createGroupedArray,
   emojify,
   fromNow,
@@ -1450,8 +1143,4 @@ module.exports = {
   giveawayDefaults,
   markdinate,
   toTitleCase,
-  createPagedInteractionCollector,
-  createConfirmationCollector,
-  createSelectionCollector,
-  createDynamicInteractionCollector,
 };

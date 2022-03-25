@@ -1,19 +1,16 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class NotifyOwnerJoin extends Handler {
+export default class NotifyOwnerJoin extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.notifyowner', Events.GUILD_CREATE);
@@ -49,5 +46,3 @@ class NotifyOwnerJoin extends Handler {
     }
   }
 }
-
-module.exports = NotifyOwnerJoin;

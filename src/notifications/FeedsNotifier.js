@@ -1,32 +1,30 @@
-'use strict';
+import RssFeedEmitter from 'rss-feed-emitter';
 
-require('colors');
-const RssFeedEmitter = require('rss-feed-emitter');
+import Broadcaster from './Broadcaster.js';
+import RSSEmbed from '../embeds/RSSEmbed.js';
+import { rssFeeds } from '../resources/index.js';
+import logger from '../utilities/Logger.js';
 
-const Broadcaster = require('./Broadcaster');
-const RSSEmbed = require('../embeds/RSSEmbed');
-const feeds = require('../resources/rssFeeds');
-const logger = require('../Logger');
+import 'colors';
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 
-class FeedsNotifier {
+export default class FeedsNotifier {
   constructor({
-    client, settings, messageManager, workerCache,
+    client, settings, workerCache,
   }) {
     this.feeder = new RssFeedEmitter({
       userAgent: `RSS Feed Emitter | ${client.user.username}`,
       skipFirstLoad: true,
     });
 
-    feeds.forEach((feed) => {
+    rssFeeds.forEach((feed) => {
       this.feeder.add({ url: feed.url, refresh: 900000 });
     });
 
     this.broadcaster = new Broadcaster({
       client,
       settings,
-      messageManager,
       workerCache,
     });
     this.feeder.on('error', logger.debug);
@@ -55,7 +53,7 @@ class FeedsNotifier {
       logger.info(`new item: ${item.title}`, 'RSS');
 
       if (new Date(item.pubDate).getTime() > this.start) {
-        const feed = feeds.filter(feedEntry => feedEntry.url === item.meta.link)[0];
+        const feed = rssFeeds.filter(feedEntry => feedEntry.url === item.meta.link)[0];
         const itemEmbed = new RSSEmbed(item, feed);
         activePlatforms.forEach((platform) => {
           this.broadcaster.broadcast(itemEmbed, platform, feed.key);
@@ -66,5 +64,3 @@ class FeedsNotifier {
     }
   }
 }
-
-module.exports = FeedsNotifier;

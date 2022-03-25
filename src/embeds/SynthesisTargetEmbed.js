@@ -1,11 +1,9 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const scannerThumb = `${assetBase}/img/synthesis-scanner.png`;
 
-module.exports = class SynthesisTargetEmbed extends BaseEmbed {
+export default class SynthesisTargetEmbed extends BaseEmbed {
   constructor(synthTargets, { query, i18n }) {
     super();
 
@@ -25,4 +23,4 @@ module.exports = class SynthesisTargetEmbed extends BaseEmbed {
       this.footer.text = i18n`Search through the results using the arrows below.`;
     }
   }
-};
+}
