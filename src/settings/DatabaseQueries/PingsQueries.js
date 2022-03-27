@@ -98,13 +98,13 @@ export default class PingsQueries {
 
   async getAllPings() {
     let globalPings = {};
-    for (const plist of pingables) {
+    await Promise.all(pingables.map(async (plist) => {
       const plistPings = await this.getGroupPings(plist);
       globalPings = {
         ...globalPings,
         ...plistPings,
       };
-    }
+    }));
     return globalPings;
   }
 

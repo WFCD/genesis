@@ -402,11 +402,9 @@ export default class Settings extends Interaction {
         : interaction.channel;
 
       if (clear && Object.keys(remove)?.length) {
-        for (const type of Object.keys(remove)) {
-          for (const unping of remove[type]) {
-            await ctx.settings.removePing(interaction.guild, unping);
-          }
-        }
+        await Promise.all(Object.keys(remove).map(async type => Promise.all(remove[type].map(
+          async unping => ctx.settings.removePing(interaction.guild, unping),
+        ))));
         return interaction?.editReply?.({ content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`, ephemeral: ctx.ephemerate });
       }
       if (clear && !remove?.length) {

@@ -56,7 +56,7 @@ export default class WhereIs extends Interaction {
     let results = [];
 
     const map = new Map();
-    for (const item of data) {
+    await Promise.all(data.map(async (item) => {
       const isRelic = item.place.includes('Relic');
       const relic = item.place.split('(')[0].trim();
       if (isRelic && (!map.has(relic) || map.get(relic) < item.chanceNum)) {
@@ -77,7 +77,7 @@ export default class WhereIs extends Interaction {
         map.set(item.place, item.chanceNum);
         results.push(item);
       }
-    }
+    }));
 
     results = [...(new Set(results))];
     results.sort((a, b) => b.chanceNum - a.chanceNum);

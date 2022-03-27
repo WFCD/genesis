@@ -1,5 +1,7 @@
 import flatCache from 'flat-cache';
 import cron from 'cron';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'url';
 import Notifier from './worldstate/Notifier.js';
 import CycleNotifier from './worldstate/CycleNotifier.js';
 import FeedsNotifier from './FeedsNotifier.js';
@@ -12,23 +14,19 @@ import logger from '../utilities/Logger.js';
 import { games } from '../utilities/CommonFunctions.js';
 
 const Job = cron.CronJob;
-
-const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
-
-const rest = new Rest();
-/** @type {Database} */
-const db = new Database();
-
 const deps = {};
+const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
+const rest = new Rest();
+const forceHydrate = (process.argv[2] || '').includes('--hydrate');
+
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let timeout;
 
-const forceHydrate = (process.argv[2] || '').includes('--hydrate');
-
-logger.info(`forceHydrate: ${forceHydrate}`);
-
 class Worker {
   constructor() {
+    logger.info(`forceHydrate: ${forceHydrate}`);
     /**
      * Objects holding worldState data, one for each platform
      * @type {Object.<WorldStateCache>}
@@ -43,11 +41,14 @@ class Worker {
           this.worldStates[platform] = new WorldStateCache(platform, timeout);
         });
     }
+    return (async () => {
+      deps.settings = await new Database();
+      return this;
+    })();
   }
-
   async hydratePings() {
     const sDate = Date.now();
-    const pings = await db.getAllPings();
+    const pings = await deps.settings.getAllPings();
     if (pings) {
       deps.workerCache.setKey('pings', pings);
       deps.workerCache.save(true);
@@ -55,10 +56,9 @@ class Worker {
     const eDate = Date.now();
     logger.info(`ping hydration took ${String(eDate - sDate).red}ms`, 'DB');
   }
-
   async hydrateGuilds() {
     const sDate = Date.now();
-    const guilds = await db.getGuilds();
+    const guilds = await deps.settings.getGuilds();
     if (guilds) {
       deps.workerCache.setKey('guilds', guilds);
       deps.workerCache.save(true);
@@ -68,24 +68,21 @@ class Worker {
 
     await this.hydratePings();
   }
-
   async hydrateQueries() {
     const sDate = Date.now();
-    for (const cachedEvent of cachedEvents) {
-      for (const platform of activePlatforms) {
+    await Promise.all(cachedEvents.map(async cachedEvent => Promise
+      .all(activePlatforms.map(async (platform) => {
         deps.workerCache.setKey(`${cachedEvent}:${platform}`,
-          await db.getAgnosticNotifications(cachedEvent, platform));
-      }
-    }
+          await deps.settings.getAgnosticNotifications(cachedEvent, platform));
+      }))));
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');
   }
-
   async initCache() {
     if (games.includes('WARFRAME')) {
       deps.workerCache = flatCache.load('worker',
-        require('path').resolve('../../.cache'));
+        path.resolve(__dirname, '../../.cache'));
 
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
@@ -96,13 +93,12 @@ class Worker {
         || forceHydrate) await this.hydratePings();
 
       let hydrateEvents = forceHydrate;
-      for (const cachedEvent of cachedEvents) {
-        for (const platform of activePlatforms) {
+      await Promise.all(cachedEvents.map(async cachedEvent => Promise
+        .all(activePlatforms.map(async (platform) => {
           if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
             hydrateEvents = true;
           }
-        }
-      }
+        }))));
       if (hydrateEvents) await this.hydrateQueries();
 
       // refresh guild cache every hour... it's a heavy process, we don't want to do it much
@@ -117,7 +113,6 @@ class Worker {
    */
   async start() {
     try {
-      deps.settings = db;
       deps.client = rest;
       deps.worldStates = this.worldStates;
       deps.timeout = timeout;
@@ -159,6 +154,7 @@ class Worker {
   }
 }
 
-const worker = new Worker();
-
-worker.start();
+(async () => {
+  const worker = await new Worker();
+  await worker.start();
+})();

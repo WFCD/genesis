@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import decache from 'decache';
 import BaseEventHandler from '../models/BaseEventHandler.js';
@@ -30,15 +30,15 @@ export default class EventHandler {
    */
   async loadHandles() {
     const handlersDir = path.join(path.resolve('src/eventHandlers'));
-    let files = fs.readdirSync(handlersDir);
+    let files = await fs.readdir(handlersDir);
 
     const categories = files.filter(f => f.indexOf('.js') === -1 && !f.startsWith('EventHandler'));
     files = files.filter(f => f.indexOf('.js') > -1);
 
-    categories.forEach((category) => {
-      files = files.concat(fs.readdirSync(path.join(handlersDir, category))
+    await Promise.all(categories.map(async (category) => {
+      files = files.concat((await fs.readdir(path.join(handlersDir, category)))
         .map(f => path.join(category, f)));
-    });
+    }));
 
     if (this.handlers.length !== 0) {
       this.logger.silly('Decaching handles');
@@ -81,8 +81,8 @@ export default class EventHandler {
    * @returns {Promise} resolution of handlers execution
    */
   async handleEvent(args) {
-    return Promise.all(this.handlers
-      .filter(handler => handler.event === args.event)
-      .map(async handler => handler.execute(...args.args)));
+    return Promise.all(this.handlers.filter(handler => handler.event === args.event).map(
+      async handler => handler.execute(...args.args),
+    ));
   }
 }

@@ -2,8 +2,9 @@ import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 
 import {
-  asId, between, embeds, getThumbnailForItem, i18ns, perLanguage, syndicates,
-} from '../NotifierUtils';
+  asId, between, embeds, getThumbnailForItem, perLanguage,
+} from '../NotifierUtils.js';
+import { syndicates } from '../../resources/index.js';
 
 import { captures, createGroupedArray, platforms } from '../../utilities/CommonFunctions.js';
 
@@ -284,14 +285,13 @@ export default class Notifier {
       const embed = new embeds.VoidTrader(newBaro, { platform, i18n, locale });
       if (embed.fields.length > 25) {
         const pages = createGroupedArray(embed.fields, 15);
-        for (const page of pages) {
+        return Promise.all(pages.map(async (page) => {
           const tembed = { ...embed };
           tembed.fields = page;
           this.#broadcaster.broadcast(tembed, platform, 'baro');
-        }
-      } else {
-        return this.#broadcaster.broadcast(embed, platform, 'baro');
+        }));
       }
+      return this.#broadcaster.broadcast(embed, platform, 'baro');
     });
   }
 
@@ -428,9 +428,9 @@ export default class Notifier {
 
   async #sendSyndicates (newSyndicates, platform) {
     if (!newSyndicates || !newSyndicates[0]) return;
-    for (const {
+    await Promise.all(syndicates.map(async ({
       key, display, prefix, notifiable,
-    } of syndicates) {
+    }) => {
       if (notifiable) {
         return perLanguage(async ({ i18n, locale }) => {
           const embed = new embeds.Syndicate(newSyndicates, {
@@ -440,12 +440,12 @@ export default class Notifier {
           return this.checkAndSendSyndicate(embed, eKey, platform);
         });
       }
-    }
+    }));
   }
 
   async #sendTweets (newTweets, platform) {
     return Promise.all(newTweets.map(t => this
-      .standardBroadcast(newTweets, {
+      .standardBroadcast(t, {
         Embed: embeds.Tweet, platform, type: t.id,
       })));
   }
@@ -455,12 +455,8 @@ export default class Notifier {
   }
 
   async #sendSentientOutposts (outpost, platform) {
-    for (const [locale, i18n] of Object.entries(i18ns)) {
-      if (outpost.mission) {
-        const embed = new embeds.Outposts({ logger }, outpost, platform, i18n);
-        embed.locale = locale;
-        await this.#broadcaster.broadcast(embed, platform, 'outposts');
-      }
+    if (outpost.mission) {
+      return this.standardBroadcast(outpost, { Embed: embeds.Outposts, type: 'outposts', platform });
     }
   }
 }

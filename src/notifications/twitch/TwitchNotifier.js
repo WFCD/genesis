@@ -1,22 +1,18 @@
 import TwitchEmbed from '../../embeds/TwitchEmbed.js';
 import TwitchMonitor from './TwitchMonitor.js';
-
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 
 import { platforms } from '../../utilities/CommonFunctions.js';
 import { perLanguage } from '../NotifierUtils.js';
-import 'colors';
 
 /**
  * Watches for Twitch go-lives and broadcasts them
  */
 export default class TwitchNotifier {
-  #monitor;
-
-  #broadcaster;
-
   #activePlatforms;
+  #broadcaster;
+  #monitor;
 
   constructor({
     client, settings, workerCache,
@@ -61,11 +57,10 @@ export default class TwitchNotifier {
           }
         }
 
-        perLanguage(async ({ i18n, locale }) => {
+        await perLanguage(async ({ i18n, locale }) => {
           const embed = new TwitchEmbed(streamData, { i18n, locale });
-          for (const platform of this.#activePlatforms) {
-            this.#broadcaster.broadcast(embed, platform, id);
-          }
+          await Promise.all(this.#activePlatforms
+            .map(async platform => this.#broadcaster.broadcast(embed, platform, id)));
         });
       }
     });

@@ -5,7 +5,14 @@ import { WebhookClient } from 'discord.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 import 'colors';
 
-const ignore = ['Invalid refresh token', 'Failed to load', 'https://discord.com/api/webhooks/', 'Could not find the channel', 'DiscordAPIError', 'CHANNEL_NOT_CACHED'];
+const ignore = [
+  'Invalid refresh token',
+  'Failed to load',
+  'https://discord.com/api/webhooks/',
+  'Could not find the channel',
+  'DiscordAPIError',
+  'CHANNEL_NOT_CACHED',
+];
 const ignoreReg = new RegExp(`(${ignore.join('|')})`, 'i');
 
 Sentry.init({
