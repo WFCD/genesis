@@ -2,11 +2,16 @@ import http from 'node:http';
 import https from 'node:https';
 import logger from './Logger.js';
 
-const retryCodes = [429].concat((process.env.JSON_CACHE_RETRY_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
-const redirectCodes = [302, 301].concat((process.env.JSON_CACHE_REDIRECT_CODES || '').split(',').map(code => parseInt(code.trim(), 10)));
+const retryCodes = [429]
+  .concat((process.env.JSON_CACHE_RETRY_CODES || '')
+    .split(',')
+    .map(code => parseInt(code.trim(), 10)));
+const redirectCodes = [302, 301]
+  .concat((process.env.JSON_CACHE_REDIRECT_CODES || '')
+    .split(',')
+    .map(code => parseInt(code.trim(), 10)));
 
-const fetch = (url, { maxRetry = 10, headers } =
-{ maxRetry: 10, headers: {} }) => {
+const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) => {
   const protocol = url.startsWith('https') ? https : http;
   // eslint-disable-next-line new-cap
   return new Promise((resolve) => {

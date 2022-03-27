@@ -37,14 +37,13 @@ export default class Ping extends Interaction {
       .concat(games.includes('WARFRAME') ? wfHosts : [])
       .concat(games.includes('DESTINY2') ? d2Hosts : []);
     const results = [];
-
-    for (const host of hosts) {
+    await Promise.all(hosts.map(async (host) => {
       const result = await ping.promise.probe(host);
       results.push({
         name: host,
         value: `${result.alive ? emojify('green_tick') : emojify('red_tick')} ${typeof result.time !== 'undefined' && result.time !== 'unknown' ? result.time : '--'}ms`,
       });
-    }
+    }));
 
     results.unshift({
       name: 'Discord WS',

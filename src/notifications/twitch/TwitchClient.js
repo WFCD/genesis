@@ -1,7 +1,6 @@
 import path from 'node:path';
 import Cache from 'flat-cache';
 import cron from 'cron';
-import 'colors';
 
 import fetch from '../../utilities/Fetcher.js';
 import logger from '../../utilities/Logger.js';
@@ -40,6 +39,10 @@ export default class TwitchClient {
     this.#tokenCache.save(true);
   }
 
+  /**
+   * Get the twitch refresh token
+   * @returns {string}
+   */
   static get refreshToken() {
     return this.#tokenCache.getKey('refresh');
   }
@@ -71,7 +74,7 @@ export default class TwitchClient {
    * Handle twitch API errors
    * @param  {TwitchError} err error reply
    */
-  static handleApiError(err) {
+  static #handleApiError (err) {
     const res = err.response || { };
 
     if (res.data && res.data.message) {
@@ -109,7 +112,7 @@ export default class TwitchClient {
       logger.error(res.statusText);
       return [];
     } catch (e) {
-      this.handleApiError(e);
+      this.#handleApiError(e);
       return [];
     }
   }
@@ -135,14 +138,13 @@ export default class TwitchClient {
       const res = await fetch(`${urls.token}?${atParams
         .map(({ key, val }) => `${key}=${val}`).join('&')}`, { method: 'POST' });
 
-      if (res.ok) {
-        const initAccessToken = (await res.json()).access_token;
+      if (res) {
+        const initAccessToken = res.access_token;
         this.#refreshToken = initAccessToken;
         this.#accessToken = initAccessToken;
         return true;
       }
-      const error = await res.json();
-      logger.error(`error refreshing refresh token: ${error.message}`, 'Twitch');
+      logger.error(`error refreshing refresh token: ${res.error.message}`, 'Twitch');
       return false;
     }
 
@@ -157,17 +159,16 @@ export default class TwitchClient {
     try {
       const res = await fetch(url, { method: 'post' });
 
-      if (res.ok) {
-        const token = (await res.json()).access_token;
+      if (res) {
+        const token = res.access_token;
         logger.info(token, 'Twitch');
         this.#accessToken = token;
         return true;
       }
-      const error = await res.json();
-      logger.error(`error retrieving refresh token: ${error.message}`, 'Twitch');
+      logger.error(`error retrieving refresh token: ${res.error.message}`, 'Twitch');
       logger.warn(url);
 
-      if (error.message === 'Invalid refresh token') {
+      if (res.error.message === 'Invalid refresh token') {
         this.#refreshToken = undefined;
         return this.hydrateToken();
       }
@@ -185,7 +186,7 @@ export default class TwitchClient {
    */
   static async fetchStreams(channels) {
     const params = channels.map(c => `user_login=${c}`).join('&');
-    return TwitchClient.#apiGet('streams', params);
+    return this.#apiGet('streams', params);
   }
 
   /**
@@ -195,7 +196,7 @@ export default class TwitchClient {
    */
   static async fetchUsers(channelNames) {
     const params = channelNames.map(c => `login=${c}`).join('&');
-    return TwitchClient.#apiGet('users', params);
+    return this.#apiGet('users', params);
   }
 
   /**
@@ -205,6 +206,6 @@ export default class TwitchClient {
    */
   static async fetchGames(gameIds) {
     const params = gameIds.map(c => `id=${c}`).join('&');
-    return TwitchClient.#apiGet('games', params);
+    return this.#apiGet('games', params);
   }
 }

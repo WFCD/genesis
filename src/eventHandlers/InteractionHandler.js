@@ -10,7 +10,7 @@ import BaseHandler from '../models/BaseEventHandler.js';
 import logger from '../utilities/Logger.js';
 import { i18n, locales } from '../resources/index.js';
 
-const { CommandInteraction, ButtonInteraction } = Discord;
+const { CommandInteraction } = Discord;
 const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
 const whitelistedGuilds = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
 
@@ -182,9 +182,7 @@ export default class InteractionHandler extends BaseHandler {
     const guilds = whitelistedGuilds.length
       ? Array.from(guildManager.cache.filter(g => whitelistedGuilds.includes(g.id)).values())
       : Array.from(guildManager.cache.values());
-    for (const guild of guilds) {
-      await this.#setGuildPerms(guild);
-    }
+    await Promise.all(guilds.map(this.#setGuildPerms));
   }
 
   /**
@@ -210,13 +208,13 @@ export default class InteractionHandler extends BaseHandler {
     });
     // logger.error(JSON.stringify(cmds));
     if (whitelistedGuilds.length) {
-      for (const gid of whitelistedGuilds) {
+      await Promise.all(whitelistedGuilds.map(async (gid) => {
         try {
           await commands.set(cmds, gid);
         } catch (e) {
           logger.error(e);
         }
-      }
+      }));
     } else {
       await commands.set(cmds);
     }
@@ -241,18 +239,19 @@ export default class InteractionHandler extends BaseHandler {
         if (grouped[ncc.guildId]) grouped[ncc.guildId].push(ncc.command);
         else grouped[ncc.guildId] = [ncc.command];
       });
-      for (const gid of Object.keys(grouped)) {
-        if (!gid) continue;
+      await Promise.all(Object.keys(grouped).map(async (gid) => {
+        if (!gid) return false;
         let guild;
         try {
           // fetch can fail due to missing access. swallow error.
           guild = await this.client.guilds.fetch(gid);
-          if (!guild) continue; // probably should consider checking if the bot is in the server?
+          // probably should consider checking if the bot is in the server?
+          if (!guild) return false;
           const guildCCs = grouped[gid];
           guildCCs.length = 50;
           await guild?.commands?.set(guildCCs.filter(c => c));
         } catch (ignore) { /* Ignored */ }
-      }
+      }));
     }
   }
 
@@ -276,7 +275,8 @@ export default class InteractionHandler extends BaseHandler {
 
   /**
    * Handle dat interaction!
-   * @param {CommandInteraction|ButtonInteraction} interaction interaction that will be handled
+   * @param {Discord.CommandInteraction|Discord.ButtonInteraction} interaction
+   *  interaction that will be handled
    * @returns {Promise<Discord.Message>|void}
    */
   async execute(interaction) {

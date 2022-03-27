@@ -1,11 +1,9 @@
-import moment from 'moment';
+import moment from 'dayjs';
 import Cache from 'flat-cache';
 import EventEmitter from 'node:events';
 import TwitchApi from './TwitchClient.js';
 import logger from '../../utilities/Logger.js';
 import { twitch as channels } from '../../resources/index.js';
-
-import 'colors';
 
 const haveEqualValues = (a, b) => {
   if (a.length !== b.length) {
@@ -76,7 +74,7 @@ export default class TwitchMonitor extends EventEmitter {
     }
 
     if (forceHydrate) {
-      TwitchApi.hydrateToken();
+      await TwitchApi.hydrateToken();
     }
 
     // Configure polling interval
@@ -207,8 +205,7 @@ export default class TwitchMonitor extends EventEmitter {
   async #handleStreamList (streams) {
     // Index channel data & build list of stream IDs now online
     const nextGameIdList = [];
-
-    for (const stream of streams) {
+    streams.forEach((stream) => {
       const channelName = stream.user_name.toLowerCase();
 
       // logger.debug(`${channelName} last seen as ${this.#statesDb.getKey(channelName)}`);
@@ -237,18 +234,15 @@ export default class TwitchMonitor extends EventEmitter {
 
       this.#statesDb.setKey(channelName, stream.type);
       this.#statesDb.save(true);
-    }
+    });
     this.#statesDb.setKey('all', this.#streamData);
-
-    for (const channel of channels) {
+    channels.forEach((channel) => {
       if (!streams.find(s => s.user_login === channel)
         && this.#statesDb.getKey(channel) === 'live') {
-        this.#handleChannelLiveUpdate(
-          this.#streamData[channel] || { type: 'offline', user_login: channel }, false,
-        );
+        this.#handleChannelLiveUpdate(this.#streamData[channel] || { type: 'offline', user_login: channel }, false);
         this.#statesDb.setKey(channel, 'offline');
       }
-    }
+    });
     this.#statesDb.save(true); // save after all are updated
 
     if (!haveEqualValues(this.#watchingGameIds, nextGameIdList)) {

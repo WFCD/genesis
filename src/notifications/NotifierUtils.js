@@ -1,7 +1,8 @@
 import util from 'node:util';
-import I18n from 'i18n-string-templates';
 import urlExists from 'url-exists';
+import I18n from 'i18n-string-templates';
 import { apiBase, apiCdnBase } from '../utilities/CommonFunctions.js';
+import { i18n as i18nBundle, locales } from '../resources/index.js';
 import fetch from '../utilities/Fetcher.js';
 
 import Alert from '../embeds/AlertEmbed.js';
@@ -27,7 +28,11 @@ import Outposts from '../embeds/SentientOutpostEmbed.js';
 import SteelPath from '../embeds/SteelPathEmbed.js';
 import RSS from '../embeds/RSSEmbed.js';
 
-export syndicates from '../resources/syndicates.json';
+const i18ns = {};
+locales.forEach((locale) => {
+  i18ns[locale] = I18n(i18nBundle, locale);
+});
+
 export const exists = util.promisify(urlExists);
 
 export const embeds = {
@@ -54,11 +59,6 @@ export const embeds = {
   SteelPath,
   RSS,
 };
-
-export const i18ns = {};
-require('../resources/locales.json').forEach((locale) => {
-  i18ns[locale] = I18n(locale);
-});
 
 export const between = (activation, platform, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
@@ -102,8 +102,6 @@ export function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-export const perLanguage = async (fn) => {
-  for (const [locale, i18n] of Object.entries(i18ns)) {
-    await fn({ locale, i18n });
-  }
-};
+export const perLanguage = async fn => Promise
+  .all(Object
+    .entries(i18ns).map(async ([locale, i18n]) => fn({ locale, i18n })));

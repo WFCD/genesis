@@ -90,7 +90,7 @@ export default class Lookup extends Interaction {
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
         if (!data.length) return interaction.editReply('None found');
-        for (const weapon of data) {
+        await Promise.all(data.map(async (weapon) => {
           pages.push(new Weapon(weapon, { i18n: ctx.i18n }));
           const strippedWeaponN = query.replace(/(prime|vandal|wraith|prisma)/ig, '').trim();
           const rivenResults = await ctx.ws.riven(strippedWeaponN, ctx.platform);
@@ -112,13 +112,13 @@ export default class Lookup extends Interaction {
               // eslint-disable-next-line no-loop-func
               .forEach(patchGroup => pages.push(new Patchnote(patchGroup)));
           }
-        }
+        }));
         return Collectors.dynamic(interaction, pages, ctx);
       case 'warframe':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
         if (!data.length) return interaction.editReply('None found');
-        for (const warframe of data) {
+        await Promise.all(data.map(async (warframe) => {
           pages.push(new Warframe(warframe, { i18n: ctx.i18n }));
           if (warframe?.components?.length) {
             pages.push(new Component(warframe.components, { i18n: ctx.i18n }));
@@ -129,7 +129,7 @@ export default class Lookup extends Interaction {
               pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
             });
           }
-        }
+        }));
         return Collectors.dynamic(interaction, pages, ctx);
       case 'riven':
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
@@ -142,7 +142,7 @@ export default class Lookup extends Interaction {
         data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query))
           .filter(m => typeof m.baseDrain !== 'undefined');
         if (!data.length) return interaction.editReply('None found');
-        for (const mod of data) {
+        await Promise.all(data.map(async (mod) => {
           pages.push(new Mod(mod, { i18n: ctx.i18n }));
           if (mod?.patchlogs?.length && enablePatchnotes) {
             // eslint-disable-next-line no-loop-func
@@ -150,7 +150,7 @@ export default class Lookup extends Interaction {
               pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
             });
           }
-        }
+        }));
         pages = Object.keys(data).map(d => new Mod(data[d], { i18n: ctx.i18n }));
         return Collectors.dynamic(interaction, pages, ctx);
       default:

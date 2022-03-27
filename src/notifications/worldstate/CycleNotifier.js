@@ -2,9 +2,9 @@ import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 import { platforms } from '../../utilities/CommonFunctions.js';
 
-const {
-  embeds, between, fromNow, perLanguage,
-} = require('../NotifierUtils');
+import {
+  between, embeds, fromNow, perLanguage,
+} from '../NotifierUtils.js';
 
 const beats = {};
 let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 60000) / 3;
