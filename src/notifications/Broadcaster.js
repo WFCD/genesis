@@ -58,13 +58,13 @@ export default class Broadcaster {
       return;
     }
 
-    for (const channelId of channels) {
-      if (typeof channelId === 'undefined' || !channelId.length) continue;
+    await Promise.all(channels.map(async (channelId) => {
+      if (typeof channelId === 'undefined' || !channelId.length) return;
       const ctx = await this.settings.getCommandContext(channelId);
 
       // localeCompare should return 0 if equal, so non-zero's will be truthy
       if (embed.locale && ctx.language.localeCompare(embed.locale)) {
-        continue;
+        return;
       }
 
       const glist = Object.entries(guilds)
@@ -73,7 +73,7 @@ export default class Broadcaster {
 
       if (!guild) {
         logger.info(`couldn't find guild for ${type} on ${channelId}`);
-        continue;
+        return;
       }
 
       try {
@@ -92,6 +92,6 @@ export default class Broadcaster {
           logger.error(e);
         }
       }
-    }
+    }));
   }
 }

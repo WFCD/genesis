@@ -4,6 +4,8 @@ import path from 'node:path';
 import { readdir } from 'node:fs/promises';
 import I18n from 'i18n-string-templates';
 import Discord from 'discord.js';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { assetBase, platforms } from '../utilities/CommonFunctions.js';
 import logger from '../utilities/Logger.js';
 import { i18n } from '../resources/index.js';
@@ -22,6 +24,9 @@ const props = (obj) => {
     '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'valueOf', '__proto__',
     'toLocaleString'].includes(thing));
 };
+
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
   * Command Context
@@ -171,14 +176,12 @@ export default class Database {
    *  if you're worried about shard space.
    */
   async #loadChildren () {
-    const dbRoot = path.join(path.resolve('src/settings/DatabaseQueries'));
-    await Promise.all((await readdir(dbRoot))
-      .filter(f => f.endsWith('.js'))
-      .map(async (file) => {
-        const QClass = (await import(path.join(dbRoot, file))).default;
-        const qInstance = new QClass(this.db);
-        Database.#copyChildQueries(qInstance);
-      }));
+    const dbRoot = path.join(path.resolve(__dirname, './DatabaseQueries'));
+    await Promise.all((await readdir(dbRoot)).filter(f => f.endsWith('.js')).map(async (file) => {
+      const QClass = (await import(path.join(dbRoot, file))).default;
+      const qInstance = new QClass(this.db);
+      Database.#copyChildQueries(qInstance);
+    }));
   }
 
   init() {

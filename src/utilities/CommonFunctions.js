@@ -843,7 +843,10 @@ export const getChannels = (channelsParam, message) => {
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
     channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/([<>#])/ig, '')));
   } else if (channelsParam === 'all' || channelsParam === '*') {
-    channels = channels.concat(Array.from(message.guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT')));
+    channels = channels
+      .concat(Array
+        .from(message.guild.channels.cache
+          .filter(channel => channel.type === 'GUILD_TEXT')));
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
   }

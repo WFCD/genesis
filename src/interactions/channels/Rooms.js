@@ -190,15 +190,15 @@ const create = async (guild, options) => {
     );
   // send invites
   if (voiceChannel.permissionsFor(guild.me).has(Permissions.FLAGS.CREATE_INSTANT_INVITE)) {
-    for (const user of options.invites) {
+    await Promise.all(options.invites.map(async (user) => {
       await user.createDM()
         .then(dmChannel => dmChannel.send({
-          content: `You\'ve been invited to <#${voiceChannel.id}> by ${options.author}`,
+          content: `You've been invited to <#${voiceChannel.id}> by ${options.author}`,
           allowedMentions: {
             users: [],
           },
         }));
-    }
+    }));
   }
   return new MessageEmbed({
     title: 'Channels created',
