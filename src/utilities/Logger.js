@@ -86,6 +86,7 @@ Logger.prototype.isLoggable = (level) =>
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message, context) => {
+    if (!message) return;
     const simple = fmt(level, message, context);
     const nonError = Object.keys(levels).indexOf(level) < Object.keys(levels).indexOf('ERROR');
     if (Logger.prototype.isLoggable(level) && nonError) {
