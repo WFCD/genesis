@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import Build from '../../models/Build.js';
 import WorldStateClient from '../../utilities/WorldStateClient.js';
+import logger from '../../utilities/Logger.js';
 
 /**
  * Database Mixin for Build queries
@@ -51,7 +52,7 @@ export default class BuildQueries {
         if (result.owner_id) {
           result.owner = this.bot.client.users.cache.get(result.owner_id) || result.owner_id;
         }
-        return new Build(result, new WorldStateClient(require('../../utilities/Logger.js')));
+        return new Build(result, new WorldStateClient(logger));
       }
     }
     return undefined;
