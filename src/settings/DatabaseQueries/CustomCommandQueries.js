@@ -18,20 +18,20 @@ export default class CustomCommandQueries {
     const [rows] = await this.query(query);
     return rows?.length
       ? rows.map((row) => {
-        try {
-          return {
-            call: row.command,
-            response: decodeURIComponent(row.response),
-            guildId: row.guild_id,
-          };
-        } catch (ignored) {
-          return {
-            call: row.command,
-            response: row.response,
-            guildId: row.guild_id,
-          };
-        }
-      })
+          try {
+            return {
+              call: row.command,
+              response: decodeURIComponent(row.response),
+              guildId: row.guild_id,
+            };
+          } catch (ignored) {
+            return {
+              call: row.command,
+              response: row.response,
+              guildId: row.guild_id,
+            };
+          }
+        })
       : undefined;
   }
 
@@ -55,8 +55,7 @@ export default class CustomCommandQueries {
 
     const [rows] = await this.query(query);
     if (rows) {
-      const vals = rows
-        .map(row => ({ call: row.command, response: row.response, id: row.command_id }));
+      const vals = rows.map((row) => ({ call: row.command, response: row.response, id: row.command_id }));
       this.logger.warn(JSON.stringify(vals));
       return vals[0];
     }
@@ -84,11 +83,10 @@ export default class CustomCommandQueries {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows
-        .map(row => ({
-          call: row.command,
-          response: row.response,
-        }));
+      return rows.map((row) => ({
+        call: row.command,
+        response: row.response,
+      }));
     }
     return [];
   }

@@ -1,8 +1,6 @@
 import BaseEmbed from './BaseEmbed.js';
 
-import {
-  assetBase, fromNow, timeDeltaToString, toTitleCase,
-} from '../utilities/CommonFunctions.js';
+import { assetBase, fromNow, timeDeltaToString, toTitleCase } from '../utilities/CommonFunctions.js';
 
 const fass = `${assetBase}/img/FassBanner.png`;
 const vome = `${assetBase}/img/VomeBanner.png`;
@@ -31,7 +29,7 @@ export default class CambionEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
     this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`;
-    this.color = state.active === 'fass' ? 0xC6733F : 0x415B9E;
+    this.color = state.active === 'fass' ? 0xc6733f : 0x415b9e;
     this.thumbnail = {
       url: state.active === 'fass' ? fass : vome,
     };

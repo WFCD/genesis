@@ -3,7 +3,9 @@ import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
 
 const tc = {
   name: 'template_channel',
@@ -19,36 +21,45 @@ export default class Templates extends Interaction {
     name: 'templates',
     description: 'Manage channel templates',
     // defaultPermission: false,
-    options: [{
-      name: 'add',
-      type: Types.SUB_COMMAND,
-      description: 'Add a channel as a template channel.',
-      options: [tc],
-    }, {
-      name: 'delete',
-      type: Types.SUB_COMMAND,
-      description: 'Delete a channel from you template channels',
-      options: [tc],
-    }, {
-      name: 'list',
-      type: Types.SUB_COMMAND,
-      description: 'List all configured templates',
-    }, {
-      name: 'set',
-      type: Types.SUB_COMMAND,
-      description: 'Set the template for a template channel',
-      options: [tc, {
-        name: 'template',
-        type: Types.STRING,
-        description: 'Template string. Supports replacing $username with originator\'s username',
-        required: true,
-      }],
-    }, {
-      name: 'clear',
-      type: Types.SUB_COMMAND,
-      description: 'clear existing template pattern on a channel',
-      options: [tc],
-    }],
+    options: [
+      {
+        name: 'add',
+        type: Types.SUB_COMMAND,
+        description: 'Add a channel as a template channel.',
+        options: [tc],
+      },
+      {
+        name: 'delete',
+        type: Types.SUB_COMMAND,
+        description: 'Delete a channel from you template channels',
+        options: [tc],
+      },
+      {
+        name: 'list',
+        type: Types.SUB_COMMAND,
+        description: 'List all configured templates',
+      },
+      {
+        name: 'set',
+        type: Types.SUB_COMMAND,
+        description: 'Set the template for a template channel',
+        options: [
+          tc,
+          {
+            name: 'template',
+            type: Types.STRING,
+            description: "Template string. Supports replacing $username with originator's username",
+            required: true,
+          },
+        ],
+      },
+      {
+        name: 'clear',
+        type: Types.SUB_COMMAND,
+        description: 'clear existing template pattern on a channel',
+        options: [tc],
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -83,12 +94,23 @@ export default class Templates extends Interaction {
           }
         });
         const embed = new BaseEmbed(this.bot);
-        const longestName = templates.length ? templates.map(t => t.name).reduce((a, b) => (a.length > b.length ? a : b)) : '';
-        embed.description = `\`${'Template'.padEnd(longestName.length, '\u2003')} | ${'# ch'.padStart(5, '\u2003')} | # Empty\`\n`;
-        embed.description += (await Promise.all(templates.map(async (t) => {
-          const instancesRes = await ctx.settings.getInstances(t);
-          return `\`${t.name.padEnd(longestName.length, '\u2003')} | ${String(instancesRes.instances.length).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
-        }))).join('\n');
+        const longestName = templates.length
+          ? templates.map((t) => t.name).reduce((a, b) => (a.length > b.length ? a : b))
+          : '';
+        embed.description = `\`${'Template'.padEnd(longestName.length, '\u2003')} | ${'# ch'.padStart(
+          5,
+          '\u2003'
+        )} | # Empty\`\n`;
+        embed.description += (
+          await Promise.all(
+            templates.map(async (t) => {
+              const instancesRes = await ctx.settings.getInstances(t);
+              return `\`${t.name.padEnd(longestName.length, '\u2003')} | ${String(
+                instancesRes.instances.length
+              ).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
+            })
+          )
+        ).join('\n');
         return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
       case 'clear':
         if (!(await ctx.settings.isTemplate(channel))) {
@@ -101,7 +123,10 @@ export default class Templates extends Interaction {
           return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
         }
         await ctx.settings.setDynTemplate(channel.id, template);
-        return interaction.reply({ content: ctx.i18n`\`${template}\` set as ${channel}'s name template.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({
+          content: ctx.i18n`\`${template}\` set as ${channel}'s name template.`,
+          ephemeral: ctx.ephemerate,
+        });
       default:
         break;
     }

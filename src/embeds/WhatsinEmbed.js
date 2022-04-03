@@ -9,19 +9,22 @@ export default class WhatsinEmbed extends BaseEmbed {
   constructor(details, tier, type) {
     super();
     const transformedRewards = {};
-    const rewards = [details?.rewards?.Intact, details?.rewards?.Exceptional,
-      details?.rewards?.Flawless, details?.rewards?.Radiant];
-    rewards
-      .forEach((rewardTier) => {
-        rewardTier.forEach((reward) => {
-          if (!transformedRewards[reward.itemName]) {
-            transformedRewards[reward.itemName] = [];
-          }
-          if (!transformedRewards[reward.itemName][rewards.indexOf(rewardTier)]) {
-            transformedRewards[reward.itemName][rewards.indexOf(rewardTier)] = reward.chance;
-          }
-        });
+    const rewards = [
+      details?.rewards?.Intact,
+      details?.rewards?.Exceptional,
+      details?.rewards?.Flawless,
+      details?.rewards?.Radiant,
+    ];
+    rewards.forEach((rewardTier) => {
+      rewardTier.forEach((reward) => {
+        if (!transformedRewards[reward.itemName]) {
+          transformedRewards[reward.itemName] = [];
+        }
+        if (!transformedRewards[reward.itemName][rewards.indexOf(rewardTier)]) {
+          transformedRewards[reward.itemName][rewards.indexOf(rewardTier)] = reward.chance;
+        }
       });
+    });
 
     const longest = Object.keys(transformedRewards).reduce((a, b) => (a.length > b.length ? a : b));
     const tokens = [];
@@ -38,6 +41,6 @@ export default class WhatsinEmbed extends BaseEmbed {
 
     this.title = `${tier} ${type}`;
     this.color = 0x3498db;
-    this.description = tokens.map(token => `\`${token}\``).join('\n');
+    this.description = tokens.map((token) => `\`${token}\``).join('\n');
   }
 }

@@ -15,9 +15,7 @@ export default class FissureEmbed extends BaseEmbed {
    * @param {string} era Era to override title
    * @param {string} locale Locality
    */
-  constructor(fissures, {
-    platform, i18n, era, locale,
-  }) {
+  constructor(fissures, { platform, i18n, era, locale }) {
     super(locale);
     if (!Array.isArray(fissures)) fissures = [fissures];
 
@@ -35,7 +33,7 @@ export default class FissureEmbed extends BaseEmbed {
       this.description = '_ _';
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
-      this.fields = fissures.map(f => ({
+      this.fields = fissures.map((f) => ({
         name: i18n`${f.missionType} ${era ? '' : f.tier}`,
         value: i18n`[${f.eta}] ${f.node} against ${f.enemy}`,
       }));

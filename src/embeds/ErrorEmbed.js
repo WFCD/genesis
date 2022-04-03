@@ -9,13 +9,14 @@ export default class BuildEmbed extends BaseEmbed {
    */
   constructor(error) {
     super();
-    this.color = 0xFF0000;
+    this.color = 0xff0000;
     this.title = `Error - ${process.env.SCOPE}`;
     this.description = error.message || error;
     if (error.stack) {
-      const stack = error.stack.replace(new RegExp(
-        process.cwd().replace('/src/notifications', '').replace(/\\/g, '\\'), 'ig',
-      ), '');
+      const stack = error.stack.replace(
+        new RegExp(process.cwd().replace('/src/notifications', '').replace(/\\/g, '\\'), 'ig'),
+        ''
+      );
       this.addField('Stack Trace', `\`\`\`\n${stack}\n\`\`\``);
     }
     this.footer.text = 'Occurred';

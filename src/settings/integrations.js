@@ -9,7 +9,7 @@ export default [
   async (db) => {
     const currentColumns = SQL`SHOW COLUMNS from builds;`;
     const [results] = await db.query(currentColumns);
-    const columns = results.map(result => result.Field);
+    const columns = results.map((result) => result.Field);
     if (!columns.includes('warframe')) {
       await db.query(SQL`ALTER TABLE builds
         ADD COLUMN (

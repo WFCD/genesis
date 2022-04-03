@@ -5,11 +5,10 @@ import LFGEmbed from '../../embeds/LFGEmbed.js';
 import Interaction from '../../models/Interaction.js';
 
 const {
-  Constants: {
-    ApplicationCommandOptionTypes: Types, MessageButtonStyles,
-    InteractionTypes, MessageComponentTypes,
-  },
-  MessageActionRow, MessageButton, InteractionCollector,
+  Constants: { ApplicationCommandOptionTypes: Types, MessageButtonStyles, InteractionTypes, MessageComponentTypes },
+  MessageActionRow,
+  MessageButton,
+  InteractionCollector,
 } = Discord;
 
 export default class LFG extends Interaction {
@@ -18,58 +17,70 @@ export default class LFG extends Interaction {
   static command = {
     name: 'lfg',
     description: 'Make an LFG post',
-    options: [{
-      type: Types.STRING,
-      name: 'platform',
-      description: 'Platform to recruit for',
-      choices: platformChoices,
-      required: true,
-    }, {
-      type: Types.STRING,
-      name: 'place',
-      description: 'Where do you want to group up?',
-      required: false,
-    }, {
-      type: Types.STRING,
-      name: 'time',
-      description: 'How long do you want to farm for?',
-      required: false,
-    }, {
-      type: Types.INTEGER,
-      name: 'members',
-      description: 'How many people do you need?',
-      required: false,
-      choices: [
-        { name: '1', value: 1 },
-        { name: '2', value: 2 },
-        { name: '3', value: 3 },
-        { name: '4', value: 4 },
-      ],
-    }, {
-      type: Types.STRING,
-      name: 'for',
-      description: 'What are you farming for?',
-      required: false,
-    }, {
-      type: Types.STRING,
-      name: 'duration',
-      description: 'How long are you willing to wait?',
-      required: false,
-    }, {
-      type: Types.STRING,
-      name: 'type',
-      description: 'What kind of post?',
-      choices: [{
-        name: 'Hosting',
-        value: 'Hosting',
-      }, {
-        name: 'LFM',
-        value: 'LFM',
-      }, {
-        name: 'LFG',
-        value: 'LFG',
-      }],
-    }],
+    options: [
+      {
+        type: Types.STRING,
+        name: 'platform',
+        description: 'Platform to recruit for',
+        choices: platformChoices,
+        required: true,
+      },
+      {
+        type: Types.STRING,
+        name: 'place',
+        description: 'Where do you want to group up?',
+        required: false,
+      },
+      {
+        type: Types.STRING,
+        name: 'time',
+        description: 'How long do you want to farm for?',
+        required: false,
+      },
+      {
+        type: Types.INTEGER,
+        name: 'members',
+        description: 'How many people do you need?',
+        required: false,
+        choices: [
+          { name: '1', value: 1 },
+          { name: '2', value: 2 },
+          { name: '3', value: 3 },
+          { name: '4', value: 4 },
+        ],
+      },
+      {
+        type: Types.STRING,
+        name: 'for',
+        description: 'What are you farming for?',
+        required: false,
+      },
+      {
+        type: Types.STRING,
+        name: 'duration',
+        description: 'How long are you willing to wait?',
+        required: false,
+      },
+      {
+        type: Types.STRING,
+        name: 'type',
+        description: 'What kind of post?',
+        choices: [
+          {
+            name: 'Hosting',
+            value: 'Hosting',
+          },
+          {
+            name: 'LFM',
+            value: 'LFM',
+          },
+          {
+            name: 'LFG',
+            value: 'LFG',
+          },
+        ],
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -92,8 +103,7 @@ export default class LFG extends Interaction {
     const embed = new LFGEmbed(undefined, lfg);
     const rawChn = ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]];
     if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
-    const chn = interaction.guild.channels
-      .resolve(rawChn.id);
+    const chn = interaction.guild.channels.resolve(rawChn.id);
     if (!chn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
 
     const buttons = [

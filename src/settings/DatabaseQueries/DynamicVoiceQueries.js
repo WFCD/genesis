@@ -72,7 +72,7 @@ export default class DynamicVoiceQueries {
     const empties = [];
     let remainingEmpty = 0;
     rows
-      .map(row => row.instance_id)
+      .map((row) => row.instance_id)
       .forEach((channelId) => {
         if (template.guild.channels.cache.has(channelId)) {
           const channel = template.guild.channels.cache.get(channelId);
@@ -121,7 +121,7 @@ export default class DynamicVoiceQueries {
    * @returns {Promise<*[]|*>}
    */
   async getTemplates(guilds) {
-    const gids = guilds.map(guild => guild.id);
+    const gids = guilds.map((guild) => guild.id);
 
     const query = SQL`SELECT channel_id
       FROM dynamic_voice_template
@@ -131,7 +131,7 @@ export default class DynamicVoiceQueries {
     if (!rows.length) {
       return [];
     }
-    return rows.map(row => row.channel_id);
+    return rows.map((row) => row.channel_id);
   }
 
   /**

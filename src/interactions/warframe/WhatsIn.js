@@ -4,13 +4,17 @@ import WhatsInEmbed from '../../embeds/WhatsinEmbed.js';
 import Interaction from '../../models/Interaction.js';
 import { games, toTitleCase } from '../../utilities/CommonFunctions.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
-const queryOpt = [{
-  type: Types.STRING,
-  name: 'query',
-  description: 'Relic Identifier (i.e. A1)',
-  required: true,
-}];
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
+const queryOpt = [
+  {
+    type: Types.STRING,
+    name: 'query',
+    description: 'Relic Identifier (i.e. A1)',
+    required: true,
+  },
+];
 
 export default class WhatsIn extends Interaction {
   static enabled = games.includes('WARFRAME');
@@ -21,28 +25,37 @@ export default class WhatsIn extends Interaction {
   static command = {
     name: 'whatsin',
     description: 'Get various pieces of information',
-    options: [{
-      name: 'relic_era',
-      type: Types.STRING,
-      description: 'What relic tier is the relic from?',
-      required: true,
-      choices: [{
-        name: 'Lith',
-        value: 'lith',
-      }, {
-        name: 'Neo',
-        value: 'neo',
-      }, {
-        name: 'Meso',
-        value: 'meso',
-      }, {
-        name: 'Axi',
-        value: 'axi',
-      }, {
-        name: 'Requiem',
-        value: 'requiem',
-      }],
-    }, ...queryOpt],
+    options: [
+      {
+        name: 'relic_era',
+        type: Types.STRING,
+        description: 'What relic tier is the relic from?',
+        required: true,
+        choices: [
+          {
+            name: 'Lith',
+            value: 'lith',
+          },
+          {
+            name: 'Neo',
+            value: 'neo',
+          },
+          {
+            name: 'Meso',
+            value: 'meso',
+          },
+          {
+            name: 'Axi',
+            value: 'axi',
+          },
+          {
+            name: 'Requiem',
+            value: 'requiem',
+          },
+        ],
+      },
+      ...queryOpt,
+    ],
   };
 
   /**

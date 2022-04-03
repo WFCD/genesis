@@ -2,15 +2,24 @@ import BaseEmbed from './BaseEmbed.js';
 
 import { emojify } from '../utilities/CommonFunctions.js';
 
-const dispositions = ['\\⚫\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚫\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚫\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚫\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚫', '\\⚪\\⚪\\⚪\\⚪\\⚪'];
+const dispositions = [
+  '\\⚫\\⚫\\⚫\\⚫\\⚫',
+  '\\⚪\\⚫\\⚫\\⚫\\⚫',
+  '\\⚪\\⚪\\⚫\\⚫\\⚫',
+  '\\⚪\\⚪\\⚪\\⚫\\⚫',
+  '\\⚪\\⚪\\⚪\\⚪\\⚫',
+  '\\⚪\\⚪\\⚪\\⚪\\⚪',
+];
 
-const mapDamage = attacks => (attacks?.map((a, index) => {
-  const damage = Object.entries(a.damage)
-    .map(([key, value]) => emojify(`\u2003${key} ${value}`))
-    .join('\n');
-  return `**${a.name || `Attack ${index + 1}`}**\n${damage}`;
-}) || [])
-  .join('\n');
+const mapDamage = (attacks) =>
+  (
+    attacks?.map((a, index) => {
+      const damage = Object.entries(a.damage)
+        .map(([key, value]) => emojify(`\u2003${key} ${value}`))
+        .join('\n');
+      return `**${a.name || `Attack ${index + 1}`}**\n${damage}`;
+    }) || []
+  ).join('\n');
 
 export default class WeaponEmbed extends BaseEmbed {
   constructor(weapon, { i18n, locale }) {
@@ -20,41 +29,49 @@ export default class WeaponEmbed extends BaseEmbed {
       this.url = weapon.wikiaUrl || '';
       this.thumbnail = { url: weapon.wikiaThumbnail || '' };
       this.description = `${weapon.type} • ${weapon.masteryReq} ${emojify('mastery_rank')}`;
-      this.color = weapon.color || 0x7C0A02;
+      this.color = weapon.color || 0x7c0a02;
       this.fields = [];
 
       if (weapon.color) {
         this.color = weapon.color;
       }
 
-      this.fields.push({
-        name: i18n`Rate`,
-        value: `${String((weapon.fireRate || 0).toFixed(0) || '-')} unit\\s`,
-        inline: true,
-      }, ...(weapon.attacks ? [{
-        name: 'Damage',
-        value: mapDamage(weapon.attacks),
-        inline: false,
-      }] : []), {
-        name: i18n`Critical Chance`,
-        value: `${((weapon.criticalChance) * 100).toFixed(2) || '-'}%`,
-        inline: true,
-      },
-      {
-        name: i18n`Critical Multiplier`,
-        value: `${(weapon.criticalMultiplier || 0).toFixed(2) || '-'}x`,
-        inline: true,
-      },
-      {
-        name: i18n`Status Chance`,
-        value: `${((weapon.procChance || 0) * 100).toFixed(2) || '-'}%`,
-        inline: true,
-      },
-      {
-        name: i18n`Polarities`,
-        value: emojify(weapon.polarities && weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
-        inline: true,
-      });
+      this.fields.push(
+        {
+          name: i18n`Rate`,
+          value: `${String((weapon.fireRate || 0).toFixed(0) || '-')} unit\\s`,
+          inline: true,
+        },
+        ...(weapon.attacks
+          ? [
+              {
+                name: 'Damage',
+                value: mapDamage(weapon.attacks),
+                inline: false,
+              },
+            ]
+          : []),
+        {
+          name: i18n`Critical Chance`,
+          value: `${(weapon.criticalChance * 100).toFixed(2) || '-'}%`,
+          inline: true,
+        },
+        {
+          name: i18n`Critical Multiplier`,
+          value: `${(weapon.criticalMultiplier || 0).toFixed(2) || '-'}x`,
+          inline: true,
+        },
+        {
+          name: i18n`Status Chance`,
+          value: `${((weapon.procChance || 0) * 100).toFixed(2) || '-'}%`,
+          inline: true,
+        },
+        {
+          name: i18n`Polarities`,
+          value: emojify(weapon.polarities && weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
+          inline: true,
+        }
+      );
       if (weapon.stancePolarity) {
         this.fields.push({
           name: i18n`Stance Polarity`,

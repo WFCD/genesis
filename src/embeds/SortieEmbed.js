@@ -10,7 +10,7 @@ export default class SortieEmbed extends BaseEmbed {
 
     this.color = 0xa84300;
     if (typeof sortie !== 'undefined' && sortie) {
-      this.fields = sortie.variants.map(v => ({
+      this.fields = sortie.variants.map((v) => ({
         name: `${v.node} - ${v.missionType}`,
         value: v.modifier,
       }));

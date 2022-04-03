@@ -23,11 +23,9 @@ export default class StreamQueries {
   }
 
   async getTrackedStreams(shardIds, type, shardTotal) {
-    const q = SQL`SELECT DISTINCT s.stream_name FROM streams as s`
-      .append(
-        SQL` INNER JOIN type_notifications as types ON types.type LIKE ${`${type}.*`}`,
-      )
-      .append(SQL` INNER JOIN channels ON channels.id = types.channel_id
+    const q = SQL`SELECT DISTINCT s.stream_name FROM streams as s`.append(
+      SQL` INNER JOIN type_notifications as types ON types.type LIKE ${`${type}.*`}`
+    ).append(SQL` INNER JOIN channels ON channels.id = types.channel_id
           AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${shardTotal}) in (${shardIds})`);
 
     return (await this.query(q))[0];

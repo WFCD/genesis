@@ -28,15 +28,21 @@ export default class FrameEmbed extends BaseEmbed {
       }
       this.color = frame.color;
       this.fields = [
-        (frame.url || frame.prime_url) ? {
-          name: i18n`Profile`,
-          value: i18n`[Frame Profile](${frame.url})${frame.prime_url ? i18n`\n[Prime Intro](${frame.prime_url})` : ''}`,
-          inline: false,
-        } : false,
-        frame.passiveDescription ? {
-          name: i18n`Passive`,
-          value: `_${frame.passiveDescription}_`,
-        } : false,
+        frame.url || frame.prime_url
+          ? {
+              name: i18n`Profile`,
+              value: i18n`[Frame Profile](${frame.url})${
+                frame.prime_url ? i18n`\n[Prime Intro](${frame.prime_url})` : ''
+              }`,
+              inline: false,
+            }
+          : false,
+        frame.passiveDescription
+          ? {
+              name: i18n`Passive`,
+              value: `_${frame.passiveDescription}_`,
+            }
+          : false,
         {
           name: i18n`Minimum Mastery`,
           value: `${frame.masteryReq || i18n`Unranked`} ${emojify('mastery_rank')}`,
@@ -74,20 +80,25 @@ export default class FrameEmbed extends BaseEmbed {
         },
         {
           name: i18n`Polarities`,
-          value: emojify(frame.polarities && frame.polarities.length > 0 ? frame.polarities.join(' ') : i18n`No polarities`),
+          value: emojify(
+            frame.polarities && frame.polarities.length > 0 ? frame.polarities.join(' ') : i18n`No polarities`
+          ),
           inline: true,
         },
-        { // this is coming out too long, needs to be chunked
+        {
+          // this is coming out too long, needs to be chunked
           name: i18n`Abilities`,
           value: '**=============**',
         },
       ];
 
-      this.fields.push(...(frame?.abilities?.map(ability => ({ name: ability.name, value: `_${ability.description}_` })) || []));
-      this.fields = this.fields.filter(field => field && field?.value?.length);
+      this.fields.push(
+        ...(frame?.abilities?.map((ability) => ({ name: ability.name, value: `_${ability.description}_` })) || [])
+      );
+      this.fields = this.fields.filter((field) => field && field?.value?.length);
     } else {
       this.title = i18n`Available Warframes`;
-      this.fields = [{ name: '\u200B', value: frames.map(stat => stat.name).join('\n') }];
+      this.fields = [{ name: '\u200B', value: frames.map((stat) => stat.name).join('\n') }];
     }
   }
 }

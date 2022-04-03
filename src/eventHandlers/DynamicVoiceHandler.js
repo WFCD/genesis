@@ -1,7 +1,10 @@
 import Discord from 'discord.js';
 import { Generator } from 'warframe-name-generator';
 
-const { Constants: { Events }, Permissions } = Discord;
+const {
+  Constants: { Events },
+  Permissions,
+} = Discord;
 const requiredVCPerms = [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MOVE_MEMBERS];
 const relays = [
   'Larunda Relay',
@@ -28,7 +31,7 @@ const generator = new Generator();
  */
 const getRelayName = async (guild, retries = 0) => {
   const name = relays[Math.floor(Math.random() * relays.length)];
-  const alreadyUsed = guild.channels.cache.find(channel => channel.name === name);
+  const alreadyUsed = guild.channels.cache.find((channel) => channel.name === name);
   if (retries > relays.length - 1 && alreadyUsed) {
     return name;
   }
@@ -51,12 +54,8 @@ const clone = async (template, settings, member) => {
 
   const isRelay = await settings.isRelay(template.id);
   const nameTemplate = await settings.getDynTemplate(template.id);
-  const generatedName = isRelay
-    ? await getRelayName(guild)
-    : generator.make({ adjective: true, type: 'places' });
-  const name = nameTemplate
-    ? nameTemplate.replace('$username', member.displayName)
-    : generatedName;
+  const generatedName = isRelay ? await getRelayName(guild) : generator.make({ adjective: true, type: 'places' });
+  const name = nameTemplate ? nameTemplate.replace('$username', member.displayName) : generatedName;
 
   // check for perms now?
   const newChannel = await template.clone({
@@ -106,10 +105,11 @@ export default class DynamicVoiceHandler {
   async checkManagementApplicable(oldMember, newMember) {
     const templates = await this.settings.getTemplates([oldMember.guild]);
     if (templates.length) {
-      return (await Promise.all(templates.map(async channel => this.checkIfShouldFilter(
-        channel, oldMember, newMember,
-      ))))
-        .filter(p => p).length > 0;
+      return (
+        (
+          await Promise.all(templates.map(async (channel) => this.checkIfShouldFilter(channel, oldMember, newMember)))
+        ).filter((p) => p).length > 0
+      );
     }
     return false;
   }
@@ -122,30 +122,33 @@ export default class DynamicVoiceHandler {
    * @returns {Promise<boolean|boolean>}
    */
   async checkIfShouldFilter(channel, oldMember, newMember) {
-    const templates = await this.settings
-      .getTemplates(Array.from(this.client.guilds.cache.entries()));
+    const templates = await this.settings.getTemplates(Array.from(this.client.guilds.cache.entries()));
 
-    return channel.id === oldMember?.voice?.channel?.id
-      || channel.id === newMember?.voice?.channel?.id
-      || templates.includes(channel.id);
+    return (
+      channel.id === oldMember?.voice?.channel?.id ||
+      channel.id === newMember?.voice?.channel?.id ||
+      templates.includes(channel.id)
+    );
   }
 
   async checkAllChannels(guild, member) {
     const templates = await this.settings.getTemplates([guild]);
 
-    await Promise.all(templates.map(async (template) => {
-      if (this.client.channels.cache.has(template)) {
-        const templateChannel = this.client.channels.cache.get(template);
-        if (!templateChannel?.guild?.me.permissions.has(requiredVCPerms)) {
-          return false;
+    await Promise.all(
+      templates.map(async (template) => {
+        if (this.client.channels.cache.has(template)) {
+          const templateChannel = this.client.channels.cache.get(template);
+          if (!templateChannel?.guild?.me.permissions.has(requiredVCPerms)) {
+            return false;
+          }
+          const { remainingEmpty } = await this.settings.getInstances(templateChannel);
+          if (remainingEmpty < 1) {
+            return this.addChannel(templateChannel, member);
+          }
         }
-        const { remainingEmpty } = await this.settings.getInstances(templateChannel);
-        if (remainingEmpty < 1) {
-          return this.addChannel(templateChannel, member);
-        }
-      }
-      return false;
-    }));
+        return false;
+      })
+    );
   }
 
   async removeChannel(channelToRemove) {

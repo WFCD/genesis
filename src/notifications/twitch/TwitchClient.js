@@ -34,7 +34,7 @@ export default class TwitchClient {
    * Sets the access token in the cache
    * @param {string} token twitch access token to cache
    */
-  static set #accessToken (token) {
+  static set #accessToken(token) {
     this.#tokenCache.setKey('token', token);
     this.#tokenCache.save(true);
   }
@@ -51,7 +51,7 @@ export default class TwitchClient {
    * Sets the refresh token in the cache
    * @param {string} token twitch refresh token to cache
    */
-  static set #refreshToken (token) {
+  static set #refreshToken(token) {
     this.#tokenCache.setKey('refresh', token);
     this.#tokenCache.save(true);
   }
@@ -74,11 +74,14 @@ export default class TwitchClient {
    * Handle twitch API errors
    * @param  {TwitchError} err error reply
    */
-  static #handleApiError (err) {
-    const res = err.response || { };
+  static #handleApiError(err) {
+    const res = err.response || {};
 
     if (res.data && res.data.message) {
-      logger.debug(`API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`, 'TwitchApi');
+      logger.debug(
+        `API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`,
+        'TwitchApi'
+      );
     } else {
       logger.debug(`API request failed with error: ${err.message || err}`, 'TwitchApi');
     }
@@ -92,7 +95,7 @@ export default class TwitchClient {
    * @static
    * @returns {Promise<Array<Object>>}
    */
-  static async #apiGet (urlPath, params) {
+  static async #apiGet(urlPath, params) {
     if (!this.accessToken) await this.hydrateToken();
     if (!this.accessToken && !this.refreshToken) return [];
 
@@ -135,8 +138,9 @@ export default class TwitchClient {
         { key: 'grant_type', val: 'client_credentials' },
       ];
 
-      const res = await fetch(`${urls.token}?${atParams
-        .map(({ key, val }) => `${key}=${val}`).join('&')}`, { method: 'POST' });
+      const res = await fetch(`${urls.token}?${atParams.map(({ key, val }) => `${key}=${val}`).join('&')}`, {
+        method: 'POST',
+      });
 
       if (res) {
         const initAccessToken = res.access_token;
@@ -185,7 +189,7 @@ export default class TwitchClient {
    * @returns {Promise<Array<Object>>} array of stream data
    */
   static async fetchStreams(channels) {
-    const params = channels.map(c => `user_login=${c}`).join('&');
+    const params = channels.map((c) => `user_login=${c}`).join('&');
     return this.#apiGet('streams', params);
   }
 
@@ -195,7 +199,7 @@ export default class TwitchClient {
    * @returns {Promise<Array<Object>>} array of stream data
    */
   static async fetchUsers(channelNames) {
-    const params = channelNames.map(c => `login=${c}`).join('&');
+    const params = channelNames.map((c) => `login=${c}`).join('&');
     return this.#apiGet('users', params);
   }
 
@@ -205,7 +209,7 @@ export default class TwitchClient {
    * @returns {Promise<Array<Object>>}        array of game data
    */
   static async fetchGames(gameIds) {
-    const params = gameIds.map(c => `id=${c}`).join('&');
+    const params = gameIds.map((c) => `id=${c}`).join('&');
     return this.#apiGet('games', params);
   }
 }

@@ -3,12 +3,13 @@ import { assetBase } from '../utilities/CommonFunctions.js';
 
 export default class ShieldEmbed extends BaseEmbed {
   static #corpus = `${assetBase}/img/corpus.png`;
-  static #shieldCalc (baseShields, baseLevel, currentLevel) {
-    return (parseFloat(baseShields)
-      + (((parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2)
-      * 0.0075 * parseFloat(baseShields))).toFixed(2);
+  static #shieldCalc(baseShields, baseLevel, currentLevel) {
+    return (
+      parseFloat(baseShields) +
+      (parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2 * 0.0075 * parseFloat(baseShields)
+    ).toFixed(2);
   }
-  static #shieldString (shields, level, i18n) {
+  static #shieldString(shields, level, i18n) {
     return i18n`At level ${parseFloat(level).toFixed(0)}, your enemy would have ${shields} Shields.`;
   }
   constructor(params, { i18n }) {

@@ -63,16 +63,20 @@ export const embeds = {
 export const between = (activation, platform, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < (beats[platform].currCycleStart);
-  const isAfterLast = activationTs > (beats[platform].lastUpdate - (leeway));
+  const isBeforeCurr = activationTs < beats[platform].currCycleStart;
+  const isAfterLast = activationTs > beats[platform].lastUpdate - leeway;
   return isBeforeCurr && isAfterLast;
 };
 
 export const getThumbnailForItem = async (query, fWiki) => {
   if (query && !fWiki) {
     const fq = query
-      .replace(/\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/ig, '$1')
-      .trim().toLowerCase();
+      .replace(
+        /\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/gi,
+        '$1'
+      )
+      .trim()
+      .toLowerCase();
     const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
     if (results.length) {
       const url = `${apiCdnBase}img/${results[0].imageName}`;
@@ -102,6 +106,5 @@ export function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-export const perLanguage = async fn => Promise
-  .all(Object
-    .entries(i18ns).map(async ([locale, i18n]) => fn({ locale, i18n })));
+export const perLanguage = async (fn) =>
+  Promise.all(Object.entries(i18ns).map(async ([locale, i18n]) => fn({ locale, i18n })));

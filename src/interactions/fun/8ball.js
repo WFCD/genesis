@@ -1,10 +1,12 @@
 import Discord from 'discord.js';
 import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
 
 const jokes = [
-  'Joke\'s on you. Try again next time',
+  "Joke's on you. Try again next time",
   'Lotus says it is certain',
   'Darvo says is decidedly so',
   'Without a doubt',
@@ -20,7 +22,7 @@ const jokes = [
   'Better not tell you now',
   'Cannot predict now',
   'Concentrate and ask again',
-  'Don\'t count on it',
+  "Don't count on it",
   'My reply is no',
   'My sources say no',
   'Outlook not so good',
@@ -33,17 +35,21 @@ export default class EightBall extends Interaction {
   static command = {
     name: '8ball',
     description: 'Get your 8Ball question answered!',
-    options: [{
-      type: Types.STRING,
-      name: 'question',
-      description: 'What do you want the all-knowing machine to answer?',
-      required: true,
-    }],
+    options: [
+      {
+        type: Types.STRING,
+        name: 'question',
+        description: 'What do you want the all-knowing machine to answer?',
+        required: true,
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
     return interaction.reply({
-      content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]} | ||_${interaction.options.getString('question')}_||`,
+      content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]} | ||_${interaction.options.getString(
+        'question'
+      )}_||`,
       ephemeral: ctx.ephemerate,
     });
   }

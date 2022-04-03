@@ -3,7 +3,8 @@ import fetch from './Fetcher.js';
 import { apiBase } from './CommonFunctions.js';
 
 const relicBase = 'https://drops.warframestat.us/data/relics';
-const toTitleCase = str => str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+const toTitleCase = (str) =>
+  str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 
 export default class WorldStateClient {
   /**
@@ -25,11 +26,10 @@ export default class WorldStateClient {
       (async function init() {
         if (!WorldStateClient.#weapons) {
           WorldStateClient.#weapons = await fetch(`${apiBase}/weapons`);
-          const misc = (await fetch(`${apiBase}/items`))
-            .filter(i => i?.uniqueName?.includes('OperatorAmplifiers'));
+          const misc = (await fetch(`${apiBase}/items`)).filter((i) => i?.uniqueName?.includes('OperatorAmplifiers'));
           WorldStateClient.#weapons.push(...misc);
         }
-      }());
+      })();
     }
 
     if (!WorldStateClient.#warframes) {
@@ -37,7 +37,7 @@ export default class WorldStateClient {
         if (!WorldStateClient.#warframes) {
           WorldStateClient.#warframes = await fetch(`${apiBase}/warframes`);
         }
-      }());
+      })();
     }
 
     if (!WorldStateClient.#mods) {
@@ -45,7 +45,7 @@ export default class WorldStateClient {
         if (!WorldStateClient.#mods) {
           WorldStateClient.#mods = await fetch(`${apiBase}/mods`);
         }
-      }());
+      })();
     }
   }
 
@@ -137,9 +137,11 @@ export default class WorldStateClient {
 
   async g(endpoint, platform = 'pc', language = 'en') {
     this.#logger.silly(`fetching ${endpoint}`);
-    if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE)
-      .concat(Object.values(WorldStateClient.ENDPOINTS.SEARCH))
-      .includes(endpoint)) {
+    if (
+      !Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE)
+        .concat(Object.values(WorldStateClient.ENDPOINTS.SEARCH))
+        .includes(endpoint)
+    ) {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE or ENDPOINTS.SEARCH`);
       return undefined;
     }
@@ -184,7 +186,9 @@ export default class WorldStateClient {
    */
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
     this.#logger.silly(`pricechecking ${query}`);
-    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${platform || 'pc'}`;
+    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${
+      platform || 'pc'
+    }`;
     this.#logger.info(`fetching ${url}`);
     return fetch(url, {
       headers: {
@@ -203,7 +207,11 @@ export default class WorldStateClient {
   async relic(tier, name) {
     try {
       this.#logger.silly(`fetching ${tier} ${name}`);
-      return fetch(`${relicBase}/${toTitleCase(tier)}/${tier.toLowerCase() === 'requiem' ? name.toUpperCase() : toTitleCase(name)}.json`);
+      return fetch(
+        `${relicBase}/${toTitleCase(tier)}/${
+          tier.toLowerCase() === 'requiem' ? name.toUpperCase() : toTitleCase(name)
+        }.json`
+      );
     } catch (e) {
       this.#logger.debug(e);
     }
@@ -221,10 +229,12 @@ export default class WorldStateClient {
       data: { weapons: WorldStateClient.#weapons },
       allowRegexp: true,
     })?.value;
-    return Array.isArray(results) ? results.map((r) => {
-      delete r.patchlogs;
-      return r;
-    }) : undefined;
+    return Array.isArray(results)
+      ? results.map((r) => {
+          delete r.patchlogs;
+          return r;
+        })
+      : undefined;
   }
 
   /**
@@ -239,10 +249,12 @@ export default class WorldStateClient {
       data: { warframes: WorldStateClient.#warframes },
       allowRegexp: true,
     })?.value;
-    return Array.isArray(results) ? results.map((r) => {
-      delete r.patchlogs;
-      return r;
-    }) : undefined;
+    return Array.isArray(results)
+      ? results.map((r) => {
+          delete r.patchlogs;
+          return r;
+        })
+      : undefined;
   }
 
   /**
@@ -257,10 +269,12 @@ export default class WorldStateClient {
       data: { mods: WorldStateClient.#mods },
       allowRegexp: true,
     })?.value;
-    return Array.isArray(results) ? results.map((r) => {
-      delete r.patchlogs;
-      return r;
-    }) : undefined;
+    return Array.isArray(results)
+      ? results.map((r) => {
+          delete r.patchlogs;
+          return r;
+        })
+      : undefined;
   }
 
   /**
@@ -270,16 +284,16 @@ export default class WorldStateClient {
    */
   modsByType(types) {
     this.#logger.silly(`filtering mods in ${JSON.stringify(types)}`);
-    return WorldStateClient.#mods.filter(m => types.includes(m.type));
+    return WorldStateClient.#mods.filter((m) => types.includes(m.type));
   }
 
   warframesByType(type) {
     this.#logger.silly(`filtering warframes in ${JSON.stringify(type)}`);
-    return WorldStateClient.#warframes.filter(m => m.type === type);
+    return WorldStateClient.#warframes.filter((m) => m.type === type);
   }
 
   weaponsByType(type) {
     this.#logger.silly(`filtering weapons in ${JSON.stringify(type)}`);
-    return WorldStateClient.#weapons.filter(m => m.type === type);
+    return WorldStateClient.#weapons.filter((m) => m.type === type);
   }
 }

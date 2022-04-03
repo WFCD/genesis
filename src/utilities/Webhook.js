@@ -24,9 +24,9 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
     try {
       return content?.length
         ? client.send({
-          ...opts,
-          content,
-        })
+            ...opts,
+            content,
+          })
         : client.send(opts);
     } catch (e) {
       logger.error(e);
@@ -56,7 +56,8 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
       }
       logger.debug(`Created and adding ${JSON.stringify(target)} to ${ctx.channel}`);
       target.name = this.client.user.username;
-      target.avatar = this.client.user.displayAvatarURL()
+      target.avatar = this.client.user
+        .displayAvatarURL()
         .replace('.webp', '.png')
         .replace('.webm', '.gif')
         .replace('?size=2048', '');

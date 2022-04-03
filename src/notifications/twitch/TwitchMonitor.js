@@ -93,7 +93,10 @@ export default class TwitchMonitor extends EventEmitter {
     }, 1000);
 
     // Ready!
-    logger.debug(`(${checkIntervalMs}ms interval) Configured stream status polling for channels: ${channels.join(', ')}`, 'TM');
+    logger.debug(
+      `(${checkIntervalMs}ms interval) Configured stream status polling for channels: ${channels.join(', ')}`,
+      'TM'
+    );
   }
 
   async refresh(reason) {
@@ -149,11 +152,11 @@ export default class TwitchMonitor extends EventEmitter {
    * Handle receiving list of users
    * @param {Array<TwitchUser>} users users received to updated and cache
    */
-  #handleUserList (users) {
+  #handleUserList(users) {
     const namesSeen = [];
 
     users.forEach((user) => {
-      const prevUserData = this.#userData[user.id] || { };
+      const prevUserData = this.#userData[user.id] || {};
       this.#userData[user.id] = { ...prevUserData, ...user };
 
       namesSeen.push(user.display_name);
@@ -170,13 +173,13 @@ export default class TwitchMonitor extends EventEmitter {
     this.#userDb.save(true);
   }
 
-  #handleGameList (games) {
+  #handleGameList(games) {
     const gotGameNames = [];
 
     games.forEach((game) => {
       const gameId = game.id;
 
-      const prevGameData = this.#gameData[gameId] || { };
+      const prevGameData = this.#gameData[gameId] || {};
       this.#gameData[gameId] = { ...prevGameData, ...game };
 
       gotGameNames.push(`${game.id} → ${game.name}`);
@@ -193,8 +196,8 @@ export default class TwitchMonitor extends EventEmitter {
     this.#gameDb.save(true);
   }
 
-  #emptyRecentStreams (stream) {
-    this.#recentLive = this.#recentLive.filter(s => s !== stream);
+  #emptyRecentStreams(stream) {
+    this.#recentLive = this.#recentLive.filter((s) => s !== stream);
   }
 
   /**
@@ -202,7 +205,7 @@ export default class TwitchMonitor extends EventEmitter {
    * @param {Array<StreamData>} streams streams to handle
    * @returns {Promise<void>}
    */
-  async #handleStreamList (streams) {
+  async #handleStreamList(streams) {
     // Index channel data & build list of stream IDs now online
     const nextGameIdList = [];
     streams.forEach((stream) => {
@@ -215,12 +218,11 @@ export default class TwitchMonitor extends EventEmitter {
         this.#statesDb.save(true);
       }
 
-      const userDataBase = this.#userData[stream.user_id] || { };
-      const prevStreamData = this.#streamData[channelName] || { };
+      const userDataBase = this.#userData[stream.user_id] || {};
+      const prevStreamData = this.#streamData[channelName] || {};
 
       this.#streamData[channelName] = { ...userDataBase, ...prevStreamData, ...stream };
-      this.#streamData[channelName].game = (stream.game_id
-        && this.#gameData[stream.game_id]) || undefined;
+      this.#streamData[channelName].game = (stream.game_id && this.#gameData[stream.game_id]) || undefined;
       this.#streamData[channelName].user = userDataBase;
 
       if (this.#statesDb.getKey(channelName) !== 'live' && stream.type === 'live') {
@@ -237,8 +239,7 @@ export default class TwitchMonitor extends EventEmitter {
     });
     this.#statesDb.setKey('all', this.#streamData);
     channels.forEach((channel) => {
-      if (!streams.find(s => s.user_login === channel)
-        && this.#statesDb.getKey(channel) === 'live') {
+      if (!streams.find((s) => s.user_login === channel) && this.#statesDb.getKey(channel) === 'live') {
         this.#handleChannelLiveUpdate(this.#streamData[channel] || { type: 'offline', user_login: channel }, false);
         this.#statesDb.setKey(channel, 'offline');
       }
@@ -268,7 +269,7 @@ export default class TwitchMonitor extends EventEmitter {
    * @param {boolean} isOnline whether or not the account is now online
    * @returns {boolean}
    */
-  #handleChannelLiveUpdate (streamData, isOnline) {
+  #handleChannelLiveUpdate(streamData, isOnline) {
     let success = true;
 
     try {

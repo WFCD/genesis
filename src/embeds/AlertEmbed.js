@@ -10,17 +10,20 @@ export default class AlertEmbed extends BaseEmbed {
     this.thumbnail = {
       url: alertThumb,
     };
-    this.color = 0xF1C40F;
+    this.color = 0xf1c40f;
     // compact
     if (Array.isArray(alerts) && alerts.length > 1) {
-      this.fields = alerts.map(a => ({
+      this.fields = alerts.map((a) => ({
         name: i18n`${a.mission.reward.asString} | ${a.eta} left`,
         value: i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}\nlevel ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
       }));
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Alerts`;
-    } else { // divided
+    } else {
+      // divided
       const a = Array.isArray(alerts) ? alerts[0] : alerts;
-      this.title = i18n`[${platform.toUpperCase()}] ${a.mission.reward.itemString || i18n`${a.mission.reward.credits} Credits`}`;
+      this.title = i18n`[${platform.toUpperCase()}] ${
+        a.mission.reward.itemString || i18n`${a.mission.reward.credits} Credits`
+      }`;
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;
       const summary = i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}`;
@@ -31,9 +34,17 @@ export default class AlertEmbed extends BaseEmbed {
         this.fields.push({ name: i18n`Mission`, value: i18n`${a.mission.faction} ${a.mission.type}`, inline: true });
         this.fields.push({ name: i18n`Location`, value: a.mission.node, inline: true });
       }
-      this.fields.push({ name: 'Levels:', value: `${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`, inline: true });
+      this.fields.push({
+        name: 'Levels:',
+        value: `${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}`,
+        inline: true,
+      });
 
-      this.fields.push({ name: i18n`Archwing Required`, value: a.mission.archwingRequired ? i18n`Yes` : i18n`No`, inline: true });
+      this.fields.push({
+        name: i18n`Archwing Required`,
+        value: a.mission.archwingRequired ? i18n`Yes` : i18n`No`,
+        inline: true,
+      });
 
       if (this.title.indexOf('Cr') === -1) {
         this.fields.push({ name: '\u200B', value: i18n`**Credits:** ${a.mission.reward.credits}`, inline: true });

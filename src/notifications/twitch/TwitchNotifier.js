@@ -14,9 +14,7 @@ export default class TwitchNotifier {
   #broadcaster;
   #monitor;
 
-  constructor({
-    client, settings, workerCache,
-  }) {
+  constructor({ client, settings, workerCache }) {
     this.#broadcaster = new Broadcaster({
       client,
       settings,
@@ -47,10 +45,12 @@ export default class TwitchNotifier {
         if (streamData.user_login === 'warframe') {
           if (streamData.title.includes('Devstream')) {
             id = `${streamData.user_login}.devstream.live`;
-          } else if (streamData.title.includes('Home Time')
-            || streamData.title.includes('Prime Time')
-            || streamData.title.includes('Working From Home')
-            || streamData.title.includes('Community Stream')) {
+          } else if (
+            streamData.title.includes('Home Time') ||
+            streamData.title.includes('Prime Time') ||
+            streamData.title.includes('Working From Home') ||
+            streamData.title.includes('Community Stream')
+          ) {
             id = `${streamData.user_login}.primetime.live`;
           } else {
             id = `${streamData.user_login}.other.live`;
@@ -59,8 +59,9 @@ export default class TwitchNotifier {
 
         await perLanguage(async ({ i18n, locale }) => {
           const embed = new TwitchEmbed(streamData, { i18n, locale });
-          await Promise.all(this.#activePlatforms
-            .map(async platform => this.#broadcaster.broadcast(embed, platform, id)));
+          await Promise.all(
+            this.#activePlatforms.map(async (platform) => this.#broadcaster.broadcast(embed, platform, id))
+          );
         });
       }
     });

@@ -40,7 +40,7 @@ export default class WelcomeQueries {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
       const [rows] = await this.query(query);
       if (rows) {
-        return rows.map(value => ({
+        return rows.map((value) => ({
           isDm: value.is_dm,
           message: value.message,
           channel: this.bot.client.channels.cache.get(value.channel_id),

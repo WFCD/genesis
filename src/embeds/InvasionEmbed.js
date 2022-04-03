@@ -43,10 +43,8 @@ export default class InvasionEmbed extends BaseEmbed {
       const completion = Math.round(i.completion * 100) / 100;
       this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
       this.description = i.desc;
-      this.fields = [
-        { name: i18n`Location`, value: i.node, inline: true },
-      ];
-      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining`;
+      this.fields = [{ name: i18n`Location`, value: i.node, inline: true }];
+      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/gi, '\u221E')} remaining`;
     }
 
     this.thumbnail = {

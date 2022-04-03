@@ -1,11 +1,7 @@
 import BaseEmbed from './BaseEmbed.js';
 
-const expiredC = process.env.LFG_EXPIRED_COLOR
-  ? Number.parseInt(process.env.LFG_EXPIRED_COLOR, 16)
-  : 0xff0000;
-const activeC = process.env.LFG_ACTIVE_COLOR
-  ? Number.parseInt(process.env.LFG_ACTIVE_COLOR, 16)
-  : 0x9370db;
+const expiredC = process.env.LFG_EXPIRED_COLOR ? Number.parseInt(process.env.LFG_EXPIRED_COLOR, 16) : 0xff0000;
+const activeC = process.env.LFG_ACTIVE_COLOR ? Number.parseInt(process.env.LFG_ACTIVE_COLOR, 16) : 0x9370db;
 
 /**
  * A collection of strings that are used by the parser to produce markdown-formatted text
@@ -36,7 +32,7 @@ export default class LFGEmbed extends BaseEmbed {
       { name: i18n`Farming For`, value: lfg.goal, inline: true },
       { name: i18n`Platform`, value: lfg.platform.toUpperCase(), inline: true },
       { name: i18n`Need`, value: `${lfg.membersNeeded - lfg.members.length}`, inline: true },
-      { name: i18n`Members`, value: lfg.members.map(id => `<@!${id}>`).join(', '), inline: true },
+      { name: i18n`Members`, value: lfg.members.map((id) => `<@!${id}>`).join(', '), inline: true },
     ];
 
     if (lfg.vc.channel) {

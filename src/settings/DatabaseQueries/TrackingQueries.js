@@ -50,7 +50,7 @@ export default class TrackingQueries {
   async trackItems(channel, items) {
     const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES `;
     items.forEach((item, index) => {
-      query.append(SQL`(${channel.id}, ${item})`).append(index !== (items.length - 1) ? ',' : ';');
+      query.append(SQL`(${channel.id}, ${item})`).append(index !== items.length - 1 ? ',' : ';');
     });
     return this.query(query);
   }
@@ -102,7 +102,7 @@ export default class TrackingQueries {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
     types.forEach((type, index) => {
       if (channel && channel.id) {
-        query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
+        query.append(SQL`(${channel.id}, ${type})`).append(index !== types.length - 1 ? ',' : ';');
       }
     });
     return this.query(query);
@@ -142,7 +142,7 @@ export default class TrackingQueries {
   async getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
     const res = await this.query(query);
-    return res[0].map(r => r.item);
+    return res[0].map((r) => r.item);
   }
 
   /**
@@ -153,7 +153,7 @@ export default class TrackingQueries {
   async getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
     const [rows] = await this.query(query);
-    return rows.map(r => r.type);
+    return rows.map((r) => r.type);
   }
 
   /**

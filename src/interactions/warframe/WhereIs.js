@@ -7,13 +7,17 @@ import WorldStateClient from '../../utilities/WorldStateClient.js';
 import Interaction from '../../models/Interaction.js';
 
 const { ENDPOINTS } = WorldStateClient;
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
-const queryOpt = [{
-  type: Types.STRING,
-  name: 'query',
-  description: 'What are you looking for?',
-  required: true,
-}];
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
+const queryOpt = [
+  {
+    type: Types.STRING,
+    name: 'query',
+    description: 'What are you looking for?',
+    required: true,
+  },
+];
 
 export default class WhereIs extends Interaction {
   static enabled = games.includes('WARFRAME');
@@ -43,11 +47,7 @@ export default class WhereIs extends Interaction {
         rarity: result.rarity,
         chance: `${String(parseFloat(result.chance).toFixed(2)).padEnd(5, '0')}%`,
         chanceNum: parseFloat(result.chance).toFixed(2),
-        place: result.place
-          .replace('Level ', '')
-          .replace(' Orb Vallis Bounty', '')
-          .replace(' Cetus Bounty', '')
-          .trim(),
+        place: result.place.replace('Level ', '').replace(' Orb Vallis Bounty', '').replace(' Cetus Bounty', '').trim(),
       };
       r.place = r.place.split('/')[1] || r.place;
       return r;
@@ -56,45 +56,47 @@ export default class WhereIs extends Interaction {
     let results = [];
 
     const map = new Map();
-    await Promise.all(data.map(async (item) => {
-      const isRelic = item.place.includes('Relic');
-      const relic = item.place.split('(')[0].trim();
-      if (isRelic && (!map.has(relic) || map.get(relic) < item.chanceNum)) {
-        if (map.has(relic)) {
-          let indexToRemove;
-          results.forEach((urelic, index) => {
-            if (urelic.place.includes(relic)) {
-              indexToRemove = index;
+    await Promise.all(
+      data.map(async (item) => {
+        const isRelic = item.place.includes('Relic');
+        const relic = item.place.split('(')[0].trim();
+        if (isRelic && (!map.has(relic) || map.get(relic) < item.chanceNum)) {
+          if (map.has(relic)) {
+            let indexToRemove;
+            results.forEach((urelic, index) => {
+              if (urelic.place.includes(relic)) {
+                indexToRemove = index;
+              }
+            });
+            if (typeof indexToRemove !== 'undefined') {
+              results.splice(indexToRemove, 1);
             }
-          });
-          if (typeof indexToRemove !== 'undefined') {
-            results.splice(indexToRemove, 1);
           }
+          map.set(relic, item.chanceNum);
+          results.push(item);
+        } else if (!isRelic && (!map.has(item.place) || map.get(item.place) < item.chanceNum)) {
+          map.set(item.place, item.chanceNum);
+          results.push(item);
         }
-        map.set(relic, item.chanceNum);
-        results.push(item);
-      } else if (!isRelic && (!map.has(item.place) || map.get(item.place) < item.chanceNum)) {
-        map.set(item.place, item.chanceNum);
-        results.push(item);
-      }
-    }));
+      })
+    );
 
-    results = [...(new Set(results))];
+    results = [...new Set(results)];
     results.sort((a, b) => b.chanceNum - a.chanceNum);
 
-    const longestName = results.length ? results.map(result => result.item
-      .replace('Blueprint', 'BP').replace(' Prime', ' P.'))
-      .reduce((a, b) => (a.length > b.length ? a : b)) : '';
-    const longestRelic = results.length ? results.map(result => result.place)
-      .reduce((a, b) => (a.length > b.length ? a : b)) : '';
+    const longestName = results.length
+      ? results
+          .map((result) => result.item.replace('Blueprint', 'BP').replace(' Prime', ' P.'))
+          .reduce((a, b) => (a.length > b.length ? a : b))
+      : '';
+    const longestRelic = results.length
+      ? results.map((result) => result.place).reduce((a, b) => (a.length > b.length ? a : b))
+      : '';
     query = toTitleCase(query.trim());
 
     const relics = createGroupedArray(results, 20)
-      .map(rg => new WhereisEmbed(createGroupedArray(rg, 10),
-        query,
-        longestName.length,
-        longestRelic.length))
-      .map(e => new Discord.MessageEmbed(e));
+      .map((rg) => new WhereisEmbed(createGroupedArray(rg, 10), query, longestName.length, longestRelic.length))
+      .map((e) => new Discord.MessageEmbed(e));
     await interaction.deferReply({ ephemeral: ctx.ephemerate });
     return Collectors.paged(interaction, relics, ctx);
   }

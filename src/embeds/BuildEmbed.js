@@ -10,7 +10,7 @@ export default class BuildEmbed extends BaseEmbed {
   constructor(build) {
     super();
     const sections = build.body.split(';');
-    this.color = 0xF1C40F;
+    this.color = 0xf1c40f;
     this.title = build.title;
     this.fields = [];
     sections.forEach((section, index) => {
@@ -21,6 +21,8 @@ export default class BuildEmbed extends BaseEmbed {
       }
     });
     this.image = { url: build.url || build.image };
-    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
+    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${
+      typeof build.owner === 'object' ? build.owner.tag : build.owner
+    }`;
   }
 }

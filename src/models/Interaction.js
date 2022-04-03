@@ -1,9 +1,8 @@
 import Discord from 'discord.js';
 
-const {
-  // eslint-disable-next-line no-unused-vars
-  Message, APIMessage, CommandInteraction,
-} = Discord;
+/* eslint-disable no-unused-vars */
+const { Message, APIMessage, CommandInteraction } = Discord;
+/* eslint-enable no-unused-vars */
 
 export default class Interaction {
   static enabled = true;

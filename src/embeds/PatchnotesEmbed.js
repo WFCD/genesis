@@ -11,10 +11,12 @@ export default class PatchnotesEmbed extends BaseEmbed {
   constructor(patchlogs, { i18n }) {
     super();
     this.title = i18n`Patch Notes`;
-    this.color = 0x819EAA;
+    this.color = 0x819eaa;
     this.fields = patchlogs.map((patchlog) => {
       const tokens = [];
-      tokens.push(i18n`**Published:** ${new Date(patchlog.date).toLocaleDateString('en-US', { timeZone: 'America/New_York' })}\n`);
+      tokens.push(
+        i18n`**Published:** ${new Date(patchlog.date).toLocaleDateString('en-US', { timeZone: 'America/New_York' })}\n`
+      );
       tokens.push(patchlog.url ? i18n`[Full Notes](${patchlog.url})\n` : '');
       tokens.push(patchlog.imgUrl ? i18n`[Thumbnail](${patchlog.imgUrl})\n` : '');
       tokens.push(patchlog.additions.length ? i18n`**Additions:**\n\t${patchlog.additions}\n` : '');

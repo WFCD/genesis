@@ -9,103 +9,118 @@ import Interaction from '../../models/Interaction.js';
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
 
 const {
-  Constants: {
-    ApplicationCommandOptionTypes: Types, InteractionTypes,
-    MessageComponentTypes, MessageButtonStyles,
-  },
-  MessageActionRow, MessageSelectMenu, InteractionCollector, MessageButton,
+  Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
+  MessageActionRow,
+  MessageSelectMenu,
+  InteractionCollector,
+  MessageButton,
 } = Discord;
 
-const buildParts = [{
-  name: 'title',
-  description: 'What do you want to call it?',
-  required: true,
-}, {
-  name: 'warframe',
-  description: 'Which Warframe?',
-  required: true,
-  compat: ['Warframe Mod'],
-  moddable: true,
-  display: 'Warframe',
-  max: 10,
-}, {
-  name: 'primus',
-  description: 'Which Primary?',
-  compat: ['Rifle Mod', 'Shotgun Mod'],
-  moddable: true,
-  display: 'Primary',
-  max: 9,
-}, {
-  name: 'secondary',
-  description: 'Which Secondary?',
-  compat: ['Secondary Mod'],
-  moddable: true,
-  display: 'Secondary',
-  max: 9,
-}, {
-  name: 'melee',
-  description: 'Which melee weapon?',
-  compat: ['Melee Mod'],
-  moddable: true,
-  display: 'Melee',
-  max: 9,
-}, {
-  name: 'heavy',
-  description: 'Which heavy weapon?',
-  compat: ['Arch-Gun Mod'],
-  moddable: true,
-  display: 'Heavy Gun',
-  max: 8,
-}, {
-  name: 'archwing',
-  description: 'Which archwing?',
-  compat: ['Archwing Mod'],
-  moddable: true,
-  display: 'Archwing',
-  max: 8,
-}, {
-  name: 'archgun',
-  description: 'Which archgun?',
-  compat: ['Arch-Gun Mod'],
-  moddable: true,
-  display: 'Arch-Gun',
-  max: 8,
-}, {
-  name: 'archmelee',
-  description: 'Which archmelee?',
-  compat: ['Arch-Melee Mod'],
-  moddable: true,
-  display: 'Arch-Melee',
-  max: 8,
-}, {
-  name: 'focus',
-  description: 'Which focus tree?',
-  choices: Build.focii,
-}, {
-  name: 'prism',
-  description: 'Which prism?',
-}, {
-  name: 'necramech',
-  description: 'Which Necramech?',
-  compat: ['Necramech Mod'],
-  moddable: true,
-  display: 'Necramech',
-  max: 12,
-}, {
-  name: 'necragun',
-  description: 'Which archgun for the Necramech?',
-  compat: ['Arch-Gun Mod'],
-  moddable: true,
-  display: 'Necra-Gun',
-  max: 8,
-}, {
-  name: 'necramelee',
-  description: 'Which Melee weapon for your Necramech?',
-  compat: ['Arch-Melee Mod'],
-  moddable: true,
-  display: 'Necra-Melee',
-  max: 8,
-}];
+const buildParts = [
+  {
+    name: 'title',
+    description: 'What do you want to call it?',
+    required: true,
+  },
+  {
+    name: 'warframe',
+    description: 'Which Warframe?',
+    required: true,
+    compat: ['Warframe Mod'],
+    moddable: true,
+    display: 'Warframe',
+    max: 10,
+  },
+  {
+    name: 'primus',
+    description: 'Which Primary?',
+    compat: ['Rifle Mod', 'Shotgun Mod'],
+    moddable: true,
+    display: 'Primary',
+    max: 9,
+  },
+  {
+    name: 'secondary',
+    description: 'Which Secondary?',
+    compat: ['Secondary Mod'],
+    moddable: true,
+    display: 'Secondary',
+    max: 9,
+  },
+  {
+    name: 'melee',
+    description: 'Which melee weapon?',
+    compat: ['Melee Mod'],
+    moddable: true,
+    display: 'Melee',
+    max: 9,
+  },
+  {
+    name: 'heavy',
+    description: 'Which heavy weapon?',
+    compat: ['Arch-Gun Mod'],
+    moddable: true,
+    display: 'Heavy Gun',
+    max: 8,
+  },
+  {
+    name: 'archwing',
+    description: 'Which archwing?',
+    compat: ['Archwing Mod'],
+    moddable: true,
+    display: 'Archwing',
+    max: 8,
+  },
+  {
+    name: 'archgun',
+    description: 'Which archgun?',
+    compat: ['Arch-Gun Mod'],
+    moddable: true,
+    display: 'Arch-Gun',
+    max: 8,
+  },
+  {
+    name: 'archmelee',
+    description: 'Which archmelee?',
+    compat: ['Arch-Melee Mod'],
+    moddable: true,
+    display: 'Arch-Melee',
+    max: 8,
+  },
+  {
+    name: 'focus',
+    description: 'Which focus tree?',
+    choices: Build.focii,
+  },
+  {
+    name: 'prism',
+    description: 'Which prism?',
+  },
+  {
+    name: 'necramech',
+    description: 'Which Necramech?',
+    compat: ['Necramech Mod'],
+    moddable: true,
+    display: 'Necramech',
+    max: 12,
+  },
+  {
+    name: 'necragun',
+    description: 'Which archgun for the Necramech?',
+    compat: ['Arch-Gun Mod'],
+    moddable: true,
+    display: 'Necra-Gun',
+    max: 8,
+  },
+  {
+    name: 'necramelee',
+    description: 'Which Melee weapon for your Necramech?',
+    compat: ['Arch-Melee Mod'],
+    moddable: true,
+    display: 'Necra-Melee',
+    max: 8,
+  },
+];
 
 const unmodable = ['id', 'owner_id', 'title', 'body', 'image', 'mods'];
 
@@ -118,70 +133,89 @@ export default class Builds extends Interaction {
   static command = {
     name: 'builds',
     description: 'Get various pieces of information',
-    options: [{
-      name: 'list',
-      type: Types.SUB_COMMAND,
-      description: 'Get all of my builds',
-    }, {
-      name: 'get',
-      type: Types.SUB_COMMAND,
-      description: 'Search builds or get a specific id.',
-      options: [{
-        name: 'query',
-        type: Types.STRING,
-        description: 'Search string',
-        required: true,
-      }],
-    }, {
-      name: 'add',
-      type: Types.SUB_COMMAND,
-      description: 'Add a new build',
-      options: buildParts.map(bp => ({
-        name: bp.name,
-        type: Types.STRING,
-        description: bp.description,
-        choices: bp.choices,
-      })),
-    }, {
-      name: 'update',
-      type: Types.SUB_COMMAND,
-      description: 'Update a build',
-      options: [{
-        name: 'id',
-        type: Types.STRING,
-        description: 'Build Identifier',
-        required: true,
-      }].concat(buildParts.map(bp => ({
-        name: bp.name,
-        type: Types.STRING,
-        description: bp.description,
-        choices: bp.choices,
-      }))),
-    }, {
-      name: 'remove',
-      type: Types.SUB_COMMAND,
-      description: 'Remove a build',
-      options: [{
-        name: 'id',
-        type: Types.STRING,
-        description: 'Build Identifier',
-        required: true,
-      }].concat(buildParts.map(bp => ({
-        name: bp.name,
-        type: Types.BOOLEAN,
-        description: bp.description,
-      }))),
-    }, {
-      name: 'mod',
-      type: Types.SUB_COMMAND,
-      description: 'Set Mods for a build',
-      options: [{
-        name: 'id',
-        type: Types.STRING,
-        description: 'Build Identifier',
-        required: true,
-      }],
-    }],
+    options: [
+      {
+        name: 'list',
+        type: Types.SUB_COMMAND,
+        description: 'Get all of my builds',
+      },
+      {
+        name: 'get',
+        type: Types.SUB_COMMAND,
+        description: 'Search builds or get a specific id.',
+        options: [
+          {
+            name: 'query',
+            type: Types.STRING,
+            description: 'Search string',
+            required: true,
+          },
+        ],
+      },
+      {
+        name: 'add',
+        type: Types.SUB_COMMAND,
+        description: 'Add a new build',
+        options: buildParts.map((bp) => ({
+          name: bp.name,
+          type: Types.STRING,
+          description: bp.description,
+          choices: bp.choices,
+        })),
+      },
+      {
+        name: 'update',
+        type: Types.SUB_COMMAND,
+        description: 'Update a build',
+        options: [
+          {
+            name: 'id',
+            type: Types.STRING,
+            description: 'Build Identifier',
+            required: true,
+          },
+        ].concat(
+          buildParts.map((bp) => ({
+            name: bp.name,
+            type: Types.STRING,
+            description: bp.description,
+            choices: bp.choices,
+          }))
+        ),
+      },
+      {
+        name: 'remove',
+        type: Types.SUB_COMMAND,
+        description: 'Remove a build',
+        options: [
+          {
+            name: 'id',
+            type: Types.STRING,
+            description: 'Build Identifier',
+            required: true,
+          },
+        ].concat(
+          buildParts.map((bp) => ({
+            name: bp.name,
+            type: Types.BOOLEAN,
+            description: bp.description,
+          }))
+        ),
+      },
+      {
+        name: 'mod',
+        type: Types.SUB_COMMAND,
+        description: 'Set Mods for a build',
+        options: [
+          {
+            name: 'id',
+            type: Types.STRING,
+            description: 'Build Identifier',
+            required: true,
+          },
+        ],
+      },
+    ],
   };
 
   /**
@@ -190,7 +224,7 @@ export default class Builds extends Interaction {
    * @param {CommandContext} ctx context for command
    * @returns {Array<Discord.MessageEmbed>}
    */
-  static #buildEmbedsForBuild (build, ctx) {
+  static #buildEmbedsForBuild(build, ctx) {
     const parsed = {};
     const pages = [];
 
@@ -221,9 +255,7 @@ export default class Builds extends Interaction {
     if (parsed.focus || build.prism) {
       const focus = parsed.focus ? `**${ctx.i18n`Focus`}:** ${build.focus}` : '';
       const prism = build.prism
-        ? new WeaponEmbed(build.prism?.uniqueName
-          ? build.prism
-          : ctx.ws.weapon(build.prism)[0])
+        ? new WeaponEmbed(build.prism?.uniqueName ? build.prism : ctx.ws.weapon(build.prism)[0])
         : undefined;
       if (prism) {
         if (focus) {
@@ -254,21 +286,33 @@ export default class Builds extends Interaction {
         const builds = await ctx.settings.getBuilds(false, interaction.user);
         if (builds.length > 0) {
           const buildGroups = createGroupedArray(builds, 10);
-          let titleLen = (builds.length ? builds.map(result => result.title.trim())
-            .reduce((a, b) => (a.length > b.length ? a : b)) : '').length;
+          let titleLen = (
+            builds.length
+              ? builds.map((result) => result.title.trim()).reduce((a, b) => (a.length > b.length ? a : b))
+              : ''
+          ).length;
           titleLen = titleLen < 10 ? 10 : titleLen;
 
-          const tokens = buildGroups.map(buildGroup => ({
+          const tokens = buildGroups.map((buildGroup) => ({
             name: '\u200B',
             value: buildGroup
-              .map(member => `\`${member.id} | ${(member?.title || '').padEnd(titleLen, '\u2003')} | Added by ${typeof member.owner === 'object' ? member.owner.tag : member.owner}\``).join('\n'),
+              .map(
+                (member) =>
+                  `\`${member.id} | ${(member?.title || '').padEnd(titleLen, '\u2003')} | Added by ${
+                    typeof member.owner === 'object' ? member.owner.tag : member.owner
+                  }\``
+              )
+              .join('\n'),
           }));
 
           const tokenGroups = createGroupedArray(tokens, 5);
           const pages = [];
           tokenGroups.forEach((tokenGroup) => {
             const fields = tokenGroup;
-            fields[0].value = `\`${ctx.i18n`Build ID`} | ${ctx.i18n`Title`.padEnd(titleLen, '\u2003')} | ${ctx.i18n`Owner`}\`\n${tokenGroup[0].value}`;
+            fields[0].value = `\`${ctx.i18n`Build ID`} | ${ctx.i18n`Title`.padEnd(
+              titleLen,
+              '\u2003'
+            )} | ${ctx.i18n`Owner`}\`\n${tokenGroup[0].value}`;
             pages.push({
               color: 0xcda2a3,
               fields,
@@ -317,9 +361,10 @@ export default class Builds extends Interaction {
         const pages = this.#buildEmbedsForBuild(build, ctx);
         return Collectors.dynamic(interaction, pages, ctx);
       case 'remove':
-        if (build
-          && (build.owner.id === interaction.user.id
-            || interaction.user.id === interaction.client.application.owner.id)) {
+        if (
+          build &&
+          (build.owner.id === interaction.user.id || interaction.user.id === interaction.client.application.owner.id)
+        ) {
           let thereWasAPart = false;
           buildParts.forEach(({ name }) => {
             if (options.get(name, false)) {
@@ -338,8 +383,8 @@ export default class Builds extends Interaction {
         }
         await interaction.deferReply({ ephemeral: ctx.ephemerate });
         const populatedKeys = Object.keys(build.toJson())
-          .filter(p => !unmodable.includes(p))
-          .filter(k => build.toJson()[k]);
+          .filter((p) => !unmodable.includes(p))
+          .filter((k) => build.toJson()[k]);
         if (!populatedKeys.length) {
           return interaction.reply(ctx.i18n`Can't add mods when you haven't got anything else`);
         }
@@ -352,36 +397,40 @@ export default class Builds extends Interaction {
         });
 
         // for some reason, mods are being inserted into the array as `[Object object]`
-        const currentMods = () => Object.keys(mods).map((k) => {
-          if (mods?.[k]?.length && !unmodable.includes(k)) {
-            const buildPart = buildParts.find(p => p.name === k);
-            if (!buildPart) return undefined;
-            const modList = mods[k];
-            const modStr = modList.map(m => m.name || ctx.ws.mod(m)?.[0]?.name).join('\n\t');
-            const warn = modList.length > buildPart.max ? ' :warning:' : '';
-            return `**${buildPart.display}**: ${build[k]?.name || ''}${warn}\n\t${modStr}`;
-          }
-          return undefined;
-        }).join('\n') || ctx.i18n`No Mods`;
+        const currentMods = () =>
+          Object.keys(mods)
+            .map((k) => {
+              if (mods?.[k]?.length && !unmodable.includes(k)) {
+                const buildPart = buildParts.find((p) => p.name === k);
+                if (!buildPart) return undefined;
+                const modList = mods[k];
+                const modStr = modList.map((m) => m.name || ctx.ws.mod(m)?.[0]?.name).join('\n\t');
+                const warn = modList.length > buildPart.max ? ' :warning:' : '';
+                return `**${buildPart.display}**: ${build[k]?.name || ''}${warn}\n\t${modStr}`;
+              }
+              return undefined;
+            })
+            .join('\n') || ctx.i18n`No Mods`;
 
-        const selectPartRow = () => new MessageActionRow({
-          components: [
-            new MessageSelectMenu({
-              minValues: 0,
-              maxValues: 1,
-              customId: 'select_part',
-              placeholder: ctx.i18n`Select Build Part`,
-              options: populatedKeys.map(k => ({
-                value: k,
-                label: buildParts.find(p => p.name === k && p.moddable)?.display,
-                default: current?.name === k,
-              })).filter(k => k && k.label),
-            }),
-          ],
-        });
-        const availableMods = () => (current
-          ? createGroupedArray(ctx.ws.modsByType(current.compat), 25)
-          : undefined);
+        const selectPartRow = () =>
+          new MessageActionRow({
+            components: [
+              new MessageSelectMenu({
+                minValues: 0,
+                maxValues: 1,
+                customId: 'select_part',
+                placeholder: ctx.i18n`Select Build Part`,
+                options: populatedKeys
+                  .map((k) => ({
+                    value: k,
+                    label: buildParts.find((p) => p.name === k && p.moddable)?.display,
+                    default: current?.name === k,
+                  }))
+                  .filter((k) => k && k.label),
+              }),
+            ],
+          });
+        const availableMods = () => (current ? createGroupedArray(ctx.ws.modsByType(current.compat), 25) : undefined);
         let modPage = 0;
         const navComponents = new MessageActionRow({
           components: [
@@ -389,11 +438,13 @@ export default class Builds extends Interaction {
               label: 'Previous',
               customId: 'previous',
               style: MessageButtonStyles.SECONDARY,
-            }), new MessageButton({
+            }),
+            new MessageButton({
               label: 'Save',
               customId: 'save',
               style: MessageButtonStyles.PRIMARY,
-            }), new MessageButton({
+            }),
+            new MessageButton({
               label: 'Next',
               customId: 'next',
               style: MessageButtonStyles.SECONDARY,
@@ -411,14 +462,16 @@ export default class Builds extends Interaction {
                   customId: 'select_mods',
                   placeholder: ctx.i18n`Select Mods to Apply`,
                   disabled: !available?.length,
-                  options: available?.[modPage]?.map(a => ({
+                  options: available?.[modPage]?.map((a) => ({
                     label: a.name,
                     value: a.uniqueName,
-                    default: !!mods?.[current?.name]?.find(f => f.uniqueName === a.uniqueName),
-                  })) || [{
-                    label: 'N/A',
-                    value: 'na',
-                  }],
+                    default: !!mods?.[current?.name]?.find((f) => f.uniqueName === a.uniqueName),
+                  })) || [
+                    {
+                      label: 'N/A',
+                      value: 'na',
+                    },
+                  ],
                 }),
               ],
             }),
@@ -429,37 +482,30 @@ export default class Builds extends Interaction {
           await selection.deferUpdate();
           switch (selection.customId) {
             case 'select_part':
-              current = buildParts.find(p => p.name === selection.values[0]);
+              current = buildParts.find((p) => p.name === selection.values[0]);
               modPage = 0;
               break;
             case 'select_mods':
               const available = availableMods();
               // TODO: !removal part doesn't sem to work
-              mods[current.name] = mods?.[current.name]
-                ?.filter(m => !available[modPage].map(a => a.uniqueName).includes(m.uniqueName))
-                || [];
-              const selected = selection?.values
-                ?.map(value => ctx.ws.mod(value)?.[0]).filter(n => n);
-              mods[current.name] = Array
-                .from(new Set([...mods[current.name], ...selected]));
+              mods[current.name] =
+                mods?.[current.name]?.filter(
+                  (m) => !available[modPage].map((a) => a.uniqueName).includes(m.uniqueName)
+                ) || [];
+              const selected = selection?.values?.map((value) => ctx.ws.mod(value)?.[0]).filter((n) => n);
+              mods[current.name] = Array.from(new Set([...mods[current.name], ...selected]));
               break;
           }
           await interaction.editReply({
             content: currentMods(),
             ephemeral: ctx.ephemerate,
-            components: [
-              selectPartRow(),
-              ...modChoices(),
-            ],
+            components: [selectPartRow(), ...modChoices()],
           });
         };
         const message = await interaction.editReply({
           content: currentMods(),
           ephemeral: ctx.ephemerate,
-          components: [
-            selectPartRow(),
-            ...modChoices(),
-          ],
+          components: [selectPartRow(), ...modChoices()],
         });
         const modCollector = new InteractionCollector(interaction.client, {
           interactionType: InteractionTypes.MESSAGE_COMPONENT,
@@ -487,26 +533,34 @@ export default class Builds extends Interaction {
               if (modPage <= availableMods().length) modPage += 1;
               break;
             case 'save': // save mods into build, save build
-              build.mods = Object.keys(mods).map(k => (k ? {
-                target: k,
-                mods: mods[k],
-              } : undefined)).filter(i => i.mods);
+              build.mods = Object.keys(mods)
+                .map((k) =>
+                  k
+                    ? {
+                        target: k,
+                        mods: mods[k],
+                      }
+                    : undefined
+                )
+                .filter((i) => i.mods);
               await ctx.settings.saveBuild(build.toJson());
               // selection for mods, filtered to compat with that part
               // before saving, error or "warn" if there's more than the type allows
               return interaction.editReply({
                 content: currentMods(),
                 ephemeral: ctx.ephemerate,
-                components: [new MessageActionRow({
-                  components: [
-                    new MessageButton({
-                      label: 'Saved',
-                      customId: 'save',
-                      style: MessageButtonStyles.SUCCESS,
-                      disabled: true,
-                    }),
-                  ],
-                })],
+                components: [
+                  new MessageActionRow({
+                    components: [
+                      new MessageButton({
+                        label: 'Saved',
+                        customId: 'save',
+                        style: MessageButtonStyles.SUCCESS,
+                        disabled: true,
+                      }),
+                    ],
+                  }),
+                ],
               });
           }
 
@@ -518,10 +572,7 @@ export default class Builds extends Interaction {
           return interaction.editReply({
             content: currentMods(),
             ephemeral: ctx.ephemerate,
-            components: [
-              selectPartRow(),
-              ...modChoices(),
-            ],
+            components: [selectPartRow(), ...modChoices()],
           });
         };
         modPageCollector.on('collect', modPageHandler);

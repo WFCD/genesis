@@ -76,12 +76,13 @@ const contexts = {
 class Logger {}
 
 const colorify = (level, map) => level[map[level] || 'red'];
-const fmt = (level, msg, context) => `[${colorify(scope, scopes)}] ${(colorify(level, levels)
-  || 'ukn').toLowerCase()}: ${context ? `${colorify(context, contexts)
-    || 'ukn'} ` : ''}${msg}`;
+const fmt = (level, msg, context) =>
+  `[${colorify(scope, scopes)}] ${(colorify(level, levels) || 'ukn').toLowerCase()}: ${
+    context ? `${colorify(context, contexts) || 'ukn'} ` : ''
+  }${msg}`;
 
-Logger.prototype.isLoggable = level => Object.keys(levels)
-  .indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
+Logger.prototype.isLoggable = (level) =>
+  Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(l.logLevel);
 
 Object.keys(levels).forEach((level) => {
   Logger.prototype[level.toLowerCase()] = (message, context) => {
@@ -103,8 +104,7 @@ Object.keys(levels).forEach((level) => {
       if (errorHook && l.logLevel !== 'DEBUG') {
         // filter out api errors, they're largely unhelpful and unrecoverable
         if (message.stack && message.stack.startsWith('DiscordAPIError')) return;
-        errorHook.send({ embeds: [new ErrorEmbed(message)] })
-          .catch(() => console.error(simple));
+        errorHook.send({ embeds: [new ErrorEmbed(message)] }).catch(() => console.error(simple));
       } else {
         console.error(simple);
         console.error(message);

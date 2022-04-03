@@ -14,8 +14,7 @@ class RSSEmbed extends BaseEmbed {
   constructor(feedItem, feed) {
     super();
     // clean up description, falling back to an empty string
-    let strippedDesc = markdinate((feedItem.description || '\u200B')
-      .replace(/<\\?string>/ig, ''));
+    let strippedDesc = markdinate((feedItem.description || '\u200B').replace(/<\\?string>/gi, ''));
     const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
 
     if (feedItem.title.includes(firstLine)) {
