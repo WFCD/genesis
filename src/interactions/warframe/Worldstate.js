@@ -61,30 +61,40 @@ const embeds = {
   voidTrader: VoidTrader,
   sortie: Sortie,
 };
-const platformable = [{
-  type: Types.STRING,
-  name: 'platform',
-  description: 'Platform to check for data',
-  choices: platformChoices,
-}];
-const places = [{
-  name: 'Earth',
-  value: 'earth',
-}, {
-  name: 'Cetus',
-  value: 'cetus',
-}, {
-  name: 'Orb Vallis',
-  value: 'vallis',
-}, {
-  name: 'Cambion Drift',
-  value: 'cambion',
-}];
-const compactable = [...platformable, {
-  type: Types.BOOLEAN,
-  name: 'compact',
-  description: 'Should all data be in one embed?',
-}];
+const platformable = [
+  {
+    type: Types.STRING,
+    name: 'platform',
+    description: 'Platform to check for data',
+    choices: platformChoices,
+  },
+];
+const places = [
+  {
+    name: 'Earth',
+    value: 'earth',
+  },
+  {
+    name: 'Cetus',
+    value: 'cetus',
+  },
+  {
+    name: 'Orb Vallis',
+    value: 'vallis',
+  },
+  {
+    name: 'Cambion Drift',
+    value: 'cambion',
+  },
+];
+const compactable = [
+  ...platformable,
+  {
+    type: Types.BOOLEAN,
+    name: 'compact',
+    description: 'Should all data be in one embed?',
+  },
+];
 
 export default class WorldState extends Interaction {
   static enabled = games.includes('WARFRAME');
@@ -92,130 +102,160 @@ export default class WorldState extends Interaction {
   static command = {
     name: 'ws',
     description: 'Get Warframe Worldstate Information',
-    options: [{
-      type: Types.SUB_COMMAND,
-      name: 'alerts',
-      description: 'Get WorldState Alerts',
-      options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'arbi',
-      description: 'Get WorldState Arbitrations',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'baro',
-      description: 'Get Current Void Trader Inventory',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'conclave',
-      description: 'Get Current Conclave Challenges',
-      options: [{
-        type: Types.STRING,
-        name: 'category',
-        description: 'Which conclave challenge category?',
-        choices: [{
-          name: 'All',
-          value: 'all',
-        }, {
-          name: 'Daily',
-          value: 'day',
-        }, {
-          name: 'Weekly',
-          value: 'week',
-        }],
+    options: [
+      {
+        type: Types.SUB_COMMAND,
+        name: 'alerts',
+        description: 'Get WorldState Alerts',
+        options: compactable,
       },
-      ...platformable,
-      ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'construction',
-      description: 'Get Construction Progress',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'cycle',
-      description: 'Get current Time Cycle',
-      options: [{
-        type: Types.STRING,
-        name: 'place',
-        description: 'Where do you want to know about?',
-        choices: places,
-        required: true,
+      {
+        type: Types.SUB_COMMAND,
+        name: 'arbi',
+        description: 'Get WorldState Arbitrations',
+        options: platformable,
       },
-      ...platformable,
-      ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'darvo',
-      description: 'Get Darvo\'s Deals',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'events',
-      description: 'Get Active Events',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'fissures',
-      description: 'Get WorldState Fissures',
-      options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'invasions',
-      description: 'Get WorldState Invasions',
-      options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'news',
-      description: 'Get Current news',
-      options: [{
-        type: Types.STRING,
-        name: 'category',
-        description: 'Which news do you want?',
-        required: true,
-        choices: [{
-          name: 'General News (All)',
-          value: 'news',
-        }, {
-          name: 'Updates',
-          value: 'updates',
-        }, {
-          name: 'Prime Access',
-          value: 'primeaccess',
-        }, {
-          name: 'Streams',
-          value: 'stream',
-        }],
-      }, ...platformable,
-      ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'nightwave',
-      description: 'Get Current Nightwave Challenges',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'sales',
-      description: 'Get Current Sales',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'outposts',
-      description: 'Get Current Sentient Outposts',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'steelpath',
-      description: 'Get Current Steel Path Offerings',
-      options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'sortie',
-      description: 'Get Sortie Information',
-      options: platformable,
-    }],
+      {
+        type: Types.SUB_COMMAND,
+        name: 'baro',
+        description: 'Get Current Void Trader Inventory',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'conclave',
+        description: 'Get Current Conclave Challenges',
+        options: [
+          {
+            type: Types.STRING,
+            name: 'category',
+            description: 'Which conclave challenge category?',
+            choices: [
+              {
+                name: 'All',
+                value: 'all',
+              },
+              {
+                name: 'Daily',
+                value: 'day',
+              },
+              {
+                name: 'Weekly',
+                value: 'week',
+              },
+            ],
+          },
+          ...platformable,
+        ],
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'construction',
+        description: 'Get Construction Progress',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'cycle',
+        description: 'Get current Time Cycle',
+        options: [
+          {
+            type: Types.STRING,
+            name: 'place',
+            description: 'Where do you want to know about?',
+            choices: places,
+            required: true,
+          },
+          ...platformable,
+        ],
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'darvo',
+        description: "Get Darvo's Deals",
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'events',
+        description: 'Get Active Events',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'fissures',
+        description: 'Get WorldState Fissures',
+        options: compactable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'invasions',
+        description: 'Get WorldState Invasions',
+        options: compactable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'news',
+        description: 'Get Current news',
+        options: [
+          {
+            type: Types.STRING,
+            name: 'category',
+            description: 'Which news do you want?',
+            required: true,
+            choices: [
+              {
+                name: 'General News (All)',
+                value: 'news',
+              },
+              {
+                name: 'Updates',
+                value: 'updates',
+              },
+              {
+                name: 'Prime Access',
+                value: 'primeaccess',
+              },
+              {
+                name: 'Streams',
+                value: 'stream',
+              },
+            ],
+          },
+          ...platformable,
+        ],
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'nightwave',
+        description: 'Get Current Nightwave Challenges',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'sales',
+        description: 'Get Current Sales',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'outposts',
+        description: 'Get Current Sentient Outposts',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'steelpath',
+        description: 'Get Current Steel Path Offerings',
+        options: platformable,
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'sortie',
+        description: 'Get Sortie Information',
+        options: platformable,
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -260,19 +300,26 @@ export default class WorldState extends Interaction {
           });
 
           Object.keys(eras).forEach((eraKey) => {
-            // eslint-disable-next-line new-cap
-            pages.push(new embeds.fissures(eras[eraKey], {
-              platform, i18n: ctx.i18n, era: eras[eraKey][0].tier,
-            }));
+            pages.push(
+              // eslint-disable-next-line new-cap
+              new embeds.fissures(eras[eraKey], {
+                platform,
+                i18n: ctx.i18n,
+                era: eras[eraKey][0].tier,
+              })
+            );
           });
           return Collectors.dynamic(interaction, pages, ctx);
         }
       case 'alerts':
       case 'invasions':
         if (!compact) {
-          return Collectors.dynamic(interaction,
+          return Collectors.dynamic(
+            interaction,
             // eslint-disable-next-line new-cap
-            data.map(a => new embeds[field](a, { platform, i18n: ctx.i18n })), ctx);
+            data.map((a) => new embeds[field](a, { platform, i18n: ctx.i18n })),
+            ctx
+          );
         }
       case 'arbitration':
       case 'earthCycle':
@@ -293,9 +340,13 @@ export default class WorldState extends Interaction {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](data, {
-          platform, onDemand: true, i18n: ctx.i18n,
-        }));
+        embed = new MessageEmbed(
+          new embeds[field](data, {
+            platform,
+            onDemand: true,
+            i18n: ctx.i18n,
+          })
+        );
         pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
           const tembed = { ...embed };
           tembed.fields = fieldGroup;
@@ -308,16 +359,15 @@ export default class WorldState extends Interaction {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        pages = createGroupedArray(data, 20)
-          .map(group => new embeds[field](group, { category, platform, i18n: ctx.i18n }));
+        pages = createGroupedArray(data, 20).map(
+          (group) => new embeds[field](group, { category, platform, i18n: ctx.i18n })
+        );
         return interaction.editReply({ embeds: pages });
       case 'events':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        pages = data.map(datum => new MessageEmbed(
-          new embeds[field](datum, { platform, i18n: ctx.i18n }),
-        ));
+        pages = data.map((datum) => new MessageEmbed(new embeds[field](datum, { platform, i18n: ctx.i18n })));
         return interaction.editReply({ embeds: pages });
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {

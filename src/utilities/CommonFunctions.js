@@ -1,9 +1,7 @@
 import Discord from 'discord.js';
 import logger from './Logger.js';
 
-import {
-  emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes,
-} from '../resources/index.js';
+import { emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes } from '../resources/index.js';
 
 const {
   clantech,
@@ -47,14 +45,18 @@ export const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat
  * Regex to check for vulgarity
  * @type {RegExp}
  */
-export const isVulgarCheck = new RegExp('(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)', 'ig');
+export const isVulgarCheck = new RegExp(
+  '(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)',
+  'ig'
+);
 
 /**
  * Allowed platforms
  * @type {Array.<string>}
  */
-export const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
-  .concat((process.env.PLATFORMS || '').split(',').filter(p => p))));
+export const platforms = Array.from(
+  new Set(['pc', 'ps4', 'xb1', 'swi'].concat((process.env.PLATFORMS || '').split(',').filter((p) => p)))
+);
 
 /**
  * Games to enable.
@@ -72,7 +74,7 @@ export const platforms = Array.from(new Set(['pc', 'ps4', 'xb1', 'swi']
  *  * UTIL
  * @type {Array<string>}
  */
-export const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter(p => p));
+export const games = ['CORE'].concat((process.env.GAMES || '').split(',').filter((p) => p));
 
 /**
  * Duration mapping
@@ -99,7 +101,7 @@ export const trackableEvents = {
   earth: ['earth.day', 'earth.night'],
   vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
   nightwave,
-  rss: rssFeeds.map(feed => feed.key),
+  rss: rssFeeds.map((feed) => feed.key),
   arbitration: [],
   kuva: [],
   twitch,
@@ -107,18 +109,21 @@ export const trackableEvents = {
   baseEvents: [],
 };
 
-trackableEvents.baseEvents = eventTypes.filter(e => !(
-  trackableEvents.cambion.includes(e)
-    || trackableEvents.cetus.includes(e)
-    || trackableEvents.ostrons.includes(e)
-    || trackableEvents.earth.includes(e)
-    || trackableEvents.vallis.includes(e)
-    || trackableEvents.nightwave.includes(e)
-    || trackableEvents.rss.includes(e)
-    || trackableEvents.twitch.includes(e)
-));
+trackableEvents.baseEvents = eventTypes.filter(
+  (e) =>
+    !(
+      trackableEvents.cambion.includes(e) ||
+      trackableEvents.cetus.includes(e) ||
+      trackableEvents.ostrons.includes(e) ||
+      trackableEvents.earth.includes(e) ||
+      trackableEvents.vallis.includes(e) ||
+      trackableEvents.nightwave.includes(e) ||
+      trackableEvents.rss.includes(e) ||
+      trackableEvents.twitch.includes(e)
+    )
+);
 
-trackableEvents['forum.staff'] = trackableEvents.rss.filter(feed => feed.startsWith('forum.staff'));
+trackableEvents['forum.staff'] = trackableEvents.rss.filter((feed) => feed.startsWith('forum.staff'));
 trackableEvents.events.push(...trackableEvents.rss);
 const tTemp = [];
 twitter.types.forEach((type) => {
@@ -177,7 +182,7 @@ trackableEvents.events.push(
   ...trackableEvents.fissures,
   ...trackableEvents.arbitration,
   ...trackableEvents.kuva,
-  ...trackableEvents.twitch,
+  ...trackableEvents.twitch
 );
 
 export const dyn = [
@@ -238,10 +243,12 @@ export const termToTrackable = (term) => {
     items: [],
   };
 
-  if (cetusCustomTimeRegex.test(term)
-    || earthCustomTimeRegex.test(term)
-    || solarisCustomTimeRegex.test(term)
-    || cambionCustomTimeRegex.test(term)) {
+  if (
+    cetusCustomTimeRegex.test(term) ||
+    earthCustomTimeRegex.test(term) ||
+    solarisCustomTimeRegex.test(term) ||
+    cambionCustomTimeRegex.test(term)
+  ) {
     trackable.events = term;
     return trackable;
   }
@@ -290,7 +297,7 @@ export const trackablesFromParameters = (params) => {
   };
   let terms;
   if (params.length) {
-    terms = params.map(term => term.trim()).filter(Boolean);
+    terms = params.map((term) => term.trim()).filter(Boolean);
   } else {
     return trackables;
   }
@@ -350,7 +357,7 @@ export function getEventsOrItems(message) {
  * @param  {string} chunk String chunk to check
  * @returns {boolean}       Whether or not the string is allowed
  */
-export const stringFilter = chunk => chunk && chunk.length;
+export const stringFilter = (chunk) => chunk && chunk.length;
 
 /**
  * Field limit for chunked embeds
@@ -380,9 +387,7 @@ export const embedDefaults = {
  * @param {boolean} [checkTitle=false]        Whether or not to check for titles at the end
  * @returns {Array.<string>}                  Array of string chunks
  */
-export const chunkify = ({
-  string, newStrings = [], breakChar = '; ', maxLength = 1000, checkTitle = false,
-}) => {
+export const chunkify = ({ string, newStrings = [], breakChar = '; ', maxLength = 1000, checkTitle = false }) => {
   let breakIndex;
   let chunk;
   if (!string) return undefined;
@@ -395,7 +400,7 @@ export const chunkify = ({
       if (checkTitle) {
         // strip the last title if it starts with a title
         if (string.endsWith('**')) {
-          const endTitle = (string.match(/\*\*(.*)\*\*\s*$/g)[1] || '');
+          const endTitle = string.match(/\*\*(.*)\*\*\s*$/g)[1] || '';
           string = string.replace(/\*\*(.*)\*\*\s*$/g, ''); // eslint-disable-line no-param-reassign
           breakIndex -= endTitle.length;
         }
@@ -419,25 +424,28 @@ export const chunkify = ({
  * @param  {string} htmlString html string to convert
  * @returns {string}            markdinated string
  */
-export const markdinate = htmlString => htmlString
-  .split('\n').map(l => l.trim()).join('\n') // trim lines
-  .replace(/\r\n/gm, '\n') // replace CRLF with LF
-  .replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
-  .replace(/<br\s*\/?>/g, '\n') // replace manual breaks with break character
-  .replace(/<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
-  .replace(/<li\s?(?:class=".*")?\s?(?:dir=".*")?>\n/gm, '- ') // strip list items to bullets, replace later with emoji
-  .replace(/ipsnoembed="false" /gm, '') // manually replace ipsnoembed, it causes issues given location
-  .replace(/ipsnoembed="true" /gm, '') // manually replace ipsnoembed, it causes issues given location
-  .replace(/<a href="(.*)" rel="external nofollow(?: noopener)?"\s?(?:target="_blank")?>(.*)<\/a>/gm, '[$2]($1)')
-  .replace(/&amp;/gm, '&') // replace ampersand entity... it looks weird with some titles
-  .replace(/<\/li>/gm, '') // strip li end tags
-  .replace(/<(?:.|\n)*?>/gm, '') // replace all other tags, like images and paragraphs... cause they uuugly
-  .replace(/-\s+\n/g, '- ')
-  .replace(/\n\s*\n+\s*/gm, '\n\n') // strip 2+ line endings to max 2
-  .replace(/\*\*\n\n/gm, '**\n') // strip any newlines between headers and content to collapse content
-  .replace(/^\s*-\s*\n\s*\[/g, '- [')
-  .replace(/^- /gm, ':white_small_square:') // swap bullets for emoji
-  .trim();
+export const markdinate = (htmlString) =>
+  htmlString
+    .split('\n')
+    .map((l) => l.trim())
+    .join('\n') // trim lines
+    .replace(/\r\n/gm, '\n') // replace CRLF with LF
+    .replace(/<\/?strong>/gm, '**') // swap <strong> tags for their md equivalent
+    .replace(/<br\s*\/?>/g, '\n') // replace manual breaks with break character
+    .replace(/<\/li>\s*<li>/gm, '</li>\n<li>') // clean up breaks between list items
+    .replace(/<li\s?(?:class=".*")?\s?(?:dir=".*")?>\n/gm, '- ') // strip list items to bullets, replace later with emoji
+    .replace(/ipsnoembed="false" /gm, '') // manually replace ipsnoembed, it causes issues given location
+    .replace(/ipsnoembed="true" /gm, '') // manually replace ipsnoembed, it causes issues given location
+    .replace(/<a href="(.*)" rel="external nofollow(?: noopener)?"\s?(?:target="_blank")?>(.*)<\/a>/gm, '[$2]($1)')
+    .replace(/&amp;/gm, '&') // replace ampersand entity... it looks weird with some titles
+    .replace(/<\/li>/gm, '') // strip li end tags
+    .replace(/<(?:.|\n)*?>/gm, '') // replace all other tags, like images and paragraphs... cause they uuugly
+    .replace(/-\s+\n/g, '- ')
+    .replace(/\n\s*\n+\s*/gm, '\n\n') // strip 2+ line endings to max 2
+    .replace(/\*\*\n\n/gm, '**\n') // strip any newlines between headers and content to collapse content
+    .replace(/^\s*-\s*\n\s*\[/g, '- [')
+    .replace(/^- /gm, ':white_small_square:') // swap bullets for emoji
+    .trim();
 
 /**
  * Check that embeds are valid, and merge values into array
@@ -470,9 +478,11 @@ export const createPageCollector = async (msg, pages, author) => {
   await msg.react('▶');
   // await msg.react('⏭');
 
-  const rColl = (reaction, user) => (nav.includes(reaction.emoji.name) && user.id === author.id);
+  const rColl = (reaction, user) => nav.includes(reaction.emoji.name) && user.id === author.id;
   const collector = msg.createReactionCollector(rColl, { time: 600000 });
-  const timeout = setTimeout(() => { msg.reactions.removeAll(); }, 601000);
+  const timeout = setTimeout(() => {
+    msg.reactions.removeAll();
+  }, 601000);
 
   collector.on('collect', async (reaction) => {
     switch (reaction.emoji.name) {
@@ -558,8 +568,7 @@ export const setupPages = async (pages, { message, settings }) => {
 export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   const embed = new MessageEmbed(embedDefaults);
   embed.setTitle(title);
-  const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || [])
-    .filter(stringFilter);
+  const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || []).filter(stringFilter);
   if (chunks.length) {
     chunks.forEach((chunk, index) => {
       if (index > 0) {
@@ -606,7 +615,7 @@ export const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
       }
       return undefined;
     })
-    .filter(field => field);
+    .filter((field) => field);
 };
 
 export const constructTypeEmbeds = (types) => {
@@ -678,9 +687,7 @@ export const constructItemEmbeds = (types) => {
   });
 };
 
-export async function sendTrackInstructionEmbeds({
-  message, prefix, call, settings,
-}) {
+export async function sendTrackInstructionEmbeds({ message, prefix, call, settings }) {
   const pages = [];
   pages.push({
     type: 'rich',
@@ -710,7 +717,8 @@ export async function sendTrackInstructionEmbeds({
       pages[0].fields[0].value = 'Set the text added before an event/item notification.';
       pages[0].fields.push({
         name: '**Ping:**',
-        value: 'Whatever string you want to be added before a notification for this item or event. If you leave this blank, the ping for this item/event will be cleared',
+        value:
+          'Whatever string you want to be added before a notification for this item or event. If you leave this blank, the ping for this item/event will be cleared',
         inline: true,
       });
       break;
@@ -720,7 +728,6 @@ export async function sendTrackInstructionEmbeds({
 
   switch (call) {
     case 'set ping':
-
       break;
     default:
       break;
@@ -737,14 +744,14 @@ export const emojify = (stringWithoutEmoji) => {
   Object.keys(emoji).forEach((identifier) => {
     if (typeof stringWithEmoji === 'string') {
       stringWithEmoji = stringWithEmoji
-        .replace(/<DT_\w+>/ig, '')
+        .replace(/<DT_\w+>/gi, '')
         .replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]} `);
     }
   });
   return stringWithEmoji;
 };
 
-export const getEmoji = identifier => emoji[identifier] || '';
+export const getEmoji = (identifier) => emoji[identifier] || '';
 
 /**
  * @param   {number} millis The number of milliseconds in the time delta
@@ -841,12 +848,11 @@ export const getChannels = (channelsParam, message) => {
   let channels = [];
   // handle it for strings
   if (channelsParam !== 'all' && channelsParam !== 'current' && channelsParam !== '*') {
-    channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/([<>#])/ig, '')));
+    channels.push(message.guild.channels.cache.get(channelsParam.trim().replace(/([<>#])/gi, '')));
   } else if (channelsParam === 'all' || channelsParam === '*') {
-    channels = channels
-      .concat(Array
-        .from(message.guild.channels.cache
-          .filter(channel => channel.type === 'GUILD_TEXT')));
+    channels = channels.concat(
+      Array.from(message.guild.channels.cache.filter((channel) => channel.type === 'GUILD_TEXT'))
+    );
   } else if (channelsParam === 'current') {
     channels.push(message.channel);
   }
@@ -900,12 +906,14 @@ export const resolveRoles = ({ mentions = undefined, content = '', guild = undef
   let matches = content.match(roleRegex);
   if (matches && matches.length) {
     matches.slice(0, 1);
-    matches = matches.map((match) => {
-      if (guild.roles.cache.has(match)) {
-        return guild.roles.cache.get(match);
-      }
-      return undefined;
-    }).filter(match => typeof match !== 'undefined');
+    matches = matches
+      .map((match) => {
+        if (guild.roles.cache.has(match)) {
+          return guild.roles.cache.get(match);
+        }
+        return undefined;
+      })
+      .filter((match) => typeof match !== 'undefined');
   }
 
   if (matches) {
@@ -919,7 +927,7 @@ export const resolveRoles = ({ mentions = undefined, content = '', guild = undef
  * @param  {Discord.Role} role role to convert members from
  * @returns {Discord.User[]}      array of discord users
  */
-export const usersInRole = role => role.members.map(member => member.user);
+export const usersInRole = (role) => role.members.map((member) => member.user);
 
 /**
  * Gets the list of users from the mentions in the call
@@ -930,7 +938,7 @@ export const usersInRole = role => role.members.map(member => member.user);
 export const getUsersForCall = (message, excludeAuthor) => {
   const users = [];
   if (message.mentions.roles) {
-    message.mentions.roles.forEach(role => users.push(...usersInRole(role)));
+    message.mentions.roles.forEach((role) => users.push(...usersInRole(role)));
   }
   if (message.mentions.users) {
     message.mentions.users.forEach((user) => {
@@ -953,16 +961,16 @@ export const getUsersForCall = (message, excludeAuthor) => {
   return users;
 };
 
-export const resolvePool = async (message, settings,
-  {
-    explicitOnly = false,
-    skipManages = false,
-    pool = undefined,
-    checkRestriction = false,
-    allowMultiple = false,
-  } = { explicitOnly: false, skipManages: false }) => {
+export const resolvePool = async (
+  message,
+  settings,
+  { explicitOnly = false, skipManages = false, pool = undefined, checkRestriction = false, allowMultiple = false } = {
+    explicitOnly: false,
+    skipManages: false,
+  }
+) => {
   let poolId = pool;
-  if (!skipManages && !await settings.userManagesPool(message.author, poolId)) {
+  if (!skipManages && !(await settings.userManagesPool(message.author, poolId))) {
     poolId = undefined;
   } else {
     return poolId;
@@ -975,8 +983,7 @@ export const resolvePool = async (message, settings,
       poolId = undefined;
     }
   } else if (!explicitOnly) {
-    let pools = (await settings.getPoolsUserManages(message.author))
-      .map(poolRow => poolRow.pool_id);
+    let pools = (await settings.getPoolsUserManages(message.author)).map((poolRow) => poolRow.pool_id);
     if (pools.length > 1 && allowMultiple) {
       return pools;
     }
@@ -986,8 +993,7 @@ export const resolvePool = async (message, settings,
       poolId = undefined;
     } else if (await settings.getGuildsPool(message.guild).length) {
       pools = await settings.getGuildsPool(message.guild);
-      if (pools.length === 1
-        && (skipManages || await settings.userManagesPool(message.author, pools[0]))) {
+      if (pools.length === 1 && (skipManages || (await settings.userManagesPool(message.author, pools[0])))) {
         [poolId] = pools;
       }
     } else {
@@ -995,7 +1001,7 @@ export const resolvePool = async (message, settings,
     }
   }
 
-  if (poolId && checkRestriction && await settings.isPoolRestricted(poolId)) {
+  if (poolId && checkRestriction && (await settings.isPoolRestricted(poolId))) {
     poolId = undefined;
   }
   return poolId;
@@ -1010,32 +1016,34 @@ export const safeGetEntry = (entry) => {
 
 export const csvToCodes = (csv) => {
   const lines = csv.replace(/\r/g, '').split('\n');
-  return lines.map((line) => {
-    const entries = line.split(',');
-    return {
-      id: safeGetEntry(entries[0]),
-      platform: safeGetEntry(entries[1]),
-      addedBy: safeGetEntry(entries[2]),
-      addedOn: safeGetEntry(entries[3]),
-      grantedTo: safeGetEntry(entries[4]),
-      grantedBy: safeGetEntry(entries[5]),
-      grantedOn: safeGetEntry(entries[6]),
-      code: safeGetEntry(entries[7]),
-    };
-  }).filter(code => code.code);
+  return lines
+    .map((line) => {
+      const entries = line.split(',');
+      return {
+        id: safeGetEntry(entries[0]),
+        platform: safeGetEntry(entries[1]),
+        addedBy: safeGetEntry(entries[2]),
+        addedOn: safeGetEntry(entries[3]),
+        grantedTo: safeGetEntry(entries[4]),
+        grantedBy: safeGetEntry(entries[5]),
+        grantedOn: safeGetEntry(entries[6]),
+        code: safeGetEntry(entries[7]),
+      };
+    })
+    .filter((code) => code.code);
 };
 
 export const determineTweetType = (tweet) => {
   if (tweet.in_reply_to_status_id) {
-    return ('reply');
+    return 'reply';
   }
   if (tweet.quoted_status_id) {
-    return ('quote');
+    return 'quote';
   }
   if (tweet.retweeted_status) {
-    return ('retweet');
+    return 'retweet';
   }
-  return ('tweet');
+  return 'tweet';
 };
 
 /**
@@ -1052,7 +1060,7 @@ export const getMessage = async (message, otherMessageId) => {
     msgResults.push(channel.messages.fetch(otherMessageId));
   });
 
-  return (await Promise.all(msgResults)).filter(fetched => fetched)[0];
+  return (await Promise.all(msgResults)).filter((fetched) => fetched)[0];
 };
 
 /**
@@ -1093,7 +1101,7 @@ const giveawayDefaults = {
   },
 };
 
-export const toTitleCase = str => str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+export const toTitleCase = (str) => str.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
 
 /**
  * Common functions for determining common functions

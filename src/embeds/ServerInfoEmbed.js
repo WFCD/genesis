@@ -49,12 +49,12 @@ export default class ServerInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Text Channels:',
-        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').size || 0}`,
+        value: `Count: ${guild.channels.cache.filter((channel) => channel.type === 'GUILD_TEXT').size || 0}`,
         inline: true,
       },
       {
         name: 'Voice Channels:',
-        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').size || 0}`,
+        value: `Count: ${guild.channels.cache.filter((channel) => channel.type === 'GUILD_VOICE').size || 0}`,
         inline: true,
       },
       {

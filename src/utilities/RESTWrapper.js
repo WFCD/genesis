@@ -25,7 +25,7 @@ export default class RESTWrapper {
     try {
       let webhooks = await this.client.get(`/channels/${channel.id}/webhooks`);
       if (webhooks.length) {
-        webhooks = webhooks.filter(webhook => webhook && webhook.type === 1);
+        webhooks = webhooks.filter((webhook) => webhook && webhook.type === 1);
         return webhooks[0];
       }
       return this.client.post(`/channels/${channel.id}/webhooks`, {

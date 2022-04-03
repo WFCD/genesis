@@ -8,7 +8,9 @@ import SQL from 'sql-template-strings';
 export default class RatioQueries {
   addGuildRatio(shard, guild) {
     if (!shard) return undefined;
-    return this.query(SQL`INSERT IGNORE INTO guild_ratio (shard_id, guild_id, owner_id) VALUES (${shard.id}, ${guild.id}, ${guild.ownerID});`);
+    return this.query(
+      SQL`INSERT IGNORE INTO guild_ratio (shard_id, guild_id, owner_id) VALUES (${shard.id}, ${guild.id}, ${guild.ownerID});`
+    );
   }
 
   getGuildRatios(shards) {

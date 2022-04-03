@@ -30,12 +30,14 @@ export default class EventEmbed extends BaseEmbed {
       if (event.rewards && event.rewards.length > 0) {
         this.fields.push({
           name: i18n`Rewards`,
-          value: event.rewards ? event
-            .rewards.map(reward => reward.asString).join('; ') : i18n`No Rewards`,
+          value: event.rewards ? event.rewards.map((reward) => reward.asString).join('; ') : i18n`No Rewards`,
         });
       }
       if (event.maximumScore && event.currentScore) {
-        this.fields.push({ name: i18n`Progress`, value: `${Number(parseFloat(event.currentScore) / parseFloat(event.maximumScore)).toFixed(2)}%` });
+        this.fields.push({
+          name: i18n`Progress`,
+          value: `${Number(parseFloat(event.currentScore) / parseFloat(event.maximumScore)).toFixed(2)}%`,
+        });
       } else {
         if (event.maximumScore) {
           this.fields.push({ name: i18n`Completion Score`, value: String(event.maximumScore) });
@@ -46,12 +48,21 @@ export default class EventEmbed extends BaseEmbed {
       }
 
       if (event.affiliatedWith) {
-        const jobString = event.jobs.map((job) => {
-          const rewards = job.rewardPool.length > 0 ? job.rewardPool.map(reward => `* ${reward}`).join('\n') : i18n`No Clear Reward`;
+        const jobString = event.jobs
+          .map((job) => {
+            const rewards =
+              job.rewardPool.length > 0
+                ? job.rewardPool.map((reward) => `* ${reward}`).join('\n')
+                : i18n`No Clear Reward`;
 
-          const rewardsFmtd = i18n`\nWith \`\`\`\n${rewards}\`\`\` as reward${job.rewardPool.length > 1 ? 's' : ''}.`;
-          return i18n`**${job.type}**\nEnemies lvls ${job.enemyLevels[0]} - ${job.enemyLevels[1]}\nGranting ${job.standingStages.join(', ')} base standing per stage.${job.rewardPool.length > 0 ? rewardsFmtd : ''}`;
-        }).join('\n');
+            const rewardsFmtd = i18n`\nWith \`\`\`\n${rewards}\`\`\` as reward${job.rewardPool.length > 1 ? 's' : ''}.`;
+            return i18n`**${job.type}**\nEnemies lvls ${job.enemyLevels[0]} - ${
+              job.enemyLevels[1]
+            }\nGranting ${job.standingStages.join(', ')} base standing per stage.${
+              job.rewardPool.length > 0 ? rewardsFmtd : ''
+            }`;
+          })
+          .join('\n');
         this.fields.push({ name: i18n`Jobs from ${event.affiliatedWith}`, value: jobString });
       }
 

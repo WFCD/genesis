@@ -93,7 +93,7 @@ export default class PromocodeQueries {
 
   async addPoolManagers(id, newManagers) {
     const query = SQL`INSERT IGNORE INTO code_pool_manager VALUES ?;`;
-    query.values = newManagers.map(manager => ([id, manager]));
+    query.values = newManagers.map((manager) => [id, manager]);
     return this.query(query);
   }
 
@@ -131,7 +131,7 @@ export default class PromocodeQueries {
     const query = SQL`SELECT * from code_pool_member WHERE pool_id in (${poolIds})`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(row => ({
+      return rows.map((row) => ({
         id: row.pool_id,
         platform: row.platform,
         addedBy: row.added_by || undefined,
@@ -191,7 +191,7 @@ export default class PromocodeQueries {
 
   async addCodes(codes) {
     const query = SQL`INSERT IGNORE INTO code_pool_member VALUES ?;`;
-    const val = codes.map(code => [
+    const val = codes.map((code) => [
       code.id,
       code.platform || 'pc',
       code.adder,

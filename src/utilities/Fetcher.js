@@ -2,14 +2,12 @@ import http from 'node:http';
 import https from 'node:https';
 import logger from './Logger.js';
 
-const retryCodes = [429]
-  .concat((process.env.JSON_CACHE_RETRY_CODES || '')
-    .split(',')
-    .map(code => parseInt(code.trim(), 10)));
-const redirectCodes = [302, 301]
-  .concat((process.env.JSON_CACHE_REDIRECT_CODES || '')
-    .split(',')
-    .map(code => parseInt(code.trim(), 10)));
+const retryCodes = [429].concat(
+  (process.env.JSON_CACHE_RETRY_CODES || '').split(',').map((code) => parseInt(code.trim(), 10))
+);
+const redirectCodes = [302, 301].concat(
+  (process.env.JSON_CACHE_REDIRECT_CODES || '').split(',').map((code) => parseInt(code.trim(), 10))
+);
 
 const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) => {
   const protocol = url.startsWith('https') ? https : http;
@@ -22,15 +20,14 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
         if (redirectCodes.includes(response.statusCode)) {
           setTimeout(() => {
             fetch(response.headers.location, { maxRetry, headers })
-              .then(d => resolve(d))
+              .then((d) => resolve(d))
               .catch(logger.error);
           }, 1000);
-        } else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode))
-          && maxRetry > 0) {
+        } else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode)) && maxRetry > 0) {
           maxRetry -= 1; // eslint-disable-line no-param-reassign
           setTimeout(() => {
             fetch(url, { maxRetry, headers })
-              .then(d => resolve(d))
+              .then((d) => resolve(d))
               .catch(logger.error);
           }, 1000);
         } else {
@@ -38,7 +35,7 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
           resolve({});
         }
       } else {
-        response.on('data', chunk => body.push(chunk));
+        response.on('data', (chunk) => body.push(chunk));
         response.on('end', () => {
           resolve(JSON.parse(body.join('')));
         });

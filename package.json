@@ -8,8 +8,8 @@
     "lint": "eslint main.js src/",
     "lint:fix": "eslint main.js src/ --fix",
     "test": "npm run lint",
-    "setup": "npm i",
     "build": "docker build . -t genesis",
+    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.1.1 -S",
     "restart": "pm2 delete genesis && npm start && npm run logs",
     "start": "pm2 start genesis.json --only genesis",
     "start:logs": "npm start && npm run logs",
@@ -69,8 +69,9 @@
   },
   "devDependencies": {
     "@types/flat-cache": "^2.0.0",
-    "@wfcd/eslint-config": "^1.0.2",
-    "discord-api-types": "^0.29.0"
+    "@wfcd/eslint-config": "^1.1.2",
+    "discord-api-types": "^0.29.0",
+    "install-peerdeps": "^2.0.3"
   },
   "license": "Apache-2.0",
   "engines": {
@@ -80,7 +81,7 @@
     "src/resources/*.json"
   ],
   "eslintConfig": {
-    "extends": "@wfcd/eslint-config",
+    "extends": "@wfcd/eslint-config/esm",
     "parser": "@babel/eslint-parser",
     "parserOptions": {
       "sourceType": "module",
@@ -94,11 +95,9 @@
           "@babel/plugin-proposal-private-methods"
         ]
       }
-    },
-    "rules": {
-      "import/extensions": "off"
     }
   },
+  "prettier": "@wfcd/eslint-config/prettier",
   "babel": {
     "presets": [
       "@babel/preset-env"

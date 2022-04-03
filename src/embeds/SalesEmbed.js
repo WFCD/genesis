@@ -13,12 +13,12 @@ export default class SalesEmbed extends BaseEmbed {
     super(locale);
 
     this.color = 0x0000ff;
-    this.title = (Array.isArray(sales) ? sales[0] : sales).isPopular ? i18n`[${platform.toUpperCase()}] Popular Sales` : i18n`[${platform.toUpperCase()}] Featured Deal`;
+    this.title = (Array.isArray(sales) ? sales[0] : sales).isPopular
+      ? i18n`[${platform.toUpperCase()}] Popular Sales`
+      : i18n`[${platform.toUpperCase()}] Featured Deal`;
     this.thumbnail = {
       url: darvo,
     };
-    this.fields = Array.isArray(sales)
-      ? sales.map(sale => makeSale(sale, i18n))
-      : [makeSale(sales, i18n)];
+    this.fields = Array.isArray(sales) ? sales.map((sale) => makeSale(sale, i18n)) : [makeSale(sales, i18n)];
   }
 }

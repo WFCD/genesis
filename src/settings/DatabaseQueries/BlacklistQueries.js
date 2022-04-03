@@ -29,9 +29,7 @@ export default class BlacklistQueries {
         AND is_global = ${global};`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows
-        .map(result => this.bot.client.users.cache.get(result.user_id))
-        .filter(user => user);
+      return rows.map((result) => this.bot.client.users.cache.get(result.user_id)).filter((user) => user);
     }
     return [];
   }

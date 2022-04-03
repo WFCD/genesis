@@ -17,7 +17,7 @@ export default class BuildQueries {
     });
 
     const query = SQL`INSERT INTO builds VALUES `;
-    rows.forEach((build, index) => query.append(SQL`(${build})`).append(index !== (rows.length - 1) ? ',' : ';'));
+    rows.forEach((build, index) => query.append(SQL`(${build})`).append(index !== rows.length - 1 ? ',' : ';'));
 
     await this.query(query);
     return builds;
@@ -29,7 +29,11 @@ export default class BuildQueries {
       ON DUPLICATE KEY UPDATE title=${title}, body=${body}, image=${image};`;
     await this.query(query);
     return {
-      id: buildId, title, body, url: image, owner,
+      id: buildId,
+      title,
+      body,
+      url: image,
+      owner,
     };
   }
 
@@ -66,7 +70,7 @@ export default class BuildQueries {
       const ws = new WorldStateClient(require('../../utilities/Logger.js'));
 
       if (rows) {
-        return rows.map(result => new Build(result, ws));
+        return rows.map((result) => new Build(result, ws));
       }
     }
     return [];
@@ -95,7 +99,7 @@ export default class BuildQueries {
 
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(result => new Build(result, ws));
+      return rows.map((result) => new Build(result, ws));
     }
     return [];
   }
@@ -104,13 +108,13 @@ export default class BuildQueries {
     const query = SQL`UPDATE builds SET `;
 
     if (title) {
-      query.append(SQL`title = ${title.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`title = ${title.trim().replace(/'/gi, "\\'")}`);
     }
     if (body) {
-      query.append(SQL`body = ${body.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`body = ${body.trim().replace(/'/gi, "\\'")}`);
     }
     if (image) {
-      query.append(SQL`image = ${image.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`image = ${image.trim().replace(/'/gi, "\\'")}`);
     }
 
     if (title || body || image) {
@@ -131,7 +135,7 @@ export default class BuildQueries {
    * @returns {Promise<mysql.Connection.query>}
    */
   async saveBuild(build) {
-    const keys = Object.keys(build).filter(k => k !== 'id');
+    const keys = Object.keys(build).filter((k) => k !== 'id');
     let query;
     const sqlize = (val) => {
       if (typeof val === 'undefined') return 'NULL';
@@ -153,7 +157,8 @@ export default class BuildQueries {
       query = SQL`UPDATE builds SET `;
       keys.forEach(populate);
       query.append(SQL` WHERE build_id=${build.id};`);
-    } else { // this means it's new
+    } else {
+      // this means it's new
       query = SQL`INSERT INTO builds SET `;
       keys.forEach(populate);
       query.append(SQL`, build_id = ${Build.makeId()};`);

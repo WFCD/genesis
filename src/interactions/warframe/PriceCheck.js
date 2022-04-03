@@ -2,7 +2,9 @@ import Discord from 'discord.js';
 import { platformMap } from '../../resources/index.js';
 import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
 
 export default class PriceCheck extends Interaction {
   static enabled = true;
@@ -10,17 +12,20 @@ export default class PriceCheck extends Interaction {
   static command = {
     name: 'pc',
     description: 'Price check an item',
-    options: [{
-      type: Types.STRING,
-      name: 'query',
-      description: 'What do you wat to search for?',
-      required: true,
-    }, {
-      type: Types.STRING,
-      name: 'platform',
-      description: 'Platform to check for data',
-      choices: platformMap,
-    }],
+    options: [
+      {
+        type: Types.STRING,
+        name: 'query',
+        description: 'What do you wat to search for?',
+        required: true,
+      },
+      {
+        type: Types.STRING,
+        name: 'platform',
+        description: 'Platform to check for data',
+        choices: platformMap,
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {

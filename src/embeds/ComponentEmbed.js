@@ -4,7 +4,7 @@ export default class ComponentEmbed extends BaseEmbed {
   constructor(components, { i18n, locale }) {
     super(locale);
     this.title = 'Components';
-    this.color = 0xD3D3D3;
+    this.color = 0xd3d3d3;
     this.fields = components.map((component) => {
       const tokens = [];
       tokens.push(`_${component.description}_\n`);

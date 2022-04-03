@@ -36,10 +36,9 @@ class Worker {
     timeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     if (games.includes('WARFRAME')) {
-      activePlatforms
-        .forEach((platform) => {
-          this.worldStates[platform] = new WorldStateCache(platform, timeout);
-        });
+      activePlatforms.forEach((platform) => {
+        this.worldStates[platform] = new WorldStateCache(platform, timeout);
+      });
     }
     return (async () => {
       deps.settings = await new Database();
@@ -70,35 +69,45 @@ class Worker {
   }
   async hydrateQueries() {
     const sDate = Date.now();
-    await Promise.all(cachedEvents.map(async cachedEvent => Promise
-      .all(activePlatforms.map(async (platform) => {
-        deps.workerCache.setKey(`${cachedEvent}:${platform}`,
-          await deps.settings.getAgnosticNotifications(cachedEvent, platform));
-      }))));
+    await Promise.all(
+      cachedEvents.map(async (cachedEvent) =>
+        Promise.all(
+          activePlatforms.map(async (platform) => {
+            deps.workerCache.setKey(
+              `${cachedEvent}:${platform}`,
+              await deps.settings.getAgnosticNotifications(cachedEvent, platform)
+            );
+          })
+        )
+      )
+    );
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');
   }
   async initCache() {
     if (games.includes('WARFRAME')) {
-      deps.workerCache = flatCache.load('worker',
-        path.resolve(__dirname, '../../.cache'));
+      deps.workerCache = flatCache.load('worker', path.resolve(__dirname, '../../.cache'));
 
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
       if (!currentGuilds || forceHydrate) await this.hydrateGuilds();
 
       const currentPings = deps.workerCache.getKey('pings');
-      if (!(currentPings && Object.keys(currentPings).length)
-        || forceHydrate) await this.hydratePings();
+      if (!(currentPings && Object.keys(currentPings).length) || forceHydrate) await this.hydratePings();
 
       let hydrateEvents = forceHydrate;
-      await Promise.all(cachedEvents.map(async cachedEvent => Promise
-        .all(activePlatforms.map(async (platform) => {
-          if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
-            hydrateEvents = true;
-          }
-        }))));
+      await Promise.all(
+        cachedEvents.map(async (cachedEvent) =>
+          Promise.all(
+            activePlatforms.map(async (platform) => {
+              if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
+                hydrateEvents = true;
+              }
+            })
+          )
+        )
+      );
       if (hydrateEvents) await this.hydrateQueries();
 
       // refresh guild cache every hour... it's a heavy process, we don't want to do it much
@@ -142,10 +151,12 @@ class Worker {
 
       if (logger.isLoggable('DEBUG')) {
         rest.controlMessage({
-          embeds: [{
-            description: `Worker ready on ${activePlatforms}`,
-            color: 0x2B90EC,
-          }],
+          embeds: [
+            {
+              description: `Worker ready on ${activePlatforms}`,
+              color: 0x2b90ec,
+            },
+          ],
         });
       }
     } catch (e) {

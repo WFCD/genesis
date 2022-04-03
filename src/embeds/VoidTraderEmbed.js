@@ -5,12 +5,10 @@ import { assetBase, emojify } from '../utilities/CommonFunctions.js';
 const baroThumb = `${assetBase}/img/baro.png`;
 
 export default class VoidTraderEmbed extends BaseEmbed {
-  constructor(voidTrader, {
-    platform, onDemand, i18n, locale,
-  }) {
+  constructor(voidTrader, { platform, onDemand, i18n, locale }) {
     super(locale);
 
-    this.color = voidTrader?.active ? 0x0EC9FF : 0xff6961;
+    this.color = voidTrader?.active ? 0x0ec9ff : 0xff6961;
 
     if (voidTrader?.active && voidTrader?.inventory?.length > 0) {
       this.fields = voidTrader?.inventory.map((i) => {

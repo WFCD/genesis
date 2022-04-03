@@ -23,8 +23,7 @@ export default class WelcomeHandler extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
     this.logger.debug(`Handling 'guildMemberAdd' for ${member.id} on ${member.guild.name}`);
 
-    const isVulgar = isVulgarCheck.test(member.displayName)
-      || isVulgarCheck.test(member.user.username);
+    const isVulgar = isVulgarCheck.test(member.displayName) || isVulgarCheck.test(member.user.username);
     if (!isVulgar) {
       const welcomes = await this.settings.getWelcomes(member.guild);
       welcomes.forEach((welcome) => {
@@ -32,9 +31,9 @@ export default class WelcomeHandler extends Handler {
           welcome.message = getRandomWelcome(); // eslint-disable-line no-param-reassign
         }
         const content = welcome.message
-          .replace(/\$username/ig, member.displayName)
-          .replace(/\$usermention/ig, member)
-          .replace(/\$timestamp/ig, new Date().toLocaleString());
+          .replace(/\$username/gi, member.displayName)
+          .replace(/\$usermention/gi, member)
+          .replace(/\$timestamp/gi, new Date().toLocaleString());
         if (welcome.isDm === '1') {
           member.send({ content });
         } else {

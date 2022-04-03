@@ -27,8 +27,7 @@ export default class KuvaEmbed extends BaseEmbed {
     Object.keys(grouped).forEach((enemy) => {
       this.fields.push({
         name: enemy,
-        value: grouped[enemy].map(kuva => i18n`${kuva.type} on ${kuva.node}`)
-          .join('\n'),
+        value: grouped[enemy].map((kuva) => i18n`${kuva.type} on ${kuva.node}`).join('\n'),
         inline: false,
       });
     });

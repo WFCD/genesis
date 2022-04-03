@@ -10,9 +10,7 @@ export default class RaidStatEmbed extends BaseEmbed {
    * @param {I18n} i18n internationalization template
    * @param {string} locale embed locale
    */
-  constructor(userStats, {
-    query, platform, i18n, locale,
-  }) {
+  constructor(userStats, { query, platform, i18n, locale }) {
     super(locale);
     this.title = i18n`Raid statistics for ${query}`;
     this.url = encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`);
@@ -28,26 +26,28 @@ export default class RaidStatEmbed extends BaseEmbed {
     };
     stats.total = new RaidStat();
     stats.total.makeTotals(stats.lor, stats.lornm, stats.jv);
-    this.fields = [{
-      name: i18n`Law of Retribution`,
-      value: stats.lor.toString(),
-      inline: true,
-    },
-    {
-      name: i18n`Law of Retribution: Nightmare`,
-      value: stats.lornm.toString(),
-      inline: true,
-    },
-    {
-      name: i18n`Jordas Verdict`,
-      value: stats.jv.toString(),
-      inline: true,
-    },
-    {
-      name: i18n`Totals`,
-      value: stats.total.toString(),
-      inline: true,
-    }];
+    this.fields = [
+      {
+        name: i18n`Law of Retribution`,
+        value: stats.lor.toString(),
+        inline: true,
+      },
+      {
+        name: i18n`Law of Retribution: Nightmare`,
+        value: stats.lornm.toString(),
+        inline: true,
+      },
+      {
+        name: i18n`Jordas Verdict`,
+        value: stats.jv.toString(),
+        inline: true,
+      },
+      {
+        name: i18n`Totals`,
+        value: stats.total.toString(),
+        inline: true,
+      },
+    ];
 
     this.footer.text = i18n`Evaluated by Cephalon Genesis | Source: trials.wf`;
   }

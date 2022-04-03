@@ -35,7 +35,7 @@ export default class LogMessageDelete extends Handler {
     }
     if (channel?.type === 'text') {
       const log = new LogEmbed(this.bot, {
-        color: 0xFF5A36,
+        color: 0xff5a36,
         title: 'Message Deleted',
         fields: [
           {

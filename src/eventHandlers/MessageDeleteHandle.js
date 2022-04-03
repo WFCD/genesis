@@ -38,7 +38,7 @@ export default class LogMessageDelete extends Handler {
         msg = message.content;
       }
       const log = new LogEmbed(this.bot, {
-        color: 0xFF5A36,
+        color: 0xff5a36,
         title: 'Message Delete',
         fields: [
           {
@@ -51,7 +51,9 @@ export default class LogMessageDelete extends Handler {
           },
           {
             name: '\u200B',
-            value: msg.length ? `\`\`\`${msg.replace(/`/g, '\\`')}\`\`\`` : '```diff\n- Message was either empty or an embed```',
+            value: msg.length
+              ? `\`\`\`${msg.replace(/`/g, '\\`')}\`\`\``
+              : '```diff\n- Message was either empty or an embed```',
           },
         ],
         footer: message.id,

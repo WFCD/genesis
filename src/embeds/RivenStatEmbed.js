@@ -13,35 +13,45 @@ export default class RivenStatEmbed extends BaseEmbed {
     };
     this.fields = [];
     if (rivenResult.rerolled) {
-      this.fields.push(...[{
-        name: i18n`Rerolled`,
-        value: '\u200B',
-        inline: false,
-      }, {
-        name: i18n`Average Cost`,
-        value: `${rivenResult.rerolled.avg}`,
-        inline: true,
-      }, {
-        name: i18n`Standard Deviation`,
-        value: `${rivenResult.rerolled.stddev}`,
-        inline: true,
-      }, {
-        name: i18n`Minimum Cost`,
-        value: `${rivenResult.rerolled.min}`,
-        inline: true,
-      }, {
-        name: i18n`Maximum Cost`,
-        value: `${rivenResult.rerolled.max}`,
-        inline: true,
-      }, {
-        name: i18n`Popularity`,
-        value: `${rivenResult.rerolled.pop}`,
-        inline: true,
-      }, {
-        name: i18n`Median Cost`,
-        value: `${rivenResult.rerolled.median}`,
-        inline: true,
-      }]);
+      this.fields.push(
+        ...[
+          {
+            name: i18n`Rerolled`,
+            value: '\u200B',
+            inline: false,
+          },
+          {
+            name: i18n`Average Cost`,
+            value: `${rivenResult.rerolled.avg}`,
+            inline: true,
+          },
+          {
+            name: i18n`Standard Deviation`,
+            value: `${rivenResult.rerolled.stddev}`,
+            inline: true,
+          },
+          {
+            name: i18n`Minimum Cost`,
+            value: `${rivenResult.rerolled.min}`,
+            inline: true,
+          },
+          {
+            name: i18n`Maximum Cost`,
+            value: `${rivenResult.rerolled.max}`,
+            inline: true,
+          },
+          {
+            name: i18n`Popularity`,
+            value: `${rivenResult.rerolled.pop}`,
+            inline: true,
+          },
+          {
+            name: i18n`Median Cost`,
+            value: `${rivenResult.rerolled.median}`,
+            inline: true,
+          },
+        ]
+      );
     }
 
     if (rivenResult.unrolled && rivenResult.rerolled) {
@@ -53,35 +63,45 @@ export default class RivenStatEmbed extends BaseEmbed {
     }
 
     if (rivenResult.unrolled) {
-      this.fields.push(...[{
-        name: i18n`Unrolled`,
-        value: '\u200B',
-        inline: false,
-      }, {
-        name: i18n`Average Cost`,
-        value: `${rivenResult.unrolled.avg}`,
-        inline: true,
-      }, {
-        name: i18n`Standard Deviation`,
-        value: `${rivenResult.unrolled.stddev}`,
-        inline: true,
-      }, {
-        name: i18n`Minimum Cost`,
-        value: `${rivenResult.unrolled.min}`,
-        inline: true,
-      }, {
-        name: i18n`Maximum Cost`,
-        value: `${rivenResult.unrolled.max}`,
-        inline: true,
-      }, {
-        name: i18n`Popularity`,
-        value: `${rivenResult.unrolled.pop}`,
-        inline: true,
-      }, {
-        name: i18n`Median Cost`,
-        value: `${rivenResult.unrolled.median}`,
-        inline: true,
-      }]);
+      this.fields.push(
+        ...[
+          {
+            name: i18n`Unrolled`,
+            value: '\u200B',
+            inline: false,
+          },
+          {
+            name: i18n`Average Cost`,
+            value: `${rivenResult.unrolled.avg}`,
+            inline: true,
+          },
+          {
+            name: i18n`Standard Deviation`,
+            value: `${rivenResult.unrolled.stddev}`,
+            inline: true,
+          },
+          {
+            name: i18n`Minimum Cost`,
+            value: `${rivenResult.unrolled.min}`,
+            inline: true,
+          },
+          {
+            name: i18n`Maximum Cost`,
+            value: `${rivenResult.unrolled.max}`,
+            inline: true,
+          },
+          {
+            name: i18n`Popularity`,
+            value: `${rivenResult.unrolled.pop}`,
+            inline: true,
+          },
+          {
+            name: i18n`Median Cost`,
+            value: `${rivenResult.unrolled.median}`,
+            inline: true,
+          },
+        ]
+      );
     }
 
     if (!this.fields.length) {
@@ -89,6 +109,6 @@ export default class RivenStatEmbed extends BaseEmbed {
     }
 
     this.title = i18n`Riven: ${resultKey}`;
-    this.color = 0x84659F;
+    this.color = 0x84659f;
   }
 }

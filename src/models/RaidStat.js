@@ -10,7 +10,7 @@ function timeToSeconds(time) {
     return 0;
   }
   const a = time.split(':');
-  return (((+a[0]) * 60) * 60) + (((+a[1]) * 60) + (+a[2]));
+  return +a[0] * 60 * 60 + (+a[1] * 60 + +a[2]);
 }
 
 /**
@@ -29,10 +29,10 @@ function safeNumber(value) {
  */
 function formatTime(n) {
   const hours = safeNumber(Math.floor(n / 60 / 60));
-  const minutes = safeNumber(Math.floor((n - (hours * 60 * 60)) / 60));
-  const seconds = safeNumber(Math.round(n - (hours * 60 * 60) - (minutes * 60)));
-  const h = hours > 0 ? `${(hours < 10) ? `0${hours}` : hours}:` : '';
-  return `${h + ((minutes < 10) ? `0${minutes}` : minutes)}:${(seconds < 10) ? `0${seconds}` : seconds}`;
+  const minutes = safeNumber(Math.floor((n - hours * 60 * 60) / 60));
+  const seconds = safeNumber(Math.round(n - hours * 60 * 60 - minutes * 60));
+  const h = hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : '';
+  return `${h + (minutes < 10 ? `0${minutes}` : minutes)}:${seconds < 10 ? `0${seconds}` : seconds}`;
 }
 
 /**
@@ -123,23 +123,26 @@ export default class RaidStat {
   }
 
   toString() {
-    return `**Cleared:** ${this.successes}/${this.completed}\n`
-    + `**Best Time:** ${this.best}\n`
-    + `**Average Time:** ${this.average}\n`
-    + `**Unique Party Members:** ${this.uniqueMems.length}\n`
-    + `**Cleared (30d):** ${this.thirty_successes}/${this.thirty_completed}\n`
-    + `**Average Time (30d):** ${this.thirty_average}`;
+    return (
+      `**Cleared:** ${this.successes}/${this.completed}\n` +
+      `**Best Time:** ${this.best}\n` +
+      `**Average Time:** ${this.average}\n` +
+      `**Unique Party Members:** ${this.uniqueMems.length}\n` +
+      `**Cleared (30d):** ${this.thirty_successes}/${this.thirty_completed}\n` +
+      `**Average Time (30d):** ${this.thirty_average}`
+    );
   }
 
   makeTotals(lor, lornm, jv) {
     this.successes = lor.successes + lornm.successes + jv.successes;
     this.completed = lor.completed + lornm.completed + jv.completed;
-    this.best = getBestTime([timeToSeconds(lor.best),
-      timeToSeconds(lornm.best), timeToSeconds(jv.best)]);
-    this.average = getAverageTime([timeToSeconds(lor.average),
-      timeToSeconds(lornm.average), timeToSeconds(jv.average)]);
-    this.successTimes = [].concat(lor.successTimes)
-      .concat(lornm.successTimes).concat(jv.successTimes);
+    this.best = getBestTime([timeToSeconds(lor.best), timeToSeconds(lornm.best), timeToSeconds(jv.best)]);
+    this.average = getAverageTime([
+      timeToSeconds(lor.average),
+      timeToSeconds(lornm.average),
+      timeToSeconds(jv.average),
+    ]);
+    this.successTimes = [].concat(lor.successTimes).concat(lornm.successTimes).concat(jv.successTimes);
     this.uniqueMems = [];
     lor.uniqueMems.forEach((mem) => {
       if (this.uniqueMems.indexOf(mem) === -1) {
@@ -159,8 +162,7 @@ export default class RaidStat {
 
     this.thirty_successes = lor.thirty_successes + lornm.thirty_successes + jv.thirty_successes;
     this.thirty_completed = lor.thirty_completed + lornm.thirty_completed + jv.thirty_completed;
-    this.thirty_times = [].concat(lor.thirty_times)
-      .concat(lornm.thirty_times).concat(jv.thirty_times);
+    this.thirty_times = [].concat(lor.thirty_times).concat(lornm.thirty_times).concat(jv.thirty_times);
 
     this.best = getBestTime(this.successTimes);
     this.average = getAverageTime(this.successTimes);

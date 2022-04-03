@@ -3,9 +3,9 @@ import { assetBase } from '../utilities/CommonFunctions.js';
 
 const arcaneThumb = `${assetBase}/img/arcane.png`;
 const colors = {
-  common: 0x443B25,
-  uncommon: 0x95BACD,
-  rare: 0xC8BE92,
+  common: 0x443b25,
+  uncommon: 0x95bacd,
+  rare: 0xc8be92,
 };
 
 export default class EnhancementEmbed extends BaseEmbed {
@@ -39,7 +39,7 @@ export default class EnhancementEmbed extends BaseEmbed {
       ];
     } else {
       this.title = 'Available Enhancements';
-      this.fields = [{ name: '\u200B', value: enhancements.map(profile => profile.name).join('\n') }];
+      this.fields = [{ name: '\u200B', value: enhancements.map((profile) => profile.name).join('\n') }];
     }
   }
 }

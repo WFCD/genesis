@@ -20,8 +20,8 @@ export default class DBMQueries {
    */
   createSchema() {
     try {
-      const things = [Promise.mapSeries(schema, q => this.query(q))];
-      things.push(Promise.mapSeries(integrations, integration => integration(this)));
+      const things = [Promise.mapSeries(schema, (q) => this.query(q))];
+      things.push(Promise.mapSeries(integrations, (integration) => integration(this)));
       return Promise.all(things);
     } catch (e) {
       this.logger.fatal(e);
@@ -31,9 +31,9 @@ export default class DBMQueries {
 
   // eslint-disable-next-line valid-jsdoc
   /**
-  * Initialize data for guilds in channels for existing guilds
-  * @param {module:"discord.js".Client} client for pulling guild information
-  */
+   * Initialize data for guilds in channels for existing guilds
+   * @param {module:"discord.js".Client} client for pulling guild information
+   */
   async ensureData(client) {
     const promises = [];
     client.guilds.cache.each((guild) => {
@@ -52,11 +52,11 @@ export default class DBMQueries {
   addGuild(guild) {
     if (!guild.available) return undefined;
 
-    const channelIDs = guild.channels.cache.filter(c => c.type === 'text').keys();
+    const channelIDs = guild.channels.cache.filter((c) => c.type === 'text').keys();
     if (channelIDs.length) {
       const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
       channelIDs.forEach((id, index) => {
-        query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
+        query.append(SQL`(${id}, ${guild.id})`).append(index !== channelIDs.length - 1 ? ',' : ';');
       });
 
       return this.query(query);

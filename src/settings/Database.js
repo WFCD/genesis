@@ -14,55 +14,73 @@ const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_
 
 const props = (obj) => {
   const p = [];
-  for (; obj; obj = Object.getPrototypeOf(obj)) { // eslint-disable-line no-param-reassign
+  for (; obj; obj = Object.getPrototypeOf(obj)) {
+    // eslint-disable-line no-param-reassign
     const op = Object.getOwnPropertyNames(obj);
     for (let i = 0; i < op.length; i += 1) {
-      if (p.indexOf(op[i]) === -1) { p.push(op[i]); }
+      if (p.indexOf(op[i]) === -1) {
+        p.push(op[i]);
+      }
     }
   }
-  return p.filter(thing => !['db', 'constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__',
-    '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'toString', 'valueOf', '__proto__',
-    'toLocaleString'].includes(thing));
+  return p.filter(
+    (thing) =>
+      ![
+        'db',
+        'constructor',
+        '__defineGetter__',
+        '__defineSetter__',
+        'hasOwnProperty',
+        '__lookupGetter__',
+        '__lookupSetter__',
+        'isPrototypeOf',
+        'propertyIsEnumerable',
+        'toString',
+        'valueOf',
+        '__proto__',
+        'toLocaleString',
+      ].includes(thing)
+  );
 };
 
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
-  * Command Context
-  * @typedef {Object} CommandContext
-  * @property {string} platform The channel's configured platform
-  * @property {string} prefix The channel's configured command prefix
-  * @property {string} language Language to localize, if possible
-  * @property {boolean} allowCustom Whether or not to allow custom commands in this channel
-  * @property {boolean} allowInline Whether or not to allow inline commands in this channel
-  * @property {boolean} defaultRoomsLocked Whether or not to set private rooms
-  *  created from this channel to locked
-  * @property {boolean} defaultNoText Whether or not to create a text chat with private chats
-  * @property {boolean} createPrivateChannel Whether or not private chats
-  *  are allowed to be created here
-  * @property {boolean} defaultShown Whether or not private chats created here are shown by default
-  * @property {Discord.CategoryChannel|string} tempCategory Temp category to put private chats in
+ * Command Context
+ * @typedef {Object} CommandContext
+ * @property {string} platform The channel's configured platform
+ * @property {string} prefix The channel's configured command prefix
+ * @property {string} language Language to localize, if possible
+ * @property {boolean} allowCustom Whether or not to allow custom commands in this channel
+ * @property {boolean} allowInline Whether or not to allow inline commands in this channel
+ * @property {boolean} defaultRoomsLocked Whether or not to set private rooms
+ *  created from this channel to locked
+ * @property {boolean} defaultNoText Whether or not to create a text chat with private chats
+ * @property {boolean} createPrivateChannel Whether or not private chats
+ *  are allowed to be created here
+ * @property {boolean} defaultShown Whether or not private chats created here are shown by default
+ * @property {Discord.CategoryChannel|string} tempCategory Temp category to put private chats in
  *    when created. Makes text chats not be created.
  *  @property {Discord.TextChannel|string} tempChannel Channel to create threads in.
  *    Must have a parent of tempCategory
-  * @property {boolean} settings.cc.ping Whether or not to ping in custom commands called here
-  * @property {boolean} respondToSettings Whether or not to respond to settings changes.
-  *  Changes are applied no matter the value.
-  * @property {Object} webhook Webhook information for this channel
-  * @property {string} webhook.id Webhook id
-  * @property {string} webhook.token Webhook token
-  * @property {string} webhook.name Webhook name (can be overrided)
-  * @property {string} webhook.avatar Webhook avatar (can be overrided)
-  * @property {Object} lfg Channel configs per-platform where LFG posts will be put.
-  * @property {Discord.Channel} lfg.pc PC lfg channel
-  * @property {Discord.Channel} lfg.ps4 PS4 lfg channel
-  * @property {Discord.Channel} lfg.swi Switch lfg channel
-  * @property {Discord.Channel} lfg.xb1 XB1 lfg channel
-  * @property {boolean} isBlacklisted whether or not the user
-  *   calling the command is blacklisted from the bot
-  * @property {boolean} isOwner whether or not the user
-  *   calling the command is blacklisted from the bot
+ * @property {boolean} settings.cc.ping Whether or not to ping in custom commands called here
+ * @property {boolean} respondToSettings Whether or not to respond to settings changes.
+ *  Changes are applied no matter the value.
+ * @property {Object} webhook Webhook information for this channel
+ * @property {string} webhook.id Webhook id
+ * @property {string} webhook.token Webhook token
+ * @property {string} webhook.name Webhook name (can be overrided)
+ * @property {string} webhook.avatar Webhook avatar (can be overrided)
+ * @property {Object} lfg Channel configs per-platform where LFG posts will be put.
+ * @property {Discord.Channel} lfg.pc PC lfg channel
+ * @property {Discord.Channel} lfg.ps4 PS4 lfg channel
+ * @property {Discord.Channel} lfg.swi Switch lfg channel
+ * @property {Discord.Channel} lfg.xb1 XB1 lfg channel
+ * @property {boolean} isBlacklisted whether or not the user
+ *   calling the command is blacklisted from the bot
+ * @property {boolean} isOwner whether or not the user
+ *   calling the command is blacklisted from the bot
  *  @property {WorldStateClient?} ws Worldstate Client
  *  @property {Logger} logger Logger
  *  @property {I18n} i18n internationalization string handler
@@ -71,7 +89,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  *  @property {InteractionHandler} handler access to a command's handler
  *  @property {Role|string} modRole designated moderator role for the server
  *  @property {Discord.Message=} original original reply to an interaction
-  */
+ */
 /**
  * Discord snowflakes are strings
  * @typedef {string} Snowflake
@@ -157,7 +175,7 @@ export default class Database {
    * @param {Object} queriesClass class instance
    * @returns {undefined} doesn't return anything
    */
-  static #copyChildQueries (queriesClass) {
+  static #copyChildQueries(queriesClass) {
     const keys = props(queriesClass);
     keys.forEach((key) => {
       if (key !== 'db') {
@@ -175,26 +193,34 @@ export default class Database {
    * Make sure your bot is in a secured folder
    *  if you're worried about shard space.
    */
-  async #loadChildren () {
+  async #loadChildren() {
     const dbRoot = path.join(path.resolve(__dirname, './DatabaseQueries'));
-    await Promise.all((await readdir(dbRoot)).filter(f => f.endsWith('.js')).map(async (file) => {
-      const QClass = (await import(path.join(dbRoot, file))).default;
-      const qInstance = new QClass(this.db);
-      Database.#copyChildQueries(qInstance);
-    }));
+    await Promise.all(
+      (
+        await readdir(dbRoot)
+      )
+        .filter((f) => f.endsWith('.js'))
+        .map(async (file) => {
+          const QClass = (await import(path.join(dbRoot, file))).default;
+          const qInstance = new QClass(this.db);
+          Database.#copyChildQueries(qInstance);
+        })
+    );
   }
 
   init() {
-    this.defaults = this.scope === 'bot'
-      ? {
-        ...this.defaults,
-        username: this.bot.client.user.username,
-        avatar: `${assetBase}/img/avatar.png`,
-      } : {
-        ...this.defaults,
-        username: process.env.DEF_USER || 'Genesis',
-        avatar: `${assetBase}/img/avatar.png`,
-      };
+    this.defaults =
+      this.scope === 'bot'
+        ? {
+            ...this.defaults,
+            username: this.bot.client.user.username,
+            avatar: `${assetBase}/img/avatar.png`,
+          }
+        : {
+            ...this.defaults,
+            username: process.env.DEF_USER || 'Genesis',
+            avatar: `${assetBase}/img/avatar.png`,
+          };
   }
 
   /**
@@ -252,15 +278,33 @@ export default class Database {
       channel = { id: channel }; // eslint-disable-line no-param-reassign
     }
 
-    const settings = ['webhookId', 'webhookToken', 'webhookName',
-      'webhookAvatar', 'language', 'platform'];
+    const settings = ['webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'language', 'platform'];
 
     if (this.scope === 'bot') {
-      settings.push(...['platform', 'prefix', 'allowCustom', 'allowInline', 'defaultRoomsLocked',
-        'defaultNoText', 'defaultShown', 'createPrivateChannel', 'tempCategory',
-        'lfgChannel', 'settings.cc.ping', 'language', 'respond_to_settings',
-        'lfgChannel.swi', 'lfgChannel.ps4', 'lfgChannel.xb1', 'delete_after_respond',
-        'ephemerate', 'modRole', 'tempChannel']);
+      settings.push(
+        ...[
+          'platform',
+          'prefix',
+          'allowCustom',
+          'allowInline',
+          'defaultRoomsLocked',
+          'defaultNoText',
+          'defaultShown',
+          'createPrivateChannel',
+          'tempCategory',
+          'lfgChannel',
+          'settings.cc.ping',
+          'language',
+          'respond_to_settings',
+          'lfgChannel.swi',
+          'lfgChannel.ps4',
+          'lfgChannel.xb1',
+          'delete_after_respond',
+          'ephemerate',
+          'modRole',
+          'tempChannel',
+        ]
+      );
 
       if (platforms.length > 4) {
         platforms.forEach((platform, index) => {
@@ -274,7 +318,7 @@ export default class Database {
     const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
       and setting in (`;
     settings.forEach((setting, index) => {
-      query.append(index !== (settings.length - 1) ? SQL`${setting}, ` : SQL`${setting}`);
+      query.append(index !== settings.length - 1 ? SQL`${setting}, ` : SQL`${setting}`);
     });
     query.append(SQL`);`);
     const [rows] = await this.query(query);
@@ -282,20 +326,22 @@ export default class Database {
       webhook: {},
     };
     if (rows) {
-      rows.map(row => ({
-        setting: row.setting,
-        value: row.val,
-      })).forEach((row) => {
-        if (row.setting === 'webhookAvatar' && !row.value.startsWith('http')) {
-          // handle sending hashes
-          row.value = `${avatarPrefix}/${row.value}.png`;
-        }
-        if (row.setting.indexOf('webhook') === -1) {
-          context[`${row.setting}`] = row.value;
-        } else {
-          context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
-        }
-      });
+      rows
+        .map((row) => ({
+          setting: row.setting,
+          value: row.val,
+        }))
+        .forEach((row) => {
+          if (row.setting === 'webhookAvatar' && !row.value.startsWith('http')) {
+            // handle sending hashes
+            row.value = `${avatarPrefix}/${row.value}.png`;
+          }
+          if (row.setting.indexOf('webhook') === -1) {
+            context[`${row.setting}`] = row.value;
+          } else {
+            context.webhook[`${row.setting.replace('webhook', '').toLowerCase()}`] = row.value;
+          }
+        });
       if (!context.platform) {
         context.platform = this.defaults.platform;
         this.setChannelSetting(channel, 'platform', this.defaults.platform);
@@ -424,8 +470,7 @@ export default class Database {
       };
     }
     if (user) {
-      context.isBlacklisted = await this.isBlacklisted(user.id,
-        channel.guild ? channel.guild.id : 0);
+      context.isBlacklisted = await this.isBlacklisted(user.id, channel.guild ? channel.guild.id : 0);
       context.isOwner = user.id === this.bot.owner;
     }
     context.channel = channel;

@@ -7,12 +7,15 @@ import Database from './settings/Database.js';
 import logger from './utilities/Logger.js';
 
 const {
-  Client, WebhookClient, Intents, Constants: { Events },
+  Client,
+  WebhookClient,
+  Intents,
+  Constants: { Events },
 } = Discord;
 
 const unlog = {
   debug: ['WS_CONNECTION_TIMEOUT'],
-  error: /^(Unknown Message)/ig,
+  error: /^(Unknown Message)/gi,
 };
 
 /**
@@ -46,11 +49,7 @@ export default class Genesis {
    * @param  {string}           [prefix]     Prefix for calling the bot
    * @param  {number[]}         [shards]     Ids of shards to control
    */
-  constructor(discordToken, {
-    prefix = process.env.PREFIX,
-    owner = undefined,
-    shards = [0],
-  } = {}) {
+  constructor(discordToken, { prefix = process.env.PREFIX, owner = undefined, shards = [0] } = {}) {
     /**
      * The Discord.js client for interacting with Discord's API
      * @type {Discord.Client}
@@ -63,9 +62,11 @@ export default class Genesis {
       presence: {
         status: 'dnd',
         afk: false,
-        activities: [{
-          name: 'Starting...',
-        }],
+        activities: [
+          {
+            name: 'Starting...',
+          },
+        ],
       },
       intents: [
         Intents.FLAGS.GUILD_MESSAGES,
@@ -148,26 +149,30 @@ export default class Genesis {
   }
 
   async setupHandlers() {
-    this.client.on(Events.CLIENT_READY, async () => this.eventHandler
-      .handleEvent({ event: Events.CLIENT_READY, args: [] }));
+    this.client.on(Events.CLIENT_READY, async () =>
+      this.eventHandler.handleEvent({ event: Events.CLIENT_READY, args: [] })
+    );
 
-    this.client.on(Events.GUILD_CREATE,
-      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] }));
-    this.client.on(Events.GUILD_DELETE,
-      async guild => this.eventHandler.handleEvent({ event: Events.GUILD_DELETE, args: [guild] }));
-    this.client.on(Events.CHANNEL_CREATE,
-      async channel => this.eventHandler
-        .handleEvent({ event: Events.CHANNEL_CREATE, args: [channel] }));
-    this.client.on(Events.CHANNEL_DELETE,
-      async channel => this.eventHandler
-        .handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] }));
+    this.client.on(Events.GUILD_CREATE, async (guild) =>
+      this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] })
+    );
+    this.client.on(Events.GUILD_DELETE, async (guild) =>
+      this.eventHandler.handleEvent({ event: Events.GUILD_DELETE, args: [guild] })
+    );
+    this.client.on(Events.CHANNEL_CREATE, async (channel) =>
+      this.eventHandler.handleEvent({ event: Events.CHANNEL_CREATE, args: [channel] })
+    );
+    this.client.on(Events.CHANNEL_DELETE, async (channel) =>
+      this.eventHandler.handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] })
+    );
 
-    this.client.on(Events.INTERACTION_CREATE,
-      async interaction => this.eventHandler
-        .handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] }));
+    this.client.on(Events.INTERACTION_CREATE, async (interaction) =>
+      this.eventHandler.handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] })
+    );
 
-    this.client.on(Events.SHARD_DISCONNECT,
-      (event) => { this.logger.error(`Disconnected with close event: ${event.code}`); });
+    this.client.on(Events.SHARD_DISCONNECT, (event) => {
+      this.logger.error(`Disconnected with close event: ${event.code}`);
+    });
     this.client.on(Events.ERROR, (error) => {
       if (!unlog.error.test(error.message)) this.logger.error(error);
     });
@@ -194,7 +199,7 @@ export default class Genesis {
       await this.client.login(this.token);
       this.logger.debug('Logged in with token.');
     } catch (err) {
-      const type = ((err && err.toString()) || '').replace(/Error \[(.*)]: .*/ig, '$1');
+      const type = ((err && err.toString()) || '').replace(/Error \[(.*)]: .*/gi, '$1');
       if (!unlog.debug.includes(type)) {
         this.logger.error(err);
       }

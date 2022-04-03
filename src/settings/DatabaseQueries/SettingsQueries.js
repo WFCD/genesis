@@ -129,7 +129,7 @@ export default class SettingsQueries {
     let webhook = {};
     if (rows) {
       rows
-        .map(row => ({
+        .map((row) => ({
           setting: row.setting,
           value: row.val,
         }))

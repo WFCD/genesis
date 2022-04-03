@@ -31,7 +31,9 @@ export default class PermissionsQueries {
     }
     const query = SQL`INSERT INTO channel_permissions VALUES`;
     commandId.forEach((command, index) => {
-      query.append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+      query
+        .append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`)
+        .append(index !== commandId.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
     return this.query(query);
@@ -54,7 +56,9 @@ export default class PermissionsQueries {
     }
     const query = SQL`INSERT INTO channel_permissions VALUES`;
     commandId.forEach((command, index) => {
-      query.append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+      query
+        .append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`)
+        .append(index !== commandId.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
     return this.query(query);
@@ -162,10 +166,10 @@ export default class PermissionsQueries {
       return 'none';
     }
 
-    rows.sort((a, b) => -Role.comparePositions(
-      channel.guild.roles.cache.get(a.target_id),
-      channel.guild.roles.cache.get(b.target_id),
-    ));
+    rows.sort(
+      (a, b) =>
+        -Role.comparePositions(channel.guild.roles.cache.get(a.target_id), channel.guild.roles.cache.get(b.target_id))
+    );
 
     return rows[0].allowed;
   }
@@ -237,7 +241,7 @@ export default class PermissionsQueries {
     const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(value => ({
+      return rows.map((value) => ({
         level: 'guild',
         command: value.command_id,
         isAllowed: value.allowed,
@@ -257,7 +261,7 @@ export default class PermissionsQueries {
     const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(value => ({
+      return rows.map((value) => ({
         level: 'channel',
         command: value.command_id,
         isAllowed: value.allowed,

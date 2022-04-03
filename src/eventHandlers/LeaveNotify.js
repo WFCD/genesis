@@ -20,29 +20,31 @@ export default class LeaveNotify extends Handler {
   async execute(...[guild]) {
     if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
-    const bots = guild.members.cache.filter(member => member.user.bot);
+    const bots = guild.members.cache.filter((member) => member.user.bot);
     const tokens = [
       `${guild.name} (${guild.id})`,
       guild.owner ? `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})` : '',
       `**Members:** ${guild.memberCount}`,
       `**Bots:** ${bots.size}`,
-      `**Percent:** ${((bots.size / (guild.memberCount)) * 100).toFixed(2)}%`,
+      `**Percent:** ${((bots.size / guild.memberCount) * 100).toFixed(2)}%`,
       `**Created:** ${guild.createdAt.toLocaleString('en-US', { timeZone: 'America/Chicago' })}`,
     ];
     try {
       this.bot.controlHook.send({
-        embeds: [{
-          color: 0x660000,
-          title: 'Left Server',
-          description: tokens.filter(a => a).join('\n'),
-          thumbnail: {
-            url: guild.iconURL(),
+        embeds: [
+          {
+            color: 0x660000,
+            title: 'Left Server',
+            description: tokens.filter((a) => a).join('\n'),
+            thumbnail: {
+              url: guild.iconURL(),
+            },
+            footer: {
+              text: guild.id,
+            },
+            timestamp: new Date(),
           },
-          footer: {
-            text: guild.id,
-          },
-          timestamp: new Date(),
-        }],
+        ],
       });
     } catch (e) {
       this.bot.logger.error(e);

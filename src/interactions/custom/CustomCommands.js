@@ -3,7 +3,9 @@ import { createGroupedArray } from '../../utilities/CommonFunctions.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
 
 const nameReg = /^[\w-]{1,32}$/u;
 
@@ -13,36 +15,45 @@ export default class CustomCommands extends Interaction {
   static command = {
     name: 'cc',
     description: 'Manage custom commands',
-    options: [{
-      type: Types.SUB_COMMAND,
-      name: 'add',
-      description: 'Add a custom command',
-      options: [{
-        type: Types.STRING,
-        name: 'call',
-        description: 'Sets the command call for the new custom command',
-        required: true,
-      }, {
-        type: Types.STRING,
-        name: 'response',
-        description: 'Set what the call will respond to',
-        required: true,
-      }],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'remove',
-      description: 'Remove a custom command by name',
-      options: [{
-        type: Types.STRING,
-        name: 'call',
-        description: 'Which call to remove?',
-        required: true,
-      }],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'list',
-      description: 'List all subcommands for the guild',
-    }],
+    options: [
+      {
+        type: Types.SUB_COMMAND,
+        name: 'add',
+        description: 'Add a custom command',
+        options: [
+          {
+            type: Types.STRING,
+            name: 'call',
+            description: 'Sets the command call for the new custom command',
+            required: true,
+          },
+          {
+            type: Types.STRING,
+            name: 'response',
+            description: 'Set what the call will respond to',
+            required: true,
+          },
+        ],
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'remove',
+        description: 'Remove a custom command by name',
+        options: [
+          {
+            type: Types.STRING,
+            name: 'call',
+            description: 'Which call to remove?',
+            required: true,
+          },
+        ],
+      },
+      {
+        type: Types.SUB_COMMAND,
+        name: 'list',
+        description: 'List all subcommands for the guild',
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -54,15 +65,15 @@ export default class CustomCommands extends Interaction {
 
     switch (action) {
       case 'add':
-        if (nameReg.test(call)
-          && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
-          await ctx.settings.addCustomCommand(
-            interaction.guild, call, response, interaction.user.id,
-          );
+        if (nameReg.test(call) && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
+          await ctx.settings.addCustomCommand(interaction.guild, call, response, interaction.user.id);
           await ctx.handler.loadCustomCommands(interaction.guild.id);
           return interaction.reply({ content: 'Added & reloaded guild commands', ephemeral });
         }
-        return interaction.reply({ content: 'Not possible, command name is either invalid, or another with the same name exists', ephemeral });
+        return interaction.reply({
+          content: 'Not possible, command name is either invalid, or another with the same name exists',
+          ephemeral,
+        });
       case 'remove':
         const onConfirm = async () => {
           await ctx.settings.deleteCustomCommand(interaction.guild, call);
@@ -82,7 +93,11 @@ export default class CustomCommands extends Interaction {
           }
         });
         const metaGroups = createGroupedArray(ccs, 10);
-        const embeds = metaGroups.map(metaGroup => ({ color: 0x301934, fields: metaGroup, title: ctx.i18n`Custom Commands` }));
+        const embeds = metaGroups.map((metaGroup) => ({
+          color: 0x301934,
+          fields: metaGroup,
+          title: ctx.i18n`Custom Commands`,
+        }));
         return interaction.reply({ embeds, ephemeral });
     }
     return undefined;

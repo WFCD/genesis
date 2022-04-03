@@ -7,9 +7,7 @@ export default class TwitchEmbed extends BaseEmbed {
     this.url = `https://www.twitch.tv/${streamData.user_login}`;
 
     this.image = {
-      url: `${streamData.thumbnail_url
-        .replace('{width}', '1280')
-        .replace('{height}', '720')}?${Date.now()}`,
+      url: `${streamData.thumbnail_url.replace('{width}', '1280').replace('{height}', '720')}?${Date.now()}`,
     };
 
     this.color = 6570405;
@@ -29,9 +27,7 @@ export default class TwitchEmbed extends BaseEmbed {
 
     if (streamData.game) {
       this.thumbnail = {
-        url: streamData.game.box_art_url
-          .replace('{width}', '288')
-          .replace('{height}', '384'),
+        url: streamData.game.box_art_url.replace('{width}', '288').replace('{height}', '384'),
       };
     }
   }

@@ -13,19 +13,23 @@ export default class EnemyEmbed extends BaseEmbed {
 
     this.title = i18n`${enemy.name} • ${enemy.type}`;
     this.description = enemy.description;
-    this.fields = [{
-      name: i18n`Health Base`,
-      value: String(enemy.health),
-      inline: true,
-    }, {
-      name: i18n`Shield Base`,
-      value: String(enemy.shield),
-      inline: true,
-    }, {
-      name: i18n`Armor Base`,
-      value: String(enemy.armor),
-      inline: true,
-    }];
+    this.fields = [
+      {
+        name: i18n`Health Base`,
+        value: String(enemy.health),
+        inline: true,
+      },
+      {
+        name: i18n`Shield Base`,
+        value: String(enemy.shield),
+        inline: true,
+      },
+      {
+        name: i18n`Armor Base`,
+        value: String(enemy.armor),
+        inline: true,
+      },
+    ];
 
     enemy?.resistances?.forEach((resistance) => {
       const field = {
@@ -37,7 +41,9 @@ export default class EnemyEmbed extends BaseEmbed {
       const affectors = [];
       resistance.affectors.forEach((affector) => {
         if (affector.modifier) {
-          affectors.push(`${emojify(affector.element)} ${affector.modifier > 0 ? '+' : ''}${(affector.modifier * 100).toFixed(2)}`);
+          affectors.push(
+            `${emojify(affector.element)} ${affector.modifier > 0 ? '+' : ''}${(affector.modifier * 100).toFixed(2)}`
+          );
         }
       });
       if (affectors.length) {

@@ -17,7 +17,8 @@ import Interaction from '../../models/Interaction.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
-  MessageEmbed, Permissions,
+  MessageEmbed,
+  Permissions,
 } = Discord;
 
 export default class Settings extends Interaction {
@@ -43,183 +44,220 @@ export default class Settings extends Interaction {
     temp_channel: 'tempChannel',
     elevated_roles: 'elevatedRoles',
   };
-  static #rooms = [{
-    name: 'allow_rooms',
-    description: 'Set whether or not to allow custom rooms to be created',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Allow private rooms?',
-      required: true,
-    }],
-  }, {
-    name: 'auto_locked',
-    description: 'Set whether or not to default private rooms to be locked (Default True)',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Lock private rooms?',
-      required: true,
-    }],
-  }, {
-    name: 'auto_text',
-    description: 'Set whether or not to default private rooms to have text channels (Default False)',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Make rooms with text?',
-      required: true,
-    }],
-  }, {
-    name: 'auto_shown',
-    description: 'Set whether or not to default private rooms should be visible (Default false)',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Make rooms visible?',
-      required: true,
-    }],
-  }, {
-    name: 'temp_category',
-    description: 'Set the temporary category for private/auto-generated rooms',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.CHANNEL,
-      name: 'value',
-      description: 'Should be a category',
-      required: true,
-    }],
-  }, {
-    name: 'temp_channel',
-    description: 'Set the channel for creating threads in for private rooms',
-    type: Types.SUB_COMMAND,
-    options: [{
-      type: Types.CHANNEL,
-      name: 'value',
-      description: 'Should be a text channel',
-      required: true,
-    }],
-  }];
+  static #rooms = [
+    {
+      name: 'allow_rooms',
+      description: 'Set whether or not to allow custom rooms to be created',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Allow private rooms?',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'auto_locked',
+      description: 'Set whether or not to default private rooms to be locked (Default True)',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Lock private rooms?',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'auto_text',
+      description: 'Set whether or not to default private rooms to have text channels (Default False)',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Make rooms with text?',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'auto_shown',
+      description: 'Set whether or not to default private rooms should be visible (Default false)',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Make rooms visible?',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'temp_category',
+      description: 'Set the temporary category for private/auto-generated rooms',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.CHANNEL,
+          name: 'value',
+          description: 'Should be a category',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'temp_channel',
+      description: 'Set the channel for creating threads in for private rooms',
+      type: Types.SUB_COMMAND,
+      options: [
+        {
+          type: Types.CHANNEL,
+          name: 'value',
+          description: 'Should be a text channel',
+          required: true,
+        },
+      ],
+    },
+  ];
   static #setLFG = {
     type: Types.SUB_COMMAND,
     name: 'lfg',
     description: 'Set LFG Channel for a Platform',
-    options: [{
-      type: Types.CHANNEL,
-      name: 'channel',
-      description: 'Channel to set LFG to post in',
-      required: true,
-    }, {
-      type: Types.STRING,
-      name: 'platform',
-      description: 'Platform to set channel for',
-      required: true,
-      choices: platformMap,
-    }],
+    options: [
+      {
+        type: Types.CHANNEL,
+        name: 'channel',
+        description: 'Channel to set LFG to post in',
+        required: true,
+      },
+      {
+        type: Types.STRING,
+        name: 'platform',
+        description: 'Platform to set channel for',
+        required: true,
+        choices: platformMap,
+      },
+    ],
   };
-  static #custom = [{
-    type: Types.SUB_COMMAND,
-    name: 'allow_custom',
-    description: 'Set allowance of custom commands',
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Should this channel allow custom commands?',
-      required: true,
-    }, Settings.#globalable],
-  }, {
-    type: Types.SUB_COMMAND,
-    name: 'allow_inline',
-    description: 'Set allowance of inline commands',
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Should this channel allow inline commands?',
-      required: true,
-    }, Settings.#globalable],
-  }];
-  static #settingsCommands = [{
-    type: Types.SUB_COMMAND,
-    name: 'language',
-    description: 'Set a language for the server',
-    options: [{
-      type: Types.STRING,
-      name: 'value',
-      description: 'What language do you want to use for this server?',
-      choices: localeMap,
-      required: true,
-    }],
-  }, {
-    type: Types.SUB_COMMAND,
-    name: 'platform',
-    description: 'Set the platform for the channel',
-    options: [{
-      type: Types.STRING,
-      name: 'value',
-      description: 'What platform is this channel?',
-      choices: platformMap,
-      required: true,
-    }],
-  }, {
-    type: Types.SUB_COMMAND,
-    name: 'ephemerate',
-    description: 'Set whether or not messages from slash commands will be public (True by default)',
-    options: [{
-      type: Types.BOOLEAN,
-      name: 'value',
-      description: 'Make replies from interactions show in this channel?',
-      required: true,
-    }],
-  }, {
-    name: 'elevated_roles',
-    type: Types.SUB_COMMAND,
-    description: 'Set elevated roles',
-    options: [{
-      name: 'value',
-      type: Types.STRING,
-      description: 'What roles are elevated?',
-      required: true,
-    }],
-  },
-  ...(games.includes('CUST_CMDS')
-    ? Settings.#custom
-    : []),
-  ...(games.includes('UTIL')
-    ? [Settings.#setLFG]
-    : []),
-  ...(games.includes('ROOMS')
-    ? this.#rooms
-    : []),
-  ].filter(s => s);
+  static #custom = [
+    {
+      type: Types.SUB_COMMAND,
+      name: 'allow_custom',
+      description: 'Set allowance of custom commands',
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Should this channel allow custom commands?',
+          required: true,
+        },
+        Settings.#globalable,
+      ],
+    },
+    {
+      type: Types.SUB_COMMAND,
+      name: 'allow_inline',
+      description: 'Set allowance of inline commands',
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Should this channel allow inline commands?',
+          required: true,
+        },
+        Settings.#globalable,
+      ],
+    },
+  ];
+  static #settingsCommands = [
+    {
+      type: Types.SUB_COMMAND,
+      name: 'language',
+      description: 'Set a language for the server',
+      options: [
+        {
+          type: Types.STRING,
+          name: 'value',
+          description: 'What language do you want to use for this server?',
+          choices: localeMap,
+          required: true,
+        },
+      ],
+    },
+    {
+      type: Types.SUB_COMMAND,
+      name: 'platform',
+      description: 'Set the platform for the channel',
+      options: [
+        {
+          type: Types.STRING,
+          name: 'value',
+          description: 'What platform is this channel?',
+          choices: platformMap,
+          required: true,
+        },
+      ],
+    },
+    {
+      type: Types.SUB_COMMAND,
+      name: 'ephemerate',
+      description: 'Set whether or not messages from slash commands will be public (True by default)',
+      options: [
+        {
+          type: Types.BOOLEAN,
+          name: 'value',
+          description: 'Make replies from interactions show in this channel?',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'elevated_roles',
+      type: Types.SUB_COMMAND,
+      description: 'Set elevated roles',
+      options: [
+        {
+          name: 'value',
+          type: Types.STRING,
+          description: 'What roles are elevated?',
+          required: true,
+        },
+      ],
+    },
+    ...(games.includes('CUST_CMDS') ? Settings.#custom : []),
+    ...(games.includes('UTIL') ? [Settings.#setLFG] : []),
+    ...(games.includes('ROOMS') ? this.#rooms : []),
+  ].filter((s) => s);
 
   /**
    * Wrap channel value into a string
    * @param {string} val channel id
    * @returns {string|*}
    */
-  static #wrapChannelValue (val) {
+  static #wrapChannelValue(val) {
     if (val !== this.#negate) {
       return `<#${val}>`;
     }
     return val;
   }
 
-  static #wrapRoleValue (val) {
+  static #wrapRoleValue(val) {
     if (val !== this.#negate) {
       return `<@&${val}>`;
     }
     return val;
   }
 
-  static async #resolveBoolean (channel, setting, settings, db) {
+  static async #resolveBoolean(channel, setting, settings, db) {
     if (settings) {
       return settings[setting] === '1' ? this.#affirm : this.#negate;
     }
-    return ((await db.getChannelSetting(channel, setting)) === '1' ? this.#affirm : this.#negate);
+    return (await db.getChannelSetting(channel, setting)) === '1' ? this.#affirm : this.#negate;
   }
 
   /**
@@ -228,13 +266,27 @@ export default class Settings extends Interaction {
    * @param {Discord.TextChannel} channel Channel to bind settings from
    * @returns {Promise<Array<Discord.MessageEmbed>>}
    */
-  static async #gather (ctx, channel) {
+  static async #gather(ctx, channel) {
     const page = new MessageEmbed(embedDefaults);
     const settings = await ctx.settings.getChannelSettings(channel, [
-      'language', 'platform', 'createPrivateChannel', 'allowInline',
-      'allowCustom', 'settings.cc.ping', 'defaultRoomsLocked', 'defaultNoText', 'defaultShown',
-      'defaultRoles', 'tempCategory', 'lfgChannel', 'lfgChannel.ps4', 'lfgChannel.xb1', 'lfgChannel.swi',
-      'modRole', 'ephemerate', 'tempChannel',
+      'language',
+      'platform',
+      'createPrivateChannel',
+      'allowInline',
+      'allowCustom',
+      'settings.cc.ping',
+      'defaultRoomsLocked',
+      'defaultNoText',
+      'defaultShown',
+      'defaultRoles',
+      'tempCategory',
+      'lfgChannel',
+      'lfgChannel.ps4',
+      'lfgChannel.xb1',
+      'lfgChannel.swi',
+      'modRole',
+      'ephemerate',
+      'tempChannel',
     ]);
 
     page.setTitle('General Settings');
@@ -253,9 +305,10 @@ export default class Settings extends Interaction {
     page.addField('Hidden?', await this.#resolveBoolean(channel, 'defaultShown', settings), true);
 
     page.addField('🔽 LFG Settings 🔽', '_ _', false);
-    const tempCategory = settings.tempCategory !== '0'
-  && typeof settings.tempCategory !== 'undefined'
-      ? settings.tempCategory : this.#negate;
+    const tempCategory =
+      settings.tempCategory !== '0' && typeof settings.tempCategory !== 'undefined'
+        ? settings.tempCategory
+        : this.#negate;
 
     let lfgVal = '';
     if (settings.lfgChannel) {
@@ -270,14 +323,18 @@ export default class Settings extends Interaction {
     if (settings['lfgChannel.swi']) {
       lfgVal += `**Switch:** ${this.#wrapChannelValue(settings['lfgChannel.swi'])}\n`;
     }
-    if (!(settings.lfgChannel || settings['lfgChannel.ps4'] || settings['lfgChannel.xb1'] || settings['lfgChannel.swi'])) {
+    if (
+      !(settings.lfgChannel || settings['lfgChannel.ps4'] || settings['lfgChannel.xb1'] || settings['lfgChannel.swi'])
+    ) {
       lfgVal = this.#negate;
     }
     page.addField('LFG', lfgVal, false);
     page.addField(
       'Temp Channels',
-      `Category: ${this.#wrapChannelValue(tempCategory)}\nChannel: ${settings.tempChannel ? this.#wrapChannelValue(settings.tempChannel) : this.#negate}`,
-      true,
+      `Category: ${this.#wrapChannelValue(tempCategory)}\nChannel: ${
+        settings.tempChannel ? this.#wrapChannelValue(settings.tempChannel) : this.#negate
+      }`,
+      true
     );
 
     const embeds = [page];
@@ -292,8 +349,8 @@ export default class Settings extends Interaction {
     // Guild Pings
     const guildPings = await ctx.settings.getPingsForGuild(channel.guild);
     const pingParts = guildPings
-      .filter(obj => obj.thing && obj.text)
-      .map(obj => `**${obj.thing}**: ${obj.text}`)
+      .filter((obj) => obj.thing && obj.text)
+      .map((obj) => `**${obj.thing}**: ${obj.text}`)
       .join('\n');
 
     checkAndMergeEmbeds(embeds, trackedItems);
@@ -301,23 +358,26 @@ export default class Settings extends Interaction {
     checkAndMergeEmbeds(embeds, createChunkedEmbed(pingParts, 'Pings', '\n'));
 
     const stats = await ctx.settings.getGuildStats(channel.guild);
-    embeds.push(new MessageEmbed({
-      title: ctx.i18n`Most Used Commands`,
-      color: 0x444444,
-      description: stats
-        .filter((s, i) => i < 10)
-        .map(s => `\`${s.id.padEnd(25, ' ')} | ${`${s.count}`.padStart(4, ' ')}\``)
-        .join('\n'),
-    }));
+    embeds.push(
+      new MessageEmbed({
+        title: ctx.i18n`Most Used Commands`,
+        color: 0x444444,
+        description: stats
+          .filter((s, i) => i < 10)
+          .map((s) => `\`${s.id.padEnd(25, ' ')} | ${`${s.count}`.padStart(4, ' ')}\``)
+          .join('\n'),
+      })
+    );
     return embeds;
   }
 
-  static #getMentions = (content, guild) => content
-    .trim()
-    .replace(/[<>@&]/ig, ' ')
-    .split(' ')
-    .filter(id => id)
-    .map(id => guild.roles.cache.get(id.trim()));
+  static #getMentions = (content, guild) =>
+    content
+      .trim()
+      .replace(/[<>@&]/gi, ' ')
+      .split(' ')
+      .filter((id) => id)
+      .map((id) => guild.roles.cache.get(id.trim()));
 
   static elevated = true;
   static enabled = true;
@@ -325,37 +385,46 @@ export default class Settings extends Interaction {
     name: 'settings',
     description: 'Interact with Settings',
     // defaultPermission: false,
-    options: [{
-      type: Types.SUB_COMMAND_GROUP,
-      name: 'set',
-      description: 'Set a setting',
-      options: this.#settingsCommands,
-    }, {
-      type: Types.SUB_COMMAND_GROUP,
-      name: 'clear',
-      description: 'Clear certain settings',
-      options: [{
-        name: 'pings',
-        description: 'Clear tracking pings',
+    options: [
+      {
+        type: Types.SUB_COMMAND_GROUP,
+        name: 'set',
+        description: 'Set a setting',
+        options: this.#settingsCommands,
+      },
+      {
+        type: Types.SUB_COMMAND_GROUP,
+        name: 'clear',
+        description: 'Clear certain settings',
+        options: [
+          {
+            name: 'pings',
+            description: 'Clear tracking pings',
+            type: Types.SUB_COMMAND,
+          },
+          {
+            name: 'temp_category',
+            description: 'Clear temp category for private channels',
+            type: Types.SUB_COMMAND,
+          },
+          {
+            name: 'all',
+            description: 'Clear all settings on the bot for this server',
+            type: Types.SUB_COMMAND,
+          },
+        ],
+      },
+      {
         type: Types.SUB_COMMAND,
-      }, {
-        name: 'temp_category',
-        description: 'Clear temp category for private channels',
+        name: 'get',
+        description: 'Get all the settings',
+      },
+      {
+        name: 'diag',
         type: Types.SUB_COMMAND,
-      }, {
-        name: 'all',
-        description: 'Clear all settings on the bot for this server',
-        type: Types.SUB_COMMAND,
-      }],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'get',
-      description: 'Get all the settings',
-    }, {
-      name: 'diag',
-      type: Types.SUB_COMMAND,
-      description: 'Run diagnostics for the guild',
-    }],
+        description: 'Run diagnostics for the guild',
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -400,9 +469,7 @@ export default class Settings extends Interaction {
             // eslint-disable-next-line no-case-declarations
             const { guild } = interaction;
             await ctx.settings.removeGuild(guild.id);
-            await Promise
-              .all(guild.channels.cache
-                .map(channel => ctx.settings.stopTracking(channel)));
+            await Promise.all(guild.channels.cache.map((channel) => ctx.settings.stopTracking(channel)));
             return interaction.editReply('server-wide purge complete');
           default:
             break;
@@ -429,7 +496,9 @@ export default class Settings extends Interaction {
             return interaction.reply(`set ${field} to \`${value}\``);
           case 'elevated_roles':
             field = this.#aliases[field] || field;
-            value = this.#getMentions(value, interaction.guild).map(role => role.id).join(',');
+            value = this.#getMentions(value, interaction.guild)
+              .map((role) => role.id)
+              .join(',');
             ctx.handler.recalcPerms(value, interaction.guild);
           case 'language':
             await ctx.settings.setGuildSetting(interaction.guild, field, value);
@@ -455,23 +524,36 @@ export default class Settings extends Interaction {
 
         // role management
         const rolePermTokens = [];
-        rolePermTokens.push(`${perms.has(Permissions.FLAGS.MANAGE_ROLES) ? this.#check : this.#xmark} Permission Present`);
+        rolePermTokens.push(
+          `${perms.has(Permissions.FLAGS.MANAGE_ROLES) ? this.#check : this.#xmark} Permission Present`
+        );
         rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
 
-        chunkFields(rolePermTokens, 'Can Manage Roles', '\n')
-          .forEach((ef) => {
-            embed.addField(ef.name, ef.value, false);
-          });
+        chunkFields(rolePermTokens, 'Can Manage Roles', '\n').forEach((ef) => {
+          embed.addField(ef.name, ef.value, false);
+        });
 
         // Tracking
-        const trackingReadinessTokens = [`${perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${this.#check}  Can` : `${this.#xmark} Cannot`} Manage Webhooks`];
+        const trackingReadinessTokens = [
+          `${
+            perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${this.#check}  Can` : `${this.#xmark} Cannot`
+          } Manage Webhooks`,
+        ];
 
         const trackables = {
           events: await ctx.settings.getTrackedEventTypes(interaction.channel),
           items: await ctx.settings.getTrackedItems(interaction.channel),
         };
-        trackingReadinessTokens.push(trackables.events.length ? `${this.#check} ${trackables.events.length} Events Tracked` : `${this.#xmark} No Events tracked`);
-        trackingReadinessTokens.push(trackables.items.length ? `${this.#check} ${trackables.items.length} Items Tracked` : `${this.#xmark} No Items tracked`);
+        trackingReadinessTokens.push(
+          trackables.events.length
+            ? `${this.#check} ${trackables.events.length} Events Tracked`
+            : `${this.#xmark} No Events tracked`
+        );
+        trackingReadinessTokens.push(
+          trackables.items.length
+            ? `${this.#check} ${trackables.items.length} Items Tracked`
+            : `${this.#xmark} No Items tracked`
+        );
 
         embed.addField('Trackable Ready', trackingReadinessTokens.join('\n'));
 
