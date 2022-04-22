@@ -1,6 +1,7 @@
 import BaseEmbed from './BaseEmbed.js';
 
-import { assetBase, fromNow, timeDeltaToString, toTitleCase } from '../utilities/CommonFunctions.js';
+import { assetBase, toTitleCase } from '../utilities/CommonFunctions.js';
+import { rTime } from '../utilities/Wrappers.js';
 
 const fass = `${assetBase}/img/FassBanner.png`;
 const vome = `${assetBase}/img/VomeBanner.png`;
@@ -18,7 +19,7 @@ const makeJobs = (mission, i18n) => {
       }
     });
 
-    tokens.push(i18n`\n**Expires in ${mission.eta}**`);
+    tokens.push(i18n`\n**Expires in ${rTime(mission.expiry)}**`);
 
     return tokens.join('\n');
   }
@@ -36,7 +37,7 @@ export default class CambionEmbed extends BaseEmbed {
 
     const next = toTitleCase(state.active === 'fass' ? 'vome' : 'fass');
 
-    const nextCtd = i18n`Time remaining until ${next}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`;
+    const nextCtd = i18n`Time remaining until ${next}: ${rTime(state.expiry)}`;
     this.description = `${state.bounty ? makeJobs(state.bounty, i18n) : ''}\n\n${nextCtd}`;
 
     this.footer.text = i18n`${next} starts `;

@@ -86,7 +86,7 @@ export default class OnReadyHandle extends Handler {
       const vs = vallisState
         ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄️' : '🔥'} • `
         : '';
-      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀️'}` : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌕' : '☀️'}` : '';
       return `${vs}${cs}`;
     }
     return base;
@@ -147,7 +147,7 @@ export default class OnReadyHandle extends Handler {
               this.logger.silly(`Deleting category... ${room.category.id}`);
               await room.category.delete();
             }
-            this.settings.deletePrivateRoom(room);
+            await this.settings.deletePrivateRoom(room);
           }
         } else if (room) {
           await this.settings.deletePrivateRoom({

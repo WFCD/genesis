@@ -1,5 +1,6 @@
 import BaseEmbed from './BaseEmbed.js';
-import { assetBase, fromNow, timeDeltaToString } from '../utilities/CommonFunctions.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
+import { rTime } from '../utilities/Wrappers.js';
 
 const solaris = `${assetBase}/img/solarisunitedflag.png`;
 const makeJobs = (mission) => {
@@ -31,12 +32,10 @@ export default class SolarisEmbed extends BaseEmbed {
     this.thumbnail = {
       url: solaris,
     };
-    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`cold` : i18n`warm`}: ${timeDeltaToString(
-      fromNow(new Date(state.expiry))
-    )}`;
+    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`cold` : i18n`warm`}: ${rTime(state.expiry)}`;
     this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
 
     this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
-    this.timestamp = new Date(state.expiry);
+    this.timestamp = new Date(state.expiry).getTime();
   }
 }
