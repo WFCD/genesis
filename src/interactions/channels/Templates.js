@@ -2,15 +2,15 @@ import Discord from 'discord.js';
 import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
 } = Discord;
 
 const tc = {
-  name: 'template_channel',
+  ...cmds['templates.tc'],
   type: Types.CHANNEL,
-  description: 'Channel to use as a template (should be a voice channel)',
   required: true,
 };
 
@@ -18,45 +18,37 @@ export default class Templates extends Interaction {
   static elevated = true;
   static enabled = games.includes('ROOMS');
   static command = {
-    name: 'templates',
-    description: 'Manage channel templates',
-    // defaultPermission: false,
+    ...cmds.templates,
     options: [
       {
-        name: 'add',
+        ...cmds['templates.add'],
         type: Types.SUB_COMMAND,
-        description: 'Add a channel as a template channel.',
         options: [tc],
       },
       {
-        name: 'delete',
+        ...cmds['templates.delete'],
         type: Types.SUB_COMMAND,
-        description: 'Delete a channel from you template channels',
         options: [tc],
       },
       {
-        name: 'list',
+        ...cmds['templates.list'],
         type: Types.SUB_COMMAND,
-        description: 'List all configured templates',
       },
       {
-        name: 'set',
+        ...cmds['templates.set'],
         type: Types.SUB_COMMAND,
-        description: 'Set the template for a template channel',
         options: [
           tc,
           {
-            name: 'template',
+            ...cmds['templates.fmt'],
             type: Types.STRING,
-            description: "Template string. Supports replacing $username with originator's username",
             required: true,
           },
         ],
       },
       {
-        name: 'clear',
+        ...cmds['templates.clear'],
         type: Types.SUB_COMMAND,
-        description: 'clear existing template pattern on a channel',
         options: [tc],
       },
     ],

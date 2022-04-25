@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
@@ -33,13 +34,11 @@ export default class EightBall extends Interaction {
   static enabled = true;
 
   static command = {
-    name: '8ball',
-    description: 'Get your 8Ball question answered!',
+    ...cmds['8ball'],
     options: [
       {
+        ...cmds['8ball.question'],
         type: Types.STRING,
-        name: 'question',
-        description: 'What do you want the all-knowing machine to answer?',
         required: true,
       },
     ],

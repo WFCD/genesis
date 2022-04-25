@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import { createGroupedArray } from '../../utilities/CommonFunctions.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
@@ -13,45 +14,38 @@ export default class CustomCommands extends Interaction {
   static enabled = true;
   static elevated = true;
   static command = {
-    name: 'cc',
-    description: 'Manage custom commands',
+    ...cmds.cc,
     options: [
       {
+        ...cmds['cc.add'],
         type: Types.SUB_COMMAND,
-        name: 'add',
-        description: 'Add a custom command',
         options: [
           {
+            ...cmds['cc.add.call'],
             type: Types.STRING,
-            name: 'call',
-            description: 'Sets the command call for the new custom command',
             required: true,
           },
           {
+            ...cmds['cc.add.response'],
             type: Types.STRING,
-            name: 'response',
-            description: 'Set what the call will respond to',
             required: true,
           },
         ],
       },
       {
+        ...cmds['cc.remove'],
         type: Types.SUB_COMMAND,
-        name: 'remove',
-        description: 'Remove a custom command by name',
         options: [
           {
+            ...cmds['cc.remove.call'],
             type: Types.STRING,
-            name: 'call',
-            description: 'Which call to remove?',
             required: true,
           },
         ],
       },
       {
+        ...cmds['cc.list'],
         type: Types.SUB_COMMAND,
-        name: 'list',
-        description: 'List all subcommands for the guild',
       },
     ],
   };

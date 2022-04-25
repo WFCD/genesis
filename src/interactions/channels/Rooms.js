@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import { games, isVulgarCheck } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 /* eslint-disable no-unused-vars */
 const {
@@ -243,13 +244,11 @@ const roomSizes = [
 export default class Rooms extends Interaction {
   static enabled = games.includes('ROOMS');
   static command = {
-    name: 'rooms',
-    description: 'Manage your private room',
+    ...cmds.rooms,
     options: [
       {
-        name: 'create',
+        ...cmds['rooms.create'],
         type: Types.SUB_COMMAND,
-        description: 'Create your own room',
         options: [
           {
             name: 'type',
@@ -286,39 +285,32 @@ export default class Rooms extends Interaction {
         ],
       },
       {
-        name: 'destroy',
+        ...cmds['rooms.destroy'],
         type: Types.SUB_COMMAND,
-        description: 'Destroy your room',
       },
       {
-        name: 'hide',
+        ...cmds['rooms.hide'],
         type: Types.SUB_COMMAND,
-        description: 'Hide your private room',
       },
       {
-        name: 'show',
+        ...cmds['rooms.show'],
         type: Types.SUB_COMMAND,
-        description: 'Show your private room',
       },
       {
-        name: 'lock',
+        ...cmds['rooms.lock'],
         type: Types.SUB_COMMAND,
-        description: 'Lock your private room',
       },
       {
-        name: 'unlock',
+        ...cmds['rooms.unlock'],
         type: Types.SUB_COMMAND,
-        description: 'Unlock your private room',
       },
       {
-        name: 'lurkable',
+        ...cmds['rooms.lurkable'],
         type: Types.SUB_COMMAND,
-        description: 'Make your private room lurkable',
       },
       {
-        name: 'rename',
+        ...cmds['rooms.rename'],
         type: Types.SUB_COMMAND,
-        description: 'Rename your private room',
         options: [
           {
             name: 'name',
@@ -328,9 +320,8 @@ export default class Rooms extends Interaction {
         ],
       },
       {
-        name: 'invite',
+        ...cmds['rooms.invite'],
         type: Types.SUB_COMMAND,
-        description: 'Hide your private room',
         options: [
           {
             name: 'invite',
@@ -340,9 +331,8 @@ export default class Rooms extends Interaction {
         ],
       },
       {
-        name: 'resize',
+        ...cmds['rooms.resize'],
         type: Types.SUB_COMMAND,
-        description: 'resize private room',
         options: [
           {
             name: 'type',

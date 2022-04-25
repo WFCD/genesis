@@ -32,7 +32,7 @@ export default class SolarisEmbed extends BaseEmbed {
     this.thumbnail = {
       url: solaris,
     };
-    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`cold` : i18n`warm`}: ${rTime(state.expiry)}`;
+    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`Cold` : i18n`Warm`}: ${rTime(state.expiry)}`;
     this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
 
     this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;

@@ -5,6 +5,7 @@ import Collectors from '../../utilities/Collectors.js';
 import { createGroupedArray, games, toTitleCase } from '../../utilities/CommonFunctions.js';
 import WorldStateClient from '../../utilities/WorldStateClient.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const { ENDPOINTS } = WorldStateClient;
 const {
@@ -12,9 +13,8 @@ const {
 } = Discord;
 const queryOpt = [
   {
+    ...cmds.query,
     type: Types.STRING,
-    name: 'query',
-    description: 'What are you looking for?',
     required: true,
   },
 ];
@@ -26,8 +26,7 @@ export default class WhereIs extends Interaction {
    * @type {Discord.ApplicationCommandData}
    */
   static command = {
-    name: 'whereis',
-    description: 'Display where something drops from',
+    ...cmds.whereis,
     options: queryOpt,
   };
 

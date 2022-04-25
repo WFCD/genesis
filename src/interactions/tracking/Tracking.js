@@ -8,6 +8,7 @@ import {
   trackableItems,
   trackablesFromParameters,
 } from '../../utilities/CommonFunctions.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
@@ -33,44 +34,36 @@ const subgrouped = ['arbitration', 'fissures', 'twitter'];
 export default class Settings extends Interaction {
   static elevated = true;
   static command = {
-    name: 'tracking',
-    description: 'Configure tracking options',
+    ...cmds.tracking,
     // defaultPermission: false,
     options: [
       {
-        name: 'manage',
+        ...cmds['tracking.manage'],
         type: Types.SUB_COMMAND,
-        description: 'Manage tracking settings',
       },
       {
-        name: 'custom',
+        ...cmds['tracking.custom'],
         type: Types.SUB_COMMAND,
-        description: 'Set up custom trackings and pings',
         options: [
           {
-            name: 'add',
+            ...cmds['tracking.custom.add'],
             type: Types.STRING,
-            description: 'Comma-separated list of trackables to add. See website.',
           },
           {
-            name: 'remove',
+            ...cmds['tracking.custom.remove'],
             type: Types.STRING,
-            description: 'Comma-separated list of trackables to remove. See website.',
           },
           {
-            name: 'prepend',
+            ...cmds['tracking.custom.prepend'],
             type: Types.STRING,
-            description: "Requires 'add' to be specified. Ignored on remove.",
           },
           {
-            name: 'channel',
+            ...cmds['tracking.custom.channel'],
             type: Types.CHANNEL,
-            description: 'Channel (text-based) that this should apply to.',
           },
           {
-            name: 'clear-prepend',
+            ...cmds['tracking.custom.clear-prepend'],
             type: Types.BOOLEAN,
-            description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.',
           },
         ],
       },

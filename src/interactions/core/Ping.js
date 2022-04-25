@@ -2,6 +2,7 @@ import { MessageEmbed } from 'discord.js';
 import ping from 'ping';
 import { emojify, games, timeDeltaToString } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const d2Hosts = ['bungie.net', 'api.steampowered.com', 'xbl.io', 'vlkyrie-superi.us', 'status.vlkyrie-superi.us'];
 const wfHosts = ['warframe.com', 'api.warframestat.us', 'hub.warframestat.us', 'drops.warframestat.us'];
@@ -9,14 +10,10 @@ const wfHosts = ['warframe.com', 'api.warframestat.us', 'hub.warframestat.us', '
 export default class Ping extends Interaction {
   static enabled = true;
 
-  static command = {
-    name: 'ping',
-    description: 'ping some stuff',
-    // defaultPermission: false,
-  };
+  static command = cmds.ping;
 
   static async commandHandler(interaction, ctx) {
-    if (!interaction.isCommand()) return;
+    if (!interaction.isCommand()) return undefined;
 
     const now = Date.now();
     await interaction.reply({ content: 'Testing Ping', ephemeral: true });

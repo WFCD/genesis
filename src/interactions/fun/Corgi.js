@@ -1,15 +1,13 @@
 import Interaction from '../../models/Interaction.js';
 import fetch from '../../utilities/Fetcher.js';
+import { cmds } from '../../resources/index.js';
 
 export default class Corgi extends Interaction {
   static enabled = true;
 
-  static command = {
-    name: 'corgi',
-    description: 'Get a corgi picture!',
-  };
+  static command = cmds.corgi;
 
-  static async commandHandler(interaction) {
+  static async commandHandler(interaction, ctx) {
     const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random');
     if (corgi) {
       return interaction.reply({
@@ -21,6 +19,6 @@ export default class Corgi extends Interaction {
         ],
       });
     }
-    return interaction.reply("couldn't find a corgi... :(");
+    return interaction.reply(ctx.i18n`couldn't find a corgi... :(`);
   }
 }

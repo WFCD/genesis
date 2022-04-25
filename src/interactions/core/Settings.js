@@ -12,7 +12,7 @@ import {
   games,
   timeDeltaToString,
 } from '../../utilities/CommonFunctions.js';
-import { localeMap, platformMap } from '../../resources/index.js';
+import { cmds, localeMap, platformMap } from '../../resources/index.js';
 import Interaction from '../../models/Interaction.js';
 
 const {
@@ -46,99 +46,86 @@ export default class Settings extends Interaction {
   };
   static #rooms = [
     {
-      name: 'allow_rooms',
-      description: 'Set whether or not to allow custom rooms to be created',
+      ...cmds['settings.allow_rooms'],
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.allow_rooms.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Allow private rooms?',
           required: true,
         },
       ],
     },
     {
-      name: 'auto_locked',
-      description: 'Set whether or not to default private rooms to be locked (Default True)',
+      ...cmds['settings.auto_locked'],
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.auto_locked.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Lock private rooms?',
           required: true,
         },
       ],
     },
     {
-      name: 'auto_text',
-      description: 'Set whether or not to default private rooms to have text channels (Default False)',
+      ...cmds['settings.auto_text'],
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.auto_text.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Make rooms with text?',
           required: true,
         },
       ],
     },
     {
-      name: 'auto_shown',
-      description: 'Set whether or not to default private rooms should be visible (Default false)',
+      ...cmds['settings.auto_shown'],
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.auto_shown.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Make rooms visible?',
           required: true,
         },
       ],
     },
     {
-      name: 'temp_category',
-      description: 'Set the temporary category for private/auto-generated rooms',
+      ...cmds['settings.temp_category'],
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.temp_category.channel'],
           type: Types.CHANNEL,
-          name: 'value',
-          description: 'Should be a category',
           required: true,
         },
       ],
     },
     {
+      ...cmds['settings.temp_channel'],
       name: 'temp_channel',
       description: 'Set the channel for creating threads in for private rooms',
       type: Types.SUB_COMMAND,
       options: [
         {
+          ...cmds['settings.temp_channel.channel'],
           type: Types.CHANNEL,
-          name: 'value',
-          description: 'Should be a text channel',
           required: true,
         },
       ],
     },
   ];
   static #setLFG = {
+    ...cmds['settings.lfg'],
     type: Types.SUB_COMMAND,
-    name: 'lfg',
-    description: 'Set LFG Channel for a Platform',
     options: [
       {
+        ...cmds['settings.lfg.channel'],
         type: Types.CHANNEL,
-        name: 'channel',
-        description: 'Channel to set LFG to post in',
         required: true,
       },
       {
+        ...cmds.platform,
         type: Types.STRING,
-        name: 'platform',
-        description: 'Platform to set channel for',
         required: true,
         choices: platformMap,
       },
@@ -146,28 +133,24 @@ export default class Settings extends Interaction {
   };
   static #custom = [
     {
+      ...cmds['settings.allow_custom'],
       type: Types.SUB_COMMAND,
-      name: 'allow_custom',
-      description: 'Set allowance of custom commands',
       options: [
         {
+          ...cmds['settings.allow_custom.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Should this channel allow custom commands?',
           required: true,
         },
         Settings.#globalable,
       ],
     },
     {
+      ...cmds['settings.allow_inline'],
       type: Types.SUB_COMMAND,
-      name: 'allow_inline',
-      description: 'Set allowance of inline commands',
       options: [
         {
+          ...cmds['settings.allow_inline.bool'],
           type: Types.BOOLEAN,
-          name: 'value',
-          description: 'Should this channel allow inline commands?',
           required: true,
         },
         Settings.#globalable,
@@ -176,37 +159,32 @@ export default class Settings extends Interaction {
   ];
   static #settingsCommands = [
     {
+      ...cmds['settings.language'],
       type: Types.SUB_COMMAND,
-      name: 'language',
-      description: 'Set a language for the server',
       options: [
         {
+          ...cmds['settings.language.str'],
           type: Types.STRING,
-          name: 'value',
-          description: 'What language do you want to use for this server?',
           choices: localeMap,
           required: true,
         },
       ],
     },
     {
+      ...cmds['settings.platform'],
       type: Types.SUB_COMMAND,
-      name: 'platform',
-      description: 'Set the platform for the channel',
       options: [
         {
+          ...cmds.platform,
           type: Types.STRING,
-          name: 'value',
-          description: 'What platform is this channel?',
           choices: platformMap,
           required: true,
         },
       ],
     },
     {
+      ...cmds['settings.ephemerate'],
       type: Types.SUB_COMMAND,
-      name: 'ephemerate',
-      description: 'Set whether or not messages from slash commands will be public (True by default)',
       options: [
         {
           type: Types.BOOLEAN,
@@ -217,14 +195,12 @@ export default class Settings extends Interaction {
       ],
     },
     {
-      name: 'elevated_roles',
+      ...cmds['settings.elevated_roles'],
       type: Types.SUB_COMMAND,
-      description: 'Set elevated roles',
       options: [
         {
-          name: 'value',
+          ...cmds['settings.elevated_roles.str'],
           type: Types.STRING,
-          description: 'What roles are elevated?',
           required: true,
         },
       ],
@@ -382,20 +358,17 @@ export default class Settings extends Interaction {
   static elevated = true;
   static enabled = true;
   static command = {
-    name: 'settings',
-    description: 'Interact with Settings',
+    ...cmds.settings,
     // defaultPermission: false,
     options: [
       {
+        ...cmds['settings.set'],
         type: Types.SUB_COMMAND_GROUP,
-        name: 'set',
-        description: 'Set a setting',
         options: this.#settingsCommands,
       },
       {
+        ...cmds['settings.clear'],
         type: Types.SUB_COMMAND_GROUP,
-        name: 'clear',
-        description: 'Clear certain settings',
         options: [
           {
             name: 'pings',
@@ -415,14 +388,12 @@ export default class Settings extends Interaction {
         ],
       },
       {
+        ...cmds['settings.get'],
         type: Types.SUB_COMMAND,
-        name: 'get',
-        description: 'Get all the settings',
       },
       {
-        name: 'diag',
+        ...cmds['settings.diag'],
         type: Types.SUB_COMMAND,
-        description: 'Run diagnostics for the guild',
       },
     ],
   };
