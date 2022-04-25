@@ -1,6 +1,7 @@
 import { createRequire } from 'module';
 import fs from 'node:fs';
-import path from 'node:path';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
 
@@ -27,9 +28,12 @@ export const welcomes = require('./welcomes.json');
 
 export const cmds = {};
 const allCommands = {};
+
+const ldirname = dirname(fileURLToPath(import.meta.url));
+
 await Promise.all(
   locales.map(async (locale) => {
-    const p = path.resolve('./src/resources/locales/commands', `${locale}.js`);
+    const p = path.resolve(ldirname, './locales/commands', `${locale}.js`);
     if (fs.existsSync(p)) {
       allCommands[locale] = (await import(p)).default;
     }
