@@ -1,10 +1,8 @@
 import Reddit from './Reddit.js';
+import { cmds } from '../../resources/index.js';
 
 export default class Runway extends Reddit {
   static enabled = true;
   static subreddit = 'warframerunway';
-  static command = {
-    name: 'fashion',
-    description: 'Get a random Warframe fashion image',
-  };
+  static command = cmds.fashion;
 }

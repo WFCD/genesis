@@ -223,9 +223,10 @@ export default class InteractionHandler extends BaseHandler {
     const cmds = loadedFiles
       .filter((cmd) => cmd.enabled && !cmd.ownerOnly)
       .map((cmd) => {
-        cmd.command.defaultPermission = true;
-        return cmd.command;
-      });
+        return cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands;
+      })
+      .flat()
+      .filter((c) => c);
     // logger.error(JSON.stringify(cmds));
     if (whitelistedGuilds.length) {
       await Promise.all(
@@ -303,12 +304,17 @@ export default class InteractionHandler extends BaseHandler {
    * @returns {Promise<Discord.Message>|void}
    */
   async execute(interaction) {
-    if (!this.ready) return;
+    if (!this.ready) return undefined;
+    if (!interaction) return undefined;
 
     if (interaction instanceof CommandInteraction) {
       this.logger.debug(`Running ${interaction.id} for ${this.event}`);
 
-      const match = this.#loadedCommands.find((c) => c.command.name === interaction.commandName);
+      const match = this.#loadedCommands.find((c) => {
+        const directMatch = c?.command?.name === interaction.commandName;
+        const subMatch = c?.commands?.find((cs) => cs?.name === interaction.commandName);
+        return directMatch || subMatch;
+      });
       const customMatch = this.#customCommands.find(
         (c) => c?.command?.name === interaction.commandName && c?.guildId === interaction?.guild?.id
       );
@@ -318,7 +324,6 @@ export default class InteractionHandler extends BaseHandler {
         (match?.ownerOnly && interaction.user.id !== this.bot.owner);
 
       if (noAccess) {
-        // eslint-disable-next-line consistent-return
         return interaction.reply({ content: 'No Access', ephemeral: true });
       }
 
@@ -337,8 +342,7 @@ export default class InteractionHandler extends BaseHandler {
       ctx.i18n = I18n(i18n, ctx.language);
 
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
-      if (!interaction) return undefined;
-      // eslint-disable-next-line no-nested-ternary,consistent-return
+      // eslint-disable-next-line no-nested-ternary
       return match
         ? match?.commandHandler?.(interaction, ctx)
         : customMatch

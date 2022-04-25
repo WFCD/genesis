@@ -16,7 +16,7 @@ export default class EarthCycleEmbed extends BaseEmbed {
     };
     const bountyExpiry = state.bountyExpiry ? rTime(state.bountyExpiry) : '';
     this.description =
-      i18n`Time remaining until ${state.isDay ? 'night' : 'day'}: ${rTime(state.expiry)}` +
+      i18n`Time remaining until ${state.isDay ? 'Night' : 'Day'}: ${rTime(state.expiry)}` +
       i18n`${state.bountyExpiry ? `\nBounties expire in ${bountyExpiry}` : ''}`;
     this.footer.text = i18n`${state.isDay ? i18n`Night` : i18n`Day`} starts `;
     this.timestamp = new Date(state.expiry).getTime();

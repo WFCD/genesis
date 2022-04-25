@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import dehumanize from 'parse-duration';
-import { platformMap as platformChoices } from '../../resources/index.js';
+import { cmds, platformMap as platformChoices } from '../../resources/index.js';
 import LFGEmbed from '../../embeds/LFGEmbed.js';
 import Interaction from '../../models/Interaction.js';
 
@@ -15,32 +15,27 @@ export default class LFG extends Interaction {
   static enabled = true;
 
   static command = {
-    name: 'lfg',
-    description: 'Make an LFG post',
+    ...cmds.lfg,
     options: [
       {
+        ...cmds.platform,
         type: Types.STRING,
-        name: 'platform',
-        description: 'Platform to recruit for',
         choices: platformChoices,
         required: true,
       },
       {
+        ...cmds['lfg.place'],
         type: Types.STRING,
-        name: 'place',
-        description: 'Where do you want to group up?',
         required: false,
       },
       {
+        ...cmds['lfg.time'],
         type: Types.STRING,
-        name: 'time',
-        description: 'How long do you want to farm for?',
         required: false,
       },
       {
+        ...cmds['lfg.members'],
         type: Types.INTEGER,
-        name: 'members',
-        description: 'How many people do you need?',
         required: false,
         choices: [
           { name: '1', value: 1 },
@@ -50,21 +45,18 @@ export default class LFG extends Interaction {
         ],
       },
       {
+        ...cmds['lfg.for'],
         type: Types.STRING,
-        name: 'for',
-        description: 'What are you farming for?',
         required: false,
       },
       {
+        ...cmds['lfg.duration'],
         type: Types.STRING,
-        name: 'duration',
-        description: 'How long are you willing to wait?',
         required: false,
       },
       {
+        ...cmds['lfg.type'],
         type: Types.STRING,
-        name: 'type',
-        description: 'What kind of post?',
         choices: [
           {
             name: 'Hosting',

@@ -11,6 +11,7 @@ import Warframe from '../../embeds/FrameEmbed.js';
 import Mod from '../../embeds/ModEmbed.js';
 
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
+import { cmds } from '../../resources/index.js';
 
 const { ENDPOINTS } = WorldStateClient;
 
@@ -19,16 +20,14 @@ const {
 } = Discord;
 const queryOpt = [
   {
+    ...cmds.query,
     type: Types.STRING,
-    name: 'query',
-    description: 'Thing to search up',
     required: true,
   },
 ];
 const patchnotes = {
+  ...cmds.patchnotes,
   type: Types.BOOLEAN,
-  name: 'patchnotes',
-  description: 'Include patchnotes? (default false)',
   required: false,
 };
 
@@ -36,37 +35,32 @@ export default class Lookup extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   static command = {
-    name: 'lookup',
-    description: 'Get various pieces of information',
+    ...cmds.lookup,
     options: [
       {
+        ...cmds.arcane,
         type: Types.SUB_COMMAND,
-        name: 'arcane',
-        description: 'Look up an Arcane from Warframe',
         options: queryOpt,
       },
       {
+        ...cmds.warframe,
         type: Types.SUB_COMMAND,
-        name: 'warframe',
-        description: 'Look up a Warframe',
         options: [...queryOpt, patchnotes],
       },
       {
+        ...cmds.weapon,
         type: Types.SUB_COMMAND,
-        name: 'weapon',
-        description: 'Look up a weapon',
         options: [...queryOpt, patchnotes],
       },
       {
+        ...cmds.riven,
         type: Types.SUB_COMMAND,
-        name: 'riven',
-        description: 'Look up a Riven',
+
         options: queryOpt,
       },
       {
+        ...cmds.mod,
         type: Types.SUB_COMMAND,
-        name: 'mod',
-        description: 'Look up a Mod',
         options: [...queryOpt, patchnotes],
       },
     ],

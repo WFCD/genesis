@@ -1,12 +1,10 @@
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 export default class Joke extends Interaction {
   static enabled = true;
 
-  static command = {
-    name: 'joke',
-    description: 'Ask Genesis for a joke!',
-  };
+  static command = cmds.joke;
 
   static async commandHandler(interaction, ctx) {
     return interaction.reply({

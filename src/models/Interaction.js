@@ -7,6 +7,7 @@ const { Message, APIMessage, CommandInteraction } = Discord;
 export default class Interaction {
   static enabled = true;
   /**
+   * Command manifest for this application
    * @type {Discord.ApplicationCommandData}
    */
   static command = {
@@ -14,6 +15,12 @@ export default class Interaction {
     description: 'Base interaction class',
     options: [],
   };
+
+  /**
+   * optional list of multiple commands to concat to the list instead of {@link #command}
+   * @type {Array<Discord.ApplicationCommandData>}
+   */
+  static commands = undefined;
 
   /**
    * Handle a command interaction

@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { platformMap } from '../../resources/index.js';
+import { cmds, platformMap } from '../../resources/index.js';
 import Interaction from '../../models/Interaction.js';
 
 const {
@@ -10,19 +10,16 @@ export default class PriceCheck extends Interaction {
   static enabled = true;
 
   static command = {
-    name: 'pc',
-    description: 'Price check an item',
+    ...cmds.pc,
     options: [
       {
+        ...cmds.query,
         type: Types.STRING,
-        name: 'query',
-        description: 'What do you wat to search for?',
         required: true,
       },
       {
+        ...cmds.platform,
         type: Types.STRING,
-        name: 'platform',
-        description: 'Platform to check for data',
         choices: platformMap,
       },
     ],

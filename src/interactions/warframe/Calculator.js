@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
@@ -39,25 +40,21 @@ export default class Calculator extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   static command = {
-    name: 'calc',
-    description: 'Get Warframe Worldstate Information',
+    ...cmds.calc,
     options: [
       {
+        ...cmds['calc.shields'],
         type: Types.SUB_COMMAND,
-        name: 'shields',
-        description: 'Calculate Enemy Shield amounts',
         options: levels,
       },
       {
+        ...cmds['calc.armor'],
         type: Types.SUB_COMMAND,
-        name: 'armor',
-        description: 'Calculate Enemy Armor amounts',
         options: levels,
       },
       {
+        ...cmds['calc.health'],
         type: Types.SUB_COMMAND,
-        name: 'health',
-        description: 'Calculate Enemy Health amounts',
         options: levels,
       },
     ],

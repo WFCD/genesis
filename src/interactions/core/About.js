@@ -1,12 +1,10 @@
 import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 export default class About extends Interaction {
   static enabled = true;
 
-  static command = {
-    name: 'about',
-    description: 'Tell me about the bot!',
-  };
+  static command = cmds.about;
 
   static async commandHandler(interaction, ctx) {
     return interaction.reply({

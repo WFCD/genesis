@@ -3,15 +3,15 @@ import Discord from 'discord.js';
 import WhatsInEmbed from '../../embeds/WhatsinEmbed.js';
 import Interaction from '../../models/Interaction.js';
 import { games, toTitleCase } from '../../utilities/CommonFunctions.js';
+import { cmds } from '../../resources/index.js';
 
 const {
   Constants: { ApplicationCommandOptionTypes: Types },
 } = Discord;
 const queryOpt = [
   {
+    ...cmds['whatsin.query'],
     type: Types.STRING,
-    name: 'query',
-    description: 'Relic Identifier (i.e. A1)',
     required: true,
   },
 ];
@@ -23,8 +23,7 @@ export default class WhatsIn extends Interaction {
    * @type {Discord.ApplicationCommandData}
    */
   static command = {
-    name: 'whatsin',
-    description: 'Get various pieces of information',
+    ...cmds.whatsin,
     options: [
       {
         name: 'relic_era',
@@ -69,7 +68,7 @@ export default class WhatsIn extends Interaction {
     const tier = toTitleCase(interaction.options.get('relic_era').value);
     const query = toTitleCase(interaction.options.get('query').value);
     const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
-    if (!data || !Object.keys(data).length) return interaction.reply('Sorry, no such relic');
+    if (!data || !Object.keys(data).length) return interaction.reply(ctx.i18n`Sorry, no such relic`);
     const embed = new WhatsInEmbed(data, tier, query);
     return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
   }
