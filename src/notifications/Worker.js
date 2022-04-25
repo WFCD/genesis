@@ -19,8 +19,7 @@ const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 const rest = new Rest();
 const forceHydrate = (process.argv[2] || '').includes('--hydrate');
 
-// eslint-disable-next-line no-underscore-dangle
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const ldirname = dirname(fileURLToPath(import.meta.url));
 
 let timeout;
 
@@ -87,7 +86,7 @@ class Worker {
   }
   async initCache() {
     if (games.includes('WARFRAME')) {
-      deps.workerCache = flatCache.load('worker', path.resolve(__dirname, '../../.cache'));
+      deps.workerCache = flatCache.load('worker', path.resolve(ldirname, '../../.cache'));
 
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
