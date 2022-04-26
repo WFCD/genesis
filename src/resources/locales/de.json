@@ -100,7 +100,7 @@
   "Levels:": "Level:",
   "Archwing Required": "Archwing erforderlich",
   "Cambion Drift Cycle - {0}": "Cambion Drift Cycle - {0}",
-  "Time remaining until {0}: {1}": "Verbleibende Zeit bis {0}: {1}",
+  "Time remaining until {0}: {1}": "{0} starts {1}",
   "{0} starts ": "{0} beginnt ",
   "\n**Expires in {0}**": "\n**Läuft ab in {0}**",
   "**#:** {0}\n": "**#:** {0}\n",
@@ -186,6 +186,7 @@
   "Unmarked": "Unmarked",
   "Last Updated {0} UTC": "Zuletzt aktualisiert {0} UTC",
   "No Such Player": "Kein solcher Spieler",
+  "Sorry, no such relic": "Sorry, no such relic",
   "{0} until **{1}**": "{0} until **{1}**",
   "Evaluated by Cephalon Genesis | Source: trials.wf": "Evaluiert von Cephalon Genesis | Quelle: trials.wf",
   "Raid Statistics for {0}": "Raid-Statistiken für {0}",
@@ -267,5 +268,6 @@
   "No Prime Access Currently": "No Prime Access Currently",
   "No News Currently": "No News Currently",
   "Are you sure?": "Are you sure?",
-  "⚠️ No {0} active.": "⚠️ No {0} active."
+  "⚠️ No {0} active.": "⚠️ No {0} active.",
+  "couldn't find a corgi... :(": "couldn't find a corgi... :("
 }
