@@ -6,12 +6,17 @@ export default class About extends Interaction {
 
   static command = cmds.about;
 
-  static async commandHandler(interaction, ctx) {
+  static async commandHandler(interaction) {
     return interaction.reply({
       embeds: [
         {
           title: 'Cephalon Genesis',
           fields: [
+            {
+              name: 'About',
+              value:
+                'Cephalon Genesis exists to help Discord Tenno find all the information they need about Warframe that you might',
+            },
             {
               name: '\u200B',
               value:
@@ -19,20 +24,6 @@ export default class About extends Interaction {
                 '\nAs well as on the [help page](https://genesis.warframestat.us),' +
                 "\nand come support Genesis, if you're interested, [on patreon](https://patreon.com/cephalongenesis).",
               inline: true,
-            },
-            {
-              name: '\u200B',
-              value: `For help information, type \`${ctx.prefix}help\``,
-              inline: false,
-            },
-            {
-              name: 'Authors',
-              value: '[Tobiah](https://github.com/tobitenno) and [nspace](https://github.com/nspacestd)',
-            },
-            {
-              name: 'About',
-              value:
-                'Cephalon Genesis exists to help Discord Tenno find all the information they need about Warframe that you might',
             },
             {
               name: '\u200B',
@@ -50,7 +41,7 @@ export default class About extends Interaction {
             },
           ],
           footer: {
-            text: 'Cephalon Genesis, now on more than 26,000 guilds!',
+            text: 'Cephalon Genesis, now on more than 23,000 guilds!',
           },
         },
       ],

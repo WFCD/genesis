@@ -5,7 +5,7 @@ import { platforms } from '../../utilities/CommonFunctions.js';
 import { between, embeds, fromNow, perLanguage } from '../NotifierUtils.js';
 
 const beats = {};
-let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 60000) / 3;
+let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 30000) / 3;
 
 function buildNotifiableData(newData, platform) {
   const data = {
@@ -119,15 +119,10 @@ export default class CyclesNotifier {
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
-  // TODO: rethink overrideCycleChanges
   async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
-    // const smolRange = fromNow(newCycle.expiry) < refreshRate;
-    // if (smolRange && !cycleChange) {
-    //   cycleChange = true;
-    //   newCycle.active = newCycle.active === 'fass' ? 'vome' : 'fass';
-    // }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cambion.${newCycle.active}${minutesRemaining}`;
+    if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
         this.broadcaster.broadcast(new embeds.Cambion(newCycle, { i18n, locale }), platform, type)
@@ -137,13 +132,9 @@ export default class CyclesNotifier {
   }
 
   async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
-    // const smolRange = fromNow(newCycle.expiry) < refreshRate;
-    // if (smolRange && !cycleChange) {
-    //   cycleChange = true;
-    //   newCycle.isDay = !newCycle.isDay;
-    // }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
 
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
@@ -154,13 +145,9 @@ export default class CyclesNotifier {
   }
 
   async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
-    // const smolRange = fromNow(newCycle.expiry) < refreshRate;
-    // if (smolRange && !cycleChange) {
-    //   cycleChange = true;
-    //   newCycle.isDay = !newCycle.isDay;
-    // }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `earth.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
+    if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
         this.broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
@@ -170,13 +157,9 @@ export default class CyclesNotifier {
   }
 
   async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
-    // const smolRange = fromNow(newCycle.expiry) < refreshRate;
-    // if (smolRange && !cycleChange) {
-    //   cycleChange = true;
-    //   newCycle.isWarm = !newCycle.isWarm;
-    // }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
+    if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
         this.broadcaster.broadcast(new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type)
