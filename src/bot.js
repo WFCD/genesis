@@ -1,5 +1,4 @@
 import Discord from 'discord.js';
-
 import WorldStateClient from './utilities/WorldStateClient.js';
 import EventHandler from './eventHandlers/EventHandler.js';
 

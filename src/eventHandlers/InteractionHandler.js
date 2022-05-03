@@ -3,6 +3,8 @@ import path from 'node:path';
 import I18n from 'i18n-string-templates';
 import decache from 'decache';
 import Discord from 'discord.js';
+import modalify from 'discord-modals';
+
 import Interaction from '../models/Interaction.js';
 import WorldStateClient from '../utilities/WorldStateClient.js';
 import CustomInteraction from '../models/CustomInteraction.js';
@@ -57,6 +59,7 @@ export default class InteractionHandler extends BaseHandler {
     this.#loadedCommands = [];
     this.#customCommands = [];
     this.ready = false;
+    modalify(bot.client);
     this.init();
   }
 

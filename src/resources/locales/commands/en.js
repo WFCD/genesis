@@ -203,6 +203,10 @@ export default {
     name: 'mod',
     description: 'Look up a Mod',
   },
+  companion: {
+    name: 'companion',
+    description: 'Look up a companion',
+  },
   lfg: {
     name: 'lfg',
     description: 'Make an LFG post',
@@ -210,6 +214,10 @@ export default {
   'lfg.place': {
     name: 'place',
     description: 'Where do you want to group up?',
+  },
+  'lfg.place.custom': {
+    name: 'place_custom',
+    description: 'Specific area you want to go to',
   },
   'lfg.time': {
     name: 'time',
@@ -222,6 +230,10 @@ export default {
   'lfg.for': {
     name: 'for',
     description: 'What are you farming for?',
+  },
+  'lfg.for.custom': {
+    name: 'for_custom',
+    description: 'Custom thing you want to farm for',
   },
   'lfg.duration': {
     name: 'duration',

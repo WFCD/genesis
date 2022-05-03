@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import dehumanize from 'parse-duration';
+
 import { cmds, platformMap as platformChoices } from '../../resources/index.js';
 import LFGEmbed from '../../embeds/LFGEmbed.js';
 import Interaction from '../../models/Interaction.js';
@@ -10,6 +11,99 @@ const {
   MessageButton,
   InteractionCollector,
 } = Discord;
+
+const places = [
+  {
+    name: 'Void',
+    value: 'Void',
+  },
+  {
+    name: 'Zariman',
+    value: 'Zariman',
+  },
+  {
+    name: 'Deimos',
+    value: 'Deimos',
+  },
+  {
+    name: 'Orb Vallis',
+    value: 'Orb Vallis',
+  },
+  {
+    name: 'Cetus',
+    value: 'Cetus',
+  },
+];
+const target = [
+  {
+    name: 'Rep Items',
+    value: 'Rep Items',
+  },
+  {
+    name: 'Area Bosses',
+    value: 'Area Bosses',
+  },
+  {
+    name: 'Resources',
+    value: 'Resources',
+  },
+  {
+    name: 'Arcanes',
+    value: 'Arcanes',
+  },
+  {
+    name: 'Level Grinding',
+    value: 'Level Grinding',
+  },
+  {
+    name: 'Endo',
+    value: 'Endo',
+  },
+  {
+    name: 'Credits',
+    value: 'Credits',
+  },
+];
+
+/**
+ * @param {Discord.CommandInteractionOptionResolver}  options option/arguments
+ * @param {I18n} i18n internationalizer
+ * @returns {string}
+ */
+const fmtLoc = (options, i18n) => {
+  let val = '';
+  if (options?.get('place')?.value) {
+    val += options?.get('place')?.value;
+    if (options?.get('place_custom')?.value) {
+      val += ` (${options?.get('place_custom')?.value})`;
+    }
+  } else if (options?.get('place_custom')?.value) {
+    val += options?.get('place_for')?.value;
+  } else {
+    val += i18n`Anywhere`;
+  }
+  return val;
+};
+
+/**
+ * @param {Discord.CommandInteractionOptionResolver}  options option/arguments
+ * @param {I18n} i18n internationalizer
+ * @returns {string}
+ */
+const fmtThing = (options, i18n) => {
+  let val = '';
+  if (options?.get('for')?.value) {
+    val += options?.get('for')?.value;
+    if (options?.get('for_custom')?.value) {
+      val += ` (${options?.get('for_custom')?.value})`;
+    }
+  } else if (options?.get('for_custom')?.value) {
+    val += options?.get('for_custom')?.value;
+  } else {
+    val += i18n`Anything`;
+  }
+  return val;
+};
 
 export default class LFG extends Interaction {
   static enabled = true;
@@ -25,6 +119,12 @@ export default class LFG extends Interaction {
       },
       {
         ...cmds['lfg.place'],
+        type: Types.STRING,
+        choices: places,
+        required: false,
+      },
+      {
+        ...cmds['lfg.place.custom'],
         type: Types.STRING,
         required: false,
       },
@@ -46,6 +146,12 @@ export default class LFG extends Interaction {
       },
       {
         ...cmds['lfg.for'],
+        type: Types.STRING,
+        choices: target,
+        required: false,
+      },
+      {
+        ...cmds['lfg.for.custom'],
         type: Types.STRING,
         required: false,
       },
@@ -79,9 +185,9 @@ export default class LFG extends Interaction {
     const { options } = interaction;
     const lfg = {
       author: interaction.member.user,
-      location: options?.get('place')?.value || ctx.i18n`Anywhere`,
+      location: fmtLoc(options, ctx.i18n),
       duration: options?.get('time')?.value || ctx.i18n`Any Time`,
-      goal: options?.get('for')?.value || ctx.i18n`Anything`,
+      goal: fmtThing(options, ctx.i18n),
       platform: options?.get('platform')?.value || ctx.platform || 'pc',
       expiry: options?.get('duration')?.value || '30m',
       expiryTs: Date.now() + dehumanize(options?.get('duration')?.value || '30m'),
@@ -92,7 +198,7 @@ export default class LFG extends Interaction {
       edited: false,
     };
 
-    const embed = new LFGEmbed(undefined, lfg);
+    const embed = new LFGEmbed(lfg, ctx);
     const rawChn = ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]];
     if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
     const chn = interaction.guild.channels.resolve(rawChn.id);
@@ -138,7 +244,7 @@ export default class LFG extends Interaction {
       message.reactions.removeAll();
       lfg.expiry = 0;
       lfg.edited = true;
-      message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: [] });
+      message.edit({ embeds: [new LFGEmbed(lfg, ctx)], components: [] });
       clearTimeout(deleteTimeout);
       deleteTimeout = setTimeout(message.delete, 10000);
     });
@@ -155,19 +261,19 @@ export default class LFG extends Interaction {
           lfg.members.push(reaction.user.id);
           lfg.vc = interaction.member.voice;
           lfg.edited = true;
-          return message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: buttons });
+          return message.edit({ embeds: [new LFGEmbed(lfg, ctx)], components: buttons });
         }
         if (lfg.members.includes(reaction.user.id) && reaction.user.id !== interaction.member.id) {
           lfg.members.splice(lfg.members.indexOf(reaction.user.id), 1);
           lfg.vc = interaction.member.voice;
           lfg.edited = true;
-          return message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: buttons });
+          return message.edit({ embeds: [new LFGEmbed(lfg, ctx)], components: buttons });
         }
       }
       if (reaction.user.id === interaction.member.id && reaction.customId === 'lfg_end') {
         lfg.expiry = 0;
         lfg.edited = true;
-        await message.edit({ embeds: [new LFGEmbed(undefined, lfg)], components: [] });
+        await message.edit({ embeds: [new LFGEmbed(lfg, ctx)], components: [] });
         collector.stop('ended');
         return undefined;
       }

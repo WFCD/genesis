@@ -12,6 +12,7 @@ import Mod from '../../embeds/ModEmbed.js';
 
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
 import { cmds } from '../../resources/index.js';
+import CompanionEmbed from '../../embeds/CompanionEmbed.js';
 
 const { ENDPOINTS } = WorldStateClient;
 
@@ -30,6 +31,7 @@ const patchnotes = {
   type: Types.BOOLEAN,
   required: false,
 };
+const companionTypes = ['Pets', 'Sentinel'];
 
 export default class Lookup extends Interaction {
   static enabled = games.includes('WARFRAME');
@@ -63,6 +65,11 @@ export default class Lookup extends Interaction {
         type: Types.SUB_COMMAND,
         options: [...queryOpt, patchnotes],
       },
+      {
+        ...cmds.companion,
+        type: Types.SUB_COMMAND,
+        options: [...queryOpt, patchnotes],
+      },
     ],
   };
 
@@ -82,16 +89,15 @@ export default class Lookup extends Interaction {
     let data;
     let pages = [];
 
+    await interaction.deferReply({ ephemeral: ctx.ephemerate });
     switch (subcommand) {
       case 'arcane':
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);
         if (!data.length) return interaction.editReply('None found');
         pages = data.map((d) => new Arcane(d, { i18n: ctx.i18n }));
         return Collectors.dynamic(interaction, pages, ctx);
       case 'weapon':
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
-        data = await ctx.ws.search(ENDPOINTS.SEARCH.WEAPONS, query);
+        data = ctx.ws.weapon(query);
         if (!data.length) return interaction.editReply('None found');
         await Promise.all(
           data.map(async (weapon) => {
@@ -118,8 +124,7 @@ export default class Lookup extends Interaction {
         );
         return Collectors.dynamic(interaction, pages, ctx);
       case 'warframe':
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
-        data = await ctx.ws.search(ENDPOINTS.SEARCH.WARFRAMES, query);
+        data = ctx.ws.warframe(query);
         if (!data.length) return interaction.editReply('None found');
         await Promise.all(
           data.map(async (warframe) => {
@@ -137,30 +142,40 @@ export default class Lookup extends Interaction {
         );
         return Collectors.dynamic(interaction, pages, ctx);
       case 'riven':
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
         data = await ctx.ws.riven(query, ctx.platform);
         if (!Object.keys(data).length) return interaction.editReply('None found');
         pages = Object.keys(data).map((d) => new Riven(data[d], { resultKey: d, i18n: ctx.i18n }));
         return Collectors.dynamic(interaction, pages, ctx);
       case 'mod':
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
-        data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query)).filter((m) => typeof m.baseDrain !== 'undefined');
+        data = ctx.ws.mod(query).filter((m) => typeof m.baseDrain !== 'undefined');
         if (!data.length) return interaction.editReply('None found');
-        await Promise.all(
-          data.map(async (mod) => {
-            pages.push(new Mod(mod, { i18n: ctx.i18n }));
-            if (mod?.patchlogs?.length && enablePatchnotes) {
-              // eslint-disable-next-line no-loop-func
-              createGroupedArray(mod?.patchlogs, 4).forEach((patchGroup) => {
-                pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
-              });
-            }
-          })
-        );
+        data.forEach((mod) => {
+          pages.push(new Mod(mod, { i18n: ctx.i18n }));
+          if (mod?.patchlogs?.length && enablePatchnotes) {
+            // eslint-disable-next-line no-loop-func
+            createGroupedArray(mod?.patchlogs, 4).forEach((patchGroup) => {
+              pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
+            });
+          }
+        });
         pages = Object.keys(data).map((d) => new Mod(data[d], { i18n: ctx.i18n }));
         return Collectors.dynamic(interaction, pages, ctx);
+      case 'companion':
+        data = (await ctx.ws.search(ENDPOINTS.SEARCH.ITEMS, query)).filter((c) => companionTypes.includes(c.type));
+        if (!data.length) return interaction.editReply('None found');
+        data.forEach((companion) => {
+          pages.push(new CompanionEmbed(companion, { i18n: ctx.i18n }));
+          // TODO: get companion precepts added to item data
+          if (companion.precepts) {
+            companion.precepts.forEach((precept) => pages.push(new Mod(precept, { i18n: ctx.i18n })));
+          }
+          createGroupedArray(companion?.patchlogs, 4).forEach((patchGroup) => {
+            pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }));
+          });
+        });
+        return Collectors.dynamic(interaction, pages, ctx);
       default:
-        return interaction.reply('ok');
+        return interaction.editReply('ok');
     }
   }
 }

@@ -145,6 +145,11 @@ export default class CyclesNotifier {
   }
 
   async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
+    const smolRange = fromNow(newCycle.expiry) < refreshRate;
+    if (smolRange && !cycleChange) {
+      cycleChange = true;
+      newCycle.isDay = !newCycle.isDay;
+    }
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `earth.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
