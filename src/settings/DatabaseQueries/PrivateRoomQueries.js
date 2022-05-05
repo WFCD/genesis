@@ -115,7 +115,10 @@ export default class PrivateRoomQueries {
   }
 
   async userHasRoom(member) {
-    const query = SQL`SELECT * FROM private_channels WHERE guild_id = ${member.guild.id} and created_by = ${member.id}`;
+    const query = SQL`SELECT *
+      FROM private_channels
+      WHERE guild_id = ${member.guild.id}
+        and created_by = ${member.id}`;
     const [rows] = await this.query(query);
     return rows.length;
   }
@@ -145,6 +148,21 @@ export default class PrivateRoomQueries {
       };
     }
     return undefined;
+  }
+
+  /**
+   * Check if room is a private room
+   * @param {Discord.VoiceChannel} channel channel that could be private
+   * @returns {Promise<*>}
+   */
+  async isPrivateRoom(channel) {
+    const query = SQL`
+      SELECT *
+      FROM private_channels
+      WHERE guild_id = ${channel.guild.id}
+        AND voice_id = ${channel.id}`;
+    const [rows] = await this.query(query);
+    return rows?.length;
   }
 
   /**

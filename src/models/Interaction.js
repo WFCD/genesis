@@ -6,6 +6,7 @@ const { Message, APIMessage, CommandInteraction } = Discord;
 
 export default class Interaction {
   static enabled = true;
+
   /**
    * Command manifest for this application
    * @type {Discord.ApplicationCommandData}

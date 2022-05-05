@@ -152,8 +152,16 @@ export default class DynamicVoiceHandler {
   }
 
   async removeChannel(channelToRemove) {
-    if (await this.settings.isInstance(channelToRemove)) {
-      this.settings.deleteInstance(channelToRemove);
+    const isInstance = await this.settings.isInstance(channelToRemove);
+    if (isInstance) {
+      await this.settings.deleteInstance(channelToRemove);
+    }
+    const isPrivate = await this.settings.isPrivateRoom(channelToRemove);
+    if (isPrivate) {
+      await this.settings.deletePrivateRoom({
+        guild: channelToRemove.guild,
+        voiceChannel: channelToRemove,
+      });
     }
   }
 
@@ -167,6 +175,9 @@ export default class DynamicVoiceHandler {
     try {
       const newChannel = await clone(template, this.settings, member);
       await this.settings.addInstance(template, newChannel);
+      if (!(await this.settings.userHasRoom(member))) {
+        await this.settings.addPrivateRoom(template.guild, undefined, newChannel, { id: 0 }, member);
+      }
       return newChannel;
     } catch (error) {
       this.logger.debug(error.stack);
