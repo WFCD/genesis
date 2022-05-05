@@ -104,7 +104,11 @@ export default {
   },
   'rooms.invite': {
     name: 'invite',
-    description: 'Hide your private room'
+    description: 'Invite someone to your private room'
+  },
+  'rooms.block': {
+    name: 'block',
+    description: 'Block someone from your private room'
   },
   'rooms.resize': {
     name: 'resize',
