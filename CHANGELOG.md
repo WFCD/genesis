@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/wfcd/genesis/compare/v1.0.6...v2.0.0) (2022-05-09)
+
+
+### Features
+
+* i18n, drop legacy commands ([#521](https://github.com/wfcd/genesis/issues/521)) ([ccf6bf7](https://github.com/wfcd/genesis/commit/ccf6bf7b5373b03e31c5b49ce5d5762c7544dafc)), closes [#516](https://github.com/wfcd/genesis/issues/516) [#502](https://github.com/wfcd/genesis/issues/502) [#523](https://github.com/wfcd/genesis/issues/523) [#140](https://github.com/wfcd/genesis/issues/140)
+
+
+### BREAKING CHANGES
+
+* Dropped support for node < 14
+
 ## [1.0.6](https://github.com/wfcd/genesis/compare/v1.0.5...v1.0.6) (2022-01-17)
 
 
