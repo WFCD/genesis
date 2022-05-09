@@ -1,6 +1,4 @@
-'use strict';
-
-const Handler = require('../models/BaseEventHandler');
+import Handler from '../models/BaseEventHandler.js';
 
 let guildCheck; // I don't know where to put this
 
@@ -9,7 +7,7 @@ let guildCheck; // I don't know where to put this
  * @param {Bot} self the bot
  */
 async function guildLeave(self) {
-  const [results] = await self.settings.getGuildRatios(self.bot.shards) || [];
+  const [results] = (await self.settings.getGuildRatios(self.bot.shards)) || [];
   if (!results) return;
 
   const guilds = results.slice(0, 5);
@@ -46,7 +44,7 @@ async function guildLeave(self) {
         }
       });
     });
-    if ((results.length - 5) <= 0) {
+    if (results.length - 5 <= 0) {
       self.logger.silly('No more guilds in "guild_ratio" clearing interval.');
       clearInterval(guildCheck);
     }
@@ -62,8 +60,8 @@ async function guildLeave(self) {
 function guildRatioCheck(self) {
   const guilds = self.client.guilds.cache.filter((guild) => {
     self.logger.silly(`Checking Guild: ${guild.name} (${guild.id}) Owner: ${guild.ownerID}`);
-    const bots = guild.members.cache.filter(user => user.user.bot);
-    return ((bots.size / guild.memberCount) * 100) >= 80;
+    const bots = guild.members.cache.filter((user) => user.user.bot);
+    return (bots.size / guild.memberCount) * 100 >= 80;
   });
 
   guilds.forEach((guild) => {
@@ -76,12 +74,10 @@ function guildRatioCheck(self) {
 /**
  * Describes a handler
  */
-class OnReadyHandle extends Handler {
+export default class OnReadyHandle extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.ready.ratio', 'ready');
@@ -95,5 +91,3 @@ class OnReadyHandle extends Handler {
     setTimeout(guildRatioCheck, 4000, this);
   }
 }
-
-module.exports = OnReadyHandle;

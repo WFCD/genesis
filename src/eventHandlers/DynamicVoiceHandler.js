@@ -1,13 +1,11 @@
-'use strict';
+import Discord from 'discord.js';
+import { Generator } from 'warframe-name-generator';
 
-const Discord = require('discord.js');
-
-const { Constants: { Events }, Permissions } = Discord;
-
-const { Generator } = require('warframe-name-generator');
-
+const {
+  Constants: { Events },
+  Permissions,
+} = Discord;
 const requiredVCPerms = [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MOVE_MEMBERS];
-
 const relays = [
   'Larunda Relay',
   'Vesper Relay',
@@ -23,7 +21,6 @@ const relays = [
   'Necralisk',
   'Cetus 69',
 ];
-
 const generator = new Generator();
 
 /**
@@ -34,7 +31,7 @@ const generator = new Generator();
  */
 const getRelayName = async (guild, retries = 0) => {
   const name = relays[Math.floor(Math.random() * relays.length)];
-  const alreadyUsed = guild.channels.cache.find(channel => channel.name === name);
+  const alreadyUsed = guild.channels.cache.find((channel) => channel.name === name);
   if (retries > relays.length - 1 && alreadyUsed) {
     return name;
   }
@@ -57,12 +54,8 @@ const clone = async (template, settings, member) => {
 
   const isRelay = await settings.isRelay(template.id);
   const nameTemplate = await settings.getDynTemplate(template.id);
-  const generatedName = isRelay
-    ? await getRelayName(guild)
-    : generator.make({ adjective: true, type: 'places' });
-  const name = nameTemplate
-    ? nameTemplate.replace('$username', member.displayName)
-    : generatedName;
+  const generatedName = isRelay ? await getRelayName(guild) : generator.make({ adjective: true, type: 'places' });
+  const name = nameTemplate ? nameTemplate.replace('$username', member.displayName) : generatedName;
 
   // check for perms now?
   const newChannel = await template.clone({
@@ -76,7 +69,7 @@ const clone = async (template, settings, member) => {
   return newChannel;
 };
 
-module.exports = class DynamicVoiceHandler {
+export default class DynamicVoiceHandler {
   /**
    * Make the handler
    * @param {Discord.Client} client for interacting with discord
@@ -112,25 +105,11 @@ module.exports = class DynamicVoiceHandler {
   async checkManagementApplicable(oldMember, newMember) {
     const templates = await this.settings.getTemplates([oldMember.guild]);
     if (templates.length) {
-      // const instancePromises = [];
-      // templates.forEach((template) => {
-      //   instancePromises.push(this.settings.getInstances(template));
-      // });
-      //
-      // const instances = [];
-      //
-      // (await Promise.all(instancePromises))
-      //   .forEach((ip) => {
-      //     instances.push(...ip.instances);
-      //   });
-
-      const shouldFilterPromises = [];
-
-      templates.forEach(channel => shouldFilterPromises.push(
-        this.checkIfShouldFilter(channel, oldMember, newMember),
-      ));
-
-      return (await Promise.all(shouldFilterPromises)).filter(p => p).length > 0;
+      return (
+        (
+          await Promise.all(templates.map(async (channel) => this.checkIfShouldFilter(channel, oldMember, newMember)))
+        ).filter((p) => p).length > 0
+      );
     }
     return false;
   }
@@ -143,35 +122,46 @@ module.exports = class DynamicVoiceHandler {
    * @returns {Promise<boolean|boolean>}
    */
   async checkIfShouldFilter(channel, oldMember, newMember) {
-    const templates = await this.settings
-      .getTemplates(Array.from(this.client.guilds.cache.entries()));
+    const templates = await this.settings.getTemplates(Array.from(this.client.guilds.cache.entries()));
 
-    return channel.id === oldMember?.voice?.channel?.id
-      || channel.id === newMember?.voice?.channel?.id
-      || templates.includes(channel.id);
+    return (
+      channel.id === oldMember?.voice?.channel?.id ||
+      channel.id === newMember?.voice?.channel?.id ||
+      templates.includes(channel.id)
+    );
   }
 
   async checkAllChannels(guild, member) {
     const templates = await this.settings.getTemplates([guild]);
 
-    await Promise.all(templates.map(async (template) => {
-      if (this.client.channels.cache.has(template)) {
-        const templateChannel = this.client.channels.cache.get(template);
-        if (!templateChannel?.guild?.me.permissions.has(requiredVCPerms)) {
-          return false;
+    await Promise.all(
+      templates.map(async (template) => {
+        if (this.client.channels.cache.has(template)) {
+          const templateChannel = this.client.channels.cache.get(template);
+          if (!templateChannel?.guild?.me.permissions.has(requiredVCPerms)) {
+            return false;
+          }
+          const { remainingEmpty } = await this.settings.getInstances(templateChannel);
+          if (remainingEmpty < 1) {
+            return this.addChannel(templateChannel, member);
+          }
         }
-        const { remainingEmpty } = await this.settings.getInstances(templateChannel);
-        if (remainingEmpty < 1) {
-          return this.addChannel(templateChannel, member);
-        }
-      }
-      return false;
-    }));
+        return false;
+      })
+    );
   }
 
   async removeChannel(channelToRemove) {
-    if (await this.settings.isInstance(channelToRemove)) {
-      this.settings.deleteInstance(channelToRemove);
+    const isInstance = await this.settings.isInstance(channelToRemove);
+    if (isInstance) {
+      await this.settings.deleteInstance(channelToRemove);
+    }
+    const isPrivate = await this.settings.isPrivateRoom(channelToRemove);
+    if (isPrivate) {
+      await this.settings.deletePrivateRoom({
+        guild: channelToRemove.guild,
+        voiceChannel: channelToRemove,
+      });
     }
   }
 
@@ -185,6 +175,9 @@ module.exports = class DynamicVoiceHandler {
     try {
       const newChannel = await clone(template, this.settings, member);
       await this.settings.addInstance(template, newChannel);
+      if (!(await this.settings.userHasRoom(member))) {
+        await this.settings.addPrivateRoom(template.guild, undefined, newChannel, { id: 0 }, member);
+      }
       return newChannel;
     } catch (error) {
       this.logger.debug(error.stack);
@@ -192,4 +185,4 @@ module.exports = class DynamicVoiceHandler {
       return undefined;
     }
   }
-};
+}

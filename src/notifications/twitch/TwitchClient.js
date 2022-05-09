@@ -1,17 +1,15 @@
-'use strict';
+import path from 'node:path';
+import Cache from 'flat-cache';
+import cron from 'cron';
 
-require('colors');
-const fetch = require('node-fetch');
-const Cache = require('flat-cache');
-const Job = require('cron').CronJob;
+import fetch from '../../utilities/Fetcher.js';
+import logger from '../../utilities/Logger.js';
 
-const logger = require('../../Logger');
-
+const { CronJob: Job } = cron;
 const urls = {
   helix: 'https://api.twitch.tv/helix',
   token: 'https://id.twitch.tv/oauth2/token',
 };
-
 const forceHydrate = (process.argv[2] || '').includes('--hydrate');
 
 /**
@@ -19,9 +17,14 @@ const forceHydrate = (process.argv[2] || '').includes('--hydrate');
  *
  * All credit to https://github.com/roydejong/timbot for composition and structure
  */
-class TwitchClient {
-  static #tokenCache = Cache.load('accessToken',
-    require('path').resolve('.cache'));
+export default class TwitchClient {
+  static #tokenCache = Cache.load('accessToken', path.resolve('.cache'));
+
+  /**
+   * Refresh cronjob - self-starting
+   * @type {cron.CronJob}
+   */
+  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), undefined, true);
 
   static get accessToken() {
     return this.#tokenCache.getKey('token');
@@ -31,11 +34,15 @@ class TwitchClient {
    * Sets the access token in the cache
    * @param {string} token twitch access token to cache
    */
-  static set #accessToken (token) {
+  static set #accessToken(token) {
     this.#tokenCache.setKey('token', token);
     this.#tokenCache.save(true);
   }
 
+  /**
+   * Get the twitch refresh token
+   * @returns {string}
+   */
   static get refreshToken() {
     return this.#tokenCache.getKey('refresh');
   }
@@ -44,7 +51,7 @@ class TwitchClient {
    * Sets the refresh token in the cache
    * @param {string} token twitch refresh token to cache
    */
-  static set #refreshToken (token) {
+  static set #refreshToken(token) {
     this.#tokenCache.setKey('refresh', token);
     this.#tokenCache.save(true);
   }
@@ -60,14 +67,21 @@ class TwitchClient {
   }
 
   /**
-   * Handle twitch API errors
-   * @param  {Error} err error reply
+   * @typedef {Error} TwitchError
+   * @property {Object} response response object for errors
    */
-  static handleApiError(err) {
-    const res = err.response || { };
+  /**
+   * Handle twitch API errors
+   * @param  {TwitchError} err error reply
+   */
+  static #handleApiError(err) {
+    const res = err.response || {};
 
     if (res.data && res.data.message) {
-      logger.debug(`API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`, 'TwitchApi');
+      logger.debug(
+        `API request failed with Helix error:\n${res.data.message}\n(${res.data.error}/${res.data.status})`,
+        'TwitchApi'
+      );
     } else {
       logger.debug(`API request failed with error: ${err.message || err}`, 'TwitchApi');
     }
@@ -75,17 +89,17 @@ class TwitchClient {
 
   /**
    * Get Data from the Twitch API
-   * @param {string} path path to request
+   * @param {string} urlPath path to request
    * @param {string} params query params
    * @private
    * @static
    * @returns {Promise<Array<Object>>}
    */
-  static async #apiGet (path, params) {
+  static async #apiGet(urlPath, params) {
     if (!this.accessToken) await this.hydrateToken();
     if (!this.accessToken && !this.refreshToken) return [];
 
-    const url = `${this.requestOptions.baseURL}/${path}?${params}`;
+    const url = `${this.requestOptions.baseURL}/${urlPath}?${params}`;
     try {
       const res = await fetch(url, {
         headers: {
@@ -101,7 +115,7 @@ class TwitchClient {
       logger.error(res.statusText);
       return [];
     } catch (e) {
-      this.handleApiError(e);
+      this.#handleApiError(e);
       return [];
     }
   }
@@ -109,6 +123,8 @@ class TwitchClient {
   /**
    * Hydrate cache with a new token.
    * @type {Array}
+   * @returns {Promise<boolean>} whether it was updated
+   * @async
    */
   static async hydrateToken() {
     if (!this.refreshToken || forceHydrate) {
@@ -122,17 +138,17 @@ class TwitchClient {
         { key: 'grant_type', val: 'client_credentials' },
       ];
 
-      const res = await fetch(`${urls.token}?${atParams
-        .map(({ key, val }) => `${key}=${val}`).join('&')}`, { method: 'POST' });
+      const res = await fetch(`${urls.token}?${atParams.map(({ key, val }) => `${key}=${val}`).join('&')}`, {
+        method: 'POST',
+      });
 
-      if (res.ok) {
-        const initAccessToken = (await res.json()).access_token;
+      if (res) {
+        const initAccessToken = res.access_token;
         this.#refreshToken = initAccessToken;
         this.#accessToken = initAccessToken;
         return true;
       }
-      const error = await res.json();
-      logger.error(`error refreshing refresh token: ${error.message}`, 'Twitch');
+      logger.error(`error refreshing refresh token: ${res.error.message}`, 'Twitch');
       return false;
     }
 
@@ -147,17 +163,16 @@ class TwitchClient {
     try {
       const res = await fetch(url, { method: 'post' });
 
-      if (res.ok) {
-        const token = (await res.json()).access_token;
+      if (res) {
+        const token = res.access_token;
         logger.info(token, 'Twitch');
         this.#accessToken = token;
         return true;
       }
-      const error = await res.json();
-      logger.error(`error retrieving refresh token: ${error.message}`, 'Twitch');
+      logger.error(`error retrieving refresh token: ${res.error.message}`, 'Twitch');
       logger.warn(url);
 
-      if (error.message === 'Invalid refresh token') {
+      if (res.error.message === 'Invalid refresh token') {
         this.#refreshToken = undefined;
         return this.hydrateToken();
       }
@@ -168,16 +183,14 @@ class TwitchClient {
     return false;
   }
 
-  static #refreshJob = new Job('0 0 */3 * * *', this.hydrateToken.bind(this), undefined, true);
-
   /**
    * Fetch stream data
    * @param {Array<string>} channels list of channels to fetch
    * @returns {Promise<Array<Object>>} array of stream data
    */
   static async fetchStreams(channels) {
-    const params = channels.map(c => `user_login=${c}`).join('&');
-    return TwitchClient.#apiGet('streams', params);
+    const params = channels.map((c) => `user_login=${c}`).join('&');
+    return this.#apiGet('streams', params);
   }
 
   /**
@@ -186,8 +199,8 @@ class TwitchClient {
    * @returns {Promise<Array<Object>>} array of stream data
    */
   static async fetchUsers(channelNames) {
-    const params = channelNames.map(c => `login=${c}`).join('&');
-    return TwitchClient.#apiGet('users', params);
+    const params = channelNames.map((c) => `login=${c}`).join('&');
+    return this.#apiGet('users', params);
   }
 
   /**
@@ -196,9 +209,7 @@ class TwitchClient {
    * @returns {Promise<Array<Object>>}        array of game data
    */
   static async fetchGames(gameIds) {
-    const params = gameIds.map(c => `id=${c}`).join('&');
-    return TwitchClient.#apiGet('games', params);
+    const params = gameIds.map((c) => `id=${c}`).join('&');
+    return this.#apiGet('games', params);
   }
 }
-
-module.exports = TwitchClient;

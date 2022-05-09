@@ -1,20 +1,19 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import LogEmbed from '../embeds/LogEmbed.js';
 
-const { Events } = require('discord.js').Constants;
+import { games } from '../utilities/CommonFunctions.js';
+import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
-const Handler = require('../models/BaseEventHandler');
-const LogEmbed = require('../embeds/LogEmbed');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class LogMemberBan extends Handler {
+export default class LogMemberBan extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.logBanAdd', Events.GUILD_BAN_ADD);
@@ -35,7 +34,7 @@ class LogMemberBan extends Handler {
     }
     if (logChannel && logChannel.type === 'GUILD_TEXT') {
       const log = new LogEmbed(this.bot, {
-        color: 0xCC0000,
+        color: 0xcc0000,
         title: 'Member Banned',
         fields: [
           {
@@ -44,9 +43,7 @@ class LogMemberBan extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
+      await webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }
-
-module.exports = LogMemberBan;

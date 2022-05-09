@@ -1,17 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for notification system tracking queries
  * @mixin
  * @mixes Database
  */
-module.exports = class TrackingQueries {
+export default class TrackingQueries {
   /**
    * Tracking option arrays
    * @typedef {Object} TrackingOptions
@@ -56,7 +50,7 @@ module.exports = class TrackingQueries {
   async trackItems(channel, items) {
     const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES `;
     items.forEach((item, index) => {
-      query.append(SQL`(${channel.id}, ${item})`).append(index !== (items.length - 1) ? ',' : ';');
+      query.append(SQL`(${channel.id}, ${item})`).append(index !== items.length - 1 ? ',' : ';');
     });
     return this.query(query);
   }
@@ -108,7 +102,7 @@ module.exports = class TrackingQueries {
     const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
     types.forEach((type, index) => {
       if (channel && channel.id) {
-        query.append(SQL`(${channel.id}, ${type})`).append(index !== (types.length - 1) ? ',' : ';');
+        query.append(SQL`(${channel.id}, ${type})`).append(index !== types.length - 1 ? ',' : ';');
       }
     });
     return this.query(query);
@@ -148,7 +142,7 @@ module.exports = class TrackingQueries {
   async getTrackedItems(channel) {
     const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
     const res = await this.query(query);
-    return res[0].map(r => r.item);
+    return res[0].map((r) => r.item);
   }
 
   /**
@@ -159,7 +153,7 @@ module.exports = class TrackingQueries {
   async getTrackedEventTypes(channel) {
     const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
     const [rows] = await this.query(query);
-    return rows.map(r => r.type);
+    return rows.map((r) => r.type);
   }
 
   /**
@@ -191,4 +185,4 @@ module.exports = class TrackingQueries {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.query(query);
   }
-};
+}

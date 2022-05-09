@@ -1,13 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Promocode queries
  * @mixin
  * @mixes Database
  */
-class PromocodeQueries {
+export default class PromocodeQueries {
   constructor(db) {
     this.db = db;
   }
@@ -95,7 +93,7 @@ class PromocodeQueries {
 
   async addPoolManagers(id, newManagers) {
     const query = SQL`INSERT IGNORE INTO code_pool_manager VALUES ?;`;
-    query.values = newManagers.map(manager => ([id, manager]));
+    query.values = newManagers.map((manager) => [id, manager]);
     return this.query(query);
   }
 
@@ -133,7 +131,7 @@ class PromocodeQueries {
     const query = SQL`SELECT * from code_pool_member WHERE pool_id in (${poolIds})`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(row => ({
+      return rows.map((row) => ({
         id: row.pool_id,
         platform: row.platform,
         addedBy: row.added_by || undefined,
@@ -193,7 +191,7 @@ class PromocodeQueries {
 
   async addCodes(codes) {
     const query = SQL`INSERT IGNORE INTO code_pool_member VALUES ?;`;
-    const val = codes.map(code => [
+    const val = codes.map((code) => [
       code.id,
       code.platform || 'pc',
       code.adder,
@@ -248,5 +246,3 @@ class PromocodeQueries {
     return (await this.query(query))[0];
   }
 }
-
-module.exports = PromocodeQueries;

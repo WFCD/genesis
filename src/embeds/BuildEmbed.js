@@ -1,19 +1,16 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates build embeds
  */
-class BuildEmbed extends BaseEmbed {
+export default class BuildEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Build} build - The alerts to be included in the embed
    */
-  constructor(bot, build) {
+  constructor(build) {
     super();
     const sections = build.body.split(';');
-    this.color = 0xF1C40F;
+    this.color = 0xf1c40f;
     this.title = build.title;
     this.fields = [];
     sections.forEach((section, index) => {
@@ -24,8 +21,8 @@ class BuildEmbed extends BaseEmbed {
       }
     });
     this.image = { url: build.url || build.image };
-    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${typeof build.owner === 'object' ? build.owner.tag : build.owner}`;
+    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${
+      typeof build.owner === 'object' ? build.owner.tag : build.owner
+    }`;
   }
 }
-
-module.exports = BuildEmbed;

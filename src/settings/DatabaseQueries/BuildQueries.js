@@ -1,16 +1,14 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-
-const Build = require('../../models/Build.js');
-const WorldStateClient = require('../../resources/WorldStateClient');
+import SQL from 'sql-template-strings';
+import Build from '../../models/Build.js';
+import WorldStateClient from '../../utilities/WorldStateClient.js';
+import logger from '../../utilities/Logger.js';
 
 /**
  * Database Mixin for Build queries
  * @mixin
  * @mixes Database
  */
-module.exports = class BuildQueries {
+export default class BuildQueries {
   async addNewBuilds(builds) {
     const rows = [];
     builds.forEach((build) => {
@@ -20,7 +18,7 @@ module.exports = class BuildQueries {
     });
 
     const query = SQL`INSERT INTO builds VALUES `;
-    rows.forEach((build, index) => query.append(SQL`(${build})`).append(index !== (rows.length - 1) ? ',' : ';'));
+    rows.forEach((build, index) => query.append(SQL`(${build})`).append(index !== rows.length - 1 ? ',' : ';'));
 
     await this.query(query);
     return builds;
@@ -32,7 +30,11 @@ module.exports = class BuildQueries {
       ON DUPLICATE KEY UPDATE title=${title}, body=${body}, image=${image};`;
     await this.query(query);
     return {
-      id: buildId, title, body, url: image, owner,
+      id: buildId,
+      title,
+      body,
+      url: image,
+      owner,
     };
   }
 
@@ -50,7 +52,7 @@ module.exports = class BuildQueries {
         if (result.owner_id) {
           result.owner = this.bot.client.users.cache.get(result.owner_id) || result.owner_id;
         }
-        return new Build(result, new WorldStateClient(require('../../Logger')));
+        return new Build(result, new WorldStateClient(logger));
       }
     }
     return undefined;
@@ -66,10 +68,10 @@ module.exports = class BuildQueries {
       const wrapped = `%${qString}%`;
       const query = SQL`SELECT * FROM builds WHERE (title like ${wrapped} or body like ${wrapped}) and is_public = '1' ;`;
       const [rows] = await this.query(query);
-      const ws = new WorldStateClient(require('../../Logger'));
+      const ws = new WorldStateClient(require('../../utilities/Logger.js'));
 
       if (rows) {
-        return rows.map(result => new Build(result, ws));
+        return rows.map((result) => new Build(result, ws));
       }
     }
     return [];
@@ -94,11 +96,11 @@ module.exports = class BuildQueries {
     } else {
       query = SQL`SELECT * FROM builds WHERE owner_id LIKE ${owner ? '%' : author.id};`;
     }
-    const ws = new WorldStateClient(require('../../Logger'));
+    const ws = new WorldStateClient(require('../../utilities/Logger.js'));
 
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(result => new Build(result, ws));
+      return rows.map((result) => new Build(result, ws));
     }
     return [];
   }
@@ -107,13 +109,13 @@ module.exports = class BuildQueries {
     const query = SQL`UPDATE builds SET `;
 
     if (title) {
-      query.append(SQL`title = ${title.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`title = ${title.trim().replace(/'/gi, "\\'")}`);
     }
     if (body) {
-      query.append(SQL`body = ${body.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`body = ${body.trim().replace(/'/gi, "\\'")}`);
     }
     if (image) {
-      query.append(SQL`image = ${image.trim().replace(/'/ig, '\\\'')}`);
+      query.append(SQL`image = ${image.trim().replace(/'/gi, "\\'")}`);
     }
 
     if (title || body || image) {
@@ -134,7 +136,7 @@ module.exports = class BuildQueries {
    * @returns {Promise<mysql.Connection.query>}
    */
   async saveBuild(build) {
-    const keys = Object.keys(build).filter(k => k !== 'id');
+    const keys = Object.keys(build).filter((k) => k !== 'id');
     let query;
     const sqlize = (val) => {
       if (typeof val === 'undefined') return 'NULL';
@@ -156,11 +158,12 @@ module.exports = class BuildQueries {
       query = SQL`UPDATE builds SET `;
       keys.forEach(populate);
       query.append(SQL` WHERE build_id=${build.id};`);
-    } else { // this means it's new
+    } else {
+      // this means it's new
       query = SQL`INSERT INTO builds SET `;
       keys.forEach(populate);
       query.append(SQL`, build_id = ${Build.makeId()};`);
     }
     return this.query(query);
   }
-};
+}

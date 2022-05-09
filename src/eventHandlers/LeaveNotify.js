@@ -1,16 +1,13 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const Handler = require('../models/BaseEventHandler');
-const { games } = require('../CommonFunctions');
-
-class LeaveNotify extends Handler {
+export default class LeaveNotify extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.server.leave', Events.GUILD_DELETE);
@@ -18,39 +15,39 @@ class LeaveNotify extends Handler {
 
   /**
    * Run the handle
-   * @param {GuildMember} member guildMember to welcome
+   * @param {Discord.GuildMember} member guildMember to welcome
    */
   async execute(...[guild]) {
     if (!games.includes('LOGGING')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}. Params: ${guild}`);
-    const bots = guild.members.cache.filter(member => member.user.bot);
+    const bots = guild.members.cache.filter((member) => member.user.bot);
     const tokens = [
       `${guild.name} (${guild.id})`,
       guild.owner ? `**Owner:** ${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.ownerID})` : '',
       `**Members:** ${guild.memberCount}`,
       `**Bots:** ${bots.size}`,
-      `**Percent:** ${((bots.size / (guild.memberCount)) * 100).toFixed(2)}%`,
+      `**Percent:** ${((bots.size / guild.memberCount) * 100).toFixed(2)}%`,
       `**Created:** ${guild.createdAt.toLocaleString('en-US', { timeZone: 'America/Chicago' })}`,
     ];
     try {
       this.bot.controlHook.send({
-        embeds: [{
-          color: 0x660000,
-          title: 'Left Server',
-          description: tokens.filter(a => a).join('\n'),
-          thumbnail: {
-            url: guild.iconURL(),
+        embeds: [
+          {
+            color: 0x660000,
+            title: 'Left Server',
+            description: tokens.filter((a) => a).join('\n'),
+            thumbnail: {
+              url: guild.iconURL(),
+            },
+            footer: {
+              text: guild.id,
+            },
+            timestamp: new Date(),
           },
-          footer: {
-            text: guild.id,
-          },
-          timestamp: new Date(),
-        }],
+        ],
       });
     } catch (e) {
       this.bot.logger.error(e);
     }
   }
 }
-
-module.exports = LeaveNotify;

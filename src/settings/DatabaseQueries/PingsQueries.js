@@ -1,22 +1,14 @@
-'use strict';
+import SQL from 'sql-template-strings';
 
-// eslint-disable-next-line no-unused-vars
-const mysql = require('mysql2/promise');
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
-
-const logger = require('../../Logger');
-const pingLists = require('../../resources/pingables.json');
+import logger from '../../utilities/Logger.js';
+import { pingables } from '../../resources/index.js';
 
 /**
  * Database Mixin for Pings queries
  * @mixin
  * @mixes Database
  */
-class PingsQueries {
+export default class PingsQueries {
   /**
    * Enables or disables pings for an item in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
@@ -67,8 +59,7 @@ class PingsQueries {
     const query = SQL`INSERT IGNORE INTO pings VALUES `;
     const combined = opts.events.concat(opts.items);
     combined.forEach((eventOrItem, index) => {
-      query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`)
-        .append(index !== (combined.length - 1) ? ',' : ';');
+      query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`).append(index !== combined.length - 1 ? ',' : ';');
     });
     return this.query(query);
   }
@@ -96,8 +87,7 @@ class PingsQueries {
       const query = SQL`SELECT text FROM pings WHERE guild_id=${guild.id} AND item_or_type in (${itemsOrTypes})`;
       const res = await this.query(query);
       if (!res[0].length) return '';
-      return res[0]
-        .map(result => result.text).join(', ');
+      return res[0].map((result) => result.text).join(', ');
     } catch (e) {
       logger.error(e);
       return '';
@@ -106,13 +96,15 @@ class PingsQueries {
 
   async getAllPings() {
     let globalPings = {};
-    for (const plist of pingLists) {
-      const plistPings = await this.getGroupPings(plist);
-      globalPings = {
-        ...globalPings,
-        ...plistPings,
-      };
-    }
+    await Promise.all(
+      pingables.map(async (plist) => {
+        const plistPings = await this.getGroupPings(plist);
+        globalPings = {
+          ...globalPings,
+          ...plistPings,
+        };
+      })
+    );
     return globalPings;
   }
 
@@ -141,9 +133,7 @@ class PingsQueries {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
       const [rows] = await this.query(query);
 
-      return rows.length
-        ? rows.map(result => ({ text: result.text, thing: result.item_or_type }))
-        : [];
+      return rows.length ? rows.map((result) => ({ text: result.text, thing: result.item_or_type })) : [];
     }
     return [];
   }
@@ -173,15 +163,24 @@ class PingsQueries {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-        .append(items && items.length
-          ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
+        .append(
+          items && items.length
+            ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id`
+            : SQL``
+        )
         .append(SQL` INNER JOIN channels ON channels.id = type_notifications.channel_id`)
         .append(SQL` INNER JOIN settings ON channels.id = settings.channel_id`)
-        .append(SQL` WHERE type_notifications.type = ${String(type)}
+        .append(
+          SQL` WHERE type_notifications.type = ${String(type)}
           AND MOD(IFNULL(channels.guild_id, 0) >> 22, ${this.bot.shardTotal}) in (${this.bot.shards})
-          AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `)
-        .append(items && items.length ? SQL` AND item_notifications.item IN (${items})
-          AND item_notifications.channel_id = settings.channel_id;` : SQL`;`);
+          AND settings.setting = "platform"  AND (settings.val = ${platform || 'pc'} OR settings.val IS NULL) `
+        )
+        .append(
+          items && items.length
+            ? SQL` AND item_notifications.item IN (${items})
+          AND item_notifications.channel_id = settings.channel_id;`
+            : SQL`;`
+        );
       return (await this.query(query))[0];
     } catch (e) {
       this.logger.error(e);
@@ -204,9 +203,13 @@ class PingsQueries {
     try {
       const query = SQL`SELECT DISTINCT channels.id as channelId
           FROM type_notifications`
-        .append(items && items.length
-          ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id` : SQL``)
-        .append(SQL`
+        .append(
+          items && items.length
+            ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id`
+            : SQL``
+        )
+        .append(
+          SQL`
           INNER JOIN channels ON channels.id = type_notifications.channel_id
           INNER JOIN settings as s1 ON channels.id = s1.channel_id
             AND s1.setting = "platform"  AND (s1.val = ${platform || 'pc'} OR s1.val IS NULL)
@@ -217,13 +220,16 @@ class PingsQueries {
           INNER JOIN settings as ws3 ON channels.id = ws3.channel_id
             AND ws3.setting = "webhookAvatar" AND ws3.val IS NOT NULL
           INNER JOIN settings as ws4 ON channels.id = ws4.channel_id
-            AND ws4.setting = "webhookName" AND ws4.val IS NOT NULL `)
+            AND ws4.setting = "webhookName" AND ws4.val IS NOT NULL `
+        )
         .append(SQL` WHERE type_notifications.type = ${String(type)} `)
-        .append(items && items.length ? SQL` AND item_notifications.item IN (${items})
-          AND item_notifications.channel_id = channels.id;` : SQL`;`);
-      return (await this.query(query))[0]
-        .map(o => o.channelId)
-        .filter(o => o);
+        .append(
+          items && items.length
+            ? SQL` AND item_notifications.item IN (${items})
+          AND item_notifications.channel_id = channels.id;`
+            : SQL`;`
+        );
+      return (await this.query(query))[0].map((o) => o.channelId).filter((o) => o);
     } catch (e) {
       this.logger.error(e);
       return [];
@@ -266,5 +272,3 @@ class PingsQueries {
     return rows.length ? rows[0].id_list : [];
   }
 }
-
-module.exports = PingsQueries;

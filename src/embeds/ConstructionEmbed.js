@@ -1,27 +1,17 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-/**
- * Generates daily deal embeds
- */
-class ConstructionEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Construction} constructionProgress - The current construction information
-   * @param {string} platform - The platform the event is for
-   */
-  constructor(bot, constructionProgress, platform) {
-    super();
+export default class ConstructionEmbed extends BaseEmbed {
+  constructor(constructionProgress, { platform, i18n, locale }) {
+    super(locale);
 
     this.color = 0xff6961;
-    this.fields = [{
-      name: `[${platform.toUpperCase()}] Construction Status:`,
-      value: `\`Razorback: ${constructionProgress.razorbackProgress}\`\n`
-      + `\`Fomorian:  ${constructionProgress.fomorianProgress}\`\n`
-      + `\`Unknown:   ${constructionProgress.unknownProgress}\``,
-    }];
+    this.fields = [
+      {
+        name: i18n`[${platform.toUpperCase()}] Construction Status:`,
+        value: i18n`\`Razorback: ${constructionProgress.razorbackProgress}\`
+\`Fomorian:  ${constructionProgress.fomorianProgress}\`
+\`Unknown:   ${constructionProgress.unknownProgress}\``,
+      },
+    ];
   }
 }
-
-module.exports = ConstructionEmbed;

@@ -1,24 +1,20 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
+import logger from '../utilities/Logger.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { chunkify, markdinate } = require('../CommonFunctions');
-const logger = require('../Logger');
+import { chunkify, markdinate } from '../utilities/CommonFunctions.js';
 
 /**
  * Generates daily deal embeds
  */
 class RSSEmbed extends BaseEmbed {
   /**
-   * @param {Logger} bot.logger - Logger instance for this bot
    * @param {Object} feedItem - feed item
    * @param {Object} feed - Configured Feed details providing the key and defaults
    */
   constructor(feedItem, feed) {
     super();
     // clean up description, falling back to an empty string
-    let strippedDesc = markdinate((feedItem.description || '\u200B')
-      .replace(/\<\\?string\>/ig, ''));
+    let strippedDesc = markdinate((feedItem.description || '\u200B').replace(/<\\?string>/gi, ''));
     const firstLine = strippedDesc.split('\n')[0].replace(/\*\*/g, '');
 
     if (feedItem.title.includes(firstLine)) {
@@ -88,4 +84,4 @@ class RSSEmbed extends BaseEmbed {
   }
 }
 
-module.exports = RSSEmbed;
+export default RSSEmbed;

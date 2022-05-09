@@ -1,18 +1,21 @@
-'use strict';
-
-const Discord = require('discord.js');
+import Discord, { MessageButton } from 'discord.js';
+import Interaction from '../../models/Interaction.js';
+import {
+  chunkify,
+  emojify,
+  toTitleCase,
+  trackableEvents,
+  trackableItems,
+  trackablesFromParameters,
+} from '../../utilities/CommonFunctions.js';
+import { cmds } from '../../resources/index.js';
 
 const {
-  Constants: {
-    ApplicationCommandOptionTypes: Types, InteractionTypes,
-    MessageComponentTypes, MessageButtonStyles,
-  },
-  MessageActionRow, MessageSelectMenu, InteractionCollector,
+  Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
+  MessageActionRow,
+  MessageSelectMenu,
+  InteractionCollector,
 } = Discord;
-const { MessageButton } = require('discord.js');
-const {
-  chunkify, trackableEvents, toTitleCase, trackableItems, trackablesFromParameters, emojify,
-} = require('../../CommonFunctions');
 
 /**
  * Generate tracking message strings
@@ -20,51 +23,52 @@ const {
  * @returns {Array<string>}
  */
 const chunkerate = (track) => {
-  const itemString = !track.items.length ? 'None' : track.items.map(i => `\`${i}\``).join(', ');
-  const eventString = !track.events.length ? 'None' : track.events.map(m => `\`${m}\``).join(', ');
+  const itemString = !track.items.length ? 'None' : track.items.map((i) => `\`${i}\``).join(', ');
+  const eventString = !track.events.length ? 'None' : track.events.map((m) => `\`${m}\``).join(', ');
   const format = `**Current Items:**\n${itemString}\n\n**Current Events:**\n${eventString}`;
   return chunkify({ string: format, maxLength: 2000, breakChar: ',' });
 };
 
 const subgrouped = ['arbitration', 'fissures', 'twitter'];
 
-module.exports = class Settings extends require('../../models/Interaction') {
+export default class Settings extends Interaction {
   static elevated = true;
   static command = {
-    name: 'tracking',
-    description: 'Configure tracking options',
+    ...cmds.tracking,
     // defaultPermission: false,
-    options: [{
-      name: 'manage',
-      type: Types.SUB_COMMAND,
-      description: 'Manage tracking settings',
-    }, {
-      name: 'custom',
-      type: Types.SUB_COMMAND,
-      description: 'Set up custom trackings and pings',
-      options: [{
-        name: 'add',
-        type: Types.STRING,
-        description: 'Comma-separated list of trackables to add. See website.',
-      }, {
-        name: 'remove',
-        type: Types.STRING,
-        description: 'Comma-separated list of trackables to remove. See website.',
-      }, {
-        name: 'prepend',
-        type: Types.STRING,
-        description: 'Requires \'add\' to be specified. Ignored on remove.',
-      }, {
-        name: 'channel',
-        type: Types.CHANNEL,
-        description: 'Channel (text-based) that this should apply to.',
-      }, {
-        name: 'clear-prepend',
-        type: Types.BOOLEAN,
-        description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.',
-      }],
-    }],
-  }
+    options: [
+      {
+        ...cmds['tracking.manage'],
+        type: Types.SUB_COMMAND,
+      },
+      {
+        ...cmds['tracking.custom'],
+        type: Types.SUB_COMMAND,
+        options: [
+          {
+            ...cmds['tracking.custom.add'],
+            type: Types.STRING,
+          },
+          {
+            ...cmds['tracking.custom.remove'],
+            type: Types.STRING,
+          },
+          {
+            ...cmds['tracking.custom.prepend'],
+            type: Types.STRING,
+          },
+          {
+            ...cmds['tracking.custom.channel'],
+            type: Types.CHANNEL,
+          },
+          {
+            ...cmds['tracking.custom.clear-prepend'],
+            type: Types.BOOLEAN,
+          },
+        ],
+      },
+    ],
+  };
 
   static async commandHandler(interaction, ctx) {
     await interaction?.deferReply({ ephemeral: false });
@@ -88,100 +92,110 @@ module.exports = class Settings extends require('../../models/Interaction') {
             value: 'items',
             default: currentGroup === 'items',
           },
-          ...(Object.keys(trackableEvents)
-            .filter(e => !['events', 'opts', 'kuva', 'cetus'].includes(e)
-              && !e.startsWith('fissures.')
-              && !e.startsWith('twitter.')
-              && !e.startsWith('arbitration.'))
-            .map(e => ({
+          ...Object.keys(trackableEvents)
+            .filter(
+              (e) =>
+                !['events', 'opts', 'kuva', 'cetus'].includes(e) &&
+                !e.startsWith('fissures.') &&
+                !e.startsWith('twitter.') &&
+                !e.startsWith('arbitration.')
+            )
+            .map((e) => ({
               label: e === 'baseEvents' ? toTitleCase('events') : toTitleCase(e.split('.').join(' ')),
               value: e,
               default: currentGroup === e,
-            }))),
+            })),
         ];
         const subgroups = subgrouped.includes(currentGroup)
           ? Object.keys(trackableEvents)
-            .filter(e => e.startsWith(`${currentGroup}.`))
-            .map(e => ({
-              label: toTitleCase(e.split('.').join(' ')),
-              value: e,
-              default: currentSubgroup === e,
-            }))
+              .filter((e) => e.startsWith(`${currentGroup}.`))
+              .map((e) => ({
+                label: toTitleCase(e.split('.').join(' ')),
+                value: e,
+                default: currentSubgroup === e,
+              }))
           : undefined;
 
-        const currentDetermination = subgrouped.includes(currentGroup) && !currentSubgroup
-          ? undefined
-          : (currentSubgroup || currentGroup);
+        const currentDetermination =
+          subgrouped.includes(currentGroup) && !currentSubgroup ? undefined : currentSubgroup || currentGroup;
 
-        const list = currentDetermination === 'items'
-          ? trackableItems.items
-          : trackableEvents[currentDetermination];
+        const list = currentDetermination === 'items' ? trackableItems.items : trackableEvents[currentDetermination];
         const groupOptions = list?.length
-          ? list.map((li, index) => {
-            if (index < 25) {
-              return {
-                label: toTitleCase(li.split('.').join(' ')),
-                value: li,
-                default: current.items.includes(li) || current.events.includes(li),
-              };
-            }
-            return undefined;
-          }).filter(a => a)
+          ? list
+              .map((li, index) => {
+                if (index < 25) {
+                  return {
+                    label: toTitleCase(li.split('.').join(' ')),
+                    value: li,
+                    default: current.items.includes(li) || current.events.includes(li),
+                  };
+                }
+                return undefined;
+              })
+              .filter((a) => a)
           : [{ label: 'N/A', value: 'na', default: false }];
-        return ([
+        return [
           // paginator
-          chunks.length > 1 ? new MessageActionRow({
-            components: [
-              new MessageButton({
-                label: 'Previous',
-                customId: 'previous',
-                style: MessageButtonStyles.SECONDARY,
-                disabled: chunks.length < 1,
-              }),
-              new MessageButton({
-                label: 'Next',
-                customId: 'next',
-                style: MessageButtonStyles.SECONDARY,
-                disabled: chunks.length < 1,
-              }),
-            ],
-          }) : undefined,
+          chunks.length > 1
+            ? new MessageActionRow({
+                components: [
+                  new MessageButton({
+                    label: 'Previous',
+                    customId: 'previous',
+                    style: MessageButtonStyles.SECONDARY,
+                    disabled: chunks.length < 1,
+                  }),
+                  new MessageButton({
+                    label: 'Next',
+                    customId: 'next',
+                    style: MessageButtonStyles.SECONDARY,
+                    disabled: chunks.length < 1,
+                  }),
+                ],
+              })
+            : undefined,
           // group selection
-          groups?.length ? new MessageActionRow({
-            components: [
-              new MessageSelectMenu({
-                minValues: 0,
-                maxValues: 1,
-                customId: 'select_group',
-                placeholder: ctx.i18n`Select Tracking Group`,
-                options: groups,
-              }),
-            ],
-          }) : undefined,
+          groups?.length
+            ? new MessageActionRow({
+                components: [
+                  new MessageSelectMenu({
+                    minValues: 0,
+                    maxValues: 1,
+                    customId: 'select_group',
+                    placeholder: ctx.i18n`Select Tracking Group`,
+                    options: groups,
+                  }),
+                ],
+              })
+            : undefined,
           // subgroup selection
-          subgrouped.includes(currentGroup) ? new MessageActionRow({
-            components: [
-              new MessageSelectMenu({
-                minValues: 0,
-                maxValues: 1,
-                customId: 'select_sub_group',
-                placeholder: ctx.i18n`Select Tracking Sub-Group`,
-                options: subgroups,
-              }),
-            ],
-          }) : undefined,
+          subgrouped.includes(currentGroup)
+            ? new MessageActionRow({
+                components: [
+                  new MessageSelectMenu({
+                    minValues: 0,
+                    maxValues: 1,
+                    customId: 'select_sub_group',
+                    placeholder: ctx.i18n`Select Tracking Sub-Group`,
+                    options: subgroups,
+                  }),
+                ],
+              })
+            : undefined,
           // discrete trackable selection
-          groupOptions.length ? new MessageActionRow({
-            components: [
-              new MessageSelectMenu({
-                maxValues: groupOptions.length,
-                customId: 'select_trackables',
-                placeholder: ctx.i18n`Select Trackables`,
-                options: groupOptions,
-                disabled: !currentDetermination,
-              }),
-            ],
-          }) : undefined,
+          groupOptions.length
+            ? new MessageActionRow({
+                components: [
+                  new MessageSelectMenu({
+                    maxValues: groupOptions.length,
+                    customId: 'select_trackables',
+                    placeholder: ctx.i18n`Select Trackables`,
+                    options: groupOptions,
+                    disabled: !currentDetermination,
+                  }),
+                ],
+              })
+            : undefined,
           // actions (save, all, reset, cancel, clear)
           new MessageActionRow({
             components: [
@@ -212,7 +226,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
               }),
             ],
           }),
-        ].filter(a => a));
+        ].filter((a) => a);
       };
       const message = await interaction.editReply({
         content: chunks[page],
@@ -252,11 +266,12 @@ module.exports = class Settings extends require('../../models/Interaction') {
             break;
           case 'select_trackables':
             if (currentGroup === 'items') {
-              current.items = current.items.filter(i => !trackableItems.items.includes(i));
+              current.items = current.items.filter((i) => !trackableItems.items.includes(i));
               current.items = [...selection.values];
             } else {
-              current.events = current.events
-                .filter(e => !trackableEvents[currentSubgroup || currentGroup].includes(e));
+              current.events = current.events.filter(
+                (e) => !trackableEvents[currentSubgroup || currentGroup].includes(e)
+              );
               current.events.push(...selection.values);
             }
             chunks = chunkerate(current);
@@ -352,9 +367,9 @@ module.exports = class Settings extends require('../../models/Interaction') {
           case 'all':
             if (currentGroup === 'items') current.items = trackableItems.items;
             else {
-              current.events = Array
-                .from(new Set(current.events
-                  .concat(trackableEvents[currentSubgroup || currentGroup])));
+              current.events = Array.from(
+                new Set(current.events.concat(trackableEvents[currentSubgroup || currentGroup]))
+              );
             }
             chunks = chunkerate(current);
             if (page > chunks.length - 1) page = 0;
@@ -384,30 +399,39 @@ module.exports = class Settings extends require('../../models/Interaction') {
     }
     if (action === 'custom') {
       await interaction?.editReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
-      const add = trackablesFromParameters((options.getString('add') || '')
-        .split(',')
-        .map(a => a?.trim())
-        .filter(Boolean));
-      const remove = trackablesFromParameters((options.getString('remove') || '')
-        .split(',')
-        .map(a => a?.trim())
-        .filter(Boolean));
+      const add = trackablesFromParameters(
+        (options.getString('add') || '')
+          .split(',')
+          .map((a) => a?.trim())
+          .filter(Boolean)
+      );
+      const remove = trackablesFromParameters(
+        (options.getString('remove') || '')
+          .split(',')
+          .map((a) => a?.trim())
+          .filter(Boolean)
+      );
       const prepend = options.getString('prepend');
       const clear = options.getBoolean('clear-prepend');
-      const channel = options?.getChannel('channel')?.type === 'GUILD_TEXT'
-        ? options.getChannel('channel')
-        : interaction.channel;
+      const channel =
+        options?.getChannel('channel')?.type === 'GUILD_TEXT' ? options.getChannel('channel') : interaction.channel;
 
       if (clear && Object.keys(remove)?.length) {
-        for (const type of Object.keys(remove)) {
-          for (const unping of remove[type]) {
-            await ctx.settings.removePing(interaction.guild, unping);
-          }
-        }
-        return interaction?.editReply?.({ content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`, ephemeral: ctx.ephemerate });
+        await Promise.all(
+          Object.keys(remove).map(async (type) =>
+            Promise.all(remove[type].map(async (unping) => ctx.settings.removePing(interaction.guild, unping)))
+          )
+        );
+        return interaction?.editReply?.({
+          content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`,
+          ephemeral: ctx.ephemerate,
+        });
       }
       if (clear && !remove?.length) {
-        return interaction?.editReply?.({ content: ctx.i18n`Specify trackables to remove the prepend for.`, ephemeral: ctx.ephemerate });
+        return interaction?.editReply?.({
+          content: ctx.i18n`Specify trackables to remove the prepend for.`,
+          ephemeral: ctx.ephemerate,
+        });
       }
       if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events);
       if (add?.items?.length) await ctx.settings.trackItems(channel, add.items);
@@ -419,9 +443,9 @@ module.exports = class Settings extends require('../../models/Interaction') {
 
       if (prepend && (add.items.length || add.events.length)) {
         await ctx.settings.addPings(interaction.guild, add, prepend);
-        const pingsString = ctx.i18n`Adding \`${
-          Discord.Util.escapeMarkdown(Discord.Util.removeMentions(prepend))
-        }\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
+        const pingsString = ctx.i18n`Adding \`${Discord.Util.escapeMarkdown(
+          Discord.Util.removeMentions(prepend)
+        )}\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
         await interaction.editReply({
           content: `${addString}\n${removeString}\n${pingsString}`,
         });
@@ -436,7 +460,7 @@ module.exports = class Settings extends require('../../models/Interaction') {
    * @param {CommandContext} ctx to set up everything
    * @param {Discord.TextChannel} [channel] to set up
    */
-  static async #generateWebhook (interaction, ctx, channel) {
+  static async #generateWebhook(interaction, ctx, channel) {
     channel = channel || interaction.channel;
     if (channel.permissionsFor(interaction.client.user).has('MANAGE_WEBHOOKS')) {
       let webhook;
@@ -446,10 +470,9 @@ module.exports = class Settings extends require('../../models/Interaction') {
         setupMsg = await interaction.followUp({
           content: 'Setting up webhook...',
         });
-        existingWebhooks = (await channel.fetchWebhooks())
-          .filter(w => w.type === 'Incoming'
-            && w?.owner?.id === interaction?.client?.user?.id
-            && !!w.token);
+        existingWebhooks = (await channel.fetchWebhooks()).filter(
+          (w) => w.type === 'Incoming' && w?.owner?.id === interaction?.client?.user?.id && !!w.token
+        );
       } catch (e) {
         ctx.logger.error(e);
         await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to get existing.`);
@@ -496,4 +519,4 @@ module.exports = class Settings extends require('../../models/Interaction') {
       await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }
   }
-};
+}

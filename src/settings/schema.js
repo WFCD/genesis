@@ -1,8 +1,6 @@
-'use strict';
+import SQL from 'sql-template-strings';
 
-const SQL = require('sql-template-strings');
-
-module.exports = [
+export default [
   SQL`CREATE TABLE IF NOT EXISTS channels (
     id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     guild_id BIGINT UNSIGNED,

@@ -1,22 +1,21 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, groupBy } = require('../CommonFunctions');
+import { assetBase, groupBy } from '../utilities/CommonFunctions.js';
 
 const kuvaThumb = `${assetBase}/img/kuva.png`;
 
 /**
  * Generates Kuva mission embed embeds
  */
-class KuvaEmbed extends BaseEmbed {
+export default class KuvaEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Array.<Alert>} kuver - The kuva missions to be included in the embed
    * @param {string} platform - platform
    * @param {I18n} i18n - string template function for internationalization
+   * @param {string} locale locality
    */
-  constructor(bot, kuver, platform, i18n) {
-    super();
+  constructor(kuver, { platform, i18n, locale }) {
+    super(locale);
 
     this.thumbnail = {
       url: kuvaThumb,
@@ -28,8 +27,7 @@ class KuvaEmbed extends BaseEmbed {
     Object.keys(grouped).forEach((enemy) => {
       this.fields.push({
         name: enemy,
-        value: grouped[enemy].map(kuva => i18n`${kuva.type} on ${kuva.node}`)
-          .join('\n'),
+        value: grouped[enemy].map((kuva) => i18n`${kuva.type} on ${kuva.node}`).join('\n'),
         inline: false,
       });
     });
@@ -38,5 +36,3 @@ class KuvaEmbed extends BaseEmbed {
     this.timestamp = kuver[0].expiry;
   }
 }
-
-module.exports = KuvaEmbed;

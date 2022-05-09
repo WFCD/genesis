@@ -1,19 +1,16 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class AssignDefaultRolesHandle extends Handler {
+export default class AssignDefaultRolesHandle extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.assignDefaultRoles', Events.GUILD_MEMBER_ADD);
@@ -21,18 +18,17 @@ class AssignDefaultRolesHandle extends Handler {
 
   /**
    * add the guild to teh Database
-   * @param {Discord.member} member member to add roles to
+   * @param {Discord.Member} member member to add roles to
    */
   async execute(...[member]) {
     if (!games.includes('UTIL')) return;
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    const defaultRoles = JSON.parse(await this.settings.getGuildSetting(member.guild, 'defaultRoles') || '[]')
-      .map(roleId => member.guild.roles.cache.get(roleId)).filter(role => role);
+    const defaultRoles = JSON.parse((await this.settings.getGuildSetting(member.guild, 'defaultRoles')) || '[]')
+      .map((roleId) => member.guild.roles.cache.get(roleId))
+      .filter((role) => role);
     if (defaultRoles.length) {
       await member.roles.add(defaultRoles, `Default role assignment for ${member.user.tag}`);
     }
   }
 }
-
-module.exports = AssignDefaultRolesHandle;

@@ -1,50 +1,53 @@
-'use strict';
+import Discord from 'discord.js';
+import { createGroupedArray } from '../../utilities/CommonFunctions.js';
+import Collectors from '../../utilities/Collectors.js';
+import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
 const {
-  // eslint-disable-next-line no-unused-vars
   Constants: { ApplicationCommandOptionTypes: Types },
-} = require('discord.js');
-const { createGroupedArray } = require('../../CommonFunctions.js');
-const { createConfirmationCollector } = require('../../CommonFunctions');
+} = Discord;
 
 const nameReg = /^[\w-]{1,32}$/u;
 
-module.exports = class CustomCommands extends require('../../models/Interaction') {
+export default class CustomCommands extends Interaction {
   static enabled = true;
   static elevated = true;
   static command = {
-    name: 'cc',
-    description: 'Manage custom commands',
-    options: [{
-      type: Types.SUB_COMMAND,
-      name: 'add',
-      description: 'Add a custom command',
-      options: [{
-        type: Types.STRING,
-        name: 'call',
-        description: 'Sets the command call for the new custom command',
-        required: true,
-      }, {
-        type: Types.STRING,
-        name: 'response',
-        description: 'Set what the call will respond to',
-        required: true,
-      }],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'remove',
-      description: 'Remove a custom command by name',
-      options: [{
-        type: Types.STRING,
-        name: 'call',
-        description: 'Which call to remove?',
-        required: true,
-      }],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'list',
-      description: 'List all subcommands for the guild',
-    }],
+    ...cmds.cc,
+    options: [
+      {
+        ...cmds['cc.add'],
+        type: Types.SUB_COMMAND,
+        options: [
+          {
+            ...cmds['cc.add.call'],
+            type: Types.STRING,
+            required: true,
+          },
+          {
+            ...cmds['cc.add.response'],
+            type: Types.STRING,
+            required: true,
+          },
+        ],
+      },
+      {
+        ...cmds['cc.remove'],
+        type: Types.SUB_COMMAND,
+        options: [
+          {
+            ...cmds['cc.remove.call'],
+            type: Types.STRING,
+            required: true,
+          },
+        ],
+      },
+      {
+        ...cmds['cc.list'],
+        type: Types.SUB_COMMAND,
+      },
+    ],
   };
 
   static async commandHandler(interaction, ctx) {
@@ -56,22 +59,22 @@ module.exports = class CustomCommands extends require('../../models/Interaction'
 
     switch (action) {
       case 'add':
-        if (nameReg.test(call)
-          && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
-          await ctx.settings.addCustomCommand(
-            interaction.guild, call, response, interaction.user.id,
-          );
+        if (nameReg.test(call) && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
+          await ctx.settings.addCustomCommand(interaction.guild, call, response, interaction.user.id);
           await ctx.handler.loadCustomCommands(interaction.guild.id);
           return interaction.reply({ content: 'Added & reloaded guild commands', ephemeral });
         }
-        return interaction.reply({ content: 'Not possible, command name is either invalid, or another with the same name exists', ephemeral });
+        return interaction.reply({
+          content: 'Not possible, command name is either invalid, or another with the same name exists',
+          ephemeral,
+        });
       case 'remove':
         const onConfirm = async () => {
           await ctx.settings.deleteCustomCommand(interaction.guild, call);
           return interaction.editReply('done');
         };
         const onDeny = async () => interaction.editReply('ok');
-        return createConfirmationCollector(interaction, onConfirm, onDeny, ctx);
+        return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
       case 'list':
         const ccs = [];
         const gcc = await ctx.settings.getCustomCommandsForGuild(interaction.guild);
@@ -84,9 +87,13 @@ module.exports = class CustomCommands extends require('../../models/Interaction'
           }
         });
         const metaGroups = createGroupedArray(ccs, 10);
-        const embeds = metaGroups.map(metaGroup => ({ color: 0x301934, fields: metaGroup, title: ctx.i18n`Custom Commands` }));
+        const embeds = metaGroups.map((metaGroup) => ({
+          color: 0x301934,
+          fields: metaGroup,
+          title: ctx.i18n`Custom Commands`,
+        }));
         return interaction.reply({ embeds, ephemeral });
     }
     return undefined;
   }
-};
+}

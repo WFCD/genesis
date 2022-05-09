@@ -1,20 +1,18 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import LogEmbed from '../embeds/LogEmbed.js';
+import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const LogEmbed = require('../embeds/LogEmbed');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class LogMessageDelete extends Handler {
+export default class LogMessageDelete extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.logMessageDeleteBulk', Events.MESSAGE_DELETE_BULK);
@@ -37,7 +35,7 @@ class LogMessageDelete extends Handler {
     }
     if (channel?.type === 'text') {
       const log = new LogEmbed(this.bot, {
-        color: 0xFF5A36,
+        color: 0xff5a36,
         title: 'Message Deleted',
         fields: [
           {
@@ -50,9 +48,7 @@ class LogMessageDelete extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel }, { embeds: [log] });
+      await webhook({ channel }, { embeds: [log] });
     }
   }
 }
-
-module.exports = LogMessageDelete;

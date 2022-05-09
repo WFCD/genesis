@@ -1,19 +1,13 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-
-/**
- * Generates enemy embeds
- */
-class WhereisEmbed extends BaseEmbed {
+export default class WhereisEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Object} resultsGroups details to derive data from
    * @param {string} query The query that this search corresponds to
    * @param {number} nameWidth Spacing for Names
    * @param {number} relicWidth Spacing for relics
    */
-  constructor(bot, resultsGroups, query, nameWidth, relicWidth) {
+  constructor(resultsGroups, query, nameWidth, relicWidth) {
     super();
     this.fields = [];
 
@@ -35,8 +29,5 @@ class WhereisEmbed extends BaseEmbed {
 
     this.title = `${query}`;
     this.color = 0x3498db;
-    this.type = 'rich';
   }
 }
-
-module.exports = WhereisEmbed;

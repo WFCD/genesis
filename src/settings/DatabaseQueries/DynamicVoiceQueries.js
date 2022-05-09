@@ -1,20 +1,11 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const mysql = require('mysql2/promise');
-// eslint-disable-next-line no-unused-vars
-const Database = require('../Database');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for dynamic voice queries
  * @mixin
  * @mixes Database
  */
-module.exports = class DynamicVoiceQueries {
+export default class DynamicVoiceQueries {
   /**
    * Add a channel as a template
    * @param {Discord.VoiceChannel} channel channel to be added as a template
@@ -81,7 +72,7 @@ module.exports = class DynamicVoiceQueries {
     const empties = [];
     let remainingEmpty = 0;
     rows
-      .map(row => row.instance_id)
+      .map((row) => row.instance_id)
       .forEach((channelId) => {
         if (template.guild.channels.cache.has(channelId)) {
           const channel = template.guild.channels.cache.get(channelId);
@@ -130,7 +121,7 @@ module.exports = class DynamicVoiceQueries {
    * @returns {Promise<*[]|*>}
    */
   async getTemplates(guilds) {
-    const gids = guilds.map(guild => guild.id);
+    const gids = guilds.map((guild) => guild.id);
 
     const query = SQL`SELECT channel_id
       FROM dynamic_voice_template
@@ -140,7 +131,7 @@ module.exports = class DynamicVoiceQueries {
     if (!rows.length) {
       return [];
     }
-    return rows.map(row => row.channel_id);
+    return rows.map((row) => row.channel_id);
   }
 
   /**
@@ -213,4 +204,4 @@ module.exports = class DynamicVoiceQueries {
       WHERE instance_id = ${channel.id}`);
     return rows.length;
   }
-};
+}

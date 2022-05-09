@@ -1,9 +1,5 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-const Discord = require('discord.js');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
+import SQL from 'sql-template-strings';
+import Discord from 'discord.js';
 
 const { Role } = Discord;
 
@@ -12,7 +8,7 @@ const { Role } = Discord;
  * @mixin
  * @mixes Database
  */
-class PermissionsQueries {
+export default class PermissionsQueries {
   /**
    * Enables or disables a command for an individual member in a channel
    * @param {Discord.TextChannel} channel - A discord guild channel
@@ -35,7 +31,9 @@ class PermissionsQueries {
     }
     const query = SQL`INSERT INTO channel_permissions VALUES`;
     commandId.forEach((command, index) => {
-      query.append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+      query
+        .append(SQL`(${channel}, ${member}, TRUE, ${command}, ${allowed})`)
+        .append(index !== commandId.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
     return this.query(query);
@@ -58,7 +56,9 @@ class PermissionsQueries {
     }
     const query = SQL`INSERT INTO channel_permissions VALUES`;
     commandId.forEach((command, index) => {
-      query.append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`).append(index !== (commandId.length - 1) ? ',' : '');
+      query
+        .append(SQL`(${channel}, ${role}, FALSE, ${command}, ${allowed})`)
+        .append(index !== commandId.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE allowed = ${allowed}`);
     return this.query(query);
@@ -166,10 +166,10 @@ class PermissionsQueries {
       return 'none';
     }
 
-    rows.sort((a, b) => -Role.comparePositions(
-      channel.guild.roles.cache.get(a.target_id),
-      channel.guild.roles.cache.get(b.target_id),
-    ));
+    rows.sort(
+      (a, b) =>
+        -Role.comparePositions(channel.guild.roles.cache.get(a.target_id), channel.guild.roles.cache.get(b.target_id))
+    );
 
     return rows[0].allowed;
   }
@@ -241,7 +241,7 @@ class PermissionsQueries {
     const query = SQL`SELECT * FROM guild_permissions WHERE guild_id = ${guild.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(value => ({
+      return rows.map((value) => ({
         level: 'guild',
         command: value.command_id,
         isAllowed: value.allowed,
@@ -261,7 +261,7 @@ class PermissionsQueries {
     const query = SQL`SELECT * FROM channel_permissions WHERE channel_id = ${channel.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(value => ({
+      return rows.map((value) => ({
         level: 'channel',
         command: value.command_id,
         isAllowed: value.allowed,
@@ -272,5 +272,3 @@ class PermissionsQueries {
     return [];
   }
 }
-
-module.exports = PermissionsQueries;

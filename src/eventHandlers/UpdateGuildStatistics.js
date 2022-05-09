@@ -1,10 +1,10 @@
-'use strict';
+import Discord from 'discord.js';
+import { games } from '../utilities/CommonFunctions.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const { games } = require('../CommonFunctions');
-
-module.exports = class UpdateGuildStatistics extends require('../models/BaseEventHandler') {
+export default class UpdateGuildStatistics extends Handler {
   constructor(bot) {
     super(bot, 'handlers.statsupdate', Events.GUILD_MEMBER_UPDATE);
   }
@@ -17,7 +17,7 @@ module.exports = class UpdateGuildStatistics extends require('../models/BaseEven
     const mappedRoles = await this.settings.getTrackedRoles(guild);
 
     guild.roles.cache
-      .filter(r => Object.keys(mappedRoles).includes(r.id))
+      .filter((r) => Object.keys(mappedRoles).includes(r.id))
       .each((role) => {
         const channel = guild.channels.cache.get(mappedRoles[role.id]);
         if (channel.permissionsFor(this.bot.client.user).has(['MANAGE_CHANNELS', 'MANAGE_ROLES'])) {
@@ -27,4 +27,4 @@ module.exports = class UpdateGuildStatistics extends require('../models/BaseEven
         }
       });
   }
-};
+}

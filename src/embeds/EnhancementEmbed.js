@@ -1,26 +1,15 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase } = require('../CommonFunctions');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
 
 const arcaneThumb = `${assetBase}/img/arcane.png`;
-
 const colors = {
-  common: 0x443B25,
-  uncommon: 0x95BACD,
-  rare: 0xC8BE92,
+  common: 0x443b25,
+  uncommon: 0x95bacd,
+  rare: 0xc8be92,
 };
 
-/**
- * Generates enemy embeds
- */
-class EnhancementEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Enhancement} enhancement - The enhancement to send info on
-   * @param {Array.<Enhancement>} enhancements - The enhancement to send info on
-   */
-  constructor(bot, enhancement, enhancements) {
+export default class EnhancementEmbed extends BaseEmbed {
+  constructor(enhancement, { enhancements }) {
     super();
 
     this.thumbnail = {
@@ -50,9 +39,7 @@ class EnhancementEmbed extends BaseEmbed {
       ];
     } else {
       this.title = 'Available Enhancements';
-      this.fields = [{ name: '\u200B', value: enhancements.map(profile => profile.name).join('\n') }];
+      this.fields = [{ name: '\u200B', value: enhancements.map((profile) => profile.name).join('\n') }];
     }
   }
 }
-
-module.exports = EnhancementEmbed;

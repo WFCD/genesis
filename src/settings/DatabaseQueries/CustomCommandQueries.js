@@ -1,25 +1,10 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const CustomCommand = require('../../models/CustomCommand.js');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for custom command queries
  * @mixin
  */
-module.exports = class CustomCommandQueries {
-  async getCustomCommands() {
-    const query = SQL`SELECT * FROM custom_commands WHERE (guild_id >> 22) % ${this.bot.shardTotal} in (${this.bot.shards})`;
-    const res = await this.query(query);
-    if (res[0]) {
-      return res[0]
-        .map(value => new CustomCommand(this.bot, value.command, value.response, value.guild_id));
-    }
-    return [];
-  }
-
+export default class CustomCommandQueries {
   /**
    * Get raw custom commands for specified guild
    * @param {string} guildId guild identifier
@@ -33,20 +18,20 @@ module.exports = class CustomCommandQueries {
     const [rows] = await this.query(query);
     return rows?.length
       ? rows.map((row) => {
-        try {
-          return {
-            call: row.command,
-            response: decodeURIComponent(row.response),
-            guildId: row.guild_id,
-          };
-        } catch (ignored) {
-          return {
-            call: row.command,
-            response: row.response,
-            guildId: row.guild_id,
-          };
-        }
-      })
+          try {
+            return {
+              call: row.command,
+              response: decodeURIComponent(row.response),
+              guildId: row.guild_id,
+            };
+          } catch (ignored) {
+            return {
+              call: row.command,
+              response: row.response,
+              guildId: row.guild_id,
+            };
+          }
+        })
       : undefined;
   }
 
@@ -70,8 +55,7 @@ module.exports = class CustomCommandQueries {
 
     const [rows] = await this.query(query);
     if (rows) {
-      const vals = rows
-        .map(row => ({ call: row.command, response: row.response, id: row.command_id }));
+      const vals = rows.map((row) => ({ call: row.command, response: row.response, id: row.command_id }));
       this.logger.warn(JSON.stringify(vals));
       return vals[0];
     }
@@ -99,8 +83,10 @@ module.exports = class CustomCommandQueries {
     const query = SQL`SELECT * FROM custom_commands WHERE guild_id = ${guild.id}`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows
-        .map(row => new CustomCommand(this.bot, row.command, row.response, row.guild_id));
+      return rows.map((row) => ({
+        call: row.command,
+        response: row.response,
+      }));
     }
     return [];
   }
@@ -141,4 +127,4 @@ module.exports = class CustomCommandQueries {
     const query = SQL`DELETE FROM custom_commands WHERE guild_id = ${guildId}`;
     return this.query(query);
   }
-};
+}

@@ -1,39 +1,31 @@
-'use strict';
+import flatCache from 'flat-cache';
+import cron from 'cron';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'url';
+import Notifier from './worldstate/Notifier.js';
+import CycleNotifier from './worldstate/CycleNotifier.js';
+import FeedsNotifier from './FeedsNotifier.js';
+import TwitchNotifier from './twitch/TwitchNotifier.js';
+import WorldStateCache from '../utilities/WorldStateCache.js';
+import Rest from '../utilities/RESTWrapper.js';
+import Database from '../settings/Database.js';
+import { cachedEvents } from '../resources/index.js';
+import logger from '../utilities/Logger.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const flatCache = require('flat-cache');
-const Job = require('cron').CronJob;
-require('colors');
-
-const Notifier = require('./worldstate/Notifier');
-const CycleNotifier = require('./worldstate/CycleNotifier');
-const FeedsNotifier = require('./FeedsNotifier');
-const TwitchNotifier = require('./twitch/TwitchNotifier');
-
-const WorldStateCache = require('../WorldStateCache');
-const MessageManager = require('../settings/MessageManager');
-const Rest = require('../tools/RESTWrapper');
-const Database = require('../settings/Database');
-
-const { logger } = require('./NotifierUtils');
-const { games } = require('../CommonFunctions');
-const cachedEvents = require('../resources/cachedEvents');
-
-const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
-
-const rest = new Rest();
-/** @type {Database} */
-const db = new Database();
-
+const Job = cron.CronJob;
 const deps = {};
+const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
+const rest = new Rest();
+const forceHydrate = (process.argv[2] || '').includes('--hydrate');
+
+const ldirname = dirname(fileURLToPath(import.meta.url));
 
 let timeout;
 
-const forceHydrate = (process.argv[2] || '').includes('--hydrate');
-
-logger.info(`forceHydrate: ${forceHydrate}`);
-
 class Worker {
   constructor() {
+    logger.info(`forceHydrate: ${forceHydrate}`);
     /**
      * Objects holding worldState data, one for each platform
      * @type {Object.<WorldStateCache>}
@@ -43,16 +35,18 @@ class Worker {
     timeout = process.env.WORLDSTATE_TIMEOUT || 60000;
 
     if (games.includes('WARFRAME')) {
-      activePlatforms
-        .forEach((platform) => {
-          this.worldStates[platform] = new WorldStateCache(platform, timeout);
-        });
+      activePlatforms.forEach((platform) => {
+        this.worldStates[platform] = new WorldStateCache(platform, timeout);
+      });
     }
+    return (async () => {
+      deps.settings = await new Database();
+      return this;
+    })();
   }
-
   async hydratePings() {
     const sDate = Date.now();
-    const pings = await db.getAllPings();
+    const pings = await deps.settings.getAllPings();
     if (pings) {
       deps.workerCache.setKey('pings', pings);
       deps.workerCache.save(true);
@@ -60,10 +54,9 @@ class Worker {
     const eDate = Date.now();
     logger.info(`ping hydration took ${String(eDate - sDate).red}ms`, 'DB');
   }
-
   async hydrateGuilds() {
     const sDate = Date.now();
-    const guilds = await db.getGuilds();
+    const guilds = await deps.settings.getGuilds();
     if (guilds) {
       deps.workerCache.setKey('guilds', guilds);
       deps.workerCache.save(true);
@@ -73,41 +66,47 @@ class Worker {
 
     await this.hydratePings();
   }
-
   async hydrateQueries() {
     const sDate = Date.now();
-    for (const cachedEvent of cachedEvents) {
-      for (const platform of activePlatforms) {
-        deps.workerCache.setKey(`${cachedEvent}:${platform}`,
-          await db.getAgnosticNotifications(cachedEvent, platform));
-      }
-    }
+    await Promise.all(
+      cachedEvents.map(async (cachedEvent) =>
+        Promise.all(
+          activePlatforms.map(async (platform) => {
+            deps.workerCache.setKey(
+              `${cachedEvent}:${platform}`,
+              await deps.settings.getAgnosticNotifications(cachedEvent, platform)
+            );
+          })
+        )
+      )
+    );
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');
   }
-
   async initCache() {
     if (games.includes('WARFRAME')) {
-      deps.workerCache = flatCache.load('worker',
-        require('path').resolve('../../.cache'));
+      deps.workerCache = flatCache.load('worker', path.resolve(ldirname, '../../.cache'));
 
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
       if (!currentGuilds || forceHydrate) await this.hydrateGuilds();
 
       const currentPings = deps.workerCache.getKey('pings');
-      if (!(currentPings && Object.keys(currentPings).length)
-        || forceHydrate) await this.hydratePings();
+      if (!(currentPings && Object.keys(currentPings).length) || forceHydrate) await this.hydratePings();
 
       let hydrateEvents = forceHydrate;
-      for (const cachedEvent of cachedEvents) {
-        for (const platform of activePlatforms) {
-          if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
-            hydrateEvents = true;
-          }
-        }
-      }
+      await Promise.all(
+        cachedEvents.map(async (cachedEvent) =>
+          Promise.all(
+            activePlatforms.map(async (platform) => {
+              if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
+                hydrateEvents = true;
+              }
+            })
+          )
+        )
+      );
       if (hydrateEvents) await this.hydrateQueries();
 
       // refresh guild cache every hour... it's a heavy process, we don't want to do it much
@@ -122,7 +121,6 @@ class Worker {
    */
   async start() {
     try {
-      deps.settings = db;
       deps.client = rest;
       deps.worldStates = this.worldStates;
       deps.timeout = timeout;
@@ -131,9 +129,6 @@ class Worker {
       await rest.init();
       await deps.settings.init();
       await this.initCache();
-
-      this.messageManager = new MessageManager(deps);
-      deps.messageManager = this.messageManager;
 
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);
@@ -155,10 +150,12 @@ class Worker {
 
       if (logger.isLoggable('DEBUG')) {
         rest.controlMessage({
-          embeds: [{
-            description: `Worker ready on ${activePlatforms}`,
-            color: 0x2B90EC,
-          }],
+          embeds: [
+            {
+              description: `Worker ready on ${activePlatforms}`,
+              color: 0x2b90ec,
+            },
+          ],
         });
       }
     } catch (e) {
@@ -167,6 +164,7 @@ class Worker {
   }
 }
 
-const worker = new Worker();
-
-worker.start();
+(async () => {
+  const worker = await new Worker();
+  await worker.start();
+})();

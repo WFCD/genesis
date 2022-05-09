@@ -1,12 +1,29 @@
-'use strict';
+import { Constants, MessageEmbed } from 'discord.js';
+import Collectors from '../../utilities/Collectors.js';
+import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
+import Interaction from '../../models/Interaction.js';
+import Alert from '../../embeds/AlertEmbed.js';
+import Arbitration from '../../embeds/ArbitrationEmbed.js';
+import Cambion from '../../embeds/CambionEmbed.js';
+import Conclave from '../../embeds/ConclaveChallengeEmbed.js';
+import Construction from '../../embeds/ConstructionEmbed.js';
+import Cycle from '../../embeds/EarthCycleEmbed.js';
+import Darvo from '../../embeds/DarvoEmbed.js';
+import Event from '../../embeds/EventEmbed.js';
+import Fissure from '../../embeds/FissureEmbed.js';
+import Invasion from '../../embeds/InvasionEmbed.js';
+import News from '../../embeds/NewsEmbed.js';
+import Sales from '../../embeds/SalesEmbed.js';
+import Sortie from '../../embeds/SortieEmbed.js';
+import Syndicate from '../../embeds/SyndicateEmbed.js';
+import VoidTrader from '../../embeds/VoidTraderEmbed.js';
+import Solaris from '../../embeds/SolarisEmbed.js';
+import Nightwave from '../../embeds/NightwaveEmbed.js';
+import Outposts from '../../embeds/SentientOutpostEmbed.js';
+import SteelPath from '../../embeds/SteelPathEmbed.js';
+import { cmds, platformMap as platformChoices } from '../../resources/index.js';
 
-const { Constants: { ApplicationCommandOptionTypes: Types }, MessageEmbed } = require('discord.js');
-
-const {
-  games, createGroupedArray, createDynamicInteractionCollector,
-} = require('../../CommonFunctions.js');
-
-const platformChoices = require('../../resources/platformMap');
+const { ApplicationCommandOptionTypes: Types } = Constants;
 
 const aliases = {
   arbi: 'arbitration',
@@ -22,199 +39,197 @@ const aliases = {
   sales: 'flashSales',
   steelpath: 'steelPath',
 };
-
-const embedsd = '../../embeds';
-
-/* eslint-disable import/no-dynamic-require */
 const embeds = {
-  arbitration: require(`${embedsd}/ArbitrationEmbed`),
-  alerts: require(`${embedsd}/AlertEmbed`),
-  cambionCycle: require(`${embedsd}/CambionEmbed`),
-  cetusCycle: require(`${embedsd}/EarthCycleEmbed`),
-  conclaveChallenges: require(`${embedsd}/ConclaveChallengeEmbed`),
-  constructionProgress: require(`${embedsd}/ConstructionEmbed`),
-  dailyDeals: require(`${embedsd}/DarvoEmbed`),
-  earthCycle: require(`${embedsd}/EarthCycleEmbed`),
-  events: require(`${embedsd}/EventEmbed`),
-  fissures: require(`${embedsd}/FissureEmbed`),
-  invasions: require(`${embedsd}/InvasionEmbed`),
-  news: require(`${embedsd}/NewsEmbed`),
-  nightwave: require(`${embedsd}/NightwaveEmbed`),
-  flashSales: require(`${embedsd}/SalesEmbed`),
-  sentientOutposts: require(`${embedsd}/SentientOutpostEmbed`),
-  steelPath: require(`${embedsd}/SteelPathEmbed`),
-  syndicate: require(`${embedsd}/SyndicateEmbed`),
-  vallisCycle: require(`${embedsd}/SolarisEmbed`),
-  voidTrader: require(`${embedsd}/VoidTraderEmbed`),
-  sortie: require(`${embedsd}/SortieEmbed`),
+  arbitration: Arbitration,
+  alerts: Alert,
+  cambionCycle: Cambion,
+  cetusCycle: Cycle,
+  conclaveChallenges: Conclave,
+  constructionProgress: Construction,
+  dailyDeals: Darvo,
+  earthCycle: Cycle,
+  events: Event,
+  fissures: Fissure,
+  invasions: Invasion,
+  news: News,
+  nightwave: Nightwave,
+  flashSales: Sales,
+  sentientOutposts: Outposts,
+  steelPath: SteelPath,
+  syndicate: Syndicate,
+  vallisCycle: Solaris,
+  voidTrader: VoidTrader,
+  sortie: Sortie,
 };
+const platformable = [
+  {
+    type: Types.STRING,
+    name: 'platform',
+    description: 'Platform to check for data',
+    choices: platformChoices,
+  },
+];
+const places = [
+  {
+    name: 'Earth',
+    value: 'earth',
+  },
+  {
+    name: 'Cetus',
+    value: 'cetus',
+  },
+  {
+    name: 'Orb Vallis',
+    value: 'vallis',
+  },
+  {
+    name: 'Cambion Drift',
+    value: 'cambion',
+  },
+];
+const compactable = [
+  ...platformable,
+  {
+    type: Types.BOOLEAN,
+    name: 'compact',
+    description: 'Should all data be in one embed?',
+  },
+];
 
-const platformable = [{
-  type: Types.STRING,
-  name: 'platform',
-  description: 'Platform to check for data',
-  choices: platformChoices,
-}];
-
-const places = [{
-  name: 'Earth',
-  value: 'earth',
-}, {
-  name: 'Cetus',
-  value: 'cetus',
-}, {
-  name: 'Orb Vallis',
-  value: 'vallis',
-}, {
-  name: 'Cambion Drift',
-  value: 'cambion',
-}];
-
-const compactable = [...platformable, {
-  type: Types.BOOLEAN,
-  name: 'compact',
-  description: 'Should all data be in one embed?',
-}];
-
-module.exports = class WorldState extends require('../../models/Interaction') {
+export default class WorldState extends Interaction {
   static enabled = games.includes('WARFRAME');
+  static command = undefined;
 
-  static command = {
-    name: 'ws',
-    description: 'Get Warframe Worldstate Information',
-    options: [{
-      type: Types.SUB_COMMAND,
-      name: 'alerts',
-      description: 'Get WorldState Alerts',
+  static commands = [
+    {
+      ...cmds.alerts,
       options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'arbi',
-      description: 'Get WorldState Arbitrations',
+    },
+    {
+      ...cmds.arbi,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'baro',
-      description: 'Get Current Void Trader Inventory',
+    },
+    {
+      ...cmds.baro,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'conclave',
-      description: 'Get Current Conclave Challenges',
-      options: [{
-        type: Types.STRING,
-        name: 'category',
-        description: 'Which conclave challenge category?',
-        choices: [{
-          name: 'All',
-          value: 'all',
-        }, {
-          name: 'Daily',
-          value: 'day',
-        }, {
-          name: 'Weekly',
-          value: 'week',
-        }],
-      },
-      ...platformable,
+    },
+    {
+      ...cmds.conclave,
+      options: [
+        {
+          type: Types.STRING,
+          name: 'category',
+          description: 'Which conclave challenge category?',
+          choices: [
+            {
+              name: 'All',
+              value: 'all',
+            },
+            {
+              name: 'Daily',
+              value: 'day',
+            },
+            {
+              name: 'Weekly',
+              value: 'week',
+            },
+          ],
+        },
+        ...platformable,
       ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'construction',
-      description: 'Get Construction Progress',
+    },
+    {
+      ...cmds.construction,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'cycle',
-      description: 'Get current Time Cycle',
-      options: [{
-        type: Types.STRING,
-        name: 'place',
-        description: 'Where do you want to know about?',
-        choices: places,
-        required: true,
-      },
-      ...platformable,
+    },
+    {
+      ...cmds.cycle,
+      options: [
+        {
+          type: Types.STRING,
+          name: 'place',
+          description: 'Where do you want to know about?',
+          choices: places,
+          required: true,
+        },
+        ...platformable,
       ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'darvo',
-      description: 'Get Darvo\'s Deals',
+    },
+    {
+      ...cmds.darvo,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'events',
-      description: 'Get Active Events',
+    },
+    {
+      ...cmds.events,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'fissures',
-      description: 'Get WorldState Fissures',
+    },
+    {
+      ...cmds.fissures,
       options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'invasions',
-      description: 'Get WorldState Invasions',
+    },
+    {
+      ...cmds.invasions,
       options: compactable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'news',
-      description: 'Get Current news',
-      options: [{
-        type: Types.STRING,
-        name: 'category',
-        description: 'Which news do you want?',
-        required: true,
-        choices: [{
-          name: 'General News (All)',
-          value: 'news',
-        }, {
-          name: 'Updates',
-          value: 'updates',
-        }, {
-          name: 'Prime Access',
-          value: 'primeaccess',
-        }, {
-          name: 'Streams',
-          value: 'stream',
-        }],
-      }, ...platformable,
+    },
+    {
+      ...cmds.news,
+      options: [
+        {
+          type: Types.STRING,
+          name: 'category',
+          description: 'Which news do you want?',
+          required: true,
+          choices: [
+            {
+              name: 'General News (All)',
+              value: 'news',
+            },
+            {
+              name: 'Updates',
+              value: 'updates',
+            },
+            {
+              name: 'Prime Access',
+              value: 'primeaccess',
+            },
+            {
+              name: 'Streams',
+              value: 'stream',
+            },
+          ],
+        },
+        ...platformable,
       ],
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'nightwave',
-      description: 'Get Current Nightwave Challenges',
+    },
+    {
+      ...cmds.nightwave,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'sales',
-      description: 'Get Current Sales',
+    },
+    {
+      ...cmds.sales,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'outposts',
-      description: 'Get Current Sentient Outposts',
+    },
+    {
+      ...cmds.outposts,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'steelpath',
-      description: 'Get Current Steel Path Offerings',
+    },
+    {
+      ...cmds.steelpath,
       options: platformable,
-    }, {
-      type: Types.SUB_COMMAND,
-      name: 'sortie',
-      description: 'Get Sortie Information',
+    },
+    {
+      ...cmds.sortie,
       options: platformable,
-    }],
-  };
+    },
+  ];
 
   static async commandHandler(interaction, ctx) {
     // args
     const language = ctx.language || 'en';
-    const subcommand = interaction.options.getSubcommand();
+    const subcommand = interaction.commandName;
     const { options } = interaction;
-    const platform = options?.getString?.('platform')?.value || ctx.platform || 'pc';
-    const compact = options?.getBoolean?.('compact');
+    const platform = options?.getString('platform', false) || ctx.platform || 'pc';
+    const compact = options?.getBoolean?.('compact', false);
     const ephemeral = ctx.ephemerate;
 
     let category = options?.get?.('category')?.value || 'all';
@@ -232,6 +247,7 @@ module.exports = class WorldState extends require('../../models/Interaction') {
     const data = await ctx.ws.get(String(field), platform, language);
     let pages;
     let embed;
+    if (Array.isArray(data) && !data.length) return interaction.editReply(ctx.i18n`⚠️ No ${field} active.`);
     switch (field) {
       case 'fissures':
         if (!compact) {
@@ -249,18 +265,26 @@ module.exports = class WorldState extends require('../../models/Interaction') {
           });
 
           Object.keys(eras).forEach((eraKey) => {
-            // eslint-disable-next-line new-cap
-            pages.push(new embeds.fissures(undefined, eras[eraKey],
-              platform, ctx.i18n, eras[eraKey][0].tier));
+            pages.push(
+              // eslint-disable-next-line new-cap
+              new embeds.fissures(eras[eraKey], {
+                platform,
+                i18n: ctx.i18n,
+                era: eras[eraKey][0].tier,
+              })
+            );
           });
-          return createDynamicInteractionCollector(interaction, pages, ctx);
+          return Collectors.dynamic(interaction, pages, ctx);
         }
       case 'alerts':
       case 'invasions':
         if (!compact) {
-          return createDynamicInteractionCollector(interaction,
+          return Collectors.dynamic(
+            interaction,
             // eslint-disable-next-line new-cap
-            data.map(a => new embeds[field](undefined, [a], platform, ctx.i18n)), ctx);
+            data.map((a) => new embeds[field](a, { platform, i18n: ctx.i18n })),
+            ctx
+          );
         }
       case 'arbitration':
       case 'earthCycle':
@@ -275,13 +299,19 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](undefined, data, platform, ctx.i18n));
+        embed = new MessageEmbed(new embeds[field](data, { platform, i18n: ctx.i18n }));
         return interaction.editReply({ embeds: [embed] });
       case 'voidTrader':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](undefined, data, platform, true));
+        embed = new MessageEmbed(
+          new embeds[field](data, {
+            platform,
+            onDemand: true,
+            i18n: ctx.i18n,
+          })
+        );
         pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
           const tembed = { ...embed };
           tembed.fields = fieldGroup;
@@ -294,23 +324,21 @@ module.exports = class WorldState extends require('../../models/Interaction') {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        pages = createGroupedArray(data, 20)
-          .map(group => new embeds[field](undefined, group, category, platform, ctx.i18n));
+        pages = createGroupedArray(data, 20).map(
+          (group) => new embeds[field](group, { category, platform, i18n: ctx.i18n })
+        );
         return interaction.editReply({ embeds: pages });
       case 'events':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        pages = data.map(datum => new MessageEmbed(
-          new embeds[field](undefined, datum, platform, ctx.i18n),
-        ));
+        pages = data.map((datum) => new MessageEmbed(new embeds[field](datum, { platform, i18n: ctx.i18n })));
         return interaction.editReply({ embeds: pages });
-
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new embeds[field](undefined, data, { isCommand: true, i18n: ctx.i18n });
+        embed = new embeds[field](data, { isCommand: true, i18n: ctx.i18n });
         return interaction.editReply({ embeds: [embed] });
       default:
         break;
@@ -319,4 +347,4 @@ module.exports = class WorldState extends require('../../models/Interaction') {
       ? false
       : interaction.reply({ content: 'got it', ephemeral: true });
   }
-};
+}

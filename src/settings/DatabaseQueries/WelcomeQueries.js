@@ -1,15 +1,11 @@
-'use strict';
-
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 
 /**
  * Database Mixin for Welcome queries
  * @mixin
  * @mixes Database
  */
-class WelcomeQueries {
+export default class WelcomeQueries {
   /**
    * Clear welcome messages for a guild
    * @param {Guild} guild The guild
@@ -44,7 +40,7 @@ class WelcomeQueries {
       const query = SQL`SELECT * FROM welcome_messages WHERE guild_id=${guild.id}`;
       const [rows] = await this.query(query);
       if (rows) {
-        return rows.map(value => ({
+        return rows.map((value) => ({
           isDm: value.is_dm,
           message: value.message,
           channel: this.bot.client.channels.cache.get(value.channel_id),
@@ -55,5 +51,3 @@ class WelcomeQueries {
     return [];
   }
 }
-
-module.exports = WelcomeQueries;

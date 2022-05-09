@@ -1,13 +1,7 @@
-'use strict';
-
-const Promise = require('bluebird');
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const { Snowflake } = require('discord-api-types/v9');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const schema = require('../schema.js');
-const integrations = require('../integrations');
+import Promise from 'bluebird';
+import SQL from 'sql-template-strings';
+import schema from '../schema.js';
+import integrations from '../integrations.js';
 
 /**
  * Database Mixin for DBM queries
@@ -19,15 +13,15 @@ const integrations = require('../integrations');
  * @mixes SettingsQueries
  * @mixes PrivateRoomQueries
  */
-class DBMQueries {
+export default class DBMQueries {
   /**
    * Creates the required tables in the database
    * @returns {Promise}
    */
   createSchema() {
     try {
-      const things = [Promise.mapSeries(schema, q => this.query(q))];
-      things.push(Promise.mapSeries(integrations, integration => integration(this)));
+      const things = [Promise.mapSeries(schema, (q) => this.query(q))];
+      things.push(Promise.mapSeries(integrations, (integration) => integration(this)));
       return Promise.all(things);
     } catch (e) {
       this.logger.fatal(e);
@@ -35,10 +29,11 @@ class DBMQueries {
     }
   }
 
+  // eslint-disable-next-line valid-jsdoc
   /**
-  * Initialize data for guilds in channels for existing guilds
-  * @param {Client} client for pulling guild information
-  */
+   * Initialize data for guilds in channels for existing guilds
+   * @param {module:"discord.js".Client} client for pulling guild information
+   */
   async ensureData(client) {
     const promises = [];
     client.guilds.cache.each((guild) => {
@@ -57,11 +52,11 @@ class DBMQueries {
   addGuild(guild) {
     if (!guild.available) return undefined;
 
-    const channelIDs = guild.channels.cache.filter(c => c.type === 'text').keys();
+    const channelIDs = guild.channels.cache.filter((c) => c.type === 'text').keys();
     if (channelIDs.length) {
       const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES `;
       channelIDs.forEach((id, index) => {
-        query.append(SQL`(${id}, ${guild.id})`).append(index !== (channelIDs.length - 1) ? ',' : ';');
+        query.append(SQL`(${id}, ${guild.id})`).append(index !== channelIDs.length - 1 ? ',' : ';');
       });
 
       return this.query(query);
@@ -122,5 +117,3 @@ class DBMQueries {
     return Promise.all(results);
   }
 }
-
-module.exports = DBMQueries;

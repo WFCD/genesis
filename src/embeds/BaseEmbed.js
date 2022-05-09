@@ -1,6 +1,4 @@
-'use strict';
-
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
 
 const defaults = {
   url: process.env.EMBED_URL || 'https://warframestat.us',
@@ -10,8 +8,8 @@ const defaults = {
 /**
  * Utility class for making rich embeds
  */
-class BaseEmbed extends MessageEmbed {
-  constructor(bot) {
+export default class BaseEmbed extends MessageEmbed {
+  constructor(locale) {
     super({
       url: defaults.url,
       description: '_ _',
@@ -24,10 +22,6 @@ class BaseEmbed extends MessageEmbed {
         url: undefined,
       },
     });
-    if (bot) {
-      this.bot = bot;
-    }
+    if (locale) this.locale = locale;
   }
 }
-
-module.exports = BaseEmbed;

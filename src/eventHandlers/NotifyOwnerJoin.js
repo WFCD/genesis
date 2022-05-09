@@ -1,19 +1,16 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class NotifyOwnerJoin extends Handler {
+export default class NotifyOwnerJoin extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.notifyowner', Events.GUILD_CREATE);
@@ -31,17 +28,21 @@ class NotifyOwnerJoin extends Handler {
     if (!guild.available) {
       return;
     }
-    const bots = guild.members.cache.filter(member => member.user.bot);
-    const isOverLimit = ((bots.size / guild.memberCount) * 100) >= 80;
+    const bots = guild.members.cache.filter((member) => member.user.bot);
+    const isOverLimit = (bots.size / guild.memberCount) * 100 >= 80;
 
     try {
       if (!isOverLimit) {
         const prefix = await this.settings.getChannelSetting(guild.channels.cache.first(), 'prefix');
-        guild.owner.send(`${this.client.user.username} has been added `
-                         + `to ${guild.name} and is ready\n Type `
-                         + `\`${prefix}help\` for help`);
+        guild.owner.send(
+          `${this.client.user.username} has been added ` +
+            `to ${guild.name} and is ready\n Type ` +
+            `\`${prefix}help\` for help`
+        );
       } else {
-        guild.owner.send(`Your guild **${guild.name}** is over the bot-to-user ratio.\nGenesis will now leave.\nIf you want to keep using ${this.client.user.username} please invite more people or kick some bots.`);
+        guild.owner.send(
+          `Your guild **${guild.name}** is over the bot-to-user ratio.\nGenesis will now leave.\nIf you want to keep using ${this.client.user.username} please invite more people or kick some bots.`
+        );
         guild.leave();
       }
     } catch (e) {
@@ -49,5 +50,3 @@ class NotifyOwnerJoin extends Handler {
     }
   }
 }
-
-module.exports = NotifyOwnerJoin;

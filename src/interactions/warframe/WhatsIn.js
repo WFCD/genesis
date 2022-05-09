@@ -1,51 +1,60 @@
-'use strict';
+import Discord from 'discord.js';
 
-const Discord = require('discord.js');
+import WhatsInEmbed from '../../embeds/WhatsinEmbed.js';
+import Interaction from '../../models/Interaction.js';
+import { games, toTitleCase } from '../../utilities/CommonFunctions.js';
+import { cmds } from '../../resources/index.js';
 
-const { games } = require('../../CommonFunctions.js');
+const {
+  Constants: { ApplicationCommandOptionTypes: Types },
+} = Discord;
+const queryOpt = [
+  {
+    ...cmds['whatsin.query'],
+    type: Types.STRING,
+    required: true,
+  },
+];
 
-const { Constants: { ApplicationCommandOptionTypes: Types } } = Discord;
-const queryOpt = [{
-  type: Types.STRING,
-  name: 'query',
-  description: 'Relic Identifier (i.e. A1)',
-  required: true,
-}];
-
-const WhatsInEmbed = require('../../embeds/WhatsinEmbed');
-const { toTitleCase } = require('../../CommonFunctions');
-
-module.exports = class WhatsIn extends require('../../models/Interaction') {
+export default class WhatsIn extends Interaction {
   static enabled = games.includes('WARFRAME');
 
   /**
    * @type {Discord.ApplicationCommandData}
    */
   static command = {
-    name: 'whatsin',
-    description: 'Get various pieces of information',
-    options: [{
-      name: 'relic_era',
-      type: Types.STRING,
-      description: 'What relic tier is the relic from?',
-      required: true,
-      choices: [{
-        name: 'Lith',
-        value: 'lith',
-      }, {
-        name: 'Neo',
-        value: 'neo',
-      }, {
-        name: 'Meso',
-        value: 'meso',
-      }, {
-        name: 'Axi',
-        value: 'axi',
-      }, {
-        name: 'Requiem',
-        value: 'requiem',
-      }],
-    }, ...queryOpt],
+    ...cmds.whatsin,
+    options: [
+      {
+        name: 'relic_era',
+        type: Types.STRING,
+        description: 'What relic tier is the relic from?',
+        required: true,
+        choices: [
+          {
+            name: 'Lith',
+            value: 'lith',
+          },
+          {
+            name: 'Neo',
+            value: 'neo',
+          },
+          {
+            name: 'Meso',
+            value: 'meso',
+          },
+          {
+            name: 'Axi',
+            value: 'axi',
+          },
+          {
+            name: 'Requiem',
+            value: 'requiem',
+          },
+        ],
+      },
+      ...queryOpt,
+    ],
   };
 
   /**
@@ -59,8 +68,8 @@ module.exports = class WhatsIn extends require('../../models/Interaction') {
     const tier = toTitleCase(interaction.options.get('relic_era').value);
     const query = toTitleCase(interaction.options.get('query').value);
     const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
-    if (!data || !Object.keys(data).length) return interaction.reply('Sorry, no such relic');
-    const embed = new WhatsInEmbed(undefined, data, tier, query);
+    if (!data || !Object.keys(data).length) return interaction.reply(ctx.i18n`Sorry, no such relic`);
+    const embed = new WhatsInEmbed(data, tier, query);
     return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
   }
-};
+}

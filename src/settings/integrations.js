@@ -1,10 +1,6 @@
-'use strict';
+import SQL from 'sql-template-strings';
 
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Database = require('./Database');
-
-module.exports = [
+export default [
   /**
    * Add advanced
    * @param {Database} db database to add to
@@ -13,7 +9,7 @@ module.exports = [
   async (db) => {
     const currentColumns = SQL`SHOW COLUMNS from builds;`;
     const [results] = await db.query(currentColumns);
-    const columns = results.map(result => result.Field);
+    const columns = results.map((result) => result.Field);
     if (!columns.includes('warframe')) {
       await db.query(SQL`ALTER TABLE builds
         ADD COLUMN (

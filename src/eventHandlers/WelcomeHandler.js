@@ -1,16 +1,13 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import { games, getRandomWelcome, isVulgarCheck } from '../utilities/CommonFunctions.js';
 
-const { Events } = require('discord.js').Constants;
+const { Events } = Discord.Constants;
 
-const Handler = require('../models/BaseEventHandler');
-const { isVulgarCheck, getRandomWelcome, games } = require('../CommonFunctions');
-
-class WelcomeHandler extends Handler {
+export default class WelcomeHandler extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.welcome', Events.GUILD_MEMBER_ADD);
@@ -18,7 +15,7 @@ class WelcomeHandler extends Handler {
 
   /**
    * Run the handle
-   * @param {GuildMember} member guildMember to welcome
+   * @param {Discord.GuildMember} member guildMember to welcome
    */
   async execute(...[member]) {
     if (!games.includes('LOGGING')) return;
@@ -26,8 +23,7 @@ class WelcomeHandler extends Handler {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
     this.logger.debug(`Handling 'guildMemberAdd' for ${member.id} on ${member.guild.name}`);
 
-    const isVulgar = isVulgarCheck.test(member.displayName)
-      || isVulgarCheck.test(member.user.username);
+    const isVulgar = isVulgarCheck.test(member.displayName) || isVulgarCheck.test(member.user.username);
     if (!isVulgar) {
       const welcomes = await this.settings.getWelcomes(member.guild);
       welcomes.forEach((welcome) => {
@@ -35,9 +31,9 @@ class WelcomeHandler extends Handler {
           welcome.message = getRandomWelcome(); // eslint-disable-line no-param-reassign
         }
         const content = welcome.message
-          .replace(/\$username/ig, member.displayName)
-          .replace(/\$usermention/ig, member)
-          .replace(/\$timestamp/ig, new Date().toLocaleString());
+          .replace(/\$username/gi, member.displayName)
+          .replace(/\$usermention/gi, member)
+          .replace(/\$timestamp/gi, new Date().toLocaleString());
         if (welcome.isDm === '1') {
           member.send({ content });
         } else {
@@ -47,5 +43,3 @@ class WelcomeHandler extends Handler {
     }
   }
 }
-
-module.exports = WelcomeHandler;

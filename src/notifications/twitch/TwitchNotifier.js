@@ -1,32 +1,23 @@
-'use strict';
+import TwitchEmbed from '../../embeds/TwitchEmbed.js';
+import TwitchMonitor from './TwitchMonitor.js';
+import Broadcaster from '../Broadcaster.js';
+import logger from '../../utilities/Logger.js';
 
-const TwitchEmbed = require('../../embeds/TwitchEmbed');
-const TwitchMonitor = require('./TwitchMonitor');
-
-const Broadcaster = require('../Broadcaster');
-const logger = require('../../Logger');
-
-const { platforms } = require('../../CommonFunctions');
-
-require('colors');
+import { platforms } from '../../utilities/CommonFunctions.js';
+import { perLanguage } from '../NotifierUtils.js';
 
 /**
  * Watches for Twitch go-lives and broadcasts them
  */
-class TwitchNotifier {
+export default class TwitchNotifier {
+  #activePlatforms;
+  #broadcaster;
   #monitor;
 
-  #broadcaster;
-
-  #activePlatforms;
-
-  constructor({
-    client, settings, messageManager, workerCache,
-  }) {
+  constructor({ client, settings, workerCache }) {
     this.#broadcaster = new Broadcaster({
       client,
       settings,
-      messageManager,
       workerCache,
     });
     this.#monitor = new TwitchMonitor();
@@ -49,29 +40,30 @@ class TwitchNotifier {
         if (!streamData.user.display_name) {
           streamData.user = await this.#monitor.spotLoadUser(streamData.user_name);
         }
-
-        const embed = new TwitchEmbed(streamData);
         let id = `${streamData.user_login}.live`;
         // add warframe type filtering for ids...
         if (streamData.user_login === 'warframe') {
           if (streamData.title.includes('Devstream')) {
             id = `${streamData.user_login}.devstream.live`;
-          } else if (streamData.title.includes('Home Time')
-            || streamData.title.includes('Prime Time')
-            || streamData.title.includes('Working From Home')
-            || streamData.title.includes('Community Stream')) {
+          } else if (
+            streamData.title.includes('Home Time') ||
+            streamData.title.includes('Prime Time') ||
+            streamData.title.includes('Working From Home') ||
+            streamData.title.includes('Community Stream')
+          ) {
             id = `${streamData.user_login}.primetime.live`;
           } else {
             id = `${streamData.user_login}.other.live`;
           }
         }
 
-        for (const platform of this.#activePlatforms) {
-          this.#broadcaster.broadcast(embed, platform, id);
-        }
+        await perLanguage(async ({ i18n, locale }) => {
+          const embed = new TwitchEmbed(streamData, { i18n, locale });
+          await Promise.all(
+            this.#activePlatforms.map(async (platform) => this.#broadcaster.broadcast(embed, platform, id))
+          );
+        });
       }
     });
   }
 }
-
-module.exports = TwitchNotifier;

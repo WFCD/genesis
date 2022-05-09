@@ -1,16 +1,12 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
-// eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
-const JoinableRole = require('../../models/JoinableRole');
+import SQL from 'sql-template-strings';
+import JoinableRole from '../../models/JoinableRole.js';
 
 /**
  * Database Mixin for private room queries
  * @mixin
  * @mixes Database
  */
-class PrivateRoomQueries {
+export default class PrivateRoomQueries {
   async removePrivateChannels(guild) {
     const query = SQL`DELETE FROM private_channels WHERE guild_id=${guild.id}`;
     return this.query(query);
@@ -54,9 +50,7 @@ class PrivateRoomQueries {
       WHERE guild_id=${guild.id}`;
     const [rows] = await this.query(query);
     if (rows.length) {
-      const rawList = typeof rows[0].id_list === 'string'
-        ? JSON.parse(rows[0].id_list)
-        : rows[0].id_list;
+      const rawList = typeof rows[0].id_list === 'string' ? JSON.parse(rows[0].id_list) : rows[0].id_list;
       return rawList
         .filter((role) => {
           if (!role) {
@@ -71,7 +65,7 @@ class PrivateRoomQueries {
           }
           return undefined;
         })
-        .filter(role => role)
+        .filter((role) => role)
         .map((role) => {
           const parsed = JSON.parse(role);
           if (typeof parsed === 'object' && guild.roles.cache.has(parsed.id)) {
@@ -92,7 +86,7 @@ class PrivateRoomQueries {
           }
           return undefined;
         })
-        .filter(role => role);
+        .filter((role) => role);
     }
     return [];
   }
@@ -113,15 +107,18 @@ class PrivateRoomQueries {
    * @returns {Promise<mysql.Connection.query>}
    */
   async deletePrivateRoom(room) {
-    const {
-      guild, voiceChannel, voiceId,
-    } = room;
-    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${voiceChannel ? voiceChannel.id : voiceId}`;
+    const { guild, voiceChannel, voiceId } = room;
+    const query = SQL`DELETE FROM private_channels WHERE guild_id = ${guild.id} AND voice_id = ${
+      voiceChannel ? voiceChannel.id : voiceId
+    }`;
     return this.query(query);
   }
 
   async userHasRoom(member) {
-    const query = SQL`SELECT * FROM private_channels WHERE guild_id = ${member.guild.id} and created_by = ${member.id}`;
+    const query = SQL`SELECT *
+      FROM private_channels
+      WHERE guild_id = ${member.guild.id}
+        and created_by = ${member.id}`;
     const [rows] = await this.query(query);
     return rows.length;
   }
@@ -140,8 +137,7 @@ class PrivateRoomQueries {
        */
       return {
         guild: this.bot.client.guilds.cache.get(rows[0].guild_id),
-        textChannel: rows[0].text_id
-          ? this.bot.client.channels.cache.get(rows[0].text_id) : undefined,
+        textChannel: rows[0].text_id ? this.bot.client.channels.cache.get(rows[0].text_id) : undefined,
         voiceChannel: this.bot.client.channels.cache.get(rows[0].voice_id),
         category: this.bot.client.channels.cache.get(rows[0].category_id),
         createdAt: rows[0].crt_sec,
@@ -152,6 +148,21 @@ class PrivateRoomQueries {
       };
     }
     return undefined;
+  }
+
+  /**
+   * Check if room is a private room
+   * @param {Discord.VoiceChannel} channel channel that could be private
+   * @returns {Promise<*>}
+   */
+  async isPrivateRoom(channel) {
+    const query = SQL`
+      SELECT *
+      FROM private_channels
+      WHERE guild_id = ${channel.guild.id}
+        AND voice_id = ${channel.id}`;
+    const [rows] = await this.query(query);
+    return rows?.length;
   }
 
   /**
@@ -166,7 +177,7 @@ class PrivateRoomQueries {
       WHERE MOD(IFNULL(guild_id, 0) >> 22, ${this.bot.shardCount}) in (${shards})`;
     const [rows] = await this.query(query);
     if (rows) {
-      return rows.map(value => ({
+      return rows.map((value) => ({
         guild: this.bot.client.guilds.cache.get(value.guild_id),
         textChannel: value.text_id ? this.bot.client.channels.cache.get(value.text_id) : undefined,
         voiceChannel: this.bot.client.channels.cache.get(value.voice_id),
@@ -181,5 +192,3 @@ class PrivateRoomQueries {
     return [];
   }
 }
-
-module.exports = PrivateRoomQueries;

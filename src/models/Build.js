@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Simple Build struct
  * @typedef {Object} SimpleBuild
@@ -41,7 +39,7 @@
 
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-const typecheck = val => (typeof val === 'undefined' ? undefined : val);
+const typecheck = (val) => (typeof val === 'undefined' ? undefined : val);
 
 /**
  * Build Mod
@@ -78,7 +76,10 @@ class Mod {
   serialize() {
     return {
       target: this.#target,
-      mods: this.#mods.flat().map(mod => mod.uniqueName).filter(m => m),
+      mods: this.#mods
+        .flat()
+        .map((mod) => mod.uniqueName)
+        .filter((m) => m),
     };
   }
 
@@ -102,7 +103,7 @@ class Mod {
 /**
  * Build object
  */
-module.exports = class Build {
+export default class Build {
   /**
    * @type {WorldStateClient}
    */
@@ -124,7 +125,7 @@ module.exports = class Build {
    */
   #url;
   /**
-   * @type {Discord.User}
+   * @type {module:"discord.js".User}
    */
   #owner;
   /**
@@ -331,22 +332,28 @@ module.exports = class Build {
     this.#mods = this.#resolve(value, 'mods');
   }
 
-  static focii = [{
-    name: 'Madurai',
-    value: 'madurai',
-  }, {
-    name: 'Vazarin',
-    value: 'vazarin',
-  }, {
-    name: 'Naramon',
-    value: 'naramon',
-  }, {
-    name: 'Unairu',
-    value: 'unairu',
-  }, {
-    name: 'Zenurik',
-    value: 'zenurik',
-  }];
+  static focii = [
+    {
+      name: 'Madurai',
+      value: 'madurai',
+    },
+    {
+      name: 'Vazarin',
+      value: 'vazarin',
+    },
+    {
+      name: 'Naramon',
+      value: 'naramon',
+    },
+    {
+      name: 'Unairu',
+      value: 'unairu',
+    },
+    {
+      name: 'Zenurik',
+      value: 'zenurik',
+    },
+  ];
 
   /**
    * Make an Id
@@ -403,7 +410,7 @@ module.exports = class Build {
    * @param {string} type type of item
    * @returns {Object|{id}|*}
    */
-  #resolve (item, type) {
+  #resolve(item, type) {
     if (!item) return undefined;
     if (item.uniqueName) return item;
     switch (type) {
@@ -415,10 +422,13 @@ module.exports = class Build {
         if (Array.isArray(item)) {
           return item.map((m) => {
             if (m.target) {
-              return new Mod({
-                target: m.target,
-                mods: m.mods?.map(sub => (sub.uniqueName ? sub : this.#ws.mod(sub))) || [],
-              }, this.#ws);
+              return new Mod(
+                {
+                  target: m.target,
+                  mods: m.mods?.map((sub) => (sub.uniqueName ? sub : this.#ws.mod(sub))) || [],
+                },
+                this.#ws
+              );
             }
             return this.#ws.mod(m.mods);
           });
@@ -455,7 +465,7 @@ module.exports = class Build {
       prism: typecheck(this.#prism?.uniqueName || this.#prism),
       necramech: typecheck(this.#necramech?.uniqueName || this.#necramech),
       necramelee: typecheck(this.#necramelee?.uniqueName || this.#necramelee),
-      mods: this.#mods?.map(m => m.serialize()) || [],
+      mods: this.#mods?.map((m) => m.serialize()) || [],
     };
   }
-};
+}

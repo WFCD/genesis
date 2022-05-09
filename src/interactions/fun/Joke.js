@@ -1,12 +1,10 @@
-'use strict';
+import Interaction from '../../models/Interaction.js';
+import { cmds } from '../../resources/index.js';
 
-module.exports = class Joke extends require('../../models/Interaction') {
+export default class Joke extends Interaction {
   static enabled = true;
 
-  static command = {
-    name: 'joke',
-    description: 'Ask Genesis for a joke!',
-  };
+  static command = cmds.joke;
 
   static async commandHandler(interaction, ctx) {
     return interaction.reply({
@@ -49,7 +47,8 @@ module.exports = class Joke extends require('../../models/Interaction') {
     'Stug. Every lady would want some of those blobs of life.',
     'Prime Gear. Technically normal. They just got the golden shower.',
     "Boltor. Perfect for an alternative on 'nailing'.",
-    "Prova. Compensation's always an option.", 'Clem. Clem. Grakaaaataaaaaa.',
+    "Prova. Compensation's always an option.",
+    'Clem. Clem. Grakaaaataaaaaa.',
     'Zephyr. Will take you to the heavens. Does not accept normies. BAKAAAAAWWWWWWWWWWW!',
     "Banshee. Prepare your earplugs when you're tuning her out.",
     'Excalibur. Cut with the grain.',
@@ -63,4 +62,4 @@ module.exports = class Joke extends require('../../models/Interaction') {
     'Badder than a ceramic dagger fight over primed reach',
     'You should feel bad about that. Let me rub your face in it to help.',
   ];
-};
+}

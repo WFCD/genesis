@@ -8,8 +8,8 @@
     "lint": "eslint main.js src/",
     "lint:fix": "eslint main.js src/ --fix",
     "test": "npm run lint",
-    "setup": "npm i",
     "build": "docker build . -t genesis",
+    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.1.1 -S",
     "restart": "pm2 delete genesis && npm start && npm run logs",
     "start": "pm2 start genesis.json --only genesis",
     "start:logs": "npm start && npm run logs",
@@ -46,23 +46,19 @@
     "bufferutil": "^4.0.3",
     "colors": "1.4.0",
     "cron": "^1.8.2",
+    "dayjs": "^1.11.0",
     "decache": "^4.6.0",
-    "discord-api-types": "^0.22.0",
-    "discord-giveaways": "^3.2.3",
-    "discord.js": "^13.2.0",
+    "discord.js": "^13.6.0",
     "flat-cache": "^3.0.4",
+    "i18n-string-templates": "^1.0.5",
     "json-query": "^2.2.2",
-    "moment": "^2.29.2",
     "ms": "^2.1.3",
     "mysql2": "^2.2.5",
-    "node-fetch": "^2.6.7",
-    "node-wikia": "0.0.3",
     "numeral": "^2.0.6",
     "parse-duration": "^0.4.4",
     "ping": "^0.4.1",
     "rss-feed-emitter": "^3.2.2",
     "sql-template-strings": "^2.2.2",
-    "topgg-autoposter": "^1.1.10",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.5",
     "warframe-name-generator": "^1.0.2"
@@ -72,92 +68,36 @@
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.13",
-    "@babel/eslint-parser": "^7.12.13",
-    "@babel/plugin-proposal-class-properties": "^7.12.13",
-    "@babel/plugin-proposal-private-methods": "^7.12.13",
-    "@babel/preset-env": "^7.12.13",
     "@types/flat-cache": "^2.0.0",
-    "eslint": "^7.19.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-no-null": "^1.0.2"
+    "@wfcd/eslint-config": "^1.1.2",
+    "discord-api-types": "^0.29.0",
+    "install-peerdeps": "^2.0.3"
   },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=16.6.2"
   },
   "eslintIgnore": [
-    "commands.json",
     "src/resources/*.json"
   ],
   "eslintConfig": {
-    "extends": "airbnb-base",
+    "extends": "@wfcd/eslint-config/esm",
     "parser": "@babel/eslint-parser",
-    "plugins": [
-      "no-null"
-    ],
     "parserOptions": {
-      "sourceType": "script",
+      "sourceType": "module",
+      "ecmaVersion": 6,
+      "ecmaFeatures": {
+        "modules": true
+      },
       "babelOptions": {
         "plugins": [
           "@babel/plugin-proposal-class-properties",
           "@babel/plugin-proposal-private-methods"
         ]
       }
-    },
-    "rules": {
-      "valid-jsdoc": [
-        "error",
-        {
-          "requireReturn": false,
-          "requireReturnDescription": false,
-          "preferType": {
-            "String": "string",
-            "Number": "number",
-            "Boolean": "boolean",
-            "Function": "function",
-            "object": "Object",
-            "date": "Date",
-            "error": "Error"
-          },
-          "prefer": {
-            "return": "returns"
-          }
-        }
-      ],
-      "strict": [
-        "error",
-        "safe"
-      ],
-      "linebreak-style": "off",
-      "no-restricted-syntax": [
-        "off"
-      ],
-      "no-await-in-loop": "off",
-      "import/no-unresolved": 0,
-      "no-useless-escape": 0,
-      "func-names": 0,
-      "arrow-parens": [
-        2,
-        "as-needed",
-        {
-          "requireForBlockBody": true
-        }
-      ],
-      "global-require": 0,
-      "no-param-reassign": "off",
-      "no-continue": "off",
-      "lines-between-class-members": "off",
-      "no-fallthrough": "off",
-      "no-case-declarations": "off",
-      "default-case": "off",
-      "max-classes-per-file": "off",
-      "consistent-return": "off",
-      "class-methods-use-this": "off",
-      "no-null/no-null": 2
     }
   },
+  "prettier": "@wfcd/eslint-config/prettier",
   "babel": {
     "presets": [
       "@babel/preset-env"
@@ -198,5 +138,6 @@
       "@eclass/semantic-release-sentry-releases"
     ],
     "branches": "master"
-  }
+  },
+  "type": "module"
 }

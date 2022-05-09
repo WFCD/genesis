@@ -1,15 +1,11 @@
-'use strict';
+import Discord from 'discord.js';
+import DynamicVoiceHandler from './DynamicVoiceHandler.js';
+import { fromNow, games, timeDeltaToMinutesString } from '../utilities/CommonFunctions.js';
+import Handler from '../models/BaseEventHandler.js';
 
-const { GiveawaysManager } = require('discord-giveaways');
-
-const Discord = require('discord.js');
-
-const DynamicVoiceHandler = require('./DynamicVoiceHandler');
-const MessageManager = require('../settings/MessageManager');
-
-const { timeDeltaToMinutesString, fromNow, games } = require('../CommonFunctions');
-
-const { Constants: { Events } } = Discord;
+const {
+  Constants: { Events },
+} = Discord;
 
 const max = {
   cetus: {
@@ -24,7 +20,7 @@ const max = {
 
 const cycleTimeout = 60000;
 
-module.exports = class OnReadyHandle extends require('../models/BaseEventHandler') {
+export default class OnReadyHandle extends Handler {
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
   }
@@ -34,7 +30,6 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
     this.logger.info('[Cluster] READY');
 
     await this.notifyUp();
-    this.setupMessageManager();
 
     this.settings.init();
     await this.settings.ensureData(this.client);
@@ -42,50 +37,31 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
 
     await this.updatePresence();
     this.setupAdditionalHandlers();
-    this.setupGiveaways();
   }
 
   async notifyUp() {
-    if (this.bot.controlHook && ((process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug')) {
+    if (this.bot.controlHook && (process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug') {
       await this.bot.controlHook.edit({
         name: this.bot.client.user.username,
         avatar: this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
       });
       await this.bot.controlHook.send({
-        embeds: [{
-          description: `Shards **${this.bot.shards[0] + 1} - ${this.bot.shards[this.bot.shards.length - 1] + 1}** ready\n<t:${Math.floor(Date.now() / 1000)}:R>`,
-          color: 0x2B90EC,
-        }],
+        embeds: [
+          {
+            description: `Shards **${this.bot.shards[0] + 1} - ${
+              this.bot.shards[this.bot.shards.length - 1] + 1
+            }** ready\n<t:${Math.floor(Date.now() / 1000)}:R>`,
+            color: 0x2b90ec,
+          },
+        ],
       });
     }
-  }
-
-  setupMessageManager() {
-    this.bot.MessageManager = new MessageManager(this.bot);
   }
 
   setupAdditionalHandlers() {
     setInterval(this.updatePresence.bind(this), cycleTimeout);
     setInterval(this.checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
-  }
-
-  setupGiveaways() {
-    if (!games.includes('GIVEAWAYS')) {
-      this.logger.silly('No init: giveaways. Feature flag disabled.');
-      return;
-    }
-    this.bot.giveaways = new GiveawaysManager(this.bot.client, {
-      updateCountdownEvery: 5000,
-      storage: './giveaways.json',
-      default: {
-        botsCanWin: false,
-        embedColor: '#748BD7',
-        embedColorEnd: '#FF0000',
-        reaction: '🎉',
-      },
-    });
-    this.logger.info('Giveaways initialized!');
   }
 
   async getWarframePresence(base) {
@@ -110,9 +86,7 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
       const vs = vallisState
         ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '❄️' : '🔥'} • `
         : '';
-      const cs = cetusState
-        ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌙' : '☀️'}`
-        : '';
+      const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '🌕' : '☀️'}` : '';
       return `${vs}${cs}`;
     }
     return base;
@@ -132,10 +106,12 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
       this.client.user.setPresence({
         status: 'online',
         afk: false,
-        activities: [{
-          name: presence,
-          type: activity,
-        }],
+        activities: [
+          {
+            name: presence,
+            type: activity,
+          },
+        ],
       });
     } catch (error) {
       this.logger.silly(error);
@@ -151,34 +127,37 @@ module.exports = class OnReadyHandle extends require('../models/BaseEventHandler
     this.logger.silly('Checking private rooms...');
     const privateRooms = await this.settings.getPrivateRooms();
     this.logger.silly(`Private rooms... ${privateRooms.length}`);
-    await Promise.all(privateRooms.map(async (room) => {
-      if (room && (room.textChannel || room.category || room.voiceChannel)) {
-        const now = new Date();
-        if (((now.getTime() + (now.getTimezoneOffset() * 60000)) - room.createdAt
-            > this.channelTimeout)
-          && (!room.voiceChannel || room.voiceChannel.members.size === 0)) {
-          if (room.textChannel && room.textChannel.deletable) {
-            this.logger.silly(`Deleting text channel... ${room.textChannel.id}`);
-            await room.textChannel.delete();
+    await Promise.all(
+      privateRooms.map(async (room) => {
+        if (room && (room.textChannel || room.category || room.voiceChannel)) {
+          const now = new Date();
+          if (
+            now.getTime() + now.getTimezoneOffset() * 60000 - room.createdAt > this.channelTimeout &&
+            (!room.voiceChannel || room.voiceChannel.members.size === 0)
+          ) {
+            if (room.textChannel && room.textChannel.deletable) {
+              this.logger.silly(`Deleting text channel... ${room.textChannel.id}`);
+              await room.textChannel.delete();
+            }
+            if (room.voiceChannel && room.voiceChannel.deletable) {
+              this.logger.silly(`Deleting voice channel... ${room.voiceChannel.id}`);
+              await room.voiceChannel.delete();
+            }
+            if (room.category && room.category.deletable) {
+              this.logger.silly(`Deleting category... ${room.category.id}`);
+              await room.category.delete();
+            }
+            await this.settings.deletePrivateRoom(room);
           }
-          if (room.voiceChannel && room.voiceChannel.deletable) {
-            this.logger.silly(`Deleting voice channel... ${room.voiceChannel.id}`);
-            await room.voiceChannel.delete();
-          }
-          if (room.category && room.category.deletable) {
-            this.logger.silly(`Deleting category... ${room.category.id}`);
-            await room.category.delete();
-          }
-          this.settings.deletePrivateRoom(room);
+        } else if (room) {
+          await this.settings.deletePrivateRoom({
+            textChannel: room.textId ? { id: room.textId } : undefined,
+            voiceChannel: { id: room.voiceId },
+            category: { id: room.categoryId },
+            guild: { id: room.guildId },
+          });
         }
-      } else if (room) {
-        await this.settings.deletePrivateRoom({
-          textChannel: room.textId ? { id: room.textId } : undefined,
-          voiceChannel: { id: room.voiceId },
-          category: { id: room.categoryId },
-          guild: { id: room.guildId },
-        });
-      }
-    }));
+      })
+    );
   }
-};
+}

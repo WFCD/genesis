@@ -1,4 +1,4 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
 const verifications = {
   NONE: {
@@ -26,12 +26,11 @@ const verifications = {
 /**
  * Generates daily deal embeds
  */
-class ServerInfoEmbed extends require('./BaseEmbed.js') {
+export default class ServerInfoEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
    * @param {Guild} guild - The sales to be displayed as featured or popular
    */
-  constructor(bot, guild) {
+  constructor(guild) {
     super();
 
     this.title = guild.name;
@@ -50,12 +49,12 @@ class ServerInfoEmbed extends require('./BaseEmbed.js') {
       },
       {
         name: 'Text Channels:',
-        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').size || 0}`,
+        value: `Count: ${guild.channels.cache.filter((channel) => channel.type === 'GUILD_TEXT').size || 0}`,
         inline: true,
       },
       {
         name: 'Voice Channels:',
-        value: `Count: ${guild.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').size || 0}`,
+        value: `Count: ${guild.channels.cache.filter((channel) => channel.type === 'GUILD_VOICE').size || 0}`,
         inline: true,
       },
       {
@@ -82,5 +81,3 @@ class ServerInfoEmbed extends require('./BaseEmbed.js') {
     this.footer = { text: `Server ID: ${guild.id}` };
   }
 }
-
-module.exports = ServerInfoEmbed;

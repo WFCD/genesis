@@ -1,11 +1,8 @@
-'use strict';
-
-const BaseEmbed = require('./BaseEmbed.js');
-
-const { timeDeltaToString, fromNow, assetBase } = require('../CommonFunctions.js');
+import BaseEmbed from './BaseEmbed.js';
+import { assetBase } from '../utilities/CommonFunctions.js';
+import { rTime } from '../utilities/Wrappers.js';
 
 const solaris = `${assetBase}/img/solarisunitedflag.png`;
-
 const makeJobs = (mission) => {
   if (mission && mission.jobs && mission.jobs.length) {
     const tokens = [];
@@ -26,28 +23,19 @@ const makeJobs = (mission) => {
   return undefined;
 };
 
-/**
- * Generates Vallis cycle embeds
- */
-class SolarisEmbed extends BaseEmbed {
-  /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Object} state - The current state of the cycle
-   */
-  constructor(bot, state) {
-    super();
+export default class SolarisEmbed extends BaseEmbed {
+  constructor(state, { i18n, locale }) {
+    super(locale);
 
     this.title = `Orb Vallis - ${state.isWarm ? 'Warm' : 'Cold'}`;
-    this.color = state.isWarm ? 0xB64624 : 0x000066;
+    this.color = state.isWarm ? 0xb64624 : 0x000066;
     this.thumbnail = {
       url: solaris,
     };
-    const warmstring = `Time remaining until ${state.isWarm ? 'cold' : 'warm'}: ${timeDeltaToString(fromNow(new Date(state.expiry)))}`;
+    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`Cold` : i18n`Warm`}: ${rTime(state.expiry)}`;
     this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
 
-    this.footer.text = `${state.isWarm ? 'Cold' : 'Warm'} starts `;
-    this.timestamp = new Date(state.expiry);
+    this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
+    this.timestamp = new Date(state.expiry).getTime();
   }
 }
-
-module.exports = SolarisEmbed;

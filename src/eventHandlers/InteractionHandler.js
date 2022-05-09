@@ -1,21 +1,24 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import I18n from 'i18n-string-templates';
+import decache from 'decache';
+import Discord from 'discord.js';
 
-const fs = require('fs');
-const path = require('path');
-const decache = require('decache');
+import Interaction from '../models/Interaction.js';
+import WorldStateClient from '../utilities/WorldStateClient.js';
+import CustomInteraction from '../models/CustomInteraction.js';
+import BaseHandler from '../models/BaseEventHandler.js';
+import logger from '../utilities/Logger.js';
+import { i18n, locales } from '../resources/index.js';
 
-const Discord = require('discord.js');
-
-const Interaction = require('../models/Interaction');
-const WorldStateClient = require('../resources/WorldStateClient');
-const CustomInteraction = require('../models/CustomInteraction');
-
-// eslint-disable-next-line no-unused-vars
-const { CommandInteraction, ButtonInteraction } = Discord;
-const { Permissions: { FLAGS: Permissions }, Constants: { Events } } = Discord;
+const { CommandInteraction } = Discord;
+const {
+  Permissions: { FLAGS: Permissions },
+  Constants: { Events },
+} = Discord;
 const whitelistedGuilds = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
 
-const ws = new WorldStateClient(require('../Logger'));
+const ws = new WorldStateClient(logger);
 
 /**
  * Give a command id for a command interaction
@@ -24,7 +27,9 @@ const ws = new WorldStateClient(require('../Logger'));
  */
 const commandId = (interaction) => {
   try {
-    return `${interaction.commandName}:${interaction.options.getSubcommandGroup() || ''}:${interaction.options.getSubcommand()}`;
+    return `${interaction.commandName}:${
+      interaction.options.getSubcommandGroup() || ''
+    }:${interaction.options.getSubcommand()}`;
   } catch (e) {
     try {
       return `${interaction.commandName}:${interaction.options.getSubcommand()}`;
@@ -37,7 +42,7 @@ const commandId = (interaction) => {
 /**
  * Describes a handler
  */
-module.exports = class InteractionHandler extends require('../models/BaseEventHandler') {
+export default class InteractionHandler extends BaseHandler {
   static deferred = true;
   /** @type {Array<Interaction>} */
   #loadedCommands;
@@ -56,34 +61,37 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
     this.init();
   }
 
-  static async loadFiles(loadedCommands, logger) {
-    const handlersDir = path.join(__dirname, '../interactions');
+  static async loadFiles(loadedCommands) {
+    const handlersDir = path.join('src/interactions');
     let reloadedCommands = loadedCommands || [];
 
     let files = fs.readdirSync(handlersDir);
-    const categories = files.filter?.(f => !f.endsWith('.js'));
-    files = files.filter?.(f => f.endsWith('.js'));
+    const categories = files.filter?.((f) => !f.endsWith('.js'));
+    files = files.filter?.((f) => f.endsWith('.js'));
 
     categories.forEach((category) => {
-      files = files.concat(fs.readdirSync(path.join(handlersDir, category))
-        .map(f => path.join(handlersDir, category, f)));
+      files = files.concat(
+        fs.readdirSync(path.join(handlersDir, category)).map((f) => path.join(path.resolve(handlersDir, category, f)))
+      );
     });
 
     if (reloadedCommands.length > 0) {
-      files?.forEach(f => decache(f));
+      files?.forEach((f) => decache(f));
     }
 
-    reloadedCommands = files.map((f) => {
-      try {
-        // eslint-disable-next-line import/no-dynamic-require, global-require
-        const Handler = require(f);
-        return Handler.prototype instanceof Interaction ? Handler : undefined;
-      } catch (e) {
-        logger.error(e);
-        return undefined;
-      }
-    })
-      .filter(h => h);
+    reloadedCommands = (
+      await Promise.all(
+        files.map(async (f) => {
+          try {
+            const Handler = (await import(f)).default;
+            return Handler.prototype instanceof Interaction ? Handler : undefined;
+          } catch (e) {
+            logger.error(e);
+            return undefined;
+          }
+        })
+      )
+    ).filter((h) => h);
 
     return reloadedCommands;
   }
@@ -94,77 +102,85 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * @param {string?} rolesOverride override instead of fetching guild setting
    * @returns {Promise<void>}
    */
-  async #setGuildPerms (guild, rolesOverride) {
+  async #setGuildPerms(guild, rolesOverride) {
     const rawCommandsToSet = this.#loadedCommands.filter((command) => {
-      const includeIfSu = command.name === 'su' ? guild.id === (process.env?.CONTROL_GUILD_ID) : true;
+      const includeIfSu = command.name === 'su' ? guild.id === process.env?.CONTROL_GUILD_ID : true;
       const isElevated = command.name !== 'su' && !command.command.defaultPermission;
       return includeIfSu || isElevated;
     });
 
     // at some point append custom commands as interactions
-    await guild.commands.set(rawCommandsToSet.map(cmd => cmd.command));
+    await guild.commands.set(rawCommandsToSet.map((cmd) => cmd.command));
 
-    const guildCommands = (await guild.commands.fetch()).filter(c => !c.defaultPermission);
+    const guildCommands = (await guild.commands.fetch()).filter((c) => !c.defaultPermission);
     const owner = guild.ownerId;
-    rolesOverride = rolesOverride || guild.roles.cache.every(role => role.permissions
-      .has(
-        [
+    rolesOverride =
+      rolesOverride ||
+      guild.roles.cache.every((role) =>
+        role.permissions.has([
           Permissions.MANAGE_GUILD,
           Permissions.ADMINISTRATOR,
           Permissions.MANAGE_CHANNELS,
           Permissions.MANAGE_ROLES,
-        ],
-      ));
+        ])
+      );
     const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
       .split(',')
-      .filter(s => s.length);
-    /** @type SetApplicationCommandPermissionsOptions */
+      .filter((s) => s.length);
     const data = {
       /** @type Array<Discord.GuildApplicationCommandPermissionData> */
       fullPermissions: [],
     };
     await this.client.application.fetch();
-    guildCommands.filter(c => c.name !== 'su').forEach((command) => {
-      data.fullPermissions.push({
-        id: command.id,
-        permissions: [{
-          id: guild.roles.everyone.id,
-          type: 'ROLE',
-          permission: false,
-        }, {
-          id: owner,
-          type: 'USER',
-          permission: true,
-        },
-        ...(roles?.length
-          ? roles.map(id => ({
-            id,
-            type: 'ROLE',
-            permission: true,
-          }))
-          : []
-        )],
+    guildCommands
+      .filter((c) => c.name !== 'su')
+      .forEach((command) => {
+        data.fullPermissions.push({
+          id: command.id,
+          permissions: [
+            {
+              id: guild.roles.everyone.id,
+              type: 'ROLE',
+              permission: false,
+            },
+            {
+              id: owner,
+              type: 'USER',
+              permission: true,
+            },
+            ...(roles?.length
+              ? roles.map((id) => ({
+                  id,
+                  type: 'ROLE',
+                  permission: true,
+                }))
+              : []),
+          ],
+        });
       });
-    });
-    const su = guildCommands.find(c => c.name === 'su');
+    const su = guildCommands.find((c) => c.name === 'su');
     if (!this.client.application.owner.ownerId && su) {
       data.fullPermissions.push({
         id: su.id,
-        permissions: [{
-          id: this.client.application.owner.id,
-          type: 'USER',
-          permission: true,
-        }],
+        permissions: [
+          {
+            id: this.client.application.owner.id,
+            type: 'USER',
+            permission: true,
+          },
+        ],
       });
     } else if (this.client?.application?.owner.members) {
       this?.client?.application?.owner?.members.forEach((member) => {
         data.fullPermissions.push({
           id: su.id,
-          permissions: [{
-            id: member.id,
-            type: 'USER',
-            permission: true,
-          }],
+          permissions: [
+            {
+              id: member.id,
+              type: 'USER',
+              permission: true,
+            },
+          ],
         });
       });
     }
@@ -183,11 +199,9 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
      * @type {Array<Discord.Guild>}
      */
     const guilds = whitelistedGuilds.length
-      ? Array.from(guildManager.cache.filter(g => whitelistedGuilds.includes(g.id)).values())
+      ? Array.from(guildManager.cache.filter((g) => whitelistedGuilds.includes(g.id)).values())
       : Array.from(guildManager.cache.values());
-    for (const guild of guilds) {
-      await this.#setGuildPerms(guild);
-    }
+    await Promise.all(guilds.map(this.#setGuildPerms));
   }
 
   /**
@@ -204,23 +218,27 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    * Load commands from files into the command manager
    * @param {Discord.ApplicationCommandManager} commands commands to populate
    * @param {Array<Interaction>} loadedFiles loaded interactions to make perms
-   * @param {Logger} logger logging interface
    * @returns {Promise<void>}
    */
-  static async loadCommands(commands, loadedFiles, logger) {
-    const cmds = loadedFiles.filter(cmd => cmd.enabled && !cmd.ownerOnly).map((cmd) => {
-      cmd.command.defaultPermission = true;
-      return cmd.command;
-    });
+  static async loadCommands(commands, loadedFiles) {
+    const cmds = loadedFiles
+      .filter((cmd) => cmd.enabled && !cmd.ownerOnly)
+      .map((cmd) => {
+        return cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands;
+      })
+      .flat()
+      .filter((c) => c);
     // logger.error(JSON.stringify(cmds));
     if (whitelistedGuilds.length) {
-      for (const gid of whitelistedGuilds) {
-        try {
-          await commands.set(cmds, gid);
-        } catch (e) {
-          logger.error(e);
-        }
-      }
+      await Promise.all(
+        whitelistedGuilds.map(async (gid) => {
+          try {
+            await commands.set(cmds, gid);
+          } catch (e) {
+            logger.error(e);
+          }
+        })
+      );
     } else {
       await commands.set(cmds);
     }
@@ -233,40 +251,42 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
    */
   async loadCustomCommands(guildId) {
     const rawCustomCommands = await this.settings.getRawCustomCommands(guildId);
-    if (guildId) this.#customCommands = this.#customCommands.filter(cc => cc.guildId !== guildId);
-    const added = rawCustomCommands.map(raw => CustomInteraction(raw));
+    if (guildId) this.#customCommands = this.#customCommands.filter((cc) => cc.guildId !== guildId);
+    const added = rawCustomCommands.map((raw) => CustomInteraction(raw));
     this.#customCommands.push(...added);
     if (guildId) {
       const guild = await this.client.guilds.fetch(guildId);
-      await guild.commands.set(added.map(cc => cc.command));
+      await guild.commands.set(added.map((cc) => cc.command));
     } else {
       const grouped = {};
       added.forEach((ncc) => {
         if (grouped[ncc.guildId]) grouped[ncc.guildId].push(ncc.command);
         else grouped[ncc.guildId] = [ncc.command];
       });
-      for (const gid of Object.keys(grouped)) {
-        if (!gid) continue;
-        let guild;
-        try {
-          // fetch can fail due to missing access. swallow error.
-          guild = await this.client.guilds.fetch(gid);
-          if (!guild) continue; // probably should consider checking if the bot is in the server?
-          const guildCCs = grouped[gid];
-          guildCCs.length = 50;
-          await guild?.commands?.set(guildCCs.filter(c => c));
-        } catch (ignore) { /* Ignored */ }
-      }
+      await Promise.all(
+        Object.keys(grouped).map(async (gid) => {
+          if (!gid) return false;
+          let guild;
+          try {
+            // fetch can fail due to missing access. swallow error.
+            guild = await this.client.guilds.fetch(gid);
+            // probably should consider checking if the bot is in the server?
+            if (!guild) return false;
+            const guildCCs = grouped[gid];
+            guildCCs.length = 50;
+            await guild?.commands?.set(guildCCs.filter((c) => c));
+          } catch (ignore) {
+            /* Ignored */
+          }
+        })
+      );
     }
   }
 
   async init() {
     this.logger.debug('Initializing InteractionHandler');
-    this.#loadedCommands = await InteractionHandler.loadFiles(
-      this.#loadedCommands, this.logger,
-    );
-    await InteractionHandler
-      .loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
+    this.#loadedCommands = await InteractionHandler.loadFiles(this.#loadedCommands, this.logger);
+    await InteractionHandler.loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
     // load custom commands, allowed to fail
     try {
       await this.loadCustomCommands();
@@ -280,41 +300,55 @@ module.exports = class InteractionHandler extends require('../models/BaseEventHa
 
   /**
    * Handle dat interaction!
-   * @param {CommandInteraction|ButtonInteraction} interaction interaction that will be handled
+   * @param {Discord.CommandInteraction|Discord.ButtonInteraction} interaction
+   *  interaction that will be handled
    * @returns {Promise<Discord.Message>|void}
    */
   async execute(interaction) {
-    if (!this.ready) return;
+    if (!this.ready) return undefined;
+    if (!interaction) return undefined;
 
     if (interaction instanceof CommandInteraction) {
       this.logger.debug(`Running ${interaction.id} for ${this.event}`);
 
-      const match = this.#loadedCommands.find(c => c.command.name === interaction.commandName);
-      const customMatch = this.#customCommands
-        .find(c => c?.command?.name === interaction.commandName
-            && c?.guildId === interaction?.guild?.id);
+      const match = this.#loadedCommands.find((c) => {
+        const directMatch = c?.command?.name === interaction.commandName;
+        const subMatch = c?.commands?.find((cs) => cs?.name === interaction.commandName);
+        return directMatch || subMatch;
+      });
+      const customMatch = this.#customCommands.find(
+        (c) => c?.command?.name === interaction.commandName && c?.guildId === interaction?.guild?.id
+      );
 
-      const noAccess = (match?.elevated
-              && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false))
-          || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
+      const noAccess =
+        (match?.elevated && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false)) ||
+        (match?.ownerOnly && interaction.user.id !== this.bot.owner);
 
       if (noAccess) {
-        // eslint-disable-next-line consistent-return
         return interaction.reply({ content: 'No Access', ephemeral: true });
       }
 
-      const ctx = await this.settings
-        .getCommandContext(interaction.channel || interaction.user, interaction.user);
+      const ctx = await this.settings.getCommandContext(interaction.channel || interaction.user, interaction.user);
       ctx.settings = this.settings;
       ctx.ws = ws;
       ctx.handler = this;
       ctx.logger = this.logger;
+
+      const intLang = interaction.locale.slice(0, 2);
+      if (locales.includes(intLang)) {
+        ctx.language = intLang;
+      } else if (!locales.includes(ctx.language)) {
+        ctx.language = 'en';
+      }
+      ctx.i18n = I18n(i18n, ctx.language);
+
       if (interaction.guild) ctx.settings.addExecution(interaction.guild, commandId(interaction));
-      if (!interaction) return undefined;
-      // eslint-disable-next-line no-nested-ternary,consistent-return
+      // eslint-disable-next-line no-nested-ternary
       return match
         ? match?.commandHandler?.(interaction, ctx)
-        : (customMatch ? customMatch?.commandHandler?.(interaction, ctx) : undefined);
+        : customMatch
+        ? customMatch?.commandHandler?.(interaction, ctx)
+        : undefined;
     }
   }
-};
+}

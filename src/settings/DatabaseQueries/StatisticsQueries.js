@@ -1,15 +1,13 @@
-'use strict';
-
-const SQL = require('sql-template-strings');
+import SQL from 'sql-template-strings';
 // eslint-disable-next-line no-unused-vars
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
 /**
  * Database Mixin for role statistics queries
  * @mixin
  * @mixes Database
  */
-module.exports = class StatisticsQueries {
+export default class StatisticsQueries {
   /**
    * Track a role in a guild
    * @param {Discord.Guild} guild guild to track in
@@ -80,12 +78,14 @@ module.exports = class StatisticsQueries {
     let query;
     if (commandId) {
       if (global) {
-        return (await this.query(
-          SQL`SELECT sum(count) as cnt
+        return (
+          await this.query(
+            SQL`SELECT sum(count) as cnt
             FROM command_stats
             WHERE command_id=${commandId}
-            GROUP BY command_id;`,
-        ))?.[0]?.[0]?.cnt;
+            GROUP BY command_id;`
+          )
+        )?.[0]?.[0]?.cnt;
       }
       query = SQL`SELECT command_id, count
         FROM command_stats
@@ -97,9 +97,9 @@ module.exports = class StatisticsQueries {
         WHERE guild_id=${guild.id}
         ORDER BY count DESC`;
     }
-    return (await this.query(query))?.[0]?.map(r => ({
+    return (await this.query(query))?.[0]?.map((r) => ({
       id: r.command_id,
       count: r.count,
     }));
   }
-};
+}

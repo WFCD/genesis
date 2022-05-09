@@ -1,20 +1,18 @@
-'use strict';
+import Discord from 'discord.js';
+import Handler from '../models/BaseEventHandler.js';
+import LogEmbed from '../embeds/LogEmbed.js';
+import { games } from '../utilities/CommonFunctions.js';
+import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
-const { Events } = require('discord.js').Constants;
-
-const Handler = require('../models/BaseEventHandler');
-const LogEmbed = require('../embeds/LogEmbed');
-const { games } = require('../CommonFunctions');
+const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
-class LogMemberRemove extends Handler {
+export default class LogMemberRemove extends Handler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
-   * @param {string}  id   The command's unique id
-   * @param {string}  event Event to trigger this handler
    */
   constructor(bot) {
     super(bot, 'handlers.logMemberRemove', Events.GUILD_MEMBER_REMOVE);
@@ -44,9 +42,7 @@ class LogMemberRemove extends Handler {
           },
         ],
       });
-      await this.messageManager.webhook({ channel: logChannel }, { embeds: [log] });
+      await webhook({ channel: logChannel }, { embeds: [log] });
     }
   }
 }
-
-module.exports = LogMemberRemove;

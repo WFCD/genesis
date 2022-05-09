@@ -1,22 +1,22 @@
-'use strict';
+import BaseEmbed from './BaseEmbed.js';
 
-const BaseEmbed = require('./BaseEmbed.js');
-const { assetBase, wikiBase } = require('../CommonFunctions');
+import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
 
 const invasionThumb = `${assetBase}img/invasion.png`;
 
 /**
  * Generates invasion embeds
  */
-class InvasionEmbed extends BaseEmbed {
+export default class InvasionEmbed extends BaseEmbed {
   /**
-   * @param {Genesis} bot - An instance of Genesis
-   * @param {Array.<Invasion>} invasions - The invasions to be included in the embed
+   * @param {Array.<Invasion>|Invasion} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
    * @param {Object} i18n - internationalization template function
+   * @param {string} locale locale
    */
-  constructor(bot, invasions, platform, i18n) {
-    super();
+  constructor(invasions, { platform, i18n, locale }) {
+    super(locale);
+    if (!Array.isArray(invasions)) invasions = [invasions];
 
     this.color = 0x3498db;
     this.url = `${wikiBase}Invasion`;
@@ -43,10 +43,8 @@ class InvasionEmbed extends BaseEmbed {
       const completion = Math.round(i.completion * 100) / 100;
       this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
       this.description = i.desc;
-      this.fields = [
-        { name: i18n`Location`, value: i.node, inline: true },
-      ];
-      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/ig, '\u221E')} remaining`;
+      this.fields = [{ name: i18n`Location`, value: i.node, inline: true }];
+      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/gi, '\u221E')} remaining`;
     }
 
     this.thumbnail = {
@@ -54,5 +52,3 @@ class InvasionEmbed extends BaseEmbed {
     };
   }
 }
-
-module.exports = InvasionEmbed;
