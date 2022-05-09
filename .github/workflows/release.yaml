@@ -70,11 +70,11 @@ jobs:
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
       - name: Start Bot Process
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && npm run start'
-      - name: Stop Worker Process
-        run: ssh worker 'source ~/.zshrc && pm2 kill'
-      - name: Update Worker server
-        run: ssh worker 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
-      - name: Update Bot dependencies
-        run: ssh worker 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
-      - name: Start Bot Process
-        run: ssh worker 'source ~/.zshrc && cd ~/genesis && npm run start:worker'
+      #- name: Stop Worker Process
+      #  run: ssh worker 'source ~/.zshrc && pm2 kill'
+      #- name: Update Worker server
+      #  run: ssh worker 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
+      #- name: Update Worker dependencies
+      #  run: ssh worker 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
+      #- name: Start Worker Process
+      #  run: ssh worker 'source ~/.zshrc && cd ~/genesis && npm run start:worker'
