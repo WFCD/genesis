@@ -458,14 +458,14 @@ export default class Rooms extends Interaction {
             if (options.room?.textChannel?.manageable) {
               await options.room.textChannel.setName(
                 options.name.replace(/\s/gi, '-'),
-                `New name for ${options.room.textChannel}.`
+                `New name for ${options.room.textChannel.name}.`
               );
             }
             if (options.room?.voiceChannel) {
-              await options.room.voiceChannel.setName(options.name, `New name for ${options.room.voiceChannel}.`);
+              await options.room.voiceChannel.setName(options.name, `New name for ${options.room.voiceChannel.name}.`);
             }
             if (options.room?.category) {
-              await options.room.category.setName(options.name, `New name for ${options.room.category}.`);
+              await options.room.category.setName(options.name, `New name for ${options.room.category.name}.`);
             }
             return interaction.editReply({ content: 'Done', ephemeral: ctx.ephemerate });
           }
@@ -484,7 +484,7 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, invitedOverwrite, audit, invite);
-            return interaction.editReply({ content: `invited ${invite}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: `invited ${invite.tag}`, ephemeral: ctx.ephemerate });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",
@@ -498,7 +498,7 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, blockOverwrite, audit, invite);
-            return interaction.editReply({ content: `blocked ${invite}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: `blocked ${invite.tag}`, ephemeral: ctx.ephemerate });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",

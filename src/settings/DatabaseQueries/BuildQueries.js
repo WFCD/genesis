@@ -68,7 +68,7 @@ export default class BuildQueries {
       const wrapped = `%${qString}%`;
       const query = SQL`SELECT * FROM builds WHERE (title like ${wrapped} or body like ${wrapped}) and is_public = '1' ;`;
       const [rows] = await this.query(query);
-      const ws = new WorldStateClient(require('../../utilities/Logger.js'));
+      const ws = new WorldStateClient(logger);
 
       if (rows) {
         return rows.map((result) => new Build(result, ws));
@@ -96,7 +96,7 @@ export default class BuildQueries {
     } else {
       query = SQL`SELECT * FROM builds WHERE owner_id LIKE ${owner ? '%' : author.id};`;
     }
-    const ws = new WorldStateClient(require('../../utilities/Logger.js'));
+    const ws = new WorldStateClient(logger);
 
     const [rows] = await this.query(query);
     if (rows) {
