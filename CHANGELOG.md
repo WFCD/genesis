@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/wfcd/genesis/compare/v2.0.0...v2.0.1) (2022-05-11)
+
+
+### Bug Fixes
+
+* build queries using require ([c949d92](https://github.com/wfcd/genesis/commit/c949d92a5463f439fd3b473c952cd22a7b7cff03))
+
 # [2.0.0](https://github.com/wfcd/genesis/compare/v1.0.6...v2.0.0) (2022-05-09)
 
 
