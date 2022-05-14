@@ -20,12 +20,10 @@ export default class TrackingQueries {
    * @returns {Promise<void>}
    */
   async setTrackables(channel, opts) {
-    const deleteQuery = SQL`DELETE i, t
-      FROM item_notifications i
-        LEFT JOIN type_notifications t
-          on i.channel_id = t.channel_id 
-      WHERE i.channel_id = ${channel.id}`;
-    await this.query(deleteQuery);
+    const deleteItems = SQL`DELETE i FROM item_notifications AS i WHERE i.channel_id = ${channel.id}`;
+    const deleteTypes = SQL`DELETE t FROM type_notifications AS t WHERE t.channel_id = ${channel.id}`;
+    await this.query(deleteItems);
+    await this.query(deleteTypes);
     if (opts?.events?.length) await this.trackEventTypes(channel, opts.events);
     if (opts?.items?.length) await this.trackItems(channel, opts.items);
   }
