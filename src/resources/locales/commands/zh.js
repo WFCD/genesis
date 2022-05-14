@@ -4,7 +4,7 @@
 export default {
   alerts: {
     name: 'alerts',
-    description: 'Get WorldState Alerts'
+    description: '获取世界状态'
   },
   arbi: {
     name: 'arbi',
