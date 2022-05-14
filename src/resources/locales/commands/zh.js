@@ -3,68 +3,68 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
+    name: '警报',
     description: '获取世界状态'
   },
   arbi: {
-    name: 'arbi',
-    description: 'Get WorldState Arbitrations'
+    name: '仲裁',
+    description: '获取仲裁任务'
   },
   baro: {
-    name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    name: '奸商',
+    description: '获取奸商本期物品'
   },
   conclave: {
-    name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    name: '武形秘仪',
+    description: '获取当前武形秘仪挑战'
   },
   construction: {
-    name: 'construction',
-    description: 'Get Construction Progress'
+    name: '建造状态',
+    description: '获取当前建造进度'
   },
   cycle: {
-    name: 'cycle',
-    description: 'Get current Time Cycle'
+    name: '周期',
+    description: '获取当前周期'
   },
   darvo: {
     name: 'darvo',
-    description: 'Get Darvo\'s Deals'
+    description: '获取 Darvo 的每日特惠'
   },
   events: {
-    name: 'events',
-    description: 'Get Active Events'
+    name: '事件',
+    description: '获取当前事件'
   },
   fissures: {
-    name: 'fissures',
-    description: 'Get WorldState Fissures'
+    name: '虚空裂缝',
+    description: '获取裂缝任务'
   },
   invasions: {
-    name: 'invasions',
-    description: 'Get WorldState Invasions'
+    name: '入侵',
+    description: '获取入侵任务'
   },
   news: {
-    name: 'news',
-    description: 'Get Current news'
+    name: '新闻',
+    description: '获取当前新闻'
   },
   nightwave: {
-    name: 'nightwave',
-    description: 'Get Current Nightwave Challenges'
+    name: '午夜电波',
+    description: '获取当前夜波挑战'
   },
   sales: {
-    name: 'sales',
-    description: 'Get Current Sales'
+    name: '促销',
+    description: '获取当前促销'
   },
   outposts: {
-    name: 'outposts',
-    description: 'Get Current Sentient Outposts'
+    name: 'sentient 异常任务',
+    description: '获取当前Sentient前哨信息'
   },
   steelpath: {
-    name: 'steelpath',
-    description: 'Get Current Steel Path Offerings'
+    name: '钢铁之路',
+    description: '获取钢铁之路物品'
   },
   sortie: {
-    name: 'sortie',
-    description: 'Get Sortie Information'
+    name: '突击',
+    description: '获取突击任务信息'
   },
   rooms: {
     name: 'rooms',
@@ -188,28 +188,28 @@ export default {
     description: 'Get various pieces of information'
   },
   arcane: {
-    name: 'arcane',
-    description: 'Look up an Arcane from Warframe'
+    name: '赋能',
+    description: '查找赋能'
   },
   warframe: {
-    name: 'warframe',
-    description: 'Look up a Warframe'
+    name: '战甲',
+    description: '查询战甲'
   },
   weapon: {
-    name: 'weapon',
-    description: 'Look up a weapon'
+    name: '武器',
+    description: '寻找武器'
   },
   riven: {
-    name: 'riven',
-    description: 'Look up a Riven'
+    name: '紫卡',
+    description: '查找紫卡'
   },
   mod: {
     name: 'mod',
-    description: 'Look up a Mod'
+    description: '查找mod'
   },
   companion: {
-    name: 'companion',
-    description: 'Look up a companion'
+    name: '同伴',
+    description: '查找同伴'
   },
   lfg: {
     name: 'lfg',
@@ -380,24 +380,24 @@ export default {
     description: 'Should be a category'
   },
   tracking: {
-    name: 'tracking',
-    description: 'Configure tracking options'
+    name: '追踪',
+    description: '配置追踪选项'
   },
   'tracking.manage': {
-    name: 'manage',
-    description: 'Manage tracking settings'
+    name: '管理',
+    description: '管理追踪设置'
   },
   'tracking.custom': {
-    name: 'custom',
-    description: 'Set up custom trackings and pings'
+    name: '自定义追踪',
+    description: '设置自定义追踪和提及'
   },
   'tracking.custom.add': {
     name: 'add',
-    description: 'Comma-separated list of trackables to add. See website.'
+    description: '以逗号分隔的要添加的跟踪列表。请查看网站。'
   },
   'tracking.custom.remove': {
-    name: 'remove',
-    description: 'Comma-separated list of trackables to remove. See website.'
+    name: '移除',
+    description: '以逗号分隔的要添加的跟踪列表。请查看网站。'
   },
   'tracking.custom.prepend': {
     name: 'prepend',
@@ -428,7 +428,7 @@ export default {
     description: 'Set what the call will respond to'
   },
   'cc.remove': {
-    name: 'remove',
+    name: '移除',
     description: 'Remove a custom command by name'
   },
   'cc.remove.call': {
