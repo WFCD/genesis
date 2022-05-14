@@ -415,7 +415,7 @@ export default class Settings extends Interaction {
       }
     }
     let field = options.getSubcommand();
-    let value = (options.get?.('value') || options?.get?.('channel'))?.value;
+    let value = (options?.get?.('value') || options?.get?.('channel') || options.get?.('platform'))?.value;
     const platform = options.get?.('platform')?.value;
 
     // validation
@@ -447,7 +447,7 @@ export default class Settings extends Interaction {
         }
         break;
       case 'set':
-        if (typeof value === 'undefined') return interaction.reply(ctx.i18n`No value`);
+        if (!value) return interaction.reply(ctx.i18n`No value`);
         switch (field) {
           case 'lfg':
             field = this.#aliases[field];
