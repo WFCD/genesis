@@ -400,8 +400,8 @@ export default {
     description: '以逗号分隔的要添加的跟踪列表。请查看网站。'
   },
   'tracking.custom.prepend': {
-    name: 'prepend',
-    description: 'Requires \'add\' to be specified. Ignored on remove.'
+    name: '追加',
+    description: '需要指定“添加”。移除时忽略。'
   },
   'tracking.custom.channel': {
     name: 'channel',
