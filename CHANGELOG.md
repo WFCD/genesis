@@ -1,3 +1,11 @@
+## [2.0.2](https://github.com/wfcd/genesis/compare/v2.0.1...v2.0.2) (2022-05-14)
+
+
+### Bug Fixes
+
+* platform settings not picking up platform ([f28d535](https://github.com/wfcd/genesis/commit/f28d53590a097090486cc96e146cb97d82f68b97))
+* tracking manage clear deletes items & events separately ([20290ab](https://github.com/wfcd/genesis/commit/20290ab8f002164c3d8a0b8b9b1f1cad90508a5d))
+
 ## [2.0.1](https://github.com/wfcd/genesis/compare/v2.0.0...v2.0.1) (2022-05-11)
 
 
