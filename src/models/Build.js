@@ -37,15 +37,27 @@
  * @typedef {SimpleBuild|Build|FullBuild} BuildResolvable
  */
 
+/**
+ * Represents something resolvable to a Warframe Item
+ * @typedef {Object|string|Array<ItemResolvable>|Array<string>} ItemResolvable
+ * @property {string} [id] if this is an object, this will be the id of the item
+ */
+
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+/**
+ * Safely check type of variable
+ * @param {*} val value for which to check type
+ * @returns {undefined|*}
+ */
 const typecheck = (val) => (typeof val === 'undefined' ? undefined : val);
 
 /**
  * Build Mod
- * @typedef {Object} BuildMod
+ * @typedef {Object} Mod
  * @property {string} target one of the build parts
  * @property {Array<ItemResolvable>} mods for that build part
+ * @class
  */
 class Mod {
   /**
@@ -102,82 +114,112 @@ class Mod {
 
 /**
  * Build object
+ * @class
+ * @typedef {Object} Build
  */
 export default class Build {
   /**
+   * WorldState Client
    * @type {WorldStateClient}
    */
   #ws;
   /**
+   * Build identifier
    * @type {string}
    */
   #id;
   /**
+   * Title of the build
    * @type {string}
    */
   #title;
   /**
+   * General body text for build
    * @type {string}
    */
   #body;
   /**
+   * Link to provide in build embed
    * @type {string}
    */
   #url;
   /**
+   * User/User Resolvable for the owner of the build
    * @type {module:"discord.js".User}
    */
   #owner;
   /**
+   * Whether the build is public, which allows searchability
    * @type {boolean}
    */
   #isPublic;
   /**
+   * Warframe configured for the build
    * @type {ItemResolvable}
    */
   #warframe;
   /**
+   * Primary weapon
    * @type {ItemResolvable}
    */
   #primary;
   /**
+   * Secondary weapon
    * @type {ItemResolvable}
    */
   #secondary;
   /**
+   * Melee weapon
    * @type {ItemResolvable}
    */
   #melee;
   /**
+   * Heavy weapon
    * @type {ItemResolvable}
    */
   #heavy;
   /**
+   * Archwing
    * @type {ItemResolvable}
    */
   #archwing;
   /**
+   * Archgun/archwing primary
    * @type {ItemResolvable}
    */
   #archgun;
   /**
+   * Archmelee/archwing melee
    * @type {ItemResolvable}
    */
   #archmelee;
   /**
+   * Operator focus
    * @type {string}
    */
   #focus;
   /**
+   * Equipped Amp Prism
    * @type {ItemResolvable}
    */
   #prism;
   /**
+   * Necramech
    * @type {ItemResolvable}
    */
   #necramech;
+  /**
+   * Necramech melee... not really a thing
+   */
   #necramelee;
+  /**
+   * @type {ItemResolvable}
+   */
   #necragun;
+  /**
+   * Equipment Mods
+   * @type {Array<Mod>}
+   */
   #mods;
 
   get title() {
@@ -397,12 +439,6 @@ export default class Build {
     this.#necramelee = this.#resolve(data.necramelee, 'weapon');
     this.#mods = this.#resolve(data.mods, 'mods');
   }
-
-  /**
-   * Represents something resolvable to a Warframe Item
-   * @typedef {Object|string|Array<ItemResolvable>|Array<string>} ItemResolvable
-   * @property {string} [id] if this is an object, this will be the id of the item
-   */
 
   /**
    * Resolve a thing from a thing resolveable

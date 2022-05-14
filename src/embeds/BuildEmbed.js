@@ -5,7 +5,7 @@ import BaseEmbed from './BaseEmbed.js';
  */
 export default class BuildEmbed extends BaseEmbed {
   /**
-   * @param {Build} build - The alerts to be included in the embed
+   * @param {Build} build - build to represent
    */
   constructor(build) {
     super();
@@ -17,7 +17,7 @@ export default class BuildEmbed extends BaseEmbed {
       if (index === 0) {
         this.description = section;
       } else {
-        this.fields.push({ name: '\u200B', value: section });
+        this.addField('\u200B', section);
       }
     });
     this.image = { url: build.url || build.image };

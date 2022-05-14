@@ -6,6 +6,11 @@ const relicBase = 'https://drops.warframestat.us/data/relics';
 const toTitleCase = (str) =>
   str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 
+/**
+ * Data interaction layer for requesting data from the WorldState API
+ * @class
+ * @classdesc Interaction layer for WorldState API
+ */
 export default class WorldStateClient {
   /**
    * @type {Logger} logger for tracing
