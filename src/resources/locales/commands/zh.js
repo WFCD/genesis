@@ -193,23 +193,23 @@ export default {
   },
   warframe: {
     name: 'warframe',
-    description: '查询战甲'
+    description: 'Look up a Warframe'
   },
   weapon: {
-    name: '武器',
-    description: '寻找武器'
+    name: 'weapon',
+    description: 'Look up a weapon'
   },
   riven: {
-    name: '紫卡',
-    description: '查找紫卡'
+    name: 'riven',
+    description: 'Look up a Riven'
   },
   mod: {
     name: 'mod',
-    description: '查找mod'
+    description: 'Look up a Mod'
   },
   companion: {
-    name: '同伴',
-    description: '查找同伴'
+    name: 'companion',
+    description: 'Look up a companion'
   },
   lfg: {
     name: 'lfg',
@@ -380,28 +380,28 @@ export default {
     description: 'Should be a category'
   },
   tracking: {
-    name: '追踪',
-    description: '配置追踪选项'
+    name: 'tracking',
+    description: 'Configure tracking options'
   },
   'tracking.manage': {
-    name: '管理',
-    description: '管理追踪设置'
+    name: 'manage',
+    description: 'Manage tracking settings'
   },
   'tracking.custom': {
-    name: '自定义追踪',
-    description: '设置自定义追踪和提及'
+    name: 'custom',
+    description: 'Set up custom trackings and pings'
   },
   'tracking.custom.add': {
     name: 'add',
-    description: '以逗号分隔的要添加的跟踪列表。请查看网站。'
+    description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
-    name: '移除',
-    description: '以逗号分隔的要添加的跟踪列表。请查看网站。'
+    name: 'remove',
+    description: 'Comma-separated list of trackables to remove. See website.'
   },
   'tracking.custom.prepend': {
-    name: '追加',
-    description: '需要指定“添加”。移除时忽略。'
+    name: 'prepend',
+    description: 'Requires \'add\' to be specified. Ignored on remove.'
   },
   'tracking.custom.channel': {
     name: 'channel',
@@ -428,7 +428,7 @@ export default {
     description: 'Set what the call will respond to'
   },
   'cc.remove': {
-    name: '移除',
+    name: 'remove',
     description: 'Remove a custom command by name'
   },
   'cc.remove.call': {
