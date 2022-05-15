@@ -3,68 +3,68 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: '警报',
-    description: '获取世界状态'
+    name: 'alerts',
+    description: 'Get WorldState Alerts'
   },
   arbi: {
-    name: '仲裁',
-    description: '获取仲裁任务'
+    name: 'arbi',
+    description: 'Get WorldState Arbitrations'
   },
   baro: {
-    name: '奸商',
-    description: '获取奸商本期物品'
+    name: 'baro',
+    description: 'Get Current Void Trader Inventory'
   },
   conclave: {
-    name: '武形秘仪',
-    description: '获取当前武形秘仪挑战'
+    name: 'conclave',
+    description: 'Get Current Conclave Challenges'
   },
   construction: {
-    name: '建造状态',
-    description: '获取当前建造进度'
+    name: 'construction',
+    description: 'Get Construction Progress'
   },
   cycle: {
-    name: '周期',
-    description: '获取当前周期'
+    name: 'cycle',
+    description: 'Get current Time Cycle'
   },
   darvo: {
     name: 'darvo',
-    description: '获取 Darvo 的每日特惠'
+    description: 'Get Darvo\'s Deals'
   },
   events: {
-    name: '事件',
-    description: '获取当前事件'
+    name: 'events',
+    description: 'Get Active Events'
   },
   fissures: {
-    name: '虚空裂缝',
-    description: '获取裂缝任务'
+    name: 'fissures',
+    description: 'Get WorldState Fissures'
   },
   invasions: {
-    name: '入侵',
-    description: '获取入侵任务'
+    name: 'invasions',
+    description: 'Get WorldState Invasions'
   },
   news: {
-    name: '新闻',
-    description: '获取当前新闻'
+    name: 'news',
+    description: 'Get Current news'
   },
   nightwave: {
-    name: '午夜电波',
-    description: '获取当前夜波挑战'
+    name: 'nightwave',
+    description: 'Get Current Nightwave Challenges'
   },
   sales: {
-    name: '促销',
-    description: '获取当前促销'
+    name: 'sales',
+    description: 'Get Current Sales'
   },
   outposts: {
-    name: 'sentient 异常任务',
-    description: '获取当前Sentient前哨信息'
+    name: 'outposts',
+    description: 'Get Current Sentient Outposts'
   },
   steelpath: {
-    name: '钢铁之路',
-    description: '获取钢铁之路物品'
+    name: 'steelpath',
+    description: 'Get Current Steel Path Offerings'
   },
   sortie: {
-    name: '突击',
-    description: '获取突击任务信息'
+    name: 'sortie',
+    description: 'Get Sortie Information'
   },
   rooms: {
     name: 'rooms',
@@ -188,11 +188,11 @@ export default {
     description: 'Get various pieces of information'
   },
   arcane: {
-    name: '赋能',
-    description: '查找赋能'
+    name: 'arcane',
+    description: 'Look up an Arcane from Warframe'
   },
   warframe: {
-    name: '战甲',
+    name: 'warframe',
     description: '查询战甲'
   },
   weapon: {
