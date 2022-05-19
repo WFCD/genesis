@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/wfcd/genesis/compare/v2.0.2...v2.1.0) (2022-05-19)
+
+
+### Features
+
+* add meme command back ([bdc6f9e](https://github.com/wfcd/genesis/commit/bdc6f9ed02fa630d9a0561f91faa45e113d07f1b))
+
 ## [2.0.2](https://github.com/wfcd/genesis/compare/v2.0.1...v2.0.2) (2022-05-14)
 
 
