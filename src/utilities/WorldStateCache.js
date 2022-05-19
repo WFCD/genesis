@@ -33,7 +33,7 @@ export default class WorldStateCache extends EventEmitter {
   async update() {
     try {
       this.lastUpdated = Date.now();
-      this.currentData = await fetch(this.url);
+      this.currentData = await fetch(`${this.url}&ts=${Date.now()}`);
       this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;

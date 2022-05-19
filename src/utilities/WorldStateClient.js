@@ -134,7 +134,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
       return undefined;
     }
-    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}?language=${language}`, {
+    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}?language=${language}&ts=${Date.now()}`, {
       headers: {
         platform,
         'Accept-Language': language,
@@ -152,7 +152,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE or ENDPOINTS.SEARCH`);
       return undefined;
     }
-    return fetch(`${apiBase}/${endpoint}?language=${language}`, {
+    return fetch(`${apiBase}/${endpoint}?language=${language}&ts=${Date.now()}`, {
       headers: {
         platform,
         'Accept-Language': language,
