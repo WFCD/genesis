@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/wfcd/genesis/compare/v2.1.2...v2.1.3) (2022-05-19)
+
+
+### Bug Fixes
+
+* restore type checking value in settings ([ce462b2](https://github.com/wfcd/genesis/commit/ce462b2764a061711061ddf871788989572c90b0))
+
 ## [2.1.2](https://github.com/wfcd/genesis/compare/v2.1.1...v2.1.2) (2022-05-19)
 
 
