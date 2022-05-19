@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/wfcd/genesis/compare/v2.1.1...v2.1.2) (2022-05-19)
+
+
+### Bug Fixes
+
+* magic ([e5c3a9f](https://github.com/wfcd/genesis/commit/e5c3a9f14fad4718dfb197e38fc0b4c0a5fb6404))
+
 ## [2.1.1](https://github.com/wfcd/genesis/compare/v2.1.0...v2.1.1) (2022-05-19)
 
 
