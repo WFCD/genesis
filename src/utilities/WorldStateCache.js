@@ -4,10 +4,10 @@ import logger from './Logger.js';
 import { apiBase } from './CommonFunctions.js';
 
 const worldStateURLs = {
-  pc: `${apiBase}/pc`,
-  ps4: `${apiBase}/ps4`,
-  xb1: `${apiBase}/xb1`,
-  swi: `${apiBase}/swi`,
+  pc: `${apiBase}/pc?language=en`,
+  ps4: `${apiBase}/ps4?language=en`,
+  xb1: `${apiBase}/xb1?language=en`,
+  swi: `${apiBase}/swi?language=en`,
 };
 
 export default class WorldStateCache extends EventEmitter {

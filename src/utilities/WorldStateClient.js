@@ -30,8 +30,10 @@ export default class WorldStateClient {
     if (!WorldStateClient.#weapons) {
       (async function init() {
         if (!WorldStateClient.#weapons) {
-          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons`);
-          const misc = (await fetch(`${apiBase}/items`)).filter((i) => i?.uniqueName?.includes('OperatorAmplifiers'));
+          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons?language=en`);
+          const misc = (await fetch(`${apiBase}/items?language=en`)).filter((i) =>
+            i?.uniqueName?.includes('OperatorAmplifiers')
+          );
           WorldStateClient.#weapons.push(...misc);
         }
       })();
@@ -40,7 +42,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#warframes) {
       (async function init() {
         if (!WorldStateClient.#warframes) {
-          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes`);
+          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes?language=en`);
         }
       })();
     }
@@ -48,7 +50,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#mods) {
       (async function init() {
         if (!WorldStateClient.#mods) {
-          WorldStateClient.#mods = await fetch(`${apiBase}/mods`);
+          WorldStateClient.#mods = await fetch(`${apiBase}/mods?language=en`);
         }
       })();
     }
@@ -132,7 +134,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
       return undefined;
     }
-    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}`, {
+    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}?language=${language}`, {
       headers: {
         platform,
         'Accept-Language': language,
@@ -150,7 +152,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE or ENDPOINTS.SEARCH`);
       return undefined;
     }
-    return fetch(`${apiBase}/${endpoint}`, {
+    return fetch(`${apiBase}/${endpoint}?language=${language}`, {
       headers: {
         platform,
         'Accept-Language': language,
@@ -173,11 +175,12 @@ export default class WorldStateClient {
    * Search an endpoint for the given query
    * @param {string<WorldStateClient.ENDPOINTS.SEARCH>} endpoint endpoint to search
    * @param {string} query search query
+   * @param {string} language language of content to fetch
    * @returns {Promise<Object>}
    */
-  async search(endpoint, query) {
+  async search(endpoint, query, language) {
     this.#logger.silly(`searching ${endpoint} for ${query}`);
-    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}`);
+    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}?language=${language}`);
   }
 
   /**

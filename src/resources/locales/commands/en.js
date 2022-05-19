@@ -467,4 +467,8 @@ export default {
     name: 'memeframe',
     description: 'Get a Warframe meme',
   },
+  memes: {
+    name: 'meme',
+    description: 'Get a meme from r/dankmemes'
+  }
 };
