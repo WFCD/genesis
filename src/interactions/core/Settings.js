@@ -447,7 +447,7 @@ export default class Settings extends Interaction {
         }
         break;
       case 'set':
-        if (!value) return interaction.reply(ctx.i18n`No value`);
+        if (typeof value === 'undefined') return interaction.reply(ctx.i18n`No value`);
         switch (field) {
           case 'lfg':
             field = this.#aliases[field];
