@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/wfcd/genesis/compare/v2.1.3...v2.1.4) (2022-05-20)
+
+
+### Bug Fixes
+
+* force a paged collector for baro ([d606d0e](https://github.com/wfcd/genesis/commit/d606d0edfeb9936ebd8c9278ef8c07e2e18409ba))
+
 ## [2.1.3](https://github.com/wfcd/genesis/compare/v2.1.2...v2.1.3) (2022-05-19)
 
 
