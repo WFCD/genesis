@@ -317,7 +317,7 @@ export default class WorldState extends Interaction {
           tembed.fields = fieldGroup;
           return tembed;
         });
-        return interaction.editReply({ embeds: pages });
+        return Collectors.paged(interaction, pages, ctx);
       case 'news':
         category = category === 'news' ? undefined : category;
       case 'conclaveChallenges':
