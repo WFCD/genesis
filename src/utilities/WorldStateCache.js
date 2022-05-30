@@ -1,13 +1,17 @@
 import EventEmitter from 'events';
+import cron from 'cron';
+
 import fetch from './Fetcher.js';
 import logger from './Logger.js';
 import { apiBase } from './CommonFunctions.js';
 
+const Job = cron.CronJob;
+
 const worldStateURLs = {
-  pc: `${apiBase}/pc?language=en`,
-  ps4: `${apiBase}/ps4?language=en`,
-  xb1: `${apiBase}/xb1?language=en`,
-  swi: `${apiBase}/swi?language=en`,
+  pc: `${apiBase}/pc/?language=en`,
+  ps4: `${apiBase}/ps4/?language=en`,
+  xb1: `${apiBase}/xb1/?language=en`,
+  swi: `${apiBase}/swi/?language=en`,
 };
 
 export default class WorldStateCache extends EventEmitter {
@@ -19,7 +23,7 @@ export default class WorldStateCache extends EventEmitter {
     this.lastUpdated = undefined;
     this.updating = undefined;
     this.platform = platform;
-    this.updateInterval = setInterval(() => this.update(), timeout);
+    this.updateJob = new Job(`0 */${timeout / 60000} * * * *`, this.update.bind(this), undefined, true);
     this.update();
   }
 
@@ -33,7 +37,7 @@ export default class WorldStateCache extends EventEmitter {
   async update() {
     try {
       this.lastUpdated = Date.now();
-      this.currentData = await fetch(`${this.url}&ts=${Date.now()}`);
+      this.currentData = await fetch(this.url);
       this.updating = undefined;
       this.emit('newData', this.platform, this.currentData);
       return this.currentData;

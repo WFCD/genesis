@@ -389,11 +389,12 @@ export default class Settings extends Interaction {
           default:
             break;
         }
-        await message.edit({
+        if (page > chunks.length - 1) page = chunks.length - 1;
+        if (page < 0) page = 0;
+        return message.edit({
           content: chunks[page],
           components: createGroupsRow(),
         });
-        return undefined;
       };
       buttonCollector.on('collect', buttonHandler);
     }

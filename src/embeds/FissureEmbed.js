@@ -1,6 +1,7 @@
 import BaseEmbed from './BaseEmbed.js';
 
 import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
+import { rTime } from '../utilities/Wrappers.js';
 
 const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissure-sm.png`;
 
@@ -35,15 +36,15 @@ export default class FissureEmbed extends BaseEmbed {
 
       this.fields = fissures.map((f) => ({
         name: i18n`${f.missionType} ${era ? '' : f.tier}`,
-        value: i18n`[${f.eta}] ${f.node} against ${f.enemy}`,
+        value: `${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`,
       }));
     } else if (fissures.length === 0) {
       this.description = i18n`Currently no fissures`;
     } else {
       const f = fissures[0];
       this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
-      this.description = i18n`${f.node} against ${f.enemy}`;
-      this.footer.text = i18n`${f.eta} remaining • Expires `;
+      this.description = `${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`;
+      this.footer.text = i18n`Expires `;
       this.timestamp = new Date(f.expiry).getTime();
       this.thumbnail.url = fissureThumb;
     }

@@ -30,8 +30,8 @@ export default class WorldStateClient {
     if (!WorldStateClient.#weapons) {
       (async function init() {
         if (!WorldStateClient.#weapons) {
-          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons?language=en`);
-          const misc = (await fetch(`${apiBase}/items?language=en`)).filter((i) =>
+          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons/?language=en`);
+          const misc = (await fetch(`${apiBase}/items/?language=en`)).filter((i) =>
             i?.uniqueName?.includes('OperatorAmplifiers')
           );
           WorldStateClient.#weapons.push(...misc);
@@ -50,7 +50,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#mods) {
       (async function init() {
         if (!WorldStateClient.#mods) {
-          WorldStateClient.#mods = await fetch(`${apiBase}/mods?language=en`);
+          WorldStateClient.#mods = await fetch(`${apiBase}/mods/?language=en`);
         }
       })();
     }
@@ -134,7 +134,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
       return undefined;
     }
-    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}?language=${language}&ts=${Date.now()}`, {
+    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}/?language=${language}&ts=${Date.now()}`, {
       headers: {
         platform,
         'Accept-Language': language,

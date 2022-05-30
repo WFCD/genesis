@@ -270,7 +270,7 @@ export default class WorldState extends Interaction {
               new embeds.fissures(eras[eraKey], {
                 platform,
                 i18n: ctx.i18n,
-                era: eras[eraKey][0].tier,
+                era: eras[eraKey][0]?.tier,
               })
             );
           });
