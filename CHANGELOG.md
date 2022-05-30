@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/wfcd/genesis/compare/v2.1.4...v2.2.0) (2022-05-30)
+
+
+### Features
+
+* swap meaning of status to remaining ([30876ef](https://github.com/wfcd/genesis/commit/30876ef1a23b2d0d81a42f6ee8b46e331e9c8452))
+
 ## [2.1.4](https://github.com/wfcd/genesis/compare/v2.1.3...v2.1.4) (2022-05-20)
 
 
