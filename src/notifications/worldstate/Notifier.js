@@ -84,6 +84,13 @@ const buildNotifiableData = (newData, platform, notified) => {
   return data;
 };
 
+const transformMissionType = (rawType) =>
+  rawType
+    .toLowerCase()
+    .replace(/dark sector/gi, '')
+    .replace(/\s/g, '')
+    .trim();
+
 export default class Notifier {
   #settings;
   #worldStates;
@@ -297,7 +304,7 @@ export default class Notifier {
 
   async #sendArbitration(arbitration, platform) {
     if (!arbitration || !arbitration.enemy) return;
-    const type = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
+    const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.type)}`;
     return this.standardBroadcast(arbitration, { Embed: embeds.Arbitration, type, platform });
   }
 
@@ -365,7 +372,7 @@ export default class Notifier {
       newFissures.map(async (fissure) =>
         this.standardBroadcast(newFissures, {
           Embed: embeds.Fissure,
-          type: `fissures.t${fissure.tierNum}.${fissure.missionType.toLowerCase().replace(/\s/g, '')}`,
+          type: `fissures.t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
           platform,
         })
       )

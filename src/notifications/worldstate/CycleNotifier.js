@@ -7,22 +7,40 @@ import { between, embeds, fromNow, perLanguage } from '../NotifierUtils.js';
 const beats = {};
 let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 30000) / 3;
 
+/**
+ * @typedef {Object} CycleData
+ * @property {Object} data cycle information corresponding to the same-named platform
+ * @property {boolean} dirty
+ */
+
 function buildNotifiableData(newData, platform) {
   const data = {
     /* Cycles data */
-    cetusCycleChange: between(newData.cetusCycle.activation, platform, refreshRate, beats),
-    earthCycleChange: between(newData.earthCycle.activation, platform, refreshRate, beats),
-    vallisCycleChange: between(newData.vallisCycle.activation, platform, refreshRate, beats),
-    cambionCycleChange: between(newData.cambionCycle.activation, platform, refreshRate, beats),
-    cambionCycle: newData.cambionCycle,
-    cetusCycle: newData.cetusCycle,
-    earthCycle: newData.earthCycle,
-    vallisCycle: newData.vallisCycle,
+    /** @type {CycleData} */
+    cetus: {
+      data: newData.cetusCycle,
+      dirty: between(newData.cetusCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    cambion: {
+      data: newData.cambionCycle,
+      dirty: between(newData.cambionCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    earth: {
+      data: newData.earthCycle,
+      dirty: between(newData.earthCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    vallis: {
+      data: newData.vallisCycle,
+      dirty: between(newData.vallisCycle.activation, platform, refreshRate, beats),
+    },
   };
 
   const ostron = newData.syndicateMissions.filter((mission) => mission.syndicate === 'Ostrons')[0];
   if (ostron) {
-    data.cetusCycle.bountyExpiry = ostron.expiry;
+    data.cetus.data.bountyExpiry = ostron.expiry;
   }
 
   return data;
@@ -46,8 +64,6 @@ export default class CyclesNotifier {
         currCycleStart: undefined,
       };
     });
-
-    this.updating = false;
     refreshRate = timeout;
     this.updating = [];
   }
@@ -64,7 +80,7 @@ export default class CyclesNotifier {
   /**
    * Send notifications on new data from worldstate
    * @param  {string} platform Platform to be updated
-   * @param  {json} newData  Updated data from the worldstate
+   * @param  {Object} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
@@ -84,29 +100,15 @@ export default class CyclesNotifier {
     this.updating.splice(this.updating.indexOf(platform), 1);
   }
 
-  async sendNew(
-    platform,
-    rawData,
-    notifiedIds,
-    {
-      cetusCycle,
-      earthCycle,
-      cetusCycleChange,
-      earthCycleChange,
-      vallisCycleChange,
-      cambionCycle,
-      cambionCycleChange,
-      vallisCycle,
-    }
-  ) {
+  async sendNew(platform, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {
     // Send all notifications
     const cycleIds = [];
     try {
-      logger.silly(`sending new data on ${platform}...`);
-      cycleIds.push(await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds));
-      cycleIds.push(await this.sendEarthCycle(earthCycle, platform, earthCycleChange, notifiedIds));
-      cycleIds.push(await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange, notifiedIds));
-      cycleIds.push(await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds));
+      logger.silly(`sending new cycle data on ${platform}...`);
+      cycleIds.push(await this.sendCetusCycle(cetus, platform, notifiedIds));
+      cycleIds.push(await this.sendEarthCycle(earth, platform, notifiedIds));
+      cycleIds.push(await this.sendVallisCycle(vallis, platform, notifiedIds));
+      cycleIds.push(await this.sendCambionCycle(cambion, platform, notifiedIds));
     } catch (e) {
       logger.error(e);
     } finally {
@@ -119,7 +121,7 @@ export default class CyclesNotifier {
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
-  async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendCambionCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cambion.${newCycle.active}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
@@ -131,7 +133,7 @@ export default class CyclesNotifier {
     return type;
   }
 
-  async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendCetusCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
@@ -144,7 +146,7 @@ export default class CyclesNotifier {
     return type;
   }
 
-  async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendEarthCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const smolRange = fromNow(newCycle.expiry) < refreshRate;
     if (smolRange && !cycleChange) {
       cycleChange = true;
@@ -161,7 +163,7 @@ export default class CyclesNotifier {
     return type;
   }
 
-  async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendVallisCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
