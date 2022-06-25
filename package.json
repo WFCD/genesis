@@ -110,6 +110,12 @@
   "release": {
     "plugins": [
       "@semantic-release/commit-analyzer",
+      [
+        "@semantic-release/exec",
+        {
+          "failCmd": "export SEMANTIC_RELEASE_COMMENCE=true"
+        }
+      ],
       "@semantic-release/release-notes-generator",
       [
         "@semantic-release/npm",
