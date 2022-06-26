@@ -47,13 +47,17 @@ function buildNotifiableData(newData, platform) {
 }
 
 export default class CyclesNotifier {
+  #settings;
+  #worldStates;
+  #broadcaster;
+  #updating;
+
   constructor({ settings, client, worldStates, timeout, workerCache }) {
-    this.settings = settings;
-    this.client = client;
-    this.worldStates = worldStates;
-    this.broadcaster = new Broadcaster({
+    this.#settings = settings;
+    this.#worldStates = worldStates;
+    this.#broadcaster = new Broadcaster({
       client,
-      settings: this.settings,
+      settings: this.#settings,
       workerCache,
     });
     logger.info('Ready', 'CY');
@@ -65,12 +69,12 @@ export default class CyclesNotifier {
       };
     });
     refreshRate = timeout;
-    this.updating = [];
+    this.#updating = [];
   }
 
   /** Start the notifier */
   async start() {
-    Object.entries(this.worldStates).forEach(([, ws]) => {
+    Object.entries(this.#worldStates).forEach(([, ws]) => {
       ws.on('newData', async (platform, newData) => {
         await this.onNewData(platform, newData);
       });
@@ -85,19 +89,19 @@ export default class CyclesNotifier {
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.updating.includes(platform)) return;
+    if (this.#updating.includes(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
-    if (!(newData && newData.timestamp)) return;
+    if (!newData?.timestamp) return;
 
-    const notifiedIds = await this.settings.getNotifiedIds(`${platform}:cycles`);
+    const notifiedIds = await this.#settings.getNotifiedIds(`${platform}:cycles`);
 
     // Set up data to notify
-    this.updating.push(platform);
+    this.#updating.push(platform);
 
     await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
 
-    this.updating.splice(this.updating.indexOf(platform), 1);
+    this.#updating.splice(this.#updating.indexOf(platform), 1);
   }
 
   async sendNew(platform, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {
@@ -117,7 +121,7 @@ export default class CyclesNotifier {
 
     const alreadyNotified = [...cycleIds].filter((a) => a);
 
-    await this.settings.setNotifiedIds(`${platform}:cycles`, alreadyNotified);
+    await this.#settings.setNotifiedIds(`${platform}:cycles`, alreadyNotified);
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
@@ -127,7 +131,7 @@ export default class CyclesNotifier {
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cambion(newCycle, { i18n, locale }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cambion(newCycle, { i18n, locale }), platform, type)
       );
     }
     return type;
@@ -140,7 +144,7 @@ export default class CyclesNotifier {
 
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;
@@ -157,7 +161,7 @@ export default class CyclesNotifier {
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;
@@ -169,7 +173,7 @@ export default class CyclesNotifier {
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;

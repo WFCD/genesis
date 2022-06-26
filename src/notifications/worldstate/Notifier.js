@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 
@@ -131,7 +132,7 @@ export default class Notifier {
   /**
    * Send notifications on new data from worldstate
    * @param  {string} platform Platform to be updated
-   * @param  {json} newData  Updated data from the worldstate
+   * @param  {Object} newData  Updated data from the worldstate
    */
   async #onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
@@ -139,7 +140,7 @@ export default class Notifier {
     if (this.#updating.includes(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
-    if (!(newData && newData.timestamp)) return;
+    if (!newData?.timestamp) return;
 
     const notifiedIds = await this.#settings.getNotifiedIds(platform);
 
@@ -211,7 +212,7 @@ export default class Notifier {
       this.#sendSentientOutposts(outposts, platform);
       this.#sendNightwave(nightwave, platform);
       this.#sendArbitration(arbitration, platform);
-      this.#sendSteelPath(steelPath, platform);
+      await this.#sendSteelPath(steelPath, platform);
     } catch (e) {
       logger.error(e);
     } finally {
@@ -247,16 +248,14 @@ export default class Notifier {
 
   async standardBroadcast(sendable, { Embed, type, platform, thumb, items }) {
     if (Array.isArray(sendable)) {
-      return Promise.all(
-        sendable.map((subsendable) =>
-          this.standardBroadcast(subsendable, {
-            Embed,
-            type,
-            platform,
-            thumb,
-            items,
-          })
-        )
+      return Promise.mapSeries(sendable, (subsendable) =>
+        this.standardBroadcast(subsendable, {
+          Embed,
+          type,
+          platform,
+          thumb,
+          items,
+        })
       );
     }
     return perLanguage(async ({ i18n, locale }) => {
@@ -267,39 +266,35 @@ export default class Notifier {
   }
 
   async #sendAcolytes(newAcolytes, platform) {
-    return Promise.all(
-      newAcolytes.map(async (acolyte) =>
-        perLanguage(async ({ i18n, locale }) =>
-          this.#broadcaster.broadcast(
-            new embeds.Acolyte([acolyte], { platform, i18n, locale }),
-            platform,
-            `enemies${acolyte.isDiscovered ? '' : '.departed'}`
-          )
+    return Promise.mapSeries(newAcolytes, async (acolyte) =>
+      perLanguage(async ({ i18n, locale }) =>
+        this.#broadcaster.broadcast(
+          new embeds.Acolyte([acolyte], { platform, i18n, locale }),
+          platform,
+          `enemies${acolyte.isDiscovered ? '' : '.departed'}`
         )
       )
     );
   }
 
   async #sendAlerts(newAlerts, platform) {
-    return Promise.all(
-      newAlerts.map(async (alert) => {
-        let thumb;
-        try {
-          thumb =
-            !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
-            (await getThumbnailForItem(alert.mission.reward.itemString));
-        } catch (e) {
-          logger.error(e);
-        }
-        return this.standardBroadcast(alert, {
-          platform,
-          Embed: embeds.Alert,
-          type: 'alerts',
-          items: alert.rewardTypes,
-          thumb,
-        });
-      })
-    );
+    return Promise.mapSeries(newAlerts, async (alert) => {
+      let thumb;
+      try {
+        thumb =
+          !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
+          (await getThumbnailForItem(alert.mission.reward.itemString));
+      } catch (e) {
+        logger.error(e);
+      }
+      return this.standardBroadcast(alert, {
+        platform,
+        Embed: embeds.Alert,
+        type: 'alerts',
+        items: alert.rewardTypes,
+        thumb,
+      });
+    });
   }
 
   async #sendArbitration(arbitration, platform) {
@@ -313,13 +308,11 @@ export default class Notifier {
       const embed = new embeds.VoidTrader(newBaro, { platform, i18n, locale });
       if (embed.fields.length > 25) {
         const pages = createGroupedArray(embed.fields, 15);
-        return Promise.all(
-          pages.map(async (page) => {
-            const tembed = { ...embed };
-            tembed.fields = page;
-            this.#broadcaster.broadcast(tembed, platform, 'baro');
-          })
-        );
+        return Promise.mapSeries(pages, async (page) => {
+          const tembed = { ...embed };
+          tembed.fields = page;
+          this.#broadcaster.broadcast(tembed, platform, 'baro');
+        });
       }
       return this.#broadcaster.broadcast(embed, platform, 'baro');
     });
@@ -368,38 +361,34 @@ export default class Notifier {
   }
 
   async #sendFissures(newFissures, platform) {
-    return Promise.all(
-      newFissures.map(async (fissure) =>
-        this.standardBroadcast(newFissures, {
-          Embed: embeds.Fissure,
-          type: `fissures.t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
-          platform,
-        })
-      )
+    return Promise.mapSeries(newFissures, async (fissure) =>
+      this.standardBroadcast(fissure, {
+        Embed: embeds.Fissure,
+        type: `fissures.t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
+        platform,
+      })
     );
   }
 
   async #sendInvasions(newInvasions, platform) {
     const type = 'invasions';
-    return Promise.all(
-      newInvasions.map(async (invasion) => {
-        let thumb;
-        try {
-          thumb =
-            !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst')) &&
-            (await getThumbnailForItem(invasion.attackerReward.itemString || invasion.defenderReward.itemString));
-        } catch (e) {
-          logger.error(e);
-        }
-        return this.standardBroadcast(invasion, {
-          Embed: embeds.Invasion,
-          items: invasion.rewardTypes,
-          platform,
-          type,
-          thumb,
-        });
-      })
-    );
+    return Promise.mapSeries(newInvasions, async (invasion) => {
+      let thumb;
+      try {
+        thumb =
+          !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst')) &&
+          (await getThumbnailForItem(invasion.attackerReward.itemString || invasion.defenderReward.itemString));
+      } catch (e) {
+        logger.error(e);
+      }
+      return this.standardBroadcast(invasion, {
+        Embed: embeds.Invasion,
+        items: invasion.rewardTypes,
+        platform,
+        type,
+        thumb,
+      });
+    });
   }
 
   async #sendNews(newNews, platform, type) {
@@ -411,15 +400,13 @@ export default class Notifier {
     if (!nightwave) return;
     return perLanguage(async ({ i18n, locale }) => {
       if (nightwave.activeChallenges.length) {
-        return Promise.all(
-          nightwave.activeChallenges.map(async (challenge) => {
-            const nwCopy = { ...nightwave };
-            nwCopy.activeChallenges = [challenge];
-            const embed = new embeds.Nightwave(nwCopy, { platform, i18n, locale });
-            embed.locale = locale;
-            return this.#broadcaster.broadcast(embed, platform, makeNightwaveType(challenge));
-          })
-        );
+        return Promise.mapSeries(nightwave.active, async (challenge) => {
+          const nwCopy = { ...nightwave };
+          nwCopy.activeChallenges = [challenge];
+          const embed = new embeds.Nightwave(nwCopy, { platform, i18n, locale });
+          embed.locale = locale;
+          return this.#broadcaster.broadcast(embed, platform, makeNightwaveType(challenge));
+        });
       }
       const embed = new embeds.Nightwave(nightwave, { platform, i18n, locale });
       embed.locale = locale;
@@ -472,33 +459,29 @@ export default class Notifier {
 
   async #sendSyndicates(newSyndicates, platform) {
     if (!newSyndicates || !newSyndicates[0]) return;
-    await Promise.all(
-      syndicates.map(async ({ key, display, prefix, notifiable }) => {
-        if (notifiable) {
-          return perLanguage(async ({ i18n, locale }) => {
-            const embed = new embeds.Syndicate(newSyndicates, {
-              display,
-              platform,
-              i18n,
-              locale,
-            });
-            const eKey = `${prefix || ''}${key}`;
-            return this.checkAndSendSyndicate(embed, eKey, platform);
+    return Promise.mapSeries(syndicates, async ({ key, display, prefix, notifiable }) => {
+      if (notifiable) {
+        return perLanguage(async ({ i18n, locale }) => {
+          const embed = new embeds.Syndicate(newSyndicates, {
+            display,
+            platform,
+            i18n,
+            locale,
           });
-        }
-      })
-    );
+          const eKey = `${prefix || ''}${key}`;
+          return this.checkAndSendSyndicate(embed, eKey, platform);
+        });
+      }
+    });
   }
 
   async #sendTweets(newTweets, platform) {
-    return Promise.all(
-      newTweets.map((t) =>
-        this.standardBroadcast(t, {
-          Embed: embeds.Tweet,
-          platform,
-          type: t.id,
-        })
-      )
+    return Promise.mapSeries(newTweets, async (t) =>
+      this.standardBroadcast(t, {
+        Embed: embeds.Tweet,
+        platform,
+        type: t.id,
+      })
     );
   }
 
