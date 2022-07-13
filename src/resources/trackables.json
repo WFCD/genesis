@@ -23,7 +23,8 @@
     "riven",
     "kavatGene",
     "kubrowEgg",
-    "traces"
+    "traces",
+    "other"
   ],
   "eventTypes": [
     "alerts",
