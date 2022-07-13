@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/wfcd/genesis/compare/v2.2.0...v2.2.1) (2022-07-13)
+
+
+### Bug Fixes
+
+* re-add "other" as a trackable ([f4a977c](https://github.com/wfcd/genesis/commit/f4a977c32f43cb86beb49ff9d7ed73c53b713f70))
+
 # [2.2.0](https://github.com/wfcd/genesis/compare/v2.1.4...v2.2.0) (2022-05-30)
 
 
