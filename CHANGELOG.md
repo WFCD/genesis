@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/wfcd/genesis/compare/v2.2.1...v2.2.2) (2022-07-17)
+
+
+### Bug Fixes
+
+* fissure doubling, 1-minute events for deimos & solaris, dark sector ([#537](https://github.com/wfcd/genesis/issues/537)) ([bd23a27](https://github.com/wfcd/genesis/commit/bd23a27227f4446925fc39eda8aedff81739f73a))
+
 ## [2.2.1](https://github.com/wfcd/genesis/compare/v2.2.0...v2.2.1) (2022-07-13)
 
 
