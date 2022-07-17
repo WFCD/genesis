@@ -113,7 +113,8 @@
       [
         "@semantic-release/exec",
         {
-          "failCmd": "export SEMANTIC_RELEASE_COMMENCE=true"
+          "successCmd": "echo 'yes' >> .release",
+          "failCmd": "echo 'no' >> .release"
         }
       ],
       "@semantic-release/release-notes-generator",

@@ -26,8 +26,12 @@ jobs:
             @eclass/semantic-release-sentry-releases
             @semantic-release/git
             @semantic-release/changelog
+            @semantic-release/exec
+      - name: Read .release file
+        id: release
+        run: echo "::set-output name=release::$(cat .release)"
       - name: Create Sentry release
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes' }}
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -37,7 +41,7 @@ jobs:
           environment: production
       # Built from https://blog.benoitblanchon.fr/github-action-run-ssh-commands/
       - name: Configure
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes'  }}
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/prod.key
@@ -61,26 +65,26 @@ jobs:
           SSH_WORKER_HOST: ${{ secrets.SSH_WORKER_HOST }}
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && pm2 kill'
       - name: Update Bot server
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
       - name: Update Bot dependencies
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
       - name: Start Bot Process
-        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+        if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && npm run start'
 #      - name: Stop Worker Process
-#        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+#        if: ${{ steps.release.outputs.release == 'yes' }}
 #        run: ssh worker 'source ~/.zshrc && pm2 kill'
 #      - name: Update Worker server
-#        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+#        if: ${{ steps.release.outputs.release == 'yes' }}
 #        run: ssh worker 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
 #      - name: Update Worker dependencies
-#        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+#        if: ${{ steps.release.outputs.release == 'yes' }}
 #        run: ssh worker 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
 #      - name: Start Worker Process
-#        if: ${{ env.SEMANTIC_RELEASE_COMMENCE == true  }}
+#        if: ${{ steps.release.outputs.release == 'yes' }}
 #        run: ssh worker 'source ~/.zshrc && cd ~/genesis && npm run start:worker'
