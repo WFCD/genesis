@@ -7,35 +7,57 @@ import { between, embeds, fromNow, perLanguage } from '../NotifierUtils.js';
 const beats = {};
 let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 30000) / 3;
 
+/**
+ * @typedef {Object} CycleData
+ * @property {Object} data cycle information corresponding to the same-named platform
+ * @property {boolean} dirty
+ */
+
 function buildNotifiableData(newData, platform) {
   const data = {
     /* Cycles data */
-    cetusCycleChange: between(newData.cetusCycle.activation, platform, refreshRate, beats),
-    earthCycleChange: between(newData.earthCycle.activation, platform, refreshRate, beats),
-    vallisCycleChange: between(newData.vallisCycle.activation, platform, refreshRate, beats),
-    cambionCycleChange: between(newData.cambionCycle.activation, platform, refreshRate, beats),
-    cambionCycle: newData.cambionCycle,
-    cetusCycle: newData.cetusCycle,
-    earthCycle: newData.earthCycle,
-    vallisCycle: newData.vallisCycle,
+    /** @type {CycleData} */
+    cetus: {
+      data: newData.cetusCycle,
+      dirty: between(newData.cetusCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    cambion: {
+      data: newData.cambionCycle,
+      dirty: between(newData.cambionCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    earth: {
+      data: newData.earthCycle,
+      dirty: between(newData.earthCycle.activation, platform, refreshRate, beats),
+    },
+    /** @type {CycleData} */
+    vallis: {
+      data: newData.vallisCycle,
+      dirty: between(newData.vallisCycle.activation, platform, refreshRate, beats),
+    },
   };
 
   const ostron = newData.syndicateMissions.filter((mission) => mission.syndicate === 'Ostrons')[0];
   if (ostron) {
-    data.cetusCycle.bountyExpiry = ostron.expiry;
+    data.cetus.data.bountyExpiry = ostron.expiry;
   }
 
   return data;
 }
 
 export default class CyclesNotifier {
+  #settings;
+  #worldStates;
+  #broadcaster;
+  #updating;
+
   constructor({ settings, client, worldStates, timeout, workerCache }) {
-    this.settings = settings;
-    this.client = client;
-    this.worldStates = worldStates;
-    this.broadcaster = new Broadcaster({
+    this.#settings = settings;
+    this.#worldStates = worldStates;
+    this.#broadcaster = new Broadcaster({
       client,
-      settings: this.settings,
+      settings: this.#settings,
       workerCache,
     });
     logger.info('Ready', 'CY');
@@ -46,15 +68,13 @@ export default class CyclesNotifier {
         currCycleStart: undefined,
       };
     });
-
-    this.updating = false;
     refreshRate = timeout;
-    this.updating = [];
+    this.#updating = [];
   }
 
   /** Start the notifier */
   async start() {
-    Object.entries(this.worldStates).forEach(([, ws]) => {
+    Object.entries(this.#worldStates).forEach(([, ws]) => {
       ws.on('newData', async (platform, newData) => {
         await this.onNewData(platform, newData);
       });
@@ -64,49 +84,35 @@ export default class CyclesNotifier {
   /**
    * Send notifications on new data from worldstate
    * @param  {string} platform Platform to be updated
-   * @param  {json} newData  Updated data from the worldstate
+   * @param  {Object} newData  Updated data from the worldstate
    */
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.updating.includes(platform)) return;
+    if (this.#updating.includes(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
-    if (!(newData && newData.timestamp)) return;
+    if (!newData?.timestamp) return;
 
-    const notifiedIds = await this.settings.getNotifiedIds(`${platform}:cycles`);
+    const notifiedIds = await this.#settings.getNotifiedIds(`${platform}:cycles`);
 
     // Set up data to notify
-    this.updating.push(platform);
+    this.#updating.push(platform);
 
     await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
 
-    this.updating.splice(this.updating.indexOf(platform), 1);
+    this.#updating.splice(this.#updating.indexOf(platform), 1);
   }
 
-  async sendNew(
-    platform,
-    rawData,
-    notifiedIds,
-    {
-      cetusCycle,
-      earthCycle,
-      cetusCycleChange,
-      earthCycleChange,
-      vallisCycleChange,
-      cambionCycle,
-      cambionCycleChange,
-      vallisCycle,
-    }
-  ) {
+  async sendNew(platform, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {
     // Send all notifications
     const cycleIds = [];
     try {
-      logger.silly(`sending new data on ${platform}...`);
-      cycleIds.push(await this.sendCetusCycle(cetusCycle, platform, cetusCycleChange, notifiedIds));
-      cycleIds.push(await this.sendEarthCycle(earthCycle, platform, earthCycleChange, notifiedIds));
-      cycleIds.push(await this.sendVallisCycle(vallisCycle, platform, vallisCycleChange, notifiedIds));
-      cycleIds.push(await this.sendCambionCycle(cambionCycle, platform, cambionCycleChange, notifiedIds));
+      logger.silly(`sending new cycle data on ${platform}...`);
+      cycleIds.push(await this.sendCetusCycle(cetus, platform, notifiedIds));
+      cycleIds.push(await this.sendEarthCycle(earth, platform, notifiedIds));
+      cycleIds.push(await this.sendVallisCycle(vallis, platform, notifiedIds));
+      cycleIds.push(await this.sendCambionCycle(cambion, platform, notifiedIds));
     } catch (e) {
       logger.error(e);
     } finally {
@@ -115,36 +121,36 @@ export default class CyclesNotifier {
 
     const alreadyNotified = [...cycleIds].filter((a) => a);
 
-    await this.settings.setNotifiedIds(`${platform}:cycles`, alreadyNotified);
+    await this.#settings.setNotifiedIds(`${platform}:cycles`, alreadyNotified);
     logger.silly(`completed sending notifications for ${platform}`);
   }
 
-  async sendCambionCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendCambionCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cambion.${newCycle.active}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cambion(newCycle, { i18n, locale }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cambion(newCycle, { i18n, locale }), platform, type)
       );
     }
     return type;
   }
 
-  async sendCetusCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendCetusCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `cetus.${newCycle.isDay ? 'day' : 'night'}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
 
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;
   }
 
-  async sendEarthCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendEarthCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const smolRange = fromNow(newCycle.expiry) < refreshRate;
     if (smolRange && !cycleChange) {
       cycleChange = true;
@@ -155,19 +161,19 @@ export default class CyclesNotifier {
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Cycle(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;
   }
 
-  async sendVallisCycle(newCycle, platform, cycleChange, notifiedIds) {
+  async sendVallisCycle({ data: newCycle, dirty: cycleChange }, platform, notifiedIds) {
     const minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const type = `solaris.${newCycle.isWarm ? 'warm' : 'cold'}${minutesRemaining}`;
     if (type.endsWith('.0')) return type; // skip sending 0's so the next cycle starts faster;
     if (!notifiedIds.includes(type)) {
       await perLanguage(async ({ i18n, locale }) =>
-        this.broadcaster.broadcast(new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type)
+        this.#broadcaster.broadcast(new embeds.Solaris(newCycle, { i18n, locale, platform }), platform, type)
       );
     }
     return type;

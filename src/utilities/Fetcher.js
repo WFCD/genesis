@@ -10,12 +10,13 @@ const redirectCodes = [302, 301].concat(
   (process.env.JSON_CACHE_REDIRECT_CODES || '').split(',').map((code) => parseInt(code.trim(), 10))
 );
 
+// eslint-disable-next-line no-unused-vars
 const hash = (input) => {
   return crypto.createHash('md5').update(input).digest('hex');
 };
 
 const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) => {
-  logger.debug(`Fetching... ${url}`);
+  // logger.debug(`Fetching... ${url}`);
   const protocol = url.startsWith('https') ? https : http;
   return new Promise((resolve) => {
     const request = protocol.get(url, { headers }, (response) => {
@@ -43,7 +44,7 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
         response.on('data', (chunk) => body.push(chunk));
         response.on('end', () => {
           const d = body.join('');
-          logger.debug(`${url} :: ${hash(d)}`);
+          // logger.debug(`${url} :: ${hash(d)}`);
           resolve(JSON.parse(d));
         });
       }

@@ -23,7 +23,9 @@ export default class WorldStateCache extends EventEmitter {
     this.lastUpdated = undefined;
     this.updating = undefined;
     this.platform = platform;
-    this.updateJob = new Job(`0 */${timeout / 60000} * * * *`, this.update.bind(this), undefined, true);
+
+    const to = Math.round(timeout / 60000) < 1 ? 1 : Math.round(timeout / 60000);
+    this.updateJob = new Job(`0 */${to} * * * *`, this.update.bind(this), undefined, true);
     this.update();
   }
 
