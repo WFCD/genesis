@@ -94,7 +94,7 @@ export default class Calculator extends Interaction {
         });
       case 'health':
         f1 = () => 1 + 0.015 * range ** 2;
-        f2 = () => 1 + ((24 * Math.sqrt(5))/5) * range ** 0.5;
+        f2 = () => 1 + ((24 * Math.sqrt(5)) / 5) * range ** 0.5;
         const health = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${health} health`,
