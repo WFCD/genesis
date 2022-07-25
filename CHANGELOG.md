@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/wfcd/genesis/compare/v2.2.2...v2.2.3) (2022-07-25)
+
+
+### Bug Fixes
+
+* **calc:** divide health f2 by 5 ([dcfc7cf](https://github.com/wfcd/genesis/commit/dcfc7cf9721268b1ff73af23238dce35138f1ca8))
+
 ## [2.2.2](https://github.com/wfcd/genesis/compare/v2.2.1...v2.2.2) (2022-07-17)
 
 
