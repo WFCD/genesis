@@ -234,10 +234,10 @@ export default class Builds extends Interaction {
         const id = build[name];
         switch (name) {
           case 'archwing':
-          case 'warframe':
           case 'necramech':
+          case 'warframe':
             parsed[name] = id?.uniqueName ? id : ctx.ws.warframe(id)?.[0];
-            pages.push(new FrameEmbed(parsed[name], undefined));
+            pages.push(new FrameEmbed(parsed[name], { i18n: ctx.i18n, locale: ctx.language }));
             break;
           case 'prism':
             return;
@@ -247,7 +247,7 @@ export default class Builds extends Interaction {
             break;
           default:
             parsed[name] = id?.uniqueName ? id : ctx.ws.weapon(id)?.[0];
-            pages.push(new WeaponEmbed(parsed[name]));
+            pages.push(new WeaponEmbed(parsed[name], { locale: ctx.language, i18n: ctx.i18n }));
             break;
         }
       }
@@ -255,7 +255,10 @@ export default class Builds extends Interaction {
     if (parsed.focus || build.prism) {
       const focus = parsed.focus ? `**${ctx.i18n`Focus`}:** ${build.focus}` : '';
       const prism = build.prism
-        ? new WeaponEmbed(build.prism?.uniqueName ? build.prism : ctx.ws.weapon(build.prism)[0])
+        ? new WeaponEmbed(build.prism?.uniqueName ? build.prism : ctx.ws.weapon(build.prism)[0], {
+            locale: ctx.language,
+            i18n: ctx.i18n,
+          })
         : undefined;
       if (prism) {
         if (focus) {

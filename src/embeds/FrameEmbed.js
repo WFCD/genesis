@@ -12,7 +12,7 @@ export default class FrameEmbed extends BaseEmbed {
    * @param {I18n} i18n internationalization template
    * @param {string} locale locality
    */
-  constructor(frame, { frames, i18n, locale }) {
+  constructor(frame, { frames = [], i18n, locale }) {
     super(locale);
 
     this.thumbnail = {
