@@ -1,3 +1,10 @@
+## [2.2.5](https://github.com/wfcd/genesis/compare/v2.2.4...v2.2.5) (2022-08-09)
+
+
+### Bug Fixes
+
+* update build command embeds ([1fc0ac5](https://github.com/wfcd/genesis/commit/1fc0ac5f03f8daeb170a01a078d2100b0dabed57)), closes [#541](https://github.com/wfcd/genesis/issues/541)
+
 ## [2.2.4](https://github.com/wfcd/genesis/compare/v2.2.3...v2.2.4) (2022-07-31)
 
 
