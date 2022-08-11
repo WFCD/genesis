@@ -2,7 +2,7 @@
   "{0} | {1} left": "{0} | {1} sol",
   "{0} {1} on {2} \n level {3} - {4}\n​": "{0} {1} ile {2} \n seviye {3} - {4}\n​",
   "[{0}] Worldstate - Arbitration": "[{0}] Arbitrasyon",
-  "[{0}] Worldstate - Alerts": "[{0}] Alerts",
+  "[{0}] Worldstate - Alerts": "{0} Uyarılar",
   "[{0}] Nightwave": "[{0}] Nightwave",
   "[{0}] Elite Nightwave": "[{0}] Elite Nightwave",
   "[{0}] Worldstate - Invasions": "[{0}] Invasions",
