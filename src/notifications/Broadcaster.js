@@ -51,15 +51,16 @@ export default class Broadcaster {
     const channels = cachedEvents.includes(type)
       ? this.workerCache.getKey(`${type}:${platform}`)
       : await this.settings.getAgnosticNotifications(type, platform, items);
-    if (!channels.length) {
+    if (!channels?.length) {
       logger.silly(`No channels on ${platform} tracking ${type}... continuing`, 'WS');
       return;
     }
 
     await Promise.all(
-      channels.map(async (channelId) => {
+      channels.map(async ({ channelId, threadId }) => {
         if (typeof channelId === 'undefined' || !channelId.length) return;
         const ctx = await this.settings.getCommandContext(channelId);
+        ctx.threadId = threadId;
 
         // localeCompare should return 0 if equal, so non-zero's will be truthy
         if (embed.locale && ctx.language.localeCompare(embed.locale)) {
@@ -75,6 +76,7 @@ export default class Broadcaster {
         }
 
         try {
+          /** @type {string} */
           const content = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || '';
           await webhook(ctx, { content, embeds: [embed] });
         } catch (e) {

@@ -12,6 +12,7 @@ export default [
   );`,
   SQL`CREATE TABLE IF NOT EXISTS type_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
+    thread_id BIGINT UNSIGNED,
     type VARCHAR(255) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (channel_id, type),
@@ -21,6 +22,7 @@ export default [
   );`,
   SQL`CREATE TABLE IF NOT EXISTS item_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
+    thread_id BIGINT UNSIGNED,
     item VARCHAR(20) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (channel_id, item),

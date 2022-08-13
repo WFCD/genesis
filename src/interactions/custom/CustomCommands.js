@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import Discord, { Permissions } from 'discord.js';
 import { createGroupedArray } from '../../utilities/CommonFunctions.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
@@ -12,9 +12,10 @@ const nameReg = /^[\w-]{1,32}$/u;
 
 export default class CustomCommands extends Interaction {
   static enabled = true;
-  static elevated = true;
+
   static command = {
     ...cmds.cc,
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
     options: [
       {
         ...cmds['cc.add'],

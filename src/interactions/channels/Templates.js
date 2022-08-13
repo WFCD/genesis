@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import Discord, { Permissions } from 'discord.js';
 import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
@@ -15,10 +15,10 @@ const tc = {
 };
 
 export default class Templates extends Interaction {
-  static elevated = true;
   static enabled = games.includes('ROOMS');
   static command = {
     ...cmds.templates,
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
     options: [
       {
         ...cmds['templates.add'],

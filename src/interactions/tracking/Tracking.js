@@ -1,4 +1,4 @@
-import Discord, { MessageButton } from 'discord.js';
+import Discord, { MessageButton, Permissions } from 'discord.js';
 import Interaction from '../../models/Interaction.js';
 import {
   chunkify,
@@ -26,20 +26,29 @@ const chunkerate = (track) => {
   const itemString = !track.items.length ? 'None' : track.items.map((i) => `\`${i}\``).join(', ');
   const eventString = !track.events.length ? 'None' : track.events.map((m) => `\`${m}\``).join(', ');
   const format = `**Current Items:**\n${itemString}\n\n**Current Events:**\n${eventString}`;
-  return chunkify({ string: format, maxLength: 2000, breakChar: ',' });
+  return chunkify({ string: format, maxLength: 500, breakChar: ',' });
 };
 
 const subgrouped = ['arbitration', 'fissures', 'twitter'];
 
 export default class Settings extends Interaction {
-  static elevated = true;
   static command = {
     ...cmds.tracking,
-    // defaultPermission: false,
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
     options: [
       {
         ...cmds['tracking.manage'],
         type: Types.SUB_COMMAND,
+        options: [
+          {
+            ...cmds['tracking.manage.channel'],
+            type: Types.CHANNEL,
+          },
+          {
+            ...cmds['tracking.manage.thread'],
+            type: Types.CHANNEL,
+          },
+        ],
       },
       {
         ...cmds['tracking.custom'],
@@ -65,6 +74,10 @@ export default class Settings extends Interaction {
             ...cmds['tracking.custom.clear-prepend'],
             type: Types.BOOLEAN,
           },
+          {
+            ...cmds['tracking.custom.thread'],
+            type: Types.CHANNEL,
+          },
         ],
       },
     ],
@@ -74,10 +87,42 @@ export default class Settings extends Interaction {
     await interaction?.deferReply({ ephemeral: false });
     const { options } = interaction;
     const action = options?.getSubcommand();
+    let channel;
+    let thread;
+    let isThread;
+    if (options?.getChannel('channel')) {
+      if (options?.getChannel('channel').type !== 'GUILD_TEXT') {
+        return interaction.editReply({
+          ephemeral: ctx.ephemerate,
+          content: `:warning: ${options.getChannel('channel')} is not a text channel. :warning:`,
+        });
+      }
+      channel = options.getChannel('channel');
+    }
+    if (!channel) {
+      isThread = interaction.channel.isThread();
+      channel = isThread ? interaction.channel.parent : interaction.channel;
+      thread = isThread ? interaction.channel : undefined;
+    }
+    if (options.getChannel('thread')?.isThread?.()) {
+      thread = options.getChannel('thread');
+      if (thread.parent.id !== channel.id) {
+        return interaction.editReply({
+          ephemeral: ctx.ephemerate,
+          content: `:warning: ${thread} is not a thread in ${channel} :warning:`,
+        });
+      }
+    } else if (options.getChannel('thread')) {
+      return interaction.editReply({
+        ephemeral: ctx.ephemerate,
+        content: `:warning: ${options.getChannel('thread')} is not a thread channel :warning:`,
+      });
+    }
     if (action === 'manage') {
       const original = Object.freeze({
-        items: await ctx.settings.getTrackedItems(interaction.channel),
-        events: await ctx.settings.getTrackedEventTypes(interaction.channel),
+        items: await ctx.settings.getTrackedItems(channel, thread),
+        events: await ctx.settings.getTrackedEventTypes(channel, thread),
+        thread,
       });
       const current = { ...original };
       let chunks = chunkerate(current);
@@ -305,9 +350,9 @@ export default class Settings extends Interaction {
         await button?.deferUpdate();
         switch (button?.customId) {
           case 'save':
-            await ctx.settings.setTrackables(interaction.channel, current);
+            await ctx.settings.setTrackables(channel, current);
             buttonCollector.stop('limit');
-            await this.#generateWebhook(interaction, ctx);
+            await this.#generateWebhook(interaction, ctx, channel);
             return message.edit({
               content: chunks[page],
               components: [
@@ -391,10 +436,25 @@ export default class Settings extends Interaction {
         }
         if (page > chunks.length - 1) page = chunks.length - 1;
         if (page < 0) page = 0;
-        return message.edit({
-          content: chunks[page],
-          components: createGroupsRow(),
-        });
+        if (chunks[page]) {
+          return message.edit({
+            content: chunks[page],
+            components: createGroupsRow(),
+          });
+        }
+        if (chunks[page - 1]) {
+          page -= 1;
+        } else if (chunks[page + 1]) {
+          page += 1;
+        } else if (chunks[0]) {
+          page = 0;
+        }
+        if (chunks[page]) {
+          return message.edit({
+            content: chunks[page],
+            components: createGroupsRow(),
+          });
+        }
       };
       buttonCollector.on('collect', buttonHandler);
     }
@@ -414,8 +474,6 @@ export default class Settings extends Interaction {
       );
       const prepend = options.getString('prepend');
       const clear = options.getBoolean('clear-prepend');
-      const channel =
-        options?.getChannel('channel')?.type === 'GUILD_TEXT' ? options.getChannel('channel') : interaction.channel;
 
       if (clear && Object.keys(remove)?.length) {
         await Promise.all(
@@ -434,11 +492,11 @@ export default class Settings extends Interaction {
           ephemeral: ctx.ephemerate,
         });
       }
-      if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events);
-      if (add?.items?.length) await ctx.settings.trackItems(channel, add.items);
+      if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events, thread);
+      if (add?.items?.length) await ctx.settings.trackItems(channel, add.items, thread);
       const addString = ctx.i18n`Added ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
-      if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events);
-      if (remove?.items?.length && !clear) await ctx.settings.untrackItems(channel, remove.items);
+      if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events, thread);
+      if (remove?.items?.length && !clear) await ctx.settings.untrackItems(channel, remove.items, thread);
       const removeString = ctx.i18n`Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
       await interaction.editReply({ content: `${addString}\n${removeString}`, ephemeral: ctx.ephemerate });
 
@@ -448,6 +506,7 @@ export default class Settings extends Interaction {
           Discord.Util.removeMentions(prepend)
         )}\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
         await interaction.editReply({
+          ephemeral: ctx.ephemerate,
           content: `${addString}\n${removeString}\n${pingsString}`,
         });
       }
@@ -460,8 +519,9 @@ export default class Settings extends Interaction {
    * @param {Discord.CommandInteraction} interaction message containing channel context
    * @param {CommandContext} ctx to set up everything
    * @param {Discord.TextChannel} [channel] to set up
+   * @param {Discord.ThreadChannel} [thread] to post to
    */
-  static async #generateWebhook(interaction, ctx, channel) {
+  static async #generateWebhook(interaction, ctx, channel, thread) {
     channel = channel || interaction.channel;
     if (channel.permissionsFor(interaction.client.user).has('MANAGE_WEBHOOKS')) {
       let webhook;
@@ -506,7 +566,10 @@ export default class Settings extends Interaction {
       if (webhook.url) {
         try {
           await interaction.followUp(`${emojify('green_tick')} Webhook setup complete.`);
-          await webhook.send(':diamond_shape_with_a_dot_inside: Webhook initialized');
+          await webhook.send({
+            content: ':diamond_shape_with_a_dot_inside: Webhook initialized',
+            threadId: thread?.id,
+          });
           if (!webhook.avatar.startsWith('http')) webhook.avatar = ctx.settings.defaults.avatar;
         } catch (e) {
           ctx.logger.error(e);

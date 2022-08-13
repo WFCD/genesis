@@ -8,7 +8,7 @@ const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
  * Send a webhook based on context
  * @param {CommandContext} ctx context object for sending data
  * @param {string} content content to send for webhook message
- * @param {Array<Discord.MessageEmbed>} embeds message embeds to send on webhook
+ * @param {Array<Discord.MessageEmbed>} [embeds] message embeds to send on webhook
  * @returns {Promise<Discord.APIMessage|boolean|*>}
  */
 const webhook = async (ctx, { content, embeds = undefined }) => {
@@ -20,6 +20,7 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
       avatarURL: ctx?.webhook?.avatar,
       username: ctx?.webhook?.name,
       embeds,
+      threadId: ctx?.threadId,
     };
     try {
       return content?.length
