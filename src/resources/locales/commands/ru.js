@@ -3,112 +3,112 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
-    description: 'Get WorldState Alerts'
+    name: 'Тревоги',
+    description: 'Показывает текущие Тревоги'
   },
   arbi: {
-    name: 'arbi',
-    description: 'Get WorldState Arbitrations'
+    name: 'Арбитраж',
+    description: 'Показывает текущий Арбитраж'
   },
   baro: {
-    name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    name: 'Баро',
+    description: 'Показывает текущие предложения Торговца Бездны'
   },
   conclave: {
-    name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    name: 'Конклав',
+    description: 'Показывает текущие испытания Конклава'
   },
   construction: {
-    name: 'construction',
-    description: 'Get Construction Progress'
+    name: 'Строительство',
+    description: 'Покавает текущий прогресс строительства'
   },
   cycle: {
-    name: 'cycle',
-    description: 'Get current Time Cycle'
+    name: 'Цикл',
+    description: 'Показывает текущий цикл локации'
   },
   darvo: {
-    name: 'darvo',
-    description: 'Get Darvo\'s Deals'
+    name: 'Дарво',
+    description: 'Показывает текущее предложение Дарво'
   },
   events: {
-    name: 'events',
-    description: 'Get Active Events'
+    name: 'События',
+    description: 'Показывает текущие особые События'
   },
   fissures: {
-    name: 'fissures',
-    description: 'Get WorldState Fissures'
+    name: 'Разрывы',
+    description: 'Показывает текущие Разрывы Бездны'
   },
   invasions: {
-    name: 'invasions',
-    description: 'Get WorldState Invasions'
+    name: 'Вторжения',
+    description: 'Показывает текущие Вторжения'
   },
   news: {
-    name: 'news',
-    description: 'Get Current news'
+    name: 'Новости',
+    description: 'Показывает последние Новости'
   },
   nightwave: {
-    name: 'nightwave',
-    description: 'Get Current Nightwave Challenges'
+    name: 'Ночная волна',
+    description: 'Показывает текущие испытания Ночной Волны'
   },
   sales: {
-    name: 'sales',
-    description: 'Get Current Sales'
+    name: 'Скидки',
+    description: 'Показывает текущие Скидки'
   },
   outposts: {
-    name: 'outposts',
-    description: 'Get Current Sentient Outposts'
+    name: 'Корабль ВР',
+    description: 'Показывает текущее местоположения корабля ВР'
   },
   steelpath: {
-    name: 'steelpath',
-    description: 'Get Current Steel Path Offerings'
+    name: 'Стальной путь',
+    description: 'Показывает текущие предложения Тешина'
   },
   sortie: {
-    name: 'sortie',
-    description: 'Get Sortie Information'
+    name: 'Вылазка',
+    description: 'Показывает текущую Вылазку'
   },
   rooms: {
-    name: 'rooms',
-    description: 'Manage your private room'
+    name: 'Каналы',
+    description: 'Настройки вашего отдельного канала'
   },
   'rooms.create': {
-    name: 'create',
-    description: 'Create your own room'
+    name: 'Создать',
+    description: 'Создаёт вам отдельный канал'
   },
   'rooms.destroy': {
-    name: 'destroy',
-    description: 'Destroy your room'
+    name: 'Удалить',
+    description: 'Удаляет ваш отдельный канал'
   },
   'rooms.hide': {
-    name: 'hide',
-    description: 'Hide your private room'
+    name: 'Скрыть',
+    description: 'Скрывает ваш отдельный канал'
   },
   'rooms.show': {
-    name: 'show',
-    description: 'Show your private room'
+    name: 'Отобразить',
+    description: 'Включает отображение вашего отдельного канала'
   },
   'rooms.lock': {
-    name: 'lock',
-    description: 'Lock your private room'
+    name: 'Закрыть',
+    description: 'Закрывает для других ваш отдельный канал'
   },
   'rooms.unlock': {
-    name: 'unlock',
-    description: 'Unlock your private room'
+    name: 'Открыть',
+    description: 'Открывает для других ваш отдельный канал'
   },
   'rooms.lurkable': {
     name: 'lurkable',
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'rename',
-    description: 'Rename your private room'
+    name: 'Переименовать',
+    description: 'Переименовыват ваш отдельный канал'
   },
   'rooms.invite': {
-    name: 'invite',
-    description: 'Hide your private room'
+    name: 'Пригласить',
+    description: 'Приглашает пользователя в ваш отдельный канал'
   },
   'rooms.block': {
-    name: 'block',
-    description: 'Block someone from your private room'
+    name: 'Заблокировать',
+    description: 'Блокирует пользователя доступ в ваш отдельный канал'
   },
   'rooms.resize': {
     name: 'resize',
