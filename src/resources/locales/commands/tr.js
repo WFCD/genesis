@@ -3,7 +3,7 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
+    name: 'uyarılar',
     description: 'Get WorldState Alerts'
   },
   arbi: {
@@ -19,11 +19,11 @@ export default {
     description: 'Get Current Conclave Challenges'
   },
   construction: {
-    name: 'construction',
+    name: 'inşaat',
     description: 'Get Construction Progress'
   },
   cycle: {
-    name: 'cycle',
+    name: 'döngü',
     description: 'Get current Time Cycle'
   },
   darvo: {
@@ -31,19 +31,19 @@ export default {
     description: 'Get Darvo\'s Deals'
   },
   events: {
-    name: 'events',
+    name: 'etkinlikler',
     description: 'Get Active Events'
   },
   fissures: {
-    name: 'fissures',
+    name: 'çatlaklar',
     description: 'Get WorldState Fissures'
   },
   invasions: {
-    name: 'invasions',
+    name: 'istilalar',
     description: 'Get WorldState Invasions'
   },
   news: {
-    name: 'news',
+    name: 'haberler',
     description: 'Get Current news'
   },
   nightwave: {
@@ -51,11 +51,11 @@ export default {
     description: 'Get Current Nightwave Challenges'
   },
   sales: {
-    name: 'sales',
+    name: 'satışlar',
     description: 'Get Current Sales'
   },
   outposts: {
-    name: 'outposts',
+    name: 'karakollar',
     description: 'Get Current Sentient Outposts'
   },
   steelpath: {
@@ -67,11 +67,11 @@ export default {
     description: 'Get Sortie Information'
   },
   rooms: {
-    name: 'rooms',
+    name: 'odalar',
     description: 'Manage your private room'
   },
   'rooms.create': {
-    name: 'create',
+    name: 'oluştur',
     description: 'Create your own room'
   },
   'rooms.destroy': {
@@ -79,19 +79,19 @@ export default {
     description: 'Destroy your room'
   },
   'rooms.hide': {
-    name: 'hide',
+    name: 'gizle',
     description: 'Hide your private room'
   },
   'rooms.show': {
-    name: 'show',
+    name: 'göster',
     description: 'Show your private room'
   },
   'rooms.lock': {
-    name: 'lock',
+    name: 'kilitle',
     description: 'Lock your private room'
   },
   'rooms.unlock': {
-    name: 'unlock',
+    name: 'kilidi aç',
     description: 'Unlock your private room'
   },
   'rooms.lurkable': {
@@ -99,55 +99,55 @@ export default {
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'rename',
+    name: 'yeniden adlandır',
     description: 'Rename your private room'
   },
   'rooms.invite': {
-    name: 'invite',
+    name: 'davet',
     description: 'Hide your private room'
   },
   'rooms.block': {
-    name: 'block',
+    name: 'engelle',
     description: 'Block someone from your private room'
   },
   'rooms.resize': {
-    name: 'resize',
+    name: 'yeniden boyutlandır',
     description: 'resize private room'
   },
   templates: {
-    name: 'templates',
+    name: 'şablonlar',
     description: 'Manage channel templates'
   },
   'templates.add': {
-    name: 'add',
+    name: 'ekle',
     description: 'Add a channel as a template channel.'
   },
   'templates.delete': {
-    name: 'delete',
+    name: 'sil',
     description: 'Delete a channel from you template channels'
   },
   'templates.list': {
-    name: 'list',
+    name: 'liste',
     description: 'List all configured templates'
   },
   'templates.set': {
-    name: 'set',
+    name: 'ayarla',
     description: 'Set the template for a template channel'
   },
   'templates.clear': {
-    name: 'clear',
+    name: 'temizle',
     description: 'clear existing template pattern on a channel'
   },
   'templates.tc': {
-    name: 'template_channel',
+    name: 'şablon_kanalı',
     description: 'Channel to use as a template (should be a voice channel)'
   },
   'templates.fmt': {
-    name: 'template',
+    name: 'şablon',
     description: 'Template string. Supports replacing $username with originator\'s username'
   },
   about: {
-    name: 'about',
+    name: 'hakkında',
     description: 'Tell me about the bot!'
   },
   ping: {
@@ -155,19 +155,19 @@ export default {
     description: 'ping some stuff'
   },
   whereis: {
-    name: 'whereis',
+    name: 'nerede',
     description: 'Display where something drops from'
   },
   query: {
-    name: 'query',
+    name: 'sorgu',
     description: 'What are you looking for?'
   },
   whatsin: {
-    name: 'whatsin',
+    name: 'içindeki nedir',
     description: 'Get various pieces of information'
   },
   'whatsin.query': {
-    name: 'query',
+    name: 'sorgu',
     description: 'Relic Identifier (i.e. A1)'
   },
   pc: {
@@ -180,7 +180,7 @@ export default {
     description: 'Platform to operate on'
   },
   patchnotes: {
-    name: 'patchnotes',
+    name: 'yama notları',
     description: 'Include patchnotes? (default false)'
   },
   lookup: {
@@ -196,7 +196,7 @@ export default {
     description: 'Look up a Warframe'
   },
   weapon: {
-    name: 'weapon',
+    name: 'silah',
     description: 'Look up a weapon'
   },
   riven: {
@@ -228,7 +228,7 @@ export default {
     description: 'How long do you want to farm for?'
   },
   'lfg.members': {
-    name: 'members',
+    name: 'üyeler',
     description: 'How many people do you need?'
   },
   'lfg.for': {
@@ -244,7 +244,7 @@ export default {
     description: 'How long are you willing to wait?'
   },
   'lfg.type': {
-    name: 'type',
+    name: 'tip',
     description: 'What kind of post?'
   },
   calc: {
@@ -264,7 +264,7 @@ export default {
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'settings',
+    name: 'ayarlar',
     description: 'Interact with Settings'
   },
   'settings.platform': {
@@ -272,11 +272,11 @@ export default {
     description: 'Set the platform for the channel'
   },
   'settings.set': {
-    name: 'set',
+    name: 'ayarla',
     description: 'Set a setting'
   },
   'settings.clear': {
-    name: 'clear',
+    name: 'temizle',
     description: 'Clear certain settings'
   },
   'settings.get': {
@@ -392,7 +392,7 @@ export default {
     description: 'Set up custom trackings and pings'
   },
   'tracking.custom.add': {
-    name: 'add',
+    name: 'ekle',
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
@@ -412,11 +412,11 @@ export default {
     description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
   },
   cc: {
-    name: 'cc',
+    name: 'kk',
     description: 'Manage custom commands'
   },
   'cc.add': {
-    name: 'add',
+    name: 'ekle',
     description: 'Add a custom command'
   },
   'cc.add.call': {
@@ -436,15 +436,15 @@ export default {
     description: 'Which call to remove?'
   },
   'cc.list': {
-    name: 'list',
+    name: 'liste',
     description: 'List all subcommands for the guild'
   },
   '8ball': {
-    name: '8ball',
+    name: '8top',
     description: 'Get your 8Ball question answered!'
   },
   '8ball.question': {
-    name: 'question',
+    name: 'soru',
     description: 'What do you want the all-knowing machine to answer?'
   },
   corgi: {
@@ -452,15 +452,15 @@ export default {
     description: 'Get a corgi picture!'
   },
   hug: {
-    name: 'hug',
+    name: 'sarıl',
     description: 'Get a hug <3'
   },
   joke: {
-    name: 'joke',
+    name: 'şaka',
     description: 'Ask Genesis for a joke!'
   },
   fashion: {
-    name: 'fashion',
+    name: 'modaframe',
     description: 'Get a random Warframe fashion image'
   },
   memeframe: {
