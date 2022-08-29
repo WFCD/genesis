@@ -1,3 +1,10 @@
+## [2.2.7](https://github.com/wfcd/genesis/compare/v2.2.6...v2.2.7) (2022-08-29)
+
+
+### Bug Fixes
+
+* **ru:** New Crowdin updates ([#545](https://github.com/wfcd/genesis/issues/545)) ([18f20d3](https://github.com/wfcd/genesis/commit/18f20d30a3ac8af61959b4f5f18498e4f05d5b16))
+
 ## [2.2.6](https://github.com/wfcd/genesis/compare/v2.2.5...v2.2.6) (2022-08-29)
 
 
