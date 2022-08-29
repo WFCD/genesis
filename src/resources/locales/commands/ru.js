@@ -188,15 +188,15 @@ export default {
     description: 'Get various pieces of information'
   },
   arcane: {
-    name: 'arcane',
+    name: 'мистификатор',
     description: 'Look up an Arcane from Warframe'
   },
   warframe: {
-    name: 'warframe',
+    name: 'варфрейм',
     description: 'Look up a Warframe'
   },
   weapon: {
-    name: 'weapon',
+    name: 'оружие',
     description: 'Look up a weapon'
   },
   riven: {
@@ -204,11 +204,11 @@ export default {
     description: 'Look up a Riven'
   },
   mod: {
-    name: 'mod',
+    name: 'мод',
     description: 'Look up a Mod'
   },
   companion: {
-    name: 'companion',
+    name: 'компаньон',
     description: 'Look up a companion'
   },
   lfg: {
@@ -224,7 +224,7 @@ export default {
     description: 'Specific area you want to go to'
   },
   'lfg.time': {
-    name: 'time',
+    name: 'время',
     description: 'How long do you want to farm for?'
   },
   'lfg.members': {
@@ -244,7 +244,7 @@ export default {
     description: 'How long are you willing to wait?'
   },
   'lfg.type': {
-    name: 'type',
+    name: 'тип',
     description: 'What kind of post?'
   },
   calc: {
@@ -312,12 +312,12 @@ export default {
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
-    name: 'language',
-    description: 'Set a language for the server'
+    name: 'язык',
+    description: 'Выбрать язык сервера'
   },
   'settings.language.str': {
     name: 'value',
-    description: 'What language do you want to use for this server?'
+    description: 'Какой язык предпочтителен на данном сервере?'
   },
   'settings.ephemerate': {
     name: 'ephemerate',
