@@ -3,95 +3,95 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'Тревоги',
+    name: 'тревоги',
     description: 'Показывает текущие Тревоги'
   },
   arbi: {
-    name: 'Арбитраж',
+    name: 'арбитраж',
     description: 'Показывает текущий Арбитраж'
   },
   baro: {
-    name: 'Баро',
+    name: 'баро',
     description: 'Показывает текущие предложения Торговца Бездны'
   },
   conclave: {
-    name: 'Конклав',
+    name: 'конклав',
     description: 'Показывает текущие испытания Конклава'
   },
   construction: {
-    name: 'Строительство',
+    name: 'строительство',
     description: 'Покавает текущий прогресс строительства'
   },
   cycle: {
-    name: 'Цикл',
+    name: 'цикл',
     description: 'Показывает текущий цикл локации'
   },
   darvo: {
-    name: 'Дарво',
+    name: 'дарво',
     description: 'Показывает текущее предложение Дарво'
   },
   events: {
-    name: 'События',
+    name: 'события',
     description: 'Показывает текущие особые События'
   },
   fissures: {
-    name: 'Разрывы',
+    name: 'разрывы',
     description: 'Показывает текущие Разрывы Бездны'
   },
   invasions: {
-    name: 'Вторжения',
+    name: 'вторжения',
     description: 'Показывает текущие Вторжения'
   },
   news: {
-    name: 'Новости',
+    name: 'новости',
     description: 'Показывает последние Новости'
   },
   nightwave: {
-    name: 'Ночная волна',
+    name: 'волна',
     description: 'Показывает текущие испытания Ночной Волны'
   },
   sales: {
-    name: 'Скидки',
+    name: 'скидки',
     description: 'Показывает текущие Скидки'
   },
   outposts: {
-    name: 'Корабль ВР',
+    name: 'корабль_вр',
     description: 'Показывает текущее местоположения корабля ВР'
   },
   steelpath: {
-    name: 'Стальной путь',
+    name: 'сталь',
     description: 'Показывает текущие предложения Тешина'
   },
   sortie: {
-    name: 'Вылазка',
+    name: 'вылазка',
     description: 'Показывает текущую Вылазку'
   },
   rooms: {
-    name: 'Каналы',
+    name: 'каналы',
     description: 'Настройки вашего отдельного канала'
   },
   'rooms.create': {
-    name: 'Создать',
+    name: 'создать',
     description: 'Создаёт вам отдельный канал'
   },
   'rooms.destroy': {
-    name: 'Удалить',
+    name: 'удалить',
     description: 'Удаляет ваш отдельный канал'
   },
   'rooms.hide': {
-    name: 'Скрыть',
+    name: 'скрыть',
     description: 'Скрывает ваш отдельный канал'
   },
   'rooms.show': {
-    name: 'Отобразить',
+    name: 'отобразить',
     description: 'Включает отображение вашего отдельного канала'
   },
   'rooms.lock': {
-    name: 'Закрыть',
+    name: 'закрыть',
     description: 'Закрывает для других ваш отдельный канал'
   },
   'rooms.unlock': {
-    name: 'Открыть',
+    name: 'открыть',
     description: 'Открывает для других ваш отдельный канал'
   },
   'rooms.lurkable': {
@@ -99,60 +99,60 @@ export default {
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'Переименовать',
+    name: 'переименовать',
     description: 'Переименовыват ваш отдельный канал'
   },
   'rooms.invite': {
-    name: 'Пригласить',
+    name: 'пригласить',
     description: 'Приглашает пользователя в ваш отдельный канал'
   },
   'rooms.block': {
-    name: 'Заблокировать',
+    name: 'заблокировать',
     description: 'Блокирует пользователя доступ в ваш отдельный канал'
   },
   'rooms.resize': {
-    name: 'resize',
-    description: 'resize private room'
+    name: 'изменить',
+    description: 'Изменяет размер вашего отдельного канала'
   },
   templates: {
-    name: 'templates',
-    description: 'Manage channel templates'
+    name: 'шаблоны',
+    description: 'Управление шаблонами каналов'
   },
   'templates.add': {
-    name: 'add',
-    description: 'Add a channel as a template channel.'
+    name: 'добавить',
+    description: 'Добавляет канал как шаблон для создания других каналов'
   },
   'templates.delete': {
-    name: 'delete',
-    description: 'Delete a channel from you template channels'
+    name: 'удалить_шаблон',
+    description: 'Удаляет канал из списка шаблонов каналов'
   },
   'templates.list': {
-    name: 'list',
-    description: 'List all configured templates'
+    name: 'список',
+    description: 'Показывает список сохранённых шаблонов'
   },
   'templates.set': {
-    name: 'set',
-    description: 'Set the template for a template channel'
+    name: 'выбрать_шаблон',
+    description: 'Выбрать шаблон для канала'
   },
   'templates.clear': {
-    name: 'clear',
-    description: 'clear existing template pattern on a channel'
+    name: 'сбросить',
+    description: 'Сбросить шаблон канала'
   },
   'templates.tc': {
-    name: 'template_channel',
-    description: 'Channel to use as a template (should be a voice channel)'
+    name: 'сделать_шаблоном',
+    description: 'Канал будет использовать в качестве шаблона (голосовой канал)'
   },
   'templates.fmt': {
-    name: 'template',
+    name: 'шаблон',
     description: 'Template string. Supports replacing $username with originator\'s username'
   },
   about: {
-    name: 'about',
-    description: 'Tell me about the bot!'
+    name: 'справка',
+    description: 'Показывает информацию о боте!'
   },
   ping: {
     name: 'ping',
-    description: 'ping some stuff'
+    description: 'Показывает скорость ответа некоторых сайтов и бота'
   },
   whereis: {
     name: 'whereis',
@@ -252,19 +252,19 @@ export default {
     description: 'Get Warframe Worldstate Information'
   },
   'calc.shields': {
-    name: 'shields',
+    name: 'щиты',
     description: 'Calculate Enemy Shield amounts'
   },
   'calc.armor': {
-    name: 'armor',
+    name: 'броня',
     description: 'Calculate Enemy Armor amounts'
   },
   'calc.health': {
-    name: 'health',
+    name: 'здоровье',
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'settings',
+    name: 'настройки',
     description: 'Interact with Settings'
   },
   'settings.platform': {
@@ -272,11 +272,11 @@ export default {
     description: 'Set the platform for the channel'
   },
   'settings.set': {
-    name: 'set',
+    name: 'выбрать_шаблон',
     description: 'Set a setting'
   },
   'settings.clear': {
-    name: 'clear',
+    name: 'сбросить',
     description: 'Clear certain settings'
   },
   'settings.get': {
@@ -392,7 +392,7 @@ export default {
     description: 'Set up custom trackings and pings'
   },
   'tracking.custom.add': {
-    name: 'add',
+    name: 'добавить',
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
@@ -416,7 +416,7 @@ export default {
     description: 'Manage custom commands'
   },
   'cc.add': {
-    name: 'add',
+    name: 'добавить',
     description: 'Add a custom command'
   },
   'cc.add.call': {
@@ -436,7 +436,7 @@ export default {
     description: 'Which call to remove?'
   },
   'cc.list': {
-    name: 'list',
+    name: 'список',
     description: 'List all subcommands for the guild'
   },
   '8ball': {
