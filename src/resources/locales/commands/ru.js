@@ -151,12 +151,12 @@ export default {
     description: 'Показывает информацию о боте!'
   },
   ping: {
-    name: 'ping',
+    name: 'пинг',
     description: 'Показывает скорость ответа некоторых сайтов и бота'
   },
   whereis: {
-    name: 'whereis',
-    description: 'Display where something drops from'
+    name: 'где_падает',
+    description: 'Показывает где падает предмет'
   },
   query: {
     name: 'query',
@@ -172,12 +172,12 @@ export default {
   },
   pc: {
     // pricecheck
-    name: 'pc',
-    description: 'Price check an item'
+    name: 'цена',
+    description: 'Показывает приблизительную цену предмета'
   },
   platform: {
-    name: 'platform',
-    description: 'Platform to operate on'
+    name: 'платформа',
+    description: 'Указывает основную платформу бота'
   },
   patchnotes: {
     name: 'patchnotes',
@@ -200,7 +200,7 @@ export default {
     description: 'Look up a weapon'
   },
   riven: {
-    name: 'riven',
+    name: 'мод_разлома',
     description: 'Look up a Riven'
   },
   mod: {
@@ -212,7 +212,7 @@ export default {
     description: 'Look up a companion'
   },
   lfg: {
-    name: 'lfg',
+    name: 'ищу_группу',
     description: 'Make an LFG post'
   },
   'lfg.place': {
@@ -240,7 +240,7 @@ export default {
     description: 'Custom thing you want to farm for'
   },
   'lfg.duration': {
-    name: 'duration',
+    name: 'длительность',
     description: 'How long are you willing to wait?'
   },
   'lfg.type': {
@@ -268,7 +268,7 @@ export default {
     description: 'Interact with Settings'
   },
   'settings.platform': {
-    name: 'platform',
+    name: 'платформа',
     description: 'Set the platform for the channel'
   },
   'settings.set': {
@@ -288,7 +288,7 @@ export default {
     description: 'Run diagnostics for the guild'
   },
   'settings.lfg': {
-    name: 'lfg',
+    name: 'ищу_группу',
     description: 'Set LFG Channel for a Platform'
   },
   'settings.lfg.channel': {
