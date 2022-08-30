@@ -49,11 +49,7 @@ jobs:
           cat >>~/.ssh/config <<END
           Host bot
             HostName $SSH_BOT_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/prod.key
-            StrictHostKeyChecking no
-          Host worker
-            HostName $SSH_WORKER_HOST
+            Port $SSH_BOT_PORT
             User $SSH_USER
             IdentityFile ~/.ssh/prod.key
             StrictHostKeyChecking no
@@ -66,7 +62,7 @@ jobs:
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && pm2 kill'
+        run: ssh bot 'source ~/.zshrc && pm2 stop genesis-prod worker-prod && pm2 delete genesis-prod worker-prod'
       - name: Update Bot server
         if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
@@ -75,16 +71,4 @@ jobs:
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
       - name: Start Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/genesis && npm run start'
-#      - name: Stop Worker Process
-#        if: ${{ steps.release.outputs.release == 'yes' }}
-#        run: ssh worker 'source ~/.zshrc && pm2 kill'
-#      - name: Update Worker server
-#        if: ${{ steps.release.outputs.release == 'yes' }}
-#        run: ssh worker 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/$DEPLOY_BRANCH'
-#      - name: Update Worker dependencies
-#        if: ${{ steps.release.outputs.release == 'yes' }}
-#        run: ssh worker 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
-#      - name: Start Worker Process
-#        if: ${{ steps.release.outputs.release == 'yes' }}
-#        run: ssh worker 'source ~/.zshrc && cd ~/genesis && npm run start:worker'
+        run: ssh bot 'source ~/.zshrc && cd ~/genesis && pm2 start genesis.json'
