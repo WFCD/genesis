@@ -1,3 +1,10 @@
+## [2.2.9](https://github.com/wfcd/genesis/compare/v2.2.8...v2.2.9) (2022-08-30)
+
+
+### Bug Fixes
+
+* **i18n:** bounties expire i18n ([c5890cc](https://github.com/wfcd/genesis/commit/c5890cc6a96fdfea9917c18526272c9719c82fdb))
+
 ## [2.2.8](https://github.com/wfcd/genesis/compare/v2.2.7...v2.2.8) (2022-08-29)
 
 
