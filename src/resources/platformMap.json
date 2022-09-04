@@ -2,5 +2,5 @@
   { "name": "PC", "value": "pc" },
   { "name": "XBox", "value": "xb1" },
   { "name": "PlayStation",  "value": "ps4" },
-  { "name": "Nintento Switch", "value": "swi" }
+  { "name": "Nintendo Switch", "value": "swi" }
 ]
