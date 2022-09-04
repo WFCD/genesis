@@ -1,3 +1,10 @@
+## [2.2.10](https://github.com/wfcd/genesis/compare/v2.2.9...v2.2.10) (2022-09-04)
+
+
+### Bug Fixes
+
+* nintendo typo ([3aa631a](https://github.com/wfcd/genesis/commit/3aa631a8d96b1a7462d8409b6641e09f39b81824)), closes [#549](https://github.com/wfcd/genesis/issues/549)
+
 ## [2.2.9](https://github.com/wfcd/genesis/compare/v2.2.8...v2.2.9) (2022-08-30)
 
 
