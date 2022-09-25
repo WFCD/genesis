@@ -246,6 +246,7 @@ export default class Notifier {
         : []),
       rawData.sentientOutposts.id,
       rawData.steelPath && rawData.steelPath.expiry ? asId(rawData.steelPath, 'steelpath') : 'steelpath:0',
+      rawData.archonHunt.id,
     ].filter((a) => a);
 
     await this.#settings.setNotifiedIds(platform, alreadyNotified);
