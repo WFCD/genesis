@@ -1,3 +1,10 @@
+## [2.3.3](https://github.com/wfcd/genesis/compare/v2.3.2...v2.3.3) (2022-09-25)
+
+
+### Bug Fixes
+
+* soft fail on stopping bot ([7f66b9d](https://github.com/wfcd/genesis/commit/7f66b9dc6409d75362a5fb1cd5cca017c682a7e6))
+
 ## [2.3.2](https://github.com/wfcd/genesis/compare/v2.3.1...v2.3.2) (2022-09-25)
 
 
