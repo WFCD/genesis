@@ -62,7 +62,7 @@ jobs:
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && pm2 stop genesis-prod worker-prod && pm2 delete genesis-prod worker-prod'
+        run: ssh bot 'source ~/.zshrc; pm2 stop genesis-prod worker-prod; pm2 delete genesis-prod worker-prod'
       - name: Update Bot server
         if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/master'
