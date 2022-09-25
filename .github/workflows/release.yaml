@@ -58,7 +58,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
-          SSH_WORKER_HOST: ${{ secrets.SSH_WORKER_HOST }}
+          SSH_BOT_PORT: ${{ secrets.SSH_BOT_PORT }}
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
