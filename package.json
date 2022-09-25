@@ -57,7 +57,7 @@
     "numeral": "^2.0.6",
     "parse-duration": "^0.4.4",
     "ping": "^0.4.1",
-    "rss-feed-emitter": "^3.2.2",
+    "rss-feed-emitter": "^3.2.3",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
     "utf-8-validate": "^5.0.5",
