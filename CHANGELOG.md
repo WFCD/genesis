@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/wfcd/genesis/compare/v2.3.0...v2.3.1) (2022-09-25)
+
+
+### Performance Improvements
+
+* **deps:** bump erlpack from `e27db8f` to `3b793a3` ([#557](https://github.com/wfcd/genesis/issues/557)) ([fd948e0](https://github.com/wfcd/genesis/commit/fd948e00e9d9fd804d5d0358fd3943c2b92d3b7f))
+
 # [2.3.0](https://github.com/wfcd/genesis/compare/v2.2.11...v2.3.0) (2022-09-25)
 
 
