@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/wfcd/genesis/compare/v2.2.11...v2.3.0) (2022-09-25)
+
+
+### Features
+
+* use threads ([#552](https://github.com/wfcd/genesis/issues/552)) ([efee0fd](https://github.com/wfcd/genesis/commit/efee0fd7ac1a9111c967a97710739be86d5ef383))
+
 ## [2.2.11](https://github.com/wfcd/genesis/compare/v2.2.10...v2.2.11) (2022-09-09)
 
 
