@@ -13,10 +13,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Install Dependencies
-        run: npm ci
-      - name: Run linters
-        run: npm run lint
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2.5.4
         env:
