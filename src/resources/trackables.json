@@ -65,7 +65,8 @@
     "outposts",
     "cambion.fass",
     "cambion.vome",
-    "steelpath"
+    "steelpath",
+    "steelpath.umbra"
   ],
   "opts": [
     "all",

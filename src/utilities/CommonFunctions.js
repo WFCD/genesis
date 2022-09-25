@@ -1104,6 +1104,13 @@ const giveawayDefaults = {
 export const toTitleCase = (str) => str.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
 
 /**
+ * Map an asset path to the cdn url it applies to
+ * @param {string} assetPath to the asset cdn location
+ * @returns {string} asset url on the cdn
+ */
+export const cdn = (assetPath) => `${assetBase}${assetBase.endsWith('/') ? '' : '/'}${assetPath}`;
+
+/**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
  *

@@ -186,10 +186,11 @@ export default class Collectors {
         if (!newPage?.footer?.text.includes(pageInd)) {
           if (newPage instanceof MessageEmbed) {
             newPage.setFooter({
-              text: newPage.footer.text.replace(/Page \d+\/\d+/ig, pageInd),
-              iconURL: newPage.footer.iconURL });
+              text: newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd),
+              iconURL: newPage.footer.iconURL,
+            });
           } else {
-            newPage.footer.text = newPage.footer.text.replace(/Page \d+\/\d+/ig, pageInd);
+            newPage.footer.text = newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd);
           }
         }
       } else {

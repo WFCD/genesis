@@ -1,9 +1,10 @@
 import BaseEmbed from './BaseEmbed.js';
 
-import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
+import { wikiBase, cdn } from '../utilities/CommonFunctions.js';
 import { rTime } from '../utilities/Wrappers.js';
 
-const fissureThumb = `${assetBase}${assetBase.endsWith('/') ? '' : '/'}img/fissure-sm.png`;
+const fissureThumb = cdn('img/fissure-sm.png');
+const steelPath = cdn('img/steelpath-h.png');
 
 /**
  * Generates fissure embeds
@@ -47,6 +48,9 @@ export default class FissureEmbed extends BaseEmbed {
       this.footer.text = i18n`Expires `;
       this.timestamp = new Date(f.expiry).getTime();
       this.thumbnail.url = fissureThumb;
+      if (f.isHard) {
+        this.setImage(steelPath);
+      }
     }
 
     this.color = 0x4aa1b2;
