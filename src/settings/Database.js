@@ -115,7 +115,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  */
 export default class Database {
   /**
-   * @param {Genesis} bot Bot to load the settings for
+   * @param {Genesis} [bot] Bot to load the settings for
    */
   constructor(bot) {
     /**
@@ -225,7 +225,7 @@ export default class Database {
 
   /**
    * Query the database
-   * @param {string|SQL.SQLStatement} query query string
+   * @param {SQLStatement} query query string
    * @returns {mysql.Connection.query}
    */
   async query(query) {

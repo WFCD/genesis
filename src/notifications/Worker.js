@@ -68,18 +68,18 @@ class Worker {
   }
   async hydrateQueries() {
     const sDate = Date.now();
-    await Promise.all(
-      cachedEvents.map(async (cachedEvent) =>
-        Promise.all(
-          activePlatforms.map(async (platform) => {
-            deps.workerCache.setKey(
-              `${cachedEvent}:${platform}`,
-              await deps.settings.getAgnosticNotifications(cachedEvent, platform)
-            );
-          })
-        )
-      )
-    );
+    const promises = [];
+    cachedEvents.forEach((cachedEvent) => {
+      activePlatforms.forEach((platform) => {
+        promises.push(
+          (async () => {
+            const notifications = await deps.settings.getAgnosticNotifications(cachedEvent, platform);
+            deps.workerCache.setKey(`${cachedEvent}:${platform}`, notifications);
+          })()
+        );
+      });
+    });
+    await Promise.all(promises);
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');

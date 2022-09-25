@@ -355,11 +355,10 @@ export default class Settings extends Interaction {
       .filter((id) => id)
       .map((id) => guild.roles.cache.get(id.trim()));
 
-  static elevated = true;
   static enabled = true;
   static command = {
     ...cmds.settings,
-    // defaultPermission: false,
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
     options: [
       {
         ...cmds['settings.set'],
@@ -511,9 +510,13 @@ export default class Settings extends Interaction {
           } Manage Webhooks`,
         ];
 
+        const isThread = interaction.channel.isThread();
+        const channel = isThread ? interaction.channel.parent : interaction.channel;
+        const thread = isThread ? interaction.channel : undefined;
+
         const trackables = {
-          events: await ctx.settings.getTrackedEventTypes(interaction.channel),
-          items: await ctx.settings.getTrackedItems(interaction.channel),
+          events: await ctx.settings.getTrackedEventTypes(channel, thread),
+          items: await ctx.settings.getTrackedItems(channel, thread),
         };
         trackingReadinessTokens.push(
           trackables.events.length
@@ -529,7 +532,10 @@ export default class Settings extends Interaction {
         embed.addField('Trackable Ready', trackingReadinessTokens.join('\n'));
 
         // General
-        embed.addField('General Ids', `Guild: \`${interaction.guild.id}\`\nChannel: \`${interaction.channel.id}\``);
+        embed.addField(
+          'General Ids',
+          `Guild: \`${interaction.guild.id}\`\nChannel: \`${channel.id}\`${thread ? `\nThread: \`${thread.id}\`` : ''}`
+        );
 
         embed.setTimestamp(new Date());
         embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });

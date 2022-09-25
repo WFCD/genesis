@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import Discord, { Permissions } from 'discord.js';
 import InteractionHandler from '../../eventHandlers/InteractionHandler.js';
 import logger from '../../utilities/Logger.js';
 import ServerInfoEmbed from '../../embeds/ServerInfoEmbed.js';
@@ -16,8 +16,8 @@ export default class Settings extends Interaction {
   static command = {
     name: 'su',
     description: 'Super User',
-    defaultPermission: false,
     ownerOnly: true,
+    defaultMemberPermissions: Permissions.FLAGS.ADMINISTRATOR,
     options: [
       {
         name: 'restart',

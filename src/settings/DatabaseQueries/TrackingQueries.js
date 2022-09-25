@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import Discord from 'discord.js'; // eslint-disable-line no-unused-vars
 
 /**
  * Database Mixin for notification system tracking queries
@@ -9,6 +10,7 @@ export default class TrackingQueries {
   /**
    * Tracking option arrays
    * @typedef {Object} TrackingOptions
+   * @property {Discord.ThreadChannel} [thread] thread channel to update
    * @property {Array<string>} items Tracked Items
    * @property {Array<string>} events Tracked Events
    */
@@ -19,48 +21,43 @@ export default class TrackingQueries {
    * @param {TrackingOptions} opts options to set for provided channel
    * @returns {Promise<void>}
    */
-  async setTrackables(channel, opts) {
+  async setTrackables(channel, { events, items, thread }) {
     const deleteItems = SQL`DELETE i FROM item_notifications AS i WHERE i.channel_id = ${channel.id}`;
     const deleteTypes = SQL`DELETE t FROM type_notifications AS t WHERE t.channel_id = ${channel.id}`;
+    if (thread) {
+      deleteItems.append(SQL` AND i.thread_id = ${thread.id}`);
+      deleteTypes.append(SQL` AND t.thread_id = ${thread.id}`);
+    } else {
+      deleteItems.append(SQL` AND i.thread_id IS NULL`);
+      deleteTypes.append(SQL` AND t.thread_id IS NULL`);
+    }
     await this.query(deleteItems);
     await this.query(deleteTypes);
-    if (opts?.events?.length) await this.trackEventTypes(channel, opts.events);
-    if (opts?.items?.length) await this.trackItems(channel, opts.items);
-  }
-
-  /**
-   * Enables notifications for an item in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} item The item to track
-   * @returns {Promise}
-   */
-  async trackItem(channel, item) {
-    const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES (${channel.id},${item});`;
-    return this.query(query);
+    if (events?.length) await this.trackEventTypes(channel, events, thread);
+    if (items?.length) await this.trackItems(channel, items, thread);
   }
 
   /**
    * Enables notifications for items in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {Array.<string>} items The items to track
+   * @param {Discord.ThreadChannel} [thread] thread to notify
    * @returns {Promise}
    */
-  async trackItems(channel, items) {
-    const query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES `;
-    items.forEach((item, index) => {
-      query.append(SQL`(${channel.id}, ${item})`).append(index !== items.length - 1 ? ',' : ';');
-    });
-    return this.query(query);
-  }
+  async trackItems(channel, items, thread) {
+    let query;
+    if (!thread) {
+      query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item) VALUES `;
+      items.forEach((item, index) => {
+        query.append(SQL`(${channel.id}, ${item})`).append(index !== items.length - 1 ? ',' : ';');
+      });
+    } else {
+      query = SQL`INSERT IGNORE INTO item_notifications (channel_id, item, thread_id) VALUES `;
+      items.forEach((item, index) => {
+        query.append(SQL`(${channel.id}, ${item},${thread.id})`).append(index !== items.length - 1 ? ',' : ';');
+      });
+    }
 
-  /**
-   * Disables notifications for an item in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} item The item to track
-   * @returns {Promise}
-   */
-  async untrackItem(channel, item) {
-    const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND item = ${item};`;
     return this.query(query);
   }
 
@@ -68,10 +65,17 @@ export default class TrackingQueries {
    * Disables notifications for items in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {Array<string>} items The items to untrack
+   * @param {Discord.ThreadChannel} [thread] contextual thread channel
    * @returns {Promise}
    */
-  async untrackItems(channel, items) {
-    const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id} AND (`;
+  async untrackItems(channel, items, thread) {
+    const query = SQL`DELETE FROM item_notifications WHERE channel_id = ${channel.id}`;
+    if (thread) {
+      query.append(SQL` AND thread_id = ${thread.id}`);
+    } else {
+      query.append(SQL` AND thread_id IS NULL`);
+    }
+    query.append(SQL` AND ( `);
     items.forEach((item, index) => {
       query.append(index > 0 ? '  OR ' : '').append(SQL`item = ${item}`);
     });
@@ -80,40 +84,30 @@ export default class TrackingQueries {
   }
 
   /**
-   * Enables notifications for an event type in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} type The item to track
-   * @returns {Promise}
-   */
-  async trackEventType(channel, type) {
-    const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES (${channel.id},${type});`;
-    return this.query(query);
-  }
-
-  /**
    * Enables notifications for items in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {Array<string>} types The types to track
+   * @param {Discord.ThreadChannel} [thread] thread to notify
    * @returns {Promise}
    */
-  async trackEventTypes(channel, types) {
-    const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
-    types.forEach((type, index) => {
-      if (channel && channel.id) {
-        query.append(SQL`(${channel.id}, ${type})`).append(index !== types.length - 1 ? ',' : ';');
-      }
-    });
-    return this.query(query);
-  }
+  async trackEventTypes(channel, types, thread) {
+    let query;
+    if (!thread) {
+      query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type) VALUES `;
+      types.forEach((type, index) => {
+        if (channel && channel.id) {
+          query.append(SQL`(${channel.id}, ${type})`).append(index !== types.length - 1 ? ',' : ';');
+        }
+      });
+    } else {
+      query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type, thread_id) VALUES `;
+      types.forEach((type, index) => {
+        if (channel && channel.id) {
+          query.append(SQL`(${channel.id}, ${type}, ${thread.id})`).append(index !== types.length - 1 ? ',' : ';');
+        }
+      });
+    }
 
-  /**
-   * Disables notifications for an event type in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} type The item to track
-   * @returns {Promise}
-   */
-  async untrackEventType(channel, type) {
-    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND type = ${type};`;
     return this.query(query);
   }
 
@@ -121,10 +115,17 @@ export default class TrackingQueries {
    * Disables notifications for event types in a channel
    * @param {Discord.TextChannel} channel The channel where to enable notifications
    * @param {Array<string>} types The types to untrack
+   * @param {Discord.ThreadChannel} [thread] contextual thread channel
    * @returns {Promise}
    */
-  async untrackEventTypes(channel, types) {
-    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id} AND (`;
+  async untrackEventTypes(channel, types, thread) {
+    const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id}`;
+    if (thread) {
+      query.append(SQL` AND thread_id = ${thread.id}`);
+    } else {
+      query.append(SQL` AND thread_id IS NULL`);
+    }
+    query.append(SQL` AND ( `);
     types.forEach((type, index) => {
       query.append(index > 0 ? '  OR ' : '').append(SQL`type = ${type}`);
     });
@@ -135,10 +136,15 @@ export default class TrackingQueries {
   /**
    * Returns the items that the channel is tracking
    * @param {Discord.TextChannel} channel A Discord channel
+   * @param {Discord.ThreadChannel} [thread] contextual thread channel
    * @returns {Promise.<Array.<string>>}
    */
-  async getTrackedItems(channel) {
-    const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id};`;
+  async getTrackedItems(channel, thread) {
+    const query = SQL`SELECT item FROM item_notifications WHERE channel_id = ${channel.id}`;
+    if (thread) {
+      query.append(SQL` AND thread_id = ${thread.id}`);
+    }
+    query.append(SQL`;`);
     const res = await this.query(query);
     return res[0].map((r) => r.item);
   }
@@ -146,10 +152,16 @@ export default class TrackingQueries {
   /**
    * Returns the event types that the channel is tracking
    * @param {Discord.TextChannel} channel A Discord channel
+   * @param {Discord.ThreadChannel} [thread] contextual thread channel
    * @returns {Promise.<Array.<string>>}
    */
-  async getTrackedEventTypes(channel) {
-    const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id};`;
+  async getTrackedEventTypes(channel, thread) {
+    const query = SQL`SELECT type FROM type_notifications WHERE channel_id = ${channel.id}`;
+    if (thread) {
+      query.append(SQL` AND thread_id = ${thread.id}`);
+    }
+    query.append(SQL`;`);
+
     const [rows] = await this.query(query);
     return rows.map((r) => r.type);
   }

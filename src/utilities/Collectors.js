@@ -72,11 +72,11 @@ export default class Collectors {
       const pageInd = `Page ${index + 1}/${pages.length}`;
       if (newPage.footer) {
         if (newPage instanceof MessageEmbed) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
+          if (newPage.footer.text.indexOf('Page ') === -1) {
             newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
           }
         } else if (newPage.footer.text) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
+          if (newPage.footer.text.indexOf('Page ') === -1) {
             newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
           }
         } else {
@@ -176,16 +176,22 @@ export default class Collectors {
       const pageInd = `Page ${index + 1}/${pages.length}`;
       if (!newPage.description) newPage.setDescription('_ _');
       if (newPage.footer) {
-        if (newPage instanceof MessageEmbed) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
+        if (!newPage?.footer?.text.includes('Page')) {
+          if (newPage instanceof MessageEmbed) {
             newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
-          }
-        } else if (newPage.footer.text) {
-          if (newPage.footer.text.indexOf('Page') === -1) {
+          } else {
             newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
           }
-        } else {
-          newPage.footer.text = pageInd;
+        }
+        if (!newPage?.footer?.text.includes(pageInd)) {
+          if (newPage instanceof MessageEmbed) {
+            newPage.setFooter({
+              text: newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd),
+              iconURL: newPage.footer.iconURL,
+            });
+          } else {
+            newPage.footer.text = newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd);
+          }
         }
       } else {
         newPage.footer = { text: pageInd };

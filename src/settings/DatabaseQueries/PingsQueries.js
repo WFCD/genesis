@@ -193,16 +193,28 @@ export default class PingsQueries {
    *    - ignores shard id, because this is for the standalone notifications
    * @param {string} type The type of the event
    * @param {string} platform The platform of the event
-   * @param {Array.<string>} items The items in the reward that is being notified
-   * @returns {Promise.<Array.<{channel_id: string, webhook: string}>>}
+   * @param {Array.<string>} [items] The items in the reward that is being notified
+   * @returns {Promise.<Array.<{channelId: string, threadId: string}>>}
    */
   async getAgnosticNotifications(type, platform, items) {
     if (this.scope.toLowerCase() !== 'worker') {
       return this.getNotifications(type, platform, items);
     }
     try {
-      const query = SQL`SELECT DISTINCT channels.id as channelId
-          FROM type_notifications`
+      const query = SQL`SELECT DISTINCT
+            channels.id as channelId,
+            type_notifications.thread_id as typeThreadId`
+        .append(
+          items && items.length
+            ? SQL`, 
+            item_notifications.thread_id as itemThreadId`
+            : SQL``
+        )
+        .append(
+          SQL`
+          FROM type_notifications
+        `
+        )
         .append(
           items && items.length
             ? SQL` INNER JOIN item_notifications ON type_notifications.channel_id = item_notifications.channel_id`
@@ -229,7 +241,14 @@ export default class PingsQueries {
           AND item_notifications.channel_id = channels.id;`
             : SQL`;`
         );
-      return (await this.query(query))[0].map((o) => o.channelId).filter((o) => o);
+      const rows = (await this.query(query))[0];
+
+      return rows
+        .map((o) => ({
+          channelId: o.channelId,
+          threadId: o.typeThreadId || o.itemThreadId,
+        }))
+        .filter((o) => o.channelId);
     } catch (e) {
       this.logger.error(e);
       return [];

@@ -2,7 +2,7 @@ import SQL from 'sql-template-strings';
 
 export default [
   /**
-   * Add advanced
+   * Add advanced builds
    * @param {Database} db database to add to
    * @returns {Promise<void>}
    */
@@ -28,6 +28,22 @@ export default [
           mods  TEXT DEFAULT NULL,
           heavy TEXT DEFAULT NULL
         );`);
+    }
+  },
+  async (db) => {
+    const currentColumns = SQL`SHOW COLUMNS from type_notifications;`;
+    const [results] = await db.query(currentColumns);
+    const columns = results.map((result) => result.Field);
+    if (!columns.includes('thread_id')) {
+      await db.query(SQL`ALTER TABLE type_notifications ADD COLUMN (thread_id BIGINT UNSIGNED);`);
+    }
+  },
+  async (db) => {
+    const currentColumns = SQL`SHOW COLUMNS from item_notifications;`;
+    const [results] = await db.query(currentColumns);
+    const columns = results.map((result) => result.Field);
+    if (!columns.includes('thread_id')) {
+      await db.query(SQL`ALTER TABLE item_notifications ADD COLUMN (thread_id BIGINT UNSIGNED);`);
     }
   },
 ];

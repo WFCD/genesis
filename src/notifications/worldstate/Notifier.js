@@ -400,7 +400,7 @@ export default class Notifier {
     if (!nightwave) return;
     return perLanguage(async ({ i18n, locale }) => {
       if (nightwave.activeChallenges.length) {
-        return Promise.mapSeries(nightwave.active, async (challenge) => {
+        return Promise?.mapSeries(nightwave?.active, async (challenge) => {
           const nwCopy = { ...nightwave };
           nwCopy.activeChallenges = [challenge];
           const embed = new embeds.Nightwave(nwCopy, { platform, i18n, locale });
