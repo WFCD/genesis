@@ -24,6 +24,10 @@ const buildNotifiableData = (newData, platform, notified) => {
   const data = {
     acolytes: newData.persistentEnemies.filter((e) => !notified.includes(e.pid)),
     alerts: newData.alerts.filter((a) => !a.expired && !notified.includes(a.id)),
+    archonHunt:
+      newData.archonHunt && !newData.archonHunt.expired && !notified.includes(newData.archonHunt.id)
+        ? newData.archonHunt
+        : undefined,
     baro:
       newData.voidTrader && !notified.includes(`${newData.voidTrader.id}${newData.voidTrader.active ? '1' : '0'}`)
         ? newData.voidTrader
@@ -159,6 +163,7 @@ export default class Notifier {
     {
       alerts,
       arbitration,
+      archonHunt,
       dailyDeals,
       events,
       fissures,
@@ -213,6 +218,7 @@ export default class Notifier {
       this.#sendNightwave(nightwave, platform);
       this.#sendArbitration(arbitration, platform);
       await this.#sendSteelPath(steelPath, platform);
+      await this.#sendArchonHunt(archonHunt, platform);
     } catch (e) {
       logger.error(e);
     } finally {
@@ -301,6 +307,17 @@ export default class Notifier {
     if (!arbitration || !arbitration.enemy) return;
     const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.type)}`;
     return this.standardBroadcast(arbitration, { Embed: embeds.Arbitration, type, platform });
+  }
+
+  async #sendArchonHunt(newArchonHunt, platform) {
+    if (!newArchonHunt) return;
+    const thumb = await getThumbnailForItem(newArchonHunt.boss, true);
+    return this.standardBroadcast(newArchonHunt, {
+      Embed: embeds.Sortie,
+      type: 'archonhunt',
+      platform,
+      thumb,
+    });
   }
 
   async #sendBaro(newBaro, platform) {
@@ -445,7 +462,7 @@ export default class Notifier {
     return this.#sendNews(newStreams, platform, 'streams');
   }
 
-  async checkAndSendSyndicate(embed, syndicate, platform) {
+  async #checkAndSendSyndicate(embed, syndicate, platform) {
     if (
       embed.description &&
       embed.description.length > 0 &&
@@ -469,7 +486,7 @@ export default class Notifier {
             locale,
           });
           const eKey = `${prefix || ''}${key}`;
-          return this.checkAndSendSyndicate(embed, eKey, platform);
+          return this.#checkAndSendSyndicate(embed, eKey, platform);
         });
       }
     });

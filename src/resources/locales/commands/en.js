@@ -10,6 +10,10 @@ export default {
     name: 'arbi',
     description: 'Get WorldState Arbitrations',
   },
+  archons: {
+    name: 'archons',
+    description: 'Get current Archon Hunt',
+  },
   baro: {
     name: 'baro',
     description: 'Get Current Void Trader Inventory',

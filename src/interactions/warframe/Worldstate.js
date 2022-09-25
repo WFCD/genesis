@@ -38,10 +38,12 @@ const aliases = {
   outposts: 'sentientOutposts',
   sales: 'flashSales',
   steelpath: 'steelPath',
+  archons: 'archonHunt',
 };
 const embeds = {
   arbitration: Arbitration,
   alerts: Alert,
+  archonHunt: Sortie,
   cambionCycle: Cambion,
   cetusCycle: Cycle,
   conclaveChallenges: Conclave,
@@ -107,6 +109,10 @@ export default class WorldState extends Interaction {
     },
     {
       ...cmds.arbi,
+      options: platformable,
+    },
+    {
+      ...cmds.archons,
       options: platformable,
     },
     {
@@ -287,6 +293,7 @@ export default class WorldState extends Interaction {
           );
         }
       case 'arbitration':
+      case 'archonHunt':
       case 'earthCycle':
       case 'cetusCycle':
       case 'vallisCycle':
@@ -296,7 +303,7 @@ export default class WorldState extends Interaction {
       case 'nightwave':
       case 'sortie':
       case 'sentientOutposts':
-        if (!data.length && !Object.keys(data).length) {
+        if (!data?.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
         embed = new MessageEmbed(new embeds[field](data, { platform, i18n: ctx.i18n }));
