@@ -71,7 +71,7 @@
     "@types/flat-cache": "^2.0.0",
     "@wfcd/eslint-config": "^1.1.2",
     "discord-api-types": "^0.29.0",
-    "install-peerdeps": "^2.0.3"
+    "install-peerdeps": "^3.0.3"
   },
   "license": "Apache-2.0",
   "engines": {
