@@ -47,7 +47,7 @@
     "colors": "1.4.0",
     "cron": "^1.8.2",
     "dayjs": "^1.11.5",
-    "decache": "^4.6.0",
+    "decache": "^4.6.1",
     "discord.js": "^13.6.0",
     "flat-cache": "^3.0.4",
     "i18n-string-templates": "^1.0.5",
