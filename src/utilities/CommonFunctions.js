@@ -45,10 +45,8 @@ export const apiCdnBase = process.env.CDN_BASE_PATH || 'https://cdn.warframestat
  * Regex to check for vulgarity
  * @type {RegExp}
  */
-export const isVulgarCheck = new RegExp(
-  '(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)',
-  'ig'
-);
+export const isVulgarCheck =
+  /(n[i!1]gg[e3]r|n[i!1]gg[ua]|h[i!1]tl[e3]r|n[a@]z[i!1]|[©ck]un[t7]|fu[©c]k|[©ck]umm?|f[a@4]g|d[i!1]ck|c[o0]ck|boner|sperm|gay|gooch|jizz|pussy|penis|r[i!1]mjob|schlong|slut|wank|whore|sh[i!1]t|sex|fuk|heil|p[o0]rn|pronz|suck|rape|scrotum)/gi;
 
 /**
  * Allowed platforms
@@ -233,10 +231,10 @@ export const trackableItems = {
  * @returns {Object}
  */
 export const termToTrackable = (term) => {
-  const cetusCustomTimeRegex = new RegExp('cetus\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
-  const earthCustomTimeRegex = new RegExp('earth\\.(day|night)\\.[0-1]?[0-9]?[0-9]?', 'ig');
-  const solarisCustomTimeRegex = new RegExp('solaris\\.(warm|cold)\\.[0-9]?[0-9]?', 'ig');
-  const cambionCustomTimeRegex = new RegExp('cambion\\.(fass|vome)\\.[0-1]?[0-9]?[0-9]?', 'ig');
+  const cetusCustomTimeRegex = /cetus\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
+  const earthCustomTimeRegex = /earth\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
+  const solarisCustomTimeRegex = /solaris\.(warm|cold)\.[0-9]?[0-9]?/gi;
+  const cambionCustomTimeRegex = /cambion\.(fass|vome)\.[0-1]?[0-9]?[0-9]?/gi;
 
   const trackable = {
     events: [],
