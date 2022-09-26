@@ -9,7 +9,7 @@
   "[{0}] Worldstate - Fissures": "[{0}] Разрывы Бездны",
   "[{0}] Worldstate - Void Fissures": "[{0}] Разрывы Бездны",
   "[{0}] Worldstate - Sortie": "[{0}] Вылазка",
-  "[{0}] Worldstate - Archon Hunt": "[{0}] Archon Hunt",
+  "[{0}] Worldstate - Archon Hunt": "[{0}] Охота на архонта",
   "[{0}] Acolytes": "[{0}] Аколиты",
   "[{0}] Worldstate - Sanctuary": "[{0}] Святилище",
   "[{0}] {1}": "[{0}] {1}",
@@ -234,9 +234,9 @@
   "{0} Tweeted": "{0} Tweeted",
   "Live @": "Live @",
   "Data Pending": "Data Pending",
-  "Time until {0} {1}": "Time until {0} {1}",
+  "Time until {0} {1}": "Время до {0} {1}",
   "departure from": "departure from",
-  "arrival at": "arrival at",
+  "arrival at": "прилёта на",
   "Critical Chance": "Шанс крита",
   "Critical Multiplier": "Множитель крита",
   "Status Chance": "Шанс статуса",
@@ -273,6 +273,6 @@
   "Are you sure?": "Вы уверены?",
   "⚠️ No {0} active.": "⚠️ No {0} active.",
   "couldn't find a corgi... :(": "couldn't find a corgi... :(",
-  "Currently in-progress sortie: **{0}**": "Currently in-progress sortie: **{0}**",
-  "Currently in-progress hunt: **{0}**": "Currently in-progress hunt: **{0}**"
+  "Currently in-progress sortie: **{0}**": "Текущая вылазка: **{0}**",
+  "Currently in-progress hunt: **{0}**": "Текущая охота: **{0}**"
 }
