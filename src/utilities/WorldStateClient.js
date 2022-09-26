@@ -70,6 +70,7 @@ export default class WorldStateClient {
       NEWS: 'news',
       EVENTS: 'events',
       ALERTS: 'alerts',
+      ARCHON_HUNT: 'archonHunt',
       SORTIE: 'sortie',
       SYNDICATE_MISSIONS: 'syndicateMissions',
       FISSURES: 'fissures',
