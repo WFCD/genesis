@@ -9,6 +9,7 @@
   "[{0}] Worldstate - Fissures": "[{0}] Fisuras del vacío",
   "[{0}] Worldstate - Void Fissures": "[{0}] Fisuras del vacío",
   "[{0}] Worldstate - Sortie": "[{0}] Incursiones",
+  "[{0}] Worldstate - Archon Hunt": "[{0}] Archon Hunt",
   "[{0}] Acolytes": "[{0}] Acolytes",
   "[{0}] Worldstate - Sanctuary": "[{0}] Worldstate - Sanctuary",
   "[{0}] {1}": "[{0}] {1}",
@@ -271,5 +272,7 @@
   "No News Currently": "No News Currently",
   "Are you sure?": "Are you sure?",
   "⚠️ No {0} active.": "⚠️ No {0} active.",
-  "couldn't find a corgi... :(": "couldn't find a corgi... :("
+  "couldn't find a corgi... :(": "couldn't find a corgi... :(",
+  "Currently in-progress sortie: **{0}**": "Currently in-progress sortie: **{0}**",
+  "Currently in-progress hunt: **{0}**": "Currently in-progress hunt: **{0}**"
 }
