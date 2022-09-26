@@ -43,7 +43,7 @@
     "@sentry/node": "^6.13.3",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
-    "bufferutil": "^4.0.3",
+    "bufferutil": "^4.0.6",
     "colors": "1.4.0",
     "cron": "^1.8.2",
     "dayjs": "^1.11.5",
