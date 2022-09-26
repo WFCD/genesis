@@ -69,7 +69,7 @@
   },
   "devDependencies": {
     "@types/flat-cache": "^2.0.0",
-    "@wfcd/eslint-config": "^1.1.2",
+    "@wfcd/eslint-config": "^1.2.0",
     "discord-api-types": "^0.29.0",
     "install-peerdeps": "^2.0.3"
   },
