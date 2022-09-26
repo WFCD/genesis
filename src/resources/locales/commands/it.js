@@ -10,6 +10,10 @@ export default {
     name: 'arbi',
     description: 'Get WorldState Arbitrations'
   },
+  archons: {
+    name: 'archons',
+    description: 'Get current Archon Hunt'
+  },
   baro: {
     name: 'baro',
     description: 'Get Current Void Trader Inventory'
@@ -387,6 +391,14 @@ export default {
     name: 'manage',
     description: 'Manage tracking settings'
   },
+  'tracking.manage.channel': {
+    name: 'channel',
+    description: 'Channel (text-based) that this should apply to.'
+  },
+  'tracking.manage.thread': {
+    name: 'thread',
+    description: 'Thread channel wherein to send messages'
+  },
   'tracking.custom': {
     name: 'custom',
     description: 'Set up custom trackings and pings'
@@ -406,6 +418,10 @@ export default {
   'tracking.custom.channel': {
     name: 'channel',
     description: 'Channel (text-based) that this should apply to.'
+  },
+  'tracking.custom.thread': {
+    name: 'thread',
+    description: 'Thread channel wherein to send messages'
   },
   'tracking.custom.clear-prepend': {
     name: 'clear-prepend',

@@ -95,6 +95,10 @@
           "@babel/plugin-proposal-private-methods"
         ]
       }
+    },
+    "rules": {
+      "no-unsafe-optional-chaining": "off",
+      "no-constructor-return": "off"
     }
   },
   "prettier": "@wfcd/eslint-config/prettier",
