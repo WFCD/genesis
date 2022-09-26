@@ -10,6 +10,10 @@ export default {
     name: 'арбитраж',
     description: 'Показывает текущий Арбитраж'
   },
+  archons: {
+    name: 'archons',
+    description: 'Get current Archon Hunt'
+  },
   baro: {
     name: 'баро',
     description: 'Показывает текущие предложения Торговца Бездны'
