@@ -9,6 +9,7 @@
   "[{0}] Worldstate - Fissures": "[{0}] 裂缝",
   "[{0}] Worldstate - Void Fissures": "[{0}] 裂缝",
   "[{0}] Worldstate - Sortie": "[{0}] 突击",
+  "[{0}] Worldstate - Archon Hunt": "[{0}] Archon Hunt",
   "[{0}] Acolytes": "[{0}] 追随者",
   "[{0}] Worldstate - Sanctuary": "[{0}] Worldstate - 圣殿突袭",
   "[{0}] {1}": "[{0}] {1}",
@@ -271,5 +272,7 @@
   "No News Currently": "目前没有更新新闻",
   "Are you sure?": "你确定吗？",
   "⚠️ No {0} active.": "⚠️ 没有 {0} 正在进行。",
-  "couldn't find a corgi... :(": "找不到一个机器人... :("
+  "couldn't find a corgi... :(": "找不到一个机器人... :(",
+  "Currently in-progress sortie: **{0}**": "Currently in-progress sortie: **{0}**",
+  "Currently in-progress hunt: **{0}**": "Currently in-progress hunt: **{0}**"
 }
