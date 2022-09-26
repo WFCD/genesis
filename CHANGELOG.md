@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/wfcd/genesis/compare/v2.3.4...v2.4.0) (2022-09-26)
+
+
+### Features
+
+* archon hunts ([#559](https://github.com/wfcd/genesis/issues/559)) ([ad26b70](https://github.com/wfcd/genesis/commit/ad26b70a3736ee88e7932eaacf904736a71f0c36))
+
 ## [2.3.4](https://github.com/wfcd/genesis/compare/v2.3.3...v2.3.4) (2022-09-25)
 
 
