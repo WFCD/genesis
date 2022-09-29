@@ -7,6 +7,8 @@ import { apiBase } from './CommonFunctions.js';
 
 const Job = cron.CronJob;
 
+const ws = (platform, locale) => `${apiBase}/${platform}/?languages=${locale}`;
+
 const worldStateURLs = {
   pc: `${apiBase}/pc/?language=en`,
   ps4: `${apiBase}/ps4/?language=en`,
