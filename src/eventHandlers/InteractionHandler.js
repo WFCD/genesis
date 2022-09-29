@@ -286,9 +286,9 @@ export default class InteractionHandler extends BaseHandler {
   async init() {
     this.logger.debug('Initializing InteractionHandler');
     this.#loadedCommands = await InteractionHandler.loadFiles(this.#loadedCommands, this.logger);
-    await InteractionHandler.loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
-    // load custom commands, allowed to fail
     try {
+      await InteractionHandler.loadCommands(this.client?.application?.commands, this.#loadedCommands, this.logger);
+      // load custom commands, allowed to fail
       await this.loadCustomCommands();
     } catch (e) {
       this.logger.error(e);
