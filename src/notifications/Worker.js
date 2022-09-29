@@ -9,7 +9,7 @@ import TwitchNotifier from './twitch/TwitchNotifier.js';
 import WorldStateCache from '../utilities/WorldStateCache.js';
 import Rest from '../utilities/RESTWrapper.js';
 import Database from '../settings/Database.js';
-import { cachedEvents } from '../resources/index.js';
+import { cachedEvents, locales } from '../resources/index.js';
 import logger from '../utilities/Logger.js';
 import { games } from '../utilities/CommonFunctions.js';
 
@@ -38,7 +38,9 @@ class Worker {
 
     if (games.includes('WARFRAME')) {
       activePlatforms.forEach((platform) => {
-        this.worldStates[platform] = new WorldStateCache(platform, timeout);
+        locales.forEach((locale) => {
+          this.worldStates[platform] = new WorldStateCache(platform, locale, timeout);
+        });
       });
     }
     return (async () => {

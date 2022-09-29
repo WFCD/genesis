@@ -28,7 +28,7 @@ import Outposts from '../embeds/SentientOutpostEmbed.js';
 import SteelPath from '../embeds/SteelPathEmbed.js';
 import RSS from '../embeds/RSSEmbed.js';
 
-const i18ns = {};
+export const i18ns = {};
 locales.forEach((locale) => {
   i18ns[locale] = I18n(i18nBundle, locale);
 });
@@ -60,11 +60,11 @@ export const embeds = {
   RSS,
 };
 
-export const between = (activation, platform, refreshRate, beats) => {
+export const between = (activation, platform, locale, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < beats[platform].currCycleStart;
-  const isAfterLast = activationTs > beats[platform].lastUpdate - leeway;
+  const isBeforeCurr = activationTs < beats[platform][locale].currCycleStart;
+  const isAfterLast = activationTs > beats[platform][locale].lastUpdate - leeway;
   return isBeforeCurr && isAfterLast;
 };
 
