@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/wfcd/genesis/compare/v2.4.1...v2.4.2) (2022-09-30)
+
+
+### Bug Fixes
+
+* null safety on commands setting guild perms ([ae9b937](https://github.com/wfcd/genesis/commit/ae9b93771a6faa89db87814a092961cdda72887f))
+
 ## [2.4.1](https://github.com/wfcd/genesis/compare/v2.4.0...v2.4.1) (2022-09-26)
 
 
