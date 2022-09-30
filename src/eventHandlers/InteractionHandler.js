@@ -105,7 +105,7 @@ export default class InteractionHandler extends BaseHandler {
   async #setGuildPerms(guild, rolesOverride) {
     const rawCommandsToSet = this.#loadedCommands.filter((command) => {
       const includeIfSu = command.name === 'su' ? guild.id === process.env?.CONTROL_GUILD_ID : true;
-      const isElevated = command.name !== 'su' && !command.command.defaultPermission;
+      const isElevated = command.name !== 'su' && !command?.command?.defaultPermission;
       return includeIfSu || isElevated;
     });
 
