@@ -107,4 +107,4 @@ export function fromNow(d, now = Date.now) {
 }
 
 export const perLanguage = async (fn) =>
-  Promise.all(Object.entries(i18ns).map(async ([locale, i18n]) => fn({ locale, i18n })));
+  Promise.all(Object.entries(i18ns)?.map(async ([locale, i18n]) => fn({ locale, i18n })));
