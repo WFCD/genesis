@@ -1,3 +1,10 @@
+## [2.4.3](https://github.com/wfcd/genesis/compare/v2.4.2...v2.4.3) (2022-10-07)
+
+
+### Bug Fixes
+
+* null safety in perLanguage ([c0af0be](https://github.com/wfcd/genesis/commit/c0af0be614f8d845998c687b7b4c8acade242bf3))
+
 ## [2.4.2](https://github.com/wfcd/genesis/compare/v2.4.1...v2.4.2) (2022-09-30)
 
 
