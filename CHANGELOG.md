@@ -1,3 +1,13 @@
+## [2.4.4](https://github.com/wfcd/genesis/compare/v2.4.3...v2.4.4) (2022-10-08)
+
+
+### Performance Improvements
+
+* disable minute-granularity tracking ([9832e66](https://github.com/wfcd/genesis/commit/9832e662c3d2ae65b4d50b887ec1a741cd5f0d24))
+* disable trying to send cycle & worldstate in parallel ([8bbd5c0](https://github.com/wfcd/genesis/commit/8bbd5c07612bea063fa2b102c71478ef29348037))
+* don't error log common twitch error ([bbb4379](https://github.com/wfcd/genesis/commit/bbb43791cea853d812e8aab0103c447eb7f5269a))
+* don't try to run another of the same hydration if another is long-running ([acb20cb](https://github.com/wfcd/genesis/commit/acb20cb0f479da2a4817b6a480fba44eb367cd8f))
+
 ## [2.4.3](https://github.com/wfcd/genesis/compare/v2.4.2...v2.4.3) (2022-10-07)
 
 
