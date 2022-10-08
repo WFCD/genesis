@@ -172,7 +172,7 @@ export default class TwitchClient {
         this.#accessToken = token;
         return true;
       }
-      logger.error(`error retrieving refresh token: ${res.error.message}`, 'Twitch');
+      logger.silly(`error retrieving refresh token: ${res.error.message}`, 'Twitch');
       logger.warn(url);
 
       if (res.error.message === 'Invalid refresh token') {
@@ -180,7 +180,7 @@ export default class TwitchClient {
         return this.hydrateToken();
       }
     } catch (e) {
-      logger.error(e, 'Twitch');
+      logger.silly(e, 'Twitch');
     }
 
     return false;
