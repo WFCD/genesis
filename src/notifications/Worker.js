@@ -24,6 +24,8 @@ const ldirname = dirname(fileURLToPath(import.meta.url));
 let timeout;
 
 class Worker {
+  static #activeHydrations = [];
+
   constructor() {
     logger.info(`forceHydrate: ${forceHydrate}`);
     /**
@@ -45,6 +47,11 @@ class Worker {
     })();
   }
   async hydratePings() {
+    if (this.#activeHydrations.includes('pings')) {
+      logger.debug('Skipping pings hydration... already running');
+      return;
+    }
+    this.#activeHydrations.push('pings');
     const sDate = Date.now();
     const pings = await deps.settings.getAllPings();
     if (pings) {
@@ -53,20 +60,31 @@ class Worker {
     }
     const eDate = Date.now();
     logger.info(`ping hydration took ${String(eDate - sDate).red}ms`, 'DB');
+    this.#activeHydrations.splice(this.#activeHydrations.indexOf('pings'));
   }
   async hydrateGuilds() {
-    const sDate = Date.now();
-    const guilds = await deps.settings.getGuilds();
-    if (guilds) {
-      deps.workerCache.setKey('guilds', guilds);
-      deps.workerCache.save(true);
+    if (this.#activeHydrations.includes('guilds')) {
+      logger.debug('Skipping guilds hydration... already running');
+    } else {
+      this.#activeHydrations.push('guilds');
+      const sDate = Date.now();
+      const guilds = await deps.settings.getGuilds();
+      if (guilds) {
+        deps.workerCache.setKey('guilds', guilds);
+        deps.workerCache.save(true);
+      }
+      const eDate = Date.now();
+      logger.info(`guild hydration took ${String(eDate - sDate).red}ms`, 'DB');
+      this.#activeHydrations.splice(this.#activeHydrations.indexOf('guilds'));
     }
-    const eDate = Date.now();
-    logger.info(`guild hydration took ${String(eDate - sDate).red}ms`, 'DB');
-
     await this.hydratePings();
   }
   async hydrateQueries() {
+    if (this.#activeHydrations.includes('events')) {
+      logger.debug('Skipping events hydration... already running');
+      return;
+    }
+    this.#activeHydrations.push('events');
     const sDate = Date.now();
     const promises = [];
     cachedEvents.forEach((cachedEvent) => {
@@ -83,6 +101,7 @@ class Worker {
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');
+    this.#activeHydrations.splice(this.#activeHydrations.indexOf('events'));
   }
   async initCache() {
     if (games.includes('WARFRAME')) {

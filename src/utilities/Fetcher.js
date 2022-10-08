@@ -16,9 +16,8 @@ const hash = (input) => {
 };
 
 const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) => {
-  // logger.debug(`Fetching... ${url}`);
   const protocol = url.startsWith('https') ? https : http;
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const request = protocol.get(url, { headers }, (response) => {
       const body = [];
 
@@ -44,14 +43,13 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
         response.on('data', (chunk) => body.push(chunk));
         response.on('end', () => {
           const d = body.join('');
-          // logger.debug(`${url} :: ${hash(d)}`);
           resolve(JSON.parse(d));
         });
       }
     });
     request.on('error', (err) => {
-      logger.error(`${err.statusCode}: ${url}\n${err.message}`);
-      resolve({});
+      const e = new Error(`${err.statusCode}: ${url}\n${err.message}`);
+      reject(e);
     });
   });
 };
