@@ -1,3 +1,10 @@
+## [2.4.5](https://github.com/wfcd/genesis/compare/v2.4.4...v2.4.5) (2022-10-08)
+
+
+### Performance Improvements
+
+* another twitch logger ([e4b6e89](https://github.com/wfcd/genesis/commit/e4b6e895b8aa6b4d505684d336df5b3ed47f6e38))
+
 ## [2.4.4](https://github.com/wfcd/genesis/compare/v2.4.3...v2.4.4) (2022-10-08)
 
 
