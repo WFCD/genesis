@@ -2,7 +2,7 @@ import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 import { platforms } from '../../utilities/CommonFunctions.js';
 
-import { between, embeds, fromNow, perLanguage } from '../NotifierUtils.js';
+import { between, embeds, fromNow, perLanguage, updating } from '../NotifierUtils.js';
 
 const beats = {};
 let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 30000) / 3;
@@ -69,7 +69,6 @@ export default class CyclesNotifier {
       };
     });
     refreshRate = timeout;
-    this.#updating = [];
   }
 
   /** Start the notifier */
@@ -89,7 +88,7 @@ export default class CyclesNotifier {
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.#updating.includes(platform)) return;
+    if (updating.has(`${platform}:cycles`) || updating.has(platform)) return;
 
     beats[platform].currCycleStart = Date.now();
     if (!newData?.timestamp) return;
@@ -97,11 +96,9 @@ export default class CyclesNotifier {
     const notifiedIds = await this.#settings.getNotifiedIds(`${platform}:cycles`);
 
     // Set up data to notify
-    this.#updating.push(platform);
-
+    updating.add(`${platform}:cycles`);
     await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
-
-    this.#updating.splice(this.#updating.indexOf(platform), 1);
+    updating.remove(`${platform}:cycles`);
   }
 
   async sendNew(platform, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {

@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 
-import { asId, between, embeds, getThumbnailForItem, perLanguage } from '../NotifierUtils.js';
+import { asId, between, embeds, getThumbnailForItem, perLanguage, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
 
 import { captures, createGroupedArray, platforms } from '../../utilities/CommonFunctions.js';
@@ -100,7 +100,6 @@ export default class Notifier {
   #settings;
   #worldStates;
   #broadcaster;
-  #updating;
 
   constructor({ settings, client, worldStates, timeout, workerCache }) {
     this.#settings = settings;
@@ -119,9 +118,7 @@ export default class Notifier {
       };
     });
 
-    this.#updating = false;
     refreshRate = timeout;
-    this.#updating = [];
   }
 
   /** Start the notifier */
@@ -141,19 +138,16 @@ export default class Notifier {
   async #onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (this.#updating.includes(platform)) return;
+    if (updating.has(platform) || updating.has(`${platform}:cycles`)) return;
 
     beats[platform].currCycleStart = Date.now();
     if (!newData?.timestamp) return;
 
-    const notifiedIds = await this.#settings.getNotifiedIds(platform);
-
     // Set up data to notify
-    this.#updating.push(platform);
-
+    updating.add(platform);
+    const notifiedIds = await this.#settings.getNotifiedIds(platform);
     await this.#sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform, notifiedIds));
-
-    this.#updating.splice(this.#updating.indexOf(platform), 1);
+    updating.remove(platform);
   }
 
   async #sendNew(

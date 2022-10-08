@@ -108,3 +108,18 @@ export function fromNow(d, now = Date.now) {
 
 export const perLanguage = async (fn) =>
   Promise.all(Object.entries(i18ns)?.map(async ([locale, i18n]) => fn({ locale, i18n })));
+
+let currentUpdating = [];
+export const updating = {
+  reset: () => {
+    currentUpdating = [];
+  },
+  add: (add) => {
+    if (currentUpdating.includes(add)) throw new Error('already updating');
+    else currentUpdating.push(add);
+  },
+  remove: (remove) => {
+    currentUpdating.splice(currentUpdating.indexOf(remove));
+  },
+  has: (current) => currentUpdating.includes(current),
+};
