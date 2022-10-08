@@ -231,25 +231,26 @@ export const trackableItems = {
  * @returns {Object}
  */
 export const termToTrackable = (term) => {
-  const cetusCustomTimeRegex = /cetus\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
-  const earthCustomTimeRegex = /earth\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
-  const solarisCustomTimeRegex = /solaris\.(warm|cold)\.[0-9]?[0-9]?/gi;
-  const cambionCustomTimeRegex = /cambion\.(fass|vome)\.[0-1]?[0-9]?[0-9]?/gi;
+  // const cetusCustomTimeRegex = /cetus\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
+  // const earthCustomTimeRegex = /earth\.(day|night)\.[0-1]?[0-9]?[0-9]?/gi;
+  // const solarisCustomTimeRegex = /solaris\.(warm|cold)\.[0-9]?[0-9]?/gi;
+  // const cambionCustomTimeRegex = /cambion\.(fass|vome)\.[0-1]?[0-9]?[0-9]?/gi;
 
   const trackable = {
     events: [],
     items: [],
   };
 
-  if (
-    cetusCustomTimeRegex.test(term) ||
-    earthCustomTimeRegex.test(term) ||
-    solarisCustomTimeRegex.test(term) ||
-    cambionCustomTimeRegex.test(term)
-  ) {
-    trackable.events = term;
-    return trackable;
-  }
+  // TODO: Eventually reenable when more stable
+  // if (
+  //   cetusCustomTimeRegex.test(term) ||
+  //   earthCustomTimeRegex.test(term) ||
+  //   solarisCustomTimeRegex.test(term) ||
+  //   cambionCustomTimeRegex.test(term)
+  // ) {
+  //   trackable.events = term;
+  //   return trackable;
+  // }
 
   if (term === 'events') {
     trackable.events = eventTypes;
