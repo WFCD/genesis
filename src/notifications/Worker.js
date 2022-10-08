@@ -24,7 +24,7 @@ const ldirname = dirname(fileURLToPath(import.meta.url));
 let timeout;
 
 class Worker {
-  static #activeHydrations = [];
+  #activeHydrations = [];
 
   constructor() {
     logger.info(`forceHydrate: ${forceHydrate}`);
