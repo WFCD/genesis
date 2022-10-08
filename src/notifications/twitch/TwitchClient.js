@@ -138,18 +138,21 @@ export default class TwitchClient {
         { key: 'grant_type', val: 'client_credentials' },
       ];
 
-      const res = await fetch(`${urls.token}?${atParams.map(({ key, val }) => `${key}=${val}`).join('&')}`, {
-        method: 'POST',
-      });
+      try {
+        const res = await fetch(`${urls.token}?${atParams.map(({ key, val }) => `${key}=${val}`).join('&')}`, {
+          method: 'POST',
+        });
 
-      if (res) {
-        const initAccessToken = res.access_token;
-        this.#refreshToken = initAccessToken;
-        this.#accessToken = initAccessToken;
-        return true;
+        if (res) {
+          const initAccessToken = res.access_token;
+          this.#refreshToken = initAccessToken;
+          this.#accessToken = initAccessToken;
+          return true;
+        }
+      } catch (e) {
+        logger.silly(`error refreshing refresh token: ${e.message}`, 'Twitch');
+        return false;
       }
-      logger.error(`error refreshing refresh token: ${res.error.message}`, 'Twitch');
-      return false;
     }
 
     const params = [
