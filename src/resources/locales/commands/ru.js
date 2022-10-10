@@ -383,6 +383,10 @@ export default {
     name: 'value',
     description: 'Should be a category'
   },
+  'syndicate': {
+    name: 'syndicate',
+    description: 'Get current syndicate information for a given syndicate'
+  },
   tracking: {
     name: 'tracking',
     description: 'Configure tracking options'
