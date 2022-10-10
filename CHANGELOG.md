@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/wfcd/genesis/compare/v2.4.6...v2.5.0) (2022-10-10)
+
+
+### Features
+
+* add syndicates command ([d8f47c7](https://github.com/wfcd/genesis/commit/d8f47c792059e0fe49d877e6dd966f76e97623b4)), closes [#573](https://github.com/wfcd/genesis/issues/573) [#576](https://github.com/wfcd/genesis/issues/576)
+
 ## [2.4.6](https://github.com/wfcd/genesis/compare/v2.4.5...v2.4.6) (2022-10-10)
 
 
