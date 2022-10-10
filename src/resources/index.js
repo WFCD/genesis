@@ -26,38 +26,89 @@ export const trackables = require('./trackables.json');
 export const twitch = require('./twitch.json');
 export const welcomes = require('./welcomes.json');
 
+export const DiscordLocales = [
+  'vi',
+  'da',
+  'he',
+  'zh-TW',
+  'ja',
+  'th',
+  'hi',
+  'ru',
+  'pl',
+  'fr',
+  'lt',
+  'en-GB',
+  'pt-BR',
+  'it',
+  'cs',
+  'bg',
+  'hr',
+  'tr',
+  'hu',
+  'ro',
+  'ar',
+  'de',
+  'ko',
+  'el',
+  'en-US',
+  'no',
+  'sv-SE',
+  'uk',
+  'zh-CN',
+  'nl',
+  'es-ES',
+  'fi',
+];
+
+export const LocalDiscordLocaleMappings = {
+  en: 'en-US',
+  es: 'es-ES',
+  pt: 'pt-BR',
+  zh: 'zh-CN',
+};
+
 export const cmds = {};
 const allCommands = {};
-
 const ldirname = dirname(fileURLToPath(import.meta.url));
-
+const nameRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
 await Promise.all(
   locales.map(async (locale) => {
     const p = path.resolve(ldirname, './locales/commands', `${locale}.js`);
-    if (fs.existsSync(p)) {
-      allCommands[locale] = (await import(p)).default;
+    if (
+      (fs.existsSync(p) && DiscordLocales.includes(locale)) ||
+      DiscordLocales.includes(LocalDiscordLocaleMappings[locale])
+    ) {
+      let localeKey;
+      if (DiscordLocales.includes(locale)) localeKey = locale;
+      if (DiscordLocales.includes(LocalDiscordLocaleMappings[locale])) localeKey = LocalDiscordLocaleMappings[locale];
+      allCommands[localeKey] = (await import(p)).default;
     }
   })
 );
 
-Object.entries(allCommands.en).forEach(([key, { name, description }]) => {
+Object.entries(allCommands['en-US']).forEach(([key, { name, description }]) => {
   cmds[key] = {
     name,
     description,
     name_localizations: {
-      en: name,
+      'en-US': name,
     },
     description_localizations: {
-      en: description,
+      'en-US': description,
     },
   };
 
   locales.forEach((locale) => {
     if (locale === 'en') return;
-    const l7d = allCommands?.[locale]?.[key];
-    if (l7d) {
-      cmds[key].name_localizations[locale] = l7d.name;
-      cmds[key].description_localizations[locale] = l7d.description;
+    let localeKey;
+    if (DiscordLocales.includes(locale)) localeKey = locale;
+    if (DiscordLocales.includes(LocalDiscordLocaleMappings[locale])) localeKey = LocalDiscordLocaleMappings[locale];
+    if (!localeKey) return;
+    const l7d = allCommands?.[localeKey]?.[key];
+    if (l7d && nameRegex.test(l7d.name)) {
+      cmds[key].name_localizations[localeKey] = l7d.name;
+      cmds[key].description_localizations[localeKey] = l7d.description;
     }
   });
 });

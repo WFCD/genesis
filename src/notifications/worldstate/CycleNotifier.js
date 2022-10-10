@@ -88,7 +88,7 @@ export default class CyclesNotifier {
   async onNewData(platform, newData) {
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (updating.has(`${platform}:cycles`) || updating.has(platform)) return;
+    if (updating.has(`${platform}:cycles`)) return;
 
     beats[platform].currCycleStart = Date.now();
     if (!newData?.timestamp) return;

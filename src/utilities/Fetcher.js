@@ -36,8 +36,8 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
               .catch(logger.error);
           }, 1000);
         } else {
-          logger.error(`${response.statusCode}: Failed to load ${url}`);
-          resolve({});
+          const e = new Error(`${response.statusCode}: Failed to load ${url}`);
+          reject(e);
         }
       } else {
         response.on('data', (chunk) => body.push(chunk));
