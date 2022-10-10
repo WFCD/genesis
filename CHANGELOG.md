@@ -1,3 +1,10 @@
+## [2.4.6](https://github.com/wfcd/genesis/compare/v2.4.5...v2.4.6) (2022-10-10)
+
+
+### Bug Fixes
+
+* cycle embed format ([2fe0471](https://github.com/wfcd/genesis/commit/2fe047159cbb0f92868ab55532724a61b2c03e22))
+
 ## [2.4.5](https://github.com/wfcd/genesis/compare/v2.4.4...v2.4.5) (2022-10-08)
 
 
