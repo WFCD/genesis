@@ -1,19 +1,6 @@
 [
   "cetus.day",
   "cetus.night",
-  "cetus.day.5",
-  "cetus.day.10",
-  "cetus.day.15",
-  "cetus.day.20",
-  "cetus.night.5",
-  "cetus.night.10",
-  "cetus.night.15",
-  "cetus.night.20",
-  "cetus.day.1",
-  "deimos.fass.1",
-  "deimos.vome.1",
-  "solaris.warm.1",
-  "solaris.cold.1",
   "deimos.fass",
   "deimos.vome",
   "solaris.warm",
@@ -85,5 +72,10 @@
   "fissures.t5.assassination",
   "steelpath",
   "steelpath.umbra",
-  "archonhunt"
+  "archonhunt",
+  "syndicate.ostrons",
+  "syndicate.quills",
+  "vox",
+  "necralisk",
+  "solaris"
 ]

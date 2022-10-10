@@ -32,6 +32,7 @@ const chunkerate = (track) => {
 const subgrouped = ['arbitration', 'fissures', 'twitter'];
 
 export default class Settings extends Interaction {
+  static elevated = true;
   static command = {
     ...cmds.tracking,
     defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,

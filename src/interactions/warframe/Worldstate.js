@@ -21,7 +21,7 @@ import Solaris from '../../embeds/SolarisEmbed.js';
 import Nightwave from '../../embeds/NightwaveEmbed.js';
 import Outposts from '../../embeds/SentientOutpostEmbed.js';
 import SteelPath from '../../embeds/SteelPathEmbed.js';
-import { cmds, platformMap as platformChoices } from '../../resources/index.js';
+import { cmds, platformMap as platformChoices, syndicates as syndicateOptions } from '../../resources/index.js';
 
 const { ApplicationCommandOptionTypes: Types } = Constants;
 
@@ -39,6 +39,7 @@ const aliases = {
   sales: 'flashSales',
   steelpath: 'steelPath',
   archons: 'archonHunt',
+  syndicate: 'syndicateMissions',
 };
 const embeds = {
   arbitration: Arbitration,
@@ -89,6 +90,10 @@ const places = [
     value: 'cambion',
   },
 ];
+const syndicates = syndicateOptions.map((s) => ({
+  name: s.display,
+  value: s.display,
+}));
 const compactable = [
   ...platformable,
   {
@@ -227,6 +232,19 @@ export default class WorldState extends Interaction {
       ...cmds.sortie,
       options: platformable,
     },
+    {
+      ...cmds.syndicate,
+      options: [
+        {
+          type: Types.STRING,
+          name: 'syndicate',
+          description: 'Which syndicate?',
+          required: true,
+          choices: syndicates,
+        },
+        ...platformable,
+      ],
+    },
   ];
 
   static async commandHandler(interaction, ctx) {
@@ -240,6 +258,7 @@ export default class WorldState extends Interaction {
 
     let category = options?.get?.('category')?.value || 'all';
     const place = options?.get?.('place')?.value;
+    const syndicate = options?.get?.('syndicate')?.value;
 
     const key = `${subcommand}${place ? `::${place}` : ''}`;
     const field = aliases[key] || subcommand || undefined;
@@ -347,6 +366,17 @@ export default class WorldState extends Interaction {
         }
         embed = new embeds[field](data, { isCommand: true, i18n: ctx.i18n });
         return interaction.editReply({ embeds: [embed] });
+      case 'syndicateMissions':
+        const missions = data?.filter((m) => {
+          return syndicate !== 'all' || m.syndicateKey === syndicate;
+        });
+        if (!missions) break;
+        pages = missions
+          .map((mission) => {
+            return new Syndicate([mission], { syndicate, i18n: ctx.i18n, platform, locale: ctx.language });
+          })
+          .filter((p) => p.title);
+        return interaction.editReply({ embeds: pages });
       default:
         break;
     }

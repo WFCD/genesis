@@ -356,6 +356,7 @@ export default class Settings extends Interaction {
       .map((id) => guild.roles.cache.get(id.trim()));
 
   static enabled = true;
+  static elevated = true;
   static command = {
     ...cmds.settings,
     defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
