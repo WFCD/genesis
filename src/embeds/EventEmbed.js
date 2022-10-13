@@ -20,12 +20,19 @@ export default class EventEmbed extends BaseEmbed {
       this.description = event.tooltip;
 
       if (event.victimNode) {
-        const faction = i18n` by attacking the ${event.faction}`;
-        const node = i18n` at ${event.node}`;
-        this.fields.push({
-          name: '\u200B',
-          value: i18n`Defend ${event.victimNode}${event.faction ? faction : ''}${event.node ? node : ''}.`,
-        });
+        if (event.faction) {
+          const faction = i18n` by attacking the ${event.faction}`;
+          const node = i18n` at ${event.node}`;
+          this.fields.push({
+            name: '\u200B',
+            value: i18n`Defend ${event.victimNode}${event.faction ? faction : ''}${event.node ? node : ''}.`,
+          });
+        } else {
+          this.fields.push({
+            nmame: event.victimNode,
+            value: i18n`Fight for ${event.affiliatedWith}`,
+          });
+        }
       }
       if (event.rewards && event.rewards.length > 0) {
         this.fields.push({
