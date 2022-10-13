@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/wfcd/genesis/compare/v2.5.1...v2.5.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* handle error from trying to update at the same time as something else ([9268e57](https://github.com/wfcd/genesis/commit/9268e5702fd94d107b435c2fb2ca1bbff4fbcb0a))
+
 ## [2.5.1](https://github.com/wfcd/genesis/compare/v2.5.0...v2.5.1) (2022-10-13)
 
 
