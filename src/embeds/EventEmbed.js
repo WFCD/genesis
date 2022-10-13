@@ -29,7 +29,7 @@ export default class EventEmbed extends BaseEmbed {
           });
         } else {
           this.fields.push({
-            nmame: event.victimNode,
+            name: event.victimNode,
             value: i18n`Fight for ${event.affiliatedWith}`,
           });
         }
