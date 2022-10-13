@@ -133,6 +133,7 @@
   "No Rewards": "No Rewards",
   "Defend {0}{1}{2}.": "Defend {0}{1}{2}.",
   " by attacking the {0}": " by attacking the {0}",
+  "attacker": "attacker",
   " at {0}": " at {0}",
   "\nWith ```\n{0}``` as reward{1}.": "\nWith ```\n{0}``` as reward{1}.",
   "**{0}**\nEnemies lvls {1} - {2}\nGranting {3} base standing per stage.{4}": "**{0}**\nEnemies lvls {1} - {2}\nGranting {3} base standing per stage.{4}",
