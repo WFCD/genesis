@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/wfcd/genesis/compare/v2.5.2...v2.5.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* field name ([9f91d24](https://github.com/wfcd/genesis/commit/9f91d242ac02b458fb40a40c5fc8084edf26ffe5))
+
 ## [2.5.2](https://github.com/wfcd/genesis/compare/v2.5.1...v2.5.2) (2022-10-13)
 
 
