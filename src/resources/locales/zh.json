@@ -133,6 +133,7 @@
   "No Rewards": "当前无奖励",
   "Defend {0}{1}{2}.": "防御 {0}{1}{2}。",
   " by attacking the {0}": " 通过进攻 {0}",
+  "attacker": "attacker",
   " at {0}": " 在 {0}",
   "\nWith ```\n{0}``` as reward{1}.": "\n使用 ```\n{0} 作为奖励{1}。",
   "**{0}**\nEnemies lvls {1} - {2}\nGranting {3} base standing per stage.{4}": "**{0}**\n敌人等级 {1} - {2}\n每个阶段给予 {3} 基础声望 {4}",
