@@ -96,9 +96,16 @@ export default class CyclesNotifier {
     const notifiedIds = await this.#settings.getNotifiedIds(`${platform}:cycles`);
 
     // Set up data to notify
-    updating.add(`${platform}:cycles`);
-    await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
-    updating.remove(`${platform}:cycles`);
+    try {
+      updating.add(`${platform}:cycles`);
+      await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
+      updating.remove(`${platform}:cycles`);
+    } catch (e) {
+      if (e.message === 'already updating') {
+        return; // expected to happen
+      }
+      throw e;
+    }
   }
 
   async sendNew(platform, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {
