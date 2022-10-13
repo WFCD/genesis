@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/wfcd/genesis/compare/v2.5.0...v2.5.1) (2022-10-13)
+
+
+### Bug Fixes
+
+* some event embed null bits ([5473423](https://github.com/wfcd/genesis/commit/5473423022707dd18af11c81b00a0ec25347f1e7))
+
 # [2.5.0](https://github.com/wfcd/genesis/compare/v2.4.6...v2.5.0) (2022-10-10)
 
 
