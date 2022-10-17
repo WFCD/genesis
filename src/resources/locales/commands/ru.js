@@ -269,26 +269,26 @@ export default {
   },
   settings: {
     name: 'настройки',
-    description: 'Interact with Settings'
+    description: 'Взаимодействие с настройками'
   },
   'settings.platform': {
     name: 'платформа',
-    description: 'Set the platform for the channel'
+    description: 'Назначить платформу для канала'
   },
   'settings.set': {
     name: 'выбрать_шаблон',
-    description: 'Set a setting'
+    description: 'Выбрать настройку'
   },
   'settings.clear': {
     name: 'сбросить',
-    description: 'Clear certain settings'
+    description: 'Сбросить указанные настройки'
   },
   'settings.get': {
-    name: 'get',
-    description: 'Get all the settings'
+    name: 'запросить',
+    description: 'Отображает все настройки'
   },
   'settings.diag': {
-    name: 'diag',
+    name: 'диагностика',
     description: 'Run diagnostics for the guild'
   },
   'settings.lfg': {
@@ -296,7 +296,7 @@ export default {
     description: 'Set LFG Channel for a Platform'
   },
   'settings.lfg.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel to set LFG to post in'
   },
   'settings.allow_custom': {
@@ -304,7 +304,7 @@ export default {
     description: 'Set allowance of custom commands'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Should this channel allow custom commands?'
   },
   'settings.allow_inline': {
@@ -312,7 +312,7 @@ export default {
     description: 'Set allowance of inline commands'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
@@ -320,7 +320,7 @@ export default {
     description: 'Выбрать язык сервера'
   },
   'settings.language.str': {
-    name: 'value',
+    name: 'значение',
     description: 'Какой язык предпочтителен на данном сервере?'
   },
   'settings.ephemerate': {
@@ -332,7 +332,7 @@ export default {
     description: 'Set elevated roles'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
+    name: 'значение',
     description: 'What roles are elevated?'
   },
   'settings.allow_rooms': {
@@ -340,7 +340,7 @@ export default {
     description: 'Set whether or not to allow custom rooms to be created'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Allow private rooms?'
   },
   'settings.auto_locked': {
@@ -348,7 +348,7 @@ export default {
     description: 'Set whether or not to default private rooms to be locked (Default True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Lock private rooms?'
   },
   'settings.auto_text': {
@@ -356,7 +356,7 @@ export default {
     description: 'Set whether or not to default private rooms to have text channels (Default False)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Make rooms with text?'
   },
   'settings.auto_shown': {
@@ -364,7 +364,7 @@ export default {
     description: 'Set whether or not to default private rooms should be visible (Default false)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Make rooms visible?'
   },
   'settings.temp_channel': {
@@ -372,7 +372,7 @@ export default {
     description: 'Set the channel for creating threads in for private rooms'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
+    name: 'значение',
     description: 'Should be a text channel'
   },
   'settings.temp_category': {
@@ -380,7 +380,7 @@ export default {
     description: 'Set the temporary category for private/auto-generated rooms'
   },
   'settings.temp_category.channel': {
-    name: 'value',
+    name: 'значение',
     description: 'Should be a category'
   },
   'syndicate': {
@@ -396,7 +396,7 @@ export default {
     description: 'Manage tracking settings'
   },
   'tracking.manage.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel (text-based) that this should apply to.'
   },
   'tracking.manage.thread': {
@@ -420,7 +420,7 @@ export default {
     description: 'Requires \'add\' to be specified. Ignored on remove.'
   },
   'tracking.custom.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel (text-based) that this should apply to.'
   },
   'tracking.custom.thread': {
