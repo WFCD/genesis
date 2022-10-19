@@ -60,7 +60,7 @@
     "rss-feed-emitter": "^3.2.3",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
-    "utf-8-validate": "^5.0.9",
+    "utf-8-validate": "^5.0.10",
     "warframe-name-generator": "^1.0.2"
   },
   "optionalDependencies": {
