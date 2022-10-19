@@ -181,7 +181,7 @@ export default {
   },
   platform: {
     name: 'платформа',
-    description: 'Указывает основную платформу бота'
+    description: 'Назначает основную платформу бота'
   },
   patchnotes: {
     name: 'patchnotes',
@@ -193,31 +193,31 @@ export default {
   },
   arcane: {
     name: 'мистификатор',
-    description: 'Look up an Arcane from Warframe'
+    description: 'Показывает мистификатор'
   },
   warframe: {
     name: 'варфрейм',
-    description: 'Look up a Warframe'
+    description: 'Показывает варфрейм'
   },
   weapon: {
     name: 'оружие',
-    description: 'Look up a weapon'
+    description: 'Показывает оружие'
   },
   riven: {
     name: 'мод_разлома',
-    description: 'Look up a Riven'
+    description: 'Показывает мод разлома'
   },
   mod: {
     name: 'мод',
-    description: 'Look up a Mod'
+    description: 'Показывает мод'
   },
   companion: {
     name: 'компаньон',
-    description: 'Look up a companion'
+    description: 'Показывает компаньона'
   },
   lfg: {
     name: 'ищу_группу',
-    description: 'Make an LFG post'
+    description: 'Создаёт запрос поиска группы'
   },
   'lfg.place': {
     name: 'place',
@@ -229,15 +229,15 @@ export default {
   },
   'lfg.time': {
     name: 'время',
-    description: 'How long do you want to farm for?'
+    description: 'Планируемая длительность миссии?'
   },
   'lfg.members': {
-    name: 'members',
-    description: 'How many people do you need?'
+    name: 'участники',
+    description: 'Сколько нужно человек?'
   },
   'lfg.for': {
-    name: 'for',
-    description: 'What are you farming for?'
+    name: 'на',
+    description: 'За чем идём?'
   },
   'lfg.for.custom': {
     name: 'for_custom',
@@ -245,7 +245,7 @@ export default {
   },
   'lfg.duration': {
     name: 'длительность',
-    description: 'How long are you willing to wait?'
+    description: 'Сколько ждём сбора группы?'
   },
   'lfg.type': {
     name: 'тип',
@@ -269,26 +269,26 @@ export default {
   },
   settings: {
     name: 'настройки',
-    description: 'Interact with Settings'
+    description: 'Взаимодействие с настройками'
   },
   'settings.platform': {
     name: 'платформа',
-    description: 'Set the platform for the channel'
+    description: 'Назначить платформу для канала'
   },
   'settings.set': {
     name: 'выбрать_шаблон',
-    description: 'Set a setting'
+    description: 'Выбрать настройку'
   },
   'settings.clear': {
     name: 'сбросить',
-    description: 'Clear certain settings'
+    description: 'Сбросить указанные настройки'
   },
   'settings.get': {
-    name: 'get',
-    description: 'Get all the settings'
+    name: 'запросить',
+    description: 'Показывает все настройки'
   },
   'settings.diag': {
-    name: 'diag',
+    name: 'диагностика',
     description: 'Run diagnostics for the guild'
   },
   'settings.lfg': {
@@ -296,7 +296,7 @@ export default {
     description: 'Set LFG Channel for a Platform'
   },
   'settings.lfg.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel to set LFG to post in'
   },
   'settings.allow_custom': {
@@ -304,7 +304,7 @@ export default {
     description: 'Set allowance of custom commands'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Should this channel allow custom commands?'
   },
   'settings.allow_inline': {
@@ -312,7 +312,7 @@ export default {
     description: 'Set allowance of inline commands'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
@@ -320,7 +320,7 @@ export default {
     description: 'Выбрать язык сервера'
   },
   'settings.language.str': {
-    name: 'value',
+    name: 'значение',
     description: 'Какой язык предпочтителен на данном сервере?'
   },
   'settings.ephemerate': {
@@ -332,7 +332,7 @@ export default {
     description: 'Set elevated roles'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
+    name: 'значение',
     description: 'What roles are elevated?'
   },
   'settings.allow_rooms': {
@@ -340,7 +340,7 @@ export default {
     description: 'Set whether or not to allow custom rooms to be created'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Allow private rooms?'
   },
   'settings.auto_locked': {
@@ -348,7 +348,7 @@ export default {
     description: 'Set whether or not to default private rooms to be locked (Default True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Lock private rooms?'
   },
   'settings.auto_text': {
@@ -356,7 +356,7 @@ export default {
     description: 'Set whether or not to default private rooms to have text channels (Default False)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Make rooms with text?'
   },
   'settings.auto_shown': {
@@ -364,7 +364,7 @@ export default {
     description: 'Set whether or not to default private rooms should be visible (Default false)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
+    name: 'значение',
     description: 'Make rooms visible?'
   },
   'settings.temp_channel': {
@@ -372,7 +372,7 @@ export default {
     description: 'Set the channel for creating threads in for private rooms'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
+    name: 'значение',
     description: 'Should be a text channel'
   },
   'settings.temp_category': {
@@ -380,27 +380,27 @@ export default {
     description: 'Set the temporary category for private/auto-generated rooms'
   },
   'settings.temp_category.channel': {
-    name: 'value',
+    name: 'значение',
     description: 'Should be a category'
   },
   'syndicate': {
-    name: 'syndicate',
-    description: 'Get current syndicate information for a given syndicate'
+    name: 'синдикат',
+    description: 'Показывает информацию о указанном синдикате'
   },
   tracking: {
-    name: 'tracking',
-    description: 'Configure tracking options'
+    name: 'отслеживание',
+    description: 'Задаёт отслеживаемые значения'
   },
   'tracking.manage': {
-    name: 'manage',
-    description: 'Manage tracking settings'
+    name: 'настроить',
+    description: 'Настройка отслеживаемых значений'
   },
   'tracking.manage.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel (text-based) that this should apply to.'
   },
   'tracking.manage.thread': {
-    name: 'thread',
+    name: 'ветка',
     description: 'Thread channel wherein to send messages'
   },
   'tracking.custom': {
@@ -409,50 +409,50 @@ export default {
   },
   'tracking.custom.add': {
     name: 'добавить',
-    description: 'Comma-separated list of trackables to add. See website.'
+    description: 'Разделяемый запятой список значений, каторые нужно добавить.'
   },
   'tracking.custom.remove': {
-    name: 'remove',
-    description: 'Comma-separated list of trackables to remove. See website.'
+    name: 'убрать',
+    description: 'Разделяемый запятой список значений, каторые нужно убрать.'
   },
   'tracking.custom.prepend': {
-    name: 'prepend',
-    description: 'Requires \'add\' to be specified. Ignored on remove.'
+    name: 'роль',
+    description: 'Требует уточнения "добавить". Игнорируется при "убрать".'
   },
   'tracking.custom.channel': {
-    name: 'channel',
+    name: 'канал',
     description: 'Channel (text-based) that this should apply to.'
   },
   'tracking.custom.thread': {
-    name: 'thread',
+    name: 'ветка',
     description: 'Thread channel wherein to send messages'
   },
   'tracking.custom.clear-prepend': {
-    name: 'clear-prepend',
-    description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
+    name: 'сбросить_роль',
+    description: 'Сбрасывает роль при команде "убрать" отслеживпемого значения, но не удаляет отслеживание.'
   },
   cc: {
     name: 'cc',
-    description: 'Manage custom commands'
+    description: 'Настройка пользовательских команд'
   },
   'cc.add': {
     name: 'добавить',
-    description: 'Add a custom command'
+    description: 'Добавляет пользовательскую команду'
   },
   'cc.add.call': {
-    name: 'call',
-    description: 'Sets the command call for the new custom command'
+    name: 'запрос',
+    description: 'Устанавливает запрос для пользовательской команды'
   },
   'cc.add.response': {
-    name: 'response',
-    description: 'Set what the call will respond to'
+    name: 'ответ',
+    description: 'Устанавливает ответ на пользовательскую команду'
   },
   'cc.remove': {
-    name: 'remove',
-    description: 'Remove a custom command by name'
+    name: 'убрать',
+    description: 'Удаляет пользовательскую команду по запросу'
   },
   'cc.remove.call': {
-    name: 'call',
+    name: 'запрос',
     description: 'Which call to remove?'
   },
   'cc.list': {
@@ -476,7 +476,7 @@ export default {
     description: 'Get a hug <3'
   },
   joke: {
-    name: 'joke',
+    name: 'шутка',
     description: 'Ask Genesis for a joke!'
   },
   fashion: {
@@ -488,7 +488,7 @@ export default {
     description: 'Get a Warframe meme'
   },
   memes: {
-    name: 'meme',
+    name: 'мем',
     description: 'Get a meme from r/dankmemes'
   }
 };
