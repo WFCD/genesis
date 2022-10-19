@@ -1,3 +1,10 @@
+## [2.5.4](https://github.com/wfcd/genesis/compare/v2.5.3...v2.5.4) (2022-10-19)
+
+
+### Bug Fixes
+
+* **i18n:** Russian trnaslations ([#580](https://github.com/wfcd/genesis/issues/580)) ([33caa2b](https://github.com/wfcd/genesis/commit/33caa2b730361898fd2f0128c36005e11e7d1b5a))
+
 ## [2.5.3](https://github.com/wfcd/genesis/compare/v2.5.2...v2.5.3) (2022-10-13)
 
 

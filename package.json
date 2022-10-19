@@ -1,6 +1,6 @@
 {
   "name": "genesis",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "A Warframe bot for your Discord server or clan :star:",
   "main": "main.js",
   "private": true,
