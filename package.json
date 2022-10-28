@@ -46,7 +46,7 @@
     "bufferutil": "^4.0.7",
     "colors": "1.4.0",
     "cron": "^1.8.2",
-    "dayjs": "^1.11.5",
+    "dayjs": "^1.11.6",
     "decache": "^4.6.1",
     "discord.js": "^13.11.0",
     "flat-cache": "^3.0.4",
