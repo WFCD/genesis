@@ -70,7 +70,7 @@
   "devDependencies": {
     "@types/flat-cache": "^2.0.0",
     "@wfcd/eslint-config": "^1.2.0",
-    "discord-api-types": "^0.37.17",
+    "discord-api-types": "^0.37.18",
     "install-peerdeps": "^2.0.3"
   },
   "license": "Apache-2.0",
