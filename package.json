@@ -48,7 +48,7 @@
     "cron": "^1.8.2",
     "dayjs": "^1.11.6",
     "decache": "^4.6.1",
-    "discord.js": "^13.11.0",
+    "discord.js": "^14.6.0",
     "flat-cache": "^3.0.4",
     "i18n-string-templates": "^1.0.5",
     "json-query": "^2.2.2",
