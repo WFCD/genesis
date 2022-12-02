@@ -42,7 +42,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#warframes) {
       (async function init() {
         if (!WorldStateClient.#warframes) {
-          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes?language=en`);
+          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes/?language=en`);
         }
       })();
     }
@@ -195,7 +195,7 @@ export default class WorldStateClient {
    */
   async pricecheck(query, { type = 'attachment', platform = 'pc', language = 'en' }) {
     this.#logger.silly(`pricechecking ${query}`);
-    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}?language=${language || 'en'}&platform=${
+    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${query}/?language=${language || 'en'}&platform=${
       platform || 'pc'
     }`;
     this.#logger.info(`fetching ${url}`);
