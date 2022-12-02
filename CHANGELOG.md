@@ -1,3 +1,10 @@
+## [2.5.5](https://github.com/wfcd/genesis/compare/v2.5.4...v2.5.5) (2022-12-02)
+
+
+### Bug Fixes
+
+* pricecheck url for redirects ([5c703a7](https://github.com/wfcd/genesis/commit/5c703a77e2af078105f0fd68ff2c2f7f61b7e489))
+
 ## [2.5.4](https://github.com/wfcd/genesis/compare/v2.5.3...v2.5.4) (2022-10-19)
 
 
