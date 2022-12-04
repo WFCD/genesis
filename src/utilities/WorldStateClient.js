@@ -153,7 +153,7 @@ export default class WorldStateClient {
       this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE or ENDPOINTS.SEARCH`);
       return undefined;
     }
-    return fetch(`${apiBase}/${endpoint}?language=${language}&ts=${Date.now()}`, {
+    return fetch(`${apiBase}/${endpoint}/?language=${language}&ts=${Date.now()}`, {
       headers: {
         platform,
         'Accept-Language': language,
@@ -169,7 +169,7 @@ export default class WorldStateClient {
    */
   async riven(query, platform) {
     this.#logger.silly(`searching rivens for ${query}`);
-    return fetch(`${apiBase}/${platform}/rivens/search/${encodeURIComponent(query)}`);
+    return fetch(`${apiBase}/${platform}/rivens/search/${encodeURIComponent(query)}/`);
   }
 
   /**
@@ -181,7 +181,9 @@ export default class WorldStateClient {
    */
   async search(endpoint, query, language) {
     this.#logger.silly(`searching ${endpoint} for ${query}`);
-    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}?language=${language}`);
+    return fetch(
+      `${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}/?language=${language || 'en'}`
+    );
   }
 
   /**
