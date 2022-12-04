@@ -98,7 +98,11 @@
     },
     "rules": {
       "no-unsafe-optional-chaining": "off",
-      "no-constructor-return": "off"
+      "no-constructor-return": "off",
+      "import/extensions": [
+        "error",
+        "ignorePackages"
+      ]
     }
   },
   "prettier": "@wfcd/eslint-config/prettier",
