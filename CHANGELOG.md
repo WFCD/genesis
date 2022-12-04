@@ -1,3 +1,10 @@
+## [2.5.6](https://github.com/wfcd/genesis/compare/v2.5.5...v2.5.6) (2022-12-04)
+
+
+### Bug Fixes
+
+* more incorrect api paths ([f48fde7](https://github.com/wfcd/genesis/commit/f48fde7af26f03e1d0d15f995ada9460f7a65b77))
+
 ## [2.5.5](https://github.com/wfcd/genesis/compare/v2.5.4...v2.5.5) (2022-12-02)
 
 
