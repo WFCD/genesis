@@ -1,3 +1,10 @@
+## [2.5.7](https://github.com/wfcd/genesis/compare/v2.5.6...v2.5.7) (2022-12-21)
+
+
+### Bug Fixes
+
+* **lfg:** better option handling ([#613](https://github.com/wfcd/genesis/issues/613)) ([c7fa91c](https://github.com/wfcd/genesis/commit/c7fa91c722bf53fb07a507e1300765b503628d36))
+
 ## [2.5.6](https://github.com/wfcd/genesis/compare/v2.5.5...v2.5.6) (2022-12-04)
 
 
