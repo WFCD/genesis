@@ -74,13 +74,12 @@ const fmtLoc = (options, i18n) => {
   let val = '';
   if (options?.get('place')?.value) {
     val += options?.get('place')?.value;
-    if (options?.get('place_custom')?.value) {
-      val += ` (${options?.get('place_custom')?.value})`;
-    }
-  } else if (options?.get('place_custom')?.value) {
-    val += options?.get('place_for')?.value;
-  } else {
-    val += i18n`Anywhere`;
+  }
+  if (options?.get('place_custom')?.value) {
+    val += options?.get('place_custom')?.value;
+  }
+  if (!val.length) {
+    val = i18n`Anywhere`;
   }
   return val;
 };
@@ -94,13 +93,12 @@ const fmtThing = (options, i18n) => {
   let val = '';
   if (options?.get('for')?.value) {
     val += options?.get('for')?.value;
-    if (options?.get('for_custom')?.value) {
-      val += ` (${options?.get('for_custom')?.value})`;
-    }
-  } else if (options?.get('for_custom')?.value) {
+  }
+  if (options?.get('for_custom')?.value) {
     val += options?.get('for_custom')?.value;
-  } else {
-    val += i18n`Anything`;
+  }
+  if (!val) {
+    return i18n`Anything`;
   }
   return val;
 };
