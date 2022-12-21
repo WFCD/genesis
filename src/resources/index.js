@@ -9,7 +9,8 @@ export const cachedEvents = require('./cachedEvents.json');
 export const emoji = require('./emoji.json');
 export const factions = require('./factions.json');
 export const localeMap = require('./localeMap.json');
-export const locales = require('./locales.json');
+
+export const locales = ['en', 'de']; // require('./locales.json');
 
 /** @typedef {'cs'|'de'|'en'|'es'|'fr'|'it'|'ko'|'pl'|'pt'|'ru'|'sr'|'tr'|'zh'} Locale */
 

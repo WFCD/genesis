@@ -56,7 +56,7 @@ export default class Collectors {
 
   /**
    * Update pages to have additional criteria and safety check fields like description
-   * @param pages
+   * @param {Array<Discord.MessageEmbed>} pages to reshape as desired
    * @returns {Array<MessageEmbed>}
    */
   static #shapePages(pages) {

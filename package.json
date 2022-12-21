@@ -9,7 +9,7 @@
     "lint:fix": "eslint main.js src/ --fix",
     "test": "npm run lint",
     "build": "docker build . -t genesis",
-    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.1.1 -S",
+    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.3.3 -S",
     "restart": "pm2 delete genesis && npm start && npm run logs",
     "start": "pm2 start genesis.json --only genesis",
     "start:logs": "npm start && npm run logs",
@@ -23,10 +23,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wfcd/genesis.git"
+    "url": "https://github.com/WFCD/genesis.git"
   },
   "bugs": {
-    "url": "https://github.com/wfcd/genesis/issues"
+    "url": "https://github.com/WFCD/genesis/issues"
   },
   "homepage": "https://genesis.warframestat.us",
   "keywords": [
@@ -36,7 +36,7 @@
   ],
   "author": "wfcd",
   "contributors": [
-    "tobitenno <tobiah@warframe.gg> (https://github.com/tobitenno)",
+    "tobitenno <tobiah@warframestat.us> (https://github.com/tobitenno)",
     "nspacestd (https://github.com/nspacestd)"
   ],
   "dependencies": {

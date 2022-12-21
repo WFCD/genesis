@@ -1,11 +1,11 @@
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 import { platforms } from '../../utilities/CommonFunctions.js';
-import { locales } from '../../resources';
+import { locales } from '../../resources/index.js';
 import { between, embeds, fromNow, i18ns, updating } from '../NotifierUtils.js';
 
 const beats = {};
-let refreshRate = (process.env.WORLDSTATE_TIMEOUT || 30000) / 3;
+let refreshRate = process.env.WORLDSTATE_TIMEOUT || 30000;
 
 /**
  * @typedef {Object} CycleData
@@ -47,11 +47,11 @@ function buildNotifiableData(newData, platform, locale) {
   return data;
 }
 
-export default class CyclesNotifier {
+export default class CycleNotifier {
   #settings;
   #worldStates;
   #broadcaster;
-  #updating;
+  #ready;
 
   constructor({ settings, client, worldStates, timeout, workerCache }) {
     this.#settings = settings;
@@ -72,12 +72,13 @@ export default class CyclesNotifier {
       });
     });
     refreshRate = timeout;
+    this.#ready = true;
   }
 
   /** Start the notifier */
   async start() {
     Object.entries(this.#worldStates).forEach(([, ws]) => {
-      ws.on('newData', this.onNewData);
+      ws.on('newData', this.onNewData.bind(this));
     });
   }
 
@@ -88,21 +89,24 @@ export default class CyclesNotifier {
    * @param  {Object} newData  Updated data from the worldstate
    */
   async onNewData(platform, locale, newData) {
-    const key = `${platform}:${locale}`;
+    if (!this.#ready) return;
+
+    const key = `${platform}:${locale}:cycles`;
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
-    if (updating.has(`${platform}:cycles`)) return;
+    if (updating.has(key)) return;
 
+    if (!beats[key]) beats[key] = { lastUpdate: Date.now(), currCycleStart: undefined };
     beats[key].currCycleStart = Date.now();
     if (!newData?.timestamp) return;
 
-    const notifiedIds = await this.#settings.getNotifiedIds(`${platform}:${locale}:cycles`);
+    const notifiedIds = await this.#settings.getNotifiedIds(key);
 
     // Set up data to notify
     try {
-      updating.add(`${platform}:cycles`);
-      await this.sendNew(platform, newData, notifiedIds, buildNotifiableData(newData, platform));
-      updating.remove(`${platform}:cycles`);
+      updating.add(key);
+      await this.sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, platform, locale), key);
+      updating.remove(key);
     } catch (e) {
       if (e.message === 'already updating') {
         return; // expected to happen
@@ -111,12 +115,12 @@ export default class CyclesNotifier {
     }
   }
 
-  async sendNew(platform, locale, rawData, notifiedIds, { cetus, earth, cambion, vallis }) {
+  async sendNew(platform, locale, rawData, notifiedIds, { cetus, earth, cambion, vallis }, key) {
     // Send all notifications
     const cycleIds = [];
     const i18n = i18ns[locale];
     try {
-      logger.silly(`sending new cycle data on ${platform}...`);
+      logger.silly(`sending new cycle data on ${platform} for ${locale}...`);
       const deps = {
         platform,
         i18n,
@@ -130,13 +134,13 @@ export default class CyclesNotifier {
     } catch (e) {
       logger.error(e);
     } finally {
-      beats[`${platform}:${locale}`].lastUpdate = Date.now();
+      beats[key].lastUpdate = Date.now();
     }
 
     const alreadyNotified = [...cycleIds].filter((a) => a);
 
-    await this.#settings.setNotifiedIds(`${platform}:${locale}:cycles`, alreadyNotified);
-    logger.silly(`completed sending notifications for ${platform}`);
+    await this.#settings.setNotifiedIds(key, alreadyNotified);
+    logger.silly(`completed sending cycle notifications for ${platform} in ${locale}`);
   }
 
   async sendCambionCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {

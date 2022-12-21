@@ -60,11 +60,11 @@ export const embeds = {
   RSS,
 };
 
-export const between = (activation, platform, locale, refreshRate, beats) => {
+export const between = (activation, key, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < beats[platform][locale].currCycleStart;
-  const isAfterLast = activationTs > beats[platform][locale].lastUpdate - leeway;
+  const isBeforeCurr = activationTs < beats[key].currCycleStart;
+  const isAfterLast = activationTs > beats[key].lastUpdate - leeway;
   return isBeforeCurr && isAfterLast;
 };
 
@@ -77,7 +77,7 @@ export const getThumbnailForItem = async (query, fWiki) => {
       )
       .trim()
       .toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
+    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}/?language=en`);
     if (results.length) {
       const url = `${apiCdnBase}img/${results[0].imageName}`;
       if (await exists(url)) {

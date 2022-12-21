@@ -179,11 +179,9 @@ export default class WorldStateClient {
    * @param {string} language language of content to fetch
    * @returns {Promise<Object>}
    */
-  async search(endpoint, query, language) {
+  async search(endpoint, query, language = 'en') {
     this.#logger.silly(`searching ${endpoint} for ${query}`);
-    return fetch(
-      `${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}/?language=${language || 'en'}`
-    );
+    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}/?language=${language}`);
   }
 
   /**

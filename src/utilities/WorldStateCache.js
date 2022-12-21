@@ -7,7 +7,7 @@ import { apiBase } from './CommonFunctions.js';
 
 const Job = cron.CronJob;
 
-const ws = (platform, locale) => `${apiBase}/${platform}/?languages=${locale}`;
+const ws = (platform, locale) => `${apiBase}/${platform}/?language=${locale}`;
 
 export default class WorldStateCache extends EventEmitter {
   constructor(platform, locale, timeout) {
@@ -37,7 +37,7 @@ export default class WorldStateCache extends EventEmitter {
       this.lastUpdated = Date.now();
       this.currentData = await fetch(this.url);
       this.updating = undefined;
-      this.emit('newData', this.platform, this.currentData);
+      this.emit('newData', this.platform, this.locale, this.currentData);
       return this.currentData;
     } catch (err) {
       this.updating = undefined;

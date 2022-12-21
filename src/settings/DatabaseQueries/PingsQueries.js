@@ -268,7 +268,7 @@ export default class PingsQueries {
   /**
    * Set the notified ids for a given platform and shard id
    * @param {string} platform    platform corresponding to notified ids
-   * @param {JSON} notifiedIds list of oids that have been notifiedIds
+   * @param {Array<string>} notifiedIds list of oids that have been notifiedIds
    * @returns {Promise}
    */
   async setNotifiedIds(platform, notifiedIds) {

@@ -1,7 +1,6 @@
 import http from 'node:http';
 import https from 'node:https';
 import crypto from 'crypto';
-import logger from './Logger.js';
 
 const retryCodes = [429].concat(
   (process.env.JSON_CACHE_RETRY_CODES || '').split(',').map((code) => parseInt(code.trim(), 10))
@@ -20,20 +19,19 @@ const fetch = (url, { maxRetry = 10, headers } = { maxRetry: 10, headers: {} }) 
   return new Promise((resolve, reject) => {
     const request = protocol.get(url, { headers }, (response) => {
       const body = [];
-
       if (response.statusCode < 200 || response.statusCode > 299) {
         if (redirectCodes.includes(response.statusCode)) {
           setTimeout(() => {
             fetch(response.headers.location, { maxRetry, headers })
               .then((d) => resolve(d))
-              .catch(logger.error);
+              .catch(reject);
           }, 1000);
         } else if ((response.statusCode > 499 || retryCodes.includes(response.statusCode)) && maxRetry > 0) {
           maxRetry -= 1;
           setTimeout(() => {
             fetch(url, { maxRetry, headers })
               .then((d) => resolve(d))
-              .catch(logger.error);
+              .catch(reject);
           }, 1000);
         } else {
           const e = new Error(`${response.statusCode}: Failed to load ${url}`);

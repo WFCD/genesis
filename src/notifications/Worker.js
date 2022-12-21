@@ -151,6 +151,8 @@ class Worker {
       await deps.settings.init();
       await this.initCache();
 
+      if (!deps.settings) logger.fatal('no settings!!!');
+
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);
         this.cycleNotifier = new CycleNotifier(deps);
@@ -170,7 +172,7 @@ class Worker {
       await this.cycleNotifier.start();
 
       if (logger.isLoggable('DEBUG')) {
-        rest.controlMessage({
+        await rest.controlMessage({
           embeds: [
             {
               description: `Worker ready on ${activePlatforms}`,
