@@ -24,4 +24,20 @@ export default class BaseEmbed extends MessageEmbed {
     });
     if (locale) this.locale = locale;
   }
+
+  /**
+   * Single field addition (thanks for deprecating, djs...)
+   * @param {string} name field title
+   * @param {string} value field display text
+   * @param {boolean?} [inline] whether to allow other items after this or before this on the same line
+   */
+  addField(name, value, inline) {
+    this.addFields([
+      {
+        name,
+        value,
+        inline,
+      },
+    ]);
+  }
 }

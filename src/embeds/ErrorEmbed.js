@@ -20,6 +20,6 @@ export default class BuildEmbed extends BaseEmbed {
       this.addField('Stack Trace', `\`\`\`\n${stack}\n\`\`\``);
     }
     this.footer.text = 'Occurred';
-    this.timestamp = new Date();
+    this.timestamp = new Date().getTime();
   }
 }

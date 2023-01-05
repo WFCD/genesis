@@ -66,7 +66,7 @@ export default [
   );`,
   SQL`CREATE TABLE IF NOT EXISTS notified_ids (
     shard_id BIGINT UNSIGNED NOT NULL,
-    platform VARCHAR(10) NOT NULL DEFAULT 'pc',
+    platform VARCHAR(20) NOT NULL DEFAULT 'pc',
     id_list JSON NOT NULL,
     PRIMARY KEY (shard_id, platform)
   );`,

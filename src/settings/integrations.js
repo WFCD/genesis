@@ -46,4 +46,7 @@ export default [
       await db.query(SQL`ALTER TABLE item_notifications ADD COLUMN (thread_id BIGINT UNSIGNED);`);
     }
   },
+  async (db) => {
+    return db.query(SQL`ALTER TABLE notified_ids MODIFY platform VARCHAR(20) NOT NULL DEFAULT 'pc'`);
+  },
 ];

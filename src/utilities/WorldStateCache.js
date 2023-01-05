@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import cron from 'cron';
 
-import fetch from './Fetcher.js';
+import fetch from 'node-fetch';
 import logger from './Logger.js';
 import { apiBase } from './CommonFunctions.js';
 
@@ -35,7 +35,7 @@ export default class WorldStateCache extends EventEmitter {
   async update() {
     try {
       this.lastUpdated = Date.now();
-      this.currentData = await fetch(this.url);
+      this.currentData = await fetch(this.url).then(d => d.json());
       this.updating = undefined;
       this.emit('newData', this.platform, this.locale, this.currentData);
       return this.currentData;

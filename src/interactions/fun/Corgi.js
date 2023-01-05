@@ -1,5 +1,5 @@
 import Interaction from '../../models/Interaction.js';
-import fetch from '../../utilities/Fetcher.js';
+import fetch from 'node-fetch';
 import { cmds } from '../../resources/index.js';
 
 export default class Corgi extends Interaction {
@@ -8,7 +8,7 @@ export default class Corgi extends Interaction {
   static command = cmds.corgi;
 
   static async commandHandler(interaction, ctx) {
-    const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random');
+    const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random').then(d => d.json());
     if (corgi) {
       return interaction.reply({
         files: [
