@@ -3,100 +3,100 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
-    description: 'Get WorldState Alerts'
+    name: 'виклики',
+    description: 'Отримати дані про виклики'
   },
   arbi: {
-    name: 'arbi',
-    description: 'Get WorldState Arbitrations'
+    name: 'арбітраж',
+    description: 'Отримати дані про арбітраж'
   },
   archons: {
-    name: 'archons',
-    description: 'Get current Archon Hunt'
+    name: 'архонти',
+    description: 'Отримати дані про архонтові лови'
   },
   baro: {
-    name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    name: 'баро',
+    description: 'Отримати дані про оферти Торговця із Порожнечі'
   },
   conclave: {
-    name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    name: 'конклав',
+    description: 'Отримати дані про поточні випробування Конклаву'
   },
   construction: {
-    name: 'construction',
-    description: 'Get Construction Progress'
+    name: 'будівництво',
+    description: 'Отримати дані про поступ будівництва'
   },
   cycle: {
-    name: 'cycle',
-    description: 'Get current Time Cycle'
+    name: 'цикл',
+    description: 'Отримати дані про поточний цикл часу локацій'
   },
   darvo: {
-    name: 'darvo',
-    description: 'Get Darvo\'s Deals'
+    name: 'дарво',
+    description: 'Отримати дані про розпродаж у Дарво'
   },
   events: {
-    name: 'events',
-    description: 'Get Active Events'
+    name: 'події',
+    description: 'Отримати дані про поточні події'
   },
   fissures: {
-    name: 'fissures',
-    description: 'Get WorldState Fissures'
+    name: 'прориви',
+    description: 'Отримати дані про поточні прориви Порожнечі'
   },
   invasions: {
-    name: 'invasions',
-    description: 'Get WorldState Invasions'
+    name: 'вторгнення',
+    description: 'Отримати дані про поточні вторгнення'
   },
   news: {
-    name: 'news',
-    description: 'Get Current news'
+    name: 'новини',
+    description: 'Показати поточні новини'
   },
   nightwave: {
-    name: 'nightwave',
-    description: 'Get Current Nightwave Challenges'
+    name: 'нічна_хвиля',
+    description: 'Отримати дані про поточні випробування Нічної Хвилі'
   },
   sales: {
-    name: 'sales',
-    description: 'Get Current Sales'
+    name: 'знижки',
+    description: 'Отримати дані про поточні знижки'
   },
   outposts: {
     name: 'outposts',
     description: 'Get Current Sentient Outposts'
   },
   steelpath: {
-    name: 'steelpath',
+    name: 'шлях_сталі',
     description: 'Get Current Steel Path Offerings'
   },
   sortie: {
-    name: 'sortie',
+    name: 'вилазка',
     description: 'Get Sortie Information'
   },
   rooms: {
-    name: 'rooms',
+    name: 'кімнати',
     description: 'Manage your private room'
   },
   'rooms.create': {
-    name: 'create',
-    description: 'Create your own room'
+    name: 'створити',
+    description: 'Створити особисту кімнату'
   },
   'rooms.destroy': {
-    name: 'destroy',
-    description: 'Destroy your room'
+    name: 'знищити',
+    description: 'Знищити особисту кімнату'
   },
   'rooms.hide': {
-    name: 'hide',
-    description: 'Hide your private room'
+    name: 'приховати',
+    description: 'Приховати особисту кімнату'
   },
   'rooms.show': {
-    name: 'show',
-    description: 'Show your private room'
+    name: 'показати',
+    description: 'Показати особисту кімнату'
   },
   'rooms.lock': {
-    name: 'lock',
-    description: 'Lock your private room'
+    name: 'зачинити',
+    description: 'Закрити доступ до особистої кімнати'
   },
   'rooms.unlock': {
-    name: 'unlock',
-    description: 'Unlock your private room'
+    name: 'відчинити',
+    description: 'Відкрити доступ до особистої кімнати'
   },
   'rooms.lurkable': {
     name: 'lurkable',
