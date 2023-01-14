@@ -95,7 +95,7 @@ export default {
     description: 'Lock your private room'
   },
   'rooms.unlock': {
-    name: 'kilidi aç',
+    name: 'kilidi_aç',
     description: 'Unlock your private room'
   },
   'rooms.lurkable': {
@@ -103,7 +103,7 @@ export default {
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'yeniden adlandır',
+    name: 'yeniden_adlandır',
     description: 'Rename your private room'
   },
   'rooms.invite': {
@@ -480,7 +480,7 @@ export default {
     description: 'Ask Genesis for a joke!'
   },
   fashion: {
-    name: 'modaframe',
+    name: 'fashionframe',
     description: 'Get a random Warframe fashion image'
   },
   memeframe: {
