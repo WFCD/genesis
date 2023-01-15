@@ -103,16 +103,16 @@ export default {
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'rename',
-    description: 'Rename your private room'
+    name: 'перейменувати',
+    description: 'Змінити назву приватної кімнати'
   },
   'rooms.invite': {
-    name: 'invite',
-    description: 'Invite someone to your private room'
+    name: 'запросити',
+    description: 'Запросити когось до приватної кімнати'
   },
   'rooms.block': {
-    name: 'block',
-    description: 'Block someone from your private room'
+    name: 'заблокувати',
+    description: 'Заблокувати доступ до приватної кімнати'
   },
   'rooms.resize': {
     name: 'resize',
