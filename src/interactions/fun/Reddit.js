@@ -19,7 +19,7 @@ export default class Reddit extends Interaction {
       title,
       subreddit_name_prefixed: srn,
       created_utc: ts,
-    } = (await fetch(base).then(d => d.json()))[0].data.children[0].data;
+    } = (await fetch(base).then((d) => d.json()))[0].data.children[0].data;
     const embed = new Embed();
     embed.setTitle(title);
     embed.setURL(`https://reddit.com${permalink}`);

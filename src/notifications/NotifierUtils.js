@@ -1,9 +1,9 @@
 import util from 'node:util';
 import urlExists from 'url-exists';
 import I18n from 'i18n-string-templates';
+import fetch from 'node-fetch';
 import { apiBase, apiCdnBase } from '../utilities/CommonFunctions.js';
 import { i18n as i18nBundle, locales } from '../resources/index.js';
-import fetch from 'node-fetch';
 
 import Alert from '../embeds/AlertEmbed.js';
 import Arbitration from '../embeds/ArbitrationEmbed.js';
@@ -77,7 +77,7 @@ export const getThumbnailForItem = async (query, fWiki) => {
       )
       .trim()
       .toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}/?language=en`).then(d => d.json());
+    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}/?language=en`).then((d) => d.json());
     if (results.length) {
       const url = `${apiCdnBase}img/${results[0].imageName}`;
       if (await exists(url)) {

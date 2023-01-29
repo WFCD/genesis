@@ -30,8 +30,8 @@ export default class WorldStateClient {
     if (!WorldStateClient.#weapons) {
       (async function init() {
         if (!WorldStateClient.#weapons) {
-          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons/?language=en`).then(d => d.json());
-          const misc = (await fetch(`${apiBase}/items/?language=en`).then(d => d.json())).filter((i) =>
+          WorldStateClient.#weapons = await fetch(`${apiBase}/weapons/?language=en`).then((d) => d.json());
+          const misc = (await fetch(`${apiBase}/items/?language=en`).then((d) => d.json())).filter((i) =>
             i?.uniqueName?.includes('OperatorAmplifiers')
           );
           WorldStateClient.#weapons.push(...misc);
@@ -42,7 +42,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#warframes) {
       (async function init() {
         if (!WorldStateClient.#warframes) {
-          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes/?language=en`).then(d => d.json());
+          WorldStateClient.#warframes = await fetch(`${apiBase}/warframes/?language=en`).then((d) => d.json());
         }
       })();
     }
@@ -50,7 +50,7 @@ export default class WorldStateClient {
     if (!WorldStateClient.#mods) {
       (async function init() {
         if (!WorldStateClient.#mods) {
-          WorldStateClient.#mods = await fetch(`${apiBase}/mods/?language=en`).then(d => d.json());
+          WorldStateClient.#mods = await fetch(`${apiBase}/mods/?language=en`).then((d) => d.json());
         }
       })();
     }
@@ -140,7 +140,7 @@ export default class WorldStateClient {
         platform,
         'Accept-Language': language,
       },
-    }).then(d => d.json());
+    }).then((d) => d.json());
   }
 
   async g(endpoint, platform = 'pc', language = 'en') {
@@ -158,7 +158,7 @@ export default class WorldStateClient {
         platform,
         'Accept-Language': language,
       },
-    }).then(d => d.json());
+    }).then((d) => d.json());
   }
 
   /**
@@ -169,7 +169,7 @@ export default class WorldStateClient {
    */
   async riven(query, platform) {
     this.#logger.silly(`searching rivens for ${query}`);
-    return fetch(`${apiBase}/${platform}/rivens/search/${encodeURIComponent(query)}/`).then(d => d.json());
+    return fetch(`${apiBase}/${platform}/rivens/search/${encodeURIComponent(query)}/`).then((d) => d.json());
   }
 
   /**
@@ -181,7 +181,9 @@ export default class WorldStateClient {
    */
   async search(endpoint, query, language = 'en') {
     this.#logger.silly(`searching ${endpoint} for ${query}`);
-    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}/?language=${language}`).then(d => d.json());
+    return fetch(`${apiBase}/${endpoint}/search/${encodeURIComponent(query.toLowerCase())}/?language=${language}`).then(
+      (d) => d.json()
+    );
   }
 
   /**
@@ -204,7 +206,7 @@ export default class WorldStateClient {
         platform,
         'Accept-Language': language,
       },
-    }).then(d => d.json());
+    }).then((d) => d.json());
   }
 
   /**
@@ -220,7 +222,7 @@ export default class WorldStateClient {
         `${relicBase}/${toTitleCase(tier)}/${
           tier.toLowerCase() === 'requiem' ? name.toUpperCase() : toTitleCase(name)
         }.json`
-      ).then(d => d.json());
+      ).then((d) => d.json());
     } catch (e) {
       this.#logger.debug(e);
     }

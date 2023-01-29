@@ -106,10 +106,10 @@ export default class TwitchClient {
           'Client-ID': process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${this.accessToken}`,
         },
-      }).then(d => d.json());
+      }).then((d) => d.json());
 
       if (res.ok) {
-        const data = await res.then(d => d.json());
+        const data = await res.then((d) => d.json());
         return data.data || [];
       }
       logger.error(res.statusText);
@@ -141,7 +141,7 @@ export default class TwitchClient {
       try {
         const res = await fetch(`${urls.token}?${atParams.map(({ key, val }) => `${key}=${val}`).join('&')}`, {
           method: 'POST',
-        }).then(d => d.json());
+        }).then((d) => d.json());
 
         if (res) {
           const initAccessToken = res.access_token;
@@ -164,7 +164,7 @@ export default class TwitchClient {
     const url = `${urls.token}?${params.map(({ key, val }) => `${key}=${val}`).join('&')}`;
 
     try {
-      const res = await fetch(url, { method: 'post' }).then(d => d.json());
+      const res = await fetch(url, { method: 'post' }).then((d) => d.json());
 
       if (res) {
         const token = res.access_token;
