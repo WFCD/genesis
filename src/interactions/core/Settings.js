@@ -479,8 +479,8 @@ export default class Settings extends Interaction {
     const platform = options.get?.('platform')?.value;
 
     // validation
-    if (!action) return interaction.reply(ctx.i18n`No action`);
-    if (['set', 'clear'].includes(action) && !field) return interaction.reply(ctx.i18n`No field`);
+    if (!action) return interaction.editReply(ctx.i18n`No action`);
+    if (['set', 'clear'].includes(action) && !field) return interaction.editReply(ctx.i18n`No field`);
 
     if (field === 'auto_text') value = !value;
 
@@ -493,11 +493,11 @@ export default class Settings extends Interaction {
         switch (field) {
           case 'pings':
             await ctx.settings.removePings(interaction?.guild?.id);
-            return interaction.reply({ content: 'pings cleared', ephemeral });
+            return interaction.editReply({ content: 'pings cleared', ephemeral });
           case 'temp_category':
             await ctx.settings.deleteChannelSetting(channel, 'tempChannel');
             await ctx.settings.deleteChannelSetting(channel, 'tempCategory');
-            return interaction.reply({ content: 'cleared temp_category', ephemeral });
+            return interaction.editReply({ content: 'cleared temp_category', ephemeral });
           case 'all':
             // wipe settings!!!
             await interaction.deferReply({ ephemeral: true });
@@ -510,7 +510,7 @@ export default class Settings extends Interaction {
         }
         break;
       case 'set':
-        if (typeof value === 'undefined') return interaction.reply(ctx.i18n`No value`);
+        if (typeof value === 'undefined') return interaction.editReply(ctx.i18n`No value`);
         logger.info(field);
         switch (field) {
           case 'lfg':
@@ -528,7 +528,7 @@ export default class Settings extends Interaction {
           case 'ephemerate':
           case 'platform':
             await ctx.settings.setChannelSetting(channel, field, value);
-            return interaction.reply(`set ${field} to \`${value}\``);
+            return interaction.editReply(`set ${field} to \`${value}\``);
           case 'elevated_roles':
             field = this.#aliases[field] || field;
             value = this.#getMentions(value, interaction.guild)
@@ -537,9 +537,9 @@ export default class Settings extends Interaction {
             return ctx.handler.recalcPerms(value, interaction.guild);
           case 'language':
             await ctx.settings.setGuildSetting(interaction.guild, field, value);
-            return interaction.reply({ content: `set ${field} to \`${value}\``, ephemeral });
+            return interaction.editReply({ content: `set ${field} to \`${value}\``, ephemeral });
           default:
-            return interaction.reply(options?.getSubcommand());
+            return interaction.editReply(options?.getSubcommand());
         }
       case 'get':
         const pages = await this.#gather(ctx, channel, thread);
@@ -610,10 +610,10 @@ export default class Settings extends Interaction {
         embed.setTimestamp(new Date());
         embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });
 
-        return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
+        return interaction.editReply({ embeds: [embed], ephemeral: ctx.ephemerate });
       default:
         break;
     }
-    return interaction.reply({ content: 'not happening', ephemeral });
+    return interaction.editReply({ content: 'not happening', ephemeral });
   }
 }
