@@ -240,9 +240,10 @@ export default class Settings extends Interaction {
    * this.#gather settings into one or more embeds
    * @param {CommandContext} ctx context object
    * @param {Discord.TextChannel} channel Channel to bind settings from
+   * @param {Discord.ThreadChannel} [thread] Optional thread
    * @returns {Promise<Array<Discord.MessageEmbed>>}
    */
-  static async #gather(ctx, channel) {
+  static async #gather(ctx, channel, thread) {
     const page = new MessageEmbed(embedDefaults);
     const settings = await ctx.settings.getChannelSettings(channel, [
       'language',
@@ -266,21 +267,74 @@ export default class Settings extends Interaction {
     ]);
 
     page.setTitle('General Settings');
-    page.addField('Language', settings.language || ctx.settings.defaults.language, true);
-    page.addField('Platform', settings.platform || ctx.settings.defaults.platform, true);
-    page.addField('Mod Role', this.#wrapRoleValue(settings.modRole || this.#negate), true);
-    page.addField('Allow Inline', await this.#resolveBoolean(channel, 'allowInline', settings), true);
-    page.addField('Allow Custom', await this.#resolveBoolean(channel, 'allowCustom', settings), true);
-    page.addField('Ping Custom', await this.#resolveBoolean(channel, 'settings.cc.ping', settings), true);
-    page.addField('Ephemerate', await this.#resolveBoolean(channel, 'ephemerate', settings), true);
+    page.addFields([
+      {
+        name: 'Language',
+        value: settings.language || ctx.settings.defaults.language,
+        inline: true,
+      },
+      {
+        name: 'Platform',
+        value: settings.platform || ctx.settings.defaults.platform,
+        inline: true,
+      },
+      {
+        name: 'Mod Role',
+        value: this.#wrapRoleValue(settings.modRole || this.#negate),
+        inline: true,
+      },
+      {
+        name: 'Allow Inline',
+        value: await this.#resolveBoolean(channel, 'allowInline', settings),
+        inline: true,
+      },
+      {
+        name: 'Allow Custom',
+        value: await this.#resolveBoolean(channel, 'allowCustom', settings),
+        inline: true,
+      },
+      {
+        name: 'Ping Custom',
+        value: await this.#resolveBoolean(channel, 'settings.cc.ping', settings),
+        inline: true,
+      },
+      {
+        name: 'Ephemerate',
+        value: await this.#resolveBoolean(channel, 'ephemerate', settings),
+        inline: true,
+      },
+      {
+        name: '🔽 Private Room Settings 🔽',
+        value: '_ _',
+        inline: false,
+      },
+      {
+        name: 'Enabled?',
+        value: await this.#resolveBoolean(channel, 'createPrivateChannel', settings),
+        inline: true,
+      },
+      {
+        name: 'Lock?',
+        value: await this.#resolveBoolean(channel, 'defaultRoomsLocked', settings),
+        inline: true,
+      },
+      {
+        name: 'No Text?',
+        value: await this.#resolveBoolean(channel, 'defaultNoText', settings),
+        inline: true,
+      },
+      {
+        name: 'Hidden?',
+        value: await this.#resolveBoolean(channel, 'defaultShown', settings),
+        inline: true,
+      },
+      {
+        name: '🔽 LFG Settings 🔽',
+        value: '_ _',
+        inline: false,
+      },
+    ]);
 
-    page.addField('🔽 Private Room Settings 🔽', '_ _', false);
-    page.addField('Enabled?', await this.#resolveBoolean(channel, 'createPrivateChannel', settings), true);
-    page.addField('Lock?', await this.#resolveBoolean(channel, 'defaultRoomsLocked', settings), true);
-    page.addField('No Text?', await this.#resolveBoolean(channel, 'defaultNoText', settings), true);
-    page.addField('Hidden?', await this.#resolveBoolean(channel, 'defaultShown', settings), true);
-
-    page.addField('🔽 LFG Settings 🔽', '_ _', false);
     const tempCategory =
       settings.tempCategory !== '0' && typeof settings.tempCategory !== 'undefined'
         ? settings.tempCategory
@@ -304,22 +358,28 @@ export default class Settings extends Interaction {
     ) {
       lfgVal = this.#negate;
     }
-    page.addField('LFG', lfgVal, false);
-    page.addField(
-      'Temp Channels',
-      `Category: ${this.#wrapChannelValue(tempCategory)}\nChannel: ${
-        settings.tempChannel ? this.#wrapChannelValue(settings.tempChannel) : this.#negate
-      }`,
-      true
-    );
+    page.addFields([
+      {
+        name: 'LFG',
+        value: lfgVal,
+        inline: false,
+      },
+      {
+        name: 'Temp Channels',
+        value: `Category: ${this.#wrapChannelValue(tempCategory)}\nChannel: ${
+          settings.tempChannel ? this.#wrapChannelValue(settings.tempChannel) : this.#negate
+        }`,
+        inline: true,
+      },
+    ]);
 
     const embeds = [page];
 
     // end of page 1
-    const items = await ctx.settings.getTrackedItems(channel);
+    const items = await ctx.settings.getTrackedItems(channel, thread);
     const trackedItems = constructItemEmbeds(items);
 
-    const events = await ctx.settings.getTrackedEventTypes(channel);
+    const events = await ctx.settings.getTrackedEventTypes(channel, thread);
     const trackedEvents = constructTypeEmbeds(events);
 
     // Guild Pings
@@ -402,7 +462,7 @@ export default class Settings extends Interaction {
     // args
     const { options } = interaction;
     const ephemeral = ctx.ephemerate;
-
+    await interaction.deferReply();
     let action;
     try {
       action = options?.getSubcommandGroup();
@@ -424,6 +484,10 @@ export default class Settings extends Interaction {
 
     if (field === 'auto_text') value = !value;
 
+    const isThread = interaction.channel.isThread();
+    const channel = isThread ? interaction.channel.parent : interaction.channel;
+    const thread = isThread ? interaction.channel : undefined;
+
     switch (action) {
       case 'clear':
         switch (field) {
@@ -431,16 +495,15 @@ export default class Settings extends Interaction {
             await ctx.settings.removePings(interaction?.guild?.id);
             return interaction.reply({ content: 'pings cleared', ephemeral });
           case 'temp_category':
-            await ctx.settings.deleteChannelSetting(interaction.channel, 'tempChannel');
-            await ctx.settings.deleteChannelSetting(interaction.channel, 'tempCategory');
+            await ctx.settings.deleteChannelSetting(channel, 'tempChannel');
+            await ctx.settings.deleteChannelSetting(channel, 'tempCategory');
             return interaction.reply({ content: 'cleared temp_category', ephemeral });
           case 'all':
             // wipe settings!!!
             await interaction.deferReply({ ephemeral: true });
-            // eslint-disable-next-line no-case-declarations
             const { guild } = interaction;
             await ctx.settings.removeGuild(guild.id);
-            await Promise.all(guild.channels.cache.map((channel) => ctx.settings.stopTracking(channel)));
+            await Promise.all(guild.channels.cache.map((cachedChannel) => ctx.settings.stopTracking(cachedChannel)));
             return interaction.editReply('server-wide purge complete');
           default:
             break;
@@ -448,6 +511,7 @@ export default class Settings extends Interaction {
         break;
       case 'set':
         if (typeof value === 'undefined') return interaction.reply(ctx.i18n`No value`);
+        logger.info(field);
         switch (field) {
           case 'lfg':
             field = this.#aliases[field];
@@ -463,46 +527,48 @@ export default class Settings extends Interaction {
             field = this.#aliases[field] || field;
           case 'ephemerate':
           case 'platform':
-            await ctx.settings.setChannelSetting(interaction.channel, field, value);
+            await ctx.settings.setChannelSetting(channel, field, value);
             return interaction.reply(`set ${field} to \`${value}\``);
           case 'elevated_roles':
             field = this.#aliases[field] || field;
             value = this.#getMentions(value, interaction.guild)
               .map((role) => role.id)
               .join(',');
-            ctx.handler.recalcPerms(value, interaction.guild);
+            return ctx.handler.recalcPerms(value, interaction.guild);
           case 'language':
             await ctx.settings.setGuildSetting(interaction.guild, field, value);
             return interaction.reply({ content: `set ${field} to \`${value}\``, ephemeral });
           default:
-            interaction.reply(options?.getSubcommand());
-            break;
+            return interaction.reply(options?.getSubcommand());
         }
-        logger.info(field);
-        break;
       case 'get':
-        /* eslint-disable no-case-declarations */
-        const pages = await this.#gather(ctx, interaction.channel);
+        const pages = await this.#gather(ctx, channel, thread);
         return Collectors.paged(interaction, pages, ctx);
       case 'diag':
         const embed = new MessageEmbed();
         embed.setTitle(`Diagnostics for Shard ${interaction.guild.shardId + 1}/${interaction.client.ws.shards.size}`);
-
-        embed.addField('Discord WS', `${this.#check} ${interaction.client.ws.ping.toFixed(2)}ms`, true);
+        embed.addFields([
+          {
+            name: 'Discord WS',
+            value: `${this.#check} ${interaction.client.ws.ping.toFixed(2)}ms`,
+            inline: true,
+          },
+        ]);
 
         // this.#check what permissions the bot has in the current channel
-        const perms = interaction.channel.permissionsFor(interaction.client.user.id);
+        const perms = channel.permissionsFor(interaction.client.user.id);
 
         // role management
+        /** @type string[] */
         const rolePermTokens = [];
         rolePermTokens.push(
           `${perms.has(Permissions.FLAGS.MANAGE_ROLES) ? this.#check : this.#xmark} Permission Present`
         );
         rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
 
-        chunkFields(rolePermTokens, 'Can Manage Roles', '\n').forEach((ef) => {
-          embed.addField(ef.name, ef.value, false);
-        });
+        /** @type Discord.EmbedField[] */
+        const fields = chunkFields(rolePermTokens, 'Can Manage Roles', '\n');
+        embed.addFields(fields);
 
         // Tracking
         const trackingReadinessTokens = [
@@ -510,10 +576,6 @@ export default class Settings extends Interaction {
             perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${this.#check}  Can` : `${this.#xmark} Cannot`
           } Manage Webhooks`,
         ];
-
-        const isThread = interaction.channel.isThread();
-        const channel = isThread ? interaction.channel.parent : interaction.channel;
-        const thread = isThread ? interaction.channel : undefined;
 
         const trackables = {
           events: await ctx.settings.getTrackedEventTypes(channel, thread),
@@ -530,13 +592,20 @@ export default class Settings extends Interaction {
             : `${this.#xmark} No Items tracked`
         );
 
-        embed.addField('Trackable Ready', trackingReadinessTokens.join('\n'));
-
-        // General
-        embed.addField(
-          'General Ids',
-          `Guild: \`${interaction.guild.id}\`\nChannel: \`${channel.id}\`${thread ? `\nThread: \`${thread.id}\`` : ''}`
-        );
+        embed.addFields([
+          {
+            name: 'Trackable Ready',
+            value: trackingReadinessTokens.join('\n'),
+            inline: false,
+          },
+          {
+            // General
+            name: 'General Ids',
+            value: `Guild: \`${interaction.guild.id}\`\nChannel: \`${channel.id}\`${
+              thread ? `\nThread: \`${thread.id}\`` : ''
+            }`,
+          },
+        ]);
 
         embed.setTimestamp(new Date());
         embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });

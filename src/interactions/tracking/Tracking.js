@@ -123,9 +123,9 @@ export default class Settings extends Interaction {
       const original = Object.freeze({
         items: await ctx.settings.getTrackedItems(channel, thread),
         events: await ctx.settings.getTrackedEventTypes(channel, thread),
-        thread,
       });
-      const current = { ...original };
+      const current = JSON.parse(JSON.stringify(original));
+      current.thread = thread;
       let chunks = chunkerate(current);
       let page = 0;
 

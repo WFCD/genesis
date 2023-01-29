@@ -12,20 +12,20 @@ export default [
   );`,
   SQL`CREATE TABLE IF NOT EXISTS type_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
-    thread_id BIGINT UNSIGNED,
+    thread_id BIGINT UNSIGNED DEFAULT 0,
     type VARCHAR(255) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (channel_id, type),
+    PRIMARY KEY (channel_id, type, thread_id),
     FOREIGN KEY (channel_id)
         REFERENCES channels(id)
         ON DELETE CASCADE
   );`,
   SQL`CREATE TABLE IF NOT EXISTS item_notifications (
     channel_id BIGINT UNSIGNED NOT NULL,
-    thread_id BIGINT UNSIGNED,
+    thread_id BIGINT UNSIGNED DEFAULT 0,
     item VARCHAR(20) NOT NULL,
     ping BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (channel_id, item),
+    PRIMARY KEY (channel_id, item, thread_id),
     FOREIGN KEY (channel_id)
         REFERENCES channels(id)
         ON DELETE CASCADE

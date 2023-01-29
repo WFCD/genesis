@@ -598,6 +598,13 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   return embed;
 };
 
+/**
+ * Chunk fields
+ * @param {Array<string>} valArr values to map
+ * @param {string} [title] title to use
+ * @param {string} [chunkStr] separator
+ * @returns {Array.<Discord.EmbedField>}
+ */
 export const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
   const chunkified = chunkify({ string: valArr.join(chunkStr) });
   if (!chunkified) {
@@ -650,9 +657,12 @@ export const constructTypeEmbeds = (types) => {
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
-    fieldGroup.forEach((field) => {
-      embed.addField(field.name, field.value, true);
-    });
+    embed.addFields(
+      fieldGroup.map((field) => ({
+        ...field,
+        inline: true,
+      }))
+    );
     return embed;
   });
 };

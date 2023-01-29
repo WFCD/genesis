@@ -41,10 +41,14 @@ export default class OnReadyHandle extends Handler {
 
   async notifyUp() {
     if (this.bot.controlHook && (process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug') {
-      await this.bot.controlHook.edit({
-        name: this.bot.client.user.username,
-        avatar: this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
-      });
+      try {
+        await this.bot.controlHook.edit({
+          name: this.bot.client.user.username,
+          avatar: this.bot.client.user.displayAvatarURL().replace('.webp', '.png').replace('.webm', '.gif'),
+        });
+      } catch (e) {
+        this.logger.info("couldn't use webhook");
+      }
       await this.bot.controlHook.send({
         embeds: [
           {
