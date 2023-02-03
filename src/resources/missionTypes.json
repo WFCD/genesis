@@ -73,10 +73,12 @@
   },
   "skirmish": {
     "arbi": false,
-    "fissure": true
+    "fissure": true,
+    "railjack": true
   },
   "volatile": {
     "arbi": false,
-    "fissure": true
+    "fissure": true,
+    "railjack": true
   }
 }

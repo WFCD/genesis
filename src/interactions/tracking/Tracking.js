@@ -29,9 +29,9 @@ const chunkerate = (track) => {
   return chunkify({ string: format, maxLength: 500, breakChar: ',' });
 };
 
-const subgrouped = ['arbitration', 'fissures', 'twitter'];
+const subgrouped = ['arbitration', 'fissures', 'twitter', 'fissures.sp'];
 
-export default class Settings extends Interaction {
+export default class Tracking extends Interaction {
   static elevated = true;
   static command = {
     ...cmds.tracking,
@@ -131,6 +131,17 @@ export default class Settings extends Interaction {
 
       let currentGroup;
       let currentSubgroup;
+
+      const titleGroup = (groupId) => {
+        switch (groupId) {
+          case 'baseEvents':
+            return 'Events';
+          case 'fissures.sp':
+            return 'Steel Path Fissures';
+          default:
+            return toTitleCase(groupId.split('.').join(' '));
+        }
+      };
       const createGroupsRow = () => {
         const groups = [
           {
@@ -141,22 +152,28 @@ export default class Settings extends Interaction {
           ...Object.keys(trackableEvents)
             .filter(
               (e) =>
-                !['events', 'opts', 'kuva', 'cetus'].includes(e) &&
-                !e.startsWith('fissures.') &&
-                !e.startsWith('twitter.') &&
-                !e.startsWith('arbitration.')
+                (!['events', 'opts', 'kuva', 'cetus'].includes(e) &&
+                  !e.startsWith('fissures.') &&
+                  !e.startsWith('twitter.') &&
+                  !e.startsWith('arbitration.')) ||
+                e === 'fissures.sp'
             )
             .map((e) => ({
-              label: e === 'baseEvents' ? toTitleCase('events') : toTitleCase(e.split('.').join(' ')),
+              label: titleGroup(e),
               value: e,
               default: currentGroup === e,
             })),
         ];
         const subgroups = subgrouped.includes(currentGroup)
           ? Object.keys(trackableEvents)
-              .filter((e) => e.startsWith(`${currentGroup}.`))
+              .filter((e) => {
+                return (
+                  e.startsWith(`${currentGroup}.`) &&
+                  (currentGroup === 'fissures' ? !e.startsWith('fissures.sp') : true)
+                );
+              })
               .map((e) => ({
-                label: toTitleCase(e.split('.').join(' ')),
+                label: titleGroup(e),
                 value: e,
                 default: currentSubgroup === e,
               }))
@@ -171,7 +188,7 @@ export default class Settings extends Interaction {
               .map((li, index) => {
                 if (index < 25) {
                   return {
-                    label: toTitleCase(li.split('.').join(' ')),
+                    label: titleGroup(li),
                     value: li,
                     default: current.items.includes(li) || current.events.includes(li),
                   };
