@@ -193,10 +193,11 @@ export default class PingsQueries {
    *    - ignores shard id, because this is for the standalone notifications
    * @param {string} type The type of the event
    * @param {string} platform The platform of the event
+   * @param {Locale} locale language of the channel
    * @param {Array.<string>} [items] The items in the reward that is being notified
    * @returns {Promise.<Array.<{channelId: string, threadId: string}>>}
    */
-  async getAgnosticNotifications(type, platform, items) {
+  async getAgnosticNotifications({ type, platform, items, locale }) {
     if (this.scope.toLowerCase() !== 'worker') {
       return this.getNotifications(type, platform, items);
     }
@@ -225,6 +226,8 @@ export default class PingsQueries {
           INNER JOIN channels ON channels.id = type_notifications.channel_id
           INNER JOIN settings as s1 ON channels.id = s1.channel_id
             AND s1.setting = "platform"  AND (s1.val = ${platform || 'pc'} OR s1.val IS NULL)
+          INNER JOIN settings s2 on channels.id = s2.channel_id
+            AND s2.setting = "language" AND s2.val = ${locale}
           INNER JOIN settings as ws1 ON channels.id = ws1.channel_id
             AND ws1.setting = "webhookToken" AND ws1.val IS NOT NULL
           INNER JOIN settings as ws2 ON channels.id = ws2.channel_id

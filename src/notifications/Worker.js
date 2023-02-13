@@ -39,7 +39,7 @@ class Worker {
     if (games.includes('WARFRAME')) {
       activePlatforms.forEach((platform) => {
         locales.forEach((locale) => {
-          this.worldStates[platform] = new WorldStateCache(platform, locale, timeout);
+          this.worldStates[locale] = new WorldStateCache(platform, locale, timeout);
         });
       });
     }
@@ -91,12 +91,18 @@ class Worker {
     const promises = [];
     cachedEvents.forEach((cachedEvent) => {
       activePlatforms.forEach((platform) => {
-        promises.push(
-          (async () => {
-            const notifications = await deps.settings.getAgnosticNotifications(cachedEvent, platform);
-            deps.workerCache.setKey(`${cachedEvent}:${platform}`, notifications);
-          })()
-        );
+        locales.forEach((locale) => {
+          promises.push(
+            (async () => {
+              const notifications = await deps.settings.getAgnosticNotifications({
+                type: cachedEvent,
+                platform,
+                locale,
+              });
+              deps.workerCache.setKey(`${cachedEvent}:${platform}:${locale}`, notifications);
+            })()
+          );
+        });
       });
     });
     await Promise.all(promises);

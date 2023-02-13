@@ -60,7 +60,9 @@ export default class TwitchNotifier {
         await perLanguage(async ({ i18n, locale }) => {
           const embed = new TwitchEmbed(streamData, { i18n, locale });
           await Promise.all(
-            this.#activePlatforms.map(async (platform) => this.#broadcaster.broadcast(embed, platform, id))
+            this.#activePlatforms.map(async (platform) =>
+              this.#broadcaster.broadcast(embed, { platform, type: id, locale })
+            )
           );
         });
       }

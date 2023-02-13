@@ -10,7 +10,11 @@ export const emoji = require('./emoji.json');
 export const factions = require('./factions.json');
 export const localeMap = require('./localeMap.json');
 
-export const locales = ['en', 'de']; // require('./locales.json');
+const availableLocales = require('./locales.json');
+
+const activeLocales = (process.env.LOCALES || availableLocales.join(',')).split(',').filter((l) => l?.trim());
+
+export const locales = activeLocales.filter((a) => availableLocales.includes(a));
 
 /** @typedef {'cs'|'de'|'en'|'es'|'fr'|'it'|'ko'|'pl'|'pt'|'ru'|'sr'|'tr'|'zh'} Locale */
 
@@ -94,28 +98,30 @@ await Promise.all(
   })
 );
 
-Object.entries(allCommands['en-US']).forEach(([key, { name, description }]) => {
-  cmds[key] = {
-    name,
-    description,
-    name_localizations: {
-      'en-US': name,
-    },
-    description_localizations: {
-      'en-US': description,
-    },
-  };
+if (locales.includes('en')) {
+  Object.entries(allCommands['en-US']).forEach(([key, { name, description }]) => {
+    cmds[key] = {
+      name,
+      description,
+      name_localizations: {
+        'en-US': name,
+      },
+      description_localizations: {
+        'en-US': description,
+      },
+    };
 
-  locales.forEach((locale) => {
-    if (locale === 'en') return;
-    let localeKey;
-    if (DiscordLocales.includes(locale)) localeKey = locale;
-    if (DiscordLocales.includes(LocalDiscordLocaleMappings[locale])) localeKey = LocalDiscordLocaleMappings[locale];
-    if (!localeKey) return;
-    const l7d = allCommands?.[localeKey]?.[key];
-    if (l7d && nameRegex.test(l7d.name)) {
-      cmds[key].name_localizations[localeKey] = l7d.name;
-      cmds[key].description_localizations[localeKey] = l7d.description;
-    }
+    locales.forEach((locale) => {
+      if (locale === 'en') return;
+      let localeKey;
+      if (DiscordLocales.includes(locale)) localeKey = locale;
+      if (DiscordLocales.includes(LocalDiscordLocaleMappings[locale])) localeKey = LocalDiscordLocaleMappings[locale];
+      if (!localeKey) return;
+      const l7d = allCommands?.[localeKey]?.[key];
+      if (l7d && nameRegex.test(l7d.name)) {
+        cmds[key].name_localizations[localeKey] = l7d.name;
+        cmds[key].description_localizations[localeKey] = l7d.description;
+      }
+    });
   });
-});
+}

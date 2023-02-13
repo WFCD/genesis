@@ -1,11 +1,12 @@
+import Discord from 'discord.js'; // eslint-disable-line no-unused-vars
+
 import logger from '../utilities/Logger.js';
 import { cachedEvents } from '../resources/index.js';
 import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * Broadcast updates out to subscribing channels
- * @param {module:"discord.js".Client} client         bot client
+ * @param {Discord.Client} client         bot client
  * @param {Database} settings settings object for fetching data
  *    information about current channel, guild, and bot settings
  */
@@ -37,20 +38,21 @@ export default class Broadcaster {
 
   /**
    * Broadcast embed to all channels for a platform and type
-   * @param  {Object} embed      Embed to send to a channel
+   * @param  {Discord.MessageEmbed} embed      Embed to send to a channel
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
+   * @param {string} locale locale string
    * @param  {Array}  [items=[]] Items to broadcast
    * @returns {Array.<Object>} values for successes
    */
-  async broadcast(embed, platform, type, items = []) {
+  async broadcast(embed, { platform, type, items = [], locale }) {
     logger.silly(`broadcasting ${type} on ${platform}`);
     delete embed.bot;
 
     const guilds = this.workerCache.getKey('guilds');
     const channels = cachedEvents.includes(type)
-      ? this.workerCache.getKey(`${type}:${platform}`)
-      : await this.settings.getAgnosticNotifications(type, platform, items);
+      ? this.workerCache.getKey(`${type}:${platform}:${locale}`)
+      : await this.settings.getAgnosticNotifications({ type, platform, items, locale });
     if (!channels?.length) {
       logger.silly(`No channels on ${platform} tracking ${type}... continuing`, 'WS');
       return;

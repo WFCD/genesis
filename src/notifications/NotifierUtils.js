@@ -63,7 +63,7 @@ export const embeds = {
 export const between = (activation, key, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < beats[key].currCycleStart;
+  const isBeforeCurr = activationTs < beats[key].currCycleStart + leeway;
   const isAfterLast = activationTs > beats[key].lastUpdate - leeway;
   return isBeforeCurr && isAfterLast;
 };

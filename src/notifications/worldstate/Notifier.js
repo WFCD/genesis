@@ -267,6 +267,7 @@ export default class Notifier {
    * @returns {Promise<Object[]>}
    */
   async #standardBroadcast(sendable, { Embed, type, platform, thumb, items, i18n, locale, typeGenerator }) {
+    if ((Array.isArray(sendable) && !sendable.length) || !sendable) return Promise.resolve(true);
     if (!i18n) {
       logger.error(
         `No notifier i18n constructed for ${locale} sending ${type} with ${
@@ -288,7 +289,7 @@ export default class Notifier {
     }
     const embed = new Embed(sendable, { platform, i18n, locale });
     embed.thumbnail.url = thumb || embed.thumbnail.url;
-    return this.#broadcaster.broadcast(embed, platform, type, items);
+    return this.#broadcaster.broadcast(embed, { platform, type, items, locale });
   }
 
   async #sendAcolytes(newAcolytes, deps) {
@@ -343,7 +344,7 @@ export default class Notifier {
       return Promise.mapSeries(pages, async (page) => {
         const tembed = { ...embed };
         tembed.fields = page;
-        this.#broadcaster.broadcast(tembed, deps.platform, 'baro');
+        this.#broadcaster.broadcast(tembed, { platform: deps.platform, type: 'baro', locale: deps.locale });
       });
     }
   }
@@ -355,7 +356,11 @@ export default class Notifier {
         category: 'day',
         ...deps,
       });
-      return this.#broadcaster.broadcast(embed, deps.platform, 'conclave.dailies');
+      return this.#broadcaster.broadcast(embed, {
+        platform: deps.platform,
+        type: 'conclave.dailies',
+        locale: deps.locale,
+      });
     }
   }
 
@@ -366,7 +371,11 @@ export default class Notifier {
         category: 'week',
         ...deps,
       });
-      return this.#broadcaster.broadcast(embed, deps.platform, 'conclave.weeklies');
+      return this.#broadcaster.broadcast(embed, {
+        platform: deps.platform,
+        type: 'conclave.weeklies',
+        locale: deps.locale,
+      });
     }
   }
 
@@ -386,8 +395,8 @@ export default class Notifier {
     return this.#standardBroadcast(newFissures, {
       ...deps,
       Embed: embeds.Fissure,
-      platform: deps.platform,
-      typeGenerator: (fissure) => `fissures.t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
+      typeGenerator: (fissure) =>
+        `fissures.${fissure.isHard ? '.sp' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
     });
   }
 
@@ -406,7 +415,6 @@ export default class Notifier {
         ...deps,
         Embed: embeds.Invasion,
         items: invasion.rewardTypes,
-        platform: deps.platform,
         type,
         thumb,
       });
@@ -425,11 +433,15 @@ export default class Notifier {
         const nwCopy = { ...nightwave };
         nwCopy.activeChallenges = [challenge];
         const embed = new embeds.Nightwave(nwCopy, deps);
-        return this.#broadcaster.broadcast(embed, deps.platform, makeNightwaveType(challenge));
+        return this.#broadcaster.broadcast(embed, {
+          platform: deps.platform,
+          type: makeNightwaveType(challenge),
+          locale: deps.locale,
+        });
       });
     }
     const embed = new embeds.Nightwave(nightwave, deps);
-    return this.#broadcaster.broadcast(embed, deps.platform, 'nightwave');
+    return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: 'nightwave', locale: deps.locale });
   }
 
   async #sendPopularDeals(newPopularDeals, deps) {
@@ -470,7 +482,7 @@ export default class Notifier {
       embed.description !== 'No such Syndicate' &&
       embed?.fields?.[0].name !== 'No such Syndicate'
     ) {
-      return this.#broadcaster.broadcast(embed, deps.platform, syndicate);
+      return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: syndicate, locale: deps.locale });
     }
     return undefined;
   }
