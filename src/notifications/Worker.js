@@ -17,7 +17,7 @@ const Job = cron.CronJob;
 const deps = {};
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 const rest = new Rest();
-const forceHydrate = (process.argv[2] || '').includes('--hydrate');
+const forceHydrate = (process.argv[2] || '').includes('--hydrate') || process.env.BUILD === 'build';
 
 const ldirname = dirname(fileURLToPath(import.meta.url));
 
@@ -71,6 +71,7 @@ class Worker {
       this.#activeHydrations.push('guilds');
       const sDate = Date.now();
       const guilds = await deps.settings.getGuilds();
+      delete guilds.null;
       if (guilds) {
         deps.workerCache.setKey('guilds', guilds);
         deps.workerCache.save(true);
@@ -127,9 +128,11 @@ class Worker {
         cachedEvents.map(async (cachedEvent) =>
           Promise.all(
             activePlatforms.map(async (platform) => {
-              if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
-                hydrateEvents = true;
-              }
+              locales.forEach((locale) => {
+                if (!deps.workerCache.getKey(`${cachedEvent}:${platform}:${locale}`)) {
+                  hydrateEvents = true;
+                }
+              });
             })
           )
         )

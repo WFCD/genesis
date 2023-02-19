@@ -29,17 +29,17 @@ export default class OnReadyHandle extends Handler {
     this.logger.silly(`Running ${this.id} for ${this.event}`);
     this.logger.info('[Cluster] READY');
 
-    await this.notifyUp();
+    await this.#notifyUp();
 
     this.settings.init();
     await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
-    await this.updatePresence();
+    await this.#updatePresence();
     this.setupAdditionalHandlers();
   }
 
-  async notifyUp() {
+  async #notifyUp() {
     if (this.bot.controlHook && (process.env.LOG_LEVEL || 'ERROR').toLowerCase() === 'debug') {
       try {
         await this.bot.controlHook.edit({
@@ -63,12 +63,13 @@ export default class OnReadyHandle extends Handler {
   }
 
   setupAdditionalHandlers() {
-    setInterval(this.updatePresence.bind(this), cycleTimeout);
-    setInterval(this.checkPrivateRooms.bind(this), cycleTimeout);
+    setInterval(this.#updatePresence.bind(this), cycleTimeout);
+    setInterval(this.#checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
+    this.#repopulateChannels();
   }
 
-  async getWarframePresence(base) {
+  async #getWarframePresence(base) {
     const cetusState = await this.bot.ws.get('cetusCycle');
     const vallisState = await this.bot.ws.get('vallisCycle');
     // const outpost = await this.bot.ws.get('sentientOutposts');
@@ -100,12 +101,12 @@ export default class OnReadyHandle extends Handler {
    * Set up presence when the bot is ready.
    * Can flex based on various games.
    */
-  async updatePresence() {
+  async #updatePresence() {
     try {
       const baseMsg = process.env.BASE_PRES_MSG || `@${this.client.user.username} help`;
       const activity = process.env.BASE_PRES_ACT || 'PLAYING';
 
-      const wfPresence = games.includes('WARFRAME') ? await this.getWarframePresence(baseMsg) : undefined;
+      const wfPresence = games.includes('WARFRAME') ? await this.#getWarframePresence(baseMsg) : undefined;
       const presence = wfPresence || baseMsg;
       this.client.user.setPresence({
         status: 'online',
@@ -126,7 +127,7 @@ export default class OnReadyHandle extends Handler {
    * Check if private rooms have expired and are empty. If not, do nothing.
    * If so, delete the corresponding channels.
    */
-  async checkPrivateRooms() {
+  async #checkPrivateRooms() {
     if (!games.includes('UTIL')) return;
     this.logger.silly('Checking private rooms...');
     const privateRooms = await this.settings.getPrivateRooms();
@@ -163,5 +164,18 @@ export default class OnReadyHandle extends Handler {
         }
       })
     );
+  }
+
+  async #repopulateChannels() {
+    if (this.client.channels) {
+      /** @type {Discord.ChannelManager} */
+      let { channels } = this.client;
+      channels = channels.cache.filter((channel) => channel.type === 'GUILD_TEXT');
+      await Promise.all(
+        channels.mapValues((channel) => {
+          this.settings.addGuildTextChannel(channel);
+        })
+      );
+    }
   }
 }

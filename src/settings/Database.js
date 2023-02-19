@@ -268,7 +268,7 @@ export default class Database {
   /**
    * Get context (including settings) for a command in a channel
    * @param {Discord.TextChannel} channel channel to get settings for
-   * @param {Discord.User} user user to check for specific settings for
+   * @param {Discord.User} [user] user to check for specific settings for
    * @returns {CommandContext} context
    */
   async getCommandContext(channel, user) {

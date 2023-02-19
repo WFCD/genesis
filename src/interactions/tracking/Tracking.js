@@ -600,5 +600,14 @@ export default class Tracking extends Interaction {
     } else {
       await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
     }
+    const upd = await interaction.followUp(`${emojify('empty')} Checking channel...`);
+    try {
+      ctx.settings.checkUpdateChannel(channel);
+      await upd.edit(`${emojify('green_tick')} Channel checked`);
+      setTimeout(async () => upd.delete(), 10000);
+    } catch (e) {
+      ctx.logger.error(e);
+      await upd.edit(`${emojify('red_tick')} Channel check failed, contact support`);
+    }
   }
 }

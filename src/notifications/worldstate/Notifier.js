@@ -284,6 +284,7 @@ export default class Notifier {
           thumb,
           items,
           i18n,
+          locale,
         })
       );
     }
@@ -396,7 +397,7 @@ export default class Notifier {
       ...deps,
       Embed: embeds.Fissure,
       typeGenerator: (fissure) =>
-        `fissures.${fissure.isHard ? '.sp' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
+        `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
     });
   }
 
@@ -492,7 +493,7 @@ export default class Notifier {
     return Promise.mapSeries(syndicates, async ({ key, display, prefix, notifiable }) => {
       if (notifiable) {
         const embed = new embeds.Syndicate(newSyndicates, {
-          display,
+          syndicate: display,
           ...deps,
         });
         const eKey = `${prefix || ''}${key}`;

@@ -70,7 +70,11 @@ export default class DBMQueries {
    * @returns {Promise}
    */
   async addGuildTextChannel(channel) {
-    const query = SQL`INSERT IGNORE INTO channels (id, guild_id) VALUES (${channel.id}, ${channel.guild.id});`;
+    const query = SQL`INSERT INTO channels (id, guild_id)
+        VALUES (${channel.id}, ${channel.guild.id})
+        ON DUPLICATE KEY UPDATE
+            id=${channel.id},
+            guild_id=${channel.guild.id};`;
     return this.query(query);
   }
 
@@ -115,5 +119,23 @@ export default class DBMQueries {
     results.push(this.removeGuildCustomCommands(guild.id));
     results.push(this.deleteGuildRatio(guild));
     return Promise.all(results);
+  }
+
+  /**
+   * Update the database with the channel existence
+   * @param {Discord.GuildChannel} channel channel to update
+   * @returns {void}
+   */
+  async checkUpdateChannel(channel) {
+    if (channel.type !== 'GUILD_TEXT') return;
+    const { id } = channel;
+    const guildId = channel.guild.id;
+    const get = SQL`SELECT id as channelId, guild_id as resultGuildId
+          FROM channels where id=${id}`;
+    const rows = (await this.query(get))?.[0];
+    const found = rows.find(({ channelId, resultGuildId }) => channelId === id && resultGuildId === guildId);
+    if (!found) {
+      await this.addGuildTextChannel(channel);
+    }
   }
 }

@@ -382,6 +382,10 @@ export default class WorldState extends Interaction {
             return new Syndicate([mission], { syndicate, i18n: ctx.i18n, platform, locale: ctx.language });
           })
           .filter((p) => p.title);
+        if (pages.length > 1) {
+          await interaction.followUp({ embeds: pages.splice(1, pages.length - 1) });
+          return interaction.followUp({ embeds: pages, ephemeral });
+        }
         return interaction.editReply({ embeds: pages });
       default:
         break;

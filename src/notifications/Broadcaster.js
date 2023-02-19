@@ -54,7 +54,7 @@ export default class Broadcaster {
       ? this.workerCache.getKey(`${type}:${platform}:${locale}`)
       : await this.settings.getAgnosticNotifications({ type, platform, items, locale });
     if (!channels?.length) {
-      logger.silly(`No channels on ${platform} tracking ${type}... continuing`, 'WS');
+      logger.error(`No channels on ${platform}:${locale} tracking ${type}... continuing`, 'WS');
       return;
     }
 
@@ -69,8 +69,8 @@ export default class Broadcaster {
           return;
         }
 
-        const glist = Object.entries(guilds).filter(([, g]) => g.channels && g.channels.includes(channelId))[0];
-        const guild = glist && glist.length ? glist[1] : undefined;
+        const guildList = Object.entries(guilds).filter(([, g]) => g.channels && g.channels.includes(channelId))[0];
+        const guild = guildList && guildList.length ? guildList[1] : undefined;
 
         if (!guild) {
           logger.info(`couldn't find guild for ${type} on ${channelId}`);
@@ -78,8 +78,9 @@ export default class Broadcaster {
         }
 
         try {
+          const pingKey = `${guild.id}:${[type].concat((items || []).sort()).join(',')}`;
           /** @type {string} */
-          const content = this.workerCache.getKey('pings')[`${guild.id}:${[type].concat(items || [])}`] || '';
+          const content = this.workerCache.getKey('pings')[pingKey] || '';
           await webhook(ctx, { content, embeds: [embed] });
         } catch (e) {
           if (e.message) {

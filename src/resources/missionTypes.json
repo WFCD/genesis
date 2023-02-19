@@ -80,5 +80,10 @@
     "arbi": false,
     "fissure": true,
     "railjack": true
+  },
+  "orphix": {
+    "arbi": false,
+    "fissure": true,
+    "railjack": true
   }
 }

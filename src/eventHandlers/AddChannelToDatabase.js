@@ -33,9 +33,10 @@ export default class AddChannelToDatabase extends Handler {
         await this.settings.addGuild(channel.guild);
         this.settings.addGuildTextChannel(channel);
       }
-    } else {
-      await this.settings.addDMChannel(channel);
-      this.logger.debug(`DM channel with id ${channel.id} created`);
+    } else if (channel.type === 'GUILD_PUBLIC_THREAD' || channel.type === 'GUILD_PRIVATE_THREAD') {
+      if (channel.parentId) {
+        await this.settings.addGuildTextChannel({ id: channel.parentId, guild: { id: channel.guild.id } });
+      }
     }
   }
 }
