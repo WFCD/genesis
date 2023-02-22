@@ -115,32 +115,32 @@ export default {
     description: 'Заблокувати доступ до приватної кімнати'
   },
   'rooms.resize': {
-    name: 'resize',
-    description: 'resize private room'
+    name: 'змінити',
+    description: 'Змінити розмір приватної кімнати'
   },
   templates: {
-    name: 'templates',
-    description: 'Manage channel templates'
+    name: 'шаблони',
+    description: 'Керування шаблонами каналів'
   },
   'templates.add': {
-    name: 'add',
-    description: 'Add a channel as a template channel.'
+    name: 'додати',
+    description: 'Додати канал у вигляді шаблону каналів.'
   },
   'templates.delete': {
-    name: 'delete',
-    description: 'Delete a channel from you template channels'
+    name: 'видалити',
+    description: 'Видалення каналу як шаблону каналів'
   },
   'templates.list': {
-    name: 'list',
-    description: 'List all configured templates'
+    name: 'список',
+    description: 'Список усіх налаштованих шаблонів'
   },
   'templates.set': {
-    name: 'set',
-    description: 'Set the template for a template channel'
+    name: 'встановити',
+    description: 'Встановлює шаблон для шаблону каналу'
   },
   'templates.clear': {
-    name: 'clear',
-    description: 'clear existing template pattern on a channel'
+    name: 'очистити',
+    description: 'Очистити чинний шаблон каналу'
   },
   'templates.tc': {
     name: 'template_channel',
@@ -276,11 +276,11 @@ export default {
     description: 'Set the platform for the channel'
   },
   'settings.set': {
-    name: 'set',
+    name: 'встановити',
     description: 'Set a setting'
   },
   'settings.clear': {
-    name: 'clear',
+    name: 'очистити',
     description: 'Clear certain settings'
   },
   'settings.get': {
@@ -408,7 +408,7 @@ export default {
     description: 'Set up custom trackings and pings'
   },
   'tracking.custom.add': {
-    name: 'add',
+    name: 'додати',
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
@@ -436,7 +436,7 @@ export default {
     description: 'Manage custom commands'
   },
   'cc.add': {
-    name: 'add',
+    name: 'додати',
     description: 'Add a custom command'
   },
   'cc.add.call': {
@@ -456,7 +456,7 @@ export default {
     description: 'Which call to remove?'
   },
   'cc.list': {
-    name: 'list',
+    name: 'список',
     description: 'List all subcommands for the guild'
   },
   '8ball': {
