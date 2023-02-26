@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/WFCD/genesis/compare/v2.7.1...v2.7.2) (2023-02-26)
+
+
+### Bug Fixes
+
+* turn off repopulate channels at startup ([da21f56](https://github.com/WFCD/genesis/commit/da21f567bdd4e54fa049392cac15aaa6e63b3dc4))
+
 ## [2.7.1](https://github.com/WFCD/genesis/compare/v2.7.0...v2.7.1) (2023-02-26)
 
 
