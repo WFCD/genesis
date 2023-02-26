@@ -91,7 +91,7 @@ export default [
     if (indices.length < 3) {
       const fk = await getFKName(db, 'item_notifications');
       if (fk && fk[0] !== 'NULL') {
-        await db.query(`ALTER TABLE item_notifications DROP FOREIGN KEY IF EXISTS ${fk};`);
+        await db.query(`ALTER TABLE item_notifications DROP FOREIGN KEY ${fk};`);
       }
       const hasPrimary = await hasPK(db, 'item_notifications');
       if (hasPrimary) {
@@ -119,7 +119,7 @@ export default [
     if (indices.length < 3) {
       const fk = await getFKName(db, 'type_notifications');
       if (fk && fk[0] !== 'NULL') {
-        await db.query(`ALTER TABLE type_notifications DROP FOREIGN KEY IF EXISTS ${fk};`);
+        await db.query(`ALTER TABLE type_notifications DROP FOREIGN KEY ${fk};`);
       }
       const hasPrimary = await hasPK(db, 'type_notifications');
       if (hasPrimary) {
