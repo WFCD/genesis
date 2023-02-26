@@ -397,7 +397,7 @@ export default class Notifier {
       ...deps,
       Embed: embeds.Fissure,
       typeGenerator: (fissure) =>
-        `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionType)}`,
+        `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
     });
   }
 
