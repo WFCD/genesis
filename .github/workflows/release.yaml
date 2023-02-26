@@ -40,35 +40,35 @@ jobs:
         with:
           environment: production
       # Built from https://blog.benoitblanchon.fr/github-action-run-ssh-commands/
-      - name: Configure
-        if: ${{ steps.release.outputs.release == 'yes'  }}
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/prod.key
-          chmod 600 ~/.ssh/prod.key
-          cat >>~/.ssh/config <<END
-          Host bot
-            HostName $SSH_BOT_HOST
-            Port $SSH_BOT_PORT
-            User $SSH_USER
-            IdentityFile ~/.ssh/prod.key
-            StrictHostKeyChecking no
-          END
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
-          SSH_BOT_PORT: ${{ secrets.SSH_BOT_PORT }}
-          DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
-      - name: Stop Bot Process
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && { pm2 stop genesis-prod worker-prod; pm2 delete genesis-prod worker-prod } || echo "Nothing to stop"'
-      - name: Update Bot server
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/master'
-      - name: Update Bot dependencies
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
-      - name: Start Bot Process
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/genesis && pm2 start genesis.json'
+#      - name: Configure
+#        if: ${{ steps.release.outputs.release == 'yes'  }}
+#        run: |
+#          mkdir -p ~/.ssh/
+#          echo "$SSH_KEY" > ~/.ssh/prod.key
+#          chmod 600 ~/.ssh/prod.key
+#          cat >>~/.ssh/config <<END
+#          Host bot
+#            HostName $SSH_BOT_HOST
+#            Port $SSH_BOT_PORT
+#            User $SSH_USER
+#            IdentityFile ~/.ssh/prod.key
+#            StrictHostKeyChecking no
+#          END
+#        env:
+#          SSH_USER: ${{ secrets.SSH_USER }}
+#          SSH_KEY: ${{ secrets.SSH_KEY }}
+#          SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
+#          SSH_BOT_PORT: ${{ secrets.SSH_BOT_PORT }}
+#          DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+#      - name: Stop Bot Process
+#        if: ${{ steps.release.outputs.release == 'yes' }}
+#        run: ssh bot 'source ~/.zshrc && { pm2 stop genesis-prod worker-prod; pm2 delete genesis-prod worker-prod } || echo "Nothing to stop"'
+#      - name: Update Bot server
+#        if: ${{ steps.release.outputs.release == 'yes' }}
+#        run: ssh bot 'source ~/.zshrc && cd ~/genesis && git checkout -- . && git fetch --all && git reset --hard origin/master'
+#      - name: Update Bot dependencies
+#        if: ${{ steps.release.outputs.release == 'yes' }}
+#        run: ssh bot 'source ~/.zshrc && cd ~/genesis && rm -rf node_modules && npm ci'
+#      - name: Start Bot Process
+#        if: ${{ steps.release.outputs.release == 'yes' }}
+#        run: ssh bot 'source ~/.zshrc && cd ~/genesis && pm2 start genesis.json'
