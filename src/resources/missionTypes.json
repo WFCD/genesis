@@ -70,5 +70,20 @@
   "sanctuaryonslaught": {
     "arbi": true,
     "fissure": false
+  },
+  "skirmish": {
+    "arbi": false,
+    "fissure": true,
+    "railjack": true
+  },
+  "volatile": {
+    "arbi": false,
+    "fissure": true,
+    "railjack": true
+  },
+  "orphix": {
+    "arbi": false,
+    "fissure": true,
+    "railjack": true
   }
 }

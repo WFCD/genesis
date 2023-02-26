@@ -39,6 +39,9 @@ export default class RESTWrapper {
   }
 
   async controlMessage(body) {
-    return this.client.post(`/webhooks/${process.env.CONTROL_WH_ID}/${process.env.CONTROL_WH_TOKEN}`, body);
+    if (process.env.CONTROL_WH_ID && process.env.CONTROL_WH_TOKEN) {
+      return this.client.post(`/webhooks/${process.env.CONTROL_WH_ID}/${process.env.CONTROL_WH_TOKEN}`, body);
+    }
+    logger.error(`cannot post control message... ${JSON.stringify(body)}`);
   }
 }

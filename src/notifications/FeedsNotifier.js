@@ -2,7 +2,7 @@ import RssFeedEmitter from 'rss-feed-emitter';
 
 import Broadcaster from './Broadcaster.js';
 import RSSEmbed from '../embeds/RSSEmbed.js';
-import { rssFeeds } from '../resources/index.js';
+import { locales, rssFeeds } from '../resources/index.js';
 import logger from '../utilities/Logger.js';
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
@@ -56,7 +56,9 @@ export default class FeedsNotifier {
         const feed = rssFeeds.filter((feedEntry) => feedEntry.url === item.meta.link)[0];
         const itemEmbed = new RSSEmbed(item, feed);
         activePlatforms.forEach((platform) => {
-          this.#broadcaster.broadcast(itemEmbed, platform, feed.key);
+          locales.forEach((locale) => {
+            this.#broadcaster.broadcast(itemEmbed, { platform, type: feed.key, locale });
+          });
         });
       }
     } catch (error) {

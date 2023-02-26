@@ -269,7 +269,13 @@ export default class WorldState extends Interaction {
     }
 
     await interaction.deferReply({ ephemeral });
-    const data = await ctx.ws.get(String(field), platform, language);
+    let data;
+
+    try {
+      data = await ctx.ws.get(String(field), platform, language);
+    } catch (e) {
+      return interaction.editReply(ctx.i18n`:red_tick: Failed to obtain data, sorry`);
+    }
     let pages;
     let embed;
     if (Array.isArray(data) && !data.length) return interaction.editReply(ctx.i18n`⚠️ No ${field} active.`);
@@ -376,6 +382,10 @@ export default class WorldState extends Interaction {
             return new Syndicate([mission], { syndicate, i18n: ctx.i18n, platform, locale: ctx.language });
           })
           .filter((p) => p.title);
+        if (pages.length > 1) {
+          await interaction.followUp({ embeds: pages.splice(1, pages.length - 1) });
+          return interaction.followUp({ embeds: pages, ephemeral });
+        }
         return interaction.editReply({ embeds: pages });
       default:
         break;

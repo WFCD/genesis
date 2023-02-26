@@ -1,9 +1,9 @@
 import util from 'node:util';
 import urlExists from 'url-exists';
 import I18n from 'i18n-string-templates';
+import fetch from 'node-fetch';
 import { apiBase, apiCdnBase } from '../utilities/CommonFunctions.js';
 import { i18n as i18nBundle, locales } from '../resources/index.js';
-import fetch from '../utilities/Fetcher.js';
 
 import Alert from '../embeds/AlertEmbed.js';
 import Arbitration from '../embeds/ArbitrationEmbed.js';
@@ -28,7 +28,7 @@ import Outposts from '../embeds/SentientOutpostEmbed.js';
 import SteelPath from '../embeds/SteelPathEmbed.js';
 import RSS from '../embeds/RSSEmbed.js';
 
-const i18ns = {};
+export const i18ns = {};
 locales.forEach((locale) => {
   i18ns[locale] = I18n(i18nBundle, locale);
 });
@@ -60,11 +60,11 @@ export const embeds = {
   RSS,
 };
 
-export const between = (activation, platform, refreshRate, beats) => {
+export const between = (activation, key, refreshRate, beats) => {
   const activationTs = new Date(activation).getTime();
   const leeway = 9 * (refreshRate / 10);
-  const isBeforeCurr = activationTs < beats[platform].currCycleStart;
-  const isAfterLast = activationTs > beats[platform].lastUpdate - leeway;
+  const isBeforeCurr = activationTs < beats[key].currCycleStart + leeway;
+  const isAfterLast = activationTs > beats[key].lastUpdate - leeway;
   return isBeforeCurr && isAfterLast;
 };
 
@@ -77,7 +77,7 @@ export const getThumbnailForItem = async (query, fWiki) => {
       )
       .trim()
       .toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}`);
+    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}/?language=en`).then((d) => d.json());
     if (results.length) {
       const url = `${apiCdnBase}img/${results[0].imageName}`;
       if (await exists(url)) {

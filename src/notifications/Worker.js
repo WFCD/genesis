@@ -9,7 +9,7 @@ import TwitchNotifier from './twitch/TwitchNotifier.js';
 import WorldStateCache from '../utilities/WorldStateCache.js';
 import Rest from '../utilities/RESTWrapper.js';
 import Database from '../settings/Database.js';
-import { cachedEvents } from '../resources/index.js';
+import { cachedEvents, locales } from '../resources/index.js';
 import logger from '../utilities/Logger.js';
 import { games } from '../utilities/CommonFunctions.js';
 
@@ -17,7 +17,7 @@ const Job = cron.CronJob;
 const deps = {};
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 const rest = new Rest();
-const forceHydrate = (process.argv[2] || '').includes('--hydrate');
+const forceHydrate = (process.argv[2] || '').includes('--hydrate') || process.env.BUILD === 'build';
 
 const ldirname = dirname(fileURLToPath(import.meta.url));
 
@@ -38,7 +38,9 @@ class Worker {
 
     if (games.includes('WARFRAME')) {
       activePlatforms.forEach((platform) => {
-        this.worldStates[platform] = new WorldStateCache(platform, timeout);
+        locales.forEach((locale) => {
+          this.worldStates[locale] = new WorldStateCache(platform, locale, timeout);
+        });
       });
     }
     return (async () => {
@@ -69,6 +71,7 @@ class Worker {
       this.#activeHydrations.push('guilds');
       const sDate = Date.now();
       const guilds = await deps.settings.getGuilds();
+      delete guilds.null;
       if (guilds) {
         deps.workerCache.setKey('guilds', guilds);
         deps.workerCache.save(true);
@@ -89,12 +92,18 @@ class Worker {
     const promises = [];
     cachedEvents.forEach((cachedEvent) => {
       activePlatforms.forEach((platform) => {
-        promises.push(
-          (async () => {
-            const notifications = await deps.settings.getAgnosticNotifications(cachedEvent, platform);
-            deps.workerCache.setKey(`${cachedEvent}:${platform}`, notifications);
-          })()
-        );
+        locales.forEach((locale) => {
+          promises.push(
+            (async () => {
+              const notifications = await deps.settings.getAgnosticNotifications({
+                type: cachedEvent,
+                platform,
+                locale,
+              });
+              deps.workerCache.setKey(`${cachedEvent}:${platform}:${locale}`, notifications);
+            })()
+          );
+        });
       });
     });
     await Promise.all(promises);
@@ -119,9 +128,11 @@ class Worker {
         cachedEvents.map(async (cachedEvent) =>
           Promise.all(
             activePlatforms.map(async (platform) => {
-              if (!deps.workerCache.getKey(`${cachedEvent}:${platform}`)) {
-                hydrateEvents = true;
-              }
+              locales.forEach((locale) => {
+                if (!deps.workerCache.getKey(`${cachedEvent}:${platform}:${locale}`)) {
+                  hydrateEvents = true;
+                }
+              });
             })
           )
         )
@@ -149,6 +160,8 @@ class Worker {
       await deps.settings.init();
       await this.initCache();
 
+      if (!deps.settings) logger.fatal('no settings!!!');
+
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);
         this.cycleNotifier = new CycleNotifier(deps);
@@ -168,7 +181,7 @@ class Worker {
       await this.cycleNotifier.start();
 
       if (logger.isLoggable('DEBUG')) {
-        rest.controlMessage({
+        await rest.controlMessage({
           embeds: [
             {
               description: `Worker ready on ${activePlatforms}`,

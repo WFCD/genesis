@@ -117,7 +117,8 @@ trackableEvents.baseEvents = eventTypes.filter(
       trackableEvents.vallis.includes(e) ||
       trackableEvents.nightwave.includes(e) ||
       trackableEvents.rss.includes(e) ||
-      trackableEvents.twitch.includes(e)
+      trackableEvents.twitch.includes(e) ||
+      trackableEvents.syndicates.includes(e)
     )
 );
 
@@ -137,6 +138,7 @@ twitter.types.forEach((type) => {
 trackableEvents.twitter = tTemp;
 
 const fTemp = [];
+const fSpTemp = [];
 const arbiTemp = [];
 const kuvaTemp = [];
 Object.keys(missionTypes).forEach((type) => {
@@ -157,6 +159,7 @@ Object.keys(missionTypes).forEach((type) => {
     // Construct Fissure types
     fissures.tiers.forEach((tier) => {
       const id = `fissures.${tier}.${type}`;
+
       if (!trackableEvents[`fissures.${tier}`]) {
         trackableEvents[`fissures.${tier}`] = [];
       }
@@ -166,6 +169,20 @@ Object.keys(missionTypes).forEach((type) => {
       }
       trackableEvents[`fissures.${type}`].push(id);
       fTemp.push(id);
+
+      if (!missionTypes[type].railjack) {
+        // steel path
+        const spId = `fissures.sp.${tier}.${type}`;
+        if (!trackableEvents[`fissures.sp.${tier}`]) {
+          trackableEvents[`fissures.sp.${tier}`] = [];
+        }
+        trackableEvents[`fissures.sp.${tier}`].push(spId);
+        if (!trackableEvents[`fissures.sp.${type}`]) {
+          trackableEvents[`fissures.sp.${type}`] = [];
+        }
+        trackableEvents[`fissures.sp.${type}`].push(spId);
+        fSpTemp.push(spId);
+      }
     });
   }
 });
@@ -174,13 +191,15 @@ Object.keys(missionTypes).forEach((type) => {
 trackableEvents.fissures = fTemp;
 trackableEvents.kuva = kuvaTemp;
 trackableEvents.arbitration = arbiTemp;
+trackableEvents['fissures.sp'] = fSpTemp;
 
 trackableEvents.events.push(
   ...trackableEvents.twitter,
   ...trackableEvents.fissures,
   ...trackableEvents.arbitration,
   ...trackableEvents.kuva,
-  ...trackableEvents.twitch
+  ...trackableEvents.twitch,
+  ...trackableEvents['fissures.sp']
 );
 
 export const dyn = [
@@ -598,6 +617,13 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   return embed;
 };
 
+/**
+ * Chunk fields
+ * @param {Array<string>} valArr values to map
+ * @param {string} [title] title to use
+ * @param {string} [chunkStr] separator
+ * @returns {Array.<Discord.EmbedField>}
+ */
 export const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
   const chunkified = chunkify({ string: valArr.join(chunkStr) });
   if (!chunkified) {
@@ -650,9 +676,12 @@ export const constructTypeEmbeds = (types) => {
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
-    fieldGroup.forEach((field) => {
-      embed.addField(field.name, field.value, true);
-    });
+    embed.addFields(
+      fieldGroup.map((field) => ({
+        ...field,
+        inline: true,
+      }))
+    );
     return embed;
   });
 };
@@ -976,7 +1005,7 @@ export const resolvePool = async (
   }
   const explicitPoolMatches = message.strippedContent.match(/--pool\s+([a-zA-Z0-9-]*)/i);
 
-  if (!poolId && explicitPoolMatches && explicitPoolMatches.length > 1) {
+  if (explicitPoolMatches && explicitPoolMatches.length > 1) {
     [, poolId] = explicitPoolMatches;
     if (!skipManages && !(await settings.userManagesPool(message.author, poolId))) {
       poolId = undefined;

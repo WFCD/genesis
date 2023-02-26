@@ -45,6 +45,7 @@ export default class FissureEmbed extends BaseEmbed {
       const f = fissures[0];
       this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
       this.description = `${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`;
+      if (f.isStorm) this.description += `\n${i18n`Void Storm - Archwing Required`}`;
       this.footer.text = i18n`Expires `;
       this.timestamp = new Date(f.expiry).getTime();
       this.thumbnail.url = fissureThumb;

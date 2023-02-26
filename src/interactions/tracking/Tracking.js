@@ -29,9 +29,9 @@ const chunkerate = (track) => {
   return chunkify({ string: format, maxLength: 500, breakChar: ',' });
 };
 
-const subgrouped = ['arbitration', 'fissures', 'twitter'];
+const subgrouped = ['arbitration', 'fissures', 'twitter', 'fissures.sp'];
 
-export default class Settings extends Interaction {
+export default class Tracking extends Interaction {
   static elevated = true;
   static command = {
     ...cmds.tracking,
@@ -123,14 +123,25 @@ export default class Settings extends Interaction {
       const original = Object.freeze({
         items: await ctx.settings.getTrackedItems(channel, thread),
         events: await ctx.settings.getTrackedEventTypes(channel, thread),
-        thread,
       });
-      const current = { ...original };
+      const current = JSON.parse(JSON.stringify(original));
+      current.thread = thread;
       let chunks = chunkerate(current);
       let page = 0;
 
       let currentGroup;
       let currentSubgroup;
+
+      const titleGroup = (groupId) => {
+        switch (groupId) {
+          case 'baseEvents':
+            return 'Events';
+          case 'fissures.sp':
+            return 'Steel Path Fissures';
+          default:
+            return toTitleCase(groupId.split('.').join(' '));
+        }
+      };
       const createGroupsRow = () => {
         const groups = [
           {
@@ -141,22 +152,28 @@ export default class Settings extends Interaction {
           ...Object.keys(trackableEvents)
             .filter(
               (e) =>
-                !['events', 'opts', 'kuva', 'cetus'].includes(e) &&
-                !e.startsWith('fissures.') &&
-                !e.startsWith('twitter.') &&
-                !e.startsWith('arbitration.')
+                (!['events', 'opts', 'kuva', 'cetus'].includes(e) &&
+                  !e.startsWith('fissures.') &&
+                  !e.startsWith('twitter.') &&
+                  !e.startsWith('arbitration.')) ||
+                e === 'fissures.sp'
             )
             .map((e) => ({
-              label: e === 'baseEvents' ? toTitleCase('events') : toTitleCase(e.split('.').join(' ')),
+              label: titleGroup(e),
               value: e,
               default: currentGroup === e,
             })),
         ];
         const subgroups = subgrouped.includes(currentGroup)
           ? Object.keys(trackableEvents)
-              .filter((e) => e.startsWith(`${currentGroup}.`))
+              .filter((e) => {
+                return (
+                  e.startsWith(`${currentGroup}.`) &&
+                  (currentGroup === 'fissures' ? !e.startsWith('fissures.sp') : true)
+                );
+              })
               .map((e) => ({
-                label: toTitleCase(e.split('.').join(' ')),
+                label: titleGroup(e),
                 value: e,
                 default: currentSubgroup === e,
               }))
@@ -171,7 +188,7 @@ export default class Settings extends Interaction {
               .map((li, index) => {
                 if (index < 25) {
                   return {
-                    label: toTitleCase(li.split('.').join(' ')),
+                    label: titleGroup(li),
                     value: li,
                     default: current.items.includes(li) || current.events.includes(li),
                   };
@@ -582,6 +599,15 @@ export default class Settings extends Interaction {
       await ctx.settings.setChannelWebhook(channel, webhook);
     } else {
       await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: missing permissions.`);
+    }
+    const upd = await interaction.followUp(`${emojify('empty')} Checking channel...`);
+    try {
+      ctx.settings.checkUpdateChannel(channel);
+      await upd.edit(`${emojify('green_tick')} Channel checked`);
+      setTimeout(async () => upd.delete(), 10000);
+    } catch (e) {
+      ctx.logger.error(e);
+      await upd.edit(`${emojify('red_tick')} Channel check failed, contact support`);
     }
   }
 }

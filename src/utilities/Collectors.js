@@ -55,21 +55,14 @@ export default class Collectors {
   }
 
   /**
-   * Created a selection collector for selecting a page from the list.
-   *   Must have 25 or fewer unique titles.
-   * @param {CommandInteraction} interaction interaction to respond to
-   * @param {Array<MessageEmbed>} pages array of pages to make available
-   * @param {CommandContext} ctx context for command call
-   * @returns {Promise<void>}
+   * Update pages to have additional criteria and safety check fields like description
+   * @param {Array<Discord.MessageEmbed>} pages to reshape as desired
+   * @returns {Array<MessageEmbed>}
    */
-  static async selection(interaction, pages, ctx) {
-    if (pages.length === 1) {
-      const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
-      return interaction.deferred || interaction.replied ? interaction.editReply(payload) : interaction.reply(payload);
-    }
-    let page = 1;
-    const pagedPages = pages.map((newPage, index) => {
+  static #shapePages(pages) {
+    return pages.map((newPage, index) => {
       const pageInd = `Page ${index + 1}/${pages.length}`;
+      if (!newPage.description) newPage.setDescription('_ _');
       if (newPage.footer) {
         if (newPage instanceof MessageEmbed) {
           if (newPage.footer.text.indexOf('Page ') === -1) {
@@ -87,6 +80,23 @@ export default class Collectors {
       }
       return new MessageEmbed(newPage);
     });
+  }
+
+  /**
+   * Created a selection collector for selecting a page from the list.
+   *   Must have 25 or fewer unique titles.
+   * @param {CommandInteraction} interaction interaction to respond to
+   * @param {Array<MessageEmbed>} pages array of pages to make available
+   * @param {CommandContext} ctx context for command call
+   * @returns {Promise<void>}
+   */
+  static async selection(interaction, pages, ctx) {
+    if (pages.length === 1) {
+      const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
+      return interaction.deferred || interaction.replied ? interaction.editReply(payload) : interaction.reply(payload);
+    }
+    let page = 1;
+    const pagedPages = this.#shapePages(pages);
     const selections = pages.map((embed, index) => ({
       label: embed.title,
       value: `${index}`,
@@ -172,32 +182,7 @@ export default class Collectors {
       const payload = { embeds: [pages[0]], ephemeral: ctx.ephemerate };
       return interaction.deferred || interaction.replied ? interaction.editReply(payload) : interaction.reply(payload);
     }
-    const pagedPages = pages.map((newPage, index) => {
-      const pageInd = `Page ${index + 1}/${pages.length}`;
-      if (!newPage.description) newPage.setDescription('_ _');
-      if (newPage.footer) {
-        if (!newPage?.footer?.text.includes('Page')) {
-          if (newPage instanceof MessageEmbed) {
-            newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
-          } else {
-            newPage.footer.text = `${pageInd} • ${newPage.footer.text}`;
-          }
-        }
-        if (!newPage?.footer?.text.includes(pageInd)) {
-          if (newPage instanceof MessageEmbed) {
-            newPage.setFooter({
-              text: newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd),
-              iconURL: newPage.footer.iconURL,
-            });
-          } else {
-            newPage.footer.text = newPage.footer.text.replace(/Page \d+\/\d+/gi, pageInd);
-          }
-        }
-      } else {
-        newPage.footer = { text: pageInd };
-      }
-      return new MessageEmbed(newPage);
-    });
+    const pagedPages = this.#shapePages(pages);
     const embeds = [pagedPages[page - 1]];
     const message =
       interaction.deferred || interaction.replied

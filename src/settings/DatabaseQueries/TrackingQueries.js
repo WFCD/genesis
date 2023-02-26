@@ -28,8 +28,8 @@ export default class TrackingQueries {
       deleteItems.append(SQL` AND i.thread_id = ${thread.id}`);
       deleteTypes.append(SQL` AND t.thread_id = ${thread.id}`);
     } else {
-      deleteItems.append(SQL` AND i.thread_id IS NULL`);
-      deleteTypes.append(SQL` AND t.thread_id IS NULL`);
+      deleteItems.append(SQL` AND i.thread_id = 0`);
+      deleteTypes.append(SQL` AND t.thread_id = 0`);
     }
     await this.query(deleteItems);
     await this.query(deleteTypes);
@@ -73,7 +73,7 @@ export default class TrackingQueries {
     if (thread) {
       query.append(SQL` AND thread_id = ${thread.id}`);
     } else {
-      query.append(SQL` AND thread_id IS NULL`);
+      query.append(SQL` AND thread_id = 0`);
     }
     query.append(SQL` AND ( `);
     items.forEach((item, index) => {
@@ -107,7 +107,6 @@ export default class TrackingQueries {
         }
       });
     }
-
     return this.query(query);
   }
 
@@ -123,7 +122,7 @@ export default class TrackingQueries {
     if (thread) {
       query.append(SQL` AND thread_id = ${thread.id}`);
     } else {
-      query.append(SQL` AND thread_id IS NULL`);
+      query.append(SQL` AND thread_id = 0`);
     }
     query.append(SQL` AND ( `);
     types.forEach((type, index) => {
