@@ -1,3 +1,11 @@
+# [2.7.0](https://github.com/WFCD/genesis/compare/v2.6.0...v2.7.0) (2023-02-26)
+
+
+### Features
+
+* add Ukranian ([#619](https://github.com/WFCD/genesis/issues/619)) ([310b374](https://github.com/WFCD/genesis/commit/310b3743d62d1e2b33414604284d18fed2911ce3))
+* enable ukranian locale ([e072a01](https://github.com/WFCD/genesis/commit/e072a018672d4c7229866e766ca72fdb490b5628))
+
 # [2.6.0](https://github.com/WFCD/genesis/compare/v2.5.7...v2.6.0) (2023-02-26)
 
 
