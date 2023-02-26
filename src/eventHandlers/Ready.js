@@ -66,7 +66,7 @@ export default class OnReadyHandle extends Handler {
     setInterval(this.#updatePresence.bind(this), cycleTimeout);
     setInterval(this.#checkPrivateRooms.bind(this), cycleTimeout);
     this.bot.dynamicVoiceHandler = new DynamicVoiceHandler(this.client, this.logger, this.settings);
-    this.#repopulateChannels();
+    // this.#repopulateChannels();
   }
 
   async #getWarframePresence(base) {
