@@ -3,155 +3,155 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'uyarılar',
-    description: 'Get WorldState Alerts'
+    name: 'виклики',
+    description: 'Отримати дані про виклики'
   },
   arbi: {
-    name: 'arbi',
-    description: 'Get WorldState Arbitrations'
+    name: 'арбітраж',
+    description: 'Отримати дані про арбітраж'
   },
   archons: {
-    name: 'archons',
-    description: 'Get current Archon Hunt'
+    name: 'архонти',
+    description: 'Отримати дані про архонтові лови'
   },
   baro: {
-    name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    name: 'баро',
+    description: 'Отримати дані про оферти Торговця із Порожнечі'
   },
   conclave: {
-    name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    name: 'конклав',
+    description: 'Отримати дані про поточні випробування Конклаву'
   },
   construction: {
-    name: 'inşaat',
-    description: 'Get Construction Progress'
+    name: 'будівництво',
+    description: 'Отримати дані про поступ будівництва'
   },
   cycle: {
-    name: 'döngü',
-    description: 'Get current Time Cycle'
+    name: 'цикл',
+    description: 'Отримати дані про поточний цикл часу локацій'
   },
   darvo: {
-    name: 'darvo',
-    description: 'Get Darvo\'s Deals'
+    name: 'дарво',
+    description: 'Отримати дані про розпродаж у Дарво'
   },
   events: {
-    name: 'etkinlikler',
-    description: 'Get Active Events'
+    name: 'події',
+    description: 'Отримати дані про поточні події'
   },
   fissures: {
-    name: 'çatlaklar',
-    description: 'Get WorldState Fissures'
+    name: 'прориви',
+    description: 'Отримати дані про поточні прориви Порожнечі'
   },
   invasions: {
-    name: 'istilalar',
-    description: 'Get WorldState Invasions'
+    name: 'вторгнення',
+    description: 'Отримати дані про поточні вторгнення'
   },
   news: {
-    name: 'haberler',
-    description: 'Get Current news'
+    name: 'новини',
+    description: 'Показати поточні новини'
   },
   nightwave: {
-    name: 'nightwave',
-    description: 'Get Current Nightwave Challenges'
+    name: 'нічна_хвиля',
+    description: 'Отримати дані про поточні випробування Нічної Хвилі'
   },
   sales: {
-    name: 'satışlar',
-    description: 'Get Current Sales'
+    name: 'знижки',
+    description: 'Отримати дані про поточні знижки'
   },
   outposts: {
-    name: 'karakollar',
+    name: 'outposts',
     description: 'Get Current Sentient Outposts'
   },
   steelpath: {
-    name: 'steelpath',
+    name: 'шлях_сталі',
     description: 'Get Current Steel Path Offerings'
   },
   sortie: {
-    name: 'sortie',
+    name: 'вилазка',
     description: 'Get Sortie Information'
   },
   rooms: {
-    name: 'odalar',
+    name: 'кімнати',
     description: 'Manage your private room'
   },
   'rooms.create': {
-    name: 'oluştur',
-    description: 'Create your own room'
+    name: 'створити',
+    description: 'Створити особисту кімнату'
   },
   'rooms.destroy': {
-    name: 'destroy',
-    description: 'Destroy your room'
+    name: 'знищити',
+    description: 'Знищити особисту кімнату'
   },
   'rooms.hide': {
-    name: 'gizle',
-    description: 'Hide your private room'
+    name: 'приховати',
+    description: 'Приховати особисту кімнату'
   },
   'rooms.show': {
-    name: 'göster',
-    description: 'Show your private room'
+    name: 'показати',
+    description: 'Показати особисту кімнату'
   },
   'rooms.lock': {
-    name: 'kilitle',
-    description: 'Lock your private room'
+    name: 'зачинити',
+    description: 'Закрити доступ до особистої кімнати'
   },
   'rooms.unlock': {
-    name: 'kilidi_aç',
-    description: 'Unlock your private room'
+    name: 'відчинити',
+    description: 'Відкрити доступ до особистої кімнати'
   },
   'rooms.lurkable': {
     name: 'lurkable',
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'yeniden_adlandır',
-    description: 'Rename your private room'
+    name: 'перейменувати',
+    description: 'Змінити назву приватної кімнати'
   },
   'rooms.invite': {
-    name: 'davet',
-    description: 'Hide your private room'
+    name: 'запросити',
+    description: 'Запросити когось до приватної кімнати'
   },
   'rooms.block': {
-    name: 'engelle',
-    description: 'Block someone from your private room'
+    name: 'заблокувати',
+    description: 'Заблокувати доступ до приватної кімнати'
   },
   'rooms.resize': {
-    name: 'yeniden boyutlandır',
-    description: 'resize private room'
+    name: 'змінити',
+    description: 'Змінити розмір приватної кімнати'
   },
   templates: {
-    name: 'şablonlar',
-    description: 'Manage channel templates'
+    name: 'шаблони',
+    description: 'Керування шаблонами каналів'
   },
   'templates.add': {
-    name: 'ekle',
-    description: 'Add a channel as a template channel.'
+    name: 'додати',
+    description: 'Додати канал у вигляді шаблону каналів.'
   },
   'templates.delete': {
-    name: 'sil',
-    description: 'Delete a channel from you template channels'
+    name: 'видалити',
+    description: 'Видалення каналу як шаблону каналів'
   },
   'templates.list': {
-    name: 'liste',
-    description: 'List all configured templates'
+    name: 'список',
+    description: 'Список усіх налаштованих шаблонів'
   },
   'templates.set': {
-    name: 'ayarla',
-    description: 'Set the template for a template channel'
+    name: 'встановити',
+    description: 'Встановлює шаблон для шаблону каналу'
   },
   'templates.clear': {
-    name: 'temizle',
-    description: 'clear existing template pattern on a channel'
+    name: 'очистити',
+    description: 'Очистити чинний шаблон каналу'
   },
   'templates.tc': {
-    name: 'şablon_kanalı',
+    name: 'template_channel',
     description: 'Channel to use as a template (should be a voice channel)'
   },
   'templates.fmt': {
-    name: 'şablon',
+    name: 'template',
     description: 'Template string. Supports replacing $username with originator\'s username'
   },
   about: {
-    name: 'hakkında',
+    name: 'about',
     description: 'Tell me about the bot!'
   },
   ping: {
@@ -159,19 +159,19 @@ export default {
     description: 'ping some stuff'
   },
   whereis: {
-    name: 'nerede',
+    name: 'whereis',
     description: 'Display where something drops from'
   },
   query: {
-    name: 'sorgu',
+    name: 'query',
     description: 'What are you looking for?'
   },
   whatsin: {
-    name: 'içindeki nedir',
+    name: 'whatsin',
     description: 'Get various pieces of information'
   },
   'whatsin.query': {
-    name: 'sorgu',
+    name: 'query',
     description: 'Relic Identifier (i.e. A1)'
   },
   pc: {
@@ -184,7 +184,7 @@ export default {
     description: 'Platform to operate on'
   },
   patchnotes: {
-    name: 'yama notları',
+    name: 'patchnotes',
     description: 'Include patchnotes? (default false)'
   },
   lookup: {
@@ -200,7 +200,7 @@ export default {
     description: 'Look up a Warframe'
   },
   weapon: {
-    name: 'silah',
+    name: 'weapon',
     description: 'Look up a weapon'
   },
   riven: {
@@ -232,7 +232,7 @@ export default {
     description: 'How long do you want to farm for?'
   },
   'lfg.members': {
-    name: 'üyeler',
+    name: 'members',
     description: 'How many people do you need?'
   },
   'lfg.for': {
@@ -248,7 +248,7 @@ export default {
     description: 'How long are you willing to wait?'
   },
   'lfg.type': {
-    name: 'tip',
+    name: 'type',
     description: 'What kind of post?'
   },
   calc: {
@@ -268,7 +268,7 @@ export default {
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'ayarlar',
+    name: 'settings',
     description: 'Interact with Settings'
   },
   'settings.platform': {
@@ -276,11 +276,11 @@ export default {
     description: 'Set the platform for the channel'
   },
   'settings.set': {
-    name: 'ayarla',
+    name: 'встановити',
     description: 'Set a setting'
   },
   'settings.clear': {
-    name: 'temizle',
+    name: 'очистити',
     description: 'Clear certain settings'
   },
   'settings.get': {
@@ -408,7 +408,7 @@ export default {
     description: 'Set up custom trackings and pings'
   },
   'tracking.custom.add': {
-    name: 'ekle',
+    name: 'додати',
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
@@ -432,11 +432,11 @@ export default {
     description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
   },
   cc: {
-    name: 'kk',
+    name: 'cc',
     description: 'Manage custom commands'
   },
   'cc.add': {
-    name: 'ekle',
+    name: 'додати',
     description: 'Add a custom command'
   },
   'cc.add.call': {
@@ -456,15 +456,15 @@ export default {
     description: 'Which call to remove?'
   },
   'cc.list': {
-    name: 'liste',
+    name: 'список',
     description: 'List all subcommands for the guild'
   },
   '8ball': {
-    name: '8top',
+    name: '8ball',
     description: 'Get your 8Ball question answered!'
   },
   '8ball.question': {
-    name: 'soru',
+    name: 'question',
     description: 'What do you want the all-knowing machine to answer?'
   },
   corgi: {
@@ -472,15 +472,15 @@ export default {
     description: 'Get a corgi picture!'
   },
   hug: {
-    name: 'sarıl',
+    name: 'hug',
     description: 'Get a hug <3'
   },
   joke: {
-    name: 'şaka',
+    name: 'joke',
     description: 'Ask Genesis for a joke!'
   },
   fashion: {
-    name: 'fashionframe',
+    name: 'fashion',
     description: 'Get a random Warframe fashion image'
   },
   memeframe: {
