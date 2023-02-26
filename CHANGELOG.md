@@ -1,3 +1,10 @@
+## [2.7.3](https://github.com/WFCD/genesis/compare/v2.7.2...v2.7.3) (2023-02-26)
+
+
+### Bug Fixes
+
+* use fissure missionKey instead of missionType for type generation ([9915eeb](https://github.com/WFCD/genesis/commit/9915eebef2d780d808c6ab7f0761e081bc8d1d8c))
+
 ## [2.7.2](https://github.com/WFCD/genesis/compare/v2.7.1...v2.7.2) (2023-02-26)
 
 
