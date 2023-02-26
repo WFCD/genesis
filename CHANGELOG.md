@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/WFCD/genesis/compare/v2.7.0...v2.7.1) (2023-02-26)
+
+
+### Bug Fixes
+
+* remove if exists on foreign key ([139c8f3](https://github.com/WFCD/genesis/commit/139c8f3b758d0723ff403906099a14ff947b98c1))
+
 # [2.7.0](https://github.com/WFCD/genesis/compare/v2.6.0...v2.7.0) (2023-02-26)
 
 
