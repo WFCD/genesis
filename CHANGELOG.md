@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/WFCD/genesis/compare/v2.5.7...v2.6.0) (2023-02-26)
+
+
+### Features
+
+* implement per-language notifications ([#612](https://github.com/WFCD/genesis/issues/612) ([8038ac4](https://github.com/WFCD/genesis/commit/8038ac4facaaeac17fa1100667149610fc3ed8fa))
+
 ## [2.5.7](https://github.com/wfcd/genesis/compare/v2.5.6...v2.5.7) (2022-12-21)
 
 
