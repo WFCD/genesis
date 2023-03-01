@@ -1,3 +1,10 @@
+## [2.7.5](https://github.com/WFCD/genesis/compare/v2.7.4...v2.7.5) (2023-03-01)
+
+
+### Bug Fixes
+
+* standarize minute range for cycles ([19fe04c](https://github.com/WFCD/genesis/commit/19fe04c6add92db21e59785ebcfb3f9f1a7abbb7))
+
 ## [2.7.4](https://github.com/WFCD/genesis/compare/v2.7.3...v2.7.4) (2023-03-01)
 
 
