@@ -181,7 +181,7 @@ export default class CycleNotifier {
   async #sendCambionCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
     let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const clone = JSON.parse(JSON.stringify(newCycle));
-    if (minutesRemaining.endsWith('.0') || minutesRemaining.endsWith('.1') || minutesRemaining.endsWith('.2')) {
+    if (isWithinRange(minutesRemaining)) {
       clone.state = clone.state === 'vome' ? 'fass' : 'vome';
       const newEnd = new Date(clone.expiry).getTime() + durations.deimos[clone.state];
       clone.id = `cambionCycle${newEnd}`;
@@ -201,7 +201,7 @@ export default class CycleNotifier {
   async #sendCetusCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
     let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const clone = JSON.parse(JSON.stringify(newCycle));
-    if (minutesRemaining.endsWith('.1') || minutesRemaining.endsWith('.0')) {
+    if (isWithinRange(minutesRemaining)) {
       clone.isDay = !clone.isDay;
       clone.state = clone.state === 'day' ? 'night' : 'day';
       const newEnd = new Date(clone.expiry).getTime() + durations.cetus[clone.state];
