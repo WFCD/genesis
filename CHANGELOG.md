@@ -1,3 +1,10 @@
+## [2.7.6](https://github.com/WFCD/genesis/compare/v2.7.5...v2.7.6) (2023-03-02)
+
+
+### Bug Fixes
+
+* attempt resend of cambion/cetus ([5690611](https://github.com/WFCD/genesis/commit/5690611ee9222516d791a85d5048d79ed205aad5))
+
 ## [2.7.5](https://github.com/WFCD/genesis/compare/v2.7.4...v2.7.5) (2023-03-01)
 
 
