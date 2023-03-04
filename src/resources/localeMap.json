@@ -1,10 +1,10 @@
 [
   {
-    "name": "Čeština",
-    "value": "cs"
-  }, {
     "name": "English",
     "value": "en"
+  }, {
+    "name": "Čeština",
+    "value": "cs"
   }, {
     "name": "Deutsch",
     "value": "de"
@@ -35,6 +35,9 @@
   }, {
     "name": "Pусский",
     "value": "ru"
+  }, {
+    "name": "Українська",
+    "value": "uk"
   }, {
     "name": "简体中文",
     "value": "zh"
