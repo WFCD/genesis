@@ -1,3 +1,15 @@
+# [2.8.0](https://github.com/WFCD/genesis/compare/v2.7.6...v2.8.0) (2023-03-04)
+
+
+### Bug Fixes
+
+* **tracking:** overwrite duplicate key text with new value ([cc362e8](https://github.com/WFCD/genesis/commit/cc362e8a2f2439c60d85404742f682581c066937)), closes [#643](https://github.com/WFCD/genesis/issues/643)
+
+
+### Features
+
+* **langs:** add uk locale option ([355afad](https://github.com/WFCD/genesis/commit/355afad459903958c1bf2410e70d87b06a791b17)), closes [#644](https://github.com/WFCD/genesis/issues/644)
+
 ## [2.7.6](https://github.com/WFCD/genesis/compare/v2.7.5...v2.7.6) (2023-03-02)
 
 
