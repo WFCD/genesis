@@ -10,45 +10,6 @@ import { pingables } from '../../resources/index.js';
  */
 export default class PingsQueries {
   /**
-   * Enables or disables pings for an item in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} item The item to set ping status for
-   * @param {boolean} enabled true to enable pinging, false to disable
-   * @returns {Promise}
-   */
-  async setItemPing(channel, item, enabled) {
-    const query = SQL`UPDATE item_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
-      AND item = ${item};`;
-    return this.query(query);
-  }
-
-  /**
-   * Enables or disables pings for an event type in a channel
-   * @param {Discord.TextChannel} channel The channel where to enable notifications
-   * @param {string} type The event type to set ping status for
-   * @param {boolean} enabled true to enable pinging, false to disable
-   * @returns {Promise}
-   */
-  async setEventTypePing(channel, type, enabled) {
-    const query = SQL`UPDATE type_notifications SET ping = ${enabled} WHERE channel_id = ${channel.id}
-      AND type = ${type};`;
-    return this.query(query);
-  }
-
-  /**
-   * Sets a ping message for an item or event type in a guild
-   * @param {Discord.Guild} guild The guild
-   * @param {string} itemOrType The item or event type to set the ping message for
-   * @param {string} text The text of the ping message
-   * @returns {Promise}
-   */
-  async setPing(guild, itemOrType, text) {
-    const query = SQL`INSERT INTO pings VALUES (${guild.id}, ${itemOrType}, ${text})
-      ON DUPLICATE KEY UPDATE text = ${text};`;
-    return this.query(query);
-  }
-
-  /**
    * Mass-sets ping messages for items and events specified in {#opts}
    * @param {Discord.Guild} guild guild to set them for
    * @param {TrackingOptions} opts containing events & items
@@ -56,11 +17,12 @@ export default class PingsQueries {
    * @returns {Promise<mysql.Connection.query>}
    */
   async addPings(guild, opts, text) {
-    const query = SQL`INSERT IGNORE INTO pings VALUES `;
+    const query = SQL`INSERT INTO pings VALUES `;
     const combined = opts.events.concat(opts.items);
     combined.forEach((eventOrItem, index) => {
       query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`).append(index !== combined.length - 1 ? ',' : ';');
     });
+    query.append(SQL`ON DUPLICATE KEY UPDATE text = ${text};`);
     return this.query(query);
   }
 
