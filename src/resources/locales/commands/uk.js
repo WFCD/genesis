@@ -269,15 +269,15 @@ export default {
   },
   settings: {
     name: 'налаштування',
-    description: 'Interact with Settings'
+    description: 'Взаємодійте з налаштуваннями'
   },
   'settings.platform': {
     name: 'platform',
-    description: 'Set the platform for the channel'
+    description: 'Встановити платформу для каналу'
   },
   'settings.set': {
     name: 'встановити',
-    description: 'Set a setting'
+    description: 'Встановити налаштування'
   },
   'settings.clear': {
     name: 'очистити',
@@ -300,11 +300,11 @@ export default {
     description: 'Channel to set LFG to post in'
   },
   'settings.allow_custom': {
-    name: 'allow_custom',
-    description: 'Set allowance of custom commands'
+    name: 'дозвіл_кк',
+    description: 'Змінити дозвіл на користувацькі команди'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Should this channel allow custom commands?'
   },
   'settings.allow_inline': {
@@ -312,15 +312,15 @@ export default {
     description: 'Set allowance of inline commands'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
-    name: 'мова',
+    name: 'мову',
     description: 'Встановити мову для сервера'
   },
   'settings.language.str': {
-    name: 'value',
+    name: 'значення',
     description: 'Яку мову ви бажаєте використовувати на сервері?'
   },
   'settings.ephemerate': {
@@ -332,7 +332,7 @@ export default {
     description: 'Set elevated roles'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
+    name: 'значення',
     description: 'What roles are elevated?'
   },
   'settings.allow_rooms': {
@@ -340,7 +340,7 @@ export default {
     description: 'Set whether or not to allow custom rooms to be created'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Allow private rooms?'
   },
   'settings.auto_locked': {
@@ -348,7 +348,7 @@ export default {
     description: 'Set whether or not to default private rooms to be locked (Default True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Lock private rooms?'
   },
   'settings.auto_text': {
@@ -356,7 +356,7 @@ export default {
     description: 'Set whether or not to default private rooms to have text channels (Default False)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Make rooms with text?'
   },
   'settings.auto_shown': {
@@ -364,7 +364,7 @@ export default {
     description: 'Set whether or not to default private rooms should be visible (Default false)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Make rooms visible?'
   },
   'settings.temp_channel': {
@@ -372,7 +372,7 @@ export default {
     description: 'Set the channel for creating threads in for private rooms'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
+    name: 'значення',
     description: 'Should be a text channel'
   },
   'settings.temp_category': {
@@ -380,7 +380,7 @@ export default {
     description: 'Set the temporary category for private/auto-generated rooms'
   },
   'settings.temp_category.channel': {
-    name: 'value',
+    name: 'значення',
     description: 'Should be a category'
   },
   'syndicate': {
