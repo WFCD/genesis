@@ -64,15 +64,15 @@ export default {
   },
   steelpath: {
     name: 'шлях_сталі',
-    description: 'Get Current Steel Path Offerings'
+    description: 'Отримати дані відзнак «Шляху сталі»'
   },
   sortie: {
     name: 'вилазка',
-    description: 'Get Sortie Information'
+    description: 'Отримати дані про активну вилазку'
   },
   rooms: {
-    name: 'кімнати',
-    description: 'Manage your private room'
+    name: 'кімната',
+    description: 'Керування особистою кімнатою'
   },
   'rooms.create': {
     name: 'створити',
@@ -119,7 +119,7 @@ export default {
     description: 'Змінити розмір приватної кімнати'
   },
   templates: {
-    name: 'шаблони',
+    name: 'шаблон',
     description: 'Керування шаблонами каналів'
   },
   'templates.add': {
@@ -136,7 +136,7 @@ export default {
   },
   'templates.set': {
     name: 'встановити',
-    description: 'Встановлює шаблон для шаблону каналу'
+    description: 'Встановлює шаблон для каналу'
   },
   'templates.clear': {
     name: 'очистити',
@@ -268,7 +268,7 @@ export default {
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'settings',
+    name: 'налаштування',
     description: 'Interact with Settings'
   },
   'settings.platform': {
@@ -316,16 +316,16 @@ export default {
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
-    name: 'language',
-    description: 'Set a language for the server'
+    name: 'мова',
+    description: 'Встановити мову для сервера'
   },
   'settings.language.str': {
     name: 'value',
-    description: 'What language do you want to use for this server?'
+    description: 'Яку мову ви бажаєте використовувати на сервері?'
   },
   'settings.ephemerate': {
-    name: 'ephemerate',
-    description: 'Set whether or not messages from slash commands will be public (True by default)'
+    name: 'видимість_повідомлень',
+    description: 'Змінити видимість повідомлень від команд (типове значення параметра — True)'
   },
   'settings.elevated_roles': {
     name: 'elevated_roles',
@@ -412,7 +412,7 @@ export default {
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
-    name: 'remove',
+    name: 'видалити',
     description: 'Comma-separated list of trackables to remove. See website.'
   },
   'tracking.custom.prepend': {
@@ -432,12 +432,12 @@ export default {
     description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
   },
   cc: {
-    name: 'cc',
-    description: 'Manage custom commands'
+    name: 'кк',
+    description: 'Керування користувацькими командами'
   },
   'cc.add': {
     name: 'додати',
-    description: 'Add a custom command'
+    description: 'Додавання користувацьких команд'
   },
   'cc.add.call': {
     name: 'call',
@@ -448,8 +448,8 @@ export default {
     description: 'Set what the call will respond to'
   },
   'cc.remove': {
-    name: 'remove',
-    description: 'Remove a custom command by name'
+    name: 'видалити',
+    description: 'Видаляє користувацьку команду'
   },
   'cc.remove.call': {
     name: 'call',
