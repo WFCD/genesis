@@ -281,11 +281,11 @@ export default {
   },
   'settings.clear': {
     name: 'очистити',
-    description: 'Clear certain settings'
+    description: 'Скинути деякі налаштування'
   },
   'settings.get': {
-    name: 'get',
-    description: 'Get all the settings'
+    name: 'отримати',
+    description: 'Показує всі налаштування'
   },
   'settings.diag': {
     name: 'diag',
@@ -336,8 +336,8 @@ export default {
     description: 'What roles are elevated?'
   },
   'settings.allow_rooms': {
-    name: 'allow_rooms',
-    description: 'Set whether or not to allow custom rooms to be created'
+    name: 'дозвіл_кімнати',
+    description: 'Змінити дозвіл на створення користувацьких кімнат'
   },
   'settings.allow_rooms.bool': {
     name: 'значення',
