@@ -59,8 +59,8 @@ export default {
     description: 'Отримати дані про поточні знижки'
   },
   outposts: {
-    name: 'outposts',
-    description: 'Get Current Sentient Outposts'
+    name: 'аномалія_свідомих',
+    description: 'Отримати дані про розміщення мюрекса свідомих'
   },
   steelpath: {
     name: 'шлях_сталі',
