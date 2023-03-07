@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/WFCD/genesis/compare/v2.8.0...v2.8.1) (2023-03-07)
+
+
+### Bug Fixes
+
+* **i18n:** ukranian translations ([#646](https://github.com/WFCD/genesis/issues/646)) ([b030509](https://github.com/WFCD/genesis/commit/b030509c3bfebe1c873d4debb9e670df95423bca))
+
 # [2.8.0](https://github.com/WFCD/genesis/compare/v2.7.6...v2.8.0) (2023-03-04)
 
 
