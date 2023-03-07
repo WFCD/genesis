@@ -59,20 +59,20 @@ export default {
     description: 'Отримати дані про поточні знижки'
   },
   outposts: {
-    name: 'outposts',
-    description: 'Get Current Sentient Outposts'
+    name: 'аномалія_свідомих',
+    description: 'Отримати дані про розміщення мюрекса свідомих'
   },
   steelpath: {
     name: 'шлях_сталі',
-    description: 'Get Current Steel Path Offerings'
+    description: 'Отримати дані відзнак «Шляху сталі»'
   },
   sortie: {
     name: 'вилазка',
-    description: 'Get Sortie Information'
+    description: 'Отримати дані про активну вилазку'
   },
   rooms: {
-    name: 'кімнати',
-    description: 'Manage your private room'
+    name: 'кімната',
+    description: 'Керування особистою кімнатою'
   },
   'rooms.create': {
     name: 'створити',
@@ -119,7 +119,7 @@ export default {
     description: 'Змінити розмір приватної кімнати'
   },
   templates: {
-    name: 'шаблони',
+    name: 'шаблон',
     description: 'Керування шаблонами каналів'
   },
   'templates.add': {
@@ -136,7 +136,7 @@ export default {
   },
   'templates.set': {
     name: 'встановити',
-    description: 'Встановлює шаблон для шаблону каналу'
+    description: 'Встановлює шаблон для каналу'
   },
   'templates.clear': {
     name: 'очистити',
@@ -268,24 +268,24 @@ export default {
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'settings',
-    description: 'Interact with Settings'
+    name: 'налаштування',
+    description: 'Взаємодійте з налаштуваннями'
   },
   'settings.platform': {
     name: 'platform',
-    description: 'Set the platform for the channel'
+    description: 'Встановити платформу для каналу'
   },
   'settings.set': {
     name: 'встановити',
-    description: 'Set a setting'
+    description: 'Встановити налаштування'
   },
   'settings.clear': {
     name: 'очистити',
-    description: 'Clear certain settings'
+    description: 'Скинути деякі налаштування'
   },
   'settings.get': {
-    name: 'get',
-    description: 'Get all the settings'
+    name: 'отримати',
+    description: 'Показує всі налаштування'
   },
   'settings.diag': {
     name: 'diag',
@@ -300,11 +300,11 @@ export default {
     description: 'Channel to set LFG to post in'
   },
   'settings.allow_custom': {
-    name: 'allow_custom',
-    description: 'Set allowance of custom commands'
+    name: 'дозвіл_кк',
+    description: 'Змінити дозвіл на користувацькі команди'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Should this channel allow custom commands?'
   },
   'settings.allow_inline': {
@@ -312,35 +312,35 @@ export default {
     description: 'Set allowance of inline commands'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Should this channel allow inline commands?'
   },
   'settings.language': {
-    name: 'language',
-    description: 'Set a language for the server'
+    name: 'мову',
+    description: 'Встановити мову для сервера'
   },
   'settings.language.str': {
-    name: 'value',
-    description: 'What language do you want to use for this server?'
+    name: 'значення',
+    description: 'Яку мову ви бажаєте використовувати на сервері?'
   },
   'settings.ephemerate': {
-    name: 'ephemerate',
-    description: 'Set whether or not messages from slash commands will be public (True by default)'
+    name: 'видимість_повідомлень',
+    description: 'Змінити видимість повідомлень від команд (типове значення параметра — True)'
   },
   'settings.elevated_roles': {
     name: 'elevated_roles',
     description: 'Set elevated roles'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
+    name: 'значення',
     description: 'What roles are elevated?'
   },
   'settings.allow_rooms': {
-    name: 'allow_rooms',
-    description: 'Set whether or not to allow custom rooms to be created'
+    name: 'дозвіл_кімнати',
+    description: 'Змінити дозвіл на створення користувацьких кімнат'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Allow private rooms?'
   },
   'settings.auto_locked': {
@@ -348,7 +348,7 @@ export default {
     description: 'Set whether or not to default private rooms to be locked (Default True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Lock private rooms?'
   },
   'settings.auto_text': {
@@ -356,7 +356,7 @@ export default {
     description: 'Set whether or not to default private rooms to have text channels (Default False)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Make rooms with text?'
   },
   'settings.auto_shown': {
@@ -364,7 +364,7 @@ export default {
     description: 'Set whether or not to default private rooms should be visible (Default false)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
+    name: 'значення',
     description: 'Make rooms visible?'
   },
   'settings.temp_channel': {
@@ -372,7 +372,7 @@ export default {
     description: 'Set the channel for creating threads in for private rooms'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
+    name: 'значення',
     description: 'Should be a text channel'
   },
   'settings.temp_category': {
@@ -380,7 +380,7 @@ export default {
     description: 'Set the temporary category for private/auto-generated rooms'
   },
   'settings.temp_category.channel': {
-    name: 'value',
+    name: 'значення',
     description: 'Should be a category'
   },
   'syndicate': {
@@ -412,7 +412,7 @@ export default {
     description: 'Comma-separated list of trackables to add. See website.'
   },
   'tracking.custom.remove': {
-    name: 'remove',
+    name: 'видалити',
     description: 'Comma-separated list of trackables to remove. See website.'
   },
   'tracking.custom.prepend': {
@@ -432,12 +432,12 @@ export default {
     description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
   },
   cc: {
-    name: 'cc',
-    description: 'Manage custom commands'
+    name: 'кк',
+    description: 'Керування користувацькими командами'
   },
   'cc.add': {
     name: 'додати',
-    description: 'Add a custom command'
+    description: 'Додавання користувацьких команд'
   },
   'cc.add.call': {
     name: 'call',
@@ -448,8 +448,8 @@ export default {
     description: 'Set what the call will respond to'
   },
   'cc.remove': {
-    name: 'remove',
-    description: 'Remove a custom command by name'
+    name: 'видалити',
+    description: 'Видаляє користувацьку команду'
   },
   'cc.remove.call': {
     name: 'call',
