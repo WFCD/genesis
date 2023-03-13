@@ -57,7 +57,7 @@
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
     "parse-duration": "^1.0.3",
-    "ping": "^0.4.2",
+    "ping": "^0.4.4",
     "rss-feed-emitter": "^3.2.3",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
