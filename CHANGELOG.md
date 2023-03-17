@@ -1,3 +1,10 @@
+## [2.8.2](https://github.com/WFCD/genesis/compare/v2.8.1...v2.8.2) (2023-03-17)
+
+
+### Bug Fixes
+
+* change night emoji ([56f0879](https://github.com/WFCD/genesis/commit/56f0879e6f2283bb492a1987d2a8c1751222eb6e))
+
 ## [2.8.1](https://github.com/WFCD/genesis/compare/v2.8.0...v2.8.1) (2023-03-07)
 
 
