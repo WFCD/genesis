@@ -25,21 +25,29 @@ const startupTimeout = Number.parseInt(process.env.READY_FORCE || '3600000', 10)
 export default class OnReadyHandle extends Handler {
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
-    setTimeout(this.execute.bind(this), startupTimeout);
+    setTimeout(() => {
+      this.logger.info(`[Cluster] Forcing readiness...`);
+      this.execute.bind(this)();
+    }, startupTimeout);
   }
 
   async execute() {
-    this.logger.silly(`Running ${this.id} for ${this.event}`);
-    this.logger.info('[Cluster] READY');
+    try {
+      if (this.body.required) return;
+      this.logger.silly(`Running ${this.id} for ${this.event}`);
+      this.logger.info('[Cluster] READY');
 
-    await this.#notifyUp();
+      await this.#notifyUp();
 
-    this.settings.init();
-    // await this.settings.ensureData(this.client);
-    this.bot.readyToExecute = true;
+      this.settings.init();
+      // await this.settings.ensureData(this.client);
+      this.bot.readyToExecute = true;
 
-    await this.#updatePresence();
-    this.setupAdditionalHandlers();
+      await this.#updatePresence();
+      this.setupAdditionalHandlers();
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   async #notifyUp() {
