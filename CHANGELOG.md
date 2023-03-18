@@ -1,3 +1,10 @@
+## [2.8.7](https://github.com/WFCD/genesis/compare/v2.8.6...v2.8.7) (2023-03-18)
+
+
+### Bug Fixes
+
+* **worker:** minutes remaining ([6c083e5](https://github.com/WFCD/genesis/commit/6c083e56470a6e4d71a82536a7ff8527b42347f0))
+
 ## [2.8.6](https://github.com/WFCD/genesis/compare/v2.8.5...v2.8.6) (2023-03-18)
 
 
