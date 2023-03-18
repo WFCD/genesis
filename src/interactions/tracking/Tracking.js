@@ -581,7 +581,10 @@ export default class Tracking extends Interaction {
           await interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: failed to make new.`);
         }
       }
-      if (webhook.url) {
+      if (!webhook) {
+        return interaction.followUp(`${emojify('red_tick')} Cannot set up webhooks: this should not happen.`);
+      }
+      if (webhook?.url) {
         try {
           await interaction.followUp(`${emojify('green_tick')} Webhook setup complete.`);
           await webhook.send({
@@ -595,6 +598,7 @@ export default class Tracking extends Interaction {
         }
       } else {
         ctx.logger.debug(`webhook for ${channel.id} already set up...`);
+        ctx.logger.debug(JSON.stringify(webhook));
       }
       await ctx.settings.setChannelWebhook(channel, webhook);
     } else {
