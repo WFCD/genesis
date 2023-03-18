@@ -1,3 +1,10 @@
+## [2.8.8](https://github.com/WFCD/genesis/compare/v2.8.7...v2.8.8) (2023-03-18)
+
+
+### Bug Fixes
+
+* **ready:** wrap ready execution ([8f8b315](https://github.com/WFCD/genesis/commit/8f8b3151869a6be38fb6b75acd4eefbe6b1b973c))
+
 ## [2.8.7](https://github.com/WFCD/genesis/compare/v2.8.6...v2.8.7) (2023-03-18)
 
 
