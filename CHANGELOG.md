@@ -1,3 +1,10 @@
+## [2.8.6](https://github.com/WFCD/genesis/compare/v2.8.5...v2.8.6) (2023-03-18)
+
+
+### Bug Fixes
+
+* **logs:** set a startup timeout, set some logs to debug ([ec5943a](https://github.com/WFCD/genesis/commit/ec5943a2cf848e1d03a2af5fc2bbfb611fd79881))
+
 ## [2.8.5](https://github.com/WFCD/genesis/compare/v2.8.4...v2.8.5) (2023-03-18)
 
 
