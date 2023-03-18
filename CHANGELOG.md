@@ -1,3 +1,10 @@
+## [2.8.3](https://github.com/WFCD/genesis/compare/v2.8.2...v2.8.3) (2023-03-18)
+
+
+### Bug Fixes
+
+* catch some errors, log debug webhook info ([d86d42a](https://github.com/WFCD/genesis/commit/d86d42adb17e19f48ae6fb8d257934752da5fb6b))
+
 ## [2.8.2](https://github.com/WFCD/genesis/compare/v2.8.1...v2.8.2) (2023-03-17)
 
 
