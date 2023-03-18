@@ -1,3 +1,10 @@
+## [2.8.5](https://github.com/WFCD/genesis/compare/v2.8.4...v2.8.5) (2023-03-18)
+
+
+### Bug Fixes
+
+* **dep:** upgrade discord.js ([0c7769d](https://github.com/WFCD/genesis/commit/0c7769dce5db107e00c5ab5a5acd4c459a716d86))
+
 ## [2.8.4](https://github.com/WFCD/genesis/compare/v2.8.3...v2.8.4) (2023-03-18)
 
 
