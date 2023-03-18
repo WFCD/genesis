@@ -8,10 +8,10 @@ jobs:
   semantic-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '14'
       - name: Semantic Release
@@ -63,7 +63,10 @@ jobs:
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && { docker-compose -f docker-compose.prod.yaml down } || echo "Nothing to stop"'
-      - name: Update & Start Bot & Notifiers
+        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
+      - name: Update Containers
         if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && make -f docker.Makefile submod bot notifier'
+      - name: Restart Containers
+        if: ${{ steps.release.outputs.release == 'yes' }}
+        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && make -f docker.Makefile up_prod'
