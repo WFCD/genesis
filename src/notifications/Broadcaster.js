@@ -54,7 +54,7 @@ export default class Broadcaster {
       ? this.workerCache.getKey(`${type}:${platform}:${locale}`)
       : await this.settings.getAgnosticNotifications({ type, platform, items, locale });
     if (!channels?.length) {
-      logger.error(`No channels on ${platform}:${locale} tracking ${type}... continuing`, 'WS');
+      logger.debug(`No channels on ${platform}:${locale} tracking ${type}... continuing`, 'WS');
       return;
     }
 

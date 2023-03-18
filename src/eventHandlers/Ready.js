@@ -20,9 +20,12 @@ const max = {
 
 const cycleTimeout = 60000;
 
+const startupTimeout = Number.parseInt(process.env.READY_FORCE || '3600000', 10);
+
 export default class OnReadyHandle extends Handler {
   constructor(bot) {
     super(bot, 'handlers.onReady', Events.CLIENT_READY);
+    setTimeout(this.execute.bind(this), startupTimeout);
   }
 
   async execute() {
@@ -32,7 +35,7 @@ export default class OnReadyHandle extends Handler {
     await this.#notifyUp();
 
     this.settings.init();
-    await this.settings.ensureData(this.client);
+    // await this.settings.ensureData(this.client);
     this.bot.readyToExecute = true;
 
     await this.#updatePresence();
