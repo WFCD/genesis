@@ -33,7 +33,7 @@ export default class OnReadyHandle extends Handler {
 
   async execute() {
     try {
-      if (this.body.required) return;
+      if (this.bot?.readyToExecute) return;
       this.logger.silly(`Running ${this.id} for ${this.event}`);
       this.logger.info('[Cluster] READY');
 
