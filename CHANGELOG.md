@@ -1,3 +1,10 @@
+## [2.8.9](https://github.com/WFCD/genesis/compare/v2.8.8...v2.8.9) (2023-03-18)
+
+
+### Bug Fixes
+
+* **ready:** naming ([98183f3](https://github.com/WFCD/genesis/commit/98183f3b49bc430978947d43006ead2f0900b486))
+
 ## [2.8.8](https://github.com/WFCD/genesis/compare/v2.8.7...v2.8.8) (2023-03-18)
 
 
