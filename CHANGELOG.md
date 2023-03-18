@@ -1,3 +1,10 @@
+## [2.8.4](https://github.com/WFCD/genesis/compare/v2.8.3...v2.8.4) (2023-03-18)
+
+
+### Bug Fixes
+
+* **ci:** repair deployment process ([33f4a24](https://github.com/WFCD/genesis/commit/33f4a248f23b2e5bc9c893ba1f53a1364c636c3d))
+
 ## [2.8.3](https://github.com/WFCD/genesis/compare/v2.8.2...v2.8.3) (2023-03-18)
 
 
