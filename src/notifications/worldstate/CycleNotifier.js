@@ -190,7 +190,7 @@ export default class CycleNotifier {
       clone.expiry = new Date(newEnd);
       delete clone.timeLeft;
       delete clone.shortString;
-      writeType = writeType.endsWith('.1');
+      writeType = minutesRemaining.endsWith('.1');
       minutesRemaining = '';
     } else return undefined;
     const type = `cambion.${clone.state}${minutesRemaining}`;
@@ -213,7 +213,7 @@ export default class CycleNotifier {
       clone.expiry = new Date(newEnd);
       delete clone.timeLeft;
       delete clone.shortString;
-      writeType = writeType.endsWith('.1');
+      writeType = minutesRemaining.endsWith('.1');
       minutesRemaining = '';
     } else return undefined;
     const type = `cetus.${clone.state}${minutesRemaining}`;
