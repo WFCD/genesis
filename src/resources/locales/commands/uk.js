@@ -143,45 +143,45 @@ export default {
     description: 'Очистити чинний шаблон каналу'
   },
   'templates.tc': {
-    name: 'template_channel',
-    description: 'Channel to use as a template (should be a voice channel)'
+    name: 'як_шаблон',
+    description: 'Канал використовуватиметься як шаблон (повинен бути голосовим каналом)'
   },
   'templates.fmt': {
-    name: 'template',
+    name: 'шаблон',
     description: 'Template string. Supports replacing $username with originator\'s username'
   },
   about: {
-    name: 'about',
-    description: 'Tell me about the bot!'
+    name: 'Про застосунок',
+    description: 'Інформація про бота!'
   },
   ping: {
-    name: 'ping',
-    description: 'ping some stuff'
+    name: 'пінг',
+    description: 'Показує час отримання відповіді до деяких сервісів'
   },
   whereis: {
-    name: 'whereis',
-    description: 'Display where something drops from'
+    name: 'здобич',
+    description: 'Покаже місця, де можна отримати вказану річ'
   },
   query: {
-    name: 'query',
-    description: 'What are you looking for?'
+    name: 'запит',
+    description: 'Що ви шукаєте?'
   },
   whatsin: {
-    name: 'whatsin',
-    description: 'Get various pieces of information'
+    name: 'реліквія',
+    description: 'Інформація про винагороду з реліквії'
   },
   'whatsin.query': {
-    name: 'query',
-    description: 'Relic Identifier (i.e. A1)'
+    name: 'запит',
+    description: 'Ідентифікатор реліквії (напр. A1)'
   },
   pc: {
     // pricecheck
-    name: 'pc',
-    description: 'Price check an item'
+    name: 'ціна',
+    description: 'Перевірка ціни предмету'
   },
   platform: {
-    name: 'platform',
-    description: 'Platform to operate on'
+    name: 'платформа',
+    description: 'Платформа для роботи бота'
   },
   patchnotes: {
     name: 'patchnotes',
@@ -189,23 +189,23 @@ export default {
   },
   lookup: {
     name: 'lookup',
-    description: 'Get various pieces of information'
+    description: 'Інформація про винагороду з реліквії'
   },
   arcane: {
-    name: 'arcane',
-    description: 'Look up an Arcane from Warframe'
+    name: 'містифікатор',
+    description: 'Показує опис містифікатора'
   },
   warframe: {
-    name: 'warframe',
-    description: 'Look up a Warframe'
+    name: 'ворфрейм',
+    description: 'Показує опис ворфрейма'
   },
   weapon: {
-    name: 'weapon',
-    description: 'Look up a weapon'
+    name: 'зброя',
+    description: 'Показує опис зброї'
   },
   riven: {
-    name: 'riven',
-    description: 'Look up a Riven'
+    name: 'розкол',
+    description: 'Показує опис модифікатора розколу для вказаної зброї'
   },
   mod: {
     name: 'mod',
@@ -272,7 +272,7 @@ export default {
     description: 'Взаємодійте з налаштуваннями'
   },
   'settings.platform': {
-    name: 'platform',
+    name: 'платформа',
     description: 'Встановити платформу для каналу'
   },
   'settings.set': {
