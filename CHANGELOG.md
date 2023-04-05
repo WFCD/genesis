@@ -1,3 +1,10 @@
+## [2.8.10](https://github.com/WFCD/genesis/compare/v2.8.9...v2.8.10) (2023-04-05)
+
+
+### Bug Fixes
+
+* **l10n:** New Crowdin updates ([#660](https://github.com/WFCD/genesis/issues/660)) ([caefd48](https://github.com/WFCD/genesis/commit/caefd487d49a4c073828244a4b513ba5bb16f04c))
+
 ## [2.8.9](https://github.com/WFCD/genesis/compare/v2.8.8...v2.8.9) (2023-03-18)
 
 
