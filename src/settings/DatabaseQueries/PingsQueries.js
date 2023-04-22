@@ -20,7 +20,7 @@ export default class PingsQueries {
     const query = SQL`INSERT INTO pings VALUES `;
     const combined = opts.events.concat(opts.items);
     combined.forEach((eventOrItem, index) => {
-      query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`).append(index !== combined.length - 1 ? ',' : ';');
+      query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`).append(index !== combined.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE text = ${text};`);
     return this.query(query);
