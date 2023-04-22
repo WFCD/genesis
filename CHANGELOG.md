@@ -1,3 +1,10 @@
+## [2.8.11](https://github.com/WFCD/genesis/compare/v2.8.10...v2.8.11) (2023-04-22)
+
+
+### Bug Fixes
+
+* pings ([8eea9c6](https://github.com/WFCD/genesis/commit/8eea9c6ac4164fd08b6712a9ec4e0e96ac88fef6))
+
 ## [2.8.10](https://github.com/WFCD/genesis/compare/v2.8.9...v2.8.10) (2023-04-05)
 
 
