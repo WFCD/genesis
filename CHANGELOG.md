@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/WFCD/genesis/compare/v2.8.12...v2.9.0) (2023-06-12)
+
+
+### Features
+
+* **deps:** bump discord.js from 13.14.0 to 13.16.0 ([#688](https://github.com/WFCD/genesis/issues/688)) ([ab7e327](https://github.com/WFCD/genesis/commit/ab7e3271b1630aa75d5bddb85a1984b903de0700))
+
 ## [2.8.12](https://github.com/WFCD/genesis/compare/v2.8.11...v2.8.12) (2023-04-26)
 
 
