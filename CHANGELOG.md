@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/WFCD/genesis/compare/v2.9.0...v2.10.0) (2023-06-27)
+
+
+### Features
+
+* enable railjack sp events ([fa6376b](https://github.com/WFCD/genesis/commit/fa6376bdf4331b6b50712dddd795e858c45723cf))
+
 # [2.9.0](https://github.com/WFCD/genesis/compare/v2.8.12...v2.9.0) (2023-06-12)
 
 
