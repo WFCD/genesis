@@ -170,19 +170,17 @@ Object.keys(missionTypes).forEach((type) => {
       trackableEvents[`fissures.${type}`].push(id);
       fTemp.push(id);
 
-      if (!missionTypes[type].railjack) {
-        // steel path
-        const spId = `fissures.sp.${tier}.${type}`;
-        if (!trackableEvents[`fissures.sp.${tier}`]) {
-          trackableEvents[`fissures.sp.${tier}`] = [];
-        }
-        trackableEvents[`fissures.sp.${tier}`].push(spId);
-        if (!trackableEvents[`fissures.sp.${type}`]) {
-          trackableEvents[`fissures.sp.${type}`] = [];
-        }
-        trackableEvents[`fissures.sp.${type}`].push(spId);
-        fSpTemp.push(spId);
+      // steel path
+      const spId = `fissures.sp.${tier}.${type}`;
+      if (!trackableEvents[`fissures.sp.${tier}`]) {
+        trackableEvents[`fissures.sp.${tier}`] = [];
       }
+      trackableEvents[`fissures.sp.${tier}`].push(spId);
+      if (!trackableEvents[`fissures.sp.${type}`]) {
+        trackableEvents[`fissures.sp.${type}`] = [];
+      }
+      trackableEvents[`fissures.sp.${type}`].push(spId);
+      fSpTemp.push(spId);
     });
   }
 });
