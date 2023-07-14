@@ -3,15 +3,15 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
+    name: 'alertas',
     description: 'Get WorldState Alerts'
   },
   arbi: {
-    name: 'arbi',
+    name: 'arbitramientos',
     description: 'Get WorldState Arbitrations'
   },
   archons: {
-    name: 'archons',
+    name: 'arcontes',
     description: 'Get current Archon Hunt'
   },
   baro: {
@@ -23,11 +23,11 @@ export default {
     description: 'Get Current Conclave Challenges'
   },
   construction: {
-    name: 'construction',
+    name: 'construcción',
     description: 'Get Construction Progress'
   },
   cycle: {
-    name: 'cycle',
+    name: 'ciclo',
     description: 'Get current Time Cycle'
   },
   darvo: {
@@ -35,27 +35,27 @@ export default {
     description: 'Get Darvo\'s Deals'
   },
   events: {
-    name: 'events',
+    name: 'eventos',
     description: 'Get Active Events'
   },
   fissures: {
-    name: 'fissures',
+    name: 'fisuras',
     description: 'Get WorldState Fissures'
   },
   invasions: {
-    name: 'invasions',
+    name: 'invasiones',
     description: 'Get WorldState Invasions'
   },
   news: {
-    name: 'news',
+    name: 'noticias',
     description: 'Get Current news'
   },
   nightwave: {
-    name: 'nightwave',
+    name: 'onda nocturna',
     description: 'Get Current Nightwave Challenges'
   },
   sales: {
-    name: 'sales',
+    name: 'ofertas',
     description: 'Get Current Sales'
   },
   outposts: {
@@ -63,39 +63,39 @@ export default {
     description: 'Get Current Sentient Outposts'
   },
   steelpath: {
-    name: 'steelpath',
+    name: 'camino de acero',
     description: 'Get Current Steel Path Offerings'
   },
   sortie: {
-    name: 'sortie',
+    name: 'incursion',
     description: 'Get Sortie Information'
   },
   rooms: {
-    name: 'rooms',
+    name: 'salas',
     description: 'Manage your private room'
   },
   'rooms.create': {
-    name: 'create',
+    name: 'crear',
     description: 'Create your own room'
   },
   'rooms.destroy': {
-    name: 'destroy',
+    name: 'destruir',
     description: 'Destroy your room'
   },
   'rooms.hide': {
-    name: 'hide',
+    name: 'ocultar',
     description: 'Hide your private room'
   },
   'rooms.show': {
-    name: 'show',
+    name: 'mostrar',
     description: 'Show your private room'
   },
   'rooms.lock': {
-    name: 'lock',
+    name: 'bloquear',
     description: 'Lock your private room'
   },
   'rooms.unlock': {
-    name: 'unlock',
+    name: 'desbloquear',
     description: 'Unlock your private room'
   },
   'rooms.lurkable': {
@@ -103,11 +103,11 @@ export default {
     description: 'Make your private room lurkable'
   },
   'rooms.rename': {
-    name: 'rename',
+    name: 'renombrar',
     description: 'Rename your private room'
   },
   'rooms.invite': {
-    name: 'invite',
+    name: 'invitar',
     description: 'Hide your private room'
   },
   'rooms.block': {
@@ -159,11 +159,11 @@ export default {
     description: 'ping some stuff'
   },
   whereis: {
-    name: 'whereis',
+    name: 'donde',
     description: 'Display where something drops from'
   },
   query: {
-    name: 'query',
+    name: 'consulta',
     description: 'What are you looking for?'
   },
   whatsin: {
@@ -171,7 +171,7 @@ export default {
     description: 'Get various pieces of information'
   },
   'whatsin.query': {
-    name: 'query',
+    name: 'consulta',
     description: 'Relic Identifier (i.e. A1)'
   },
   pc: {
@@ -180,19 +180,19 @@ export default {
     description: 'Price check an item'
   },
   platform: {
-    name: 'platform',
+    name: 'plataforma',
     description: 'Platform to operate on'
   },
   patchnotes: {
-    name: 'patchnotes',
+    name: 'notas de parche',
     description: 'Include patchnotes? (default false)'
   },
   lookup: {
-    name: 'lookup',
+    name: 'búsqueda',
     description: 'Get various pieces of information'
   },
   arcane: {
-    name: 'arcane',
+    name: 'arcano',
     description: 'Look up an Arcane from Warframe'
   },
   warframe: {
@@ -200,11 +200,11 @@ export default {
     description: 'Look up a Warframe'
   },
   weapon: {
-    name: 'weapon',
+    name: 'arma',
     description: 'Look up a weapon'
   },
   riven: {
-    name: 'riven',
+    name: 'agrietado',
     description: 'Look up a Riven'
   },
   mod: {
@@ -212,7 +212,7 @@ export default {
     description: 'Look up a Mod'
   },
   companion: {
-    name: 'companion',
+    name: 'compañero',
     description: 'Look up a companion'
   },
   lfg: {
@@ -220,7 +220,7 @@ export default {
     description: 'Make an LFG post'
   },
   'lfg.place': {
-    name: 'place',
+    name: 'lugar',
     description: 'Where do you want to group up?'
   },
   'lfg.place.custom': {
@@ -228,15 +228,15 @@ export default {
     description: 'Specific area you want to go to'
   },
   'lfg.time': {
-    name: 'time',
+    name: 'tiempo',
     description: 'How long do you want to farm for?'
   },
   'lfg.members': {
-    name: 'members',
+    name: 'miembros',
     description: 'How many people do you need?'
   },
   'lfg.for': {
-    name: 'for',
+    name: 'para',
     description: 'What are you farming for?'
   },
   'lfg.for.custom': {
@@ -244,11 +244,11 @@ export default {
     description: 'Custom thing you want to farm for'
   },
   'lfg.duration': {
-    name: 'duration',
+    name: 'duración',
     description: 'How long are you willing to wait?'
   },
   'lfg.type': {
-    name: 'type',
+    name: 'tipo',
     description: 'What kind of post?'
   },
   calc: {
@@ -256,23 +256,23 @@ export default {
     description: 'Get Warframe Worldstate Information'
   },
   'calc.shields': {
-    name: 'shields',
+    name: 'escudos',
     description: 'Calculate Enemy Shield amounts'
   },
   'calc.armor': {
-    name: 'armor',
+    name: 'armadura',
     description: 'Calculate Enemy Armor amounts'
   },
   'calc.health': {
-    name: 'health',
+    name: 'salud',
     description: 'Calculate Enemy Health amounts'
   },
   settings: {
-    name: 'settings',
+    name: 'ajustes',
     description: 'Interact with Settings'
   },
   'settings.platform': {
-    name: 'platform',
+    name: 'plataforma',
     description: 'Set the platform for the channel'
   },
   'settings.set': {
