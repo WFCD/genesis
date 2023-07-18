@@ -3,492 +3,492 @@
 //   ^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$
 export default {
   alerts: {
-    name: 'alerts',
-    description: 'Get WorldState Alerts'
+    name: 'alertas',
+    description: 'Obtener alertas de WorldState'
   },
   arbi: {
-    name: 'arbi',
-    description: 'Get WorldState Arbitrations'
+    name: 'arbitramientos',
+    description: 'Obtener arbitramientos de WorldState'
   },
   archons: {
-    name: 'archons',
-    description: 'Get current Archon Hunt'
+    name: 'arcontes',
+    description: 'Obtén la cacería del arconte actual'
   },
   baro: {
     name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    description: 'Obtén el inventario actual del vendedor del vacío'
   },
   conclave: {
     name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    description: 'Obtén los desafíos actuales del cónclave'
   },
   construction: {
-    name: 'construction',
-    description: 'Get Construction Progress'
+    name: 'construcción',
+    description: 'Consigue el progreso de la construcción'
   },
   cycle: {
-    name: 'cycle',
-    description: 'Get current Time Cycle'
+    name: 'ciclo',
+    description: 'Obtener ciclo de tiempo actual'
   },
   darvo: {
     name: 'darvo',
-    description: 'Get Darvo\'s Deals'
+    description: 'Ofertas de Darvo'
   },
   events: {
-    name: 'events',
-    description: 'Get Active Events'
+    name: 'eventos',
+    description: 'Obtener eventos activos'
   },
   fissures: {
-    name: 'fissures',
-    description: 'Get WorldState Fissures'
+    name: 'fisuras',
+    description: 'Obtener fisuras de WorldState'
   },
   invasions: {
-    name: 'invasions',
-    description: 'Get WorldState Invasions'
+    name: 'invasiones',
+    description: 'Obtener Invasiones de WorldState'
   },
   news: {
-    name: 'news',
-    description: 'Get Current news'
+    name: 'noticias',
+    description: 'Obtener noticias actuales'
   },
   nightwave: {
-    name: 'nightwave',
-    description: 'Get Current Nightwave Challenges'
+    name: 'onda nocturna',
+    description: 'Obtén los desafíos actuales de Onda Nocturna'
   },
   sales: {
-    name: 'sales',
-    description: 'Get Current Sales'
+    name: 'ofertas',
+    description: 'Obtener ofertas actuales'
   },
   outposts: {
-    name: 'outposts',
-    description: 'Get Current Sentient Outposts'
+    name: 'puesto avanzado',
+    description: 'Obtener salidas actuales de concientes'
   },
   steelpath: {
-    name: 'steelpath',
-    description: 'Get Current Steel Path Offerings'
+    name: 'camino de acero',
+    description: 'Obtén ofertas actuales en la Ruta del Acero'
   },
   sortie: {
-    name: 'sortie',
-    description: 'Get Sortie Information'
+    name: 'incursion',
+    description: 'Obtener información de la incursión'
   },
   rooms: {
-    name: 'rooms',
-    description: 'Manage your private room'
+    name: 'salas',
+    description: 'Administra tu sala privada'
   },
   'rooms.create': {
-    name: 'create',
-    description: 'Create your own room'
+    name: 'crear',
+    description: 'Crea tu propia sala'
   },
   'rooms.destroy': {
-    name: 'destroy',
-    description: 'Destroy your room'
+    name: 'destruir',
+    description: 'Elimine su sala'
   },
   'rooms.hide': {
-    name: 'hide',
-    description: 'Hide your private room'
+    name: 'ocultar',
+    description: 'Esconde tu sala privada'
   },
   'rooms.show': {
-    name: 'show',
-    description: 'Show your private room'
+    name: 'mostrar',
+    description: 'Mostrar tu sala privada'
   },
   'rooms.lock': {
-    name: 'lock',
-    description: 'Lock your private room'
+    name: 'bloquear',
+    description: 'Bloquea tu sala privada'
   },
   'rooms.unlock': {
-    name: 'unlock',
-    description: 'Unlock your private room'
+    name: 'desbloquear',
+    description: 'Desbloquea tu sala privada'
   },
   'rooms.lurkable': {
     name: 'lurkable',
-    description: 'Make your private room lurkable'
+    description: 'Haz que tu sala privada sea acechable'
   },
   'rooms.rename': {
-    name: 'rename',
-    description: 'Rename your private room'
+    name: 'renombrar',
+    description: 'Renombrar tu sala privada'
   },
   'rooms.invite': {
-    name: 'invite',
+    name: 'invitar',
     description: 'Hide your private room'
   },
   'rooms.block': {
-    name: 'block',
-    description: 'Block someone from your private room'
+    name: 'bloquear',
+    description: 'Bloquea a alguien de tu sala privada'
   },
   'rooms.resize': {
-    name: 'resize',
-    description: 'resize private room'
+    name: 'cambiar tamaño',
+    description: 'redimensionar sala privada'
   },
   templates: {
-    name: 'templates',
-    description: 'Manage channel templates'
+    name: 'plantilla',
+    description: 'Administrar plantillas de canal'
   },
   'templates.add': {
-    name: 'add',
-    description: 'Add a channel as a template channel.'
+    name: 'añadir',
+    description: 'Añadir un canal como un canal de plantilla.'
   },
   'templates.delete': {
-    name: 'delete',
-    description: 'Delete a channel from you template channels'
+    name: 'borrar',
+    description: 'Eliminar un canal de tus canales de plantillas'
   },
   'templates.list': {
-    name: 'list',
-    description: 'List all configured templates'
+    name: 'lista',
+    description: 'Listar todas las plantillas configuradas'
   },
   'templates.set': {
-    name: 'set',
-    description: 'Set the template for a template channel'
+    name: 'poner',
+    description: 'Establecer la plantilla para un canal de plantilla'
   },
   'templates.clear': {
-    name: 'clear',
-    description: 'clear existing template pattern on a channel'
+    name: 'limpiar',
+    description: 'borrar patrón de plantilla existente en un canal'
   },
   'templates.tc': {
-    name: 'template_channel',
-    description: 'Channel to use as a template (should be a voice channel)'
+    name: 'canal_plantilla',
+    description: 'Canal a usar como plantilla (debe ser un canal de voz)'
   },
   'templates.fmt': {
-    name: 'template',
-    description: 'Template string. Supports replacing $username with originator\'s username'
+    name: 'plantilla',
+    description: 'Cadena de plantilla. Soporta reemplazar $username con el nombre de usuario del creador'
   },
   about: {
-    name: 'about',
-    description: 'Tell me about the bot!'
+    name: 'acerca de',
+    description: '¡Cuéntame sobre el bot!'
   },
   ping: {
     name: 'ping',
-    description: 'ping some stuff'
+    description: 'ping de algunas cosas'
   },
   whereis: {
-    name: 'whereis',
-    description: 'Display where something drops from'
+    name: 'donde',
+    description: 'Mostrar donde algo cae'
   },
   query: {
-    name: 'query',
-    description: 'What are you looking for?'
+    name: 'consulta',
+    description: '¿Qué estás buscando?'
   },
   whatsin: {
-    name: 'whatsin',
-    description: 'Get various pieces of information'
+    name: 'qué hay',
+    description: 'Obtener varias piezas de información'
   },
   'whatsin.query': {
-    name: 'query',
-    description: 'Relic Identifier (i.e. A1)'
+    name: 'consulta',
+    description: 'Identificador de Reliquia (por ejemplo, A1)'
   },
   pc: {
     // pricecheck
     name: 'pc',
-    description: 'Price check an item'
+    description: 'Comprobar precio de un artículo'
   },
   platform: {
-    name: 'platform',
-    description: 'Platform to operate on'
+    name: 'plataforma',
+    description: 'Plataforma en la que operar'
   },
   patchnotes: {
-    name: 'patchnotes',
-    description: 'Include patchnotes? (default false)'
+    name: 'notas de parche',
+    description: '¿Incluye notas de parche? (por defecto falso)'
   },
   lookup: {
-    name: 'lookup',
-    description: 'Get various pieces of information'
+    name: 'búsqueda',
+    description: 'Obtener varias piezas de información'
   },
   arcane: {
-    name: 'arcane',
-    description: 'Look up an Arcane from Warframe'
+    name: 'arcano',
+    description: 'Mira un Arcano desde un Warframe'
   },
   warframe: {
     name: 'warframe',
-    description: 'Look up a Warframe'
+    description: 'Buscar un warframe'
   },
   weapon: {
-    name: 'weapon',
-    description: 'Look up a weapon'
+    name: 'arma',
+    description: 'Mira un arma'
   },
   riven: {
-    name: 'riven',
-    description: 'Look up a Riven'
+    name: 'agrietado',
+    description: 'Buscar un agrietado'
   },
   mod: {
     name: 'mod',
-    description: 'Look up a Mod'
+    description: 'Buscar un Mod'
   },
   companion: {
-    name: 'companion',
-    description: 'Look up a companion'
+    name: 'compañero',
+    description: 'Buscar un compañero'
   },
   lfg: {
     name: 'lfg',
-    description: 'Make an LFG post'
+    description: 'Crear un post de LFG'
   },
   'lfg.place': {
-    name: 'place',
-    description: 'Where do you want to group up?'
+    name: 'lugar',
+    description: '¿Dónde quieres agruparte?'
   },
   'lfg.place.custom': {
-    name: 'place_custom',
-    description: 'Specific area you want to go to'
+    name: 'ubicar_personalizado',
+    description: 'Área específica a la que quieres ir'
   },
   'lfg.time': {
-    name: 'time',
-    description: 'How long do you want to farm for?'
+    name: 'tiempo',
+    description: '¿Durante cuánto tiempo quieres farmear?'
   },
   'lfg.members': {
-    name: 'members',
-    description: 'How many people do you need?'
+    name: 'miembros',
+    description: '¿Cuántas personas necesitas?'
   },
   'lfg.for': {
-    name: 'for',
-    description: 'What are you farming for?'
+    name: 'para',
+    description: '¿Para qué está usted farmeando?'
   },
   'lfg.for.custom': {
-    name: 'for_custom',
-    description: 'Custom thing you want to farm for'
+    name: 'para _personalizado',
+    description: 'Algo personalizado para lo que quieres recolectar'
   },
   'lfg.duration': {
-    name: 'duration',
-    description: 'How long are you willing to wait?'
+    name: 'duración',
+    description: '¿Cuánto tiempo estás dispuesto a esperar?'
   },
   'lfg.type': {
-    name: 'type',
-    description: 'What kind of post?'
+    name: 'tipo',
+    description: '¿Qué tipo de post?'
   },
   calc: {
     name: 'calc',
-    description: 'Get Warframe Worldstate Information'
+    description: 'Obtener información mundial de un Warframe'
   },
   'calc.shields': {
-    name: 'shields',
-    description: 'Calculate Enemy Shield amounts'
+    name: 'escudos',
+    description: 'Calcular cantidades de Escudo Enemigo'
   },
   'calc.armor': {
-    name: 'armor',
-    description: 'Calculate Enemy Armor amounts'
+    name: 'armadura',
+    description: 'Calcular cantidades de armadura enemiga'
   },
   'calc.health': {
-    name: 'health',
-    description: 'Calculate Enemy Health amounts'
+    name: 'salud',
+    description: 'Calcular cantidades de salud del enemigo'
   },
   settings: {
-    name: 'settings',
-    description: 'Interact with Settings'
+    name: 'ajustes',
+    description: 'Interactuar con ajustes'
   },
   'settings.platform': {
-    name: 'platform',
-    description: 'Set the platform for the channel'
+    name: 'plataforma',
+    description: 'Establecer la plataforma para el canal'
   },
   'settings.set': {
-    name: 'set',
-    description: 'Set a setting'
+    name: 'poner',
+    description: 'Establecer un ajuste'
   },
   'settings.clear': {
-    name: 'clear',
-    description: 'Clear certain settings'
+    name: 'limpiar',
+    description: 'Borrar ciertos ajustes'
   },
   'settings.get': {
     name: 'get',
-    description: 'Get all the settings'
+    description: 'Obtener todos los ajustes'
   },
   'settings.diag': {
     name: 'diag',
-    description: 'Run diagnostics for the guild'
+    description: 'Ejecutar diagnóstico para el gremio'
   },
   'settings.lfg': {
     name: 'lfg',
-    description: 'Set LFG Channel for a Platform'
+    description: 'Establecer canal LFG para una plataforma'
   },
   'settings.lfg.channel': {
-    name: 'channel',
-    description: 'Channel to set LFG to post in'
+    name: 'canal',
+    description: 'Canal en el que colocar LFG'
   },
   'settings.allow_custom': {
-    name: 'allow_custom',
-    description: 'Set allowance of custom commands'
+    name: 'permitir_personalizar',
+    description: 'Establecer permiso de comandos personalizados'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
-    description: 'Should this channel allow custom commands?'
+    name: 'valor',
+    description: '¿Este canal debería permitir comandos personalizados?'
   },
   'settings.allow_inline': {
-    name: 'allow_inline',
-    description: 'Set allowance of inline commands'
+    name: 'permitir_enlínea',
+    description: 'Establecer permisos de comandos en línea'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
-    description: 'Should this channel allow inline commands?'
+    name: 'valor',
+    description: '¿Este canal debería permitir comandos en línea?'
   },
   'settings.language': {
-    name: 'language',
-    description: 'Set a language for the server'
+    name: 'idioma',
+    description: 'Establecer un idioma para el servidor'
   },
   'settings.language.str': {
-    name: 'value',
-    description: 'What language do you want to use for this server?'
+    name: 'valor',
+    description: '¿Qué idioma quieres usar para este servidor?'
   },
   'settings.ephemerate': {
-    name: 'ephemerate',
-    description: 'Set whether or not messages from slash commands will be public (True by default)'
+    name: 'efímero',
+    description: 'Establecer si los mensajes de los comandos de barra slash serán públicos (Verdadero de forma predeterminada)'
   },
   'settings.elevated_roles': {
-    name: 'elevated_roles',
-    description: 'Set elevated roles'
+    name: 'roles elevados',
+    description: 'Establecer roles elevados'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
-    description: 'What roles are elevated?'
+    name: 'valor',
+    description: '¿Qué roles se elevan?'
   },
   'settings.allow_rooms': {
-    name: 'allow_rooms',
-    description: 'Set whether or not to allow custom rooms to be created'
+    name: 'permitir_salas',
+    description: 'Establecer si permitir o no crear salas personalizadas'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
-    description: 'Allow private rooms?'
+    name: 'valor',
+    description: '¿Permitir salas privadas?'
   },
   'settings.auto_locked': {
-    name: 'auto_locked',
-    description: 'Set whether or not to default private rooms to be locked (Default True)'
+    name: 'auto_bloqueado',
+    description: 'Establecer si se bloquean o no las salas privadas por defecto (True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
-    description: 'Lock private rooms?'
+    name: 'valor',
+    description: '¿Bloquear salas privadas?'
   },
   'settings.auto_text': {
-    name: 'auto_text',
-    description: 'Set whether or not to default private rooms to have text channels (Default False)'
+    name: 'auto_texto',
+    description: 'Establecer si las salas privadas por defecto tienen canales de texto (Falso por defecto)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
-    description: 'Make rooms with text?'
+    name: 'valor',
+    description: '¿Hacer salas con texto?'
   },
   'settings.auto_shown': {
-    name: 'auto_shown',
-    description: 'Set whether or not to default private rooms should be visible (Default false)'
+    name: 'auto_mostrado',
+    description: 'Establecer si las salas privadas por defecto deben ser visibles (por defecto falso)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
-    description: 'Make rooms visible?'
+    name: 'valor',
+    description: '¿Hacer visibles las salas?'
   },
   'settings.temp_channel': {
-    name: 'temp_channel',
-    description: 'Set the channel for creating threads in for private rooms'
+    name: 'canales_temporales',
+    description: 'Establecer el canal en el que crear hilos para salas privadas'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
-    description: 'Should be a text channel'
+    name: 'valor',
+    description: 'Debe ser un canal de texto'
   },
   'settings.temp_category': {
-    name: 'temp_category',
-    description: 'Set the temporary category for private/auto-generated rooms'
+    name: 'categoria_temporal',
+    description: 'Establecer la categoría temporal para salas privadas o autogeneradas'
   },
   'settings.temp_category.channel': {
-    name: 'value',
-    description: 'Should be a category'
+    name: 'valor',
+    description: 'Debe ser una categoría'
   },
   'syndicate': {
-    name: 'syndicate',
-    description: 'Get current syndicate information for a given syndicate'
+    name: 'sindicato',
+    description: 'Obtener información de sindicato actual para un sindicato determinado'
   },
   tracking: {
-    name: 'tracking',
-    description: 'Configure tracking options'
+    name: 'seguimiento',
+    description: 'Configurar opciones de seguimiento'
   },
   'tracking.manage': {
-    name: 'manage',
-    description: 'Manage tracking settings'
+    name: 'administrar',
+    description: 'Administrar ajustes de seguimiento'
   },
   'tracking.manage.channel': {
-    name: 'channel',
-    description: 'Channel (text-based) that this should apply to.'
+    name: 'canal',
+    description: 'Canal (basado en texto) al que debería aplicarse esto.'
   },
   'tracking.manage.thread': {
-    name: 'thread',
-    description: 'Thread channel wherein to send messages'
+    name: 'hilo',
+    description: 'Hilo de canal en donde enviar mensajes'
   },
   'tracking.custom': {
-    name: 'custom',
-    description: 'Set up custom trackings and pings'
+    name: 'personalizado',
+    description: 'Configurar seguimiento y pings personalizados'
   },
   'tracking.custom.add': {
-    name: 'add',
-    description: 'Comma-separated list of trackables to add. See website.'
+    name: 'añadir',
+    description: 'Lista separada por comas de seguimientos para añadir. Ver sitio web.'
   },
   'tracking.custom.remove': {
-    name: 'remove',
-    description: 'Comma-separated list of trackables to remove. See website.'
+    name: 'eliminar',
+    description: 'Lista separada por comas de seguimiento para eliminar. Ver sitio web.'
   },
   'tracking.custom.prepend': {
-    name: 'prepend',
-    description: 'Requires \'add\' to be specified. Ignored on remove.'
+    name: 'anteponer',
+    description: 'Requiere \'añadir\' para ser especificado. Ignorado al eliminar.'
   },
   'tracking.custom.channel': {
-    name: 'channel',
-    description: 'Channel (text-based) that this should apply to.'
+    name: 'canal',
+    description: 'Canal (basado en texto) al que debería aplicarse esto.'
   },
   'tracking.custom.thread': {
-    name: 'thread',
-    description: 'Thread channel wherein to send messages'
+    name: 'hilo',
+    description: 'Hilo de canal en donde enviar mensajes'
   },
   'tracking.custom.clear-prepend': {
-    name: 'clear-prepend',
-    description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
+    name: 'borrar-anteponer',
+    description: 'Elimina el preajuste para el seguimiento "remover" especificado. No los eliminará del seguimiento.'
   },
   cc: {
     name: 'cc',
-    description: 'Manage custom commands'
+    description: 'Administrar comandos personalizados'
   },
   'cc.add': {
-    name: 'add',
-    description: 'Add a custom command'
+    name: 'añadir',
+    description: 'Añadir un comando personalizado'
   },
   'cc.add.call': {
-    name: 'call',
-    description: 'Sets the command call for the new custom command'
+    name: 'llamar',
+    description: 'Establece la llamada de comando para el nuevo comando personalizado'
   },
   'cc.add.response': {
-    name: 'response',
-    description: 'Set what the call will respond to'
+    name: 'respuesta',
+    description: 'Establecer a qué responderá la llamada'
   },
   'cc.remove': {
-    name: 'remove',
-    description: 'Remove a custom command by name'
+    name: 'eliminar',
+    description: 'Eliminar un comando personalizado por nombre'
   },
   'cc.remove.call': {
-    name: 'call',
-    description: 'Which call to remove?'
+    name: 'llamar',
+    description: '¿Qué llamada a eliminar?'
   },
   'cc.list': {
-    name: 'list',
-    description: 'List all subcommands for the guild'
+    name: 'lista',
+    description: 'Listar todos los subcomandos de la guild'
   },
   '8ball': {
-    name: '8ball',
-    description: 'Get your 8Ball question answered!'
+    name: 'bola8',
+    description: '¡Obtén respuesta a tu pregunta de bola 8!'
   },
   '8ball.question': {
-    name: 'question',
-    description: 'What do you want the all-knowing machine to answer?'
+    name: 'pregunta',
+    description: '¿Qué quieres que responda la máquina de todo el conocimiento?'
   },
   corgi: {
     name: 'corgi',
-    description: 'Get a corgi picture!'
+    description: '¡Obtén una foto de corgi!'
   },
   hug: {
-    name: 'hug',
-    description: 'Get a hug <3'
+    name: 'abrazo',
+    description: 'Consigue un abrazo <3'
   },
   joke: {
-    name: 'joke',
-    description: 'Ask Genesis for a joke!'
+    name: 'broma',
+    description: '¡Pídele a Génesis una broma!'
   },
   fashion: {
-    name: 'fashion',
-    description: 'Get a random Warframe fashion image'
+    name: 'moda',
+    description: 'Obtén una imagen aleatoria de moda Warframe'
   },
   memeframe: {
     name: 'memeframe',
-    description: 'Get a Warframe meme'
+    description: 'Consigue un meme de Warframe'
   },
   memes: {
     name: 'meme',
-    description: 'Get a meme from r/dankmemes'
+    description: 'Obtener un meme de r/dankmemes'
   }
 };
