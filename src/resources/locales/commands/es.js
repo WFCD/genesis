@@ -59,7 +59,7 @@ export default {
     description: 'Obtener ofertas actuales'
   },
   outposts: {
-    name: 'outposts',
+    name: 'puesto avanzado',
     description: 'Obtener salidas actuales de concientes'
   },
   steelpath: {
@@ -111,15 +111,15 @@ export default {
     description: 'Hide your private room'
   },
   'rooms.block': {
-    name: 'block',
+    name: 'bloquear',
     description: 'Bloquea a alguien de tu sala privada'
   },
   'rooms.resize': {
-    name: 'resize',
+    name: 'cambiar tamaño',
     description: 'redimensionar sala privada'
   },
   templates: {
-    name: 'templates',
+    name: 'plantilla',
     description: 'Administrar plantillas de canal'
   },
   'templates.add': {
@@ -273,222 +273,222 @@ export default {
   },
   'settings.platform': {
     name: 'plataforma',
-    description: 'Set the platform for the channel'
+    description: 'Establecer la plataforma para el canal'
   },
   'settings.set': {
     name: 'poner',
-    description: 'Set a setting'
+    description: 'Establecer un ajuste'
   },
   'settings.clear': {
     name: 'limpiar',
-    description: 'Clear certain settings'
+    description: 'Borrar ciertos ajustes'
   },
   'settings.get': {
     name: 'get',
-    description: 'Get all the settings'
+    description: 'Obtener todos los ajustes'
   },
   'settings.diag': {
     name: 'diag',
-    description: 'Run diagnostics for the guild'
+    description: 'Ejecutar diagnóstico para el gremio'
   },
   'settings.lfg': {
     name: 'lfg',
-    description: 'Set LFG Channel for a Platform'
+    description: 'Establecer canal LFG para una plataforma'
   },
   'settings.lfg.channel': {
-    name: 'channel',
-    description: 'Channel to set LFG to post in'
+    name: 'canal',
+    description: 'Canal en el que colocar LFG'
   },
   'settings.allow_custom': {
-    name: 'allow_custom',
-    description: 'Set allowance of custom commands'
+    name: 'permitir_personalizar',
+    description: 'Establecer permiso de comandos personalizados'
   },
   'settings.allow_custom.bool': {
-    name: 'value',
-    description: 'Should this channel allow custom commands?'
+    name: 'valor',
+    description: '¿Este canal debería permitir comandos personalizados?'
   },
   'settings.allow_inline': {
-    name: 'allow_inline',
-    description: 'Set allowance of inline commands'
+    name: 'permitir_enlínea',
+    description: 'Establecer permisos de comandos en línea'
   },
   'settings.allow_inline.bool': {
-    name: 'value',
-    description: 'Should this channel allow inline commands?'
+    name: 'valor',
+    description: '¿Este canal debería permitir comandos en línea?'
   },
   'settings.language': {
-    name: 'language',
-    description: 'Set a language for the server'
+    name: 'idioma',
+    description: 'Establecer un idioma para el servidor'
   },
   'settings.language.str': {
-    name: 'value',
-    description: 'What language do you want to use for this server?'
+    name: 'valor',
+    description: '¿Qué idioma quieres usar para este servidor?'
   },
   'settings.ephemerate': {
-    name: 'ephemerate',
-    description: 'Set whether or not messages from slash commands will be public (True by default)'
+    name: 'efímero',
+    description: 'Establecer si los mensajes de los comandos de barra slash serán públicos (Verdadero de forma predeterminada)'
   },
   'settings.elevated_roles': {
-    name: 'elevated_roles',
-    description: 'Set elevated roles'
+    name: 'roles elevados',
+    description: 'Establecer roles elevados'
   },
   'settings.elevated_roles.str': {
-    name: 'value',
-    description: 'What roles are elevated?'
+    name: 'valor',
+    description: '¿Qué roles se elevan?'
   },
   'settings.allow_rooms': {
-    name: 'allow_rooms',
-    description: 'Set whether or not to allow custom rooms to be created'
+    name: 'permitir_salas',
+    description: 'Establecer si permitir o no crear salas personalizadas'
   },
   'settings.allow_rooms.bool': {
-    name: 'value',
-    description: 'Allow private rooms?'
+    name: 'valor',
+    description: '¿Permitir salas privadas?'
   },
   'settings.auto_locked': {
-    name: 'auto_locked',
-    description: 'Set whether or not to default private rooms to be locked (Default True)'
+    name: 'auto_bloqueado',
+    description: 'Establecer si se bloquean o no las salas privadas por defecto (True)'
   },
   'settings.auto_locked.bool': {
-    name: 'value',
-    description: 'Lock private rooms?'
+    name: 'valor',
+    description: '¿Bloquear salas privadas?'
   },
   'settings.auto_text': {
-    name: 'auto_text',
-    description: 'Set whether or not to default private rooms to have text channels (Default False)'
+    name: 'auto_texto',
+    description: 'Establecer si las salas privadas por defecto tienen canales de texto (Falso por defecto)'
   },
   'settings.auto_text.bool': {
-    name: 'value',
-    description: 'Make rooms with text?'
+    name: 'valor',
+    description: '¿Hacer salas con texto?'
   },
   'settings.auto_shown': {
-    name: 'auto_shown',
-    description: 'Set whether or not to default private rooms should be visible (Default false)'
+    name: 'auto_mostrado',
+    description: 'Establecer si las salas privadas por defecto deben ser visibles (por defecto falso)'
   },
   'settings.auto_shown.bool': {
-    name: 'value',
-    description: 'Make rooms visible?'
+    name: 'valor',
+    description: '¿Hacer visibles las salas?'
   },
   'settings.temp_channel': {
-    name: 'temp_channel',
-    description: 'Set the channel for creating threads in for private rooms'
+    name: 'canales_temporales',
+    description: 'Establecer el canal en el que crear hilos para salas privadas'
   },
   'settings.temp_channel.channel': {
-    name: 'value',
-    description: 'Should be a text channel'
+    name: 'valor',
+    description: 'Debe ser un canal de texto'
   },
   'settings.temp_category': {
-    name: 'temp_category',
-    description: 'Set the temporary category for private/auto-generated rooms'
+    name: 'categoria_temporal',
+    description: 'Establecer la categoría temporal para salas privadas o autogeneradas'
   },
   'settings.temp_category.channel': {
-    name: 'value',
-    description: 'Should be a category'
+    name: 'valor',
+    description: 'Debe ser una categoría'
   },
   'syndicate': {
-    name: 'syndicate',
-    description: 'Get current syndicate information for a given syndicate'
+    name: 'sindicato',
+    description: 'Obtener información de sindicato actual para un sindicato determinado'
   },
   tracking: {
-    name: 'tracking',
-    description: 'Configure tracking options'
+    name: 'seguimiento',
+    description: 'Configurar opciones de seguimiento'
   },
   'tracking.manage': {
-    name: 'manage',
-    description: 'Manage tracking settings'
+    name: 'administrar',
+    description: 'Administrar ajustes de seguimiento'
   },
   'tracking.manage.channel': {
-    name: 'channel',
-    description: 'Channel (text-based) that this should apply to.'
+    name: 'canal',
+    description: 'Canal (basado en texto) al que debería aplicarse esto.'
   },
   'tracking.manage.thread': {
-    name: 'thread',
-    description: 'Thread channel wherein to send messages'
+    name: 'hilo',
+    description: 'Hilo de canal en donde enviar mensajes'
   },
   'tracking.custom': {
-    name: 'custom',
-    description: 'Set up custom trackings and pings'
+    name: 'personalizado',
+    description: 'Configurar seguimiento y pings personalizados'
   },
   'tracking.custom.add': {
     name: 'añadir',
-    description: 'Comma-separated list of trackables to add. See website.'
+    description: 'Lista separada por comas de seguimientos para añadir. Ver sitio web.'
   },
   'tracking.custom.remove': {
-    name: 'remove',
-    description: 'Comma-separated list of trackables to remove. See website.'
+    name: 'eliminar',
+    description: 'Lista separada por comas de seguimiento para eliminar. Ver sitio web.'
   },
   'tracking.custom.prepend': {
-    name: 'prepend',
-    description: 'Requires \'add\' to be specified. Ignored on remove.'
+    name: 'anteponer',
+    description: 'Requiere \'añadir\' para ser especificado. Ignorado al eliminar.'
   },
   'tracking.custom.channel': {
-    name: 'channel',
-    description: 'Channel (text-based) that this should apply to.'
+    name: 'canal',
+    description: 'Canal (basado en texto) al que debería aplicarse esto.'
   },
   'tracking.custom.thread': {
-    name: 'thread',
-    description: 'Thread channel wherein to send messages'
+    name: 'hilo',
+    description: 'Hilo de canal en donde enviar mensajes'
   },
   'tracking.custom.clear-prepend': {
-    name: 'clear-prepend',
-    description: 'Clear prepend for specified "remove" trackables. Won\'t remove them from tracking.'
+    name: 'borrar-anteponer',
+    description: 'Elimina el preajuste para el seguimiento "remover" especificado. No los eliminará del seguimiento.'
   },
   cc: {
     name: 'cc',
-    description: 'Manage custom commands'
+    description: 'Administrar comandos personalizados'
   },
   'cc.add': {
     name: 'añadir',
-    description: 'Add a custom command'
+    description: 'Añadir un comando personalizado'
   },
   'cc.add.call': {
-    name: 'call',
-    description: 'Sets the command call for the new custom command'
+    name: 'llamar',
+    description: 'Establece la llamada de comando para el nuevo comando personalizado'
   },
   'cc.add.response': {
-    name: 'response',
-    description: 'Set what the call will respond to'
+    name: 'respuesta',
+    description: 'Establecer a qué responderá la llamada'
   },
   'cc.remove': {
-    name: 'remove',
-    description: 'Remove a custom command by name'
+    name: 'eliminar',
+    description: 'Eliminar un comando personalizado por nombre'
   },
   'cc.remove.call': {
-    name: 'call',
-    description: 'Which call to remove?'
+    name: 'llamar',
+    description: '¿Qué llamada a eliminar?'
   },
   'cc.list': {
     name: 'lista',
-    description: 'List all subcommands for the guild'
+    description: 'Listar todos los subcomandos de la guild'
   },
   '8ball': {
-    name: '8ball',
-    description: 'Get your 8Ball question answered!'
+    name: 'bola8',
+    description: '¡Obtén respuesta a tu pregunta de bola 8!'
   },
   '8ball.question': {
-    name: 'question',
-    description: 'What do you want the all-knowing machine to answer?'
+    name: 'pregunta',
+    description: '¿Qué quieres que responda la máquina de todo el conocimiento?'
   },
   corgi: {
     name: 'corgi',
-    description: 'Get a corgi picture!'
+    description: '¡Obtén una foto de corgi!'
   },
   hug: {
-    name: 'hug',
-    description: 'Get a hug <3'
+    name: 'abrazo',
+    description: 'Consigue un abrazo <3'
   },
   joke: {
-    name: 'joke',
-    description: 'Ask Genesis for a joke!'
+    name: 'broma',
+    description: '¡Pídele a Génesis una broma!'
   },
   fashion: {
-    name: 'fashion',
-    description: 'Get a random Warframe fashion image'
+    name: 'moda',
+    description: 'Obtén una imagen aleatoria de moda Warframe'
   },
   memeframe: {
     name: 'memeframe',
-    description: 'Get a Warframe meme'
+    description: 'Consigue un meme de Warframe'
   },
   memes: {
     name: 'meme',
-    description: 'Get a meme from r/dankmemes'
+    description: 'Obtener un meme de r/dankmemes'
   }
 };
