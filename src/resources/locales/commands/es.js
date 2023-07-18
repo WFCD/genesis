@@ -4,23 +4,23 @@
 export default {
   alerts: {
     name: 'alertas',
-    description: 'Get WorldState Alerts'
+    description: 'Obtener alertas de WorldState'
   },
   arbi: {
     name: 'arbitramientos',
-    description: 'Get WorldState Arbitrations'
+    description: 'Obtener arbitramientos de WorldState'
   },
   archons: {
     name: 'arcontes',
-    description: 'Get current Archon Hunt'
+    description: 'Obtén la cacería del arconte actual'
   },
   baro: {
     name: 'baro',
-    description: 'Get Current Void Trader Inventory'
+    description: 'Obtén el inventario actual del vendedor del vacío'
   },
   conclave: {
     name: 'conclave',
-    description: 'Get Current Conclave Challenges'
+    description: 'Obtén los desafíos actuales del cónclave'
   },
   construction: {
     name: 'construcción',
