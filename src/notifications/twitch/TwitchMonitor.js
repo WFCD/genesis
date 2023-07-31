@@ -1,6 +1,6 @@
+import EventEmitter from 'node:events';
 import moment from 'dayjs';
 import Cache from 'flat-cache';
-import EventEmitter from 'node:events';
 import TwitchApi from './TwitchClient.js';
 import logger from '../../utilities/Logger.js';
 import { twitch as channels } from '../../resources/index.js';
