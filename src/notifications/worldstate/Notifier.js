@@ -174,9 +174,9 @@ export default class Notifier {
 
       await this.#sendAcolytes(acolytes, deps);
 
-      if (baro) {
-        await this.#sendBaro(baro, deps);
-      }
+      // if (baro) {
+      //   await this.#sendBaro(baro, deps);
+      // }
       if (conclave && conclave.length > 0) {
         await this.#sendConclaveDailies(conclave, deps);
         await this.#sendConclaveWeeklies(conclave, deps);
