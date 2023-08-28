@@ -1,3 +1,10 @@
+## [2.10.3](https://github.com/WFCD/genesis/compare/v2.10.2...v2.10.3) (2023-08-28)
+
+
+### Bug Fixes
+
+* **temp:** stop sending baro updates ([3cf4731](https://github.com/WFCD/genesis/commit/3cf47319de22d00fb00cd8d95027b9e37a262463))
+
 ## [2.10.2](https://github.com/WFCD/genesis/compare/v2.10.1...v2.10.2) (2023-07-18)
 
 
