@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/WFCD/genesis/compare/v2.10.3...v2.11.0) (2023-09-28)
+
+
+### Features
+
+* support multi-baro ([#727](https://github.com/WFCD/genesis/issues/727)) ([aeb057a](https://github.com/WFCD/genesis/commit/aeb057a10551d671f29a5a57b1b5732af784c522))
+
 ## [2.10.3](https://github.com/WFCD/genesis/compare/v2.10.2...v2.10.3) (2023-08-28)
 
 
