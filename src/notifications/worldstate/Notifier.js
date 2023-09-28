@@ -26,9 +26,10 @@ const buildNotifiableData = (newData, notified) => {
       newData.archonHunt && !newData.archonHunt.expired && !notified.includes(newData.archonHunt.id)
         ? newData.archonHunt
         : undefined,
-    baro:
-      newData.voidTrader && !notified.includes(`${newData.voidTrader.id}${newData.voidTrader.active ? '1' : '0'}`)
-        ? newData.voidTrader
+    baros:
+      newData.voidTraders?.length &&
+      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))?.length
+        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))
         : undefined,
     conclave: newData.conclaveChallenges.filter((cc) => !cc.expired && !cc.rootChallenge && !notified.includes(cc.id)),
     dailyDeals: newData.dailyDeals.filter((dd) => !notified.includes(dd.id)),
@@ -150,7 +151,7 @@ export default class Notifier {
       acolytes,
       sortie,
       syndicateM,
-      baro,
+      baros,
       tweets,
       nightwave,
       featuredDeals,
@@ -174,9 +175,12 @@ export default class Notifier {
 
       await this.#sendAcolytes(acolytes, deps);
 
-      // if (baro) {
-      //   await this.#sendBaro(baro, deps);
-      // }
+      if (baros?.length) {
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const baro of baros) {
+          await this.#sendBaro(baro, deps);
+        }
+      }
       if (conclave && conclave.length > 0) {
         await this.#sendConclaveDailies(conclave, deps);
         await this.#sendConclaveWeeklies(conclave, deps);
