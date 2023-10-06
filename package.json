@@ -45,7 +45,7 @@
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.7",
     "colors": "1.4.0",
-    "cron": "^1.8.2",
+    "cron": "^3.0.0",
     "dayjs": "^1.11.10",
     "decache": "^4.6.2",
     "discord.js": "^13.16.0",
