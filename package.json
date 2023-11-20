@@ -69,7 +69,7 @@
     "zlib-sync": "^0.1.9"
   },
   "devDependencies": {
-    "@types/flat-cache": "^2.0.0",
+    "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.4.1",
     "discord-api-types": "^0.37.63",
     "install-peerdeps": "^2.0.3"
