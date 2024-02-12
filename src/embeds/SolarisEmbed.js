@@ -1,6 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
 import { assetBase } from '../utilities/CommonFunctions.js';
 import { rTime } from '../utilities/Wrappers.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const solaris = `${assetBase}/img/solarisunitedflag.png`;
 const makeJobs = (mission) => {

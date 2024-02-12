@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+
 import decache from 'decache';
+
 import BaseEventHandler from '../models/BaseEventHandler.js';
 
 /**

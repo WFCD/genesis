@@ -1,5 +1,6 @@
 import qEngine from 'json-query';
 import fetch from 'node-fetch';
+
 import { apiBase } from './CommonFunctions.js';
 
 const relicBase = 'https://drops.warframestat.us/data/relics';

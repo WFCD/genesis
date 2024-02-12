@@ -1,5 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
 import { assetBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 export default class ShieldEmbed extends BaseEmbed {
   static #corpus = `${assetBase}/img/corpus.png`;

@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { assetBase, emojify } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const steelPathThumb = `${assetBase}/img/steelpath.png`;
 export default class SteelPathEmbed extends BaseEmbed {

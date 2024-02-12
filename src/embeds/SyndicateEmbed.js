@@ -1,6 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
 import { syndicates } from '../resources/index.js';
 import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const syndicateThumb = `${assetBase}/img/syndicate.png`;
 const values = syndicates.map((s) => s.display);

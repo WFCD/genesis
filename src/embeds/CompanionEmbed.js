@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
-import BaseEmbed from './BaseEmbed.js';
+
 import { emojify } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 dayjs.extend(duration);
 

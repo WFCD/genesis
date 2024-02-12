@@ -1,17 +1,20 @@
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'url';
+
 import flatCache from 'flat-cache';
 import cron from 'cron';
-import Notifier from './worldstate/Notifier.js';
-import CycleNotifier from './worldstate/CycleNotifier.js';
-import FeedsNotifier from './FeedsNotifier.js';
-import TwitchNotifier from './twitch/TwitchNotifier.js';
+
 import WorldStateCache from '../utilities/WorldStateCache.js';
 import Rest from '../utilities/RESTWrapper.js';
 import Database from '../settings/Database.js';
 import { cachedEvents, locales } from '../resources/index.js';
 import logger from '../utilities/Logger.js';
 import { games } from '../utilities/CommonFunctions.js';
+
+import TwitchNotifier from './twitch/TwitchNotifier.js';
+import FeedsNotifier from './FeedsNotifier.js';
+import CycleNotifier from './worldstate/CycleNotifier.js';
+import Notifier from './worldstate/Notifier.js';
 
 const Job = cron.CronJob;
 const deps = {};

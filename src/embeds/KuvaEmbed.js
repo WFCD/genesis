@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { assetBase, groupBy } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const kuvaThumb = `${assetBase}/img/kuva.png`;
 

@@ -1,5 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
 import { createGroupedArray } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 export default class DropsEmbed extends BaseEmbed {
   constructor(drops, { i18n, locale }) {

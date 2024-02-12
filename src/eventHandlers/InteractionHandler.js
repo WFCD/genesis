@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+
 import I18n from 'i18n-string-templates';
 import decache from 'decache';
 import Discord from 'discord.js';

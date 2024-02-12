@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
+
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
-
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
 import { captures, createGroupedArray, platforms } from '../../utilities/CommonFunctions.js';

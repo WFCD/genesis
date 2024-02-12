@@ -2,10 +2,12 @@ import path from 'node:path';
 import { readdir } from 'node:fs/promises';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+
 import SQL from 'sql-template-strings';
 import mysql from 'mysql2/promise';
 import I18n from 'i18n-string-templates';
 import Discord from 'discord.js';
+
 import { assetBase, platforms } from '../utilities/CommonFunctions.js';
 import logger from '../utilities/Logger.js';
 import { i18n } from '../resources/index.js';

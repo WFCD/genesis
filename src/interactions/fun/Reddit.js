@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+
 import Embed from '../../embeds/BaseEmbed.js';
 import Interaction from '../../models/Interaction.js';
 

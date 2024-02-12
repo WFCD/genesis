@@ -1,10 +1,11 @@
 import util from 'node:util';
+
 import urlExists from 'url-exists';
 import I18n from 'i18n-string-templates';
 import fetch from 'node-fetch';
+
 import { apiBase, apiCdnBase } from '../utilities/CommonFunctions.js';
 import { i18n as i18nBundle, locales } from '../resources/index.js';
-
 import Alert from '../embeds/AlertEmbed.js';
 import Arbitration from '../embeds/ArbitrationEmbed.js';
 import Acolyte from '../embeds/AcolyteEmbed.js';

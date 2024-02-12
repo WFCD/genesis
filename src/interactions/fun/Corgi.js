@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 

@@ -1,7 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
 import logger from '../utilities/Logger.js';
-
 import { chunkify, markdinate } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 /**
  * Generates daily deal embeds

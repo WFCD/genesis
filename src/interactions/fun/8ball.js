@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 

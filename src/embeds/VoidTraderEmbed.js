@@ -1,6 +1,8 @@
 import n from 'numeral';
-import BaseEmbed from './BaseEmbed.js';
+
 import { assetBase, emojify } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const baroThumb = `${assetBase}/img/baro.png`;
 

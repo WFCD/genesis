@@ -1,7 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { assetBase, toTitleCase } from '../utilities/CommonFunctions.js';
 import { rTime } from '../utilities/Wrappers.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const fass = `${assetBase}/img/FassBanner.png`;
 const vome = `${assetBase}/img/VomeBanner.png`;

@@ -1,5 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
 import { assetBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const acolyteThumb = `${assetBase}/img/acolyte.png`;
 

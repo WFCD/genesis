@@ -1,7 +1,8 @@
 import EventEmitter from 'events';
-import cron from 'cron';
 
+import cron from 'cron';
 import fetch from 'node-fetch';
+
 import logger from './Logger.js';
 import { apiBase } from './CommonFunctions.js';
 

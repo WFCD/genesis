@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
 import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default

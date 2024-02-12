@@ -1,10 +1,10 @@
 import TwitchEmbed from '../../embeds/TwitchEmbed.js';
-import TwitchMonitor from './TwitchMonitor.js';
 import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
-
 import { platforms } from '../../utilities/CommonFunctions.js';
 import { perLanguage } from '../NotifierUtils.js';
+
+import TwitchMonitor from './TwitchMonitor.js';
 
 /**
  * Watches for Twitch go-lives and broadcasts them

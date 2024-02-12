@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const invasionThumb = `${assetBase}img/invasion.png`;
 

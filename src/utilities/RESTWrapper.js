@@ -1,4 +1,5 @@
 import { Rest } from '@spectacles/rest';
+
 import logger from './Logger.js';
 import { assetBase } from './CommonFunctions.js';
 

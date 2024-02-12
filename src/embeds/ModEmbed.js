@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { apiCdnBase, emojify, wikiBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const rarity = {
   common: 0x775448,

@@ -1,9 +1,10 @@
 import RssFeedEmitter from 'rss-feed-emitter';
 
-import Broadcaster from './Broadcaster.js';
 import RSSEmbed from '../embeds/RSSEmbed.js';
 import { locales, rssFeeds } from '../resources/index.js';
 import logger from '../utilities/Logger.js';
+
+import Broadcaster from './Broadcaster.js';
 
 const activePlatforms = (process.env.PLATFORMS || 'pc').split(',');
 

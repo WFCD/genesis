@@ -1,9 +1,12 @@
 import EventEmitter from 'node:events';
+
 import moment from 'dayjs';
 import Cache from 'flat-cache';
-import TwitchApi from './TwitchClient.js';
+
 import logger from '../../utilities/Logger.js';
 import { twitch as channels } from '../../resources/index.js';
+
+import TwitchApi from './TwitchClient.js';
 
 const haveEqualValues = (a, b) => {
   if (a.length !== b.length) {

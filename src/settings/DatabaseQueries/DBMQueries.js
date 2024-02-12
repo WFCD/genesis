@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import SQL from 'sql-template-strings';
+
 import schema from '../schema.js';
 import integrations from '../integrations.js';
 

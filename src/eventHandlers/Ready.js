@@ -1,7 +1,9 @@
 import Discord from 'discord.js';
-import DynamicVoiceHandler from './DynamicVoiceHandler.js';
+
 import { fromNow, games, timeDeltaToMinutesString } from '../utilities/CommonFunctions.js';
 import Handler from '../models/BaseEventHandler.js';
+
+import DynamicVoiceHandler from './DynamicVoiceHandler.js';
 
 const {
   Constants: { Events },

@@ -1,4 +1,5 @@
 import Discord, { MessageButton, Permissions } from 'discord.js';
+
 import Interaction from '../../models/Interaction.js';
 import {
   chunkify,

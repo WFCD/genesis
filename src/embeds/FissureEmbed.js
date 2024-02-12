@@ -1,7 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { wikiBase, cdn } from '../utilities/CommonFunctions.js';
 import { rTime } from '../utilities/Wrappers.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const fissureThumb = cdn('img/fissure-sm.png');
 const steelPath = cdn('img/steelpath-h.png');

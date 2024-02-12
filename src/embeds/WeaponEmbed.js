@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { emojify } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const dispositions = [
   '\\⚫\\⚫\\⚫\\⚫\\⚫',

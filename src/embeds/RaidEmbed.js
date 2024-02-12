@@ -1,6 +1,7 @@
-import BaseEmbed from './BaseEmbed.js';
 import RaidStat from '../models/RaidStat.js';
 import { assetBase } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 export default class RaidStatEmbed extends BaseEmbed {
   /**

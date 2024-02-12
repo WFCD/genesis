@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+
 import JoinableRole from '../../models/JoinableRole.js';
 
 /**

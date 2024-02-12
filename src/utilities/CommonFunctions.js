@@ -1,7 +1,8 @@
 import Discord from 'discord.js';
-import logger from './Logger.js';
 
 import { emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes } from '../resources/index.js';
+
+import logger from './Logger.js';
 
 const {
   clantech,

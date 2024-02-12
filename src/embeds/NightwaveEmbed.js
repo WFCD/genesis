@@ -1,4 +1,5 @@
 import { createGroupedArray, timeDeltaToString } from '../utilities/CommonFunctions.js';
+
 import BaseEmbed from './BaseEmbed.js';
 
 const chString = (challenge) =>

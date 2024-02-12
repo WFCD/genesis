@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import Sentry from '@sentry/node';
-
 import { WebhookClient } from 'discord.js';
+
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 import 'colors';
 

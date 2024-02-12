@@ -1,6 +1,6 @@
-import BaseEmbed from './BaseEmbed.js';
-
 import { cdn } from '../utilities/CommonFunctions.js';
+
+import BaseEmbed from './BaseEmbed.js';
 
 const sortieThumb = cdn(`img/sortie.png`);
 const narmer = cdn('img/narmer.png');

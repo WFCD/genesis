@@ -1,4 +1,5 @@
 import Discord, { Permissions } from 'discord.js';
+
 import InteractionHandler from '../../eventHandlers/InteractionHandler.js';
 import logger from '../../utilities/Logger.js';
 import ServerInfoEmbed from '../../embeds/ServerInfoEmbed.js';
