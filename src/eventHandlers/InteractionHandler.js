@@ -348,8 +348,8 @@ export default class InteractionHandler extends BaseHandler {
       return match
         ? match?.commandHandler?.(interaction, ctx)
         : customMatch
-        ? customMatch?.commandHandler?.(interaction, ctx)
-        : undefined;
+          ? customMatch?.commandHandler?.(interaction, ctx)
+          : undefined;
     }
   }
 }
