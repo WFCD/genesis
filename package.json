@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@types/flat-cache": "^2.0.2",
-    "@wfcd/eslint-config": "^1.5.0",
+    "@wfcd/eslint-config": "^1.6.1",
     "discord-api-types": "^0.37.69",
     "install-peerdeps": "^2.0.3"
   },
@@ -92,8 +92,8 @@
       },
       "babelOptions": {
         "plugins": [
-          "@babel/plugin-proposal-class-properties",
-          "@babel/plugin-proposal-private-methods"
+          "@babel/plugin-transform-class-properties",
+          "@babel/plugin-transform-private-methods"
         ]
       }
     },
@@ -112,8 +112,8 @@
       "@babel/preset-env"
     ],
     "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      "@babel/plugin-proposal-private-methods"
+      "@babel/plugin-transform-class-properties",
+      "@babel/plugin-transform-private-methods"
     ]
   },
   "release": {

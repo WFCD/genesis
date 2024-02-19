@@ -198,9 +198,7 @@ export default class Database {
   async #loadChildren() {
     const dbRoot = path.join(path.resolve(__dirname, './DatabaseQueries'));
     await Promise.all(
-      (
-        await readdir(dbRoot)
-      )
+      (await readdir(dbRoot))
         .filter((f) => f.endsWith('.js'))
         .map(async (file) => {
           const QClass = (await import(path.join(dbRoot, file))).default;
