@@ -1,0 +1,18 @@
+plugins:
+  - '@semantic-release/commit-analyzer'
+  - - '@semantic-release/exec'
+    - successCmd: echo 'yes' >> .release
+      failCmd: echo 'no' >> .release
+  - '@semantic-release/release-notes-generator'
+  - - '@semantic-release/npm'
+    - npmPublish: false
+  - '@semantic-release/github'
+  - - '@semantic-release/changelog'
+    - assets:
+        - CHANGELOG.md
+  - - '@semantic-release/git'
+    - assets:
+        - package.json
+        - CHANGELOG.md
+  - '@eclass/semantic-release-sentry-releases'
+branches: master

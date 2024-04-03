@@ -1,0 +1,5 @@
+slow: 10000
+timeout: 10000
+spec: spec/**/*.spec.js
+require:
+  - dotenv/config

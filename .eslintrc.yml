@@ -1,0 +1,19 @@
+extends: '@wfcd/eslint-config/esm'
+parser: '@babel/eslint-parser'
+parserOptions:
+  sourceType: module
+  ecmaVersion: 6
+  ecmaFeatures:
+    modules: true
+  babelOptions:
+    plugins:
+      - '@babel/plugin-transform-class-properties'
+      - '@babel/plugin-transform-private-methods'
+rules:
+  no-unsafe-optional-chaining: 'off'
+  no-constructor-return: 'off'
+  import/extensions:
+    - error
+    - ignorePackages
+  import/no-named-as-default: 'off'
+  import/no-named-as-default-member: 'off'

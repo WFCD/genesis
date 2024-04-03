@@ -53,13 +53,14 @@ export default class InteractionHandler extends BaseHandler {
   /**
    * Base class for bot commands
    * @param {Genesis} bot  The bot object
+   * @param {boolean} skipInit Whether to skip initialization
    */
-  constructor(bot) {
+  constructor(bot, skipInit) {
     super(bot, 'handlers.interactions', Events.INTERACTION_CREATE);
     this.#loadedCommands = [];
     this.#customCommands = [];
     this.ready = false;
-    this.init();
+    if (!skipInit) this.init();
   }
 
   static async loadFiles(loadedCommands) {
@@ -228,8 +229,7 @@ export default class InteractionHandler extends BaseHandler {
         return cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands;
       })
       .flat()
-      .filter((c) => c);
-    // logger.error(JSON.stringify(cmds));
+      .filter(Boolean);
     if (whitelistedGuilds.length) {
       await Promise.all(
         whitelistedGuilds.map(async (gid) => {
