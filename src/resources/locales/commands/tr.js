@@ -167,7 +167,7 @@ export default {
     description: 'What are you looking for?'
   },
   whatsin: {
-    name: 'içindeki nedir',
+    name: 'icindeki_nedir',
     description: 'Get various pieces of information'
   },
   'whatsin.query': {
