@@ -115,7 +115,7 @@ export default {
     description: 'Block someone from your private room'
   },
   'rooms.resize': {
-    name: 'yeniden boyutlandır',
+    name: 'yeniden_boyutlandır',
     description: 'resize private room'
   },
   templates: {
@@ -184,7 +184,7 @@ export default {
     description: 'Platform to operate on'
   },
   patchnotes: {
-    name: 'yama notları',
+    name: 'yama_notları',
     description: 'Include patchnotes? (default false)'
   },
   lookup: {
