@@ -26,7 +26,6 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
         with:
-          semantic_version: 17
           extra_plugins: |
             @eclass/semantic-release-sentry-releases
             @semantic-release/git
