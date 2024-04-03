@@ -1,3 +1,10 @@
+## [2.11.2](https://github.com/WFCD/genesis/compare/v2.11.1...v2.11.2) (2024-04-03)
+
+
+### Bug Fixes
+
+* **l10n:** bad command name & option translations ([#794](https://github.com/WFCD/genesis/issues/794)) ([86d63f3](https://github.com/WFCD/genesis/commit/86d63f3f785120d295b381de3d1d807b1fda18d4))
+
 ## [2.11.1](https://github.com/WFCD/genesis/compare/v2.11.0...v2.11.1) (2024-03-26)
 
 
