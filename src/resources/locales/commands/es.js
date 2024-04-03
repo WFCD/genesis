@@ -51,7 +51,7 @@ export default {
     description: 'Obtener noticias actuales'
   },
   nightwave: {
-    name: 'onda nocturna',
+    name: 'onda_nocturna',
     description: 'Obtén los desafíos actuales de Onda Nocturna'
   },
   sales: {
@@ -59,11 +59,11 @@ export default {
     description: 'Obtener ofertas actuales'
   },
   outposts: {
-    name: 'puesto avanzado',
+    name: 'puesto_avanzado',
     description: 'Obtener salidas actuales de concientes'
   },
   steelpath: {
-    name: 'camino de acero',
+    name: 'camino_de_acero',
     description: 'Obtén ofertas actuales en la Ruta del Acero'
   },
   sortie: {
@@ -91,11 +91,11 @@ export default {
     description: 'Mostrar tu sala privada'
   },
   'rooms.lock': {
-    name: 'bloquear',
+    name: 'cerrar',
     description: 'Bloquea tu sala privada'
   },
   'rooms.unlock': {
-    name: 'desbloquear',
+    name: 'abrir',
     description: 'Desbloquea tu sala privada'
   },
   'rooms.lurkable': {
@@ -115,7 +115,7 @@ export default {
     description: 'Bloquea a alguien de tu sala privada'
   },
   'rooms.resize': {
-    name: 'cambiar tamaño',
+    name: 'cambiar_tamaño',
     description: 'redimensionar sala privada'
   },
   templates: {
@@ -167,7 +167,7 @@ export default {
     description: '¿Qué estás buscando?'
   },
   whatsin: {
-    name: 'qué hay',
+    name: 'qué_hay',
     description: 'Obtener varias piezas de información'
   },
   'whatsin.query': {
@@ -184,7 +184,7 @@ export default {
     description: 'Plataforma en la que operar'
   },
   patchnotes: {
-    name: 'notas de parche',
+    name: 'notas_de_parche',
     description: '¿Incluye notas de parche? (por defecto falso)'
   },
   lookup: {
@@ -240,7 +240,7 @@ export default {
     description: '¿Para qué está usted farmeando?'
   },
   'lfg.for.custom': {
-    name: 'para _personalizado',
+    name: 'para_personalizado',
     description: 'Algo personalizado para lo que quieres recolectar'
   },
   'lfg.duration': {
@@ -328,7 +328,7 @@ export default {
     description: 'Establecer si los mensajes de los comandos de barra slash serán públicos (Verdadero de forma predeterminada)'
   },
   'settings.elevated_roles': {
-    name: 'roles elevados',
+    name: 'roles_elevados',
     description: 'Establecer roles elevados'
   },
   'settings.elevated_roles.str': {
@@ -428,7 +428,7 @@ export default {
     description: 'Hilo de canal en donde enviar mensajes'
   },
   'tracking.custom.clear-prepend': {
-    name: 'borrar-anteponer',
+    name: 'borrar_anteponer',
     description: 'Elimina el preajuste para el seguimiento "remover" especificado. No los eliminará del seguimiento.'
   },
   cc: {
