@@ -15,6 +15,8 @@ jobs:
       with:
         node-version-file: '.nvmrc'
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
     - name: Run linters
       run: npm run lint
+    - name: Run Tests
+      run: npm test

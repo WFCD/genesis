@@ -13,7 +13,11 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version-file: '.nvmrc'
+      - run: |
+          npm ci
+          npm run lint
+          npm test
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2.5.4
         env:
@@ -63,10 +67,10 @@ jobs:
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
+        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
       - name: Update Containers
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && make -f docker.Makefile submod bot notifier'
+        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && make -f docker.Makefile submod bot notifier'
       - name: Restart Containers
         if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ~/services/genesis-docker && make -f docker.Makefile up_prod'
+        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && make -f docker.Makefile up_prod'

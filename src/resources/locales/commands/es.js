@@ -151,7 +151,7 @@ export default {
     description: 'Cadena de plantilla. Soporta reemplazar $username con el nombre de usuario del creador'
   },
   about: {
-    name: 'acerca de',
+    name: 'acerca_de',
     description: '¡Cuéntame sobre el bot!'
   },
   ping: {
@@ -325,7 +325,7 @@ export default {
   },
   'settings.ephemerate': {
     name: 'efímero',
-    description: 'Establecer si los mensajes de los comandos de barra slash serán públicos (Verdadero de forma predeterminada)'
+    description: 'Si los mensajes de los comandos de barra slash serán públicos (Verdadero de forma predeterminada)'
   },
   'settings.elevated_roles': {
     name: 'roles_elevados',
@@ -417,7 +417,7 @@ export default {
   },
   'tracking.custom.prepend': {
     name: 'anteponer',
-    description: 'Requiere \'añadir\' para ser especificado. Ignorado al eliminar.'
+    description: `Requiere 'añadir' para ser especificado. Ignorado al eliminar.`
   },
   'tracking.custom.channel': {
     name: 'canal',

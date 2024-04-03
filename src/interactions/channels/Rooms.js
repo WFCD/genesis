@@ -306,7 +306,7 @@ export default class Rooms extends Interaction {
         type: Types.SUB_COMMAND,
         options: [
           {
-            name: 'invite',
+            name: 'who',
             type: Types.USER,
             description: 'Who do you want to add to your channel?',
             required: true,
@@ -318,7 +318,7 @@ export default class Rooms extends Interaction {
         type: Types.SUB_COMMAND,
         options: [
           {
-            name: 'invite',
+            name: 'user',
             type: Types.USER,
             description: 'Who do you want to block from your channel?',
             required: true,

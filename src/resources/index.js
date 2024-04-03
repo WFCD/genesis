@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'url';
 
+import logger from '../utilities/Logger.js';
+
 const require = createRequire(import.meta.url);
 
 export const cachedEvents = require('./cachedEvents.json');
@@ -103,12 +105,8 @@ if (locales.includes('en')) {
     cmds[key] = {
       name,
       description,
-      name_localizations: {
-        'en-US': name,
-      },
-      description_localizations: {
-        'en-US': description,
-      },
+      name_localizations: {},
+      description_localizations: {},
     };
 
     locales.forEach((locale) => {
@@ -118,9 +116,27 @@ if (locales.includes('en')) {
       if (DiscordLocales.includes(LocalDiscordLocaleMappings[locale])) localeKey = LocalDiscordLocaleMappings[locale];
       if (!localeKey) return;
       const l7d = allCommands?.[localeKey]?.[key];
-      if (l7d && nameRegex.test(l7d.name)) {
-        cmds[key].name_localizations[localeKey] = l7d.name;
-        cmds[key].description_localizations[localeKey] = l7d.description;
+      if (process.env.SKIP_INVALID_CMDS !== 'false') {
+        if (!nameRegex.test(l7d.name)) {
+          logger.error(`Invalid name for ${key} in ${localeKey}`);
+          return;
+        }
+        if (l7d.description?.length > 100) {
+          logger.error(`Description too long for ${key} in ${localeKey}`);
+          return;
+        }
+      }
+      if (l7d && (nameRegex.test(l7d.name) || process.env.SKIP_INVALID_CMDS === 'false')) {
+        if (l7d.name !== cmds[key].name) {
+          cmds[key].name_localizations[localeKey] = l7d.name;
+        } else {
+          logger.debug(`No name change for ${key} in ${localeKey}`);
+        }
+        if (l7d.description !== cmds[key].description) {
+          cmds[key].description_localizations[localeKey] = l7d.description;
+        } else {
+          logger.debug(`No description change for ${key} in ${localeKey}`);
+        }
       }
     });
   });
