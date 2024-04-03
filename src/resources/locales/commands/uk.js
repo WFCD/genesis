@@ -151,7 +151,7 @@ export default {
     description: 'Template string. Supports replacing $username with originator\'s username'
   },
   about: {
-    name: 'Про застосунок',
+    name: 'про_застосунок',
     description: 'Інформація про бота!'
   },
   ping: {
