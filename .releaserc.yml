@@ -14,5 +14,8 @@ plugins:
     - assets:
         - package.json
         - CHANGELOG.md
+      # don't include the release notes, as it's already in the changelog
+      # and would blow up commitlint
+      message: 'ci(release): ${nextRelease.version} [skip ci]'
   - '@eclass/semantic-release-sentry-releases'
 branches: master
