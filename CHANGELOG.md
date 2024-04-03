@@ -1,3 +1,10 @@
+## [2.11.4](https://github.com/WFCD/genesis/compare/v2.11.3...v2.11.4) (2024-04-03)
+
+
+### Bug Fixes
+
+* add verifications for bad translation mismatches ([#795](https://github.com/WFCD/genesis/issues/795)) ([b2a4a4e](https://github.com/WFCD/genesis/commit/b2a4a4e62d513106f900cc2c7be0693b036de075))
+
 ## [2.11.3](https://github.com/WFCD/genesis/compare/v2.11.2...v2.11.3) (2024-04-03)
 
 
