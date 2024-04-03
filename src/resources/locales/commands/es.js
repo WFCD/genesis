@@ -91,11 +91,11 @@ export default {
     description: 'Mostrar tu sala privada'
   },
   'rooms.lock': {
-    name: 'bloquear',
+    name: 'cerrar',
     description: 'Bloquea tu sala privada'
   },
   'rooms.unlock': {
-    name: 'desbloquear',
+    name: 'abrir',
     description: 'Desbloquea tu sala privada'
   },
   'rooms.lurkable': {
