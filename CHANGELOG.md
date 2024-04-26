@@ -1,3 +1,10 @@
+## [2.11.5](https://github.com/WFCD/genesis/compare/v2.11.4...v2.11.5) (2024-04-26)
+
+
+### Bug Fixes
+
+* **l10n:** new crowdin updates ([#807](https://github.com/WFCD/genesis/issues/807)) ([a98e1a4](https://github.com/WFCD/genesis/commit/a98e1a41b76531f41a40c86f69e2a8e5ade591ef))
+
 ## [2.11.4](https://github.com/WFCD/genesis/compare/v2.11.3...v2.11.4) (2024-04-03)
 
 
