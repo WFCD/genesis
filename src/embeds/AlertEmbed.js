@@ -5,6 +5,13 @@ import BaseEmbed from './BaseEmbed.js';
 const alertThumb = `${assetBase}/img/alert.png`;
 
 export default class AlertEmbed extends BaseEmbed {
+  /**
+   * Create an embed from an array, or single, alert
+   * @param {WorldState.Alert | WorldState.Alert[]} alerts alert to be displayed
+   * @param {string} platform platform of the worldstate
+   * @param {I18n} i18n translator
+   * @param {string} locale locale of the worldstate
+   */
   constructor(alerts, { platform, i18n, locale }) {
     super(locale);
 

@@ -27,6 +27,12 @@ const makeJobs = (mission, i18n) => {
 };
 
 export default class CambionEmbed extends BaseEmbed {
+  /**
+   * Cambion cycle embed to display current cycle state
+   * @param {WorldState.CambionCycle} state - the current cambion cycle state
+   * @param {I18n} i18n - the translator
+   * @param {string }locale - locale of the worldstate
+   */
   constructor(state, { i18n, locale }) {
     super(locale);
     this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`;
