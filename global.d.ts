@@ -148,8 +148,6 @@ export namespace WorldState {
     id: string;
     node: string;
     desc: string;
-    attackerReward: Reward;
-    defenderReward: Reward;
     attackingFaction: string;
     defendingFaction: string;
     attacker: {

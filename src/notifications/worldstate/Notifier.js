@@ -412,7 +412,7 @@ export default class Notifier {
       try {
         thumb =
           !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst')) &&
-          (await getThumbnailForItem(invasion.attackerReward.itemString || invasion.defenderReward.itemString));
+          (await getThumbnailForItem(invasion.attacker.reward.itemString || invasion.defender.reward.itemString));
       } catch (e) {
         logger.error(e);
       }

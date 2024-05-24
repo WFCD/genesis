@@ -13,11 +13,14 @@ export default class BuildEmbed extends BaseEmbed {
     this.color = 0xf1c40f;
     this.title = build.title;
     this.fields = [];
-    sections.forEach((section, index) => {
+    sections.forEach((value, index) => {
       if (index === 0) {
-        this.description = section;
+        this.description = value;
       } else {
-        this.addField('\u200B', section);
+        this.addFields({
+          name: '\u200B',
+          value,
+        });
       }
     });
     this.image = { url: build.url || build.image };
