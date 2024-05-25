@@ -1,3 +1,10 @@
+## [2.11.6](https://github.com/WFCD/genesis/compare/v2.11.5...v2.11.6) (2024-05-25)
+
+
+### Bug Fixes
+
+* **invasions:** update data accessor ([#820](https://github.com/WFCD/genesis/issues/820)) ([807250b](https://github.com/WFCD/genesis/commit/807250b4daad0fb01cfeb7d80f60fdce9a96781a))
+
 ## [2.11.5](https://github.com/WFCD/genesis/compare/v2.11.4...v2.11.5) (2024-04-26)
 
 
