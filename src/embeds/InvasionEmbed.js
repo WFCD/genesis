@@ -9,7 +9,7 @@ const invasionThumb = `${assetBase}img/invasion.png`;
  */
 export default class InvasionEmbed extends BaseEmbed {
   /**
-   * @param {Array.<Invasion>|Invasion} invasions - The invasions to be included in the embed
+   * @param {Array.<WorldState.Invasion>|Invasion} invasions - The invasions to be included in the embed
    * @param {string} platform - platform
    * @param {Object} i18n - internationalization template function
    * @param {string} locale locale
@@ -22,9 +22,9 @@ export default class InvasionEmbed extends BaseEmbed {
     this.url = `${wikiBase}Invasion`;
     if (invasions.length > 1) {
       this.fields = invasions.map((i) => {
-        let rewards = i.defenderReward.asString;
+        let rewards = i.defender.reward.asString;
         if (!i.vsInfestation) {
-          rewards = i18n`${i.attackerReward.asString} vs ${rewards}`;
+          rewards = i18n`${i.attacker.reward.asString} vs ${rewards}`;
         }
         const completion = Math.round(i.completion * 100) / 100;
         return {
@@ -36,9 +36,9 @@ export default class InvasionEmbed extends BaseEmbed {
       this.description = i18n`Currently in-progress invasions:`;
     } else {
       const i = invasions[0];
-      let rewards = i.defenderReward.asString;
+      let rewards = i.defender?.reward?.asString;
       if (!i.vsInfestation) {
-        rewards = i18n`${i.attackerReward.asString} vs ${rewards}`;
+        rewards = i18n`${i.attacker.reward.asString} vs ${rewards}`;
       }
       const completion = Math.round(i.completion * 100) / 100;
       this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;

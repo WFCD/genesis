@@ -589,7 +589,7 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
   if (chunks.length) {
     chunks.forEach((chunk, index) => {
       if (index > 0) {
-        embed.addField('\u200B', chunk, true);
+        embed.addFields({ name: '\u200B', value: chunk, inline: true });
       } else {
         embed.setDescription(chunk);
       }
@@ -707,9 +707,12 @@ export const constructItemEmbeds = (types) => {
   return fieldGroups.map((fieldGroup, index) => {
     const embed = new MessageEmbed(embedDefaults);
     embed.setTitle(`Item Trackables${index > 0 ? ', ctd.' : ''}`);
-    fieldGroup.forEach((field) => {
-      embed.addField(field.name, field.value, true);
-    });
+    embed.addFields(
+      fieldGroup.map((field) => ({
+        ...field,
+        inline: true,
+      }))
+    );
     return embed;
   });
 };

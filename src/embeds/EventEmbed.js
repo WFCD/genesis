@@ -5,7 +5,7 @@ import BaseEmbed from './BaseEmbed.js';
  */
 export default class EventEmbed extends BaseEmbed {
   /**
-   * @param {Event} event - The deal to be included in the embed
+   * @param {WorldState.Event} event - The deal to be included in the embed
    * @param {string} platform - The platform the event is for
    * @param {I18n} i18n internationalization template
    * @param {string} locale locality
@@ -34,16 +34,21 @@ export default class EventEmbed extends BaseEmbed {
           });
         }
       }
-      if (event.rewards && event.rewards.length > 0) {
+      if (event.rewards?.length > 0) {
         this.fields.push({
           name: i18n`Rewards`,
-          value: event.rewards ? event.rewards.map((reward) => reward.asString).join('; ') : i18n`No Rewards`,
+          value: event.rewards
+            ? event.rewards
+                .filter(Boolean)
+                .map((reward) => reward?.asString)
+                .join('; ')
+            : i18n`No Rewards`,
         });
       }
       if (event.maximumScore && event.currentScore) {
         this.fields.push({
           name: i18n`Progress`,
-          value: `${Number(parseFloat(event.currentScore) / parseFloat(event.maximumScore)).toFixed(2)}%`,
+          value: `${Number(event.currentScore / event.maximumScore).toFixed(2)}%`,
         });
       } else {
         if (event.maximumScore) {

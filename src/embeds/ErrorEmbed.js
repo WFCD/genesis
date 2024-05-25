@@ -17,7 +17,7 @@ export default class BuildEmbed extends BaseEmbed {
         new RegExp(process.cwd().replace('/src/notifications', '').replace(/\\/g, '\\'), 'ig'),
         ''
       );
-      this.addField('Stack Trace', `\`\`\`\n${stack}\n\`\`\``);
+      this.addFields({ name: 'Stack Trace', value: `\`\`\`\n${stack}\n\`\`\`` });
     }
     this.footer.text = 'Occurred';
     this.timestamp = new Date().getTime();

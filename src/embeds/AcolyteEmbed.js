@@ -5,6 +5,13 @@ import BaseEmbed from './BaseEmbed.js';
 const acolyteThumb = `${assetBase}/img/acolyte.png`;
 
 export default class AcolyteEmbed extends BaseEmbed {
+  /**
+   * Create an embed from an array, or single, enemy
+   * @param {WorldState.PersistentEnemy | WorldState.PersistentEnemy[]} enemies enemy to be fought
+   * @param {string} platform platform of the worldstate
+   * @param {I18n} i18n translator
+   * @param {string} locale locale of the worldstate
+   */
   constructor(enemies, { platform, i18n, locale }) {
     super(locale);
 

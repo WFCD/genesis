@@ -14,12 +14,18 @@ export default class CompanionEmbed extends BaseEmbed {
       .setURL(`https://warframe.fandom.com/wiki/${companion.name.replace(/\s/g, '_')}`)
       .setThumbnail(`https://cdn.warframestat.us/img/${companion.imageName}`)
       .setDescription(companion.description)
-      .addField(i18n`Health`, `${companion.health}`, true)
-      .addField(i18n`Power`, `${companion.power}`, true)
-      .addField(i18n`Armor`, `${companion.armor}`, true)
-      .addField(i18n`Shields`, `${companion.shield}`, true)
-      .addField(i18n`Build Time`, `${dayjs.duration({ seconds: companion.buildTime }).asHours()}h`, true)
-      .addField(i18n`Build Price`, `${companion.buildPrice}${emojify('credits')}`, true)
-      .addField(i18n`Build Skip`, `${companion.skipBuildTimePrice}${emojify('p')}`, true);
+      .addFields(
+        { name: i18n`Health`, value: `${companion.health}`, inline: true },
+        { name: i18n`Power`, value: `${companion.power}`, inline: true },
+        { name: i18n`Armor`, value: `${companion.armor}`, inline: true },
+        { name: i18n`Shield`, value: `${companion.shield}`, inline: true },
+        {
+          name: i18n`Build Time`,
+          value: `${dayjs.duration({ seconds: companion.buildTime }).asHours()}h`,
+          inline: true,
+        },
+        { name: `Build Price`, value: `${companion.buildPrice}${emojify('credits')}`, inline: true },
+        { name: `Build Skip`, value: `${companion.skipBuildTimePrice}${emojify('p')}`, inline: true }
+      );
   }
 }
