@@ -1,3 +1,10 @@
+## [2.11.7](https://github.com/WFCD/genesis/compare/v2.11.6...v2.11.7) (2024-06-22)
+
+
+### Bug Fixes
+
+* trackbility, pingability, elevated_roles, omnia fissures ([#833](https://github.com/WFCD/genesis/issues/833)) ([cade574](https://github.com/WFCD/genesis/commit/cade5742b10abce343e1a481de2cc6029529be4c)), closes [#674](https://github.com/WFCD/genesis/issues/674) [#709](https://github.com/WFCD/genesis/issues/709) [#760](https://github.com/WFCD/genesis/issues/760) [#747](https://github.com/WFCD/genesis/issues/747)
+
 ## [2.11.6](https://github.com/WFCD/genesis/compare/v2.11.5...v2.11.6) (2024-05-25)
 
 
