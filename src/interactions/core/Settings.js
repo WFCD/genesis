@@ -501,11 +501,11 @@ export default class Settings extends Interaction {
             return interaction.editReply({ content: 'cleared temp_category', ephemeral });
           case 'all':
             // wipe settings!!!
-            await interaction.deferReply({ ephemeral: true });
+            await interaction.editReply({ ephemeral: true, content: 'clearing...' });
             const { guild } = interaction;
             await ctx.settings.removeGuild(guild.id);
             await Promise.all(guild.channels.cache.map((cachedChannel) => ctx.settings.stopTracking(cachedChannel)));
-            return interaction.editReply('server-wide purge complete');
+            return interaction.editReply({ ephemeral: true, content: 'server-wide purge complete' });
           default:
             break;
         }
