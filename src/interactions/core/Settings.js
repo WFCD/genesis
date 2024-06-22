@@ -43,7 +43,6 @@ export default class Settings extends Interaction {
     auto_shown: 'defaultShown',
     temp_category: 'tempCategory',
     temp_channel: 'tempChannel',
-    elevated_roles: 'elevatedRoles',
   };
   static #rooms = [
     {
@@ -191,17 +190,6 @@ export default class Settings extends Interaction {
           type: Types.BOOLEAN,
           name: 'value',
           description: 'Make replies from interactions show in this channel?',
-          required: true,
-        },
-      ],
-    },
-    {
-      ...cmds['settings.elevated_roles'],
-      type: Types.SUB_COMMAND,
-      options: [
-        {
-          ...cmds['settings.elevated_roles.str'],
-          type: Types.STRING,
           required: true,
         },
       ],
@@ -501,11 +489,11 @@ export default class Settings extends Interaction {
             return interaction.editReply({ content: 'cleared temp_category', ephemeral });
           case 'all':
             // wipe settings!!!
-            await interaction.deferReply({ ephemeral: true });
+            await interaction.editReply({ ephemeral: true, content: 'clearing...' });
             const { guild } = interaction;
             await ctx.settings.removeGuild(guild.id);
             await Promise.all(guild.channels.cache.map((cachedChannel) => ctx.settings.stopTracking(cachedChannel)));
-            return interaction.editReply('server-wide purge complete');
+            return interaction.editReply({ ephemeral: true, content: 'server-wide purge complete' });
           default:
             break;
         }
@@ -530,12 +518,6 @@ export default class Settings extends Interaction {
           case 'platform':
             await ctx.settings.setChannelSetting(channel, field, value);
             return interaction.editReply(`set ${field} to \`${value}\``);
-          case 'elevated_roles':
-            field = this.#aliases[field] || field;
-            value = this.#getMentions(value, interaction.guild)
-              .map((role) => role.id)
-              .join(',');
-            return ctx.handler.recalcPerms(value, interaction.guild);
           case 'language':
             await ctx.settings.setGuildSetting(interaction.guild, field, value);
             return interaction.editReply({ content: `set ${field} to \`${value}\``, ephemeral });
