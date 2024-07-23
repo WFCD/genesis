@@ -417,7 +417,7 @@ export default {
   },
   'tracking.custom.prepend': {
     name: 'anteponer',
-    description: `Requiere 'añadir' para ser especificado. Ignorado al eliminar.`
+    description: 'Requiere \'añadir\' para ser especificado. Ignorado al eliminar.'
   },
   'tracking.custom.channel': {
     name: 'canal',
