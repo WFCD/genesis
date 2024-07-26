@@ -175,12 +175,12 @@ export default class Notifier {
 
       await this.#sendAcolytes(acolytes, deps);
 
-      if (baros?.length) {
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const baro of baros) {
-          await this.#sendBaro(baro, deps);
-        }
-      }
+      // if (baros?.length) {
+      //   // eslint-disable-next-line no-restricted-syntax
+      //   for await (const baro of baros) {
+      //     await this.#sendBaro(baro, deps);
+      //   }
+      // }
       if (conclave && conclave.length > 0) {
         await this.#sendConclaveDailies(conclave, deps);
         await this.#sendConclaveWeeklies(conclave, deps);
