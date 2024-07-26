@@ -1,3 +1,11 @@
+## [2.11.9](https://github.com/WFCD/genesis/compare/v2.11.8...v2.11.9) (2024-07-26)
+
+
+### Bug Fixes
+
+* screw baro ([2827ec1](https://github.com/WFCD/genesis/commit/2827ec1cda34a1974edb235f18952ac4a43005b4))
+* screw baro numba 2 ([808d968](https://github.com/WFCD/genesis/commit/808d968e0a9299aae5525e34f15321ad92f146df))
+
 ## [2.11.8](https://github.com/WFCD/genesis/compare/v2.11.7...v2.11.8) (2024-07-23)
 
 
