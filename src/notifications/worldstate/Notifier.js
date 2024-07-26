@@ -151,7 +151,7 @@ export default class Notifier {
       acolytes,
       sortie,
       syndicateM,
-      baros,
+      // baros,
       tweets,
       nightwave,
       featuredDeals,
