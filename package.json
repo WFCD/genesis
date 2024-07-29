@@ -43,7 +43,7 @@
   },
   "prettier": "@wfcd/eslint-config/prettier",
   "dependencies": {
-    "@sentry/node": "^7.113.0",
+    "@sentry/node": "^8.20.0",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.8",
