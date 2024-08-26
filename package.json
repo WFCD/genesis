@@ -73,7 +73,7 @@
     "chai": "^5.1.1",
     "discord-api-types": "^0.37.96",
     "dotenv": "^16.4.5",
-    "husky": "^9.1.4",
+    "husky": "^9.1.5",
     "install-peerdeps": "^3.0.3",
     "lint-staged": "^15.2.9",
     "mocha": "^10.7.3"
