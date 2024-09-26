@@ -1,3 +1,10 @@
+## [2.11.11](https://github.com/WFCD/genesis/compare/v2.11.10...v2.11.11) (2024-09-26)
+
+
+### Bug Fixes
+
+* force release ([32b0e05](https://github.com/WFCD/genesis/commit/32b0e05be83c5dfe826b36ccede8c03a177b5641))
+
 ## [2.11.10](https://github.com/WFCD/genesis/compare/v2.11.9...v2.11.10) (2024-09-26)
 
 
