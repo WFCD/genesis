@@ -1,3 +1,10 @@
+## [2.11.10](https://github.com/WFCD/genesis/compare/v2.11.9...v2.11.10) (2024-09-26)
+
+
+### Bug Fixes
+
+* **baro:** game flag for baro for easy setting ([#873](https://github.com/WFCD/genesis/issues/873)) ([15fa1b9](https://github.com/WFCD/genesis/commit/15fa1b9f3cebc1b3c6a11318b20a998f1ed732c6))
+
 ## [2.11.9](https://github.com/WFCD/genesis/compare/v2.11.8...v2.11.9) (2024-07-26)
 
 
