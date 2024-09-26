@@ -4,7 +4,7 @@ import Broadcaster from '../Broadcaster.js';
 import logger from '../../utilities/Logger.js';
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
-import { captures, createGroupedArray, platforms } from '../../utilities/CommonFunctions.js';
+import { captures, createGroupedArray, platforms, games } from '../../utilities/CommonFunctions.js';
 
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
@@ -151,7 +151,7 @@ export default class Notifier {
       acolytes,
       sortie,
       syndicateM,
-      // baros,
+      baros,
       tweets,
       nightwave,
       featuredDeals,
@@ -175,12 +175,12 @@ export default class Notifier {
 
       await this.#sendAcolytes(acolytes, deps);
 
-      // if (baros?.length) {
-      //   // eslint-disable-next-line no-restricted-syntax
-      //   for await (const baro of baros) {
-      //     await this.#sendBaro(baro, deps);
-      //   }
-      // }
+      if (games.includes('BARO') && baros?.length) {
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const baro of baros) {
+          await this.#sendBaro(baro, deps);
+        }
+      }
       if (conclave && conclave.length > 0) {
         await this.#sendConclaveDailies(conclave, deps);
         await this.#sendConclaveWeeklies(conclave, deps);
