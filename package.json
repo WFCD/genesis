@@ -71,7 +71,7 @@
     "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.6.3",
     "chai": "^5.1.2",
-    "discord-api-types": "^0.37.104",
+    "discord-api-types": "^0.37.105",
     "dotenv": "^16.4.5",
     "husky": "^9.1.6",
     "install-peerdeps": "^3.0.3",
