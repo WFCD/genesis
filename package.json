@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.6.3",
     "chai": "^5.1.2",
