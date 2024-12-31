@@ -75,7 +75,7 @@
     "dotenv": "^16.4.7",
     "husky": "^9.1.7",
     "install-peerdeps": "^3.0.3",
-    "lint-staged": "^15.2.11",
+    "lint-staged": "^15.3.0",
     "mocha": "^11.0.1"
   },
   "optionalDependencies": {
