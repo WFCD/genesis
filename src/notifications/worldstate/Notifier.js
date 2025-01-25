@@ -352,6 +352,7 @@ export default class Notifier {
         this.#broadcaster.broadcast(tembed, { platform: deps.platform, type: 'baro', locale: deps.locale });
       });
     }
+    return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: 'baro', locale: deps.locale });
   }
 
   async #sendConclaveDailies(newDailies, deps) {
@@ -412,7 +413,9 @@ export default class Notifier {
       try {
         thumb =
           !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst')) &&
-          (await getThumbnailForItem(invasion.attacker.reward.itemString || invasion.defender.reward.itemString));
+          (await getThumbnailForItem(
+            invasion.attacker.reward?.itemString ?? invasion.defender.reward?.itemString ?? ''
+          ));
       } catch (e) {
         logger.error(e);
       }
