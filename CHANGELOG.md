@@ -1,3 +1,10 @@
+## [2.11.12](https://github.com/WFCD/genesis/compare/v2.11.11...v2.11.12) (2025-01-25)
+
+
+### Bug Fixes
+
+* **baro:** broadcast when embed is small enough ([ac1c5cc](https://github.com/WFCD/genesis/commit/ac1c5cc87cda571b92d14184e09817bb5abc23df))
+
 ## [2.11.11](https://github.com/WFCD/genesis/compare/v2.11.10...v2.11.11) (2024-09-26)
 
 
