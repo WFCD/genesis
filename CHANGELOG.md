@@ -1,3 +1,10 @@
+## [2.11.13](https://github.com/WFCD/genesis/compare/v2.11.12...v2.11.13) (2025-01-25)
+
+
+### Bug Fixes
+
+* new crowdin updates ([#912](https://github.com/WFCD/genesis/issues/912)) ([10045d0](https://github.com/WFCD/genesis/commit/10045d0176187955d6fda82c53a23169022fb845))
+
 ## [2.11.12](https://github.com/WFCD/genesis/compare/v2.11.11...v2.11.12) (2025-01-25)
 
 
