@@ -26,6 +26,6 @@ export default class AddGuildToDatabase extends Handler {
       return;
     }
     await this.settings.addGuild([guild]);
-    this.logger.debug(`Joined guild ${guild} (${guild.id}`);
+    this.logger.debug(`Joined guild ${guild} (${guild.id})`);
   }
 }

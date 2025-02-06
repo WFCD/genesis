@@ -8,6 +8,7 @@ import {
   ButtonStyle,
   ComponentType,
   Utils,
+  ChannelType,
 } from 'discord.js';
 
 import Interaction from '../../models/Interaction.js';
@@ -96,7 +97,7 @@ export default class Tracking extends Interaction {
     let thread;
     let isThread;
     if (options?.getChannel('channel')) {
-      if (options?.getChannel('channel').type !== 'GUILD_TEXT') {
+      if (options?.getChannel('channel').type !== ChannelType.GuildText) {
         return interaction.editReply({
           ephemeral: ctx.ephemerate,
           content: `:warning: ${options.getChannel('channel')} is not a text channel. :warning:`,

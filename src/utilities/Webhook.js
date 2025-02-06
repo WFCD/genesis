@@ -32,7 +32,7 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
         : client.send(opts);
     } catch (e) {
       logger.error(e);
-      await this.settings.deleteWebhooksForChannel(ctx.channel.id);
+      await ctx.settings.deleteWebhooksForChannel(ctx.channel.id);
       logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
       return false;
     }
@@ -50,9 +50,10 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
   if (ctx.channel) {
     if (useBotLogic) {
       const webhooks = await ctx.channel.fetchWebhooks();
+      const array = Array.from(webhooks.values());
       let target;
-      if (webhooks.array().length > 0) {
-        [target] = webhooks.array();
+      if (array.length > 0) {
+        [target] = array;
       } else {
         target = await ctx.channel.createWebhook(this.client.user.username);
       }

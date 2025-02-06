@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
@@ -27,7 +27,7 @@ export default class LogMessageDelete extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'GUILD_TEXT') {
+    if (logChannel && logChannel.type === ChannelType.GuildText) {
       let msg;
       if (message.content.length > 1024) {
         msg = `${message.content.slice(1020, message.content.length)}...`;

@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
@@ -30,7 +30,7 @@ export default class LogMemberRemove extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'GUILD_TEXT') {
+    if (logChannel && logChannel.type === ChannelType.GuildText) {
       const log = new LogEmbed(this.bot, {
         color: 0xffa500,
         title: 'Member Left/Kicked',
