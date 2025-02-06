@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
@@ -14,7 +14,7 @@ export default class LogMessageDelete extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.logMessageDeleteBulk', Events.MessageDelete);
+    super(bot, 'handlers.logMessageDeleteBulk', Events.MessageBulkDelete);
   }
 
   /**
@@ -32,7 +32,7 @@ export default class LogMessageDelete extends Handler {
     } else {
       channel = undefined;
     }
-    if (channel?.type === 'text') {
+    if (channel?.type === ChannelType.GuildText) {
       const log = new LogEmbed(this.bot, {
         color: 0xff5a36,
         title: 'Message Deleted',

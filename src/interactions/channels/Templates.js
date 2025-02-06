@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
+import { ApplicationCommandOptionType, ChannelType, PermissionsBitField } from 'discord.js';
 
 import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
@@ -56,7 +56,7 @@ export default class Templates extends Interaction {
     const channel = interaction?.options?.getChannel?.('template_channel');
     const template = interaction?.options?.getString('template');
 
-    if (channel && channel.type !== 'GUILD_VOICE') {
+    if (channel && channel.type !== ChannelType.GuildVoice) {
       return interaction.reply({ content: ctx.i18n`Template must be a voice channel`, ephemeral: ctx.ephemerate });
     }
 

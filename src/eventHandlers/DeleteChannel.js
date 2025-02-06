@@ -11,7 +11,7 @@ export default class DeleteChannel extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.deleteChannel', Events.CHANNEL_DELETE);
+    super(bot, 'handlers.deleteChannel', Events.ChannelDelete);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, PermissionsBitField, EmbedBuilder } from 'discord.js';
+import { ApplicationCommandOptionType, PermissionsBitField, EmbedBuilder, ChannelType } from 'discord.js';
 
 import { games, isVulgarCheck } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
@@ -140,14 +140,14 @@ const create = async (guild, options) => {
     options.category ||
     (await guild.channels.create(options.name, {
       name: options.name,
-      type: 'GUILD_CATEGORY',
+      type: ChannelType.GuildCategory,
       permissionOverwrites: overwrites,
     }));
   let textChannel =
     options.useText && !options.category
       ? await guild.channels.create(cleanedName, {
           name: cleanedName,
-          type: 'GUILD_TEXT',
+          type: ChannelType.GuildText,
           parent: category.id,
           permissionOverwrites: overwrites,
         })
@@ -157,7 +157,7 @@ const create = async (guild, options) => {
   }
   const voiceChannel = await guild.channels.create(options.name, {
     name: options.name,
-    type: 'GUILD_VOICE',
+    type: ChannelType.GuildVoice,
     parent: category,
     permissionOverwrites: overwrites,
     userLimit: typeof options.limit !== 'undefined' ? options.limit : undefined,
