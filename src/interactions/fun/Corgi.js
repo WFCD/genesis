@@ -12,12 +12,7 @@ export default class Corgi extends Interaction {
     const corgi = await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random').then((d) => d.json());
     if (corgi) {
       return interaction.reply({
-        files: [
-          {
-            attachment: corgi.message,
-            name: `corgi.${corgi.message.split('.').pop()}`,
-          },
-        ],
+        files: [corgi.message],
       });
     }
     return interaction.reply(ctx.i18n`couldn't find a corgi... :(`);

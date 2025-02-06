@@ -1,11 +1,7 @@
-import Discord from 'discord.js';
-import Generator from 'warframe-name-generator';
+import { Events, PermissionsBitField } from 'discord.js';
+import { Generator } from 'warframe-name-generator';
 
-const {
-  Constants: { Events },
-  Permissions,
-} = Discord;
-const requiredVCPerms = [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MOVE_MEMBERS];
+const requiredVCPerms = [PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.MoveMembers];
 const relays = [
   'Larunda Relay',
   'Vesper Relay',
@@ -82,14 +78,14 @@ export default class DynamicVoiceHandler {
     /** @type Database  */
     this.settings = settings;
 
-    client.on(Events.VOICE_STATE_UPDATE, async (oldMember, newMember) => {
+    client.on(Events.VoiceStateUpdate, async (oldMember, newMember) => {
       const applicable = await this.checkManagementApplicable(oldMember, newMember);
       if (applicable) {
         await this.checkAllChannels(oldMember.guild, newMember.member);
       }
     });
 
-    client.on(Events.CHANNEL_DELETE, async (channel) => {
+    client.on(Events.ChannelDelete, async (channel) => {
       await this.removeChannel(channel);
     });
 

@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 
 import WhereisEmbed from '../../embeds/WhereisEmbed.js';
 import Collectors from '../../utilities/Collectors.js';
@@ -8,13 +8,10 @@ import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
 const { ENDPOINTS } = WorldStateClient;
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 const queryOpt = [
   {
     ...cmds.query,
-    type: Types.STRING,
+    type: ApplicationCommandOptionType.String,
     required: true,
   },
 ];
@@ -95,7 +92,7 @@ export default class WhereIs extends Interaction {
 
     const relics = createGroupedArray(results, 20)
       .map((rg) => new WhereisEmbed(createGroupedArray(rg, 10), query, longestName.length, longestRelic.length))
-      .map((e) => new Discord.MessageEmbed(e));
+      .map((e) => new EmbedBuilder(e));
     await interaction.deferReply({ ephemeral: ctx.ephemerate });
     return Collectors.paged(interaction, relics, ctx);
   }

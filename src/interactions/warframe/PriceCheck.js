@@ -1,11 +1,7 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import { cmds, platformMap } from '../../resources/index.js';
 import Interaction from '../../models/Interaction.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 
 export default class PriceCheck extends Interaction {
   static enabled = true;
@@ -15,12 +11,12 @@ export default class PriceCheck extends Interaction {
     options: [
       {
         ...cmds.query,
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: true,
       },
       {
         ...cmds.platform,
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         choices: platformMap,
       },
     ],

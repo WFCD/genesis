@@ -1,17 +1,13 @@
-import Discord, { Permissions } from 'discord.js';
+import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
 
 import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
-
 const tc = {
   ...cmds['templates.tc'],
-  type: Types.CHANNEL,
+  type: ApplicationCommandOptionType.Channel,
   required: true,
 };
 
@@ -19,37 +15,37 @@ export default class Templates extends Interaction {
   static enabled = games.includes('ROOMS');
   static command = {
     ...cmds.templates,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['templates.add'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
       {
         ...cmds['templates.delete'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
       {
         ...cmds['templates.list'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['templates.set'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           tc,
           {
             ...cmds['templates.fmt'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['templates.clear'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
     ],

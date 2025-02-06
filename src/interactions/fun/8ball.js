@@ -1,11 +1,7 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 
 const jokes = [
   "Joke's on you. Try again next time",
@@ -39,7 +35,7 @@ export default class EightBall extends Interaction {
     options: [
       {
         ...cmds['8ball.question'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: true,
       },
     ],

@@ -1,9 +1,7 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import { games, getRandomWelcome, isVulgarCheck } from '../utilities/CommonFunctions.js';
-
-const { Events } = Discord.Constants;
 
 export default class WelcomeHandler extends Handler {
   /**
@@ -11,7 +9,7 @@ export default class WelcomeHandler extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.welcome', Events.GUILD_MEMBER_ADD);
+    super(bot, 'handlers.welcome', Events.GuildMemberAdd);
   }
 
   /**
