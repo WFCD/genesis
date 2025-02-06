@@ -546,7 +546,7 @@ export default class Tracking extends Interaction {
    */
   static async #generateWebhook(interaction, ctx, channel, thread) {
     channel = channel || interaction.channel;
-    if (channel.permissionsFor(interaction.client.user).has('MANAGE_WEBHOOKS')) {
+    if (channel.permissionsFor(interaction.client.user).has(PermissionsBitField.Flags.ManageWebhooks)) {
       let webhook;
       let existingWebhooks;
       let setupMsg;
