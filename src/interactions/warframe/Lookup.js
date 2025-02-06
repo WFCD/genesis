@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import WorldStateClient from '../../utilities/WorldStateClient.js';
 import Interaction from '../../models/Interaction.js';
@@ -15,20 +15,16 @@ import { cmds } from '../../resources/index.js';
 import CompanionEmbed from '../../embeds/CompanionEmbed.js';
 
 const { ENDPOINTS } = WorldStateClient;
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 const queryOpt = [
   {
     ...cmds.query,
-    type: Types.STRING,
+    type: ApplicationCommandOptionType.String,
     required: true,
   },
 ];
 const patchnotes = {
   ...cmds.patchnotes,
-  type: Types.BOOLEAN,
+  type: ApplicationCommandOptionType.Boolean,
   required: false,
 };
 const companionTypes = ['Pets', 'Sentinel'];
@@ -41,33 +37,33 @@ export default class Lookup extends Interaction {
     options: [
       {
         ...cmds.arcane,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: queryOpt,
       },
       {
         ...cmds.warframe,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [...queryOpt, patchnotes],
       },
       {
         ...cmds.weapon,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [...queryOpt, patchnotes],
       },
       {
         ...cmds.riven,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
 
         options: queryOpt,
       },
       {
         ...cmds.mod,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [...queryOpt, patchnotes],
       },
       {
         ...cmds.companion,
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [...queryOpt, patchnotes],
       },
     ],

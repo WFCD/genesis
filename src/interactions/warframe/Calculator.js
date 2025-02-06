@@ -1,28 +1,24 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
-
 const levels = [
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'base_level',
     description: "Enemy's base level",
     required: true,
   },
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'current_level',
     description: "Enemy's current level",
     required: true,
   },
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'base',
     description: 'Base value for the current calculation',
   },
@@ -44,17 +40,17 @@ export default class Calculator extends Interaction {
     options: [
       {
         ...cmds['calc.shields'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
       {
         ...cmds['calc.armor'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
       {
         ...cmds['calc.health'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
     ],

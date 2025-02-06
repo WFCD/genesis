@@ -36,7 +36,7 @@ export default class Joke extends Interaction {
     "Wukong. WHY WON'T YOU FINISH?!",
     'Nezha. Not to be confused with Hatsune Miku.',
     'Ivara. Tugging on your hips with these dashwires.',
-    'Opticor, Lanka, Snipetron, Punchthrough. Maximum penetration.',
+    'Opticor, Qorvex, Snipetron, Punchthrough. Maximum penetration.',
     "Phage. Several strokes and your ultimate weapon's ready to go again.",
     "Braton. A first timer's best friend.",
     'Vectis. Top quality wood.',

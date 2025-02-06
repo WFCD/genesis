@@ -1,16 +1,17 @@
-import Discord from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  ButtonStyle,
+  InteractionType,
+  ComponentType,
+  ActionRowBuilder,
+  ButtonBuilder,
+  InteractionCollector,
+} from 'discord.js';
 import dehumanize from 'parse-duration';
 
 import { cmds, platformMap as platformChoices } from '../../resources/index.js';
 import LFGEmbed from '../../embeds/LFGEmbed.js';
 import Interaction from '../../models/Interaction.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types, MessageButtonStyles, InteractionTypes, MessageComponentTypes },
-  MessageActionRow,
-  MessageButton,
-  InteractionCollector,
-} = Discord;
 
 const places = [
   {
@@ -119,29 +120,29 @@ export default class LFG extends Interaction {
     options: [
       {
         ...cmds.platform,
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         choices: platformChoices,
         required: true,
       },
       {
         ...cmds['lfg.place'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         choices: places,
         required: false,
       },
       {
         ...cmds['lfg.place.custom'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: false,
       },
       {
         ...cmds['lfg.time'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: false,
       },
       {
         ...cmds['lfg.members'],
-        type: Types.INTEGER,
+        type: ApplicationCommandOptionType.Integer,
         required: false,
         choices: [
           { name: '1', value: 1 },
@@ -152,23 +153,23 @@ export default class LFG extends Interaction {
       },
       {
         ...cmds['lfg.for'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         choices: target,
         required: false,
       },
       {
         ...cmds['lfg.for.custom'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: false,
       },
       {
         ...cmds['lfg.duration'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: false,
       },
       {
         ...cmds['lfg.type'],
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         choices: [
           {
             name: 'Hosting',
@@ -211,16 +212,16 @@ export default class LFG extends Interaction {
     if (!chn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
 
     const buttons = [
-      new MessageActionRow({
+      new ActionRowBuilder({
         components: [
-          new MessageButton({
-            style: MessageButtonStyles.PRIMARY,
+          new ButtonBuilder({
+            style: ButtonStyle.Primary,
             customId: 'lfg_add',
             emoji: '🔰',
             label: 'Join',
           }),
-          new MessageButton({
-            style: MessageButtonStyles.DANGER,
+          new ButtonBuilder({
+            style: ButtonStyle.Danger,
             customId: 'lfg_end',
             emoji: '❌',
             label: 'End',
@@ -239,8 +240,8 @@ export default class LFG extends Interaction {
     let deleteTimeout = setTimeout(message.delete, dehumanize(lfg.expiry));
 
     const collector = new InteractionCollector(interaction.client, {
-      interactionType: InteractionTypes.MESSAGE_COMPONENT,
-      componentType: MessageComponentTypes.BUTTON,
+      interactionType: InteractionType.MessageComponent,
+      componentType: ComponentType.Button,
       message,
       guild: interaction.guild,
       channel: interaction.channel,
