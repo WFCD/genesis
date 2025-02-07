@@ -145,10 +145,9 @@ export default class Settings extends Interaction {
         if (clear && interaction.client.channels.cache.get(interaction.options.getString('channel'))) {
           onConfirm = async () => {
             await ctx.settings.deleteWebhooksForChannel(interaction.options.getString('channel'));
-            return interaction.editReply({ content: 'buhleted', components: [], ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: 'buhleted', components: [], flags: ctx.flags });
           };
-          onDeny = async () =>
-            interaction.editReply({ content: 'canceled', components: [], ephemeral: ctx.ephemerate });
+          onDeny = async () => interaction.editReply({ content: 'canceled', components: [], flags: ctx.flags });
           return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
         }
       default:

@@ -1,8 +1,7 @@
-import Discord from 'discord.js';
+import { PermissionsBitField, WebhookClient } from 'discord.js';
 
 import logger from './Logger.js';
 
-const { WebhookClient } = Discord;
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
 
 /**
@@ -44,7 +43,9 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
     return webhook(ctx, { content, embeds });
   }
 
-  const useBotLogic = this.scope === 'bot' && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS');
+  const useBotLogic =
+    this.scope === 'bot' &&
+    ctx.channel.permissionsFor(this.client.user.id).has(PermissionsBitField.Flags.ManageWebhooks);
 
   // find how to do this with rest instead of a discord client
   if (ctx.channel) {

@@ -105,7 +105,7 @@ export default class Calculator extends Interaction {
           ephemeral: ctx.ephemerate,
         });
       default:
-        return interaction.reply({ content: 'ok', ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: 'ok', flags: ctx.flags });
     }
   }
 }

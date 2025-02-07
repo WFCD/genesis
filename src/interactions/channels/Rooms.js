@@ -387,9 +387,9 @@ export default class Rooms extends Interaction {
         .permissionsFor(interaction.client.user.id)
         .has([PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageGuild])
     ) {
-      return interaction.reply({ content: 'Bot missing manage channels perms', ephemeral: ctx.ephemerate });
+      return interaction.reply({ content: 'Bot missing manage channels perms', flags: ctx.flags });
     }
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction.deferReply({ flags: ctx.flags });
     try {
       switch (subcommand) {
         case 'create':
@@ -398,8 +398,8 @@ export default class Rooms extends Interaction {
           // eslint-disable-next-line no-case-declarations
           const msg = await create(interaction.guild, options);
           return typeof msg === 'string'
-            ? interaction.editReply({ content: msg, ephemeral: ctx.ephemerate })
-            : interaction.editReply({ embeds: [msg], ephemeral: ctx.ephemerate });
+            ? interaction.editReply({ content: msg, flags: ctx.flags })
+            : interaction.editReply({ embeds: [msg], flags: ctx.flags });
         case 'destroy':
           if (options.userHasRoom) {
             const { room } = options;
@@ -409,9 +409,9 @@ export default class Rooms extends Interaction {
               await room.category.delete();
             }
             await ctx.settings.deletePrivateRoom(room);
-            return interaction.editReply({ content: 'Private room deleted', ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: 'Private room deleted', flags: ctx.flags });
           }
-          return interaction.editReply({ content: 'Nothing to destroy', ephemeral: ctx.ephemerate });
+          return interaction.editReply({ content: 'Nothing to destroy', flags: ctx.flags });
         case 'hide':
           show = false;
           return this.#roomUpdate(options, connect, show, interaction, ctx);
@@ -445,9 +445,9 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, overwrite, audit);
-            return interaction.editReply({ content: 'Private room updated', ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: 'Private room updated', flags: ctx.flags });
           }
-          return interaction.editReply({ content: 'Nothing to update', ephemeral: ctx.ephemerate });
+          return interaction.editReply({ content: 'Nothing to update', flags: ctx.flags });
         case 'rename':
           if (options.userHasRoom && options.name) {
             if (options.room?.textChannel?.manageable) {
@@ -462,15 +462,15 @@ export default class Rooms extends Interaction {
             if (options.room?.category) {
               await options.room.category.setName(options.name, `New name for ${options.room.category.name}.`);
             }
-            return interaction.editReply({ content: 'Done', ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: 'Done', flags: ctx.flags });
           }
-          return interaction.editReply({ content: 'Nothing to rename', ephemeral: ctx.ephemerate });
+          return interaction.editReply({ content: 'Nothing to rename', flags: ctx.flags });
         case 'resize':
           if (options.userHasRoom && typeof options.limit !== 'undefined' && options.room.voiceChannel.manageable) {
             await options.room.voiceChannel.setUserLimit(options.limit);
-            return interaction.editReply({ content: 'Voice channel resized', ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: 'Voice channel resized', flags: ctx.flags });
           }
-          return interaction.editReply({ content: "Couldn't resize nothingness!", ephemeral: ctx.ephemerate });
+          return interaction.editReply({ content: "Couldn't resize nothingness!", flags: ctx.flags });
         case 'invite':
           if (options.userHasRoom && options.invite) {
             const { room, invite } = options;
@@ -479,7 +479,7 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, invitedOverwrite, audit, invite);
-            return interaction.editReply({ content: `invited ${invite.tag}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: `invited ${invite.tag}`, flags: ctx.flags });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",
@@ -493,7 +493,7 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, blockOverwrite, audit, invite);
-            return interaction.editReply({ content: `blocked ${invite.tag}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({ content: `blocked ${invite.tag}`, flags: ctx.flags });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",
@@ -507,7 +507,7 @@ export default class Rooms extends Interaction {
       return interaction.editReply('unable to act. feature requires Administrator permission on bot. Thanks discord.');
     }
 
-    return interaction.editReply({ content: ctx.i18n`naaah`, ephemeral: ctx.ephemerate });
+    return interaction.editReply({ content: ctx.i18n`naaah`, flags: ctx.flags });
   }
 
   static async #roomUpdate(options, connect, show, interaction, ctx) {
@@ -534,9 +534,9 @@ export default class Rooms extends Interaction {
         this.#logger.error(e);
         return interaction.editReply({ content: "Couldn't update permissions", ephemeral: true });
       }
-      return interaction.editReply({ content: 'Private room updated', ephemeral: ctx.ephemerate });
+      return interaction.editReply({ content: 'Private room updated', flags: ctx.flags });
     }
-    return interaction.editReply({ content: 'Nothing to update', ephemeral: ctx.ephemerate });
+    return interaction.editReply({ content: 'Nothing to update', flags: ctx.flags });
   }
 
   /**

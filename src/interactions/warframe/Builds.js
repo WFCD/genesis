@@ -350,7 +350,7 @@ export default class Builds extends Interaction {
           });
           return Collectors.dynamic(interaction, pages, ctx);
         }
-        return interaction.reply({ content: ctx.i18n`No builds found`, ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: ctx.i18n`No builds found`, flags: ctx.flags });
       case 'update':
       case 'add':
         await interaction.deferReply({ ephemeral: true });
@@ -379,14 +379,14 @@ export default class Builds extends Interaction {
           });
           if (!thereWasAPart) await ctx.settings.deleteBuild(id);
           else await ctx.settings.saveBuild(build);
-          return interaction.reply({ content: 'buhleted', ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: 'buhleted', flags: ctx.flags });
         }
         break;
       case 'mod':
         if (!build) {
           return interaction.reply(ctx.i18n`Can't add mods when you haven't got a build.`);
         }
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
+        await interaction.deferReply({ flags: ctx.flags });
         const populatedKeys = Object.keys(build.toJson())
           .filter((p) => !unmodable.includes(p))
           .filter((k) => build.toJson()[k]);
@@ -529,7 +529,7 @@ export default class Builds extends Interaction {
           channel: interaction.channel,
         });
         const modPageHandler = async (button) => {
-          await button.deferUpdate({ ephemeral: ctx.ephemerate });
+          await button.deferUpdate({ flags: ctx.flags });
           switch (button.customId) {
             case 'previous':
               if (modPage > 1) modPage -= 1;
@@ -583,6 +583,6 @@ export default class Builds extends Interaction {
         modPageCollector.on('collect', modPageHandler);
         return undefined;
     }
-    return interaction.reply({ content: ctx.i18n`Nah.`, ephemeral: ctx.ephemerate });
+    return interaction.reply({ content: ctx.i18n`Nah.`, flags: ctx.flags });
   }
 }

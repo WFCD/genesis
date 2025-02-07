@@ -57,22 +57,22 @@ export default class Templates extends Interaction {
     const template = interaction?.options?.getString('template');
 
     if (channel && channel.type !== ChannelType.GuildVoice) {
-      return interaction.reply({ content: ctx.i18n`Template must be a voice channel`, ephemeral: ctx.ephemerate });
+      return interaction.reply({ content: ctx.i18n`Template must be a voice channel`, flags: ctx.flags });
     }
 
     switch (subcommand) {
       case 'add':
         if (await ctx.settings.isTemplate(channel)) {
-          return interaction.reply({ content: ctx.i18n`That is already a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: ctx.i18n`That is already a template`, flags: ctx.flags });
         }
         await ctx.settings.addTemplate(channel, false);
-        return interaction.reply({ content: ctx.i18n`${channel} added as a template.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: ctx.i18n`${channel} added as a template.`, flags: ctx.flags });
       case 'delete':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: ctx.i18n`That is not a template`, flags: ctx.flags });
         }
         await ctx.settings.deleteTemplate(channel);
-        return interaction.reply({ content: ctx.i18n`${channel} removed as a template.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: ctx.i18n`${channel} removed as a template.`, flags: ctx.flags });
       case 'list':
         /* eslint-disable no-case-declarations */
         const templateIds = await ctx.settings.getTemplates([interaction.guild]);
@@ -100,16 +100,16 @@ export default class Templates extends Interaction {
             })
           )
         ).join('\n');
-        return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
+        return interaction.reply({ embeds: [embed], flags: ctx.flags });
       case 'clear':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: ctx.i18n`That is not a template`, flags: ctx.flags });
         }
         await ctx.settings.setDynTemplate(channel.id, undefined);
-        return interaction.reply({ content: ctx.i18n`${channel}'s name template cleared.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: ctx.i18n`${channel}'s name template cleared.`, flags: ctx.flags });
       case 'set':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: ctx.i18n`That is not a template`, flags: ctx.flags });
         }
         await ctx.settings.setDynTemplate(channel.id, template);
         return interaction.reply({

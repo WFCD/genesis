@@ -207,9 +207,9 @@ export default class LFG extends Interaction {
 
     const embed = new LFGEmbed(lfg, ctx);
     const rawChn = ctx.lfg?.[lfg.platform] || ctx.lfg?.[Object.keys(ctx.lfg)?.[0]];
-    if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
+    if (!rawChn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, flags: ctx.flags });
     const chn = interaction.guild.channels.resolve(rawChn.id);
-    if (!chn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, ephemeral: ctx.ephemerate });
+    if (!chn) return interaction.reply({ content: ctx.i18n`Couldn't find channel.`, flags: ctx.flags });
 
     const buttons = [
       new ActionRowBuilder({
@@ -288,6 +288,6 @@ export default class LFG extends Interaction {
     };
 
     collector.on('collect', reactionHandler);
-    return interaction.reply({ content: 'gl;hf', ephemeral: ctx.ephemerate });
+    return interaction.reply({ content: 'gl;hf', flags: ctx.flags });
   }
 }

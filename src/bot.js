@@ -1,11 +1,9 @@
-import Discord, { PresenceUpdateStatus } from 'discord.js';
+import { Client, WebhookClient, GatewayIntentBits, Events, PresenceUpdateStatus } from 'discord.js';
 
 import WorldStateClient from './utilities/WorldStateClient.js';
 import EventHandler from './eventHandlers/EventHandler.js';
 import Database from './settings/Database.js';
 import logger from './utilities/Logger.js';
-
-const { Client, WebhookClient, GatewayIntentBits, Events } = Discord;
 
 const unlog = {
   debug: ['WS_CONNECTION_TIMEOUT'],
