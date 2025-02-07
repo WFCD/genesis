@@ -114,7 +114,7 @@ export default class Templates extends Interaction {
         await ctx.settings.setDynTemplate(channel.id, template);
         return interaction.reply({
           content: ctx.i18n`\`${template}\` set as ${channel}'s name template.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
         });
       default:
         break;
