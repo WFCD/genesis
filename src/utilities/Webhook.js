@@ -55,7 +55,9 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
       if (array.length > 0) {
         [target] = array;
       } else {
-        target = await ctx.channel.createWebhook(this.client.user.username);
+        target = await ctx.channel.createWebhook({
+          name: this.client.user.username,
+        });
       }
       logger.debug(`Created and adding ${JSON.stringify(target)} to ${ctx.channel}`);
       target.name = this.client.user.username;

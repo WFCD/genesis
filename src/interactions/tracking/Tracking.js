@@ -577,7 +577,8 @@ export default class Tracking extends Interaction {
         }
       } else {
         try {
-          webhook = await channel.createWebhook(ctx.settings.defaults.username, {
+          webhook = await channel.createWebhook({
+            name: ctx.settings.defaults.username,
             avatar: ctx.settings.defaults.avatar,
             reason: 'Automated Webhook setup for Notifications',
           });
