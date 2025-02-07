@@ -248,7 +248,7 @@ export default class InteractionHandler extends BaseHandler {
   async loadCustomCommands(guildId) {
     const rawCustomCommands = await this.settings.getRawCustomCommands(guildId);
     if (guildId) this.#customCommands = this.#customCommands.filter((cc) => cc.guildId !== guildId);
-    const added = rawCustomCommands.map((raw) => CustomInteraction(raw));
+    const added = rawCustomCommands?.map((raw) => CustomInteraction(raw)) ?? [];
     this.#customCommands.push(...added);
     if (guildId) {
       const guild = await this.client.guilds.fetch(guildId);

@@ -50,7 +50,7 @@ export default class CustomCommands extends Interaction {
 
   static async commandHandler(interaction, ctx) {
     const { options } = interaction;
-    const ephemeral = ctx.ephemerate;
+    const { flags } = ctx;
     const action = options?.getSubcommand(false);
     const call = options.getString('call', false);
     const response = options.getString('response', false);
@@ -60,11 +60,11 @@ export default class CustomCommands extends Interaction {
         if (nameReg.test(call) && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
           await ctx.settings.addCustomCommand(interaction.guild, call, response, interaction.user.id);
           await ctx.handler.loadCustomCommands(interaction.guild.id);
-          return interaction.reply({ content: 'Added & reloaded guild commands', ephemeral });
+          return interaction.reply({ content: 'Added & reloaded guild commands', flags });
         }
         return interaction.reply({
           content: 'Not possible, command name is either invalid, or another with the same name exists',
-          ephemeral,
+          flags,
         });
       case 'remove':
         const onConfirm = async () => {
@@ -90,7 +90,7 @@ export default class CustomCommands extends Interaction {
           fields: metaGroup,
           title: ctx.i18n`Custom Commands`,
         }));
-        return interaction.reply({ embeds, ephemeral });
+        return interaction.reply({ embeds, flags });
     }
     return undefined;
   }

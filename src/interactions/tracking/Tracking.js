@@ -90,7 +90,7 @@ export default class Tracking extends Interaction {
   };
 
   static async commandHandler(interaction, ctx) {
-    await interaction?.deferReply({ ephemeral: false });
+    await interaction?.deferReply();
     const { options } = interaction;
     const action = options?.getSubcommand();
     let channel;
@@ -99,7 +99,7 @@ export default class Tracking extends Interaction {
     if (options?.getChannel('channel')) {
       if (options?.getChannel('channel').type !== ChannelType.GuildText) {
         return interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
           content: `:warning: ${options.getChannel('channel')} is not a text channel. :warning:`,
         });
       }
@@ -114,13 +114,13 @@ export default class Tracking extends Interaction {
       thread = options.getChannel('thread');
       if (thread.parent.id !== channel.id) {
         return interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
           content: `:warning: ${thread} is not a thread in ${channel} :warning:`,
         });
       }
     } else if (options.getChannel('thread')) {
       return interaction.editReply({
-        ephemeral: ctx.ephemerate,
+        flags: ctx.flags,
         content: `:warning: ${options.getChannel('thread')} is not a thread channel :warning:`,
       });
     }
@@ -482,7 +482,7 @@ export default class Tracking extends Interaction {
       buttonCollector.on('collect', buttonHandler);
     }
     if (action === 'custom') {
-      await interaction?.editReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
+      await interaction?.editReply({ content: 'Analyzing...', flags: ctx.flags });
       const add = trackablesFromParameters(
         (options.getString('add') || '')
           .split(',')
@@ -506,13 +506,13 @@ export default class Tracking extends Interaction {
         );
         return interaction?.editReply?.({
           content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
         });
       }
       if (clear && !remove?.length) {
         return interaction?.editReply?.({
           content: ctx.i18n`Specify trackables to remove the prepend for.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
         });
       }
       if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events, thread);
@@ -521,7 +521,7 @@ export default class Tracking extends Interaction {
       if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events, thread);
       if (remove?.items?.length && !clear) await ctx.settings.untrackItems(channel, remove.items, thread);
       const removeString = ctx.i18n`Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
-      await interaction.editReply({ content: `${addString}\n${removeString}`, ephemeral: ctx.ephemerate });
+      await interaction.editReply({ content: `${addString}\n${removeString}`, flags: ctx.flags });
 
       if (prepend && (add.items.length || add.events.length)) {
         await ctx.settings.addPings(interaction.guild, add, prepend);
@@ -529,7 +529,7 @@ export default class Tracking extends Interaction {
           Utils.removeMentions(prepend)
         )}\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
         await interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.flags,
           content: `${addString}\n${removeString}\n${pingsString}`,
         });
       }

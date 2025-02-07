@@ -85,7 +85,7 @@ export default class Lookup extends Interaction {
     let data;
     let pages = [];
 
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction.deferReply({ flags: ctx.flags });
     switch (subcommand) {
       case 'arcane':
         data = await ctx.ws.search(ENDPOINTS.SEARCH.ARCANES, query);

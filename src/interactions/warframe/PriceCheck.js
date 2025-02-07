@@ -27,8 +27,8 @@ export default class PriceCheck extends Interaction {
     const platform = options?.get('platform')?.value || ctx.platform || 'pc';
     const query = options?.get('query')?.value;
 
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction.deferReply({ flags: ctx.flags });
     const embeds = await ctx.ws.pricecheck(query, { platform });
-    return interaction.editReply({ embeds, ephemeral: ctx.ephemerate });
+    return interaction.editReply({ embeds, flags: ctx.flags });
   }
 }

@@ -587,7 +587,7 @@ export default class Settings extends Interaction {
         embed.setTimestamp(new Date());
         embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });
 
-        return interaction.editReply({ embeds: [embed], ephemeral: ctx.ephemerate });
+        return interaction.editReply({ embeds: [embed], flags: ctx.flags });
       default:
         break;
     }

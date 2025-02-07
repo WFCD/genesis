@@ -1,4 +1,4 @@
-import { EmbedBuilder, EmbedType } from 'discord.js';
+import { EmbedBuilder, EmbedType, MessageFlags } from 'discord.js';
 import ping from 'ping';
 
 import { emojify, games, timeDeltaToString } from '../../utilities/CommonFunctions.js';
@@ -17,7 +17,7 @@ export default class Ping extends Interaction {
     if (!interaction.isCommand()) return undefined;
 
     const now = Date.now();
-    await interaction.reply({ content: 'Testing Ping', ephemeral: true });
+    await interaction.reply({ content: 'Testing Ping', flags: MessageFlags.Ephemeral });
     const afterSend = Date.now();
 
     const hosts = ['discordapp.com']

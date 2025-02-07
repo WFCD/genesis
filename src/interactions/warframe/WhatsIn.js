@@ -67,6 +67,6 @@ export default class WhatsIn extends Interaction {
     const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
     if (!data || !Object.keys(data).length) return interaction.reply(ctx.i18n`Sorry, no such relic`);
     const embed = new WhatsInEmbed(data, tier, query);
-    return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
+    return interaction.reply({ embeds: [embed], flags: ctx.flags });
   }
 }

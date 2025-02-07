@@ -93,7 +93,7 @@ export default class WhereIs extends Interaction {
     const relics = createGroupedArray(results, 20)
       .map((rg) => new WhereisEmbed(createGroupedArray(rg, 10), query, longestName.length, longestRelic.length))
       .map((e) => new EmbedBuilder(e));
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction.deferReply({ flags: ctx.flags });
     return Collectors.paged(interaction, relics, ctx);
   }
 }

@@ -9,7 +9,7 @@ export default class Joke extends Interaction {
   static async commandHandler(interaction, ctx) {
     return interaction.reply({
       content: `\`\`\`haskell\n${this.jokes[Math.floor(Math.random() * this.jokes.length)]}\n\`\`\``,
-      ephemeral: ctx.ephemerate,
+      flags: ctx.flags,
     });
   }
 
