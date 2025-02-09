@@ -446,17 +446,10 @@ export default class Settings extends Interaction {
     const { options } = interaction;
     const ephemeral = ctx.ephemerate;
     await interaction.deferReply();
-    let action;
-    try {
-      action = options?.getSubcommandGroup();
-    } catch (e) {
-      try {
-        action = options?.getSubcommand();
-      } catch (ex) {
-        ctx.logger.error(ex);
-        return undefined;
-      }
-    }
+    let action = options.getSubcommandGroup();
+    if (!action) action = options.getSubcommand();
+    if (!action) return undefined;
+
     let field = options.getSubcommand();
     let value = (options?.get?.('value') || options?.get?.('channel') || options.get?.('platform'))?.value;
     const platform = options.get?.('platform')?.value;
@@ -541,7 +534,7 @@ export default class Settings extends Interaction {
         rolePermTokens.push(
           `${perms.has(PermissionsBitField.Flags.ManageRoles) ? this.#check : this.#xmark} Permission Present`
         );
-        rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
+        rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.members.me.roles.highest.position}`);
 
         /** @type Discord.EmbedField[] */
         const fields = chunkFields(rolePermTokens, 'Can Manage Roles', '\n');
