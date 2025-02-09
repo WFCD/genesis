@@ -596,16 +596,16 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
     embed.setDescription(`No ${title}`);
   }
 
-  if (embed.fields.length > fieldLimit) {
-    const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
+  if (embed.data.fields?.length > fieldLimit) {
+    const fieldGroups = createGroupedArray(embed.data.fields, fieldLimit);
     const embeds = [];
     fieldGroups.forEach((fields, index) => {
       const smEmbed = new EmbedBuilder(embedDefaults);
       embed.setTitle(title);
 
-      smEmbed.fields = fields;
+      smEmbed.data.fields = fields;
       if (index === 0) {
-        smEmbed.setDescription(embed.description);
+        smEmbed.setDescription(embed.data.description);
       }
       embeds.push(smEmbed);
     });
