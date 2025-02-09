@@ -603,7 +603,7 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
       const smEmbed = new EmbedBuilder(embedDefaults);
       embed.setTitle(title);
 
-      smEmbed.data.fields = fields;
+      smEmbed.setFields(fields);
       if (index === 0) {
         smEmbed.setDescription(embed.data.description);
       }
