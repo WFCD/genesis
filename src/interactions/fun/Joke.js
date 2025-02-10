@@ -9,7 +9,7 @@ export default class Joke extends Interaction {
   static async commandHandler(interaction, ctx) {
     return interaction.reply({
       content: `\`\`\`haskell\n${this.jokes[Math.floor(Math.random() * this.jokes.length)]}\n\`\`\``,
-      ephemeral: ctx.ephemerate,
+      flags: ctx.flags,
     });
   }
 
@@ -36,7 +36,7 @@ export default class Joke extends Interaction {
     "Wukong. WHY WON'T YOU FINISH?!",
     'Nezha. Not to be confused with Hatsune Miku.',
     'Ivara. Tugging on your hips with these dashwires.',
-    'Opticor, Lanka, Snipetron, Punchthrough. Maximum penetration.',
+    'Opticor, Qorvex, Snipetron, Punchthrough. Maximum penetration.',
     "Phage. Several strokes and your ultimate weapon's ready to go again.",
     "Braton. A first timer's best friend.",
     'Vectis. Top quality wood.',

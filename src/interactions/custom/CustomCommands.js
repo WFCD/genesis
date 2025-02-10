@@ -1,13 +1,9 @@
-import Discord, { Permissions } from 'discord.js';
+import { PermissionsBitField, ApplicationCommandOptionType } from 'discord.js';
 
 import { createGroupedArray } from '../../utilities/CommonFunctions.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 
 const nameReg = /^[\w-]{1,32}$/u;
 
@@ -16,45 +12,45 @@ export default class CustomCommands extends Interaction {
 
   static command = {
     ...cmds.cc,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['cc.add'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['cc.add.call'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
           {
             ...cmds['cc.add.response'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['cc.remove'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['cc.remove.call'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['cc.list'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   };
 
   static async commandHandler(interaction, ctx) {
     const { options } = interaction;
-    const ephemeral = ctx.ephemerate;
+    const { flags } = ctx;
     const action = options?.getSubcommand(false);
     const call = options.getString('call', false);
     const response = options.getString('response', false);
@@ -64,11 +60,11 @@ export default class CustomCommands extends Interaction {
         if (nameReg.test(call) && !(await ctx.settings.getCustomCommandRaw(interaction.guild, call))) {
           await ctx.settings.addCustomCommand(interaction.guild, call, response, interaction.user.id);
           await ctx.handler.loadCustomCommands(interaction.guild.id);
-          return interaction.reply({ content: 'Added & reloaded guild commands', ephemeral });
+          return interaction.reply({ content: 'Added & reloaded guild commands', flags });
         }
         return interaction.reply({
           content: 'Not possible, command name is either invalid, or another with the same name exists',
-          ephemeral,
+          flags,
         });
       case 'remove':
         const onConfirm = async () => {
@@ -94,7 +90,7 @@ export default class CustomCommands extends Interaction {
           fields: metaGroup,
           title: ctx.i18n`Custom Commands`,
         }));
-        return interaction.reply({ embeds, ephemeral });
+        return interaction.reply({ embeds, flags });
     }
     return undefined;
   }

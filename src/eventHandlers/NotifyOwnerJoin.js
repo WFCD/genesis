@@ -1,9 +1,7 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import { games } from '../utilities/CommonFunctions.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
@@ -14,7 +12,7 @@ export default class NotifyOwnerJoin extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.notifyowner', Events.GUILD_CREATE);
+    super(bot, 'handlers.notifyowner', Events.GuildCreate);
     this.channelTimeout = 60000;
   }
 
@@ -29,19 +27,22 @@ export default class NotifyOwnerJoin extends Handler {
     if (!guild.available) {
       return;
     }
+
+    const owner = await guild.fetchOwner();
     const bots = guild.members.cache.filter((member) => member.user.bot);
     const isOverLimit = (bots.size / guild.memberCount) * 100 >= 80;
 
     try {
       if (!isOverLimit) {
         const prefix = await this.settings.getChannelSetting(guild.channels.cache.first(), 'prefix');
-        guild.owner.send(
+
+        owner.send(
           `${this.client.user.username} has been added ` +
             `to ${guild.name} and is ready\n Type ` +
             `\`${prefix}help\` for help`
         );
       } else {
-        guild.owner.send(
+        owner.send(
           `Your guild **${guild.name}** is over the bot-to-user ratio.\nGenesis will now leave.\nIf you want to keep using ${this.client.user.username} please invite more people or kick some bots.`
         );
         guild.leave();

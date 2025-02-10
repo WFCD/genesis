@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType, EmbedBuilder, PermissionsBitField } from 'discord.js';
 
 import logger from '../../utilities/Logger.js';
 import Collectors from '../../utilities/Collectors.js';
@@ -16,12 +16,6 @@ import {
 import { cmds, localeMap, platformMap } from '../../resources/index.js';
 import Interaction from '../../models/Interaction.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-  MessageEmbed,
-  Permissions,
-} = Discord;
-
 export default class Settings extends Interaction {
   static #negate = '✘';
   static #affirm = '✓';
@@ -29,7 +23,7 @@ export default class Settings extends Interaction {
   static #xmark = emojify('red_tick');
   static #empty = emojify('empty');
   static #globalable = {
-    type: Types.BOOLEAN,
+    type: ApplicationCommandOptionType.Boolean,
     name: 'global',
     description: 'Should this value be set for every channel in the server?',
   };
@@ -47,55 +41,55 @@ export default class Settings extends Interaction {
   static #rooms = [
     {
       ...cmds['settings.allow_rooms'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.allow_rooms.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
       ],
     },
     {
       ...cmds['settings.auto_locked'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.auto_locked.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
       ],
     },
     {
       ...cmds['settings.auto_text'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.auto_text.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
       ],
     },
     {
       ...cmds['settings.auto_shown'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.auto_shown.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
       ],
     },
     {
       ...cmds['settings.temp_category'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.temp_category.channel'],
-          type: Types.CHANNEL,
+          type: ApplicationCommandOptionType.Channel,
           required: true,
         },
       ],
@@ -104,11 +98,11 @@ export default class Settings extends Interaction {
       ...cmds['settings.temp_channel'],
       name: 'temp_channel',
       description: 'Set the channel for creating threads in for private rooms',
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.temp_channel.channel'],
-          type: Types.CHANNEL,
+          type: ApplicationCommandOptionType.Channel,
           required: true,
         },
       ],
@@ -116,16 +110,16 @@ export default class Settings extends Interaction {
   ];
   static #setLFG = {
     ...cmds['settings.lfg'],
-    type: Types.SUB_COMMAND,
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         ...cmds['settings.lfg.channel'],
-        type: Types.CHANNEL,
+        type: ApplicationCommandOptionType.Channel,
         required: true,
       },
       {
         ...cmds.platform,
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         required: true,
         choices: platformMap,
       },
@@ -134,11 +128,11 @@ export default class Settings extends Interaction {
   static #custom = [
     {
       ...cmds['settings.allow_custom'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.allow_custom.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
         Settings.#globalable,
@@ -146,11 +140,11 @@ export default class Settings extends Interaction {
     },
     {
       ...cmds['settings.allow_inline'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.allow_inline.bool'],
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
         },
         Settings.#globalable,
@@ -160,11 +154,11 @@ export default class Settings extends Interaction {
   static #settingsCommands = [
     {
       ...cmds['settings.language'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds['settings.language.str'],
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           choices: localeMap,
           required: true,
         },
@@ -172,11 +166,11 @@ export default class Settings extends Interaction {
     },
     {
       ...cmds['settings.platform'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           ...cmds.platform,
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           choices: platformMap,
           required: true,
         },
@@ -184,10 +178,10 @@ export default class Settings extends Interaction {
     },
     {
       ...cmds['settings.ephemerate'],
-      type: Types.SUB_COMMAND,
+      type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
-          type: Types.BOOLEAN,
+          type: ApplicationCommandOptionType.Boolean,
           name: 'value',
           description: 'Make replies from interactions show in this channel?',
           required: true,
@@ -233,7 +227,7 @@ export default class Settings extends Interaction {
    * @returns {Promise<Array<Discord.MessageEmbed>>}
    */
   static async #gather(ctx, channel, thread) {
-    const page = new MessageEmbed(embedDefaults);
+    const page = new EmbedBuilder(embedDefaults);
     const settings = await ctx.settings.getChannelSettings(channel, [
       'language',
       'platform',
@@ -384,7 +378,7 @@ export default class Settings extends Interaction {
 
     const stats = await ctx.settings.getGuildStats(channel.guild);
     embeds.push(
-      new MessageEmbed({
+      new EmbedBuilder({
         title: ctx.i18n`Most Used Commands`,
         color: 0x444444,
         description: stats
@@ -408,41 +402,41 @@ export default class Settings extends Interaction {
   static elevated = true;
   static command = {
     ...cmds.settings,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['settings.set'],
-        type: Types.SUB_COMMAND_GROUP,
+        type: ApplicationCommandOptionType.SubcommandGroup,
         options: this.#settingsCommands,
       },
       {
         ...cmds['settings.clear'],
-        type: Types.SUB_COMMAND_GROUP,
+        type: ApplicationCommandOptionType.SubcommandGroup,
         options: [
           {
             name: 'pings',
             description: 'Clear tracking pings',
-            type: Types.SUB_COMMAND,
+            type: ApplicationCommandOptionType.Subcommand,
           },
           {
             name: 'temp_category',
             description: 'Clear temp category for private channels',
-            type: Types.SUB_COMMAND,
+            type: ApplicationCommandOptionType.Subcommand,
           },
           {
             name: 'all',
             description: 'Clear all settings on the bot for this server',
-            type: Types.SUB_COMMAND,
+            type: ApplicationCommandOptionType.Subcommand,
           },
         ],
       },
       {
         ...cmds['settings.get'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['settings.diag'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   };
@@ -452,17 +446,10 @@ export default class Settings extends Interaction {
     const { options } = interaction;
     const ephemeral = ctx.ephemerate;
     await interaction.deferReply();
-    let action;
-    try {
-      action = options?.getSubcommandGroup();
-    } catch (e) {
-      try {
-        action = options?.getSubcommand();
-      } catch (ex) {
-        ctx.logger.error(ex);
-        return undefined;
-      }
-    }
+    let action = options.getSubcommandGroup();
+    if (!action) action = options.getSubcommand();
+    if (!action) return undefined;
+
     let field = options.getSubcommand();
     let value = (options?.get?.('value') || options?.get?.('channel') || options.get?.('platform'))?.value;
     const platform = options.get?.('platform')?.value;
@@ -528,7 +515,7 @@ export default class Settings extends Interaction {
         const pages = await this.#gather(ctx, channel, thread);
         return Collectors.paged(interaction, pages, ctx);
       case 'diag':
-        const embed = new MessageEmbed();
+        const embed = new EmbedBuilder();
         embed.setTitle(`Diagnostics for Shard ${interaction.guild.shardId + 1}/${interaction.client.ws.shards.size}`);
         embed.addFields([
           {
@@ -545,9 +532,9 @@ export default class Settings extends Interaction {
         /** @type string[] */
         const rolePermTokens = [];
         rolePermTokens.push(
-          `${perms.has(Permissions.FLAGS.MANAGE_ROLES) ? this.#check : this.#xmark} Permission Present`
+          `${perms.has(PermissionsBitField.Flags.ManageRoles) ? this.#check : this.#xmark} Permission Present`
         );
-        rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.me.roles.highest.position}`);
+        rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.members.me.roles.highest.position}`);
 
         /** @type Discord.EmbedField[] */
         const fields = chunkFields(rolePermTokens, 'Can Manage Roles', '\n');
@@ -556,7 +543,7 @@ export default class Settings extends Interaction {
         // Tracking
         const trackingReadinessTokens = [
           `${
-            perms.has(Permissions.FLAGS.MANAGE_WEBHOOKS) ? `${this.#check}  Can` : `${this.#xmark} Cannot`
+            perms.has(PermissionsBitField.Flags.ManageWebhooks) ? `${this.#check}  Can` : `${this.#xmark} Cannot`
           } Manage Webhooks`,
         ];
 
@@ -593,7 +580,7 @@ export default class Settings extends Interaction {
         embed.setTimestamp(new Date());
         embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });
 
-        return interaction.editReply({ embeds: [embed], ephemeral: ctx.ephemerate });
+        return interaction.editReply({ embeds: [embed], flags: ctx.flags });
       default:
         break;
     }

@@ -1,8 +1,6 @@
-import Discord from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
@@ -13,7 +11,7 @@ export default class DeleteChannel extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.deleteChannel', Events.CHANNEL_DELETE);
+    super(bot, 'handlers.deleteChannel', Events.ChannelDelete);
   }
 
   /**
@@ -23,7 +21,7 @@ export default class DeleteChannel extends Handler {
   async execute(...[channel]) {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    if (channel.type === 'GUILD_VOICE') {
+    if (channel.type === ChannelType.GuildVoice) {
       return;
     }
     await this.settings.deleteChannel(channel);

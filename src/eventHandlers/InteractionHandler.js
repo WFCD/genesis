@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import I18n from 'i18n-string-templates';
 import decache from 'decache';
-import Discord from 'discord.js';
+import { CommandInteraction, Events, PermissionsBitField, ApplicationCommandOptionType } from 'discord.js';
 
 import Interaction from '../models/Interaction.js';
 import WorldStateClient from '../utilities/WorldStateClient.js';
@@ -12,11 +12,6 @@ import BaseHandler from '../models/BaseEventHandler.js';
 import logger from '../utilities/Logger.js';
 import { i18n, locales } from '../resources/index.js';
 
-const { CommandInteraction } = Discord;
-const {
-  Permissions: { FLAGS: Permissions },
-  Constants: { Events },
-} = Discord;
 const whitelistedGuilds = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
 
 const ws = new WorldStateClient(logger);
@@ -56,7 +51,7 @@ export default class InteractionHandler extends BaseHandler {
    * @param {boolean} skipInit Whether to skip initialization
    */
   constructor(bot, skipInit) {
-    super(bot, 'handlers.interactions', Events.INTERACTION_CREATE);
+    super(bot, 'handlers.interactions', Events.InteractionCreate);
     this.#loadedCommands = [];
     this.#customCommands = [];
     this.ready = false;
@@ -120,10 +115,10 @@ export default class InteractionHandler extends BaseHandler {
       rolesOverride ||
       guild.roles.cache.every((role) =>
         role.permissions.has([
-          Permissions.MANAGE_GUILD,
-          Permissions.ADMINISTRATOR,
-          Permissions.MANAGE_CHANNELS,
-          Permissions.MANAGE_ROLES,
+          PermissionsBitField.Flags.ManageGuild,
+          PermissionsBitField.Flags.Administrator,
+          PermissionsBitField.Flags.ManageChannels,
+          PermissionsBitField.Flags.ManageRoles,
         ])
       );
     const roles = (rolesOverride || (await this.settings.getGuildSetting(guild, 'elevatedRoles')) || '')
@@ -142,18 +137,18 @@ export default class InteractionHandler extends BaseHandler {
           permissions: [
             {
               id: guild.roles.everyone.id,
-              type: 'ROLE',
+              type: ApplicationCommandOptionType.Role,
               permission: false,
             },
             {
               id: owner,
-              type: 'USER',
+              type: ApplicationCommandOptionType.User,
               permission: true,
             },
             ...(roles?.length
               ? roles.map((id) => ({
                   id,
-                  type: 'ROLE',
+                  type: ApplicationCommandOptionType.Role,
                   permission: true,
                 }))
               : []),
@@ -167,7 +162,7 @@ export default class InteractionHandler extends BaseHandler {
         permissions: [
           {
             id: this.client.application.owner.id,
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             permission: true,
           },
         ],
@@ -179,7 +174,7 @@ export default class InteractionHandler extends BaseHandler {
           permissions: [
             {
               id: member.id,
-              type: 'USER',
+              type: ApplicationCommandOptionType.User,
               permission: true,
             },
           ],
@@ -253,7 +248,7 @@ export default class InteractionHandler extends BaseHandler {
   async loadCustomCommands(guildId) {
     const rawCustomCommands = await this.settings.getRawCustomCommands(guildId);
     if (guildId) this.#customCommands = this.#customCommands.filter((cc) => cc.guildId !== guildId);
-    const added = rawCustomCommands.map((raw) => CustomInteraction(raw));
+    const added = rawCustomCommands?.map((raw) => CustomInteraction(raw)) ?? [];
     this.#customCommands.push(...added);
     if (guildId) {
       const guild = await this.client.guilds.fetch(guildId);
@@ -322,7 +317,7 @@ export default class InteractionHandler extends BaseHandler {
       );
 
       const noAccess =
-        (match?.elevated && !interaction.member.permissions.has(Permissions.MANAGE_GUILD, false)) ||
+        (match?.elevated && !interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild, false)) ||
         (match?.ownerOnly && interaction.user.id !== this.bot.owner);
 
       if (noAccess) {

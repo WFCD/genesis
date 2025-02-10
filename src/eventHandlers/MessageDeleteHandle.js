@@ -1,18 +1,16 @@
-import Discord from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
 import { games } from '../utilities/CommonFunctions.js';
 import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
 
-const { Events } = Discord.Constants;
-
 /**
  * Describes a handler
  */
 export default class LogMessageDelete extends Handler {
   constructor(bot) {
-    super(bot, 'handlers.logMessageDelete', Events.MESSAGE_DELETE);
+    super(bot, 'handlers.logMessageDelete', Events.MessageDelete);
   }
 
   /**
@@ -29,7 +27,7 @@ export default class LogMessageDelete extends Handler {
     } else {
       logChannel = undefined;
     }
-    if (logChannel && logChannel.type === 'GUILD_TEXT') {
+    if (logChannel && logChannel.type === ChannelType.GuildText) {
       let msg;
       if (message.content.length > 1024) {
         msg = `${message.content.slice(1020, message.content.length)}...`;
