@@ -1,3 +1,10 @@
+## [2.11.15](https://github.com/WFCD/genesis/compare/v2.11.14...v2.11.15) (2025-02-18)
+
+
+### Bug Fixes
+
+* bump warframe-name-generator from 1.0.2 to 2.0.1 ([#917](https://github.com/WFCD/genesis/issues/917)) ([5b299d6](https://github.com/WFCD/genesis/commit/5b299d6fee16bede828bebdd129b0bea2bf74a4e))
+
 ## [2.11.14](https://github.com/WFCD/genesis/compare/v2.11.13...v2.11.14) (2025-02-18)
 
 
