@@ -1,3 +1,10 @@
+## [2.11.14](https://github.com/WFCD/genesis/compare/v2.11.13...v2.11.14) (2025-02-18)
+
+
+### Bug Fixes
+
+* bump parse-duration from 1.1.1 to 2.1.3 ([#930](https://github.com/WFCD/genesis/issues/930)) ([8e72739](https://github.com/WFCD/genesis/commit/8e727398dc72851a1b6e1ae18b0958ea54802de8))
+
 ## [2.11.13](https://github.com/WFCD/genesis/compare/v2.11.12...v2.11.13) (2025-01-25)
 
 
