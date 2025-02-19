@@ -1,3 +1,10 @@
+## [2.11.16](https://github.com/WFCD/genesis/compare/v2.11.15...v2.11.16) (2025-02-19)
+
+
+### Bug Fixes
+
+* syntax for name-generator ([b030330](https://github.com/WFCD/genesis/commit/b030330ad77b1a25f530a089bca18a48bb73281c))
+
 ## [2.11.15](https://github.com/WFCD/genesis/compare/v2.11.14...v2.11.15) (2025-02-18)
 
 
