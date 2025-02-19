@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { Generator } from 'warframe-name-generator';
+import Generator from 'warframe-name-generator';
 
 const {
   Constants: { Events },
