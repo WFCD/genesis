@@ -13,27 +13,27 @@ export default class ConclaveChallengeEmbed extends BaseEmbed {
     super(locale);
 
     const categoryInValues = category && values.indexOf(category.toLowerCase()) !== -1;
-    this.color = categoryInValues ? 0x00ff00 : 0xff0000;
+    this.setColor(categoryInValues ? 0x00ff00 : 0xff0000);
     if (categoryInValues) {
-      this.fields = challenges
-        .filter((c) => compareCCategory(c, category))
-        .map((c) => ({
-          name: c.mode,
-          value: `${c.description} expires in ${c.endString}`,
-        }));
+      this.setFields(
+        challenges
+          .filter((c) => compareCCategory(c, category))
+          .map((c) => ({
+            name: c.mode,
+            value: `${c.description} expires in ${c.endString}`,
+          }))
+      );
     } else {
-      this.fields = [
+      this.setFields([
         {
           name: i18n`No such conclave category`,
           value: `Valid values: ${values.join(', ')}`,
         },
-      ];
+      ]);
     }
-    this.title = `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${
-      category || 'none'
-    }`;
-    this.thumbnail = {
-      url: conclaveThumb,
-    };
+    this.setTitle(
+      `${platform ? `[${platform.toUpperCase()}] ` : ''}Current Challenges for category: ${category || 'none'}`
+    );
+    this.setThumbnail(conclaveThumb);
   }
 }

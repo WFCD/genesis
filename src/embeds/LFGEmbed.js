@@ -24,33 +24,37 @@ export default class LFGEmbed extends BaseEmbed {
    */
   constructor(lfg, { i18n, locale }) {
     super(locale);
-    this.color = lfg.expiry ? activeC : expiredC;
-    this.title = i18n`${lfg.types.length ? lfg.types.join(' & ') : i18n`LFG`} Posted by ${lfg.author.tag}`;
-    this.fields = [
+    this.setColor(lfg.expiry ? activeC : expiredC);
+    this.setTitle(i18n`${lfg.types.length ? lfg.types.join(' & ') : i18n`LFG`} Posted by ${lfg.author.tag}`);
+    this.setFields([
       { name: i18n`Where`, value: lfg.location, inline: true },
       { name: i18n`Time`, value: lfg.duration, inline: true },
       { name: i18n`Farming For`, value: lfg.goal, inline: true },
       { name: i18n`Platform`, value: lfg.platform.toUpperCase(), inline: true },
       { name: i18n`Need`, value: `${lfg.membersNeeded - lfg.members.length}`, inline: true },
       { name: i18n`Members`, value: lfg.members.map((id) => `<@!${id}>`).join(', '), inline: true },
-    ];
+    ]);
 
     if (lfg.vc.channel) {
-      this.fields.push({
-        name: i18n`Voice Chat`,
-        value: `<#${lfg.vc.channel.id}>`,
-        inline: true,
-      });
+      this.addFields([
+        {
+          name: i18n`Voice Chat`,
+          value: `<#${lfg.vc.channel.id}>`,
+          inline: true,
+        },
+      ]);
     }
 
     if (lfg.expiry !== 0) {
-      this.fields.push({
-        name: '_ _',
-        value: i18n`Expires <t:${(lfg.expiryTs / 1000).toFixed(0)}:R>`,
-        inline: false,
-      });
+      this.addFields([
+        {
+          name: '_ _',
+          value: i18n`Expires <t:${(lfg.expiryTs / 1000).toFixed(0)}:R>`,
+          inline: false,
+        },
+      ]);
     }
     const ed = lfg.edited ? i18n`Edited` : i18n`Posted`;
-    this.footer.text = lfg.expiry === 0 ? i18n`Expired • ${ed}` : ed;
+    this.setFooter({ text: lfg.expiry === 0 ? i18n`Expired • ${ed}` : ed });
   }
 }

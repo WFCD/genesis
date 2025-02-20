@@ -15,19 +15,17 @@ export default class FrameEmbed extends BaseEmbed {
   constructor(frame, { frames = [], i18n, locale }) {
     super(locale);
 
-    this.thumbnail = {
-      url: `${assetBase}/img/arcane.png`,
-    };
+    this.setThumbnail(`${assetBase}/img/arcane.png`);
     if (frame && typeof frame !== 'undefined') {
-      this.title = frame.name;
-      this.url = frame.wikiaUrl;
-      this.thumbnail.url = frame.wikiaThumbnail;
-      this.description = `_${frame.description}_`;
+      this.setTitle(frame.name);
+      this.setURL(frame.wikiaThumbnail);
+      this.setThumbnail(frame.wikiaThumbnail);
+      this.setDescription(`_${frame.description}_`);
       if (frame.location) {
-        this.footer = { text: i18n`Drops from: ${frame.location}` };
+        this.setFooter({ text: i18n`Drops from: ${frame.location}` });
       }
-      this.color = frame.color;
-      this.fields = [
+      this.setColor(frame.color);
+      this.setFields([
         frame.url || frame.prime_url
           ? {
               name: i18n`Profile`,
@@ -90,15 +88,15 @@ export default class FrameEmbed extends BaseEmbed {
           name: i18n`Abilities`,
           value: '**=============**',
         },
-      ];
+      ]);
 
-      this.fields.push(
+      this.addFields(
         ...(frame?.abilities?.map((ability) => ({ name: ability.name, value: `_${ability.description}_` })) || [])
       );
-      this.fields = this.fields.filter((field) => field && field?.value?.length);
+      this.setFields(this.data.fields.filter((field) => field && field?.value?.length));
     } else {
-      this.title = i18n`Available Warframes`;
-      this.fields = [{ name: '\u200B', value: frames.map((stat) => stat.name).join('\n') }];
+      this.setTitle(i18n`Available Warframes`);
+      this.setFields([{ name: '\u200B', value: frames.map((stat) => stat.name).join('\n') }]);
     }
   }
 }

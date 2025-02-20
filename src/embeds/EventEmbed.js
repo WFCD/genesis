@@ -15,47 +15,55 @@ export default class EventEmbed extends BaseEmbed {
 
     this.color = 0xfdec96;
     if (event) {
-      this.title = `[${platform.toUpperCase()}] ${event.description}`;
-      this.fields = [];
-      this.description = event.tooltip;
+      this.setTitle(`[${platform.toUpperCase()}] ${event.description}`);
+      this.setFields([]);
+      this.setDescription(event.tooltip);
 
       if (event.victimNode) {
         if (event.faction) {
           const faction = i18n` by attacking the ${event.faction}`;
           const node = i18n` at ${event.node}`;
-          this.fields.push({
-            name: '\u200B',
-            value: i18n`Defend ${event.victimNode}${event.faction ? faction : ''}${event.node ? node : ''}.`,
-          });
+          this.setFields([
+            {
+              name: '\u200B',
+              value: i18n`Defend ${event.victimNode}${event.faction ? faction : ''}${event.node ? node : ''}.`,
+            },
+          ]);
         } else {
-          this.fields.push({
-            name: event.victimNode,
-            value: i18n`Fight for ${event.affiliatedWith}`,
-          });
+          this.setFields([
+            {
+              name: event.victimNode,
+              value: i18n`Fight for ${event.affiliatedWith}`,
+            },
+          ]);
         }
       }
       if (event.rewards?.length > 0) {
-        this.fields.push({
-          name: i18n`Rewards`,
-          value: event.rewards
-            ? event.rewards
-                .filter(Boolean)
-                .map((reward) => reward?.asString)
-                .join('; ')
-            : i18n`No Rewards`,
-        });
+        this.setFields([
+          {
+            name: i18n`Rewards`,
+            value: event.rewards
+              ? event.rewards
+                  .filter(Boolean)
+                  .map((reward) => reward?.asString)
+                  .join('; ')
+              : i18n`No Rewards`,
+          },
+        ]);
       }
       if (event.maximumScore && event.currentScore) {
-        this.fields.push({
-          name: i18n`Progress`,
-          value: `${Number(event.currentScore / event.maximumScore).toFixed(2)}%`,
-        });
+        this.setFields([
+          {
+            name: i18n`Progress`,
+            value: `${Number(event.currentScore / event.maximumScore).toFixed(2)}%`,
+          },
+        ]);
       } else {
         if (event.maximumScore) {
-          this.fields.push({ name: i18n`Completion Score`, value: String(event.maximumScore) });
+          this.setFields([{ name: i18n`Completion Score`, value: String(event.maximumScore) }]);
         }
         if (event.currentScore) {
-          this.fields.push({ name: i18n`Current Score`, value: String(event.currentScore) });
+          this.setFields([{ name: i18n`Current Score`, value: String(event.currentScore) }]);
         }
       }
 
@@ -75,14 +83,14 @@ export default class EventEmbed extends BaseEmbed {
             }`;
           })
           .join('\n');
-        this.fields.push({ name: i18n`Jobs from ${event.affiliatedWith}`, value: jobString });
+        this.setFields([{ name: i18n`Jobs from ${event.affiliatedWith}`, value: jobString }]);
       }
 
       if (event.health && event.health !== '0.00') {
-        this.footer.text = i18n`${event.health}% Remaining`;
+        this.setFooter({ text: i18n`${event.health}% Remaining` });
       }
     } else {
-      this.title = 'No Current Events';
+      this.setTitle('No Current Events');
     }
   }
 }

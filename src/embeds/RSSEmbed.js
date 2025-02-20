@@ -45,23 +45,23 @@ class RSSEmbed extends BaseEmbed {
       logger.debug(strippedDesc, 'WS');
     }
 
-    this.url = feedItem.link;
-    this.timestamp = feedItem.pubdate;
-    this.title = feedItem.title;
+    this.setURL(feedItem.link);
+    this.setTimestamp(feedItem.pubdate);
+    this.setTitle(feedItem.title);
 
-    this.color = 0x993333;
-    this.footer.text = `${feedItem.meta.description} • Published`;
+    this.setColor(0x993333);
+    this.setFooter({ text: `${feedItem.meta.description} • Published` });
 
-    this.thumbnail = { url: 'https://i.imgur.com/GGzVZPL.png', height: 50, width: 50 };
+    this.setThumbnail('https://i.imgur.com/GGzVZPL.png');
 
     if (feed.author) {
-      this.author = feed.author;
+      this.setAuthor({ name: feed.author });
     } else {
-      this.author = {
+      this.setAuthor({
         name: 'Warframe Forums',
         url: feedItem['rss:link']['#'],
         icon_url: 'https://i.imgur.com/hE2jdpv.png',
-      };
+      });
     }
 
     if (!Object.keys(feedItem.image).length) {
@@ -69,18 +69,14 @@ class RSSEmbed extends BaseEmbed {
       if (first) {
         if (first.startsWith('//')) {
           first = first.replace('//', 'https://');
-          this.image = {
-            url: first,
-          };
+          this.setImage(first);
         }
       } else if (feed.defaultAttach) {
-        this.image = {
-          url: feed.defaultAttach,
-        };
+        this.setImage(feed.defaultAttach);
       }
     }
 
-    if (!this.description?.length) this.description = '_ _';
+    if (!this.data.description?.length) this.setDescription('_ _');
   }
 }
 

@@ -10,16 +10,15 @@ export default class EarthCycleEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
 
-    this.title = `${state.isCetus ? 'PoE' : 'Earth'} - ${state.isDay ? 'Day' : 'Night'}`;
-    this.color = state.isDay ? 0xb64624 : 0x000066;
-    this.thumbnail = {
-      url: state.isCetus ? ostron : earth,
-    };
+    this.setTitle(`${state.isCetus ? 'PoE' : 'Earth'} - ${state.isDay ? 'Day' : 'Night'}`);
+    this.setColor(state.isDay ? 0xb64624 : 0x000066);
+    this.setThumbnail(state.isCetus ? ostron : earth);
     const bountyExpiry = state.bountyExpiry ? rTime(state.bountyExpiry) : '';
-    this.description =
+    this.setDescription(
       i18n`Time remaining until ${state.isDay ? 'Night' : 'Day'}: ${rTime(state.expiry)}` +
-      (state.bountyExpiry ? i18n`\nBounties expire in ${bountyExpiry}` : '');
-    this.footer.text = i18n`${state.isDay ? i18n`Night` : i18n`Day`} starts `;
-    this.timestamp = new Date(state.expiry).getTime();
+        (state.bountyExpiry ? i18n`\nBounties expire in ${bountyExpiry}` : '')
+    );
+    this.setFooter({ text: i18n`${state.isDay ? i18n`Night` : i18n`Day`} starts ` });
+    this.setTimestamp(new Date(state.expiry).getTime());
   }
 }

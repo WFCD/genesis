@@ -15,26 +15,25 @@ export default class ModEmbed extends BaseEmbed {
   constructor(modData, { i18n, locale }) {
     super(locale);
 
-    this.title = modData.name;
-    this.color = rarity[modData.rarity.toLowerCase()];
+    this.setTitle(modData.name);
+    this.setColor(rarity[modData.rarity.toLowerCase()]);
 
     // If we have a description, show it. For stance mods, etc
     if (modData.description) {
-      this.description = `_${emojify(modData.description)}_`;
+      this.setDescription(`_${emojify(modData.description)}_`);
     }
 
     // If we have an effect, show the max rank effect
     const statsLength = modData.levelStats && modData.levelStats.length;
     if (statsLength > 0) {
       const stats = modData.levelStats[statsLength - 1].stats.join('\n');
-      this.description = `_${emojify(stats)}_`;
+      this.setDescription(`_${emojify(stats)}_`);
     }
 
-    this.url = `${wikiBase}${modData.name.replace(/\s/gi, '_')}`;
-    this.image = {
-      url: `${apiCdnBase}img/${modData.imageName}`,
-    };
-    this.fields = [
+    this.setURL(`${wikiBase}${modData.name.replace(/\s/gi, '_')}`);
+    this.setImage(`${apiCdnBase}img/${modData.imageName}`);
+
+    this.setFields([
       {
         name: i18n`Polarity`,
         value: emojify(modData.polarity.toLowerCase()),
@@ -65,6 +64,6 @@ export default class ModEmbed extends BaseEmbed {
         value: emojify(modData.tradable ? 'green_tick' : 'red_tick'),
         inline: true,
       },
-    ];
+    ]);
   }
 }
