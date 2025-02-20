@@ -510,7 +510,7 @@ export default class Rooms extends Interaction {
       }
     } catch (e) {
       this.#logger.error(e);
-      return interaction.editReply('unable to act');
+      return interaction.editReply('unable to act. feature requires Administrator permission on bot. Thanks discord.');
     }
 
     return interaction.editReply({ content: ctx.i18n`naaah`, ephemeral: ctx.ephemerate });
