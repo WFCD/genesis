@@ -38,7 +38,7 @@ class RSSEmbed extends BaseEmbed {
           strippedDesc = strippedDesc.replace(/\*\*(.*)\*\*$/g, '');
         }
 
-        this.description = strippedDesc;
+        this.setDescription(strippedDesc);
       }
     } catch (e) {
       logger.error(e);

@@ -17,7 +17,7 @@ export default class LogEmbed extends BaseEmbed {
     super();
     this.setColor(log.color);
     this.setTitle(log.title);
-    this.setFields(log.footer);
+    this.setFields(log.fields);
     this.setFooter({ text: log.footer });
   }
 }
