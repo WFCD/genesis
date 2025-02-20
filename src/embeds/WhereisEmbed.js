@@ -21,13 +21,13 @@ export default class WhereisEmbed extends BaseEmbed {
 
       const value = mappedResults.join('\n');
       if (index > 0) {
-        this.fields.push({ name: '\u200B', value });
+        this.addFields([{ name: '\u200B', value }]);
       } else {
-        this.description = value;
+        this.setDescription(value);
       }
     });
 
-    this.title = `${query}`;
-    this.color = 0x3498db;
+    this.setTitle(`${query}`);
+    this.setColor(0x3498db);
   }
 }

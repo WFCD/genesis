@@ -13,21 +13,19 @@ export default class RaidStatEmbed extends BaseEmbed {
    */
   constructor(userStats, { query, platform, i18n, locale }) {
     super(locale);
-    this.title = i18n`Raid statistics for ${query}`;
-    this.url = encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`);
-    this.color = 0xaf5b4b;
-    this.thumbnail = {
-      url: `${assetBase}/NightmareRaidSekhara.png`,
-    };
+    this.setTitle(i18n`Raid statistics for ${query}`);
+    this.setURL(encodeURI(`https://${platform !== 'pc' ? `${platform}.` : ''}trials.wf/player/?user=${query}`));
+    this.setColor(0xaf5b4b);
+    this.setThumbnail(`${assetBase}/NightmareRaidSekhara.png`);
     const stats = {
       lor: new RaidStat(userStats, 'lor'),
       lornm: new RaidStat(userStats, 'lornm'),
       jv: new RaidStat(userStats, 'jv'),
       totals: {},
     };
-    stats.total = new RaidStat();
-    stats.total.makeTotals(stats.lor, stats.lornm, stats.jv);
-    this.fields = [
+    stats.totals = new RaidStat();
+    stats.totals.makeTotals(stats.lor, stats.lornm, stats.jv);
+    this.setFields([
       {
         name: i18n`Law of Retribution`,
         value: stats.lor.toString(),
@@ -48,8 +46,8 @@ export default class RaidStatEmbed extends BaseEmbed {
         value: stats.total.toString(),
         inline: true,
       },
-    ];
+    ]);
 
-    this.footer.text = i18n`Evaluated by Cephalon Genesis | Source: trials.wf`;
+    this.setFooter({ text: i18n`Evaluated by Cephalon Genesis | Source: trials.wf` });
   }
 }

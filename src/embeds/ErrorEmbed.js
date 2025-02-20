@@ -9,9 +9,9 @@ export default class BuildEmbed extends BaseEmbed {
    */
   constructor(error) {
     super();
-    this.color = 0xff0000;
-    this.title = `Error - ${process.env.SCOPE}`;
-    this.description = error.message || error;
+    this.setColor(0xff0000);
+    this.setTitle(`Error - ${process.env.SCOPE}`);
+    this.setDescription(error.message || error);
     if (error.stack) {
       const stack = error.stack.replace(
         new RegExp(process.cwd().replace('/src/notifications', '').replace(/\\/g, '\\'), 'ig'),
@@ -19,7 +19,7 @@ export default class BuildEmbed extends BaseEmbed {
       );
       this.addFields({ name: 'Stack Trace', value: `\`\`\`\n${stack}\n\`\`\`` });
     }
-    this.footer.text = 'Occurred';
-    this.timestamp = new Date().getTime();
+    this.setFooter({ text: 'Occurred' });
+    this.setTimestamp(new Date().getTime());
   }
 }

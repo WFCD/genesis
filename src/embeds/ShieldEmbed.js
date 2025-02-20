@@ -15,29 +15,27 @@ export default class ShieldEmbed extends BaseEmbed {
   }
   constructor(params, { i18n }) {
     super();
-    this.color = params && params.length > 3 ? 0x00ff00 : 0xff0000;
-    this.title = i18n`Warframe - Shields`;
-    this.url = 'https://warframe.com';
-    this.thumbnail = {
-      url: ShieldEmbed.#corpus,
-    };
-    this.fields = [
-      {
-        name: '\u200B',
-        value: '',
-      },
-    ];
+    this.setColor(params && params.length > 3 ? 0x00ff00 : 0xff0000);
+    this.setTitle(i18n`Warframe - Shields`);
+    this.setURL('https://warframe.com');
+    this.setThumbnail(ShieldEmbed.#corpus);
 
+    const field = {
+      name: '\u200B',
+      value: '',
+    };
     if (params && params.length > 3) {
       const shields = params[1];
       const baseLevel = params[2];
       const currentLevel = params[3];
       const calc = ShieldEmbed.#shieldCalc(shields, baseLevel, currentLevel);
-      this.fields[0].name = i18n`Shield calculation`;
-      this.fields[0].value = ShieldEmbed.#shieldString(calc, currentLevel, i18n);
+      field.name = i18n`Shield calculation`;
+      field.value = ShieldEmbed.#shieldString(calc, currentLevel, i18n);
     } else {
-      this.fields[0].value = '`shields (Base Shelds) (Base Level) (Current Level)` - calculate shields and stats.';
-      this.fields[0].name = 'Possible uses include:';
+      field.value = '`shields (Base Shelds) (Base Level) (Current Level)` - calculate shields and stats.';
+      field.name = 'Possible uses include:';
     }
+
+    this.setFields([field]);
   }
 }

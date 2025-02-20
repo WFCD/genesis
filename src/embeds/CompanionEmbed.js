@@ -14,7 +14,7 @@ export default class CompanionEmbed extends BaseEmbed {
       .setURL(`https://warframe.fandom.com/wiki/${companion.name.replace(/\s/g, '_')}`)
       .setThumbnail(`https://cdn.warframestat.us/img/${companion.imageName}`)
       .setDescription(companion.description)
-      .addFields(
+      .addFields([
         { name: i18n`Health`, value: `${companion.health}`, inline: true },
         { name: i18n`Power`, value: `${companion.power}`, inline: true },
         { name: i18n`Armor`, value: `${companion.armor}`, inline: true },
@@ -25,7 +25,7 @@ export default class CompanionEmbed extends BaseEmbed {
           inline: true,
         },
         { name: `Build Price`, value: `${companion.buildPrice}${emojify('credits')}`, inline: true },
-        { name: `Build Skip`, value: `${companion.skipBuildTimePrice}${emojify('p')}`, inline: true }
-      );
+        { name: `Build Skip`, value: `${companion.skipBuildTimePrice}${emojify('p')}`, inline: true },
+      ]);
   }
 }

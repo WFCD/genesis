@@ -6,7 +6,7 @@ export default class DropsEmbed extends BaseEmbed {
   constructor(drops, { i18n, locale }) {
     super(locale);
     if (!drops || !drops.length) {
-      this.description = i18n`No drops`;
+      this.setDescription(i18n`No drops`);
       return;
     }
     const longest = (
@@ -23,10 +23,12 @@ export default class DropsEmbed extends BaseEmbed {
       .filter((drop) => drop);
 
     const dropGroups = createGroupedArray(consolidated, 10);
-    this.fields = dropGroups.map((group) => ({
-      name: '\u200B',
-      value: group.join('\n'),
-      inline: false,
-    }));
+    this.setFields(
+      dropGroups.map((group) => ({
+        name: '\u200B',
+        value: group.join('\n'),
+        inline: false,
+      }))
+    );
   }
 }

@@ -48,17 +48,15 @@ class SyndicateEmbed extends BaseEmbed {
   constructor(missions, { syndicate, platform, skipCheck, i18n, locale }) {
     super(locale);
     // Set default fields
-    this.color = 0xff0000;
-    this.fields = [
+    this.setColor(0xff0000);
+    this.setFields([
       {
         name: 'No such Syndicate',
         value: `Valid values: ${values.join(', ')}`,
       },
-    ];
-    this.url = `${wikiBase}${wikiBase.endsWith('/') ? '' : '/'}Syndicates`;
-    this.thumbnail = {
-      url: syndicateThumb,
-    };
+    ]);
+    this.setURL(`${wikiBase}${wikiBase.endsWith('/') ? '' : '/'}Syndicates`);
+    this.setThumbnail(syndicateThumb);
 
     const foundSyndicate =
       missions.length && values.find((v) => syndicate && v.toLowerCase() === syndicate.toLowerCase());
@@ -70,36 +68,39 @@ class SyndicateEmbed extends BaseEmbed {
         syndMissions = missions;
       }
       if (syndMissions.length) {
-        this.title = i18n`[${platform.toUpperCase()}] Syndicates`;
-        this.color = 0x00ff00;
+        this.setTitle(i18n`[${platform.toUpperCase()}] Syndicates`);
+        this.setColor(0x00ff00);
         if (syndMissions.length < 2) {
-          this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
-          this.footer.text = i18n`Expires in ${syndMissions[0].eta}`;
-          this.timestamp = syndMissions[0].expiry;
+          this.setTitle(`[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`);
+          this.setFooter({ text: i18n`Expires in ${syndMissions[0].eta}` });
+          this.setTimestamp(syndMissions[0].expiry);
         }
         if (syndMissions.length < 2) {
           const missionValue = makeMissionValue(syndMissions[0], syndMissions);
 
           if (missionValue.length < 2000) {
-            this.description = missionValue;
-            this.fields = undefined;
+            this.setDescription(missionValue);
+            this.data.fields = undefined;
           } else {
-            this.fields = missionValue.split('\n\n').map((spv) => ({
-              name: '\u200B',
-              value: spv,
-              inline: false,
-            }));
+            this.setFields(
+              missionValue.split('\n\n').map((spv) => ({
+                name: '\u200B',
+                value: spv,
+                inline: false,
+              }))
+            );
           }
         } else {
-          this.fields = syndMissions.map((m) => ({
-            name: syndMissions.length < 2 ? '\u200B' : m.syndicate,
-            value: makeMissionValue(m, syndMissions),
-            inline: !(m.jobs.length > 0),
-          }));
+          this.setFields(
+            syndMissions.map((m) => ({
+              name: syndMissions.length < 2 ? '\u200B' : m.syndicate,
+              value: makeMissionValue(m, syndMissions),
+              inline: !(m.jobs.length > 0),
+            }))
+          );
         }
       }
     }
-    this.bot = undefined;
   }
 }
 

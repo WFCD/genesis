@@ -11,16 +11,16 @@ export default class SettingsEmbed extends BaseEmbed {
    */
   constructor(channel, { tokens, i18n }) {
     super();
-    this.color = 0x77dd77;
+    this.setColor(0x77dd77);
     if (channel.type === 'GUILD_TEXT') {
-      this.title = i18n`Settings for ${channel.name}`;
+      this.setTitle(i18n`Settings for ${channel.name}`);
     } else {
-      this.title = i18n`Settings for DM with ${channel.recipient.username}`;
+      this.setTitle(i18n`Settings for DM with ${channel.recipient.username}`);
     }
 
-    this.fields = [];
+    this.setFields([]);
     tokens.forEach((tokenGroup) => {
-      this.fields.push({ name: '\u200B', value: tokenGroup.join('\n') });
+      this.addFields([{ name: '\u200B', value: tokenGroup.join('\n') }]);
     });
   }
 }

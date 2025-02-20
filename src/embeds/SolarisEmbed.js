@@ -36,7 +36,7 @@ export default class SolarisEmbed extends BaseEmbed {
     const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`Cold` : i18n`Warm`}: ${rTime(state.expiry)}`;
     this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
 
-    this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
+    this.setFooter({ text: `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts ` });
     this.timestamp = new Date(state.expiry).getTime();
   }
 }
