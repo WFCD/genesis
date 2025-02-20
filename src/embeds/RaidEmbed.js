@@ -43,7 +43,7 @@ export default class RaidStatEmbed extends BaseEmbed {
       },
       {
         name: i18n`Totals`,
-        value: stats.total.toString(),
+        value: stats.totals.toString(),
         inline: true,
       },
     ]);

@@ -80,7 +80,7 @@ class SyndicateEmbed extends BaseEmbed {
 
           if (missionValue.length < 2000) {
             this.setDescription(missionValue);
-            this.data.fields = undefined;
+            this.setFields([]);
           } else {
             this.setFields(
               missionValue.split('\n\n').map((spv) => ({

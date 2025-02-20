@@ -76,6 +76,6 @@ export default class NewsEmbed extends BaseEmbed {
       }
       this.setFooter({ text: platform.toUpperCase() });
     }
-    this.image = { url: first ? first.imageLink : '' };
+    this.setImage(first ? first.imageLink : '');
   }
 }

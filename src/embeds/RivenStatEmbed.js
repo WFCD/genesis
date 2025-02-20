@@ -100,7 +100,7 @@ export default class RivenStatEmbed extends BaseEmbed {
       ]);
     }
 
-    if (!this.fields.length) {
+    if (!this.data.fields.length) {
       this.setDescription(i18n`No data available`);
     }
 

@@ -37,7 +37,7 @@ export default class EnhancementEmbed extends BaseEmbed {
         },
       ]);
     } else {
-      this.settTitle('Available Enhancements');
+      this.setTitle('Available Enhancements');
       this.setFields([{ name: '\u200B', value: enhancements.map((profile) => profile.name).join('\n') }]);
     }
   }

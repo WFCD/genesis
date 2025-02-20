@@ -1,3 +1,5 @@
+import { ChannelType } from 'discord.js';
+
 import BaseEmbed from './BaseEmbed.js';
 
 /**
@@ -12,7 +14,7 @@ export default class SettingsEmbed extends BaseEmbed {
   constructor(channel, { tokens, i18n }) {
     super();
     this.setColor(0x77dd77);
-    if (channel.type === 'GUILD_TEXT') {
+    if (channel.type === ChannelType.GuildText) {
       this.setTitle(i18n`Settings for ${channel.name}`);
     } else {
       this.setTitle(i18n`Settings for DM with ${channel.recipient.username}`);

@@ -13,7 +13,7 @@ export default class EventEmbed extends BaseEmbed {
   constructor(event, { platform, i18n, locale }) {
     super(locale);
 
-    this.color = 0xfdec96;
+    this.setColor(0xfdec96);
     if (event) {
       this.setTitle(`[${platform.toUpperCase()}] ${event.description}`);
       this.setFields([]);
