@@ -1,5 +1,5 @@
 import { Events, PermissionsBitField } from 'discord.js';
-import { Generator } from 'warframe-name-generator';
+import Generator from 'warframe-name-generator';
 
 const requiredVCPerms = [PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.MoveMembers];
 const relays = [
