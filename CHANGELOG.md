@@ -1,3 +1,10 @@
+## [2.11.18](https://github.com/WFCD/genesis/compare/v2.11.17...v2.11.18) (2025-02-20)
+
+
+### Bug Fixes
+
+* update messaging on rooms create ([4d704a2](https://github.com/WFCD/genesis/commit/4d704a24eb3f2b5d68ffc10bad23cd0a79f1a250))
+
 ## [2.11.17](https://github.com/WFCD/genesis/compare/v2.11.16...v2.11.17) (2025-02-19)
 
 
