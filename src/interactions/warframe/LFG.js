@@ -33,6 +33,14 @@ const places = [
     name: 'Cetus',
     value: 'Cetus',
   },
+  {
+    name: 'Sanctum Anatomica', 
+    value: 'Sanctum Anatomica',
+  },
+  {
+    name: 'Duviri',
+    value: 'Duviri',
+  },
 ];
 const target = [
   {
