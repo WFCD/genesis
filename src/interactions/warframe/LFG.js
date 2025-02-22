@@ -34,7 +34,7 @@ const places = [
     value: 'Cetus',
   },
   {
-    name: 'Sanctum Anatomica', 
+    name: 'Sanctum Anatomica',
     value: 'Sanctum Anatomica',
   },
   {
