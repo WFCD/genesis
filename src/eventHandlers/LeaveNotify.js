@@ -1,9 +1,7 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import { games } from '../utilities/CommonFunctions.js';
-
-const { Events } = Discord.Constants;
 
 export default class LeaveNotify extends Handler {
   /**
@@ -11,7 +9,7 @@ export default class LeaveNotify extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.server.leave', Events.GUILD_DELETE);
+    super(bot, 'handlers.server.leave', Events.GuildDelete);
   }
 
   /**

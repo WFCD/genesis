@@ -1,3 +1,5 @@
+import { MessageFlags } from 'discord.js';
+
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
@@ -45,7 +47,7 @@ export default class About extends Interaction {
           },
         },
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

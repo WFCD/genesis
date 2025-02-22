@@ -17,22 +17,19 @@ export default class KuvaEmbed extends BaseEmbed {
   constructor(kuver, { platform, i18n, locale }) {
     super(locale);
 
-    this.thumbnail = {
-      url: kuvaThumb,
-    };
-    this.color = 0x742725;
-    this.title = i18n`[${platform.toUpperCase()}] Worldstate - Kuva`;
+    this.setThumbnail(kuvaThumb);
+    this.setColor(0x742725);
+    this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Kuva`);
     const grouped = groupBy(kuver, 'enemy');
-    this.fields = [];
-    Object.keys(grouped).forEach((enemy) => {
-      this.fields.push({
+    this.setFields(
+      Object.keys(grouped).map((enemy) => ({
         name: enemy,
         value: grouped[enemy].map((kuva) => i18n`${kuva.type} on ${kuva.node}`).join('\n'),
         inline: false,
-      });
-    });
+      }))
+    );
 
-    this.footer.text = 'Expires';
-    this.timestamp = kuver[0].expiry;
+    this.setFooter({ text: 'Expires' });
+    this.setTimestamp(kuver[0].expiry);
   }
 }

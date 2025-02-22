@@ -28,15 +28,13 @@ export default class SolarisEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }) {
     super(locale);
 
-    this.title = `Orb Vallis - ${state.isWarm ? 'Warm' : 'Cold'}`;
-    this.color = state.isWarm ? 0xb64624 : 0x000066;
-    this.thumbnail = {
-      url: solaris,
-    };
+    this.setTitle(`Orb Vallis - ${state.isWarm ? 'Warm' : 'Cold'}`);
+    this.setColor(state.isWarm ? 0xb64624 : 0x000066);
+    this.setThumbnail(solaris);
     const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`Cold` : i18n`Warm`}: ${rTime(state.expiry)}`;
-    this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
+    this.setDescription(`${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`);
 
-    this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
-    this.timestamp = new Date(state.expiry).getTime();
+    this.setFooter({ text: `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts ` });
+    this.setTimestamp(new Date(state.expiry).getTime());
   }
 }

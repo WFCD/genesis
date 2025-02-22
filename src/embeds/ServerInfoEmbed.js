@@ -33,10 +33,10 @@ export default class ServerInfoEmbed extends BaseEmbed {
   constructor(guild) {
     super();
 
-    this.title = guild.name;
-    this.color = verifications[guild.verificationLevel].color;
-    this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` };
-    this.fields = [
+    this.setTitle(guild.name);
+    this.setColor(verifications[guild.verificationLevel].color);
+    this.setThumbnail(`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`);
+    this.setFields([
       {
         name: 'Created:',
         value: guild.createdAt.toLocaleString(),
@@ -77,7 +77,7 @@ export default class ServerInfoEmbed extends BaseEmbed {
         value: `Count: ${guild.roles.cache.size}`,
         inline: true,
       },
-    ];
-    this.footer = { text: `Server ID: ${guild.id}` };
+    ]);
+    this.setFooter({ text: `Server ID: ${guild.id}` });
   }
 }

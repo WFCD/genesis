@@ -1,4 +1,14 @@
-import Discord from 'discord.js';
+import {
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  InteractionCollector,
+  ButtonBuilder,
+  ApplicationCommandOptionType,
+  ComponentType,
+  ButtonStyle,
+  InteractionType,
+  EmbedBuilder,
+} from 'discord.js';
 
 import Build from '../../models/Build.js';
 import BuildEmbed from '../../embeds/BuildEmbed.js';
@@ -7,14 +17,6 @@ import WeaponEmbed from '../../embeds/WeaponEmbed.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
-  MessageActionRow,
-  MessageSelectMenu,
-  InteractionCollector,
-  MessageButton,
-} = Discord;
 
 const buildParts = [
   {
@@ -136,17 +138,17 @@ export default class Builds extends Interaction {
     options: [
       {
         name: 'list',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Get all of my builds',
       },
       {
         name: 'get',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Search builds or get a specific id.',
         options: [
           {
             name: 'query',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Search string',
             required: true,
           },
@@ -154,30 +156,30 @@ export default class Builds extends Interaction {
       },
       {
         name: 'add',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Add a new build',
         options: buildParts.map((bp) => ({
           name: bp.name,
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           description: bp.description,
           choices: bp.choices,
         })),
       },
       {
         name: 'update',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Update a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
         ].concat(
           buildParts.map((bp) => ({
             name: bp.name,
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: bp.description,
             choices: bp.choices,
           }))
@@ -185,31 +187,31 @@ export default class Builds extends Interaction {
       },
       {
         name: 'remove',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Remove a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
         ].concat(
           buildParts.map((bp) => ({
             name: bp.name,
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
             description: bp.description,
           }))
         ),
       },
       {
         name: 'mod',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Set Mods for a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
@@ -266,7 +268,7 @@ export default class Builds extends Interaction {
         }
         pages.push(prism);
       } else {
-        const operator = new Discord.MessageEmbed({ title: ctx.i18n`Operator`, description: focus });
+        const operator = new EmbedBuilder({ title: ctx.i18n`Operator`, description: focus });
         pages.push(operator);
       }
     }
@@ -348,7 +350,7 @@ export default class Builds extends Interaction {
           });
           return Collectors.dynamic(interaction, pages, ctx);
         }
-        return interaction.reply({ content: ctx.i18n`No builds found`, ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: ctx.i18n`No builds found`, flags: ctx.flags });
       case 'update':
       case 'add':
         await interaction.deferReply({ ephemeral: true });
@@ -377,14 +379,14 @@ export default class Builds extends Interaction {
           });
           if (!thereWasAPart) await ctx.settings.deleteBuild(id);
           else await ctx.settings.saveBuild(build);
-          return interaction.reply({ content: 'buhleted', ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: 'buhleted', flags: ctx.flags });
         }
         break;
       case 'mod':
         if (!build) {
           return interaction.reply(ctx.i18n`Can't add mods when you haven't got a build.`);
         }
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
+        await interaction.deferReply({ flags: ctx.flags });
         const populatedKeys = Object.keys(build.toJson())
           .filter((p) => !unmodable.includes(p))
           .filter((k) => build.toJson()[k]);
@@ -416,9 +418,9 @@ export default class Builds extends Interaction {
             .join('\n') || ctx.i18n`No Mods`;
 
         const selectPartRow = () =>
-          new MessageActionRow({
+          new ActionRowBuilder({
             components: [
-              new MessageSelectMenu({
+              new StringSelectMenuBuilder({
                 minValues: 0,
                 maxValues: 1,
                 customId: 'select_part',
@@ -435,31 +437,31 @@ export default class Builds extends Interaction {
           });
         const availableMods = () => (current ? createGroupedArray(ctx.ws.modsByType(current.compat), 25) : undefined);
         let modPage = 0;
-        const navComponents = new MessageActionRow({
+        const navComponents = new ActionRowBuilder({
           components: [
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Previous',
               customId: 'previous',
-              style: MessageButtonStyles.SECONDARY,
+              style: ButtonStyle.Secondary,
             }),
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Save',
               customId: 'save',
-              style: MessageButtonStyles.PRIMARY,
+              style: ButtonStyle.Primary,
             }),
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Next',
               customId: 'next',
-              style: MessageButtonStyles.SECONDARY,
+              style: ButtonStyle.Secondary,
             }),
           ],
         });
         const modChoices = () => {
           const available = availableMods();
           return [
-            new MessageActionRow({
+            new ActionRowBuilder({
               components: [
-                new MessageSelectMenu({
+                new StringSelectMenuBuilder({
                   minValues: 0,
                   maxValues: available?.[modPage]?.length || 1,
                   customId: 'select_mods',
@@ -511,8 +513,8 @@ export default class Builds extends Interaction {
           components: [selectPartRow(), ...modChoices()],
         });
         const modCollector = new InteractionCollector(interaction.client, {
-          interactionType: InteractionTypes.MESSAGE_COMPONENT,
-          componentType: MessageComponentTypes.SELECT_MENU,
+          interactionType: InteractionType.MessageComponent,
+          componentType: ComponentType.StringSelect,
           message,
           guild: interaction.guild,
           channel: interaction.channel,
@@ -520,14 +522,14 @@ export default class Builds extends Interaction {
         modCollector.on('collect', modSelectionHandler);
 
         const modPageCollector = new InteractionCollector(interaction.client, {
-          interactionType: InteractionTypes.MESSAGE_COMPONENT,
-          componentType: MessageComponentTypes.BUTTON,
+          interactionType: InteractionType.MessageComponent,
+          componentType: ComponentType.Button,
           message,
           guild: interaction.guild,
           channel: interaction.channel,
         });
         const modPageHandler = async (button) => {
-          await button.deferUpdate({ ephemeral: ctx.ephemerate });
+          await button.deferUpdate({ flags: ctx.flags });
           switch (button.customId) {
             case 'previous':
               if (modPage > 1) modPage -= 1;
@@ -553,12 +555,12 @@ export default class Builds extends Interaction {
                 content: currentMods(),
                 ephemeral: ctx.ephemerate,
                 components: [
-                  new MessageActionRow({
+                  new ActionRowBuilder({
                     components: [
-                      new MessageButton({
+                      new ButtonBuilder({
                         label: 'Saved',
                         customId: 'save',
-                        style: MessageButtonStyles.SUCCESS,
+                        style: ButtonStyle.Success,
                         disabled: true,
                       }),
                     ],
@@ -581,6 +583,6 @@ export default class Builds extends Interaction {
         modPageCollector.on('collect', modPageHandler);
         return undefined;
     }
-    return interaction.reply({ content: ctx.i18n`Nah.`, ephemeral: ctx.ephemerate });
+    return interaction.reply({ content: ctx.i18n`Nah.`, flags: ctx.flags });
   }
 }

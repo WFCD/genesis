@@ -1,9 +1,7 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import { games } from '../utilities/CommonFunctions.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
@@ -14,12 +12,12 @@ export default class AssignDefaultRolesHandle extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.assignDefaultRoles', Events.GUILD_MEMBER_ADD);
+    super(bot, 'handlers.assignDefaultRoles', Events.GuildMemberAdd);
   }
 
   /**
    * add the guild to teh Database
-   * @param {Discord.Member} member member to add roles to
+   * @param {Discord.GuildMember} member member to add roles to
    */
   async execute(...[member]) {
     if (!games.includes('UTIL')) return;

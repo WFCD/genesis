@@ -1,9 +1,3 @@
-import Discord from 'discord.js';
-
-/* eslint-disable no-unused-vars */
-const { Message, APIMessage, CommandInteraction } = Discord;
-/* eslint-enable no-unused-vars */
-
 export default class Interaction {
   static enabled = true;
 
@@ -25,9 +19,9 @@ export default class Interaction {
 
   /**
    * Handle a command interaction
-   * @param {CommandInteraction} interaction interaction to handle
-   * @param {CommandContext} ctx command context
-   * @returns {Promise<Message | APIMessage>}
+   * @param {Discord.CommandInteraction} interaction interaction to handle
+   * @param {Discord.CommandContext} ctx command context
+   * @returns {Promise<Discord.Message | Discord.MessagePayload>}
    */
   // eslint-disable-next-line no-unused-vars,no-empty-function
   static async commandHandler(interaction, ctx) {}

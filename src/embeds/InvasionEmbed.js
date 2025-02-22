@@ -18,22 +18,24 @@ export default class InvasionEmbed extends BaseEmbed {
     super(locale);
     if (!Array.isArray(invasions)) invasions = [invasions];
 
-    this.color = 0x3498db;
-    this.url = `${wikiBase}Invasion`;
+    this.setColor(0x3498db);
+    this.setURL(`${wikiBase}Invasion`);
     if (invasions.length > 1) {
-      this.fields = invasions.map((i) => {
-        let rewards = i.defender.reward.asString;
-        if (!i.vsInfestation) {
-          rewards = i18n`${i.attacker.reward.asString} vs ${rewards}`;
-        }
-        const completion = Math.round(i.completion * 100) / 100;
-        return {
-          name: i18n`${rewards} - ${completion > 0 ? completion : 0}%`,
-          value: i18n`${i.desc} on ${i.node} - ETA ${i.eta}`,
-        };
-      });
-      this.title = i18n`[${platform.toUpperCase()}] Worldstate - Invasions`;
-      this.description = i18n`Currently in-progress invasions:`;
+      this.setFields(
+        invasions.map((i) => {
+          let rewards = i.defender.reward.asString;
+          if (!i.vsInfestation) {
+            rewards = i18n`${i.attacker.reward.asString} vs ${rewards}`;
+          }
+          const completion = Math.round(i.completion * 100) / 100;
+          return {
+            name: i18n`${rewards} - ${completion > 0 ? completion : 0}%`,
+            value: i18n`${i.desc} on ${i.node} - ETA ${i.eta}`,
+          };
+        })
+      );
+      this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Invasions`);
+      this.setDescription(i18n`Currently in-progress invasions:`);
     } else {
       const i = invasions[0];
       let rewards = i.defender?.reward?.asString;
@@ -41,14 +43,12 @@ export default class InvasionEmbed extends BaseEmbed {
         rewards = i18n`${i.attacker.reward.asString} vs ${rewards}`;
       }
       const completion = Math.round(i.completion * 100) / 100;
-      this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
-      this.description = i.desc;
-      this.fields = [{ name: i18n`Location`, value: i.node, inline: true }];
-      this.footer.text = i18n`${i.eta.replace(/-?Infinityd/gi, '\u221E')} remaining`;
+      this.setTitle(i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`);
+      this.setDescription(i.desc);
+      this.setFields([{ name: i18n`Location`, value: i.node, inline: true }]);
+      this.setFooter({ text: i18n`${i.eta.replace(/-?Infinityd/gi, '\u221E')} remaining` });
     }
 
-    this.thumbnail = {
-      url: invasionThumb,
-    };
+    this.setThumbnail(invasionThumb);
   }
 }

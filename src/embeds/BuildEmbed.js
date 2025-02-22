@@ -10,12 +10,12 @@ export default class BuildEmbed extends BaseEmbed {
   constructor(build) {
     super();
     const sections = build.body.split(';');
-    this.color = 0xf1c40f;
-    this.title = build.title;
-    this.fields = [];
+    this.setColor(0xf1c40f);
+    this.setTitle(build.title);
+    this.setFields([]);
     sections.forEach((value, index) => {
       if (index === 0) {
-        this.description = value;
+        this.setDescription(value);
       } else {
         this.addFields({
           name: '\u200B',
@@ -23,9 +23,11 @@ export default class BuildEmbed extends BaseEmbed {
         });
       }
     });
-    this.image = { url: build.url || build.image };
-    this.footer.text = `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${
-      typeof build.owner === 'object' ? build.owner.tag : build.owner
-    }`;
+    this.setImage({ url: build.url || build.image });
+    this.setFooter({
+      text: `${build.id}${build.isPublic ? ' • Public' : ''} • Owned by ${
+        typeof build.owner === 'object' ? build.owner.tag : build.owner
+      }`,
+    });
   }
 }
