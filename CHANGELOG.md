@@ -1,3 +1,15 @@
+# [2.12.0](https://github.com/WFCD/genesis/compare/v2.11.18...v2.12.0) (2025-02-22)
+
+
+### Bug Fixes
+
+* styles ([3459266](https://github.com/WFCD/genesis/commit/3459266fe1b825adc1715b89af492cd8faef8194))
+
+
+### Features
+
+* **lfg:** allow Duviri & Sanctum Anatomica ([74731d0](https://github.com/WFCD/genesis/commit/74731d03b992e9e259a855409003bea48fb63584))
+
 ## [2.11.18](https://github.com/WFCD/genesis/compare/v2.11.17...v2.11.18) (2025-02-20)
 
 
