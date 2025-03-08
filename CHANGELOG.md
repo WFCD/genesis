@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/WFCD/genesis/compare/v2.12.0...v2.12.1) (2025-03-08)
+
+
+### Bug Fixes
+
+* **#937:** random reddit post update ([8c40fc6](https://github.com/WFCD/genesis/commit/8c40fc6211c5fc7737268b26c30823daa0a994d9)), closes [#937](https://github.com/WFCD/genesis/issues/937)
+
 # [2.12.0](https://github.com/WFCD/genesis/compare/v2.11.18...v2.12.0) (2025-02-22)
 
 
