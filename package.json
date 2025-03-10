@@ -67,7 +67,7 @@
     "warframe-name-generator": "^2.0.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.7.1",
+    "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.6.3",
