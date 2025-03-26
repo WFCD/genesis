@@ -1,50 +1,48 @@
-import Discord from 'discord.js';
-
-/* eslint-disable no-unused-vars */
-const {
-  MessageEmbed,
-  CommandInteraction,
-  MessageButton,
-  MessageActionRow,
-  Constants: { MessageButtonStyles, InteractionTypes, MessageComponentTypes },
+import {
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  InteractionType,
+  ComponentType,
   InteractionCollector,
-} = Discord;
-/* eslint-enable no-unused-vars */
+  StringSelectMenuBuilder,
+} from 'discord.js';
 
 export default class Collectors {
   static #navComponents = [
-    new MessageActionRow({
+    new ActionRowBuilder({
       components: [
-        new MessageButton({
+        new ButtonBuilder({
           label: 'Previous',
           customId: 'previous',
-          style: MessageButtonStyles.SECONDARY,
+          style: ButtonStyle.Secondary,
         }),
-        new MessageButton({
+        new ButtonBuilder({
           label: 'Stop',
           customId: 'stop',
-          style: MessageButtonStyles.DANGER,
+          style: ButtonStyle.Danger,
         }),
-        new MessageButton({
+        new ButtonBuilder({
           label: 'Next',
           customId: 'next',
-          style: MessageButtonStyles.SECONDARY,
+          style: ButtonStyle.Secondary,
         }),
       ],
     }),
   ];
   static #confirmationComponents = [
-    new MessageActionRow({
+    new ActionRowBuilder({
       components: [
-        new MessageButton({
+        new ButtonBuilder({
           label: 'yes',
           customId: 'confirm',
-          style: MessageButtonStyles.PRIMARY,
+          style: ButtonStyle.Primary,
         }),
-        new MessageButton({
+        new ButtonBuilder({
           label: 'no',
           customId: 'deny',
-          style: MessageButtonStyles.SECONDARY,
+          style: ButtonStyle.Secondary,
         }),
       ],
     }),
@@ -56,15 +54,15 @@ export default class Collectors {
 
   /**
    * Update pages to have additional criteria and safety check fields like description
-   * @param {Array<Discord.MessageEmbed>} pages to reshape as desired
-   * @returns {Array<MessageEmbed>}
+   * @param {Array<Discord.EmbedBuilder>} pages to reshape as desired
+   * @returns {Array<EmbedBuilder>}
    */
   static #shapePages(pages) {
     return pages.map((newPage, index) => {
       const pageInd = `Page ${index + 1}/${pages.length}`;
       if (!newPage.description) newPage.setDescription('_ _');
       if (newPage.footer) {
-        if (newPage instanceof MessageEmbed) {
+        if (newPage instanceof EmbedBuilder) {
           if (newPage.footer.text.indexOf('Page ') === -1) {
             newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
           }
@@ -78,7 +76,7 @@ export default class Collectors {
       } else {
         newPage.footer = { text: pageInd };
       }
-      return new MessageEmbed(newPage);
+      return new EmbedBuilder(newPage);
     });
   }
 
@@ -86,7 +84,7 @@ export default class Collectors {
    * Created a selection collector for selecting a page from the list.
    *   Must have 25 or fewer unique titles.
    * @param {CommandInteraction} interaction interaction to respond to
-   * @param {Array<MessageEmbed>} pages array of pages to make available
+   * @param {Array<EmbedBuilder>} pages array of pages to make available
    * @param {CommandContext} ctx context for command call
    * @returns {Promise<void>}
    */
@@ -103,9 +101,9 @@ export default class Collectors {
     }));
 
     const menu = () => [
-      new MessageActionRow({
+      new ActionRowBuilder({
         components: [
-          new Discord.MessageSelectMenu({
+          new StringSelectMenuBuilder({
             customId: 'select',
             placeholder: ctx.i18n`Select Page`,
             minValues: 1,
@@ -130,8 +128,8 @@ export default class Collectors {
         : await interaction.reply(payload);
 
     const collector = new InteractionCollector(interaction.client, {
-      interactionType: InteractionTypes.MESSAGE_COMPONENT,
-      componentType: MessageComponentTypes.SELECT_MENU,
+      interactionType: InteractionType.MessageComponent,
+      componentType: ComponentType.SelectMenu,
       message,
       guild: interaction.guild,
       channel: interaction.channel,
@@ -171,7 +169,7 @@ export default class Collectors {
   /**
    * Create a paged interaction collector for an interaction & embed pages
    * @param {CommandInteraction} interaction to reply to
-   * @param {Array<MessageEmbed>} pages embed pages
+   * @param {Array<EmbedBuilder>} pages embed pages
    * @param {CommandContext} ctx command context
    * @returns {Promise<void>}
    */
@@ -198,8 +196,8 @@ export default class Collectors {
           });
 
     const collector = new InteractionCollector(interaction.client, {
-      interactionType: InteractionTypes.MESSAGE_COMPONENT,
-      componentType: MessageComponentTypes.BUTTON,
+      interactionType: InteractionType.MessageComponent,
+      componentType: ComponentType.Button,
       message,
       guild: interaction.guild,
       channel: interaction.channel,
@@ -277,8 +275,8 @@ export default class Collectors {
           });
 
     const collector = new InteractionCollector(interaction.client, {
-      interactionType: InteractionTypes.MESSAGE_COMPONENT,
-      componentType: MessageComponentTypes.BUTTON,
+      interactionType: InteractionType.MessageComponent,
+      componentType: ComponentType.Button,
       max: 1,
       message,
       guild: interaction.guild,

@@ -1,29 +1,27 @@
-import Discord from 'discord.js';
+import { ChannelType, Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
 export default class AddChannelToDatabase extends Handler {
   constructor(bot) {
-    super(bot, 'handlers.addChannel', Events.CHANNEL_CREATE);
+    super(bot, 'handlers.addChannel', Events.ChannelCreate);
   }
 
   // eslint-disable-next-line valid-jsdoc
   /**
    * add the guild to the Database
-   * @param {Discord.Channel} channel channel to add to the database
+   * @param {Discord.channel} channel channel to add to the database
    */
   async execute(...[channel]) {
     this.logger.debug(`Running ${this.id} for ${this.event}`);
 
-    if (channel.type === 'GUILD_VOICE') {
+    if (channel.type === ChannelType.GuildVoice) {
       return;
     }
-    if (channel.type === 'GUILD_TEXT') {
+    if (channel.type === ChannelType.GuildText) {
       try {
         await this.settings.addGuildTextChannel(channel);
         this.logger.debug(
@@ -34,7 +32,7 @@ export default class AddChannelToDatabase extends Handler {
         await this.settings.addGuild(channel.guild);
         this.settings.addGuildTextChannel(channel);
       }
-    } else if (channel.type === 'GUILD_PUBLIC_THREAD' || channel.type === 'GUILD_PRIVATE_THREAD') {
+    } else if (channel.type === ChannelType.PublicThread || channel.type === ChannelType.PrivateThread) {
       if (channel.parentId) {
         await this.settings.addGuildTextChannel({ id: channel.parentId, guild: { id: channel.guild.id } });
       }

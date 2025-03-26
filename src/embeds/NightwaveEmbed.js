@@ -19,72 +19,78 @@ export default class NightwaveEmbed extends BaseEmbed {
   constructor(nightwave, { platform, i18n, locale }) {
     super(locale);
 
-    this.thumbnail = {
-      url: 'https://i.imgur.com/yVcWOPp.png',
-    };
-    this.color = 0x663333;
-    this.title = i18n`[${platform.toUpperCase()}] Worldstate - Nightwave`;
+    this.setThumbnail('https://i.imgur.com/yVcWOPp.png');
+    this.setColor(0x663333);
+    this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Nightwave`);
 
     const logicalSeason = nightwave.season + 1;
     const seasonDisplay = `${Math.floor(logicalSeason / 2)}${logicalSeason % 2 === 1 ? ' Intermission' : ''}`;
 
     if (nightwave.activeChallenges.length > 1) {
-      this.description = i18n`Season ${seasonDisplay} • Phase ${nightwave.phase + 1}`;
-      this.fields = [];
-      this.fields.push({
-        name: i18n`Currently Active`,
-        value: String(nightwave.activeChallenges.length),
-        inline: false,
-      });
+      this.setDescription(i18n`Season ${seasonDisplay} • Phase ${nightwave.phase + 1}`);
+      this.setFields([]);
+      this.addFields([
+        {
+          name: i18n`Currently Active`,
+          value: String(nightwave.activeChallenges.length),
+          inline: false,
+        },
+      ]);
 
       if (nightwave.activeChallenges.filter((challenge) => challenge.isDaily).length) {
-        this.fields.push({
-          name: i18n`Daily`,
-          value:
-            nightwave.activeChallenges
-              .filter((challenge) => challenge.isDaily)
-              .map(chString)
-              .join('\n') || '__',
-          inline: false,
-        });
+        this.addFields([
+          {
+            name: i18n`Daily`,
+            value:
+              nightwave.activeChallenges
+                .filter((challenge) => challenge.isDaily)
+                .map(chString)
+                .join('\n') || '__',
+            inline: false,
+          },
+        ]);
       }
 
       createGroupedArray(
         nightwave.activeChallenges.filter((challenge) => !challenge.isDaily && !challenge.isElite),
         5
       ).forEach((challengeGroup, index) => {
-        this.fields.push({
-          name: index > 0 ? i18n`Weekly, ctd.` : i18n`Weekly`,
-          value: challengeGroup.map(chString).join('\n') || '__',
-          inline: false,
-        });
+        this.addFields([
+          {
+            name: index > 0 ? i18n`Weekly, ctd.` : i18n`Weekly`,
+            value: challengeGroup.map(chString).join('\n') || '__',
+            inline: false,
+          },
+        ]);
       });
 
       createGroupedArray(
         nightwave.activeChallenges.filter((challenge) => !challenge.isDaily && challenge.isElite),
         4
       ).forEach((challengeGroup, index) => {
-        this.fields.push({
-          name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
-          value: challengeGroup.map(chString).join('\n') || '__',
-          inline: false,
-        });
+        this.addFields([
+          {
+            name: index > 0 ? i18n`Elite Weekly, ctd.` : i18n`Elite Weekly`,
+            value: challengeGroup.map(chString).join('\n') || '__',
+            inline: false,
+          },
+        ]);
       });
 
-      this.footer.text = i18n`${timeDeltaToString(
-        new Date(nightwave.expiry).getTime() - Date.now()
-      )} remaining • Expires `;
-      this.timestamp = nightwave.activeChallenges[0].expiry;
+      this.setFooter({
+        text: i18n`${timeDeltaToString(new Date(nightwave.expiry).getTime() - Date.now())} remaining • Expires `,
+      });
+      this.setTimestamp(nightwave.activeChallenges[0].expiry);
     } else {
       const challenge = nightwave.activeChallenges[0];
-      this.description = chStringSingle(challenge);
+      this.setDescription(chStringSingle(challenge));
       if (challenge.isElite) {
-        this.title = i18n`[${platform.toUpperCase()}] Worldstate - Elite Nightwave`;
+        this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Elite Nightwave`);
       }
-      this.footer.text = i18n`${timeDeltaToString(
-        new Date(challenge.expiry).getTime() - Date.now()
-      )} remaining • Expires `;
-      this.timestamp = challenge.expiry;
+      this.setFooter({
+        text: i18n`${timeDeltaToString(new Date(challenge.expiry).getTime() - Date.now())} remaining • Expires `,
+      });
+      this.setTimestamp(challenge.expiry);
     }
   }
 }

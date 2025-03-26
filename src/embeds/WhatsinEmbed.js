@@ -39,8 +39,8 @@ export default class WhatsinEmbed extends BaseEmbed {
       tokens.push(`${rewardName.padEnd(longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
     });
 
-    this.title = `${tier} ${type}`;
-    this.color = 0x3498db;
-    this.description = tokens.map((token) => `\`${token}\``).join('\n');
+    this.setTitle(`${tier} ${type}`);
+    this.setColor(0x3498db);
+    this.setDescription(tokens.map((token) => `\`${token}\``).join('\n'));
   }
 }

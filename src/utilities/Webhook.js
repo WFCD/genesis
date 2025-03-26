@@ -1,15 +1,14 @@
-import Discord from 'discord.js';
+import { PermissionsBitField, WebhookClient } from 'discord.js';
 
 import logger from './Logger.js';
 
-const { WebhookClient } = Discord;
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
 
 /**
  * Send a webhook based on context
  * @param {CommandContext} ctx context object for sending data
  * @param {string} content content to send for webhook message
- * @param {Array<Discord.MessageEmbed>} [embeds] message embeds to send on webhook
+ * @param {Array<Discord.EmbedBuilder>} [embeds] message embeds to send on webhook
  * @returns {Promise<Discord.APIMessage|boolean|*>}
  */
 const webhook = async (ctx, { content, embeds = undefined }) => {
@@ -32,7 +31,7 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
         : client.send(opts);
     } catch (e) {
       logger.error(e);
-      await this.settings.deleteWebhooksForChannel(ctx.channel.id);
+      await ctx.settings.deleteWebhooksForChannel(ctx.channel.id);
       logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
       return false;
     }
@@ -44,17 +43,22 @@ const webhook = async (ctx, { content, embeds = undefined }) => {
     return webhook(ctx, { content, embeds });
   }
 
-  const useBotLogic = this.scope === 'bot' && ctx.channel.permissionsFor(this.client.user.id).has('MANAGE_WEBHOOKS');
+  const useBotLogic =
+    this.scope === 'bot' &&
+    ctx.channel.permissionsFor(this.client.user.id).has(PermissionsBitField.Flags.ManageWebhooks);
 
   // find how to do this with rest instead of a discord client
   if (ctx.channel) {
     if (useBotLogic) {
       const webhooks = await ctx.channel.fetchWebhooks();
+      const array = Array.from(webhooks.values());
       let target;
-      if (webhooks.array().length > 0) {
-        [target] = webhooks.array();
+      if (array.length > 0) {
+        [target] = array;
       } else {
-        target = await ctx.channel.createWebhook(this.client.user.username);
+        target = await ctx.channel.createWebhook({
+          name: this.client.user.username,
+        });
       }
       logger.debug(`Created and adding ${JSON.stringify(target)} to ${ctx.channel}`);
       target.name = this.client.user.username;

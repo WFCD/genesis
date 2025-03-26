@@ -13,15 +13,13 @@ export default class EnhancementEmbed extends BaseEmbed {
   constructor(enhancement, { enhancements }) {
     super();
 
-    this.thumbnail = {
-      url: arcaneThumb,
-    };
+    this.setThumbnail(arcaneThumb);
     if (enhancement && typeof enhancement !== 'undefined') {
-      this.title = enhancement.name;
-      this.url = enhancement.info;
-      this.thumbnail.url = enhancement.thumbnail;
-      this.color = colors[enhancement.rarity.toLowerCase()];
-      this.fields = [
+      this.setTitle(enhancement.name);
+      this.setURL(enhancement.info);
+      this.setThumbnail(enhancement.thumbnail);
+      this.setColor(colors[enhancement.rarity.toLowerCase()]);
+      this.setFields([
         {
           name: 'Effect',
           value: enhancement.effect,
@@ -37,10 +35,10 @@ export default class EnhancementEmbed extends BaseEmbed {
           value: enhancement.location,
           inline: false,
         },
-      ];
+      ]);
     } else {
-      this.title = 'Available Enhancements';
-      this.fields = [{ name: '\u200B', value: enhancements.map((profile) => profile.name).join('\n') }];
+      this.setTitle('Available Enhancements');
+      this.setFields([{ name: '\u200B', value: enhancements.map((profile) => profile.name).join('\n') }]);
     }
   }
 }

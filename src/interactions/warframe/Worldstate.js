@@ -1,4 +1,4 @@
-import { Constants, MessageEmbed } from 'discord.js';
+import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 
 import Collectors from '../../utilities/Collectors.js';
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
@@ -23,8 +23,6 @@ import Nightwave from '../../embeds/NightwaveEmbed.js';
 import Outposts from '../../embeds/SentientOutpostEmbed.js';
 import SteelPath from '../../embeds/SteelPathEmbed.js';
 import { cmds, platformMap as platformChoices, syndicates as syndicateOptions } from '../../resources/index.js';
-
-const { ApplicationCommandOptionTypes: Types } = Constants;
 
 const aliases = {
   arbi: 'arbitration',
@@ -67,7 +65,7 @@ const embeds = {
 };
 const platformable = [
   {
-    type: Types.STRING,
+    type: ApplicationCommandOptionType.String,
     name: 'platform',
     description: 'Platform to check for data',
     choices: platformChoices,
@@ -98,7 +96,7 @@ const syndicates = syndicateOptions.map((s) => ({
 const compactable = [
   ...platformable,
   {
-    type: Types.BOOLEAN,
+    type: ApplicationCommandOptionType.Boolean,
     name: 'compact',
     description: 'Should all data be in one embed?',
   },
@@ -129,7 +127,7 @@ export default class WorldState extends Interaction {
       ...cmds.conclave,
       options: [
         {
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           name: 'category',
           description: 'Which conclave challenge category?',
           choices: [
@@ -158,7 +156,7 @@ export default class WorldState extends Interaction {
       ...cmds.cycle,
       options: [
         {
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           name: 'place',
           description: 'Where do you want to know about?',
           choices: places,
@@ -187,7 +185,7 @@ export default class WorldState extends Interaction {
       ...cmds.news,
       options: [
         {
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           name: 'category',
           description: 'Which news do you want?',
           required: true,
@@ -237,7 +235,7 @@ export default class WorldState extends Interaction {
       ...cmds.syndicate,
       options: [
         {
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           name: 'syndicate',
           description: 'Which syndicate?',
           required: true,
@@ -332,13 +330,13 @@ export default class WorldState extends Interaction {
         if (!data?.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(new embeds[field](data, { platform, i18n: ctx.i18n }));
+        embed = new EmbedBuilder(new embeds[field](data, { platform, i18n: ctx.i18n }));
         return interaction.editReply({ embeds: [embed] });
       case 'voidTrader':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new MessageEmbed(
+        embed = new EmbedBuilder(
           new embeds[field](data, {
             platform,
             onDemand: true,
@@ -365,7 +363,7 @@ export default class WorldState extends Interaction {
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        pages = data.map((datum) => new MessageEmbed(new embeds[field](datum, { platform, i18n: ctx.i18n })));
+        pages = data.map((datum) => new EmbedBuilder(new embeds[field](datum, { platform, i18n: ctx.i18n })));
         return interaction.editReply({ embeds: pages });
       case 'steelPath':
         if (!data.length && !Object.keys(data).length) {

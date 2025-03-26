@@ -25,18 +25,14 @@ export default class WeaponEmbed extends BaseEmbed {
   constructor(weapon, { i18n, locale }) {
     super(locale);
     if (weapon && typeof weapon !== 'undefined') {
-      this.title = weapon.name;
-      this.url = weapon.wikiaUrl || '';
-      this.thumbnail = { url: weapon.wikiaThumbnail || '' };
-      this.description = `${weapon.type} • ${weapon.masteryReq} ${emojify('mastery_rank')}`;
-      this.color = weapon.color || 0x7c0a02;
-      this.fields = [];
+      this.setTitle(weapon.name);
+      this.setURL(weapon.wikiaUrl || '');
+      this.setThumbnail(weapon.wikiaThumbnail || '');
+      this.setDescription(`${weapon.type} • ${weapon.masteryReq} ${emojify('mastery_rank')}`);
+      this.setColor(weapon.color || 0x7c0a02);
+      this.setFields([]);
 
-      if (weapon.color) {
-        this.color = weapon.color;
-      }
-
-      this.fields.push(
+      this.addFields([
         {
           name: i18n`Rate`,
           value: `${String((weapon.fireRate || 0).toFixed(0) || '-')} unit\\s`,
@@ -70,14 +66,16 @@ export default class WeaponEmbed extends BaseEmbed {
           name: i18n`Polarities`,
           value: emojify(weapon.polarities && weapon.polarities.length ? weapon.polarities.join(' ') : '-'),
           inline: true,
-        }
-      );
+        },
+      ]);
       if (weapon.stancePolarity) {
-        this.fields.push({
-          name: i18n`Stance Polarity`,
-          value: emojify(weapon.stancePolarity || '-'),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Stance Polarity`,
+            value: emojify(weapon.stancePolarity || '-'),
+            inline: true,
+          },
+        ]);
       }
 
       if (weapon.secondary) {
@@ -125,82 +123,102 @@ export default class WeaponEmbed extends BaseEmbed {
           values.push(i18n`**Status Chance:** ${((weapon.secondary.status_chance || 0) * 100).toFixed(2) || '-'}%`);
         }
 
-        this.fields.push({
-          name: weapon.secondary.name || i18n`Secondary Fire`,
-          value: values.join('\n') || '--',
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: weapon.secondary.name || i18n`Secondary Fire`,
+            value: values.join('\n') || '--',
+            inline: true,
+          },
+        ]);
       }
 
       if (weapon.noise) {
-        this.fields.push({
-          name: i18n`Noise Level`,
-          value: String(weapon.noise),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Noise Level`,
+            value: String(weapon.noise),
+            inline: true,
+          },
+        ]);
       }
 
       if (weapon.projectile) {
-        this.fields.push({
-          name: i18n`Projectile`,
-          value: String(weapon.projectile),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Projectile`,
+            value: String(weapon.projectile),
+            inline: true,
+          },
+        ]);
       }
       if (weapon.trigger) {
-        this.fields.push({
-          name: i18n`Trigger Type`,
-          value: weapon.trigger,
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Trigger Type`,
+            value: weapon.trigger,
+            inline: true,
+          },
+        ]);
       }
 
       if (weapon.flight) {
-        this.fields.push({
-          name: i18n`Flight Speed`,
-          value: `${weapon.flight || '0'}m\\s`,
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Flight Speed`,
+            value: `${weapon.flight || '0'}m\\s`,
+            inline: true,
+          },
+        ]);
       }
       if (weapon.magazineSize) {
-        this.fields.push({
-          name: i18n`Magazine Size`,
-          value: String(weapon.magazineSize),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Magazine Size`,
+            value: String(weapon.magazineSize),
+            inline: true,
+          },
+        ]);
       }
       if (weapon.ammo) {
-        this.fields.push({
-          name: i18n`Ammo Max`,
-          value: String(weapon.ammo),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Ammo Max`,
+            value: String(weapon.ammo),
+            inline: true,
+          },
+        ]);
       }
       if (weapon.accuracy) {
-        this.fields.push({
-          name: i18n`Accuracy`,
-          value: String(weapon.accuracy),
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Accuracy`,
+            value: String(weapon.accuracy),
+            inline: true,
+          },
+        ]);
       }
       if (weapon.reload) {
-        this.fields.push({
-          name: i18n`Reload Speed`,
-          value: `${(weapon.reloadTime || 0).toFixed(1) || '-'}s`,
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Reload Speed`,
+            value: `${(weapon.reloadTime || 0).toFixed(1) || '-'}s`,
+            inline: true,
+          },
+        ]);
       }
       if (weapon.disposition) {
-        this.fields.push({
-          name: i18n`Riven Disposition`,
-          value: `${dispositions[weapon.disposition]} (${Number(weapon.omegaAttenuation).toFixed(2)})`,
-          inline: true,
-        });
+        this.addFields([
+          {
+            name: i18n`Riven Disposition`,
+            value: `${dispositions[weapon.disposition]} (${Number(weapon.omegaAttenuation).toFixed(2)})`,
+            inline: true,
+          },
+        ]);
       }
     } else {
-      this.title = i18n`Invalid Query`;
-      this.color = 0xff6961;
-      this.footer = undefined;
+      this.setTitle(i18n`Invalid Query`);
+      this.setColor(0xff6961);
+      this.data.footer = undefined;
     }
   }
 }

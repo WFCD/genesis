@@ -26,7 +26,7 @@ export default class NewsEmbed extends BaseEmbed {
     if (!Array.isArray(news)) news = [news];
     news.sort(newsSort);
 
-    this.color = news.length > 0 ? 0x779ecb : 0xff6961;
+    this.setColor(news.length > 0 ? 0x779ecb : 0xff6961);
     let value = createGroupedArray(
       news
         .filter((n) => {
@@ -63,19 +63,19 @@ export default class NewsEmbed extends BaseEmbed {
     }
     const first = news[0];
     if (news.length === 1) {
-      this.title = i18n`[${platform.toUpperCase()}] ${first.message}`;
-      this.fields = undefined;
-      this.footer.text = i18n`Published `;
-      this.timestamp = new Date(first.date);
-      this.url = first.link;
+      this.setTitle(i18n`[${platform.toUpperCase()}] ${first.message}`);
+      this.setFields([]);
+      this.setFooter(i18n`Published `);
+      this.setTimestamp(new Date(first.date));
+      this.setURL(first.link);
     } else {
       if (Array.isArray(value[0])) {
-        this.fields = value.map((val) => ({ name: '\u200B', value: val.join('\n') }));
+        this.setFields(value.map((val) => ({ name: '\u200B', value: val.join('\n') })));
       } else {
-        [this.description] = value;
+        this.setDescription(value);
       }
-      this.footer.text = platform.toUpperCase();
+      this.setFooter({ text: platform.toUpperCase() });
     }
-    this.image = { url: first ? first.imageLink : '' };
+    this.setImage(first ? first.imageLink : '');
   }
 }

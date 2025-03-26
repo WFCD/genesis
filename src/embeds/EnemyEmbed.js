@@ -6,15 +6,15 @@ export default class EnemyEmbed extends BaseEmbed {
   constructor(enemy, { i18n, locale }) {
     super(locale);
     if (!enemy || !enemy.health) {
-      this.title = i18n`Invalid Query`;
-      this.color = 0xff6961;
-      this.footer = undefined;
+      this.setTitle(i18n`Invalid Query`);
+      this.setColor(0xff6961);
+      this.data.footer = undefined;
       return;
     }
 
-    this.title = i18n`${enemy.name} • ${enemy.type}`;
-    this.description = enemy.description;
-    this.fields = [
+    this.setTitle(i18n`${enemy.name} • ${enemy.type}`);
+    this.setDescription(enemy.description);
+    this.setFields([
       {
         name: i18n`Health Base`,
         value: String(enemy.health),
@@ -30,7 +30,7 @@ export default class EnemyEmbed extends BaseEmbed {
         value: String(enemy.armor),
         inline: true,
       },
-    ];
+    ]);
 
     enemy?.resistances?.forEach((resistance) => {
       const field = {
@@ -49,7 +49,7 @@ export default class EnemyEmbed extends BaseEmbed {
       });
       if (affectors.length) {
         field.value = affectors.join('\n');
-        this.fields.push(field);
+        this.addFields([field]);
       }
     });
   }

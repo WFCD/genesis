@@ -10,9 +10,9 @@ export default class PatchnotesEmbed extends BaseEmbed {
    */
   constructor(patchlogs, { i18n }) {
     super();
-    this.title = i18n`Patch Notes`;
-    this.color = 0x819eaa;
-    this.fields = patchlogs.map((patchlog) => {
+    this.setTitle(i18n`Patch Notes`);
+    this.setColor(0x819eaa);
+    const fields = patchlogs.map((patchlog) => {
       const tokens = [];
       tokens.push(
         i18n`**Published:** ${new Date(patchlog.date).toLocaleDateString('en-US', { timeZone: 'America/New_York' })}\n`
@@ -29,6 +29,8 @@ export default class PatchnotesEmbed extends BaseEmbed {
         value: tokens.join(''),
       };
     });
+
+    this.setFields(fields);
     if (patchlogs[0].imgUrl) {
       this.setImage(patchlogs[0].imgUrl);
     }

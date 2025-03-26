@@ -9,31 +9,29 @@ export default class SortieEmbed extends BaseEmbed {
   constructor(sortie, { platform, i18n, locale }) {
     super(locale);
 
-    this.color = 0xa84300;
+    this.setColor(0xa84300);
     if (typeof sortie !== 'undefined' && sortie) {
-      this.fields = sortie?.variants?.length
-        ? sortie.variants.map((v) => ({
-            name: `${v.node} - ${v.missionType}`,
-            value: v.modifier,
-          }))
-        : sortie?.missions.map((m) => ({
-            name: `${m.node} - ${m.type}`,
-            value: '_ _',
-          }));
+      this.setFields(
+        sortie?.variants?.length
+          ? sortie.variants.map((v) => ({
+              name: `${v.node} - ${v.missionType}`,
+              value: v.modifier,
+            }))
+          : sortie?.missions.map((m) => ({
+              name: `${m.node} - ${m.type}`,
+              value: '_ _',
+            }))
+      );
       if (sortie?.variants?.length) {
-        this.description = i18n`Currently in-progress sortie: **${sortie.boss}**`;
-        this.title = i18n`[${platform.toUpperCase()}] Worldstate - Sortie`;
-        this.thumbnail = {
-          url: sortieThumb,
-        };
+        this.setDescription(i18n`Currently in-progress sortie: **${sortie.boss}**`);
+        this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Sortie`);
+        this.setThumbnail(sortieThumb);
       } else {
-        this.description = i18n`Currently in-progress hunt: **${sortie.boss}**`;
-        this.title = i18n`[${platform.toUpperCase()}] Worldstate - Archon Hunt`;
-        this.thumbnail = {
-          url: narmer,
-        };
+        this.setDescription(i18n`Currently in-progress hunt: **${sortie.boss}**`);
+        this.setTitle(i18n`[${platform.toUpperCase()}] Worldstate - Archon Hunt`);
+        this.setThumbnail(narmer);
       }
-      this.footer.text = i18n`${sortie.eta} remaining`;
+      this.setFooter({ text: i18n`${sortie.eta} remaining` });
     }
   }
 }

@@ -1,16 +1,9 @@
-import Discord from 'discord.js';
+import { Client, WebhookClient, GatewayIntentBits, Events, PresenceUpdateStatus } from 'discord.js';
 
 import WorldStateClient from './utilities/WorldStateClient.js';
 import EventHandler from './eventHandlers/EventHandler.js';
 import Database from './settings/Database.js';
 import logger from './utilities/Logger.js';
-
-const {
-  Client,
-  WebhookClient,
-  Intents,
-  Constants: { Events },
-} = Discord;
 
 const unlog = {
   debug: ['WS_CONNECTION_TIMEOUT'],
@@ -59,7 +52,7 @@ export default class Genesis {
       shards,
       shardCount: Number(process.env.SHARDS || 1),
       presence: {
-        status: 'dnd',
+        status: PresenceUpdateStatus.DoNotDisturb,
         afk: false,
         activities: [
           {
@@ -68,11 +61,11 @@ export default class Genesis {
         ],
       },
       intents: [
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_INTEGRATIONS,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
       ],
     });
 
@@ -148,35 +141,35 @@ export default class Genesis {
   }
 
   async setupHandlers() {
-    this.client.on(Events.CLIENT_READY, async () =>
-      this.eventHandler.handleEvent({ event: Events.CLIENT_READY, args: [] })
+    this.client.on(Events.ClientReady, async () =>
+      this.eventHandler.handleEvent({ event: Events.ClientReady, args: [] })
     );
 
-    this.client.on(Events.GUILD_CREATE, async (guild) =>
-      this.eventHandler.handleEvent({ event: Events.GUILD_CREATE, args: [guild] })
+    this.client.on(Events.GuildCreate, async (guild) =>
+      this.eventHandler.handleEvent({ event: Events.GuildCreate, args: [guild] })
     );
-    this.client.on(Events.GUILD_DELETE, async (guild) =>
-      this.eventHandler.handleEvent({ event: Events.GUILD_DELETE, args: [guild] })
+    this.client.on(Events.GuildDelete, async (guild) =>
+      this.eventHandler.handleEvent({ event: Events.GuildDelete, args: [guild] })
     );
-    this.client.on(Events.CHANNEL_CREATE, async (channel) =>
-      this.eventHandler.handleEvent({ event: Events.CHANNEL_CREATE, args: [channel] })
+    this.client.on(Events.ChannelCreate, async (channel) =>
+      this.eventHandler.handleEvent({ event: Events.ChannelCreate, args: [channel] })
     );
-    this.client.on(Events.CHANNEL_DELETE, async (channel) =>
-      this.eventHandler.handleEvent({ event: Events.CHANNEL_DELETE, args: [channel] })
-    );
-
-    this.client.on(Events.INTERACTION_CREATE, async (interaction) =>
-      this.eventHandler.handleEvent({ event: Events.INTERACTION_CREATE, args: [interaction] })
+    this.client.on(Events.ChannelDelete, async (channel) =>
+      this.eventHandler.handleEvent({ event: Events.ChannelDelete, args: [channel] })
     );
 
-    this.client.on(Events.SHARD_DISCONNECT, (event) => {
+    this.client.on(Events.InteractionCreate, async (interaction) =>
+      this.eventHandler.handleEvent({ event: Events.InteractionCreate, args: [interaction] })
+    );
+
+    this.client.on(Events.ShardDisconnect, (event) => {
       this.logger.error(`Disconnected with close event: ${event.code}`);
     });
-    this.client.on(Events.ERROR, (error) => {
+    this.client.on(Events.Error, (error) => {
       if (!unlog.error.test(error.message)) this.logger.error(error);
     });
-    this.client.on(Events.WARN, this.logger.warn);
-    this.client.on(Events.DEBUG, (message) => {
+    this.client.on(Events.Warn, this.logger.warn);
+    this.client.on(Events.Debug, (message) => {
       if (/(heartbeat|Latency of|voice|HELLO timeout|CONNECT|Spawning)/i.test(message)) {
         this.logger.silly(message);
         return;

@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder, EmbedType, MessageFlags } from 'discord.js';
 import ping from 'ping';
 
 import { emojify, games, timeDeltaToString } from '../../utilities/CommonFunctions.js';
@@ -17,7 +17,7 @@ export default class Ping extends Interaction {
     if (!interaction.isCommand()) return undefined;
 
     const now = Date.now();
-    await interaction.reply({ content: 'Testing Ping', ephemeral: true });
+    await interaction.reply({ content: 'Testing Ping', flags: MessageFlags.Ephemeral });
     const afterSend = Date.now();
 
     const hosts = ['discordapp.com']
@@ -40,9 +40,9 @@ export default class Ping extends Interaction {
       name: 'Discord WS',
       value: `${emojify('green_tick')} ${interaction.client.ws.ping.toFixed(2)}ms`,
     });
-    const updated = new MessageEmbed({
+    const updated = new EmbedBuilder({
       title: 'PONG',
-      type: 'rich',
+      type: EmbedType.Rich,
       fields: [
         {
           name: ctx.i18n`Response time (shard ${interaction.inGuild() ? interaction.guild.shardId + 1 : 1})`,
@@ -51,7 +51,7 @@ export default class Ping extends Interaction {
         ...results,
       ],
       footer: {
-        thumbnail_url: '\u200B',
+        icon_url: '\u200B',
         text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}`,
       },
     });

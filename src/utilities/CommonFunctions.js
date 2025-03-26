@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import { Collection, EmbedBuilder } from 'discord.js';
 
 import { emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes } from '../resources/index.js';
 
@@ -18,8 +18,6 @@ const {
   twitch,
   twitter,
 } = all;
-
-const { Collection, MessageEmbed } = Discord;
 
 /**
  * API base path
@@ -482,7 +480,7 @@ const nav = ['◀', '▶', '⏮', '⏭', '🛑'];
 /**
  * Create a page collector for the given message and pages
  * @param   {Discord.Message}                 msg     Message to start the page collector from
- * @param   {(Object|Discord.MessageEmbed)}   pages   Array of possible pages
+ * @param   {(Object|Discord.EmbedBuilder)}   pages   Array of possible pages
  * @param   {Discord.User}                    author  Calling author
  */
 export const createPageCollector = async (msg, pages, author) => {
@@ -532,7 +530,7 @@ export const createPageCollector = async (msg, pages, author) => {
       const newPage = pages[page - 1];
       const pageInd = `Page ${page}/${pages.length}`;
       if (newPage.footer) {
-        if (newPage instanceof MessageEmbed) {
+        if (newPage instanceof EmbedBuilder) {
           if (newPage.footer.text.indexOf('Page') === -1) {
             newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.icon_url });
           }
@@ -561,7 +559,7 @@ export const createPageCollector = async (msg, pages, author) => {
 
 /**
  * Set up pages from an array of embeds
- * @param  {Array.<Object|MessageEmbed>}  pages    Array of embeds to use as pages
+ * @param  {Array.<Object|EmbedBuilder>}  pages    Array of embeds to use as pages
  * @param  {Discord.Message}              message  Message for author
  * @param  {Settings}                     settings Settings
  */
@@ -580,10 +578,10 @@ export const setupPages = async (pages, { message, settings }) => {
  * @param  {string} stringToChunk string that will be broken up for the fields
  * @param  {string} title         title of the embed
  * @param  {string} breakChar     character to break on
- * @returns {Discord.MessageEmbed}               Embed
+ * @returns {Discord.EmbedBuilder}               Embed
  */
 export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
-  const embed = new MessageEmbed(embedDefaults);
+  const embed = new EmbedBuilder(embedDefaults);
   embed.setTitle(title);
   const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || []).filter(stringFilter);
   if (chunks.length) {
@@ -598,16 +596,16 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
     embed.setDescription(`No ${title}`);
   }
 
-  if (embed.fields.length > fieldLimit) {
-    const fieldGroups = createGroupedArray(embed.fields, fieldLimit);
+  if (embed.data.fields?.length > fieldLimit) {
+    const fieldGroups = createGroupedArray(embed.data.fields, fieldLimit);
     const embeds = [];
     fieldGroups.forEach((fields, index) => {
-      const smEmbed = new MessageEmbed(embedDefaults);
+      const smEmbed = new EmbedBuilder(embedDefaults);
       embed.setTitle(title);
 
-      smEmbed.fields = fields;
+      smEmbed.setFields(fields);
       if (index === 0) {
-        smEmbed.setDescription(embed.description);
+        smEmbed.setDescription(embed.data.description);
       }
       embeds.push(smEmbed);
     });
@@ -673,7 +671,7 @@ export const constructTypeEmbeds = (types) => {
   });
   const fieldGroups = createGroupedArray(fields, fieldLimit);
   return fieldGroups.map((fieldGroup, index) => {
-    const embed = new MessageEmbed(embedDefaults);
+    const embed = new EmbedBuilder(embedDefaults);
     embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
     embed.addFields(
       fieldGroup.map((field) => ({
@@ -705,7 +703,7 @@ export const constructItemEmbeds = (types) => {
   });
   const fieldGroups = createGroupedArray(fields, fieldLimit);
   return fieldGroups.map((fieldGroup, index) => {
-    const embed = new MessageEmbed(embedDefaults);
+    const embed = new EmbedBuilder(embedDefaults);
     embed.setTitle(`Item Trackables${index > 0 ? ', ctd.' : ''}`);
     embed.addFields(
       fieldGroup.map((field) => ({

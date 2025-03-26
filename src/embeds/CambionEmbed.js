@@ -35,18 +35,16 @@ export default class CambionEmbed extends BaseEmbed {
    */
   constructor(state, { i18n, locale }) {
     super(locale);
-    this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`;
-    this.color = state.active === 'fass' ? 0xc6733f : 0x415b9e;
-    this.thumbnail = {
-      url: state.active === 'fass' ? fass : vome,
-    };
+    this.setTitle(i18n`Cambion Drift Cycle - ${toTitleCase(state.active)}`);
+    this.setColor(state.active === 'fass' ? 0xc6733f : 0x415b9e);
+    this.setThumbnail(state.active === 'fass' ? fass : vome);
 
     const next = toTitleCase(state.active === 'fass' ? 'vome' : 'fass');
 
     const nextCtd = i18n`Time remaining until ${next}: ${rTime(state.expiry)}`;
-    this.description = `${state.bounty ? makeJobs(state.bounty, i18n) : ''}\n\n${nextCtd}`;
+    this.setDescription(`${state.bounty ? makeJobs(state.bounty, i18n) : ''}\n\n${nextCtd}`);
 
-    this.footer.text = i18n`${next} starts `;
-    this.timestamp = new Date(state.expiry).getTime();
+    this.setFooter({ text: i18n`${next} starts ` });
+    this.setTimestamp(new Date(state.expiry).getTime());
   }
 }
