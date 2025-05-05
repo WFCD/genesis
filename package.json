@@ -81,7 +81,7 @@
   },
   "optionalDependencies": {
     "erlpack": "github:discord/erlpack",
-    "zlib-sync": "^0.1.9"
+    "zlib-sync": "^0.1.10"
   },
   "engines": {
     "node": ">=16.6.2"
