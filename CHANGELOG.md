@@ -1,3 +1,10 @@
+## [2.12.2](https://github.com/WFCD/genesis/compare/v2.12.1...v2.12.2) (2025-05-08)
+
+
+### Bug Fixes
+
+* update wiki links ([#956](https://github.com/WFCD/genesis/issues/956)) ([7c8362c](https://github.com/WFCD/genesis/commit/7c8362cf39e0f1a9120924babc50c82609deccd7))
+
 ## [2.12.1](https://github.com/WFCD/genesis/compare/v2.12.0...v2.12.1) (2025-03-08)
 
 
