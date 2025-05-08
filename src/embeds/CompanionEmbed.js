@@ -11,7 +11,7 @@ export default class CompanionEmbed extends BaseEmbed {
   constructor(companion, { i18n, locale }) {
     super(locale);
     this.setTitle(companion.name)
-      .setURL(`https://warframe.fandom.com/wiki/${companion.name.replace(/\s/g, '_')}`)
+      .setURL(`https://wiki.warframe.com/w/${companion.name.replace(/\s/g, '_')}`)
       .setThumbnail(`https://cdn.warframestat.us/img/${companion.imageName}`)
       .setDescription(companion.description)
       .addFields(
