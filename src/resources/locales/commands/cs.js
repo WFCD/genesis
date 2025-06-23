@@ -287,6 +287,10 @@ export default {
     name: 'get',
     description: 'Get all the settings'
   },
+  'settings.get.channel': {
+    name: 'channel',
+    description: 'Should be a text channel',
+  },
   'settings.diag': {
     name: 'diag',
     description: 'Run diagnostics for the guild'

@@ -256,6 +256,7 @@ export default class Settings extends Interaction {
     ]);
 
     page.setTitle('General Settings');
+    page.setDescription(`<#${channel.id}>`);
     page.addFields([
       {
         name: 'Language',
@@ -439,6 +440,13 @@ export default class Settings extends Interaction {
       {
         ...cmds['settings.get'],
         type: Types.SUB_COMMAND,
+        options: [
+          {
+            ...cmds['settings.get.channel'],
+            type: Types.CHANNEL,
+            required: false,
+          },
+        ],
       },
       {
         ...cmds['settings.diag'],
@@ -474,7 +482,7 @@ export default class Settings extends Interaction {
     if (field === 'auto_text') value = !value;
 
     const isThread = interaction.channel.isThread();
-    const channel = isThread ? interaction.channel.parent : interaction.channel;
+    const channel = options?.getChannel('channel') ?? (isThread ? interaction.channel.parent : interaction.channel);
     const thread = isThread ? interaction.channel : undefined;
 
     switch (action) {
