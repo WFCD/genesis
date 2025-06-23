@@ -1,3 +1,10 @@
+## [2.13.1](https://github.com/WFCD/genesis/compare/v2.13.0...v2.13.1) (2025-06-23)
+
+
+### Bug Fixes
+
+* **ci:** deploy via ts ([6dfe17a](https://github.com/WFCD/genesis/commit/6dfe17aa66b90b5c77b0dc794ddd710ce41c6422))
+
 # [2.13.0](https://github.com/WFCD/genesis/compare/v2.12.2...v2.13.0) (2025-06-23)
 
 
