@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/WFCD/genesis/compare/v2.12.2...v2.13.0) (2025-06-23)
+
+
+### Features
+
+* support channel on settings get ([#973](https://github.com/WFCD/genesis/issues/973)) ([a645e6f](https://github.com/WFCD/genesis/commit/a645e6fd7d28312b307b5f3f7e0d1c11e93e9eee))
+
 ## [2.12.2](https://github.com/WFCD/genesis/compare/v2.12.1...v2.12.2) (2025-05-08)
 
 
