@@ -287,6 +287,10 @@ export default {
     name: 'get',
     description: 'Obtener todos los ajustes'
   },
+  'settings.get.channel': {
+    name: 'channel',
+    description: 'Debe ser un canal de texto'
+  },
   'settings.diag': {
     name: 'diag',
     description: 'Ejecutar diagnóstico para el gremio'
