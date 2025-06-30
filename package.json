@@ -77,7 +77,7 @@
     "husky": "^9.1.7",
     "install-peerdeps": "^3.0.3",
     "lint-staged": "^16.1.2",
-    "mocha": "^11.7.0"
+    "mocha": "^11.7.1"
   },
   "optionalDependencies": {
     "erlpack": "github:discord/erlpack",
