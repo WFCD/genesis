@@ -289,7 +289,7 @@ export default {
   },
   'settings.get.channel': {
     name: 'channel',
-    description: 'Should be a text channel',
+    description: 'Should be a text channel'
   },
   'settings.diag': {
     name: 'diag',

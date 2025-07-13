@@ -288,7 +288,7 @@ export default {
     description: 'Obtener todos los ajustes'
   },
   'settings.get.channel': {
-    name: 'channel',
+    name: 'canal',
     description: 'Debe ser un canal de texto'
   },
   'settings.diag': {
