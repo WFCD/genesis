@@ -35,7 +35,7 @@ export const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframesta
  * Warframe Wiki base url
  * @type {string}
  */
-export const wikiBase = process.env.WIKIA_BASE_PATH || 'https://warframe.fandom.com/wiki/';
+export const wikiBase = process.env.WIKIA_BASE_PATH || 'https://wiki.warframe.com/w/';
 /**
  * API base url for the warframe-items cdn
  * @type {string}

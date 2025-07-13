@@ -1,3 +1,24 @@
+## [2.13.1](https://github.com/WFCD/genesis/compare/v2.13.0...v2.13.1) (2025-06-23)
+
+
+### Bug Fixes
+
+* **ci:** deploy via ts ([6dfe17a](https://github.com/WFCD/genesis/commit/6dfe17aa66b90b5c77b0dc794ddd710ce41c6422))
+
+# [2.13.0](https://github.com/WFCD/genesis/compare/v2.12.2...v2.13.0) (2025-06-23)
+
+
+### Features
+
+* support channel on settings get ([#973](https://github.com/WFCD/genesis/issues/973)) ([a645e6f](https://github.com/WFCD/genesis/commit/a645e6fd7d28312b307b5f3f7e0d1c11e93e9eee))
+
+## [2.12.2](https://github.com/WFCD/genesis/compare/v2.12.1...v2.12.2) (2025-05-08)
+
+
+### Bug Fixes
+
+* update wiki links ([#956](https://github.com/WFCD/genesis/issues/956)) ([7c8362c](https://github.com/WFCD/genesis/commit/7c8362cf39e0f1a9120924babc50c82609deccd7))
+
 ## [2.12.1](https://github.com/WFCD/genesis/compare/v2.12.0...v2.12.1) (2025-03-08)
 
 

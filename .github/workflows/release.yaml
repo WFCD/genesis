@@ -19,7 +19,7 @@ jobs:
           npm run lint
           npm test
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4.1.1
+        uses: cycjimmy/semantic-release-action@v4.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -64,6 +64,10 @@ jobs:
           SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
           SSH_BOT_PORT: ${{ secrets.SSH_BOT_PORT }}
           DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ secrets.TS_AUTHKEY }}
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
