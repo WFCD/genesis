@@ -1,4 +1,5 @@
 import { cdn } from '../utilities/CommonFunctions.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -33,7 +34,7 @@ export default class SortieEmbed extends BaseEmbed {
           url: narmer,
         };
       }
-      this.footer.text = i18n`${sortie.eta} remaining`;
+      this.footer.text = i18n`${eta(sortie)} remaining`;
     }
   }
 }

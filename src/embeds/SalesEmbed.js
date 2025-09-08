@@ -1,11 +1,12 @@
 import { assetBase } from '../utilities/CommonFunctions.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
 const darvo = `${assetBase}/img/darvo-md.png`;
 const makeSale = (sale, i18n) => ({
   name: i18n`${sale.item}, ${sale.premiumOverride}p ${sale.discount > 0 ? `${sale.discount}% off` : ''}`,
-  value: i18n`Expires in ${sale.eta}`,
+  value: i18n`Expires in ${eta(sale)}`,
 });
 
 export default class SalesEmbed extends BaseEmbed {

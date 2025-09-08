@@ -1,15 +1,13 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
  */
 export default class AddChannelToDatabase extends Handler {
   constructor(bot) {
-    super(bot, 'handlers.addChannel', Events.CHANNEL_CREATE);
+    super(bot, 'handlers.addChannel', Events.ChannelCreate);
   }
 
   // eslint-disable-next-line valid-jsdoc

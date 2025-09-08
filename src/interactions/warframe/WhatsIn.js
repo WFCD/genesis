@@ -1,17 +1,14 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import WhatsInEmbed from '../../embeds/WhatsinEmbed.js';
 import Interaction from '../../models/Interaction.js';
 import { games, toTitleCase } from '../../utilities/CommonFunctions.js';
 import { cmds } from '../../resources/index.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 const queryOpt = [
   {
     ...cmds['whatsin.query'],
-    type: Types.STRING,
+    type: ApplicationCommandOptionType.String,
     required: true,
   },
 ];
@@ -27,7 +24,7 @@ export default class WhatsIn extends Interaction {
     options: [
       {
         name: 'relic_era',
-        type: Types.STRING,
+        type: ApplicationCommandOptionType.String,
         description: 'What relic tier is the relic from?',
         required: true,
         choices: [
@@ -70,6 +67,6 @@ export default class WhatsIn extends Interaction {
     const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
     if (!data || !Object.keys(data).length) return interaction.reply(ctx.i18n`Sorry, no such relic`);
     const embed = new WhatsInEmbed(data, tier, query);
-    return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
+    return interaction.reply({ embeds: [embed], flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
   }
 }

@@ -1,13 +1,11 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import { games } from '../utilities/CommonFunctions.js';
 import Handler from '../models/BaseEventHandler.js';
 
-const { Events } = Discord.Constants;
-
 export default class UpdateGuildStatistics extends Handler {
   constructor(bot) {
-    super(bot, 'handlers.statsupdate', Events.GUILD_MEMBER_UPDATE);
+    super(bot, 'handlers.statsupdate', Events.GuildMemberUpdate);
   }
 
   async execute(...[, newMember]) {

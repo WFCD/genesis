@@ -1,17 +1,13 @@
-import Discord, { Permissions } from 'discord.js';
+import { PermissionsBitField, ApplicationCommandOptionType } from 'discord.js';
 
 import BaseEmbed from '../../embeds/BaseEmbed.js';
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
-
 const tc = {
   ...cmds['templates.tc'],
-  type: Types.CHANNEL,
+  type: ApplicationCommandOptionType.Channel,
   required: true,
 };
 
@@ -19,37 +15,37 @@ export default class Templates extends Interaction {
   static enabled = games.includes('ROOMS');
   static command = {
     ...cmds.templates,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['templates.add'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
       {
         ...cmds['templates.delete'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
       {
         ...cmds['templates.list'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['templates.set'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           tc,
           {
             ...cmds['templates.fmt'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['templates.clear'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [tc],
       },
     ],
@@ -61,22 +57,37 @@ export default class Templates extends Interaction {
     const template = interaction?.options?.getString('template');
 
     if (channel && channel.type !== 'GUILD_VOICE') {
-      return interaction.reply({ content: ctx.i18n`Template must be a voice channel`, ephemeral: ctx.ephemerate });
+      return interaction.reply({
+        content: ctx.i18n`Template must be a voice channel`,
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+      });
     }
 
     switch (subcommand) {
       case 'add':
         if (await ctx.settings.isTemplate(channel)) {
-          return interaction.reply({ content: ctx.i18n`That is already a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({
+            content: ctx.i18n`That is already a template`,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         }
         await ctx.settings.addTemplate(channel, false);
-        return interaction.reply({ content: ctx.i18n`${channel} added as a template.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({
+          content: ctx.i18n`${channel} added as a template.`,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+        });
       case 'delete':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({
+            content: ctx.i18n`That is not a template`,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         }
         await ctx.settings.deleteTemplate(channel);
-        return interaction.reply({ content: ctx.i18n`${channel} removed as a template.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({
+          content: ctx.i18n`${channel} removed as a template.`,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+        });
       case 'list':
         /* eslint-disable no-case-declarations */
         const templateIds = await ctx.settings.getTemplates([interaction.guild]);
@@ -104,21 +115,30 @@ export default class Templates extends Interaction {
             })
           )
         ).join('\n');
-        return interaction.reply({ embeds: [embed], ephemeral: ctx.ephemerate });
+        return interaction.reply({ embeds: [embed], flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
       case 'clear':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({
+            content: ctx.i18n`That is not a template`,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         }
         await ctx.settings.setDynTemplate(channel.id, undefined);
-        return interaction.reply({ content: ctx.i18n`${channel}'s name template cleared.`, ephemeral: ctx.ephemerate });
+        return interaction.reply({
+          content: ctx.i18n`${channel}'s name template cleared.`,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+        });
       case 'set':
         if (!(await ctx.settings.isTemplate(channel))) {
-          return interaction.reply({ content: ctx.i18n`That is not a template`, ephemeral: ctx.ephemerate });
+          return interaction.reply({
+            content: ctx.i18n`That is not a template`,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         }
         await ctx.settings.setDynTemplate(channel.id, template);
         return interaction.reply({
           content: ctx.i18n`\`${template}\` set as ${channel}'s name template.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       default:
         break;

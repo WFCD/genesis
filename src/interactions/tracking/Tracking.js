@@ -1,4 +1,13 @@
-import Discord, { MessageButton, Permissions } from 'discord.js';
+import Discord, {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonStyle,
+  ComponentType,
+  InteractionCollector,
+  InteractionType,
+  ButtonBuilder,
+  PermissionsBitField,
+} from 'discord.js';
 
 import Interaction from '../../models/Interaction.js';
 import {
@@ -10,13 +19,6 @@ import {
   trackablesFromParameters,
 } from '../../utilities/CommonFunctions.js';
 import { cmds } from '../../resources/index.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
-  MessageActionRow,
-  MessageSelectMenu,
-  InteractionCollector,
-} = Discord;
 
 /**
  * Generate tracking message strings
@@ -36,49 +38,49 @@ export default class Tracking extends Interaction {
   static elevated = true;
   static command = {
     ...cmds.tracking,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['tracking.manage'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['tracking.manage.channel'],
-            type: Types.CHANNEL,
+            type: ApplicationCommandOptionType.Channel,
           },
           {
             ...cmds['tracking.manage.thread'],
-            type: Types.CHANNEL,
+            type: ApplicationCommandOptionType.Channel,
           },
         ],
       },
       {
         ...cmds['tracking.custom'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['tracking.custom.add'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
           },
           {
             ...cmds['tracking.custom.remove'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
           },
           {
             ...cmds['tracking.custom.prepend'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
           },
           {
             ...cmds['tracking.custom.channel'],
-            type: Types.CHANNEL,
+            type: ApplicationCommandOptionType.Channel,
           },
           {
             ...cmds['tracking.custom.clear-prepend'],
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
           },
           {
             ...cmds['tracking.custom.thread'],
-            type: Types.CHANNEL,
+            type: ApplicationCommandOptionType.Channel,
           },
         ],
       },
@@ -95,7 +97,7 @@ export default class Tracking extends Interaction {
     if (options?.getChannel('channel')) {
       if (options?.getChannel('channel').type !== 'GUILD_TEXT') {
         return interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           content: `:warning: ${options.getChannel('channel')} is not a text channel. :warning:`,
         });
       }
@@ -110,13 +112,13 @@ export default class Tracking extends Interaction {
       thread = options.getChannel('thread');
       if (thread.parent.id !== channel.id) {
         return interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           content: `:warning: ${thread} is not a thread in ${channel} :warning:`,
         });
       }
     } else if (options.getChannel('thread')) {
       return interaction.editReply({
-        ephemeral: ctx.ephemerate,
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         content: `:warning: ${options.getChannel('thread')} is not a thread channel :warning:`,
       });
     }
@@ -201,18 +203,18 @@ export default class Tracking extends Interaction {
         return [
           // paginator
           chunks.length > 1
-            ? new MessageActionRow({
+            ? new ActionRowBuilder({
                 components: [
-                  new MessageButton({
+                  new ButtonBuilder({
                     label: 'Previous',
                     customId: 'previous',
-                    style: MessageButtonStyles.SECONDARY,
+                    style: ButtonStyle.Secondary,
                     disabled: chunks.length < 1,
                   }),
-                  new MessageButton({
+                  new ButtonBuilder({
                     label: 'Next',
                     customId: 'next',
-                    style: MessageButtonStyles.SECONDARY,
+                    style: ButtonStyle.Secondary,
                     disabled: chunks.length < 1,
                   }),
                 ],
@@ -220,9 +222,9 @@ export default class Tracking extends Interaction {
             : undefined,
           // group selection
           groups?.length
-            ? new MessageActionRow({
+            ? new ActionRowBuilder({
                 components: [
-                  new MessageSelectMenu({
+                  new ActionRowBuilder({
                     minValues: 0,
                     maxValues: 1,
                     customId: 'select_group',
@@ -234,9 +236,9 @@ export default class Tracking extends Interaction {
             : undefined,
           // subgroup selection
           subgrouped.includes(currentGroup)
-            ? new MessageActionRow({
+            ? new ActionRowBuilder({
                 components: [
-                  new MessageSelectMenu({
+                  new ActionRowBuilder({
                     minValues: 0,
                     maxValues: 1,
                     customId: 'select_sub_group',
@@ -248,9 +250,9 @@ export default class Tracking extends Interaction {
             : undefined,
           // discrete trackable selection
           groupOptions.length
-            ? new MessageActionRow({
+            ? new ActionRowBuilder({
                 components: [
-                  new MessageSelectMenu({
+                  new ActionRowBuilder({
                     maxValues: groupOptions.length,
                     customId: 'select_trackables',
                     placeholder: ctx.i18n`Select Trackables`,
@@ -261,32 +263,32 @@ export default class Tracking extends Interaction {
               })
             : undefined,
           // actions (save, all, reset, cancel, clear)
-          new MessageActionRow({
+          new ActionRowBuilder({
             components: [
-              new MessageButton({
+              new ButtonBuilder({
                 label: 'Save',
                 customId: 'save',
-                style: MessageButtonStyles.PRIMARY,
+                style: ButtonStyle.Primary,
               }),
-              new MessageButton({
+              new ButtonBuilder({
                 label: 'All',
                 customId: 'all',
-                style: MessageButtonStyles.PRIMARY,
+                style: ButtonStyle.Primary,
               }),
-              new MessageButton({
+              new ButtonBuilder({
                 label: 'Reset',
                 customId: 'reset',
-                style: MessageButtonStyles.SECONDARY,
+                style: ButtonStyle.Secondary,
               }),
-              new MessageButton({
+              new ButtonBuilder({
                 label: 'Cancel',
                 customId: 'cancel',
-                style: MessageButtonStyles.SECONDARY,
+                style: ButtonStyle.Secondary,
               }),
-              new MessageButton({
+              new ButtonBuilder({
                 label: 'Clear',
                 customId: 'clear',
-                style: MessageButtonStyles.DANGER,
+                style: ButtonStyle.Danger,
               }),
             ],
           }),
@@ -299,8 +301,8 @@ export default class Tracking extends Interaction {
       });
 
       const groupCollector = new InteractionCollector(interaction.client, {
-        interactionType: InteractionTypes.MESSAGE_COMPONENT,
-        componentType: MessageComponentTypes.SELECT_MENU,
+        interactionType: InteractionType.MessageComponent,
+        componentType: ComponentType.SelectMenu,
         message,
         guild: interaction.guild,
         channel: interaction.channel,
@@ -354,8 +356,8 @@ export default class Tracking extends Interaction {
       groupCollector.on('collect', groupSelectionHandler);
 
       const buttonCollector = new InteractionCollector(interaction.client, {
-        interactionType: InteractionTypes.MESSAGE_COMPONENT,
-        componentType: MessageComponentTypes.BUTTON,
+        interactionType: InteractionType.MessageComponent,
+        componentType: ComponentType.Button,
         message,
         guild: interaction.guild,
         channel: interaction.channel,
@@ -375,10 +377,10 @@ export default class Tracking extends Interaction {
             return message.edit({
               content: chunks[page],
               components: [
-                new MessageActionRow({
+                new ActionRowBuilder({
                   components: [
-                    new MessageButton({
-                      style: MessageButtonStyles.SUCCESS,
+                    new ButtonBuilder({
+                      style: ActionRowBuilder.Success,
                       customId: 'success',
                       label: 'Tracking Saved!',
                       disabled: true,
@@ -396,13 +398,13 @@ export default class Tracking extends Interaction {
             return message.edit({
               content: chunks[page],
               components: [
-                new MessageActionRow({
+                new ActionRowBuilder({
                   components: [
-                    new MessageButton({
+                    new ButtonBuilder({
                       label: 'Canceled',
                       customId: 'done',
                       disabled: true,
-                      style: MessageButtonStyles.SUCCESS,
+                      style: ButtonStyle.Success,
                     }),
                   ],
                 }),
@@ -478,7 +480,10 @@ export default class Tracking extends Interaction {
       buttonCollector.on('collect', buttonHandler);
     }
     if (action === 'custom') {
-      await interaction?.editReply({ content: 'Analyzing...', ephemeral: ctx.ephemerate });
+      await interaction?.editReply({
+        content: 'Analyzing...',
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+      });
       const add = trackablesFromParameters(
         (options.getString('add') || '')
           .split(',')
@@ -502,13 +507,13 @@ export default class Tracking extends Interaction {
         );
         return interaction?.editReply?.({
           content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       }
       if (clear && !remove?.length) {
         return interaction?.editReply?.({
           content: ctx.i18n`Specify trackables to remove the prepend for.`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       }
       if (add?.events?.length) await ctx.settings.trackEventTypes(channel, add.events, thread);
@@ -517,7 +522,10 @@ export default class Tracking extends Interaction {
       if (remove?.events?.length) await ctx.settings.untrackEventTypes(channel, remove.events, thread);
       if (remove?.items?.length && !clear) await ctx.settings.untrackItems(channel, remove.items, thread);
       const removeString = ctx.i18n`Removed ${remove?.events?.length} events, ${remove?.items?.length} items`;
-      await interaction.editReply({ content: `${addString}\n${removeString}`, ephemeral: ctx.ephemerate });
+      await interaction.editReply({
+        content: `${addString}\n${removeString}`,
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+      });
 
       if (prepend && (add.items.length || add.events.length)) {
         await ctx.settings.addPings(interaction.guild, add, prepend);
@@ -525,7 +533,7 @@ export default class Tracking extends Interaction {
           Discord.Util.removeMentions(prepend)
         )}\` for ${add?.events?.length || 0} events, ${add?.items?.length || 0} items`;
         await interaction.editReply({
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           content: `${addString}\n${removeString}\n${pingsString}`,
         });
       }

@@ -1,13 +1,9 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import { fromNow, games, timeDeltaToMinutesString } from '../utilities/CommonFunctions.js';
 import Handler from '../models/BaseEventHandler.js';
 
 import DynamicVoiceHandler from './DynamicVoiceHandler.js';
-
-const {
-  Constants: { Events },
-} = Discord;
 
 const max = {
   cetus: {
@@ -26,7 +22,7 @@ const startupTimeout = Number.parseInt(process.env.READY_FORCE || '3600000', 10)
 
 export default class OnReadyHandle extends Handler {
   constructor(bot) {
-    super(bot, 'handlers.onReady', Events.CLIENT_READY);
+    super(bot, 'handlers.onReady', Events.ClientReady);
     setTimeout(() => {
       this.logger.info(`[Cluster] Forcing readiness...`);
       this.execute.bind(this)();

@@ -1,11 +1,9 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
 import { games } from '../utilities/CommonFunctions.js';
-import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
-
-const { Events } = Discord.Constants;
+import webhook from '../utilities/Webhook.js';
 
 /**
  * Describes a handler
@@ -16,7 +14,7 @@ export default class LogMemberBan extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.logBanAdd', Events.GUILD_BAN_ADD);
+    super(bot, 'handlers.logBanAdd', Events.GuildBanAdd);
   }
 
   /**

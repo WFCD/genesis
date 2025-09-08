@@ -1,4 +1,14 @@
-import Discord from 'discord.js';
+import {
+  ActionRow,
+  StringSelectMenuBuilder,
+  InteractionCollector,
+  ButtonBuilder,
+  EmbedBuilder,
+  ApplicationCommandOptionType,
+  InteractionType,
+  ComponentType,
+  ButtonStyle,
+} from 'discord.js';
 
 import Build from '../../models/Build.js';
 import BuildEmbed from '../../embeds/BuildEmbed.js';
@@ -7,14 +17,6 @@ import WeaponEmbed from '../../embeds/WeaponEmbed.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
 import { createGroupedArray, games } from '../../utilities/CommonFunctions.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types, InteractionTypes, MessageComponentTypes, MessageButtonStyles },
-  MessageActionRow,
-  MessageSelectMenu,
-  InteractionCollector,
-  MessageButton,
-} = Discord;
 
 const buildParts = [
   {
@@ -136,17 +138,17 @@ export default class Builds extends Interaction {
     options: [
       {
         name: 'list',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Get all of my builds',
       },
       {
         name: 'get',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Search builds or get a specific id.',
         options: [
           {
             name: 'query',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Search string',
             required: true,
           },
@@ -154,30 +156,30 @@ export default class Builds extends Interaction {
       },
       {
         name: 'add',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Add a new build',
         options: buildParts.map((bp) => ({
           name: bp.name,
-          type: Types.STRING,
+          type: ApplicationCommandOptionType.String,
           description: bp.description,
           choices: bp.choices,
         })),
       },
       {
         name: 'update',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Update a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
         ].concat(
           buildParts.map((bp) => ({
             name: bp.name,
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: bp.description,
             choices: bp.choices,
           }))
@@ -185,31 +187,31 @@ export default class Builds extends Interaction {
       },
       {
         name: 'remove',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Remove a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
         ].concat(
           buildParts.map((bp) => ({
             name: bp.name,
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
             description: bp.description,
           }))
         ),
       },
       {
         name: 'mod',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         description: 'Set Mods for a build',
         options: [
           {
             name: 'id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Build Identifier',
             required: true,
           },
@@ -222,7 +224,7 @@ export default class Builds extends Interaction {
    * Build out pages for the provided build
    * @param {Build} build to generate pages for
    * @param {CommandContext} ctx context for command
-   * @returns {Array<Discord.MessageEmbed>}
+   * @returns {Array<Discord.EmbedBuilder>}
    */
   static #buildEmbedsForBuild(build, ctx) {
     const parsed = {};
@@ -266,7 +268,7 @@ export default class Builds extends Interaction {
         }
         pages.push(prism);
       } else {
-        const operator = new Discord.MessageEmbed({ title: ctx.i18n`Operator`, description: focus });
+        const operator = new EmbedBuilder({ title: ctx.i18n`Operator`, description: focus });
         pages.push(operator);
       }
     }
@@ -326,14 +328,14 @@ export default class Builds extends Interaction {
         }
         return interaction.reply({
           embeds: [{ color: 0xcda2a3, title: ctx.i18n`No builds for user` }],
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       case 'get':
         if (build) {
           if (build.body) {
             return interaction.reply({
               embeds: [new BuildEmbed(undefined, build)],
-              ephemeral: ctx.ephemerate,
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
             });
           }
           const pages = this.#buildEmbedsForBuild(build, ctx);
@@ -348,7 +350,10 @@ export default class Builds extends Interaction {
           });
           return Collectors.dynamic(interaction, pages, ctx);
         }
-        return interaction.reply({ content: ctx.i18n`No builds found`, ephemeral: ctx.ephemerate });
+        return interaction.reply({
+          content: ctx.i18n`No builds found`,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+        });
       case 'update':
       case 'add':
         await interaction.deferReply({ ephemeral: true });
@@ -377,14 +382,14 @@ export default class Builds extends Interaction {
           });
           if (!thereWasAPart) await ctx.settings.deleteBuild(id);
           else await ctx.settings.saveBuild(build);
-          return interaction.reply({ content: 'buhleted', ephemeral: ctx.ephemerate });
+          return interaction.reply({ content: 'buhleted', flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
         }
         break;
       case 'mod':
         if (!build) {
           return interaction.reply(ctx.i18n`Can't add mods when you haven't got a build.`);
         }
-        await interaction.deferReply({ ephemeral: ctx.ephemerate });
+        await interaction.deferReply({ flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
         const populatedKeys = Object.keys(build.toJson())
           .filter((p) => !unmodable.includes(p))
           .filter((k) => build.toJson()[k]);
@@ -416,9 +421,9 @@ export default class Builds extends Interaction {
             .join('\n') || ctx.i18n`No Mods`;
 
         const selectPartRow = () =>
-          new MessageActionRow({
+          new ActionRow({
             components: [
-              new MessageSelectMenu({
+              new StringSelectMenuBuilder({
                 minValues: 0,
                 maxValues: 1,
                 customId: 'select_part',
@@ -435,31 +440,31 @@ export default class Builds extends Interaction {
           });
         const availableMods = () => (current ? createGroupedArray(ctx.ws.modsByType(current.compat), 25) : undefined);
         let modPage = 0;
-        const navComponents = new MessageActionRow({
+        const navComponents = new ActionRow({
           components: [
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Previous',
               customId: 'previous',
-              style: MessageButtonStyles.SECONDARY,
+              style: ButtonStyle.Secondary,
             }),
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Save',
               customId: 'save',
-              style: MessageButtonStyles.PRIMARY,
+              style: ButtonStyle.Primary,
             }),
-            new MessageButton({
+            new ButtonBuilder({
               label: 'Next',
               customId: 'next',
-              style: MessageButtonStyles.SECONDARY,
+              style: ButtonStyle.Secondary,
             }),
           ],
         });
         const modChoices = () => {
           const available = availableMods();
           return [
-            new MessageActionRow({
+            new ActionRow({
               components: [
-                new MessageSelectMenu({
+                new StringSelectMenuBuilder({
                   minValues: 0,
                   maxValues: available?.[modPage]?.length || 1,
                   customId: 'select_mods',
@@ -501,18 +506,18 @@ export default class Builds extends Interaction {
           }
           await interaction.editReply({
             content: currentMods(),
-            ephemeral: ctx.ephemerate,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
             components: [selectPartRow(), ...modChoices()],
           });
         };
         const message = await interaction.editReply({
           content: currentMods(),
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           components: [selectPartRow(), ...modChoices()],
         });
         const modCollector = new InteractionCollector(interaction.client, {
-          interactionType: InteractionTypes.MESSAGE_COMPONENT,
-          componentType: MessageComponentTypes.SELECT_MENU,
+          interactionType: InteractionType.MESSAGE_COMPONENT,
+          componentType: ComponentType.SelectMenu,
           message,
           guild: interaction.guild,
           channel: interaction.channel,
@@ -520,14 +525,14 @@ export default class Builds extends Interaction {
         modCollector.on('collect', modSelectionHandler);
 
         const modPageCollector = new InteractionCollector(interaction.client, {
-          interactionType: InteractionTypes.MESSAGE_COMPONENT,
-          componentType: MessageComponentTypes.BUTTON,
+          componentType: ComponentType.Button,
+          interactionType: InteractionType.MessageComponent,
           message,
           guild: interaction.guild,
           channel: interaction.channel,
         });
         const modPageHandler = async (button) => {
-          await button.deferUpdate({ ephemeral: ctx.ephemerate });
+          await button.deferUpdate({ flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
           switch (button.customId) {
             case 'previous':
               if (modPage > 1) modPage -= 1;
@@ -551,14 +556,14 @@ export default class Builds extends Interaction {
               // before saving, error or "warn" if there's more than the type allows
               return interaction.editReply({
                 content: currentMods(),
-                ephemeral: ctx.ephemerate,
+                flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
                 components: [
-                  new MessageActionRow({
+                  new ActionRow({
                     components: [
-                      new MessageButton({
+                      new ButtonBuilder({
                         label: 'Saved',
                         customId: 'save',
-                        style: MessageButtonStyles.SUCCESS,
+                        style: ButtonStyle.Success,
                         disabled: true,
                       }),
                     ],
@@ -574,13 +579,13 @@ export default class Builds extends Interaction {
           }
           return interaction.editReply({
             content: currentMods(),
-            ephemeral: ctx.ephemerate,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
             components: [selectPartRow(), ...modChoices()],
           });
         };
         modPageCollector.on('collect', modPageHandler);
         return undefined;
     }
-    return interaction.reply({ content: ctx.i18n`Nah.`, ephemeral: ctx.ephemerate });
+    return interaction.reply({ content: ctx.i18n`Nah.`, flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
   }
 }
