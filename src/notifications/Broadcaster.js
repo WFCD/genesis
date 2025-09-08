@@ -38,7 +38,7 @@ export default class Broadcaster {
 
   /**
    * Broadcast embed to all channels for a platform and type
-   * @param  {Discord.MessageEmbed} embed      Embed to send to a channel
+   * @param  {Discord.EmbedBuilder} embed      Embed to send to a channel
    * @param  {string} platform   Platform of worldstate
    * @param  {string} type       Type of new data to notify
    * @param {string} locale locale string

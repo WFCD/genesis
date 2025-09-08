@@ -1,15 +1,9 @@
-import Discord from 'discord.js';
+import { PermissionsBitField, EmbedBuilder, ApplicationCommandOptionType } from 'discord.js';
 
 import { games, isVulgarCheck } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 import logger from '../../utilities/Logger.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-  Permissions,
-  MessageEmbed,
-} = Discord;
 
 const GuildChannelOverwriteOptionsType = {
   ROLE: 0,
@@ -34,8 +28,8 @@ const makeOverwrites = (guild, options) => {
   const overwrites = [];
   if (options.isPublic) {
     const everyoneOverwrites = [];
-    everyoneOverwrites.push(Permissions.FLAGS.CONNECT);
-    if (!options.shown) everyoneOverwrites.push(Permissions.FLAGS.VIEW_CHANNEL);
+    everyoneOverwrites.push(PermissionsBitField.Flags.Connect);
+    if (!options.shown) everyoneOverwrites.push(PermissionsBitField.Flags.ViewChannel);
     overwrites.push({
       id: guild.roles.everyone.id,
       deny: everyoneOverwrites,
@@ -45,11 +39,11 @@ const makeOverwrites = (guild, options) => {
       overwrites.push({
         id: user.id,
         allow: [
-          Permissions.FLAGS.VIEW_CHANNEL,
-          Permissions.FLAGS.SEND_MESSAGES,
-          Permissions.FLAGS.CONNECT,
-          Permissions.FLAGS.SPEAK,
-          Permissions.FLAGS.USE_VAD,
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.Connect,
+          PermissionsBitField.Flags.Speak,
+          PermissionsBitField.Flags.UseVAD,
         ],
         type: 'user',
       });
@@ -57,20 +51,20 @@ const makeOverwrites = (guild, options) => {
   } else {
     overwrites.push({
       id: guild.roles.everyone.id,
-      allow: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.CONNECT],
+      allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.Connect],
     });
   }
   overwrites.push(
     {
       allow: [
-        Permissions.FLAGS.VIEW_CHANNEL,
-        Permissions.FLAGS.SEND_MESSAGES,
-        Permissions.FLAGS.CONNECT,
-        Permissions.FLAGS.MUTE_MEMBERS,
-        Permissions.FLAGS.DEAFEN_MEMBERS,
-        Permissions.FLAGS.MOVE_MEMBERS,
-        Permissions.FLAGS.MANAGE_ROLES,
-        Permissions.FLAGS.MANAGE_CHANNELS,
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.CONNECT,
+        PermissionsBitField.Flags.MuteMembers,
+        PermissionsBitField.Flags.DeafenMembers,
+        PermissionsBitField.Flags.MoveMembers,
+        PermissionsBitField.Flags.ManageRoles,
+        PermissionsBitField.Flags.ManageChannels,
       ],
       id: guild.me.id,
       type: 'user',
@@ -78,12 +72,12 @@ const makeOverwrites = (guild, options) => {
     {
       id: options.author.id,
       allow: [
-        Permissions.FLAGS.VIEW_CHANNEL,
-        Permissions.FLAGS.SEND_MESSAGES,
-        Permissions.FLAGS.CONNECT,
-        Permissions.FLAGS.SPEAK,
-        Permissions.FLAGS.USE_VAD,
-        Permissions.FLAGS.MANAGE_MESSAGES,
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.Connect,
+        PermissionsBitField.Flags.Speak,
+        PermissionsBitField.Flags.UseVAD,
+        PermissionsBitField.Flags.ManageMessages,
       ],
       type: 'user',
     }
@@ -92,14 +86,14 @@ const makeOverwrites = (guild, options) => {
     overwrites.push({
       id: options?.modRole?.id,
       allow: [
-        Permissions.FLAGS.VIEW_CHANNEL,
-        Permissions.FLAGS.SEND_MESSAGES,
-        Permissions.FLAGS.CONNECT,
-        Permissions.FLAGS.SPEAK,
-        Permissions.FLAGS.USE_VAD,
-        Permissions.FLAGS.MANAGE_MESSAGES,
-        Permissions.FLAGS.DEAFEN_MEMBERS,
-        Permissions.FLAGS.MOVE_MEMBERS,
+        PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.Connect,
+        PermissionsBitField.Flags.Speak,
+        PermissionsBitField.Flags.UseVAD,
+        PermissionsBitField.Flags.ManageMessages,
+        PermissionsBitField.Flags.DeafenMembers,
+        PermissionsBitField.Flags.MoveMembers,
       ],
       type: 'role',
     });
@@ -111,27 +105,30 @@ const makeOverwrites = (guild, options) => {
  * @type {Discord.PermissionOverwriteOptions}
  */
 const invitedOverwrite = {
-  VIEW_CHANNEL: true,
-  SEND_MESSAGES: true,
-  CONNECT: true,
-  SPEAK: true,
-  USE_VAD: true,
-  MANAGE_CHANNELS: false,
+  ViewChannel: true,
+  SendMessages: true,
+  Connect: true,
+  Speak: true,
+  UseVAD: true,
+  ManageChannels: false,
 };
 
+/**
+ * @type {Discord.PermissionOverwriteOptions}
+ */
 const blockOverwrite = {
-  VIEW_CHANNEL: false,
-  SEND_MESSAGES: false,
-  CONNECT: false,
-  SPEAK: false,
-  USE_VAD: false,
+  ViewChannel: false,
+  SendMessages: false,
+  Connect: false,
+  Speak: false,
+  UseVAD: false,
 };
 
 /**
  *
  * @param {Guild} guild guild to create channel in
  * @param {RoomOption} options options provided by user to populate
- * @returns {Promise<string|MessageEmbed>}
+ * @returns {Promise<string|EmbedBuilder>}
  */
 const create = async (guild, options) => {
   if (options.userHasRoom) {
@@ -177,7 +174,7 @@ const create = async (guild, options) => {
     options.author
   );
   // send invites
-  if (voiceChannel.permissionsFor(guild.me).has(Permissions.FLAGS.CREATE_INSTANT_INVITE)) {
+  if (voiceChannel.permissionsFor(guild.me).has(PermissionsBitField.Flags.CreateInstantInvite)) {
     await Promise.all(
       options.invites.map(async (user) => {
         await user.createDM().then((dmChannel) =>
@@ -191,7 +188,7 @@ const create = async (guild, options) => {
       })
     );
   }
-  return new MessageEmbed({
+  return new EmbedBuilder({
     title: 'Channels created',
     fields: [
       {
@@ -229,73 +226,73 @@ export default class Rooms extends Interaction {
     options: [
       {
         ...cmds['rooms.create'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'type',
-            type: Types.NUMBER,
+            type: ApplicationCommandOptionType.Number,
             description: 'What kind of room should this be?',
             required: true,
             choices: roomSizes,
           },
           {
             name: 'locked',
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Should this channel be locked on creation?',
           },
           {
             name: 'text',
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Should we make a text channel too?',
           },
           {
             name: 'shown',
-            type: Types.BOOLEAN,
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Should this channel be visible to everyone?',
           },
           {
             name: 'name',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'What should the channel you create be called?',
           },
           {
             name: 'invites',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Who do you want to have access',
           },
         ],
       },
       {
         ...cmds['rooms.destroy'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.hide'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.show'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.lock'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.unlock'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.lurkable'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         ...cmds['rooms.rename'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'name',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'What do you want to rename your room to?',
             required: true,
           },
@@ -303,11 +300,11 @@ export default class Rooms extends Interaction {
       },
       {
         ...cmds['rooms.invite'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'who',
-            type: Types.USER,
+            type: ApplicationCommandOptionType.User,
             description: 'Who do you want to add to your channel?',
             required: true,
           },
@@ -315,11 +312,11 @@ export default class Rooms extends Interaction {
       },
       {
         ...cmds['rooms.block'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'user',
-            type: Types.USER,
+            type: ApplicationCommandOptionType.User,
             description: 'Who do you want to block from your channel?',
             required: true,
           },
@@ -327,11 +324,11 @@ export default class Rooms extends Interaction {
       },
       {
         ...cmds['rooms.resize'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'type',
-            type: Types.NUMBER,
+            type: ApplicationCommandOptionType.Number,
             description: 'What kind of room should this be?',
             required: true,
             choices: roomSizes,
@@ -385,27 +382,30 @@ export default class Rooms extends Interaction {
     options.shown = typeof options.shown === 'undefined' ? ctx.defaultShown : options.shown;
     const { everyone } = interaction.guild.roles;
 
-    let show = options?.room?.voiceChannel?.permissionsFor(everyone).has(Permissions.FLAGS.VIEW_CHANNEL);
-    let connect = options?.room?.voiceChannel?.permissionsFor(everyone)?.has(Permissions.FLAGS.CONNECT);
+    let show = options?.room?.voiceChannel?.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel);
+    let connect = options?.room?.voiceChannel?.permissionsFor(everyone)?.has(PermissionsBitField.Flags.Connect);
     if (
       options?.category &&
       !options.category
         .permissionsFor(interaction.client.user.id)
-        .has([Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MANAGE_GUILD])
+        .has([PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageGuild])
     ) {
-      return interaction.reply({ content: 'Bot missing manage channels perms', ephemeral: ctx.ephemerate });
+      return interaction.reply({
+        content: 'Bot missing manage channels perms',
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+      });
     }
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+
+    await interaction.deferReply({ flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
     try {
       switch (subcommand) {
         case 'create':
-          if (!ctx.createPrivateChannel)
-            return interaction.editReply({ content: 'feature not enabled', ephemeral: true });
+          if (!ctx.createPrivateChannel) return interaction.editReply({ content: 'feature not enabled', flags: true });
           // eslint-disable-next-line no-case-declarations
           const msg = await create(interaction.guild, options);
           return typeof msg === 'string'
-            ? interaction.editReply({ content: msg, ephemeral: ctx.ephemerate })
-            : interaction.editReply({ embeds: [msg], ephemeral: ctx.ephemerate });
+            ? interaction.editReply({ content: msg, flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 })
+            : interaction.editReply({ embeds: [msg], flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
         case 'destroy':
           if (options.userHasRoom) {
             const { room } = options;
@@ -415,9 +415,15 @@ export default class Rooms extends Interaction {
               await room.category.delete();
             }
             await ctx.settings.deletePrivateRoom(room);
-            return interaction.editReply({ content: 'Private room deleted', ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: 'Private room deleted',
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
-          return interaction.editReply({ content: 'Nothing to destroy', ephemeral: ctx.ephemerate });
+          return interaction.editReply({
+            content: 'Nothing to destroy',
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         case 'hide':
           show = false;
           return this.#roomUpdate(options, connect, show, interaction, ctx);
@@ -437,10 +443,10 @@ export default class Rooms extends Interaction {
              * @type {Discord.PermissionOverwriteOptions}
              */
             const overwrite = {
-              CONNECT: true,
-              VIEW_CHANNEL: true,
-              SPEAK: false,
-              SEND_MESSAGES: false,
+              Connect: true,
+              ViewChannel: true,
+              Speak: false,
+              SendMessages: false,
             };
             /**
              * Audit log options
@@ -451,9 +457,15 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, overwrite, audit);
-            return interaction.editReply({ content: 'Private room updated', ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: 'Private room updated',
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
-          return interaction.editReply({ content: 'Nothing to update', ephemeral: ctx.ephemerate });
+          return interaction.editReply({
+            content: 'Nothing to update',
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         case 'rename':
           if (options.userHasRoom && options.name) {
             if (options.room?.textChannel?.manageable) {
@@ -468,15 +480,27 @@ export default class Rooms extends Interaction {
             if (options.room?.category) {
               await options.room.category.setName(options.name, `New name for ${options.room.category.name}.`);
             }
-            return interaction.editReply({ content: 'Done', ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: 'Done',
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
-          return interaction.editReply({ content: 'Nothing to rename', ephemeral: ctx.ephemerate });
+          return interaction.editReply({
+            content: 'Nothing to rename',
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         case 'resize':
           if (options.userHasRoom && typeof options.limit !== 'undefined' && options.room.voiceChannel.manageable) {
             await options.room.voiceChannel.setUserLimit(options.limit);
-            return interaction.editReply({ content: 'Voice channel resized', ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: 'Voice channel resized',
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
-          return interaction.editReply({ content: "Couldn't resize nothingness!", ephemeral: ctx.ephemerate });
+          return interaction.editReply({
+            content: "Couldn't resize nothingness!",
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+          });
         case 'invite':
           if (options.userHasRoom && options.invite) {
             const { room, invite } = options;
@@ -485,11 +509,14 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, invitedOverwrite, audit, invite);
-            return interaction.editReply({ content: `invited ${invite.tag}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: `invited ${invite.tag}`,
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",
-            ephemeral: ctx.ephemerate,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           });
         case 'block':
           if (options.userHasRoom && options.invite) {
@@ -499,11 +526,14 @@ export default class Rooms extends Interaction {
               type: GuildChannelOverwriteOptionsType.MEMBER,
             };
             await this.#assignRoomOverwrites(room, blockOverwrite, audit, invite);
-            return interaction.editReply({ content: `blocked ${invite.tag}`, ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: `blocked ${invite.tag}`,
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           }
           return interaction.editReply({
             content: "Couldn't invite someone to nothingness!",
-            ephemeral: ctx.ephemerate,
+            flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
           });
         default:
           break;
@@ -513,7 +543,7 @@ export default class Rooms extends Interaction {
       return interaction.editReply('unable to act. feature requires Administrator permission on bot. Thanks discord.');
     }
 
-    return interaction.editReply({ content: ctx.i18n`naaah`, ephemeral: ctx.ephemerate });
+    return interaction.editReply({ content: ctx.i18n`naaah`, flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
   }
 
   static async #roomUpdate(options, connect, show, interaction, ctx) {
@@ -538,11 +568,17 @@ export default class Rooms extends Interaction {
         await this.#assignRoomOverwrites(room, overwrite, audit);
       } catch (e) {
         this.#logger.error(e);
-        return interaction.editReply({ content: "Couldn't update permissions", ephemeral: true });
+        return interaction.editReply({ content: "Couldn't update permissions", flags: this.MessageFlags.Ephemeral });
       }
-      return interaction.editReply({ content: 'Private room updated', ephemeral: ctx.ephemerate });
+      return interaction.editReply({
+        content: 'Private room updated',
+        flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+      });
     }
-    return interaction.editReply({ content: 'Nothing to update', ephemeral: ctx.ephemerate });
+    return interaction.editReply({
+      content: 'Nothing to update',
+      flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+    });
   }
 
   /**

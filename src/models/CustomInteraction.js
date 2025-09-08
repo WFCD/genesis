@@ -22,8 +22,8 @@ export default ({ call, response, guildId }) =>
           response.endsWith('.webm') ||
           response.endsWith('.webm'));
       if (isSingleImg) {
-        return interaction.reply({ files: [response], ephemeral: ctx.ephemerate });
+        return interaction.reply({ files: [response], flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
       }
-      return interaction.reply({ content: response, ephemeral: ctx.ephemerate });
+      return interaction.reply({ content: response, flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
     }
   };

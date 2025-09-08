@@ -1,11 +1,9 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import LogEmbed from '../embeds/LogEmbed.js';
 import { games } from '../utilities/CommonFunctions.js';
 import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
@@ -16,7 +14,7 @@ export default class LogMemberRemove extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.logMemberRemove', Events.GUILD_MEMBER_REMOVE);
+    super(bot, 'handlers.logMemberRemove', Events.GuildMemberRemove);
   }
 
   /**

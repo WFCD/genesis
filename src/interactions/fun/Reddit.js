@@ -12,7 +12,7 @@ export default class Reddit extends Interaction {
   };
 
   static async commandHandler(interaction, ctx) {
-    await interaction.deferReply({ ephemeral: ctx.ephemerate });
+    await interaction.deferReply({ flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
     const post = await getPost(this.subreddit);
     const { selftext, permalink, thumbnail: url, title, subreddit_name_prefixed: srn, created_utc: ts } = post;
     const embed = new Embed();

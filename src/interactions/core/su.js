@@ -1,15 +1,10 @@
-import Discord, { Permissions } from 'discord.js';
+import { PermissionsBitField, ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 
 import InteractionHandler from '../../eventHandlers/InteractionHandler.js';
 import logger from '../../utilities/Logger.js';
 import ServerInfoEmbed from '../../embeds/ServerInfoEmbed.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-  MessageEmbed,
-} = Discord;
 
 export default class Settings extends Interaction {
   static elevated = true;
@@ -18,26 +13,26 @@ export default class Settings extends Interaction {
     name: 'su',
     description: 'Super User',
     ownerOnly: true,
-    defaultMemberPermissions: Permissions.FLAGS.ADMINISTRATOR,
+    defaultMemberPermissions: PermissionsBitField.Flags.Administrator,
     options: [
       {
         name: 'restart',
         description: 'Restart Bot',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         name: 'reload',
         description: 'Reload Commands',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         name: 'server',
         description: 'Get server info',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'server_id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Guild Id to look up',
             required: true,
           },
@@ -46,11 +41,11 @@ export default class Settings extends Interaction {
       {
         name: 'leave',
         description: 'Force bot to leave specified server',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'server_id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Guild Id to leave',
             required: true,
           },
@@ -59,11 +54,11 @@ export default class Settings extends Interaction {
       {
         name: 'stats',
         description: 'Get Stats for a given command across servers',
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'command_id',
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             description: 'Command identifier (derived by command:subcommandgroup:subcommand)',
             required: true,
           },
@@ -72,16 +67,16 @@ export default class Settings extends Interaction {
       {
         name: 'clear',
         description: 'Clear something from a channel',
-        type: Types.SUB_COMMAND_GROUP,
+        type: ApplicationCommandOptionType.SubcommandGroup,
         options: [
           {
             name: 'webhook',
-            type: Types.SUB_COMMAND,
+            type: ApplicationCommandOptionType.Subcommand,
             description: 'Clear a webhook in a channel',
             options: [
               {
                 name: 'channel',
-                type: Types.STRING,
+                type: ApplicationCommandOptionType.String,
                 description: 'Channel Id for the channel to clear of webhooks',
                 required: true,
               },
@@ -115,7 +110,7 @@ export default class Settings extends Interaction {
         id = interaction.options.getString('server_id').trim();
         guild = await interaction.client.guilds.fetch(id);
         if (!guild || !guild.available) {
-          return interaction.reply({ content: 'guild not available', ephemeral: true });
+          return interaction.reply({ content: 'guild not available', flags: this.MessageFlags.Ephemeral });
         }
         onConfirm = async () => {
           await guild.leave();
@@ -129,7 +124,7 @@ export default class Settings extends Interaction {
         onConfirm = async () =>
           interaction.editReply({
             content: undefined,
-            embeds: [new MessageEmbed(new ServerInfoEmbed(undefined, guild))],
+            embeds: [new EmbedBuilder(new ServerInfoEmbed(undefined, guild))],
             components: [],
           });
         onDeny = async () =>
@@ -143,23 +138,31 @@ export default class Settings extends Interaction {
         const count = await ctx.settings.getGuildStats(undefined, commandId, true);
         return interaction.reply({
           content: `\`${commandId}\` has been used ${count} times`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       case 'webhook':
         const clear = !!interaction.options.getSubcommandGroup(false);
         if (clear && interaction.client.channels.cache.get(interaction.options.getString('channel'))) {
           onConfirm = async () => {
             await ctx.settings.deleteWebhooksForChannel(interaction.options.getString('channel'));
-            return interaction.editReply({ content: 'buhleted', components: [], ephemeral: ctx.ephemerate });
+            return interaction.editReply({
+              content: 'buhleted',
+              components: [],
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           };
           onDeny = async () =>
-            interaction.editReply({ content: 'canceled', components: [], ephemeral: ctx.ephemerate });
+            interaction.editReply({
+              content: 'canceled',
+              components: [],
+              flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
+            });
           return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
         }
       default:
         break;
     }
 
-    return interaction.reply({ content: 'got it', ephemeral });
+    return interaction.reply({ content: 'got it', flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
   }
 }

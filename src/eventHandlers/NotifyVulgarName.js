@@ -1,10 +1,8 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
 import { games, isVulgarCheck } from '../utilities/CommonFunctions.js';
-import webhook from '../utilities/Webhook.js'; // eslint-disable-line import/no-named-as-default
-
-const { Events } = Discord.Constants;
+import webhook from '../utilities/Webhook.js';
 
 export default class VulgarNameHandle extends Handler {
   /**
@@ -12,7 +10,7 @@ export default class VulgarNameHandle extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.vulgarCheck', Events.GUILD_MEMBER_ADD);
+    super(bot, 'handlers.vulgarCheck', Events.GuildMemberAdd);
   }
 
   /**

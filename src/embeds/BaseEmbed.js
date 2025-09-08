@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 
 const defaults = {
   url: process.env.EMBED_URL || 'https://warframestat.us',
@@ -8,7 +8,7 @@ const defaults = {
 /**
  * Utility class for making rich embeds
  */
-export default class BaseEmbed extends MessageEmbed {
+export default class BaseEmbed extends EmbedBuilder {
   constructor(locale) {
     super({
       url: defaults.url,

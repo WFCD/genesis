@@ -9,6 +9,6 @@ export default class Hug extends Interaction {
   static command = cmds.hug;
 
   static async commandHandler(interaction, ctx) {
-    return interaction.reply({ content, ephemeral: ctx.ephemerate });
+    return interaction.reply({ content, flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
   }
 }

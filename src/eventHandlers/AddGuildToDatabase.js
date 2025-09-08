@@ -1,8 +1,6 @@
-import Discord from 'discord.js';
+import { Events } from 'discord.js';
 
 import Handler from '../models/BaseEventHandler.js';
-
-const { Events } = Discord.Constants;
 
 /**
  * Describes a handler
@@ -13,7 +11,7 @@ export default class AddGuildToDatabase extends Handler {
    * @param {Genesis} bot  The bot object
    */
   constructor(bot) {
-    super(bot, 'handlers.addGuild', Events.GUILD_CREATE);
+    super(bot, 'handlers.addGuild', Events.GuildCreate);
     this.channelTimeout = 60000;
   }
 

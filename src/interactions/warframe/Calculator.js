@@ -1,28 +1,24 @@
-import Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 import { games } from '../../utilities/CommonFunctions.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
 
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
-
 const levels = [
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'base_level',
     description: "Enemy's base level",
     required: true,
   },
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'current_level',
     description: "Enemy's current level",
     required: true,
   },
   {
-    type: Types.INTEGER,
+    type: ApplicationCommandOptionType.Integer,
     name: 'base',
     description: 'Base value for the current calculation',
   },
@@ -44,17 +40,17 @@ export default class Calculator extends Interaction {
     options: [
       {
         ...cmds['calc.shields'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
       {
         ...cmds['calc.armor'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
       {
         ...cmds['calc.health'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: levels,
       },
     ],
@@ -90,7 +86,7 @@ export default class Calculator extends Interaction {
         const shields = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${shields} shields`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       case 'health':
         f1 = () => 1 + 0.015 * range ** 2;
@@ -98,7 +94,7 @@ export default class Calculator extends Interaction {
         const health = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${health} health`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       case 'armor':
         f1 = () => 1 + 0.005 * range ** 1.75;
@@ -106,10 +102,10 @@ export default class Calculator extends Interaction {
         const armor = multiplier();
         return interaction.reply({
           content: ctx.i18n`The Enemy would have ${armor} armor`,
-          ephemeral: ctx.ephemerate,
+          flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0,
         });
       default:
-        return interaction.reply({ content: 'ok', ephemeral: ctx.ephemerate });
+        return interaction.reply({ content: 'ok', flags: ctx.ephemerate ? this.MessageFlags.Ephemeral : 0 });
     }
   }
 }

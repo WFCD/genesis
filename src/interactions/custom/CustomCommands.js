@@ -1,13 +1,9 @@
-import Discord, { Permissions } from 'discord.js';
+import { ApplicationCommandOptionType, PermissionsBitField } from 'discord.js';
 
 import { createGroupedArray } from '../../utilities/CommonFunctions.js';
 import Collectors from '../../utilities/Collectors.js';
 import Interaction from '../../models/Interaction.js';
 import { cmds } from '../../resources/index.js';
-
-const {
-  Constants: { ApplicationCommandOptionTypes: Types },
-} = Discord;
 
 const nameReg = /^[\w-]{1,32}$/u;
 
@@ -16,38 +12,38 @@ export default class CustomCommands extends Interaction {
 
   static command = {
     ...cmds.cc,
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageGuild,
     options: [
       {
         ...cmds['cc.add'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['cc.add.call'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
           {
             ...cmds['cc.add.response'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['cc.remove'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             ...cmds['cc.remove.call'],
-            type: Types.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
       },
       {
         ...cmds['cc.list'],
-        type: Types.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   };
