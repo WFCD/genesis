@@ -5,6 +5,7 @@ import logger from '../../utilities/Logger.js';
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
 import { captures, createGroupedArray, platforms, games } from '../../utilities/CommonFunctions.js';
+import { rewardString } from '../../utilities/WorldState.js';
 
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
@@ -311,7 +312,7 @@ export default class Notifier {
       try {
         thumb =
           !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
-          (await getThumbnailForItem(alert.mission.reward.itemString));
+          (await getThumbnailForItem(rewardString(alert.mission.reward, false)));
       } catch (e) {
         logger.error(e);
       }

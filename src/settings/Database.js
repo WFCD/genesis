@@ -12,7 +12,7 @@ import { assetBase, platforms } from '../utilities/CommonFunctions.js';
 import logger from '../utilities/Logger.js';
 import { i18n } from '../resources/index.js';
 
-const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.BOT_USER_ID}`;
+const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.CLIENT_ID}`;
 
 const props = (obj) => {
   const p = [];
