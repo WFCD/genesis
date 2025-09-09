@@ -1,22 +1,20 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime.js';
-import updateLocale from 'dayjs/plugin/updateLocale.js';
 import { timeDeltaToString } from 'warframe-worldstate-data/utilities';
 
-dayjs.extend(relativeTime);
-dayjs.extend(updateLocale);
-
 export const isActive = (/** Worldstate Data element */ data) => {
-  if (data?.activation && data?.expiry) {
-    return new Date(data.activation).getTime() < Date.now() && new Date(data.expiry).getTime() > Date.now();
+  try {
+    if (data?.activation && data?.expiry) {
+      return new Date(data.activation).getTime() < Date.now() && new Date(data.expiry).getTime() > Date.now();
+    }
+    if (data?.activation) {
+      return new Date(data.activation).getTime() < Date.now();
+    }
+    if (data?.expiry) {
+      return new Date(data.expiry).getTime() > Date.now();
+    }
+    return true;
+  } catch (e) {
+    return false;
   }
-  if (data?.activation) {
-    return new Date(data.activation).getTime() < Date.now();
-  }
-  if (data?.expiry) {
-    return new Date(data.expiry).getTime() > Date.now();
-  }
-  return true;
 };
 
 /**
@@ -38,19 +36,32 @@ export const rewardString = (reward, includeCredits = true) => {
 };
 
 export const invasionEta = (invasion) => {
-  const completedRuns = invasion.count;
-  const required = invasion.requiredRuns;
-  const ellapsedMillis = dayjs(invasion.activation).diff(dayjs(), 'millisecond');
-  const remaining = required - completedRuns;
-  const estExpiry = dayjs().add(remaining * (ellapsedMillis / completedRuns), 'millisecond');
+  try {
+    const completedRuns = invasion.count;
+    const required = invasion.requiredRuns;
+    const ellapsedMillis = new Date(invasion.activation).getTime() - Date.now();
+    const remaining = required - completedRuns;
+    const estExpiry = remaining * (ellapsedMillis / completedRuns);
 
-  return dayjs(estExpiry).fromNow(true).trim();
+    return timeDeltaToString(estExpiry);
+  } catch (e) {
+    return '';
+  }
 };
 
 export const eta = (/** Worldstate Data element */ data) => {
-  if (data?.expiry) {
-    const diff = dayjs(data.expiry).diff(dayjs());
-    return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
+  try {
+    if (!isActive(data)) {
+      const diff = new Date(data.activation).getTime() - Date.now();
+      return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
+    }
+    if (data?.expiry) {
+      const diff = new Date(data.expiry) - Date.now();
+      return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
+    }
+  } catch (e) {
+    console.error(e);
   }
+
   return '';
 };

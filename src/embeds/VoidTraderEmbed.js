@@ -29,7 +29,7 @@ export default class VoidTraderEmbed extends BaseEmbed {
       this.fields = [];
     }
     this.fields.push({
-      name: i18n`Time until ${voidTrader.active ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location}`,
+      name: i18n`Time until ${isActive(voidTrader) ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location}`,
       value: `${active ? voidTrader.endString : voidTrader.startString}` || i18n`Data Pending`,
     });
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Trader`;

@@ -47,7 +47,6 @@ export default class InvasionEmbed extends BaseEmbed {
         this.title = i18n`[${platform.toUpperCase()}] ${rewards} - ${completion > 0 ? completion : 0}%`;
         this.description = i.desc;
         this.fields = [{ name: i18n`Location`, value: i.node, inline: true }];
-        logger.error(`invasionEta: ${invasionEta(i)}`);
         this.footer.text = i18n`${invasionEta(i)} remaining`;
       }
 
