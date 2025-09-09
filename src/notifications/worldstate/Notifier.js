@@ -5,7 +5,7 @@ import logger from '../../utilities/Logger.js';
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
 import { captures, createGroupedArray, platforms, games } from '../../utilities/CommonFunctions.js';
-import { rewardString } from '../../utilities/WorldState.js';
+import { isActive, rewardString } from '../../utilities/WorldState.js';
 
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
@@ -29,15 +29,15 @@ const buildNotifiableData = (newData, notified) => {
         : undefined,
     baros:
       newData.voidTraders?.length &&
-      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))?.length
-        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))
+      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
+        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
         : undefined,
     conclave: newData.conclaveChallenges.filter((cc) => !cc.expired && !cc.rootChallenge && !notified.includes(cc.id)),
     dailyDeals: newData.dailyDeals.filter((dd) => !notified.includes(dd.id)),
     events: newData.events.filter((e) => !e.expired && !notified.includes(e.id)),
     invasions: newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)),
     featuredDeals: newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)),
-    fissures: newData.fissures.filter((f) => f.active && !notified.includes(f.id)),
+    fissures: newData.fissures.filter((f) => isActive(f) && !notified.includes(f.id)),
     news: newData.news.filter(
       (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
     ),
@@ -58,20 +58,19 @@ const buildNotifiableData = (newData, notified) => {
       newData.arbitration && newData.arbitration.enemy && !notified.includes(asId(newData.arbitration, 'arbitration'))
         ? newData.arbitration
         : undefined,
-    outposts: newData.sentientOutposts.active && !notified.includes(newData.sentientOutposts.id),
+    outposts: isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id),
   };
 
   /* Nightwave */
   if (newData.nightwave) {
     const nWaveChallenges = newData.nightwave.activeChallenges.filter(
-      (challenge) => challenge.active && !notified.includes(challenge.id)
+      (challenge) => isActive(challenge) && !notified.includes(challenge.id)
     );
     data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
     if (data.nightwave) {
       data.nightwave.activeChallenges = nWaveChallenges;
     }
   }
-
   return data;
 };
 
@@ -216,7 +215,7 @@ export default class Notifier {
     try {
       const alreadyNotified = [
         ...rawData.persistentEnemies.map((a) => a.pid),
-        `${rawData.voidTrader.id}${rawData.voidTrader.active ? '1' : '0'}`,
+        `${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`,
         ...rawData.fissures.map((f) => f.id),
         ...rawData.invasions.map((i) => i.id),
         ...rawData.news.map((n) => n.id),
@@ -230,7 +229,7 @@ export default class Notifier {
         ...rawData.weeklyChallenges.map((w) => w.id),
         rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
-        ...(rawData.nightwave && rawData.nightwave.active
+        ...(rawData.nightwave && isActive(rawData.nightwave)
           ? rawData.nightwave.activeChallenges.filter((c) => c.active).map((c) => c.id)
           : []),
         rawData.sentientOutposts.id,

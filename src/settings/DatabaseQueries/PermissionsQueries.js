@@ -1,5 +1,7 @@
 import SQL from 'sql-template-strings';
-import { Role } from 'discord.js';
+import Discord from 'discord.js';
+
+const { Role } = Discord;
 
 /**
  * Database Mixin for dynamic voice queries
