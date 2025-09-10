@@ -226,7 +226,7 @@ export default class Notifier {
         ...rawData.flashSales.map((s) => s.id),
         ...rawData.dailyDeals.map((d) => d.id),
         ...rawData.conclaveChallenges.map((cc) => cc.id),
-        ...rawData.weeklyChallenges.map((w) => w.id),
+        ...rawData?.weeklyChallenges?.map((w) => w.id),
         rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
         ...(rawData.nightwave && isActive(rawData.nightwave)
@@ -235,7 +235,7 @@ export default class Notifier {
         rawData.sentientOutposts.id,
         rawData.steelPath && rawData.steelPath.expiry ? asId(rawData.steelPath, 'steelpath') : 'steelpath:0',
         rawData.archonHunt.id,
-      ].filter((a) => a);
+      ].filter(Boolean);
 
       await this.#settings.setNotifiedIds(`${platform}:${locale}`, alreadyNotified);
       logger.silly(`completed sending notifications for ${platform} in ${locale}`);
