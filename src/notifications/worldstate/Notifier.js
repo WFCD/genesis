@@ -230,7 +230,7 @@ export default class Notifier {
         rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
         ...(rawData.nightwave && isActive(rawData.nightwave)
-          ? rawData.nightwave.activeChallenges.filter((c) => c.active).map((c) => c.id)
+          ? rawData.nightwave.activeChallenges.filter(isActive).map((c) => c.id)
           : []),
         rawData.sentientOutposts.id,
         rawData.steelPath && rawData.steelPath.expiry ? asId(rawData.steelPath, 'steelpath') : 'steelpath:0',
