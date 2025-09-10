@@ -7,6 +7,14 @@ import { syndicates } from '../../resources/index.js';
 import { captures, createGroupedArray, platforms, games } from '../../utilities/CommonFunctions.js';
 import { isActive, isExpired, rewardString } from '../../utilities/WorldState.js';
 
+const wrap = (fn) => {
+  try {
+    return fn();
+  } catch (e) {
+    logger.error(e);
+  }
+};
+
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
 const makeNightwaveType = (challenge) => {
@@ -21,67 +29,79 @@ const makeNightwaveType = (challenge) => {
 };
 const buildNotifiableData = (newData, notified) => {
   try {
-    const data = {
-      acolytes: newData.persistentEnemies.filter((e) => !notified.includes(e.pid)),
-      alerts: newData.alerts.filter((a) => !isExpired(a) && !notified.includes(a.id)),
-      archonHunt:
-        newData.archonHunt && !isExpired(newData.archonHunt) && !notified.includes(newData.archonHunt.id)
-          ? newData.archonHunt
-          : undefined,
-      baros:
-        newData.voidTraders?.length &&
-        newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
-          ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
-          : undefined,
-      conclave: newData.conclaveChallenges.filter(
-        (cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id)
-      ),
-      dailyDeals: newData.dailyDeals.filter((dd) => !notified.includes(dd.id)),
-      events: newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)),
-      invasions: newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)),
-      featuredDeals: newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)),
-      fissures: newData.fissures.filter((f) => isActive(f) && !notified.includes(f.id)),
-      news: newData.news.filter(
+    const data = {};
+
+    data.acolytes = wrap(() => newData.persistentEnemies?.filter((e) => !notified.includes(e.pid)));
+    data.alerts = wrap(() => newData.alerts?.filter((a) => !isExpired(a) && !notified.includes(a.id)));
+    data.archonHunt = wrap(() =>
+      newData.archonHunt && !isExpired(newData.archonHunt) && !notified?.includes(newData.archonHunt.id)
+        ? newData.archonHunt
+        : undefined
+    );
+    data.baros = wrap(() =>
+      newData.voidTraders?.length &&
+      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
+        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
+        : undefined
+    );
+    data.conclave = wrap(() =>
+      newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id))
+    );
+    data.dailyDeals = wrap(() => newData.dailyDeals.filter((dd) => !notified.includes(dd.id)));
+    data.events = wrap(() => newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)));
+    data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
+    data.featuredDeals = wrap(() => newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)));
+    data.fissures = wrap(() => newData.fissures.filter((f) => isActive(f) && !notified.includes(f.id)));
+    data.news = wrap(() =>
+      newData.news.filter(
         (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
-      ),
-      popularDeals: newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)),
-      primeAccess: newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)),
-      sortie:
-        newData.sortie && !isExpired(newData.sortie) && !notified.includes(newData.sortie.id)
-          ? newData.sortie
-          : undefined,
-      streams: newData.news.filter((n) => n.stream && !notified.includes(n.id)),
-      steelPath:
-        newData.steelPath.currentReward && !notified.includes(asId(newData.steelPath, 'steelpath'))
-          ? newData.steelPath
-          : undefined,
-      syndicateM: newData.syndicateMissions.filter((m) => !notified.includes(m.id)),
-      tweets: newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : [],
-      updates: newData.news.filter(
-        (n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id)
-      ),
+      )
+    );
+    data.popularDeals = wrap(() => newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)));
+    data.primeAccess = wrap(() => newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)));
+    data.sortie = wrap(() =>
+      newData.sortie && !isExpired(newData.sortie) && !notified.includes(newData.sortie.id) ? newData.sortie : undefined
+    );
+    data.streams = wrap(() => newData.news.filter((n) => n.stream && !notified.includes(n.id)));
+    data.steelPath = wrap(() =>
+      newData.steelPath.currentReward && !notified.includes(asId(newData.steelPath, 'steelpath'))
+        ? newData.steelPath
+        : undefined
+    );
+    data.syndicateM = wrap(() => newData.syndicateMissions.filter((m) => !notified.includes(m.id)));
+    data.tweets = wrap(() =>
+      newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : []
+    );
+    data.updates = wrap(() =>
+      newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id))
+    );
 
-      arbitration:
-        newData.arbitration && newData.arbitration.enemy && !notified.includes(asId(newData.arbitration, 'arbitration'))
-          ? newData.arbitration
-          : undefined,
-      outposts: isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id),
-    };
+    data.arbitration = wrap(() =>
+      newData.arbitration && newData.arbitration.enemy && !notified.includes(asId(newData.arbitration, 'arbitration'))
+        ? newData.arbitration
+        : undefined
+    );
+    data.outposts = wrap(() => isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id));
 
-    /* Nightwave */
-    if (newData.nightwave) {
-      const nWaveChallenges = newData.nightwave.activeChallenges.filter(
-        (challenge) => isActive(challenge) && !notified.includes(challenge.id)
-      );
-      data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
-      if (data.nightwave) {
-        data.nightwave.activeChallenges = nWaveChallenges;
+    try {
+      /* Nightwave */
+      if (newData.nightwave) {
+        const nWaveChallenges = newData.nightwave.activeChallenges.filter(
+          (challenge) => isActive(challenge) && !notified.includes(challenge.id)
+        );
+        data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
+        if (data.nightwave) {
+          data.nightwave.activeChallenges = nWaveChallenges;
+        }
       }
+    } catch (e) {
+      logger.error(`error parsing nightwave data: ${e}`);
     }
     return data;
   } catch (e) {
     logger.error(e);
   }
+  return {};
 };
 
 const transformMissionType = (rawType) =>
