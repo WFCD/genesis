@@ -19,7 +19,7 @@ const wrapPromise = async (fn, indicator) => {
   try {
     return await fn();
   } catch (e) {
-    logger.error(`Failure running ${indicator}`, e);
+    logger.error(`Failure running ${e}`, indicator);
   }
 };
 
