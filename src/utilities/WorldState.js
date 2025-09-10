@@ -19,6 +19,17 @@ export const isActive = (/** Worldstate Data element */ data) => {
   }
 };
 
+export const isExpired = (/** Worldstate Data element */ data) => {
+  try {
+    if (data?.expiry) {
+      return new Date(data.expiry).getTime() < Date.now();
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+};
+
 /**
  * Formats a reward object into a string
  * @param {Reward} reward to be stringified
