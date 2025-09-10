@@ -161,7 +161,8 @@ export default class Notifier {
     updating.add(key);
     const notifiedIds = await this.#settings.getNotifiedIds(key);
     try {
-      await this.#sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, notifiedIds));
+      const notifiableData = buildNotifiableData(newData, notifiedIds);
+      await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
     } catch (e) {
       logger.error(e);
     }
