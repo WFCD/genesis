@@ -14,7 +14,6 @@ const wrap = (fn) => {
     logger.error(e);
   }
 };
-
 const wrapPromise = async (prom, indicator) => {
   try {
     return await prom;
@@ -22,7 +21,6 @@ const wrapPromise = async (prom, indicator) => {
     logger.error(`Failure running ${e}`, indicator);
   }
 };
-
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
 const makeNightwaveType = (challenge) => {
@@ -59,7 +57,7 @@ const buildNotifiableData = (newData, notified) => {
     data.events = wrap(() => newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)));
     data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
     data.featuredDeals = wrap(() => newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)));
-    data.fissures = wrap(() => newData.fissures.filter((f) => isActive(f) && !notified.includes(f.id)));
+    data.fissures = wrap(() => newData.fissures.filter((f) => !notified.includes(f.id)));
     data.news = wrap(() =>
       newData.news.filter(
         (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
