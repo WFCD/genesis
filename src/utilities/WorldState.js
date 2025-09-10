@@ -1,5 +1,7 @@
 import { timeDeltaToString } from 'warframe-worldstate-data/utilities';
 
+import logger from './Logger.js';
+
 export const isActive = (/** Worldstate Data element */ data) => {
   try {
     if (data?.activation && data?.expiry) {
@@ -60,8 +62,32 @@ export const eta = (/** Worldstate Data element */ data) => {
       return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
     }
   } catch (e) {
-    console.error(e);
+    logger.error(e);
   }
 
+  return '';
+};
+
+export const timeUntil = (/** Worldstate Data element */ data) => {
+  try {
+    if (data?.activation) {
+      const diff = new Date(data.activation).getTime() - Date.now();
+      return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
+    }
+  } catch (e) {
+    logger.error(e);
+  }
+  return '';
+};
+
+export const timeToEnd = (/** Worldstate Data element */ data) => {
+  try {
+    if (data?.expiry) {
+      const diff = new Date(data.expiry) - Date.now();
+      return timeDeltaToString(diff).replace(/-?Infinityd/gi, '\u221E');
+    }
+  } catch (e) {
+    logger.error(e);
+  }
   return '';
 };

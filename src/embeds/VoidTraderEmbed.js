@@ -1,7 +1,7 @@
 import n from 'numeral';
 
 import { assetBase, emojify } from '../utilities/CommonFunctions.js';
-import { isActive } from '../utilities/WorldState.js';
+import { isActive, timeToEnd, timeUntil } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -12,7 +12,8 @@ export default class VoidTraderEmbed extends BaseEmbed {
     super(locale);
 
     const active = isActive(voidTrader);
-
+    const endString = timeToEnd(voidTrader);
+    const startString = timeUntil(voidTrader);
     this.color = active ? 0x0ec9ff : 0xff6961;
 
     if (active && voidTrader?.inventory?.length > 0) {
@@ -30,7 +31,7 @@ export default class VoidTraderEmbed extends BaseEmbed {
     }
     this.fields.push({
       name: i18n`Time until ${isActive(voidTrader) ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location}`,
-      value: `${active ? voidTrader.endString : voidTrader.startString}` || i18n`Data Pending`,
+      value: `${active ? endString : startString}` || i18n`Data Pending`,
     });
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {
