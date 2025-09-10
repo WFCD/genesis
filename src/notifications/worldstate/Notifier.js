@@ -15,9 +15,9 @@ const wrap = (fn) => {
   }
 };
 
-const wrapPromise = async (fn, indicator) => {
+const wrapPromise = async (prom, indicator) => {
   try {
-    return await fn();
+    return await prom;
   } catch (e) {
     logger.error(`Failure running ${e}`, indicator);
   }
