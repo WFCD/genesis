@@ -1,3 +1,10 @@
+## [2.13.3](https://github.com/WFCD/genesis/compare/v2.13.2...v2.13.3) (2025-09-10)
+
+
+### Bug Fixes
+
+* worldstate updates ([#1007](https://github.com/WFCD/genesis/issues/1007)) ([286a5ba](https://github.com/WFCD/genesis/commit/286a5ba2dabbb9d2d7196cb178f92895048ecba1))
+
 ## [2.13.2](https://github.com/WFCD/genesis/compare/v2.13.1...v2.13.2) (2025-07-13)
 
 
