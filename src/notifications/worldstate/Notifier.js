@@ -215,47 +215,34 @@ export default class Notifier {
         return;
       }
       const deps = { platform, locale, i18n: i18ns[locale] };
-
-      const promises = [];
-
-      promises.push(this.#sendAcolytes(acolytes, deps));
-
+      await this.#sendAcolytes(acolytes, deps);
       if (games.includes('BARO') && baros?.length) {
-        promises.push(wrapPromise(Promise.all(baros.map((baro) => this.#sendBaro(baro, deps))), 'Baro'));
+        await Promise.map(baros, (baro) => this.#sendBaro(baro, deps));
       }
       if (conclave && conclave.length > 0) {
-        promises.push(
-          wrapPromise(
-            Promise.all([this.#sendConclaveDailies(conclave, deps), this.#sendConclaveWeeklies(conclave, deps)]),
-            'Conclave'
-          )
-        );
+        await Promise.all([this.#sendConclaveDailies(conclave, deps), this.#sendConclaveWeeklies(conclave, deps)]);
       }
       if (tweets && tweets.length > 0) {
-        promises.push(wrapPromise(this.#sendTweets(tweets, deps)), 'tweets');
+        await this.#sendTweets(tweets, deps);
       }
-      promises.push(
-        wrapPromise(this.#sendDarvo(dailyDeals, deps)),
-        wrapPromise(this.#sendEvent(events, deps)),
-        wrapPromise(this.#sendFeaturedDeals(featuredDeals, deps)),
-        wrapPromise(this.#sendFissures(fissures, deps)),
-        wrapPromise(this.#sendNews(news, deps)),
-        wrapPromise(this.#sendStreams(streams, deps)),
-        wrapPromise(this.#sendPopularDeals(popularDeals, deps)),
-        wrapPromise(this.#sendPrimeAccess(primeAccess, deps)),
-        wrapPromise(this.#sendInvasions(invasions, deps)),
-        wrapPromise(this.#sendSortie(sortie, deps)),
-        wrapPromise(this.#sendSyndicates(syndicateM, deps)),
-        wrapPromise(this.#sendUpdates(updates, deps)),
-        wrapPromise(this.#sendAlerts(alerts, deps)),
-        wrapPromise(this.#sendSentientOutposts(outposts, deps)),
-        wrapPromise(this.#sendNightwave(nightwave, deps)),
-        wrapPromise(this.#sendArbitration(arbitration, deps)),
-        wrapPromise(this.#sendSteelPath(steelPath, deps)),
-        wrapPromise(this.#sendArchonHunt(archonHunt, deps))
-      );
-
-      await Promise.all(promises);
+      await wrapPromise(this.#sendDarvo(dailyDeals, deps));
+      await wrapPromise(this.#sendEvent(events, deps));
+      await wrapPromise(this.#sendFeaturedDeals(featuredDeals, deps));
+      await wrapPromise(this.#sendFissures(fissures, deps));
+      await wrapPromise(this.#sendNews(news, deps));
+      await wrapPromise(this.#sendStreams(streams, deps));
+      await wrapPromise(this.#sendPopularDeals(popularDeals, deps));
+      await wrapPromise(this.#sendPrimeAccess(primeAccess, deps));
+      await wrapPromise(this.#sendInvasions(invasions, deps));
+      await wrapPromise(this.#sendSortie(sortie, deps));
+      await wrapPromise(this.#sendSyndicates(syndicateM, deps));
+      await wrapPromise(this.#sendUpdates(updates, deps));
+      await wrapPromise(this.#sendAlerts(alerts, deps));
+      await wrapPromise(this.#sendSentientOutposts(outposts, deps));
+      await wrapPromise(this.#sendNightwave(nightwave, deps));
+      await wrapPromise(this.#sendArbitration(arbitration, deps));
+      await wrapPromise(this.#sendSteelPath(steelPath, deps));
+      await wrapPromise(this.#sendArchonHunt(archonHunt, deps));
     } catch (e) {
       logger.error(e);
     } finally {
