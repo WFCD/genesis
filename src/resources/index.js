@@ -130,12 +130,12 @@ if (locales.includes('en')) {
         if (l7d.name !== cmds[key].name) {
           cmds[key].name_localizations[localeKey] = l7d.name;
         } else {
-          logger.debug(`No name change for ${key} in ${localeKey}`);
+          // logger.silly(`No name change for ${key} in ${localeKey}`);
         }
         if (l7d.description !== cmds[key].description) {
           cmds[key].description_localizations[localeKey] = l7d.description;
         } else {
-          logger.debug(`No description change for ${key} in ${localeKey}`);
+          // logger.silly(`No description change for ${key} in ${localeKey}`);
         }
       }
     });

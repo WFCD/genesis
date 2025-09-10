@@ -1,4 +1,5 @@
 import { createGroupedArray } from '../utilities/CommonFunctions.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -40,7 +41,7 @@ export default class NewsEmbed extends BaseEmbed {
           return true;
         })
         .map((n) => {
-          const etaChunks = n.eta.split(' ');
+          const etaChunks = eta(n).split(' ');
           const timeTokens = [
             etaChunks[0],
             etaChunks[1],

@@ -39,7 +39,7 @@ if (process.env.CONTROL_WH_ID) {
 
 const l = {
   get logLevel() {
-    return process.env.LOG_LEVEL || 'ERROR';
+    return (process.env.LOG_LEVEL || 'ERROR').toUpperCase();
   },
 };
 const levels = {

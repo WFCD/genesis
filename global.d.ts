@@ -69,8 +69,6 @@ export namespace WorldState {
     startString: string;
     nodes: string[];
     jobs: Job[];
-    eta: string;
-    active: boolean;
     syndicate: Syndicate;
     syndicateKey: Syndicate;
   }
@@ -79,8 +77,7 @@ export namespace WorldState {
     id: string;
     expiry: string;
     activation: string;
-    state: string;
-    active: 'fass' | 'vome';
+    state: 'fass' | 'vome';
     bounty: SyndicateMission;
   }
 

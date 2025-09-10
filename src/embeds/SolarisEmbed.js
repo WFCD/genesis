@@ -1,5 +1,6 @@
 import { assetBase } from '../utilities/CommonFunctions.js';
 import { rTime } from '../utilities/Wrappers.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -17,7 +18,7 @@ const makeJobs = (mission) => {
       }
     });
 
-    tokens.push(`\n**Expires in ${mission.eta}**`);
+    tokens.push(`\n**Expires in ${eta(mission)}**`);
 
     return tokens.join('\n');
   }

@@ -175,7 +175,7 @@ export default class PermissionsQueries {
   }
 
   /**
-   * Gets whether or not a user is allowed to use a particular command in a guild
+   * Gets whether a user is allowed to use a particular command in a guild
    * @param {Discord.Guild} guild - A Discord guild
    * @param {string} memberId - String representing a user identifier
    * @param {string} commandId - String representing a command identifier

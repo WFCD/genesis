@@ -1131,7 +1131,7 @@ const giveawayDefaults = {
   },
 };
 
-export const toTitleCase = (str) => str.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
+export const toTitleCase = (str) => (str ?? '')?.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
 
 /**
  * Map an asset path to the cdn url it applies to

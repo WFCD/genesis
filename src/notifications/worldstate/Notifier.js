@@ -5,7 +5,22 @@ import logger from '../../utilities/Logger.js';
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils.js';
 import { syndicates } from '../../resources/index.js';
 import { captures, createGroupedArray, platforms, games } from '../../utilities/CommonFunctions.js';
+import { isActive, isExpired, rewardString } from '../../utilities/WorldState.js';
 
+const wrap = (fn) => {
+  try {
+    return fn();
+  } catch (e) {
+    logger.error(e);
+  }
+};
+const wrapPromise = async (prom, indicator) => {
+  try {
+    return await prom;
+  } catch (e) {
+    logger.error(`Failure running ${e}`, indicator);
+  }
+};
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
 const makeNightwaveType = (challenge) => {
@@ -19,67 +34,89 @@ const makeNightwaveType = (challenge) => {
   return `nightwave.${type}`;
 };
 const buildNotifiableData = (newData, notified) => {
-  const data = {
-    acolytes: newData.persistentEnemies.filter((e) => !notified.includes(e.pid)),
-    alerts: newData.alerts.filter((a) => !a.expired && !notified.includes(a.id)),
-    archonHunt:
-      newData.archonHunt && !newData.archonHunt.expired && !notified.includes(newData.archonHunt.id)
+  try {
+    const data = {};
+
+    data.acolytes = wrap(() => newData.persistentEnemies?.filter((e) => !notified.includes(e.pid)));
+    data.alerts = wrap(() => newData.alerts?.filter((a) => !isExpired(a) && !notified.includes(a.id)));
+    data.archonHunt = wrap(() =>
+      newData.archonHunt && !isExpired(newData.archonHunt) && !notified?.includes(newData.archonHunt.id)
         ? newData.archonHunt
-        : undefined,
-    baros:
+        : undefined
+    );
+    data.baros = wrap(() =>
       newData.voidTraders?.length &&
-      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))?.length
-        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${vt.active ? '1' : '0'}`))
-        : undefined,
-    conclave: newData.conclaveChallenges.filter((cc) => !cc.expired && !cc.rootChallenge && !notified.includes(cc.id)),
-    dailyDeals: newData.dailyDeals.filter((dd) => !notified.includes(dd.id)),
-    events: newData.events.filter((e) => !e.expired && !notified.includes(e.id)),
-    invasions: newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)),
-    featuredDeals: newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)),
-    fissures: newData.fissures.filter((f) => f.active && !notified.includes(f.id)),
-    news: newData.news.filter(
-      (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
-    ),
-    popularDeals: newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)),
-    primeAccess: newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)),
-    sortie:
-      newData.sortie && !newData.sortie.expired && !notified.includes(newData.sortie.id) ? newData.sortie : undefined,
-    streams: newData.news.filter((n) => n.stream && !notified.includes(n.id)),
-    steelPath:
+      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
+        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
+        : undefined
+    );
+    data.conclave = wrap(() =>
+      newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id))
+    );
+    data.dailyDeals = wrap(() => newData.dailyDeals.filter((dd) => !notified.includes(dd.id)));
+    data.events = wrap(() => newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)));
+    data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
+    data.featuredDeals = wrap(() => newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)));
+    data.fissures = wrap(() => newData.fissures.filter((f) => !notified.includes(f.id)));
+    logger.info(`notifiableData: found ${data.fissures.length} fissures items`);
+    data.news = wrap(() =>
+      newData.news.filter(
+        (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
+      )
+    );
+    data.popularDeals = wrap(() => newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)));
+    data.primeAccess = wrap(() => newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)));
+    data.sortie = wrap(() =>
+      newData.sortie && !isExpired(newData.sortie) && !notified.includes(newData.sortie.id) ? newData.sortie : undefined
+    );
+    data.streams = wrap(() => newData.news.filter((n) => n.stream && !notified.includes(n.id)));
+    data.steelPath = wrap(() =>
       newData.steelPath.currentReward && !notified.includes(asId(newData.steelPath, 'steelpath'))
         ? newData.steelPath
-        : undefined,
-    syndicateM: newData.syndicateMissions.filter((m) => !notified.includes(m.id)),
-    tweets: newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : [],
-    updates: newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id)),
+        : undefined
+    );
+    data.syndicateM = wrap(() => newData.syndicateMissions.filter((m) => !notified.includes(m.id)));
+    data.tweets = wrap(() =>
+      newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : []
+    );
+    data.updates = wrap(() =>
+      newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id))
+    );
 
-    arbitration:
+    data.arbitration = wrap(() =>
       newData.arbitration && newData.arbitration.enemy && !notified.includes(asId(newData.arbitration, 'arbitration'))
         ? newData.arbitration
-        : undefined,
-    outposts: newData.sentientOutposts.active && !notified.includes(newData.sentientOutposts.id),
-  };
-
-  /* Nightwave */
-  if (newData.nightwave) {
-    const nWaveChallenges = newData.nightwave.activeChallenges.filter(
-      (challenge) => challenge.active && !notified.includes(challenge.id)
+        : undefined
     );
-    data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
-    if (data.nightwave) {
-      data.nightwave.activeChallenges = nWaveChallenges;
-    }
-  }
+    data.outposts = wrap(() => isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id));
 
-  return data;
+    try {
+      /* Nightwave */
+      if (newData.nightwave) {
+        const nWaveChallenges = newData.nightwave.activeChallenges.filter(
+          (challenge) => isActive(challenge) && !notified.includes(challenge.id)
+        );
+        data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
+        if (data.nightwave) {
+          data.nightwave.activeChallenges = nWaveChallenges;
+        }
+      }
+    } catch (e) {
+      logger.error(`error parsing nightwave data: ${e}`);
+    }
+    return data;
+  } catch (e) {
+    logger.error(e);
+  }
+  return {};
 };
 
 const transformMissionType = (rawType) =>
   rawType
-    .toLowerCase()
+    ?.toLowerCase()
     .replace(/dark sector/gi, '')
     .replace(/\s/g, '')
-    .trim();
+    .trim() ?? '';
 
 export default class Notifier {
   #settings;
@@ -130,7 +167,12 @@ export default class Notifier {
     // Set up data to notify
     updating.add(key);
     const notifiedIds = await this.#settings.getNotifiedIds(key);
-    await this.#sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, notifiedIds));
+    try {
+      const notifiableData = buildNotifiableData(newData, notifiedIds);
+      await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
+    } catch (e) {
+      logger.error(e);
+    }
     updating.remove(key);
   }
 
@@ -172,40 +214,34 @@ export default class Notifier {
         return;
       }
       const deps = { platform, locale, i18n: i18ns[locale] };
-
       await this.#sendAcolytes(acolytes, deps);
-
       if (games.includes('BARO') && baros?.length) {
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const baro of baros) {
-          await this.#sendBaro(baro, deps);
-        }
+        await Promise.map(baros, (baro) => this.#sendBaro(baro, deps));
       }
       if (conclave && conclave.length > 0) {
-        await this.#sendConclaveDailies(conclave, deps);
-        await this.#sendConclaveWeeklies(conclave, deps);
+        await Promise.all([this.#sendConclaveDailies(conclave, deps), this.#sendConclaveWeeklies(conclave, deps)]);
       }
       if (tweets && tweets.length > 0) {
         await this.#sendTweets(tweets, deps);
       }
-      await this.#sendDarvo(dailyDeals, deps);
-      await this.#sendEvent(events, deps);
-      await this.#sendFeaturedDeals(featuredDeals, deps);
-      await this.#sendFissures(fissures, deps);
-      await this.#sendNews(news, deps);
-      await this.#sendStreams(streams, deps);
-      await this.#sendPopularDeals(popularDeals, deps);
-      await this.#sendPrimeAccess(primeAccess, deps);
-      await this.#sendInvasions(invasions, deps);
-      await this.#sendSortie(sortie, deps);
-      await this.#sendSyndicates(syndicateM, deps);
-      await this.#sendUpdates(updates, deps);
-      await this.#sendAlerts(alerts, deps);
-      await this.#sendSentientOutposts(outposts, deps);
-      await this.#sendNightwave(nightwave, deps);
-      await this.#sendArbitration(arbitration, deps);
-      await this.#sendSteelPath(steelPath, deps);
-      await this.#sendArchonHunt(archonHunt, deps);
+      await wrapPromise(this.#sendDarvo(dailyDeals, deps));
+      await wrapPromise(this.#sendEvent(events, deps));
+      await wrapPromise(this.#sendFeaturedDeals(featuredDeals, deps));
+      await wrapPromise(this.#sendFissures(fissures, deps));
+      await wrapPromise(this.#sendNews(news, deps));
+      await wrapPromise(this.#sendStreams(streams, deps));
+      await wrapPromise(this.#sendPopularDeals(popularDeals, deps));
+      await wrapPromise(this.#sendPrimeAccess(primeAccess, deps));
+      await wrapPromise(this.#sendInvasions(invasions, deps));
+      await wrapPromise(this.#sendSortie(sortie, deps));
+      await wrapPromise(this.#sendSyndicates(syndicateM, deps));
+      await wrapPromise(this.#sendUpdates(updates, deps));
+      await wrapPromise(this.#sendAlerts(alerts, deps));
+      await wrapPromise(this.#sendSentientOutposts(outposts, deps));
+      await wrapPromise(this.#sendNightwave(nightwave, deps));
+      await wrapPromise(this.#sendArbitration(arbitration, deps));
+      await wrapPromise(this.#sendSteelPath(steelPath, deps));
+      await wrapPromise(this.#sendArchonHunt(archonHunt, deps));
     } catch (e) {
       logger.error(e);
     } finally {
@@ -215,7 +251,7 @@ export default class Notifier {
     try {
       const alreadyNotified = [
         ...rawData.persistentEnemies.map((a) => a.pid),
-        `${rawData.voidTrader.id}${rawData.voidTrader.active ? '1' : '0'}`,
+        `${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`,
         ...rawData.fissures.map((f) => f.id),
         ...rawData.invasions.map((i) => i.id),
         ...rawData.news.map((n) => n.id),
@@ -226,16 +262,16 @@ export default class Notifier {
         ...rawData.flashSales.map((s) => s.id),
         ...rawData.dailyDeals.map((d) => d.id),
         ...rawData.conclaveChallenges.map((cc) => cc.id),
-        ...rawData.weeklyChallenges.map((w) => w.id),
+        ...(rawData?.weeklyChallenges?.map((w) => w.id) ?? []),
         rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
-        ...(rawData.nightwave && rawData.nightwave.active
-          ? rawData.nightwave.activeChallenges.filter((c) => c.active).map((c) => c.id)
+        ...(rawData.nightwave && isActive(rawData.nightwave)
+          ? rawData.nightwave.activeChallenges.filter(isActive).map((c) => c.id)
           : []),
         rawData.sentientOutposts.id,
         rawData.steelPath && rawData.steelPath.expiry ? asId(rawData.steelPath, 'steelpath') : 'steelpath:0',
         rawData.archonHunt.id,
-      ].filter((a) => a);
+      ].filter(Boolean);
 
       await this.#settings.setNotifiedIds(`${platform}:${locale}`, alreadyNotified);
       logger.silly(`completed sending notifications for ${platform} in ${locale}`);
@@ -311,7 +347,7 @@ export default class Notifier {
       try {
         thumb =
           !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
-          (await getThumbnailForItem(alert.mission.reward.itemString));
+          (await getThumbnailForItem(rewardString(alert.mission.reward, false)));
       } catch (e) {
         logger.error(e);
       }
@@ -326,7 +362,7 @@ export default class Notifier {
   }
 
   async #sendArbitration(arbitration, deps) {
-    if (!arbitration?.enemy) return;
+    if (!arbitration?.enemy || arbitration.nodeKey !== 'SolNode000') return;
     const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.typeKey)}`;
     return this.#standardBroadcast(arbitration, { ...deps, Embed: embeds.Arbitration, type });
   }
@@ -398,12 +434,16 @@ export default class Notifier {
   }
 
   async #sendFissures(newFissures, deps) {
-    return this.#standardBroadcast(newFissures, {
-      ...deps,
-      Embed: embeds.Fissure,
-      typeGenerator: (fissure) =>
-        `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
-    });
+    try {
+      return this.#standardBroadcast(newFissures, {
+        ...deps,
+        Embed: embeds.Fissure,
+        typeGenerator: (fissure) =>
+          `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
+      });
+    } catch (e) {
+      logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
+    }
   }
 
   async #sendInvasions(newInvasions, deps) {

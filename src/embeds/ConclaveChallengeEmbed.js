@@ -1,4 +1,5 @@
 import { assetBase } from '../utilities/CommonFunctions.js';
+import { timeToEnd } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -17,10 +18,13 @@ export default class ConclaveChallengeEmbed extends BaseEmbed {
     if (categoryInValues) {
       this.fields = challenges
         .filter((c) => compareCCategory(c, category))
-        .map((c) => ({
-          name: c.mode,
-          value: `${c.description} expires in ${c.endString}`,
-        }));
+        .map((c) => {
+          const endString = timeToEnd(c);
+          return {
+            name: c.mode,
+            value: `${c.description} expires in ${endString}`,
+          };
+        });
     } else {
       this.fields = [
         {
