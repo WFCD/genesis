@@ -276,7 +276,7 @@ export default class Notifier {
         ...rawData.flashSales.map((s) => s.id),
         ...rawData.dailyDeals.map((d) => d.id),
         ...rawData.conclaveChallenges.map((cc) => cc.id),
-        ...rawData?.weeklyChallenges?.map((w) => w.id),
+        ...(rawData?.weeklyChallenges?.map((w) => w.id) ?? []),
         rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
         ...(rawData.nightwave && isActive(rawData.nightwave)
