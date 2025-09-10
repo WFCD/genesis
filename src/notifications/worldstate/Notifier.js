@@ -162,6 +162,10 @@ export default class Notifier {
     const notifiedIds = await this.#settings.getNotifiedIds(key);
     try {
       const notifiableData = buildNotifiableData(newData, notifiedIds);
+      logger.info(`Notifying for ${platform} in ${locale}`, 'Notifier');
+      logger.info(Object.keys(notifiableData).sort());
+      logger.info(Object.keys(newData).sort());
+      logger.info(`Notified ids cnt: ${notifiedIds.length}`);
       await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
     } catch (e) {
       logger.error(e);
