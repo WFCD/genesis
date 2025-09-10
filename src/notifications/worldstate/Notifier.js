@@ -448,12 +448,16 @@ export default class Notifier {
   }
 
   async #sendFissures(newFissures, deps) {
-    return this.#standardBroadcast(newFissures, {
-      ...deps,
-      Embed: embeds.Fissure,
-      typeGenerator: (fissure) =>
-        `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
-    });
+    try {
+      return this.#standardBroadcast(newFissures, {
+        ...deps,
+        Embed: embeds.Fissure,
+        typeGenerator: (fissure) =>
+          `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
+      });
+    } catch (e) {
+      logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
+    }
   }
 
   async #sendInvasions(newInvasions, deps) {
