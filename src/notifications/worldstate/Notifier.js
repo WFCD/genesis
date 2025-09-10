@@ -130,6 +130,7 @@ export default class Notifier {
     // Set up data to notify
     updating.add(key);
     const notifiedIds = await this.#settings.getNotifiedIds(key);
+    logger.error(`notified ids... ${JSON.stringify(notifiedIds)}`);
     await this.#sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, notifiedIds));
     updating.remove(key);
   }
