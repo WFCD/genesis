@@ -326,7 +326,7 @@ export default class Notifier {
   }
 
   async #sendArbitration(arbitration, deps) {
-    if (!arbitration?.enemy) return;
+    if (!arbitration?.enemy && arbitration.nodeKey !== 'SolNode000') return;
     const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.typeKey)}`;
     return this.#standardBroadcast(arbitration, { ...deps, Embed: embeds.Arbitration, type });
   }
