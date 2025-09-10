@@ -15,6 +15,14 @@ const wrap = (fn) => {
   }
 };
 
+const wrapPromise = async (fn, indicator) => {
+  try {
+    return await fn();
+  } catch (e) {
+    logger.error(`Failure running ${indicator}`, e);
+  }
+};
+
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
 const makeNightwaveType = (challenge) => {
@@ -162,10 +170,6 @@ export default class Notifier {
     const notifiedIds = await this.#settings.getNotifiedIds(key);
     try {
       const notifiableData = buildNotifiableData(newData, notifiedIds);
-      logger.info(`Notifying for ${platform} in ${locale}`, 'Notifier');
-      logger.info(Object.keys(notifiableData).sort());
-      logger.info(Object.keys(newData).sort());
-      logger.info(`Notified ids cnt: ${notifiedIds.length}`);
       await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
     } catch (e) {
       logger.error(e);
@@ -212,39 +216,46 @@ export default class Notifier {
       }
       const deps = { platform, locale, i18n: i18ns[locale] };
 
-      await this.#sendAcolytes(acolytes, deps);
+      const promises = [];
+
+      promises.push(this.#sendAcolytes(acolytes, deps));
 
       if (games.includes('BARO') && baros?.length) {
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const baro of baros) {
-          await this.#sendBaro(baro, deps);
-        }
+        promises.push(wrapPromise(Promise.all(baros.map((baro) => this.#sendBaro(baro, deps))), 'Baro'));
       }
       if (conclave && conclave.length > 0) {
-        await this.#sendConclaveDailies(conclave, deps);
-        await this.#sendConclaveWeeklies(conclave, deps);
+        promises.push(
+          wrapPromise(
+            Promise.all([this.#sendConclaveDailies(conclave, deps), this.#sendConclaveWeeklies(conclave, deps)]),
+            'Conclave'
+          )
+        );
       }
       if (tweets && tweets.length > 0) {
-        await this.#sendTweets(tweets, deps);
+        promises.push(wrapPromise(this.#sendTweets(tweets, deps)), 'tweets');
       }
-      await this.#sendDarvo(dailyDeals, deps);
-      await this.#sendEvent(events, deps);
-      await this.#sendFeaturedDeals(featuredDeals, deps);
-      await this.#sendFissures(fissures, deps);
-      await this.#sendNews(news, deps);
-      await this.#sendStreams(streams, deps);
-      await this.#sendPopularDeals(popularDeals, deps);
-      await this.#sendPrimeAccess(primeAccess, deps);
-      await this.#sendInvasions(invasions, deps);
-      await this.#sendSortie(sortie, deps);
-      await this.#sendSyndicates(syndicateM, deps);
-      await this.#sendUpdates(updates, deps);
-      await this.#sendAlerts(alerts, deps);
-      await this.#sendSentientOutposts(outposts, deps);
-      await this.#sendNightwave(nightwave, deps);
-      await this.#sendArbitration(arbitration, deps);
-      await this.#sendSteelPath(steelPath, deps);
-      await this.#sendArchonHunt(archonHunt, deps);
+      promises.push(
+        wrapPromise(this.#sendDarvo(dailyDeals, deps)),
+        wrapPromise(this.#sendEvent(events, deps)),
+        wrapPromise(this.#sendFeaturedDeals(featuredDeals, deps)),
+        wrapPromise(this.#sendFissures(fissures, deps)),
+        wrapPromise(this.#sendNews(news, deps)),
+        wrapPromise(this.#sendStreams(streams, deps)),
+        wrapPromise(this.#sendPopularDeals(popularDeals, deps)),
+        wrapPromise(this.#sendPrimeAccess(primeAccess, deps)),
+        wrapPromise(this.#sendInvasions(invasions, deps)),
+        wrapPromise(this.#sendSortie(sortie, deps)),
+        wrapPromise(this.#sendSyndicates(syndicateM, deps)),
+        wrapPromise(this.#sendUpdates(updates, deps)),
+        wrapPromise(this.#sendAlerts(alerts, deps)),
+        wrapPromise(this.#sendSentientOutposts(outposts, deps)),
+        wrapPromise(this.#sendNightwave(nightwave, deps)),
+        wrapPromise(this.#sendArbitration(arbitration, deps)),
+        wrapPromise(this.#sendSteelPath(steelPath, deps)),
+        wrapPromise(this.#sendArchonHunt(archonHunt, deps))
+      );
+
+      await Promise.all(promises);
     } catch (e) {
       logger.error(e);
     } finally {
