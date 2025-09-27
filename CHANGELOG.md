@@ -1,3 +1,10 @@
+## [2.13.8](https://github.com/WFCD/genesis/compare/v2.13.7...v2.13.8) (2025-09-27)
+
+
+### Bug Fixes
+
+* **copy:** alerts, restore archwing ([5fb9062](https://github.com/WFCD/genesis/commit/5fb90622fa835de9c0913f17086043808a234c21))
+
 ## [2.13.7](https://github.com/WFCD/genesis/compare/v2.13.6...v2.13.7) (2025-09-27)
 
 
