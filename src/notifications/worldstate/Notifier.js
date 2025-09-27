@@ -58,7 +58,6 @@ const buildNotifiableData = (newData, notified) => {
     data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
     data.featuredDeals = wrap(() => newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)));
     data.fissures = wrap(() => newData.fissures.filter((f) => !notified.includes(f.id)));
-    logger.info(`notifiableData: found ${data.fissures.length} fissures items`);
     data.news = wrap(() =>
       newData.news.filter(
         (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
@@ -435,7 +434,6 @@ export default class Notifier {
 
   async #sendFissures(newFissures, deps) {
     try {
-      logger.info(`Attempting to send ${newFissures.length} fissures`);
       return this.#standardBroadcast(newFissures, {
         ...deps,
         Embed: embeds.Fissure,
