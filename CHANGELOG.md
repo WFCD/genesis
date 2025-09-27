@@ -1,3 +1,10 @@
+## [2.13.6](https://github.com/WFCD/genesis/compare/v2.13.5...v2.13.6) (2025-09-27)
+
+
+### Bug Fixes
+
+* **notifier:** extra info logs ([63b0164](https://github.com/WFCD/genesis/commit/63b0164e1c167a1bacd616bffd7279e540de5aae))
+
 ## [2.13.5](https://github.com/WFCD/genesis/compare/v2.13.4...v2.13.5) (2025-09-27)
 
 
