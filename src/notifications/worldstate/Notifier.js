@@ -435,11 +435,12 @@ export default class Notifier {
 
   async #sendFissures(newFissures, deps) {
     try {
+      logger.info(`Attempting to send ${newFissures.length} fissures`);
       return this.#standardBroadcast(newFissures, {
         ...deps,
         Embed: embeds.Fissure,
         typeGenerator: (fissure) =>
-          `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionKey)}`,
+          `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionTypeKey)}`,
       });
     } catch (e) {
       logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
