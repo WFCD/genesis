@@ -1,3 +1,10 @@
+## [2.13.5](https://github.com/WFCD/genesis/compare/v2.13.4...v2.13.5) (2025-09-27)
+
+
+### Bug Fixes
+
+* **about:** more info ([01dca1b](https://github.com/WFCD/genesis/commit/01dca1bb8075e634f55484e40cc29768de690543))
+
 ## [2.13.4](https://github.com/WFCD/genesis/compare/v2.13.3...v2.13.4) (2025-09-27)
 
 
