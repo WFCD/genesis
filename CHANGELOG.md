@@ -1,3 +1,10 @@
+## [2.13.7](https://github.com/WFCD/genesis/compare/v2.13.6...v2.13.7) (2025-09-27)
+
+
+### Bug Fixes
+
+* **copy:** on storms, archwing -> railjack ([acebb38](https://github.com/WFCD/genesis/commit/acebb3846ead19b479e778553bc7ef50a4674ac2))
+
 ## [2.13.6](https://github.com/WFCD/genesis/compare/v2.13.5...v2.13.6) (2025-09-27)
 
 
