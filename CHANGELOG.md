@@ -1,3 +1,10 @@
+## [2.13.4](https://github.com/WFCD/genesis/compare/v2.13.3...v2.13.4) (2025-09-27)
+
+
+### Bug Fixes
+
+* **fissues:** missionTypeKey ([1f8dff9](https://github.com/WFCD/genesis/commit/1f8dff9f8849a5684f03019e78a783e58e060d95))
+
 ## [2.13.3](https://github.com/WFCD/genesis/compare/v2.13.2...v2.13.3) (2025-09-10)
 
 
