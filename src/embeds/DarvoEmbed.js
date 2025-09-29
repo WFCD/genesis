@@ -1,4 +1,5 @@
 import { assetBase } from '../utilities/CommonFunctions.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -16,7 +17,7 @@ export default class DarvoEmbed extends BaseEmbed {
     this.fields = [
       {
         name: i18n`${deal.item}, ${deal.salePrice}p`,
-        value: `Original price: ${deal.originalPrice}p, expires in ${deal.eta}`,
+        value: `Original price: ${deal.originalPrice}p, expires in ${eta(deal)}`,
       },
     ];
     this.footer.text = i18n`${deal.total - deal.sold}/${deal.total} left`;

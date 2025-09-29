@@ -1,4 +1,5 @@
 import { assetBase } from '../utilities/CommonFunctions.js';
+import { eta, rewardString } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -22,7 +23,7 @@ export default class AlertEmbed extends BaseEmbed {
     // compact
     if (Array.isArray(alerts) && alerts.length > 1) {
       this.fields = alerts.map((a) => ({
-        name: i18n`${a.mission.reward.asString} | ${a.eta} left`,
+        name: i18n`${rewardString(a.mission.reward)} | ${eta(a)} left`,
         value: i18n`${a.mission.faction} ${a.mission.type} on ${a.mission.node}\nlevel ${a.mission.minEnemyLevel} - ${a.mission.maxEnemyLevel}\n\u200B`,
       }));
       this.title = i18n`[${platform.toUpperCase()}] Worldstate - Alerts`;
@@ -30,7 +31,7 @@ export default class AlertEmbed extends BaseEmbed {
       // divided
       const a = Array.isArray(alerts) ? alerts[0] : alerts;
       this.title = i18n`[${platform.toUpperCase()}] ${
-        a.mission.reward.itemString || i18n`${a.mission.reward.credits} Credits`
+        rewardString(a.mission.reward, false) || i18n`${a.mission.reward.credits} Credits`
       }`;
       this.color = a.mission.reward.color;
       this.thumbnail.url = a.mission.reward.thumbnail;
@@ -57,7 +58,7 @@ export default class AlertEmbed extends BaseEmbed {
       if (this.title.indexOf('Cr') === -1) {
         this.fields.push({ name: '\u200B', value: i18n`**Credits:** ${a.mission.reward.credits}`, inline: true });
       }
-      this.footer.text = i18n`${a.eta} remaining • Expires `;
+      this.footer.text = i18n`${eta(a)} remaining • Expires `;
       this.timestamp = a.expiry;
     }
   }

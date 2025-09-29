@@ -1,6 +1,6 @@
 {
   "name": "genesis",
-  "version": "2.13.2",
+  "version": "2.13.8",
   "private": true,
   "description": "A Warframe bot for your Discord server or clan :star:",
   "keywords": [
@@ -43,13 +43,13 @@
   },
   "prettier": "@wfcd/eslint-config/prettier",
   "dependencies": {
-    "@sentry/node": "^7.120.3",
+    "@sentry/node": "^7.120.4",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.9",
     "colors": "1.4.0",
-    "cron": "^4.3.2",
-    "dayjs": "^1.11.13",
+    "cron": "^4.3.3",
+    "dayjs": "^1.11.18",
     "decache": "^4.6.2",
     "discord.js": "^13.17.1",
     "flat-cache": "^3.2.0",
@@ -64,20 +64,21 @@
     "rss-feed-emitter": "^3.2.3",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
-    "warframe-name-generator": "^2.0.2"
+    "warframe-name-generator": "^2.0.2",
+    "warframe-worldstate-data": "^3.1.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.6.3",
-    "chai": "^5.2.1",
-    "discord-api-types": "^0.38.16",
-    "dotenv": "^17.2.0",
+    "chai": "^6.0.1",
+    "discord-api-types": "^0.38.26",
+    "dotenv": "^17.2.2",
     "husky": "^9.1.7",
     "install-peerdeps": "^3.0.3",
-    "lint-staged": "^16.1.2",
-    "mocha": "^11.7.1"
+    "lint-staged": "^16.1.6",
+    "mocha": "^11.7.2"
   },
   "optionalDependencies": {
     "erlpack": "github:discord/erlpack",

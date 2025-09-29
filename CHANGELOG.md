@@ -1,3 +1,45 @@
+## [2.13.8](https://github.com/WFCD/genesis/compare/v2.13.7...v2.13.8) (2025-09-27)
+
+
+### Bug Fixes
+
+* **copy:** alerts, restore archwing ([5fb9062](https://github.com/WFCD/genesis/commit/5fb90622fa835de9c0913f17086043808a234c21))
+
+## [2.13.7](https://github.com/WFCD/genesis/compare/v2.13.6...v2.13.7) (2025-09-27)
+
+
+### Bug Fixes
+
+* **copy:** on storms, archwing -> railjack ([acebb38](https://github.com/WFCD/genesis/commit/acebb3846ead19b479e778553bc7ef50a4674ac2))
+
+## [2.13.6](https://github.com/WFCD/genesis/compare/v2.13.5...v2.13.6) (2025-09-27)
+
+
+### Bug Fixes
+
+* **notifier:** extra info logs ([63b0164](https://github.com/WFCD/genesis/commit/63b0164e1c167a1bacd616bffd7279e540de5aae))
+
+## [2.13.5](https://github.com/WFCD/genesis/compare/v2.13.4...v2.13.5) (2025-09-27)
+
+
+### Bug Fixes
+
+* **about:** more info ([01dca1b](https://github.com/WFCD/genesis/commit/01dca1bb8075e634f55484e40cc29768de690543))
+
+## [2.13.4](https://github.com/WFCD/genesis/compare/v2.13.3...v2.13.4) (2025-09-27)
+
+
+### Bug Fixes
+
+* **fissues:** missionTypeKey ([1f8dff9](https://github.com/WFCD/genesis/commit/1f8dff9f8849a5684f03019e78a783e58e060d95))
+
+## [2.13.3](https://github.com/WFCD/genesis/compare/v2.13.2...v2.13.3) (2025-09-10)
+
+
+### Bug Fixes
+
+* worldstate updates ([#1007](https://github.com/WFCD/genesis/issues/1007)) ([286a5ba](https://github.com/WFCD/genesis/commit/286a5ba2dabbb9d2d7196cb178f92895048ecba1))
+
 ## [2.13.2](https://github.com/WFCD/genesis/compare/v2.13.1...v2.13.2) (2025-07-13)
 
 

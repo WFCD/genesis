@@ -1,5 +1,6 @@
 import { syndicates } from '../resources/index.js';
 import { assetBase, wikiBase } from '../utilities/CommonFunctions.js';
+import { eta } from '../utilities/WorldState.js';
 
 import BaseEmbed from './BaseEmbed.js';
 
@@ -20,7 +21,7 @@ const makeJobs = (mission, numSyndMissions) => {
     });
 
     if (numSyndMissions > 1) {
-      tokens.push(`\n**Expires in ${mission.eta}**`);
+      tokens.push(`\n**Expires in ${eta(mission)}**`);
     }
 
     return tokens.join('\n');
@@ -33,7 +34,7 @@ const makeMissionValue = (mission, syndMissions) => {
   }
   const jobs = mission.jobs.length ? makeJobs(mission, syndMissions.length) : '';
   const nodes = mission.nodes.length
-    ? `${mission.nodes.join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${mission.eta}**`}`
+    ? `${mission.nodes.join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${eta(mission)}**`}`
     : '';
   let value = 'No Nodes or Jobs Available';
   if (jobs.length) {
@@ -74,7 +75,7 @@ class SyndicateEmbed extends BaseEmbed {
         this.color = 0x00ff00;
         if (syndMissions.length < 2) {
           this.title = `[${platform.toUpperCase()}] ${syndMissions[0].syndicate}`;
-          this.footer.text = i18n`Expires in ${syndMissions[0].eta}`;
+          this.footer.text = i18n`Expires in ${eta(syndMissions[0])}`;
           this.timestamp = syndMissions[0].expiry;
         }
         if (syndMissions.length < 2) {
