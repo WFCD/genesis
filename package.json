@@ -59,7 +59,7 @@
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
     "parse-duration": "^2.1.4",
-    "ping": "^0.4.4",
+    "ping": "^1.0.0",
     "random-reddit": "^2.0.3",
     "rss-feed-emitter": "^3.2.3",
     "sql-template-strings": "^2.2.2",
