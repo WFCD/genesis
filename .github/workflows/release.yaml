@@ -67,7 +67,9 @@ jobs:
       - name: Tailscale
         uses: tailscale/github-action@v3
         with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - name: Stop Bot Process
         if: ${{ steps.release.outputs.release == 'yes' }}
         run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
