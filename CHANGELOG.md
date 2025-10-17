@@ -1,3 +1,10 @@
+## [2.13.10](https://github.com/WFCD/genesis/compare/v2.13.9...v2.13.10) (2025-10-17)
+
+
+### Bug Fixes
+
+* switch to ts oauth instead of authkey ([#1024](https://github.com/WFCD/genesis/issues/1024)) ([12f55ee](https://github.com/WFCD/genesis/commit/12f55eeb7538a8a69dd93239e79c008b559e1188))
+
 ## [2.13.9](https://github.com/WFCD/genesis/compare/v2.13.8...v2.13.9) (2025-10-06)
 
 
