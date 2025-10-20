@@ -71,7 +71,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@types/flat-cache": "^2.0.2",
-    "@wfcd/eslint-config": "^1.6.3",
+    "@wfcd/eslint-config": "^1.6.4",
     "chai": "^6.2.0",
     "discord-api-types": "^0.38.30",
     "dotenv": "^17.2.3",
