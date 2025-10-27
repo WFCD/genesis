@@ -7,6 +7,7 @@ RUN npm ci
 
 FROM node:jod-alpine as release
 
+LABEL org.opencontainers.image.source = "https://github.com/WFCD/genesis"
 COPY --from=base --chown=node:node /app/genesis /app/genesis
 WORKDIR /app/genesis
 COPY --chown=node:node . .
