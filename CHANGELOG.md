@@ -1,3 +1,13 @@
+## [2.13.12](https://github.com/WFCD/genesis/compare/v2.13.11...v2.13.12) (2025-10-27)
+
+
+### Bug Fixes
+
+* expose secrets ([0377001](https://github.com/WFCD/genesis/commit/03770012f355e94e3c805c8cd1e0eb9ae2a258eb))
+* login to docker before release ([689c8fb](https://github.com/WFCD/genesis/commit/689c8fb69954b3ecb6db657cc52aa019f87a7e4b))
+* pathing in dockerfile ([c7d4171](https://github.com/WFCD/genesis/commit/c7d41718c5efda50a9185241bba07f140d0a0e25))
+* release to ghcr ([4ac1cfb](https://github.com/WFCD/genesis/commit/4ac1cfb8b0ddc13ca0c58d84dc7877f09acd647f))
+
 ## [2.13.11](https://github.com/WFCD/genesis/compare/v2.13.10...v2.13.11) (2025-10-27)
 
 
