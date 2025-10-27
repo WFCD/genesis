@@ -25,6 +25,8 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          DOCKER_REGISTRY_USER: ${{ github.repository_owner }}
+          DOCKER_REGISTRY_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
         with:
           extra_plugins: |
             @eclass/semantic-release-sentry-releases
