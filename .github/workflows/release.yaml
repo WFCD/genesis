@@ -28,6 +28,7 @@ jobs:
         with:
           extra_plugins: |
             @eclass/semantic-release-sentry-releases
+            @codedependant/semantic-release-docker
             @semantic-release/git
             @semantic-release/changelog
             @semantic-release/exec
@@ -43,39 +44,3 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-      # Built from https://blog.benoitblanchon.fr/github-action-run-ssh-commands/
-      - name: Configure
-        if: ${{ steps.release.outputs.release == 'yes'  }}
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/prod.key
-          chmod 600 ~/.ssh/prod.key
-          cat >>~/.ssh/config <<END
-          Host bot
-            HostName $SSH_BOT_HOST
-            Port $SSH_BOT_PORT
-            User $SSH_USER
-            IdentityFile ~/.ssh/prod.key
-            StrictHostKeyChecking no
-          END
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_BOT_HOST: ${{ secrets.SSH_BOT_HOST }}
-          SSH_BOT_PORT: ${{ secrets.SSH_BOT_PORT }}
-          DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
-      - name: Tailscale
-        uses: tailscale/github-action@v4
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-      - name: Stop Bot Process
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && { make -f docker.Makefile down_prod } || echo "Nothing to stop"'
-      - name: Update Containers
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && make -f docker.Makefile submod bot notifier'
-      - name: Restart Containers
-        if: ${{ steps.release.outputs.release == 'yes' }}
-        run: ssh bot 'source ~/.zshrc && cd ${{ secrets.DEPLOY_DIR }} && make -f docker.Makefile up_prod'

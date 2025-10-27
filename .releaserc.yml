@@ -7,6 +7,22 @@ plugins:
   - - '@semantic-release/npm'
     - npmPublish: false
   - '@semantic-release/github'
+  - - '@codedependant/semantic-release-docker'
+    - dockerImage: genesis/bot
+      dockerRegistry: ghcr.io
+      dockerProject: wfcd
+      dockerPlatform:
+        - 'linux/amd64'
+        - 'linux/arm64'
+      dockerFile: bot.Dockerfile
+  - - '@codedependant/semantic-release-docker'
+    - dockerImage: genesis/notifier
+      dockerRegistry: ghcr.io
+      dockerProject: wfcd
+      dockerPlatform:
+        - 'linux/amd64'
+        - 'linux/arm64'
+      dockerFile: notifier.Dockerfile
   - - '@semantic-release/changelog'
     - assets:
         - CHANGELOG.md
