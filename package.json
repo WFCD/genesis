@@ -61,7 +61,7 @@
     "parse-duration": "^2.1.4",
     "ping": "^1.0.0",
     "random-reddit": "^2.0.3",
-    "rss-feed-emitter": "^3.2.3",
+    "rss-feed-emitter": "^3.2.4",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
     "warframe-name-generator": "^2.0.5",
