@@ -53,7 +53,7 @@
     "decache": "^4.6.2",
     "discord.js": "^13.17.1",
     "flat-cache": "^3.2.0",
-    "i18n-string-templates": "^2.0.1",
+    "i18n-string-templates": "^2.0.2",
     "json-query": "^2.2.2",
     "mysql2": "^2.3.3",
     "node-fetch": "^3.3.0",
