@@ -65,7 +65,7 @@
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
     "warframe-name-generator": "^2.0.5",
-    "warframe-worldstate-data": "^3.1.14"
+    "warframe-worldstate-data": "^3.1.15"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
