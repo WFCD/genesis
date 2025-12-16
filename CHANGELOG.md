@@ -1,3 +1,10 @@
+## [2.13.17](https://github.com/WFCD/genesis/compare/v2.13.16...v2.13.17) (2025-12-16)
+
+
+### Bug Fixes
+
+* aggressively fall back to default presence message ([fabf931](https://github.com/WFCD/genesis/commit/fabf9312f1518d1cadb09cd976fd09927453c345))
+
 ## [2.13.16](https://github.com/WFCD/genesis/compare/v2.13.15...v2.13.16) (2025-12-15)
 
 
