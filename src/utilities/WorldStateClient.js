@@ -131,17 +131,22 @@ export default class WorldStateClient {
    * @returns {Promise<Object>|undefined}
    */
   async get(endpoint, platform = 'pc', language = 'en') {
-    this.#logger.silly(`fetching ${endpoint} for ${platform} with lang(${language})`);
-    if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE).includes(endpoint)) {
-      this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
+    try {
+      this.#logger.silly(`fetching ${endpoint} for ${platform} with lang(${language})`);
+      if (!Object.values(WorldStateClient.ENDPOINTS.WORLDSTATE).includes(endpoint)) {
+        this.#logger.error(`invalid request: ${endpoint} not an ENDPOINTS.WORLDSTATE`);
+        return undefined;
+      }
+      return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}/?language=${language}&ts=${Date.now()}`, {
+        headers: {
+          platform,
+          'Accept-Language': language,
+        },
+      }).then((d) => d.json());
+    } catch (e) {
+      this.logger.warn(`Error fetching worldstate data: ${e}`);
       return undefined;
     }
-    return fetch(`${apiBase}/${platform.toLowerCase()}/${endpoint}/?language=${language}&ts=${Date.now()}`, {
-      headers: {
-        platform,
-        'Accept-Language': language,
-      },
-    }).then((d) => d.json());
   }
 
   async g(endpoint, platform = 'pc', language = 'en') {

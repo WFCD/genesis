@@ -83,6 +83,7 @@ export default class OnReadyHandle extends Handler {
   }
 
   async #getWarframePresence(base) {
+    const defPres = `0m: ❄️ • 0m: 🌙`;
     const cetusState = await this.bot.ws.get('cetusCycle');
     const vallisState = await this.bot.ws.get('vallisCycle');
     // const outpost = await this.bot.ws.get('sentientOutposts');
@@ -105,7 +106,11 @@ export default class OnReadyHandle extends Handler {
         ? `${timeDeltaToMinutesString(vsFromNow) || '0m'}: ${vallisState.isWarm ? '🔥' : '❄️'} • `
         : '';
       const cs = cetusState ? `${timeDeltaToMinutesString(csFromNow) || '0m'}: ${cetusState.isDay ? '☀️' : '🌙'}` : '';
-      return `${vs}${cs}`;
+      const wfPres = `${vs}${cs}`;
+      if (wfPres === defPres) {
+        return base;
+      }
+      return wfPres;
     }
     return base;
   }
@@ -116,10 +121,15 @@ export default class OnReadyHandle extends Handler {
    */
   async #updatePresence() {
     try {
-      const baseMsg = process.env.BASE_PRES_MSG || `@${this.client.user.username} help`;
+      const baseMsg = process.env.BASE_PRES_MSG || `/help`;
       const activity = process.env.BASE_PRES_ACT || 'PLAYING';
 
-      const wfPresence = games.includes('WARFRAME') ? await this.#getWarframePresence(baseMsg) : undefined;
+      let wfPresence;
+      try {
+        wfPresence = games.includes('WARFRAME') ? await this.#getWarframePresence(baseMsg) : undefined;
+      } catch (e) {
+        this.logger.warn('Could not get Warframe presence data.');
+      }
       const presence = wfPresence || baseMsg;
       this.client.user.setPresence({
         status: 'online',
