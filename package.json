@@ -58,7 +58,7 @@
     "mysql2": "^2.3.3",
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
-    "parse-duration": "^2.1.4",
+    "parse-duration": "^2.1.5",
     "ping": "^1.0.0",
     "random-reddit": "^2.0.3",
     "rss-feed-emitter": "^3.2.4",
