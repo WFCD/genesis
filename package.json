@@ -64,7 +64,7 @@
     "rss-feed-emitter": "^3.2.4",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
-    "warframe-name-generator": "^2.0.5",
+    "warframe-name-generator": "^2.0.8",
     "warframe-worldstate-data": "^3.2.1"
   },
   "devDependencies": {
