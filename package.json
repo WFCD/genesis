@@ -74,7 +74,7 @@
     "@wfcd/eslint-config": "^1.6.4",
     "chai": "^6.2.2",
     "discord-api-types": "^0.38.39",
-    "dotenv": "^17.2.4",
+    "dotenv": "^17.3.1",
     "husky": "^9.1.7",
     "install-peerdeps": "^3.0.3",
     "lint-staged": "^16.2.7",
