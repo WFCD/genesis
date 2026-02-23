@@ -1,3 +1,10 @@
+## [2.13.20](https://github.com/WFCD/genesis/compare/v2.13.19...v2.13.20) (2026-02-23)
+
+
+### Bug Fixes
+
+* bump warframe-worldstate-data from 3.4.1 to 3.6.1 ([#1083](https://github.com/WFCD/genesis/issues/1083)) ([c67d59d](https://github.com/WFCD/genesis/commit/c67d59d6aec33e3d29edb38a5514158833700680))
+
 ## [2.13.19](https://github.com/WFCD/genesis/compare/v2.13.18...v2.13.19) (2026-02-09)
 
 
