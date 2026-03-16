@@ -68,7 +68,7 @@
     "warframe-worldstate-data": "^3.8.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.4.4",
+    "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.4.3",
     "@types/flat-cache": "^2.0.2",
     "@wfcd/eslint-config": "^1.6.4",
