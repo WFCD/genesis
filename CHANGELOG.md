@@ -1,3 +1,10 @@
+## [2.13.23](https://github.com/WFCD/genesis/compare/v2.13.22...v2.13.23) (2026-04-01)
+
+
+### Bug Fixes
+
+* **sec:** bump brace-expansion ([#1111](https://github.com/WFCD/genesis/issues/1111)) ([98b60cf](https://github.com/WFCD/genesis/commit/98b60cf7cfd64c60f608912c56895aa69bf50c2f))
+
 ## [2.13.22](https://github.com/WFCD/genesis/compare/v2.13.21...v2.13.22) (2026-03-23)
 
 
