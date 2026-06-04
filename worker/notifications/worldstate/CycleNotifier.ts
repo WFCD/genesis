@@ -29,30 +29,25 @@ const durations = {
 };
 
 interface CycleData {
-  data: Object;
+  data: object;
   dirty: boolean;
 }
 
 function buildNotifiableData(newData, platform, locale) {
   const key = `${platform}:${locale}`;
-  const data = {
-    /* Cycles data */
-    /** @type {CycleData} */
+  const data: Record<string, CycleData> = {
     cetus: {
       data: newData.cetusCycle,
       dirty: between(newData.cetusCycle.activation, key, refreshRate, beats),
     },
-    /** @type {CycleData} */
     cambion: {
       data: newData.cambionCycle,
       dirty: between(newData.cambionCycle.activation, key, refreshRate, beats),
     },
-    /** @type {CycleData} */
     earth: {
       data: newData.earthCycle,
       dirty: between(newData.earthCycle.activation, key, refreshRate, beats),
     },
-    /** @type {CycleData} */
     vallis: {
       data: newData.vallisCycle,
       dirty: between(newData.vallisCycle.activation, key, refreshRate, beats),
