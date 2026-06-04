@@ -1,0 +1,396 @@
+import { ApplicationCommandOptionType as Types, EmbedBuilder } from 'discord.js';
+
+import Collectors from '#shared/utilities/Collectors';
+import { createGroupedArray, emojify, games, withEphemeral } from '#shared/utilities/CommonFunctions';
+import Alert from '#shared/embeds/AlertEmbed';
+import Arbitration from '#shared/embeds/ArbitrationEmbed';
+import Cambion from '#shared/embeds/CambionEmbed';
+import Conclave from '#shared/embeds/ConclaveChallengeEmbed';
+import Construction from '#shared/embeds/ConstructionEmbed';
+import Cycle from '#shared/embeds/EarthCycleEmbed';
+import Darvo from '#shared/embeds/DarvoEmbed';
+import Event from '#shared/embeds/EventEmbed';
+import Fissure from '#shared/embeds/FissureEmbed';
+import Invasion from '#shared/embeds/InvasionEmbed';
+import News from '#shared/embeds/NewsEmbed';
+import Sales from '#shared/embeds/SalesEmbed';
+import Sortie from '#shared/embeds/SortieEmbed';
+import Syndicate from '#shared/embeds/SyndicateEmbed';
+import VoidTrader from '#shared/embeds/VoidTraderEmbed';
+import Solaris from '#shared/embeds/SolarisEmbed';
+import Nightwave from '#shared/embeds/NightwaveEmbed';
+import Outposts from '#shared/embeds/SentientOutpostEmbed';
+import SteelPath from '#shared/embeds/SteelPathEmbed';
+import { cmds, platformMap as platformChoices, syndicates as syndicateOptions } from '#shared/resources/index';
+
+import Interaction from '../../models/Interaction';
+
+const aliases = {
+  arbi: 'arbitration',
+  baro: 'voidTrader',
+  'cycle::cetus': 'cetusCycle',
+  'cycle::earth': 'earthCycle',
+  'cycle::cambion': 'cambionCycle',
+  'cycle::vallis': 'vallisCycle',
+  conclave: 'conclaveChallenges',
+  construction: 'constructionProgress',
+  darvo: 'dailyDeals',
+  outposts: 'sentientOutposts',
+  sales: 'flashSales',
+  steelpath: 'steelPath',
+  archons: 'archonHunt',
+  syndicate: 'syndicateMissions',
+};
+const embeds = {
+  arbitration: Arbitration,
+  alerts: Alert,
+  archonHunt: Sortie,
+  cambionCycle: Cambion,
+  cetusCycle: Cycle,
+  conclaveChallenges: Conclave,
+  constructionProgress: Construction,
+  dailyDeals: Darvo,
+  earthCycle: Cycle,
+  events: Event,
+  fissures: Fissure,
+  invasions: Invasion,
+  news: News,
+  nightwave: Nightwave,
+  flashSales: Sales,
+  sentientOutposts: Outposts,
+  steelPath: SteelPath,
+  syndicate: Syndicate,
+  vallisCycle: Solaris,
+  voidTrader: VoidTrader,
+  sortie: Sortie,
+};
+const platformable = [
+  {
+    type: Types.String,
+    name: 'platform',
+    description: 'Platform to check for data',
+    choices: platformChoices,
+  },
+];
+const places = [
+  {
+    name: 'Earth',
+    value: 'earth',
+  },
+  {
+    name: 'Cetus',
+    value: 'cetus',
+  },
+  {
+    name: 'Orb Vallis',
+    value: 'vallis',
+  },
+  {
+    name: 'Cambion Drift',
+    value: 'cambion',
+  },
+];
+const syndicates = syndicateOptions.map((s) => ({
+  name: s.display,
+  value: s.display,
+}));
+const compactable = [
+  ...platformable,
+  {
+    type: Types.Boolean,
+    name: 'compact',
+    description: 'Should all data be in one embed?',
+  },
+];
+
+export default class WorldState extends Interaction {
+  static enabled = games.includes('WARFRAME');
+  static command = undefined;
+
+  static commands = [
+    {
+      ...cmds.alerts,
+      options: compactable,
+    },
+    {
+      ...cmds.arbi,
+      options: platformable,
+    },
+    {
+      ...cmds.archons,
+      options: platformable,
+    },
+    {
+      ...cmds.baro,
+      options: platformable,
+    },
+    {
+      ...cmds.conclave,
+      options: [
+        {
+          type: Types.String,
+          name: 'category',
+          description: 'Which conclave challenge category?',
+          choices: [
+            {
+              name: 'All',
+              value: 'all',
+            },
+            {
+              name: 'Daily',
+              value: 'day',
+            },
+            {
+              name: 'Weekly',
+              value: 'week',
+            },
+          ],
+        },
+        ...platformable,
+      ],
+    },
+    {
+      ...cmds.construction,
+      options: platformable,
+    },
+    {
+      ...cmds.cycle,
+      options: [
+        {
+          type: Types.String,
+          name: 'place',
+          description: 'Where do you want to know about?',
+          choices: places,
+          required: true,
+        },
+        ...platformable,
+      ],
+    },
+    {
+      ...cmds.darvo,
+      options: platformable,
+    },
+    {
+      ...cmds.events,
+      options: platformable,
+    },
+    {
+      ...cmds.fissures,
+      options: compactable,
+    },
+    {
+      ...cmds.invasions,
+      options: compactable,
+    },
+    {
+      ...cmds.news,
+      options: [
+        {
+          type: Types.String,
+          name: 'category',
+          description: 'Which news do you want?',
+          required: true,
+          choices: [
+            {
+              name: 'General News (All)',
+              value: 'news',
+            },
+            {
+              name: 'Updates',
+              value: 'updates',
+            },
+            {
+              name: 'Prime Access',
+              value: 'primeaccess',
+            },
+            {
+              name: 'Streams',
+              value: 'stream',
+            },
+          ],
+        },
+        ...platformable,
+      ],
+    },
+    {
+      ...cmds.nightwave,
+      options: platformable,
+    },
+    {
+      ...cmds.sales,
+      options: platformable,
+    },
+    {
+      ...cmds.outposts,
+      options: platformable,
+    },
+    {
+      ...cmds.steelpath,
+      options: platformable,
+    },
+    {
+      ...cmds.sortie,
+      options: platformable,
+    },
+    {
+      ...cmds.syndicate,
+      options: [
+        {
+          type: Types.String,
+          name: 'syndicate',
+          description: 'Which syndicate?',
+          required: true,
+          choices: syndicates,
+        },
+        ...platformable,
+      ],
+    },
+  ];
+
+  static async commandHandler(interaction, ctx) {
+    // args
+    const language = ctx.language || 'en';
+    const subcommand = interaction.commandName;
+    const { options } = interaction;
+    const platform = options?.getString('platform', false) || ctx.platform || 'pc';
+    const compact = options?.getBoolean?.('compact', false);
+    const ephemeral = ctx.ephemerate;
+
+    let category = options?.get?.('category')?.value || 'all';
+    const place = options?.get?.('place')?.value;
+    const syndicate = options?.get?.('syndicate')?.value;
+
+    const key = `${subcommand}${place ? `::${place}` : ''}`;
+    const field = aliases[key] || subcommand || undefined;
+
+    // validation
+    if (!field) {
+      return interaction.reply(ctx.i18n`No field`);
+    }
+
+    await interaction.deferReply(withEphemeral(ephemeral));
+    let data;
+
+    try {
+      data = await ctx.ws.get(String(field), platform, language);
+    } catch (e) {
+      return interaction.editReply(ctx.i18n`${emojify('red_tick')} Failed to obtain data, sorry`);
+    }
+    let pages;
+    let embed;
+    if (Array.isArray(data) && !data.length) return interaction.editReply(ctx.i18n`⚠️ No ${field} active.`);
+    switch (field) {
+      case 'fissures':
+        if (!compact) {
+          pages = [];
+          const eras = {
+            lith: [],
+            meso: [],
+            neo: [],
+            axi: [],
+            requiem: [],
+          };
+
+          data.forEach((fissure) => {
+            eras?.[fissure.tier.toLowerCase()]?.push(fissure);
+          });
+
+          Object.keys(eras).forEach((eraKey) => {
+            pages.push(
+              new embeds.fissures(eras[eraKey], {
+                platform,
+                i18n: ctx.i18n,
+                era: eras[eraKey][0]?.tier,
+              })
+            );
+          });
+          return Collectors.dynamic(interaction, pages, ctx);
+        }
+      case 'alerts':
+      case 'invasions':
+        if (!compact) {
+          return Collectors.dynamic(
+            interaction,
+
+            data.map((a) => new embeds[field](a, { platform, i18n: ctx.i18n })),
+            ctx
+          );
+        }
+      case 'arbitration':
+      case 'archonHunt':
+      case 'earthCycle':
+      case 'cetusCycle':
+      case 'vallisCycle':
+      case 'cambionCycle':
+      case 'dailyDeals':
+      case 'constructionProgress':
+      case 'nightwave':
+      case 'sortie':
+      case 'sentientOutposts':
+        if (!data?.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        embed = new EmbedBuilder(new embeds[field](data, { platform, i18n: ctx.i18n }));
+        return interaction.editReply({ embeds: [embed] });
+      case 'voidTrader':
+        if (!data.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        embed = new EmbedBuilder(
+          new embeds[field](data, {
+            platform,
+            onDemand: true,
+            i18n: ctx.i18n,
+          })
+        );
+        pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
+          const tembed = { ...embed };
+          tembed.fields = fieldGroup;
+          return tembed;
+        });
+        return Collectors.paged(interaction, pages, ctx);
+      case 'news':
+        category = category === 'news' ? undefined : category;
+      case 'conclaveChallenges':
+        if (!data.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        pages = createGroupedArray(data, 20).map(
+          (group) => new embeds[field](group, { category, platform, i18n: ctx.i18n })
+        );
+        return interaction.editReply({ embeds: pages });
+      case 'events':
+        if (!data.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        pages = data.map((datum) => new EmbedBuilder(new embeds[field](datum, { platform, i18n: ctx.i18n })));
+        return interaction.editReply({ embeds: pages });
+      case 'steelPath':
+        if (!data.length && !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+        }
+        embed = new embeds[field](data, { isCommand: true, i18n: ctx.i18n });
+        return interaction.editReply({ embeds: [embed] });
+      case 'syndicateMissions':
+        const missions = data?.filter((m) => {
+          return syndicate !== 'all' || m.syndicateKey === syndicate;
+        });
+        if (!missions) break;
+        pages = missions
+          .map((mission) => {
+            return new Syndicate([mission], { syndicate, i18n: ctx.i18n, platform, locale: ctx.language });
+          })
+          .filter((p) => p.title);
+        if (pages.length > 1) {
+          await interaction.followUp({ embeds: pages.splice(1, pages.length - 1) });
+          return interaction.followUp(withEphemeral(ephemeral, { embeds: pages }));
+        }
+        return interaction.editReply({ embeds: pages });
+      default:
+        break;
+    }
+    return interaction.replied || interaction.deferred
+      ? false
+      : interaction.reply(withEphemeral(true, { content: 'got it' }));
+  }
+}

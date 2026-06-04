@@ -23,11 +23,22 @@
     "nspacestd (https://github.com/nspacestd)"
   ],
   "type": "module",
-  "main": "main.js",
+  "imports": {
+    "#shared/*": "./shared/*"
+  },
+  "main": "bot/main.ts",
   "scripts": {
-    "build": "docker build . -t genesis",
-    "lint": "eslint main.js src/",
-    "lint:fix": "eslint main.js src/ --fix",
+    "build": "docker build -f bot.Dockerfile . -t genesis",
+    "build:bundle": "tsup",
+    "build:prod": "npm run build:bundle",
+    "build:ts": "tsc --noEmit",
+    "build:worker": "docker build -f notifier.Dockerfile . -t genesis-worker",
+    "dev": "DOTENV_CONFIG_PATH=.env.docker node --import dotenv/config --import tsx/esm bot/main.ts",
+    "dev:worker": "DOTENV_CONFIG_PATH=.env.docker node --import dotenv/config --import tsx/esm worker/main.ts",
+    "docker:down": "docker compose down -v",
+    "docker:up": "docker compose up --build",
+    "lint": "eslint bot/ worker/ shared/ spec/",
+    "lint:fix": "eslint bot/ worker/ shared/ spec/ --fix",
     "logs": "pm2 logs genesis",
     "logs:worker": "pm2 logs /worker.*/",
     "prepare": "husky",
@@ -37,21 +48,31 @@
     "start:logs:worker": "npm run start:worker && npm run logs:worker",
     "start:worker": "pm2 start worker.json",
     "stop": "pm2 delete genesis",
-    "test": "NODE_ENV=test mocha",
+    "test": "NODE_ENV=test node --import tsx/esm ./node_modules/mocha/bin/mocha.js",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
   },
-  "prettier": "@wfcd/eslint-config/prettier",
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "printWidth": 120,
+    "quoteProps": "as-needed",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  },
   "dependencies": {
+    "@discordjs/builders": "^1.14.1",
     "@sentry/node": "^7.120.4",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.1.0",
-    "colors": "1.4.0",
+    "chalk": "^5.6.2",
     "cron": "^4.4.0",
     "dayjs": "^1.11.21",
     "decache": "^4.6.2",
-    "discord.js": "^13.17.1",
+    "discord.js": "^14.16.0",
     "flat-cache": "^3.2.0",
     "i18n-string-templates": "^2.0.7",
     "json-query": "^2.2.2",
@@ -61,6 +82,7 @@
     "parse-duration": "^2.1.6",
     "ping": "^1.0.0",
     "random-reddit": "^2.0.3",
+    "reddit-interfaces": "^1.0.7",
     "rss-feed-emitter": "^3.2.4",
     "sql-template-strings": "^2.2.2",
     "url-exists": "^1.0.3",
@@ -70,21 +92,34 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "@eslint/js": "^9.39.1",
+    "@types/chai": "^5.2.3",
     "@types/flat-cache": "^2.0.2",
-    "@wfcd/eslint-config": "^1.6.4",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.0",
     "chai": "^6.2.2",
     "discord-api-types": "^0.38.48",
     "dotenv": "^17.4.2",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-node": "^0.4.0",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "install-peerdeps": "^3.0.3",
     "lint-staged": "^17.0.7",
-    "mocha": "^11.7.6"
+    "mocha": "^11.7.6",
+    "prettier": "^3.8.3",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.60.1"
   },
   "optionalDependencies": {
     "erlpack": "github:discord/erlpack",
     "zlib-sync": "^0.1.10"
   },
   "engines": {
-    "node": ">=16.6.2"
+    "node": ">=24.0.0"
   }
 }

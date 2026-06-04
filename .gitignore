@@ -50,8 +50,19 @@ mypm2.json
 # Commands manifest
 commands.json
 
+# Compiled TypeScript (tsup prod bundle + tsc artifacts)
+dist/
+*.tsbuildinfo
+**/*.js.map
+
+# Source is TypeScript — ignore legacy/accidental JS in source trees
+bot/**/*.js
+worker/**/*.js
+shared/**/*.js
+spec/**/*.js
+
 # Docker
-docker-compose.yaml
+.env.docker
 
 .cache/
 .run

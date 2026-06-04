@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "paths": {
+      "#shared/*": ["./shared/*"]
+    }
+  },
+  "include": ["bot/**/*", "worker/**/*", "shared/**/*", "global.d.ts", "shared/types/**/*.d.ts", "spec/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
