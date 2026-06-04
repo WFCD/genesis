@@ -2,7 +2,7 @@ import SQL from 'sql-template-strings';
 
 const getFKName = async (db, table) => {
   const q = SQL`select constraint_name from information_schema.TABLE_CONSTRAINTS
-        where information_schema.TABLE_CONSTRAINTS.TABLE_SCHEMA = 'genesis'
+        where information_schema.TABLE_CONSTRAINTS.TABLE_SCHEMA = DATABASE()
             and information_schema.TABLE_CONSTRAINTS.TABLE_NAME = ${table}
             and information_schema.TABLE_CONSTRAINTS.CONSTRAINT_TYPE = 'FOREIGN KEY';`;
   const [results] = await db.query(q);
@@ -10,7 +10,7 @@ const getFKName = async (db, table) => {
 };
 const hasPK = async (db, table) => {
   const q = SQL`select constraint_name from information_schema.TABLE_CONSTRAINTS
-        where information_schema.TABLE_CONSTRAINTS.TABLE_SCHEMA = 'genesis'
+        where information_schema.TABLE_CONSTRAINTS.TABLE_SCHEMA = DATABASE()
             and information_schema.TABLE_CONSTRAINTS.TABLE_NAME = ${table}
             and information_schema.TABLE_CONSTRAINTS.CONSTRAINT_TYPE = 'PRIMARY KEY';`;
   const [results] = await db.query(q);

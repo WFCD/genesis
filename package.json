@@ -49,6 +49,7 @@
     "start:worker": "pm2 start worker.json",
     "stop": "pm2 delete genesis",
     "test": "NODE_ENV=test node --import tsx/esm ./node_modules/mocha/bin/mocha.js",
+    "test:db": "TEST_MARIADB=1 MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306 MYSQL_USER=genesis MYSQL_PASSWORD=genesis MYSQL_DB=genesis NODE_ENV=test node --import tsx/esm ./node_modules/mocha/bin/mocha.js",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
   },

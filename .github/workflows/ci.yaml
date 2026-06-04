@@ -9,16 +9,72 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - name: Use Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version-file: '.nvmrc'
-    - name: Install Dependencies
-      run: npm ci
-    - name: Run linters
-      run: npm run lint
-    - name: Run Tests
-      run: npm test
-    - name: Build production bundle
-      run: npm run build:bundle
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run linters
+        run: npm run lint
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+  test-db:
+    name: Tests (database)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: genesis
+          MARIADB_DATABASE: genesis
+          MARIADB_USER: genesis
+          MARIADB_PASSWORD: genesis
+        ports:
+          - 3306:3306
+        options: >-
+          --tmpfs /var/lib/mysql:rw
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+          --health-start-period=30s
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run database integration tests
+        run: npm run test:db
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build production bundle
+        run: npm run build:bundle

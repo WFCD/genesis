@@ -126,8 +126,9 @@ export default class Database implements DatabaseRepositories {
       database: process.env.MYSQL_DB || 'genesis',
     };
 
-    if (process.env.NODE_ENV === 'test') {
-      instance.logger.debug('Database connection probe skipped (NODE_ENV=test)');
+    const skipProbe = process.env.NODE_ENV === 'test' && process.env.TEST_MARIADB !== '1';
+    if (skipProbe) {
+      instance.logger.debug('Database connection probe skipped (NODE_ENV=test, TEST_MARIADB≠1)');
       return instance;
     }
 
