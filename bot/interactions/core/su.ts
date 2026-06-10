@@ -5,7 +5,8 @@ import Collectors from '#shared/utilities/Collectors';
 import { withEphemeral } from '#shared/utilities/CommonFunctions';
 
 import Interaction from '../../models/Interaction';
-import InteractionHandler from '../../eventHandlers/InteractionHandler';
+
+import SuServerUI from './SuServerUI';
 
 export default class SuperUser extends Interaction {
   static elevated = true;
@@ -13,7 +14,6 @@ export default class SuperUser extends Interaction {
   static command = {
     name: 'su',
     description: 'Super User',
-    ownerOnly: true,
     defaultMemberPermissions: PermissionFlagsBits.Administrator,
     options: [
       {
@@ -91,7 +91,6 @@ export default class SuperUser extends Interaction {
   static async commandHandler(interaction, ctx) {
     const command = interaction.options.getSubcommand();
     const ephemeral = true;
-    let commandFiles;
 
     let id;
     let guild;
@@ -104,8 +103,7 @@ export default class SuperUser extends Interaction {
         break;
       case 'reload':
         await interaction.deferReply(withEphemeral(ephemeral));
-        commandFiles = await InteractionHandler.loadFiles(ctx.handler.loadedCommands);
-        await InteractionHandler.loadCommands(interaction.client.application.commands, commandFiles);
+        await ctx.handler.reloadCommands();
         return interaction.editReply('doneski');
       case 'leave':
         id = interaction.options.getString('server_id').trim();
@@ -121,18 +119,22 @@ export default class SuperUser extends Interaction {
         return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
       case 'server':
         id = interaction.options.getString('server_id').trim();
-        guild = await interaction.client.guilds.fetch(id);
-        onConfirm = async () =>
-          interaction.editReply({
-            content: undefined,
-            embeds: [new ServerInfoEmbed(guild)],
-            components: [],
-          });
-        onDeny = async () =>
-          interaction.editReply({
-            content: 'ok',
-            components: [],
-          });
+        try {
+          guild = await interaction.client.guilds.fetch(id);
+        } catch {
+          return interaction.reply(withEphemeral(ephemeral, { content: 'Guild not found or unavailable.' }));
+        }
+        onConfirm = async () => {
+          SuServerUI.rememberServerLookup(interaction, guild.id);
+          return interaction.editReply(
+            withEphemeral(ephemeral, {
+              content: undefined,
+              embeds: [new ServerInfoEmbed(guild)],
+              components: SuServerUI.serverComponents(interaction.id),
+            })
+          );
+        };
+        onDeny = async () => interaction.editReply(withEphemeral(ephemeral, { content: 'ok', components: [] }));
         return Collectors.confirmation(interaction, onConfirm, onDeny, ctx);
       case 'stats':
         const commandId = interaction.options.getString('command_id');

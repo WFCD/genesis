@@ -15,9 +15,12 @@ export default class SalesEmbed extends BaseEmbed {
     super(locale);
 
     this.color = 0x0000ff;
-    this.title = (Array.isArray(sales) ? sales[0] : sales).isPopular
+    const first = Array.isArray(sales) ? sales[0] : sales;
+    this.title = first.isPopular
       ? i18n`[${platform.toUpperCase()}] Popular Sales`
-      : i18n`[${platform.toUpperCase()}] Featured Deal`;
+      : first.isFeatured
+        ? i18n`[${platform.toUpperCase()}] Featured Deal`
+        : i18n`[${platform.toUpperCase()}] Market Sales`;
     this.thumbnail = {
       url: darvo,
     };

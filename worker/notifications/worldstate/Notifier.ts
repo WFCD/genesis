@@ -4,7 +4,8 @@ import Promise from 'bluebird';
 import logger from '#shared/utilities/Logger';
 import { syndicates } from '#shared/resources';
 import { captures, createGroupedArray, platforms, games } from '#shared/utilities/CommonFunctions';
-import { isActive, isExpired, rewardString } from '#shared/utilities/WorldState';
+import { isActive, isActiveArbitration, isExpired, rewardString } from '#shared/utilities/WorldState';
+import { resolveInvasionThumbnail } from '#shared/embeds/InvasionEmbed';
 
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils';
 import Broadcaster from '../Broadcaster';
@@ -85,7 +86,7 @@ const buildNotifiableData = (newData, notified) => {
     );
 
     data.arbitration = wrap(() =>
-      newData.arbitration && newData.arbitration.enemy && !notified.includes(asId(newData.arbitration, 'arbitration'))
+      isActiveArbitration(newData.arbitration) && !notified.includes(asId(newData.arbitration, 'arbitration'))
         ? newData.arbitration
         : undefined
     );
@@ -264,7 +265,7 @@ export default class Notifier {
         ...rawData.dailyDeals.map((d) => d.id),
         ...rawData.conclaveChallenges.map((cc) => cc.id),
         ...(rawData?.weeklyChallenges?.map((w) => w.id) ?? []),
-        rawData.arbitration && rawData.arbitration.enemy ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
+        isActiveArbitration(rawData.arbitration) ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
         ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
         ...(rawData.nightwave && isActive(rawData.nightwave)
           ? rawData.nightwave.activeChallenges.filter(isActive).map((c) => c.id)
@@ -363,7 +364,7 @@ export default class Notifier {
   }
 
   async #sendArbitration(arbitration, deps) {
-    if (!arbitration?.enemy || arbitration.nodeKey !== 'SolNode000') return;
+    if (!isActiveArbitration(arbitration)) return;
     const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.typeKey)}`;
     return this.#standardBroadcast(arbitration, { ...deps, Embed: embeds.Arbitration, type });
   }
@@ -449,25 +450,15 @@ export default class Notifier {
 
   async #sendInvasions(newInvasions, deps) {
     const type = 'invasions';
-    return Promise.mapSeries(newInvasions, async (invasion) => {
-      let thumb;
-      try {
-        thumb =
-          !(invasion.rewardTypes.includes('reactor') && invasion.rewardTypes.includes('catalyst')) &&
-          (await getThumbnailForItem(
-            invasion.attacker.reward?.itemString ?? invasion.defender.reward?.itemString ?? ''
-          ));
-      } catch (e) {
-        logger.error(e);
-      }
-      return this.#standardBroadcast(invasion, {
+    return Promise.mapSeries(newInvasions, async (invasion) =>
+      this.#standardBroadcast(invasion, {
         ...deps,
         Embed: embeds.Invasion,
         items: invasion.rewardTypes,
         type,
-        thumb,
-      });
-    });
+        thumb: resolveInvasionThumbnail(invasion),
+      })
+    );
   }
 
   async #sendNews(newNews, deps, type) {

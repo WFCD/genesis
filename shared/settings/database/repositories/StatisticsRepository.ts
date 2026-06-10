@@ -41,8 +41,7 @@ export default class StatisticsRepository {
   }
 
   async addExecution(guild: GuildRef, commandId: string) {
-    const query = SQL`INSERT IGNORE
-      INTO command_stats
+    const query = SQL`INSERT INTO command_stats (guild_id, command_id, count)
       VALUES (${guild.id}, ${commandId}, 1)
       ON DUPLICATE KEY UPDATE count=count+1;`;
     return this.deps.query(query);
@@ -72,9 +71,11 @@ export default class StatisticsRepository {
         ORDER BY count DESC`;
     }
     const [rows] = (await this.deps.query(query)) ?? [[]];
-    return (rows as { command_id: string; count: number }[]).map((r) => ({
-      id: r.command_id,
-      count: r.count,
-    }));
+    return (rows as Array<{ command_id?: string; count?: number | string }>)
+      .map((row) => ({
+        id: row.command_id ?? '',
+        count: Number(row.count) || 0,
+      }))
+      .filter((row) => row.id);
   }
 }

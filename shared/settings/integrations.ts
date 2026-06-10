@@ -135,4 +135,17 @@ export default [
   async (db) => {
     return db.query(SQL`ALTER TABLE notified_ids MODIFY platform VARCHAR(20) NOT NULL DEFAULT 'pc'`);
   },
+  async (db) => {
+    const [results] = await db.query(SQL`SHOW COLUMNS FROM command_stats LIKE 'command_id'`);
+    const type = results?.[0]?.Type as string | undefined;
+    if (type?.startsWith('varchar(20)')) {
+      await db.query(SQL`ALTER TABLE command_stats MODIFY command_id VARCHAR(255) NOT NULL`);
+    }
+  },
+  async (db) => {
+    const [results] = await db.query(SQL`SHOW COLUMNS FROM custom_commands LIKE 'ephemeral'`);
+    if (!results?.length) {
+      await db.query(SQL`ALTER TABLE custom_commands ADD COLUMN ephemeral TINYINT(1) NOT NULL DEFAULT 0`);
+    }
+  },
 ];

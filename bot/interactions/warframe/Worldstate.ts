@@ -9,21 +9,25 @@ import Conclave from '#shared/embeds/ConclaveChallengeEmbed';
 import Construction from '#shared/embeds/ConstructionEmbed';
 import Cycle from '#shared/embeds/EarthCycleEmbed';
 import Darvo from '#shared/embeds/DarvoEmbed';
+import Duviri from '#shared/embeds/DuviriEmbed';
 import Event from '#shared/embeds/EventEmbed';
 import Fissure from '#shared/embeds/FissureEmbed';
 import Invasion from '#shared/embeds/InvasionEmbed';
 import News from '#shared/embeds/NewsEmbed';
 import Sales from '#shared/embeds/SalesEmbed';
 import Sortie from '#shared/embeds/SortieEmbed';
-import Syndicate from '#shared/embeds/SyndicateEmbed';
+import Syndicate, { expandSyndicateMissionPages } from '#shared/embeds/SyndicateEmbed';
 import VoidTrader from '#shared/embeds/VoidTraderEmbed';
 import Solaris from '#shared/embeds/SolarisEmbed';
 import Nightwave from '#shared/embeds/NightwaveEmbed';
 import Outposts from '#shared/embeds/SentientOutpostEmbed';
 import SteelPath from '#shared/embeds/SteelPathEmbed';
 import { cmds, platformMap as platformChoices, syndicates as syndicateOptions } from '#shared/resources/index';
+import { isActive, isActiveArbitration } from '#shared/utilities/WorldState';
 
 import Interaction from '../../models/Interaction';
+
+import { replyDarvoDeal } from './lib/DarvoDealReply';
 
 const aliases = {
   arbi: 'arbitration',
@@ -32,6 +36,7 @@ const aliases = {
   'cycle::earth': 'earthCycle',
   'cycle::cambion': 'cambionCycle',
   'cycle::vallis': 'vallisCycle',
+  'cycle::duviri': 'duviriCycle',
   conclave: 'conclaveChallenges',
   construction: 'constructionProgress',
   darvo: 'dailyDeals',
@@ -46,6 +51,7 @@ const embeds = {
   alerts: Alert,
   archonHunt: Sortie,
   cambionCycle: Cambion,
+  duviriCycle: Duviri,
   cetusCycle: Cycle,
   conclaveChallenges: Conclave,
   constructionProgress: Construction,
@@ -88,6 +94,10 @@ const places = [
   {
     name: 'Cambion Drift',
     value: 'cambion',
+  },
+  {
+    name: 'Duviri',
+    value: 'duviri',
   },
 ];
 const syndicates = syndicateOptions.map((s) => ({
@@ -256,7 +266,7 @@ export default class WorldState extends Interaction {
     const compact = options?.getBoolean?.('compact', false);
     const ephemeral = ctx.ephemerate;
 
-    let category = options?.get?.('category')?.value || 'all';
+    const category = options?.get?.('category')?.value || 'all';
     const place = options?.get?.('place')?.value;
     const syndicate = options?.get?.('syndicate')?.value;
 
@@ -283,46 +293,91 @@ export default class WorldState extends Interaction {
       case 'fissures':
         if (!compact) {
           pages = [];
-          const eras = {
-            lith: [],
-            meso: [],
-            neo: [],
-            axi: [],
-            requiem: [],
-          };
+          const eras = data.reduce((groups, fissure) => {
+            const key = fissure.tier.toLowerCase();
+            groups[key] ??= [];
+            groups[key].push(fissure);
+            return groups;
+          }, {});
 
-          data.forEach((fissure) => {
-            eras?.[fissure.tier.toLowerCase()]?.push(fissure);
-          });
-
-          Object.keys(eras).forEach((eraKey) => {
-            pages.push(
-              new embeds.fissures(eras[eraKey], {
-                platform,
-                i18n: ctx.i18n,
-                era: eras[eraKey][0]?.tier,
-              })
-            );
-          });
+          Object.keys(eras)
+            .sort((a, b) => (eras[a][0]?.tierNum ?? 0) - (eras[b][0]?.tierNum ?? 0))
+            .forEach((eraKey) => {
+              if (!eras[eraKey].length) return;
+              pages.push(
+                new embeds.fissures(eras[eraKey], {
+                  platform,
+                  i18n: ctx.i18n,
+                  era: eras[eraKey][0]?.tier,
+                })
+              );
+            });
           return Collectors.dynamic(interaction, pages, ctx);
         }
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No ${field} active.`);
+        }
+        pages = createGroupedArray(data, 25).map(
+          (group) => new Fissure(group, { platform, i18n: ctx.i18n, locale: language })
+        );
+        if (pages.length === 1) {
+          return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
+        }
+        return Collectors.dynamic(interaction, pages, ctx);
+      case 'invasions': {
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No invasions active.`);
+        }
+        if (!compact) {
+          pages = data.map((a) => new Invasion(a, { i18n: ctx.i18n, locale: language }));
+          if (pages.length === 1) {
+            return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
+          }
+          return Collectors.paged(interaction, pages, ctx);
+        }
+        pages = createGroupedArray(data, 25).map((group) => new Invasion(group, { i18n: ctx.i18n, locale: language }));
+        if (pages.length === 1) {
+          return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
+        }
+        return Collectors.paged(interaction, pages, ctx);
+      }
       case 'alerts':
-      case 'invasions':
         if (!compact) {
           return Collectors.dynamic(
             interaction,
-
-            data.map((a) => new embeds[field](a, { platform, i18n: ctx.i18n })),
+            data.map((a) => new embeds.alerts(a, { platform, i18n: ctx.i18n })),
             ctx
           );
         }
-      case 'arbitration':
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No alerts active.`);
+        }
+        pages = createGroupedArray(data, 25).map(
+          (group) => new Alert(group, { platform, i18n: ctx.i18n, locale: language })
+        );
+        if (pages.length === 1) {
+          return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
+        }
+        return Collectors.paged(interaction, pages, ctx);
+      case 'dailyDeals': {
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`No Daily Deals Active`);
+        }
+        return replyDarvoDeal(interaction, data[0], ctx, { platform, language, ephemeral });
+      }
+      case 'arbitration': {
+        if (!isActiveArbitration(data)) {
+          return interaction.editReply(ctx.i18n`⚠️ No arbitration active.`);
+        }
+        embed = EmbedBuilder.from(new embeds.arbitration(data, { platform, i18n: ctx.i18n, locale: language }));
+        return interaction.editReply({ embeds: [embed] });
+      }
       case 'archonHunt':
       case 'earthCycle':
       case 'cetusCycle':
       case 'vallisCycle':
       case 'cambionCycle':
-      case 'dailyDeals':
+      case 'duviriCycle':
       case 'constructionProgress':
       case 'nightwave':
       case 'sortie':
@@ -332,31 +387,50 @@ export default class WorldState extends Interaction {
         }
         embed = new EmbedBuilder(new embeds[field](data, { platform, i18n: ctx.i18n }));
         return interaction.editReply({ embeds: [embed] });
-      case 'voidTrader':
-        if (!data.length && !Object.keys(data).length) {
-          return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
+      case 'voidTrader': {
+        if (!data || !Object.keys(data).length) {
+          return interaction.editReply(ctx.i18n`No Void Trader Active`);
         }
-        embed = new EmbedBuilder(
-          new embeds[field](data, {
-            platform,
-            onDemand: true,
-            i18n: ctx.i18n,
-          })
-        );
-        pages = createGroupedArray(embed.fields, 15).map((fieldGroup) => {
-          const tembed = { ...embed };
-          tembed.fields = fieldGroup;
-          return tembed;
+        const baroEmbed = new embeds.voidTrader(data, {
+          platform,
+          onDemand: true,
+          i18n: ctx.i18n,
+          locale: language,
+        });
+        const fields = baroEmbed.data.fields ?? [];
+
+        if (fields.length <= 15) {
+          return interaction.editReply({ embeds: [EmbedBuilder.from(baroEmbed)] });
+        }
+
+        pages = createGroupedArray(fields, 15).map((fieldGroup) => {
+          const page = EmbedBuilder.from(baroEmbed);
+          page.setFields(fieldGroup);
+          return page;
         });
         return Collectors.paged(interaction, pages, ctx);
-      case 'news':
-        category = category === 'news' ? undefined : category;
+      }
+      case 'news': {
+        const newsType =
+          !category || category === 'news' || category === 'all'
+            ? undefined
+            : category === 'updates'
+              ? 'update'
+              : category;
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`No News Active`);
+        }
+        pages = createGroupedArray(data, 20).map(
+          (group) => new News(group, { type: newsType, platform, i18n: ctx.i18n, locale: language })
+        );
+        return interaction.editReply({ embeds: pages });
+      }
       case 'conclaveChallenges':
         if (!data.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
         pages = createGroupedArray(data, 20).map(
-          (group) => new embeds[field](group, { category, platform, i18n: ctx.i18n })
+          (group) => new embeds.conclaveChallenges(group, { category, platform, i18n: ctx.i18n, locale: language })
         );
         return interaction.editReply({ embeds: pages });
       case 'events':
@@ -371,21 +445,54 @@ export default class WorldState extends Interaction {
         }
         embed = new embeds[field](data, { isCommand: true, i18n: ctx.i18n });
         return interaction.editReply({ embeds: [embed] });
-      case 'syndicateMissions':
-        const missions = data?.filter((m) => {
-          return syndicate !== 'all' || m.syndicateKey === syndicate;
-        });
-        if (!missions) break;
-        pages = missions
-          .map((mission) => {
-            return new Syndicate([mission], { syndicate, i18n: ctx.i18n, platform, locale: ctx.language });
-          })
-          .filter((p) => p.title);
-        if (pages.length > 1) {
-          await interaction.followUp({ embeds: pages.splice(1, pages.length - 1) });
-          return interaction.followUp(withEphemeral(ephemeral, { embeds: pages }));
+      case 'flashSales': {
+        if (!data?.length) {
+          return interaction.editReply(ctx.i18n`No Flash Sales Active`);
         }
-        return interaction.editReply({ embeds: pages });
+        const active = data.filter((sale) => isActive(sale));
+        const groups = [active.filter((sale) => sale.isFeatured), active.filter((sale) => sale.isPopular)].filter(
+          (group) => group.length
+        );
+        if (!groups.length) {
+          const discounted = active.filter((sale) => (sale.discount ?? 0) > 0);
+          if (discounted.length) groups.push(discounted);
+        }
+        if (!groups.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No sales active.`);
+        }
+        pages = groups.flatMap((group) =>
+          createGroupedArray(group, 25).map((chunk) => new Sales(chunk, { platform, i18n: ctx.i18n, locale: language }))
+        );
+        if (pages.length === 1) {
+          return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
+        }
+        return Collectors.dynamic(interaction, pages, ctx);
+      }
+      case 'syndicateMissions': {
+        const hasSyndicateContent = (mission) => (mission.jobs?.length ?? 0) > 0 || (mission.nodes?.length ?? 0) > 0;
+        const missions = data?.filter(
+          (m) => (syndicate === 'all' || m.syndicate === syndicate) && hasSyndicateContent(m)
+        );
+        if (!missions?.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No syndicate missions active.`);
+        }
+        pages = expandSyndicateMissionPages(missions)
+          .map(
+            (mission) =>
+              new Syndicate([mission], {
+                syndicate: mission.syndicate,
+                skipCheck: true,
+                i18n: ctx.i18n,
+                platform,
+                locale: ctx.language,
+              })
+          )
+          .filter((p) => p.title);
+        if (!pages.length) {
+          return interaction.editReply(ctx.i18n`⚠️ No syndicate missions active.`);
+        }
+        return Collectors.dynamic(interaction, pages, ctx);
+      }
       default:
         break;
     }

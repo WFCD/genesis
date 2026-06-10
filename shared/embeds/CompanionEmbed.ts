@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 
-import { emojify } from '#shared/utilities/CommonFunctions';
+import { emojify, itemImageUrl } from '#shared/utilities/CommonFunctions';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
@@ -13,7 +13,7 @@ export default class CompanionEmbed extends BaseEmbed {
     super(locale);
     this.setTitle(companion.name)
       .setURL(`https://wiki.warframe.com/w/${companion.name.replace(/\s/g, '_')}`)
-      .setThumbnail(`https://cdn.warframestat.us/img/${companion.imageName}`)
+      .setThumbnail(itemImageUrl(companion.imageName))
       .setDescription(companion.description)
       .addFields(
         { name: i18n`Health`, value: `${companion.health}`, inline: true },

@@ -6,6 +6,16 @@ import type { EmbedBuildOptions } from './embedOptions';
 
 const darvo = `${assetBase}/img/darvo-md.png`;
 
+/** Full-width item image shown after "Show Image" on `/darvo`. */
+export class DarvoItemImageEmbed extends BaseEmbed {
+  constructor(deal: { item: string }, imageUrl: string, { locale }: EmbedBuildOptions) {
+    super(locale);
+    this.color = 0x0000ff;
+    this.title = deal.item;
+    this.image = { url: imageUrl };
+  }
+}
+
 export default class DarvoEmbed extends BaseEmbed {
   constructor(deal, { platform, i18n, locale }: EmbedBuildOptions) {
     super(locale);

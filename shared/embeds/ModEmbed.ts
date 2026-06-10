@@ -1,4 +1,4 @@
-import { apiCdnBase, emojify, wikiBase } from '#shared/utilities/CommonFunctions';
+import { emojify, emojifyDtTags, optimizeImage, wikiBase, wfcdn } from '#shared/utilities/CommonFunctions';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
@@ -21,19 +21,19 @@ export default class ModEmbed extends BaseEmbed {
 
     // If we have a description, show it. For stance mods, etc
     if (modData.description) {
-      this.description = `_${emojify(modData.description)}_`;
+      this.description = `_${emojifyDtTags(modData.description)}_`;
     }
 
     // If we have an effect, show the max rank effect
     const statsLength = modData.levelStats && modData.levelStats.length;
     if (statsLength > 0) {
       const stats = modData.levelStats[statsLength - 1].stats.join('\n');
-      this.description = `_${emojify(stats)}_`;
+      this.description = `_${emojifyDtTags(stats)}_`;
     }
 
     this.url = `${wikiBase}${modData.name.replace(/\s/gi, '_')}`;
     this.image = {
-      url: `${apiCdnBase}img/${modData.imageName}`,
+      url: optimizeImage(wfcdn(modData.imageName)),
     };
     this.fields = [
       {

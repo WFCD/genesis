@@ -1,33 +1,74 @@
+import { formatFixedWidthTable } from '#shared/utilities/CommonFunctions';
+
 import BaseEmbed from './BaseEmbed';
 
+export type WhereisSort = 'chance' | 'item' | 'location';
+
+export type WhereisRow = {
+  item: string;
+  place: string;
+  rarity: string;
+  chance: string;
+  chanceNum: number;
+};
+
+export const WHEREIS_SORT_LABELS: Record<WhereisSort, string> = {
+  chance: 'Drop %',
+  item: 'Item',
+  location: 'Location',
+};
+
+const SORT_SUMMARY: Record<WhereisSort, string> = {
+  chance: 'sorted by drop chance (high → low)',
+  item: 'sorted by item name (A → Z)',
+  location: 'sorted by location (A → Z)',
+};
+
+export const abbrevWhereisItem = (name: string) => name.replace(/Blueprint/g, 'BP').replace(/ Prime/g, ' P.');
+
+export const formatWhereisPlace = (place: string) => (place.split('/')[1] || place).trim();
+
+export const sortWhereisRows = (results: WhereisRow[], sort: WhereisSort) => {
+  const rows = [...results];
+  switch (sort) {
+    case 'item':
+      return rows.sort((a, b) => abbrevWhereisItem(a.item).localeCompare(abbrevWhereisItem(b.item)));
+    case 'location':
+      return rows.sort((a, b) => formatWhereisPlace(a.place).localeCompare(formatWhereisPlace(b.place)));
+    default:
+      return rows.sort((a, b) => b.chanceNum - a.chanceNum);
+  }
+};
+
+const buildTable = (results: Array<Pick<WhereisRow, 'item' | 'place' | 'rarity' | 'chance'>>) => {
+  const items = results.map((result) => abbrevWhereisItem(result.item));
+  const places = results.map((result) => formatWhereisPlace(result.place));
+  const drops = results.map((result) => `${result.rarity.charAt(0)}@${result.chance}`);
+
+  return formatFixedWidthTable([
+    { header: 'Item', cells: items, maxWidth: 30, minWidth: 4 },
+    { header: 'Location', cells: places, maxWidth: 42, minWidth: 8 },
+    { header: 'Drop', cells: drops, minWidth: 6, align: 'right' },
+  ]);
+};
+
 export default class WhereisEmbed extends BaseEmbed {
-  /**
-   * @param {Object} resultsGroups details to derive data from
-   * @param {string} query The query that this search corresponds to
-   * @param {number} nameWidth Spacing for Names
-   * @param {number} relicWidth Spacing for relics
-   */
-  constructor(resultsGroups, query, nameWidth, relicWidth) {
+  constructor(
+    results: Array<Pick<WhereisRow, 'item' | 'place' | 'rarity' | 'chance'>>,
+    query: string,
+    sort: WhereisSort = 'chance'
+  ) {
     super();
-    this.fields = [];
 
-    resultsGroups.forEach((results, index) => {
-      const mappedResults = results.map((result) => {
-        const item = result.item.replace('Blueprint', 'BP').replace(' Prime', ' P.').padEnd(nameWidth, '\u2003');
-        const place = (result.place.split('/')[1] || result.place).padEnd(relicWidth, '\u2003');
-        const chance = `${result.rarity.charAt(0)}@${result.chance}`;
-        return `\`${item} | ${place} | ${chance}\``;
-      });
-
-      const value = mappedResults.join('\n');
-      if (index > 0) {
-        this.fields.push({ name: '\u200B', value });
-      } else {
-        this.description = value;
-      }
-    });
-
-    this.title = `${query}`;
+    this.title = `Where is ${query}?`;
     this.color = 0x3498db;
+
+    if (!results.length) {
+      this.description = 'No drop locations found.';
+      return;
+    }
+
+    const summary = `${results.length} location${results.length === 1 ? '' : 's'} · ${SORT_SUMMARY[sort]}`;
+    this.description = `${summary}\n${buildTable(results)}`;
   }
 }

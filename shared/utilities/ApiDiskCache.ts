@@ -48,6 +48,16 @@ export async function readStaleCache<T>(key: string): Promise<T | undefined> {
   return readEntry<T>(key)?.data;
 }
 
+export function readStaleCacheSync<T>(key: string): T | undefined {
+  return readEntry<T>(key)?.data;
+}
+
+export function writeCache<T>(key: string, data: T) {
+  writeEntry(key, data);
+}
+
+export { defaultTtlMs as apiCacheTtlMs, cacheDir as apiCacheDir };
+
 export async function getOrFetch<T>(
   key: string,
   fetchFn: () => Promise<T>,

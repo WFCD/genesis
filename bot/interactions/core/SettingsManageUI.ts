@@ -7,7 +7,16 @@ import {
   StringSelectMenuOptionBuilder,
   TextInputBuilder,
 } from '@discordjs/builders';
-import { ChannelType, TextInputStyle, type ChatInputCommandInteraction, type ModalSubmitInteraction } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType,
+  TextInputStyle,
+  type ChatInputCommandInteraction,
+  type MessageComponentInteraction,
+  type ModalSubmitInteraction,
+} from 'discord.js';
 
 import { localeMap, platformMap } from '#shared/resources/';
 import { trackableEvents, withEphemeral } from '#shared/utilities/CommonFunctions';
@@ -44,8 +53,13 @@ const parseId = (customId: string) => {
 const buildId = (channelId: string, threadId: string | undefined, component: string) =>
   `${PREFIX}:${channelId}:${threadId ?? '0'}:${component}`;
 
-type ModalChainInteraction = ModalSubmitInteraction & {
-  showModal(modal: ModalBuilder): Promise<unknown>;
+const panelLabels: Record<ManagePanel, string> = {
+  general: 'General',
+  commands: 'Commands',
+  rooms: 'Private Rooms',
+  rooms_adv: 'Room Channels',
+  tracking: 'Tracking',
+  pings: 'Pings',
 };
 
 const yesNoOptions = (isOn: boolean) => [
@@ -158,9 +172,19 @@ export default class SettingsManageUI {
         sessions.delete(sessionKey(session.userId, channelId, threadId));
         return TrackingManageUI.start(interaction, ctx, channel, thread);
       }
-      const chain = interaction as ModalChainInteraction;
-      const modal = await this.#buildPanelModal(session, ctx, channel);
-      return chain.showModal(modal);
+      return interaction.reply(
+        withEphemeral(ctx.ephemerate, {
+          content: `Click **Continue** to edit **${panelLabels[panel]}** settings.`,
+          components: [
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+              new ButtonBuilder()
+                .setCustomId(buildId(channelId, threadId, `open:${panel}`))
+                .setLabel('Continue')
+                .setStyle(ButtonStyle.Primary)
+            ),
+          ],
+        })
+      );
     }
 
     await interaction.deferReply(withEphemeral(ctx.ephemerate));
@@ -272,6 +296,32 @@ export default class SettingsManageUI {
     return interaction.editReply({ content: 'Unknown settings form.' });
   }
 
+  static async handleComponent(interaction: MessageComponentInteraction, ctx, channel, thread?) {
+    if (!interaction.isButton()) return undefined;
+
+    const { channelId, threadId, component } = parseId(interaction.customId);
+    if (channelId !== channel.id || (threadId ?? undefined) !== (thread?.id ?? undefined)) {
+      return interaction.reply(withEphemeral(true, { content: 'This control is for a different channel.' }));
+    }
+
+    if (!component.startsWith('open:')) return undefined;
+
+    const session = this.#getSession(interaction.user.id, channelId, threadId);
+    if (!session) {
+      return interaction.reply(withEphemeral(true, { content: 'Session expired — run manage again.' }));
+    }
+
+    if (interaction.user.id !== session.userId) {
+      return interaction.reply(withEphemeral(true, { content: 'Only the user who opened this form can continue.' }));
+    }
+
+    const panel = component.slice('open:'.length) as ManagePanel;
+    session.panel = panel;
+    this.#touchSession(session);
+
+    return interaction.showModal(await this.#buildPanelModal(session, ctx, channel));
+  }
+
   static #buildPickModal(channelId: string, threadId?: string) {
     return new ModalBuilder()
       .setCustomId(buildId(channelId, threadId, 'pick'))
@@ -294,6 +344,29 @@ export default class SettingsManageUI {
       .setLabel(label)
       .setStringSelectMenuComponent(
         new StringSelectMenuBuilder().setCustomId(customId).addOptions(...yesNoOptions(current ?? false))
+      );
+  }
+
+  static #optionalRoleLabel(customId: string, label: string) {
+    return new LabelBuilder()
+      .setLabel(label)
+      .setDescription('Leave empty to clear')
+      .setRoleSelectMenuComponent(
+        new RoleSelectMenuBuilder().setCustomId(customId).setMinValues(0).setMaxValues(1).setRequired(false)
+      );
+  }
+
+  static #optionalChannelLabel(customId: string, label: string, ...channelTypes: ChannelType[]) {
+    return new LabelBuilder()
+      .setLabel(label)
+      .setDescription('Leave empty to clear')
+      .setChannelSelectMenuComponent(
+        new ChannelSelectMenuBuilder()
+          .setCustomId(customId)
+          .setChannelTypes(...channelTypes)
+          .setMinValues(0)
+          .setMaxValues(1)
+          .setRequired(false)
       );
   }
 
@@ -332,12 +405,7 @@ export default class SettingsManageUI {
               )
             )
           ),
-          new LabelBuilder()
-            .setLabel('Mod role')
-            .setDescription('Leave empty to clear')
-            .setRoleSelectMenuComponent(
-              new RoleSelectMenuBuilder().setCustomId('modrole').setMinValues(0).setMaxValues(1)
-            )
+          this.#optionalRoleLabel('modrole', 'Mod role')
         );
         break;
       case 'commands':
@@ -366,26 +434,13 @@ export default class SettingsManageUI {
         break;
       case 'rooms_adv':
         modal.addLabelComponents(
-          new LabelBuilder()
-            .setLabel('Temp category')
-            .setDescription('Leave empty to clear')
-            .setChannelSelectMenuComponent(
-              new ChannelSelectMenuBuilder()
-                .setCustomId('tempCategory')
-                .setChannelTypes(ChannelType.GuildCategory)
-                .setMinValues(0)
-                .setMaxValues(1)
-            ),
-          new LabelBuilder()
-            .setLabel('Temp text channel')
-            .setDescription('Leave empty to clear')
-            .setChannelSelectMenuComponent(
-              new ChannelSelectMenuBuilder()
-                .setCustomId('tempChannel')
-                .setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
-                .setMinValues(0)
-                .setMaxValues(1)
-            )
+          this.#optionalChannelLabel('tempCategory', 'Temp category', ChannelType.GuildCategory),
+          this.#optionalChannelLabel(
+            'tempChannel',
+            'Temp text channel',
+            ChannelType.GuildText,
+            ChannelType.GuildAnnouncement
+          )
         );
         break;
       case 'pings': {
@@ -428,6 +483,10 @@ export default class SettingsManageUI {
   }
 
   static isManageModal(customId: string) {
+    return customId.startsWith(`${PREFIX}:`);
+  }
+
+  static isManageComponent(customId: string) {
     return customId.startsWith(`${PREFIX}:`);
   }
 }

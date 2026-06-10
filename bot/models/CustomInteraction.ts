@@ -11,9 +11,10 @@ export interface CustomCommandDefinition {
   call: string;
   response: string;
   guildId: string;
+  ephemeral?: boolean;
 }
 
-export default ({ call, response, guildId }: CustomCommandDefinition) =>
+export default ({ call, response, guildId, ephemeral = false }: CustomCommandDefinition) =>
   class CustomInteraction extends Interaction {
     static guildId = guildId;
 
@@ -23,6 +24,7 @@ export default ({ call, response, guildId }: CustomCommandDefinition) =>
     };
 
     static async commandHandler(interaction: ChatInputCommandInteraction, ctx: CommandContext) {
+      const replyEphemeral = ephemeral || ctx.ephemerate;
       const isSingleImg =
         response.match(URL_RE) &&
         response.match(URL_RE)!.length === 2 &&
@@ -35,8 +37,8 @@ export default ({ call, response, guildId }: CustomCommandDefinition) =>
           response.endsWith('.webm') ||
           response.endsWith('.webm'));
       if (isSingleImg) {
-        return interaction.reply(withEphemeral(ctx.ephemerate, { files: [response] }));
+        return interaction.reply(withEphemeral(replyEphemeral, { files: [response] }));
       }
-      return interaction.reply(withEphemeral(ctx.ephemerate, { content: response }));
+      return interaction.reply(withEphemeral(replyEphemeral, { content: response }));
     }
   };

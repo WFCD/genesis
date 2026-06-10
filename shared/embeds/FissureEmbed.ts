@@ -37,8 +37,8 @@ export default class FissureEmbed extends BaseEmbed {
       fissures.sort((a, b) => a.tierNum - b.tierNum);
 
       this.fields = fissures.map((f) => ({
-        name: i18n`${f.missionType} ${era ? '' : f.tier}`,
-        value: `${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`,
+        name: String(i18n`${f.missionType} ${era ? '' : f.tier}`),
+        value: String(`${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`),
       }));
     } else if (fissures.length === 0) {
       this.description = i18n`Currently no fissures`;

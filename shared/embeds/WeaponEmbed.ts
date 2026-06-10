@@ -1,4 +1,4 @@
-import { emojify } from '#shared/utilities/CommonFunctions';
+import { emojify, emojifyDtTags, getEmoji } from '#shared/utilities/CommonFunctions';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
@@ -16,7 +16,7 @@ const mapDamage = (attacks) =>
   (
     attacks?.map((a, index) => {
       const damage = Object.entries(a.damage)
-        .map(([key, value]) => emojify(`\u2003${key} ${value}`))
+        .map(([key, value]) => `\u2003${getEmoji(key.toLowerCase()) || key} ${value}`)
         .join('\n');
       return `**${a.name || `Attack ${index + 1}`}**\n${damage}`;
     }) || []
@@ -105,7 +105,7 @@ export default class WeaponEmbed extends BaseEmbed {
           values.push(i18n`**Reload:** ${weapon.secondary.reload}`);
         }
         if (weapon.secondary.damage) {
-          values.push(i18n`**Damage:** ${emojify(weapon.secondary.damage || '-')}`);
+          values.push(i18n`**Damage:** ${emojifyDtTags(weapon.secondary.damage || '-')}`);
         }
         if (weapon.secondary.impact) {
           values.push(i18n`**Impact:** ${weapon.secondary.impact}`);

@@ -48,6 +48,47 @@ export const isExpired = (data: TimedData) => {
   }
 };
 
+/** Discord rejects embed timestamps after ~275760; API uses that as an inactive placeholder. */
+const DISCORD_MAX_TIMESTAMP_MS = Date.parse('275760-09-12T00:00:00.000Z');
+
+export type ArbitrationData = {
+  expired?: boolean;
+  node?: string;
+  nodeKey?: string;
+  type?: string;
+  typeKey?: string;
+  enemy?: string;
+  expiry?: string | number;
+};
+
+/** True when worldstate has a live arbitration (not the SolNode000 placeholder). */
+export const isActiveArbitration = (arbitration: ArbitrationData | null | undefined) => {
+  if (!arbitration || typeof arbitration !== 'object') return false;
+  if (arbitration.expired === true) return false;
+  if (arbitration.nodeKey === 'SolNode000' || arbitration.node === 'SolNode000') return false;
+  if (arbitration.type === 'Unknown' || arbitration.typeKey === 'Unknown') return false;
+  return Boolean(arbitration.node || arbitration.type);
+};
+
+export const parseArbitrationExpiry = (expiry: unknown): number | null => {
+  if (expiry == null) return null;
+
+  if (typeof expiry === 'number') {
+    if (!Number.isFinite(expiry) || expiry <= 0) return null;
+    const ms = expiry < 1e12 ? expiry * 1000 : expiry;
+    return ms > DISCORD_MAX_TIMESTAMP_MS ? null : ms;
+  }
+
+  if (typeof expiry === 'string') {
+    if (/^\+|275760/.test(expiry)) return null;
+    const ms = Date.parse(expiry);
+    if (Number.isNaN(ms) || ms > DISCORD_MAX_TIMESTAMP_MS) return null;
+    return ms;
+  }
+
+  return null;
+};
+
 export const rewardString = (reward: Reward | undefined, includeCredits = true) => {
   if (!reward) return '';
   if (reward.asString) return reward.asString;

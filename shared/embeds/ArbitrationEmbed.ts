@@ -1,4 +1,5 @@
 import { assetBase } from '#shared/utilities/CommonFunctions';
+import { eta, isActiveArbitration, parseArbitrationExpiry } from '#shared/utilities/WorldState';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
@@ -18,11 +19,21 @@ export default class ArbitrationEmbed extends BaseEmbed {
     this.thumbnail.url = arbiThumb;
     this.color = 0x742725;
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Arbitration`;
+
+    const mission = [arbitration.enemy, arbitration.type].filter(Boolean).join(' • ') || arbitration.type || '???';
+    const expiryMs = parseArbitrationExpiry(arbitration.expiry);
+    const remaining = expiryMs != null ? eta({ expiry: new Date(expiryMs).toISOString() }) : eta(arbitration);
+
     this.fields.push({
       name: arbitration.node || '???',
-      value: arbitration.type || '???',
+      value: remaining ? `${mission}\n${i18n`Expires in ${remaining}`}` : mission,
     });
-    this.footer.text = i18n`Expires`;
-    this.timestamp = arbitration.expiry;
+
+    if (expiryMs != null) {
+      this.footer.text = i18n`Expires`;
+      this.timestamp = expiryMs;
+    } else if (isActiveArbitration(arbitration)) {
+      this.footer.text = i18n`Active`;
+    }
   }
 }

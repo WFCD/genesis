@@ -1,6 +1,6 @@
 import type { APIEmbedField } from 'discord.js';
 
-import { assetBase, emojify } from '#shared/utilities/CommonFunctions';
+import { assetBase, cdn, emojify, emojifyDtTags, itemImageUrl } from '#shared/utilities/CommonFunctions';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
@@ -18,14 +18,13 @@ export default class FrameEmbed extends BaseEmbed {
   constructor(frame, { frames = [], i18n, locale }: EmbedBuildOptions) {
     super(locale);
 
-    this.thumbnail = {
-      url: `${assetBase}/img/arcane.png`,
-    };
     if (frame && typeof frame !== 'undefined') {
       this.title = frame.name;
       this.url = frame.wikiaUrl;
-      this.thumbnail.url = frame.wikiaThumbnail;
-      this.description = `_${frame.description}_`;
+      this.thumbnail = {
+        url: frame.wikiaThumbnail || (frame.imageName ? itemImageUrl(frame.imageName) : cdn('img/arcane.png')),
+      };
+      this.description = `_${emojifyDtTags(frame.description)}_`;
       if (frame.location) {
         this.footer = { text: i18n`Drops from: ${frame.location}` };
       }
@@ -43,32 +42,32 @@ export default class FrameEmbed extends BaseEmbed {
         frame.passiveDescription
           ? {
               name: i18n`Passive`,
-              value: `_${frame.passiveDescription}_`,
+              value: `_${emojifyDtTags(frame.passiveDescription)}_`,
             }
           : undefined,
         {
           name: i18n`Minimum Mastery`,
-          value: `${frame.masteryReq || i18n`Unranked`} ${emojify('mastery_rank')}`,
+          value: `${frame.masteryReq ?? i18n`Unranked`} ${emojify('mastery_rank')}`,
           inline: true,
         },
         {
           name: i18n`Health`,
-          value: frame.health || 'N/A',
+          value: frame.health != null ? String(frame.health) : 'N/A',
           inline: true,
         },
         {
           name: i18n`Shields`,
-          value: frame.shield || 'N/A',
+          value: frame.shield != null ? String(frame.shield) : 'N/A',
           inline: true,
         },
         {
           name: i18n`Armor`,
-          value: frame.armor || 'N/A',
+          value: frame.armor != null ? String(frame.armor) : 'N/A',
           inline: true,
         },
         {
           name: i18n`Power`,
-          value: frame.power || 'N/A',
+          value: frame.power != null ? String(frame.power) : 'N/A',
           inline: true,
         },
         {
@@ -96,10 +95,14 @@ export default class FrameEmbed extends BaseEmbed {
       ].filter(Boolean) as APIEmbedField[];
 
       this.fields.push(
-        ...(frame?.abilities?.map((ability) => ({ name: ability.name, value: `_${ability.description}_` })) || [])
+        ...(frame?.abilities?.map((ability) => ({
+          name: ability.name,
+          value: `_${emojifyDtTags(ability.description)}_`,
+        })) || [])
       );
       this.fields = this.fields.filter((field) => field && field?.value?.length);
     } else {
+      this.thumbnail = { url: `${assetBase}/img/arcane.png` };
       this.title = i18n`Available Warframes`;
       this.fields = [
         { name: '\u200B', value: (frames as Array<{ name: string }>).map((stat) => stat.name).join('\n') },

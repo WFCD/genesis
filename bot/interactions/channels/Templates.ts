@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType as Types, ChannelType, PermissionFlagsBits } from 'discord.js';
 
 import BaseEmbed from '#shared/embeds/BaseEmbed';
-import { games, withEphemeral } from '#shared/utilities/CommonFunctions';
+import { formatFixedWidthTable, games, withEphemeral } from '#shared/utilities/CommonFunctions';
 import { cmds } from '#shared/resources/index';
 
 import Interaction from '../../models/Interaction';
@@ -76,33 +76,50 @@ export default class Templates extends Interaction {
         return interaction.reply(
           withEphemeral(ctx.ephemerate, { content: ctx.i18n`${channel} removed as a template.` })
         );
-      case 'list':
+      case 'list': {
         const templateIds = await ctx.settings.dynamicVoice.getTemplates([interaction.guild]);
-        const templates = [];
-        templateIds.forEach((templateId) => {
-          if (interaction.guild.channels.cache.has(templateId)) {
-            templates.push(interaction.guild.channels.cache.get(templateId));
-          }
-        });
+        const templates = templateIds
+          .map((templateId) => interaction.guild.channels.cache.get(templateId))
+          .filter((channel) => channel?.type === ChannelType.GuildVoice);
+
         const embed = new BaseEmbed();
-        const longestName = templates.length
-          ? templates.map((t) => t.name).reduce((a, b) => (a.length > b.length ? a : b))
-          : '';
-        embed.description = `\`${'Template'.padEnd(longestName.length, '\u2003')} | ${'# ch'.padStart(
-          5,
-          '\u2003'
-        )} | # Empty\`\n`;
-        embed.description += (
-          await Promise.all(
-            templates.map(async (t) => {
-              const instancesRes = await ctx.settings.dynamicVoice.getInstances(t);
-              return `\`${t.name.padEnd(longestName.length, '\u2003')} | ${String(
-                instancesRes.instances.length
-              ).padStart(5, '\u2003')} | ${String(instancesRes.remainingEmpty).padStart(7, '\u2003')}\``;
-            })
-          )
-        ).join('\n');
+        embed.title = ctx.i18n`Voice Templates`;
+
+        if (!templates.length) {
+          embed.description = ctx.i18n`No templates configured.`;
+          return interaction.reply(withEphemeral(ctx.ephemerate, { embeds: [embed] }));
+        }
+
+        const instances = await Promise.all(
+          templates.map((template) => ctx.settings.dynamicVoice.getInstances(template))
+        );
+
+        embed.description = [
+          ctx.i18n`${templates.length} template${templates.length === 1 ? '' : 's'}`,
+          formatFixedWidthTable([
+            {
+              header: 'Template',
+              cells: templates.map((template) => template.name),
+              maxWidth: 32,
+              minWidth: 8,
+            },
+            {
+              header: '# ch',
+              cells: instances.map((row) => String(row.instances?.length ?? 0)),
+              minWidth: 4,
+              align: 'right',
+            },
+            {
+              header: '# Empty',
+              cells: instances.map((row) => String(row.remainingEmpty ?? 0)),
+              minWidth: 7,
+              align: 'right',
+            },
+          ]),
+        ].join('\n');
+
         return interaction.reply(withEphemeral(ctx.ephemerate, { embeds: [embed] }));
+      }
       case 'clear':
         if (!(await ctx.settings.dynamicVoice.isTemplate(channel))) {
           return interaction.reply(withEphemeral(ctx.ephemerate, { content: ctx.i18n`That is not a template` }));

@@ -1,11 +1,6 @@
 // @ts-nocheck -- incremental TS migration; worker notification runtime
-import util from 'node:util';
-
-import urlExists from 'url-exists';
-import fetch from 'node-fetch';
-
+import { resolveItemImageUrl } from '#shared/utilities/CommonFunctions';
 import createI18n from '#shared/utilities/i18n';
-import { apiBase, apiCdnBase } from '#shared/utilities/CommonFunctions';
 import { i18n as i18nBundle, locales } from '#shared/resources/index';
 import Alert from '#shared/embeds/AlertEmbed';
 import Arbitration from '#shared/embeds/ArbitrationEmbed';
@@ -34,8 +29,6 @@ export const i18ns = {};
 locales.forEach((locale) => {
   i18ns[locale] = createI18n(i18nBundle, locale);
 });
-
-export const exists = util.promisify(urlExists);
 
 export const embeds = {
   Alert,
@@ -77,15 +70,8 @@ export const getThumbnailForItem = async (query, fWiki) => {
         /\d*\s*((?:\w|\s)*)\s*(?:blueprint|receiver|stock|barrel|blade|gauntlet|upper limb|lower limb|string|guard|neuroptics|systems|chassis|link)?/gi,
         '$1'
       )
-      .trim()
-      .toLowerCase();
-    const results = await fetch(`${apiBase}/items/search/${encodeURIComponent(fq)}/?language=en`).then((d) => d.json());
-    if (results.length) {
-      const url = `${apiCdnBase}img/${results[0].imageName}`;
-      if (await exists(url)) {
-        return url;
-      }
-    }
+      .trim();
+    return resolveItemImageUrl(fq, 128);
   }
   return '';
 };

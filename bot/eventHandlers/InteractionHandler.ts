@@ -6,6 +6,7 @@ import decache from 'decache';
 import {
   ApplicationCommandManager,
   ApplicationCommandPermissionType,
+  AutocompleteInteraction,
   ChatInputCommandInteraction,
   Events,
   Guild,
@@ -27,7 +28,10 @@ import BaseHandler from '../models/BaseEventHandler';
 import CustomInteraction, { type CustomCommandDefinition } from '../models/CustomInteraction';
 import Interaction, { type InteractionCommandDefinition } from '../models/Interaction';
 import SettingsManageUI from '../interactions/core/SettingsManageUI';
+import SuServerUI from '../interactions/core/SuServerUI';
 import TrackingManageUI from '../interactions/tracking/TrackingManageUI';
+import RoomsManageUI from '../interactions/channels/RoomsManageUI';
+import BuildsSearchUI from '../interactions/warframe/BuildsSearchUI';
 import type Genesis from '../bot';
 
 const whitelistedGuilds: string[] = []; // (process.env.WHITELISTED_GUILDS || '').split(',');
@@ -41,6 +45,7 @@ type InteractionConstructor = typeof Interaction & {
   name?: string;
   command?: InteractionCommandDefinition;
   commands?: InteractionCommandDefinition[];
+  autocompleteHandler?: (interaction: AutocompleteInteraction, ctx: CommandContext) => Promise<unknown>;
 };
 
 type CustomInteractionConstructor = InteractionConstructor & {
@@ -92,8 +97,12 @@ export default class InteractionHandler extends BaseHandler {
     files = files.filter((f) => /\.(js|ts)$/.test(f));
 
     categories.forEach((category) => {
+      const categoryDir = path.join(handlersDir, category);
       files = files.concat(
-        fs.readdirSync(path.join(handlersDir, category)).map((f) => path.join(path.resolve(handlersDir, category, f)))
+        fs
+          .readdirSync(categoryDir)
+          .filter((f) => /\.(js|ts)$/.test(f))
+          .map((f) => path.join(path.resolve(categoryDir, f)))
       );
     });
 
@@ -105,8 +114,8 @@ export default class InteractionHandler extends BaseHandler {
       await Promise.all(
         files.map(async (f) => {
           try {
-            const Handler = (await import(f)).default as InteractionConstructor;
-            return Handler.prototype instanceof Interaction ? Handler : undefined;
+            const Handler = (await import(f)).default as InteractionConstructor | undefined;
+            return Handler?.prototype instanceof Interaction ? Handler : undefined;
           } catch (e) {
             logger.error(e);
             return undefined;
@@ -116,6 +125,78 @@ export default class InteractionHandler extends BaseHandler {
     ).filter((h): h is InteractionConstructor => Boolean(h));
 
     return reloadedCommands;
+  }
+
+  get loadedCommands() {
+    return this.#loadedCommands;
+  }
+
+  #isBotOwner(userId: string) {
+    const configuredOwner = this.bot.owner?.trim();
+    if (configuredOwner && userId === configuredOwner) return true;
+
+    const appOwner = this.client.application?.owner;
+    if (!appOwner) return false;
+    if ('id' in appOwner && appOwner.id === userId) return true;
+    if ('members' in appOwner) return appOwner.members.some((member) => member.id === userId);
+    return false;
+  }
+
+  #canUseOwnerCommand(interaction: ChatInputCommandInteraction) {
+    if (!this.#isBotOwner(interaction.user.id)) return false;
+    const controlGuildId = process.env.CONTROL_GUILD_ID?.trim();
+    if (controlGuildId && interaction.guildId !== controlGuildId) return false;
+    return true;
+  }
+
+  static sanitizeCommandDefinition(command: InteractionCommandDefinition) {
+    const sanitized = { ...command } as Record<string, unknown>;
+    delete sanitized.ownerOnly;
+    delete sanitized.elevated;
+    delete sanitized.enabled;
+    return sanitized as InteractionCommandDefinition;
+  }
+
+  static buildCommandPayloads(loadedFiles: InteractionConstructor[]) {
+    const payloads = loadedFiles
+      .filter((cmd) => cmd.enabled && !cmd.ownerOnly)
+      .map((cmd) => (cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands))
+      .flat()
+      .filter(Boolean);
+
+    const suHandler = loadedFiles.find((cmd) => cmd.enabled && commandName(cmd) === 'su' && cmd.ownerOnly);
+    if (suHandler?.command) {
+      payloads.push(InteractionHandler.sanitizeCommandDefinition(suHandler.command));
+    }
+
+    return payloads;
+  }
+
+  async #removeGuildScopedSu() {
+    const controlGuildId = process.env.CONTROL_GUILD_ID?.trim();
+    if (!controlGuildId) return;
+
+    try {
+      await this.client.application.fetch();
+      const guildCommands = await this.client.application.commands.fetch({ guildId: controlGuildId });
+      const su = guildCommands.find((entry) => entry.name === 'su');
+      if (!su) return;
+      await this.client.application.commands.delete(su.id, controlGuildId);
+      this.logger.info(`Removed legacy guild-scoped /su from ${controlGuildId}`);
+    } catch (error) {
+      this.logger.debug(`Could not remove guild-scoped /su: ${error}`);
+    }
+  }
+
+  /** @deprecated Guild-scoped registration hid /su behind stale permission overwrites; use global payloads instead. */
+  async registerSuCommand() {
+    await this.#removeGuildScopedSu();
+  }
+
+  async reloadCommands() {
+    this.#loadedCommands = await InteractionHandler.loadFiles(this.#loadedCommands);
+    await InteractionHandler.loadCommands(this.client?.application?.commands, this.#loadedCommands);
+    await this.#removeGuildScopedSu();
   }
 
   async #setGuildPerms(guild: Guild, rolesOverride?: string | boolean) {
@@ -130,10 +211,11 @@ export default class InteractionHandler extends BaseHandler {
     );
 
     const rawCommandsToSet = this.#loadedCommands.filter((command) => {
-      const includeIfSu = commandName(command) === 'su' ? guild.id === process.env?.CONTROL_GUILD_ID : true;
-      const isElevated =
-        command.elevated === true || (commandName(command) !== 'su' && !command?.command?.defaultMemberPermissions);
-      return includeIfSu || isElevated;
+      if (commandName(command) === 'su') {
+        return guild.id === process.env?.CONTROL_GUILD_ID;
+      }
+      const isElevated = command.elevated === true || !command?.command?.defaultMemberPermissions;
+      return isElevated;
     });
 
     // at some point append custom commands as interactions
@@ -252,13 +334,7 @@ export default class InteractionHandler extends BaseHandler {
   }
 
   static async loadCommands(commands: ApplicationCommandManager | undefined, loadedFiles: InteractionConstructor[]) {
-    const cmds = loadedFiles
-      .filter((cmd) => cmd.enabled && !cmd.ownerOnly)
-      .map((cmd) => {
-        return cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands;
-      })
-      .flat()
-      .filter(Boolean);
+    const cmds = InteractionHandler.buildCommandPayloads(loadedFiles);
     if (whitelistedGuilds.length) {
       await Promise.all(
         whitelistedGuilds.map(async (gid) => {
@@ -320,7 +396,11 @@ export default class InteractionHandler extends BaseHandler {
     this.#loadedCommands = await InteractionHandler.loadFiles(this.#loadedCommands);
     try {
       await InteractionHandler.loadCommands(this.client?.application?.commands, this.#loadedCommands);
+      await this.#removeGuildScopedSu();
       await this.loadCustomCommands();
+      if (this.#loadedCommands.some((command) => commandName(command) === 'su' && command.ownerOnly)) {
+        this.logger.info('Registered /su globally (owner-only at runtime)');
+      }
     } catch (e) {
       this.logger.error(e);
     }
@@ -364,6 +444,31 @@ export default class InteractionHandler extends BaseHandler {
     const interaction = args[0];
     if (!this.ready || !interaction) return undefined;
 
+    if (interaction instanceof MessageComponentInteraction && SuServerUI.isComponent(interaction.customId)) {
+      if (!this.#isBotOwner(interaction.user.id)) {
+        return interaction.reply(withEphemeral(true, { content: 'No Access' }));
+      }
+      if (!interaction.isButton()) {
+        return interaction.reply(withEphemeral(true, { content: 'Unsupported control.' }));
+      }
+      const ctx = (await this.settings.getCommandContext(
+        interaction.channel || interaction.user,
+        interaction.user
+      )) as CommandContext;
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      const intLang = interaction.locale.slice(0, 2);
+      if (locales.includes(intLang)) {
+        ctx.language = intLang;
+      } else if (!locales.includes(ctx.language)) {
+        ctx.language = 'en';
+      }
+      ctx.i18n = createI18n(i18n, ctx.language);
+      return SuServerUI.handleComponent(interaction, ctx);
+    }
+
     if (interaction instanceof ModalSubmitInteraction && SettingsManageUI.isManageModal(interaction.customId)) {
       if (!this.#canManageGuild(interaction)) {
         return interaction.reply(withEphemeral(true, { content: 'No Access' }));
@@ -374,6 +479,21 @@ export default class InteractionHandler extends BaseHandler {
         return interaction.reply(withEphemeral(true, { content: 'Channel no longer available.' }));
       }
       return SettingsManageUI.handleModalSubmit(interaction, resolved.ctx, resolved.channel, resolved.thread);
+    }
+
+    if (
+      interaction instanceof MessageComponentInteraction &&
+      SettingsManageUI.isManageComponent(interaction.customId)
+    ) {
+      if (!this.#canManageGuild(interaction)) {
+        return interaction.reply(withEphemeral(true, { content: 'No Access' }));
+      }
+      const parts = interaction.customId.split(':');
+      const resolved = await this.#manageGuildContext(interaction, parts[1], parts[2] === '0' ? undefined : parts[2]);
+      if (!resolved) {
+        return interaction.reply(withEphemeral(true, { content: 'Channel no longer available.' }));
+      }
+      return SettingsManageUI.handleComponent(interaction, resolved.ctx, resolved.channel, resolved.thread);
     }
 
     if (
@@ -391,6 +511,75 @@ export default class InteractionHandler extends BaseHandler {
       return TrackingManageUI.handleComponent(interaction, resolved.ctx, resolved.channel, resolved.thread);
     }
 
+    if (interaction instanceof ModalSubmitInteraction && RoomsManageUI.isManageModal(interaction.customId)) {
+      if (!interaction.guild) return undefined;
+      const parts = interaction.customId.split(':');
+      const ownerId = parts[2];
+      if (interaction.user.id !== ownerId) {
+        return interaction.reply(withEphemeral(true, { content: 'Only the room owner can use this panel.' }));
+      }
+      const ctx = (await this.settings.getCommandContext(
+        interaction.channel || interaction.user,
+        interaction.user
+      )) as CommandContext;
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      return RoomsManageUI.handleModalSubmit(interaction, ctx);
+    }
+
+    if (interaction instanceof MessageComponentInteraction && RoomsManageUI.isManageComponent(interaction.customId)) {
+      if (!interaction.guild) return undefined;
+      const parts = interaction.customId.split(':');
+      const ownerId = parts[2];
+      if (interaction.user.id !== ownerId) {
+        return interaction.reply(withEphemeral(true, { content: 'Only the room owner can use this panel.' }));
+      }
+      const ctx = (await this.settings.getCommandContext(
+        interaction.channel || interaction.user,
+        interaction.user
+      )) as CommandContext;
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      return RoomsManageUI.handleComponent(interaction, ctx);
+    }
+
+    if (interaction instanceof MessageComponentInteraction && BuildsSearchUI.isManageComponent(interaction.customId)) {
+      const ctx = (await this.settings.getCommandContext(
+        interaction.channel || interaction.user,
+        interaction.user
+      )) as CommandContext;
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      const intLang = interaction.locale.slice(0, 2);
+      if (locales.includes(intLang)) {
+        ctx.language = intLang;
+      } else if (!locales.includes(ctx.language)) {
+        ctx.language = 'en';
+      }
+      ctx.i18n = createI18n(i18n, ctx.language);
+      return BuildsSearchUI.handleComponent(interaction, ctx);
+    }
+
+    if (interaction instanceof AutocompleteInteraction) {
+      const match = this.#loadedCommands.find((c) => c?.command?.name === interaction.commandName);
+      if (!match?.autocompleteHandler) return undefined;
+      const ctx = (await this.settings.getCommandContext(
+        interaction.channel || interaction.user,
+        interaction.user
+      )) as CommandContext;
+      ctx.settings = this.settings;
+      ctx.ws = ws;
+      ctx.handler = this;
+      ctx.logger = this.logger;
+      return match.autocompleteHandler(interaction, ctx);
+    }
+
     if (!(interaction instanceof ChatInputCommandInteraction)) return undefined;
 
     this.logger.debug(`Running ${interaction.id} for ${this.event}`);
@@ -405,8 +594,9 @@ export default class InteractionHandler extends BaseHandler {
     );
 
     const canManageGuild = this.#canManageGuild(interaction);
-    const noAccess =
-      (match?.elevated && !canManageGuild) || (match?.ownerOnly && interaction.user.id !== this.bot.owner);
+    const noAccess = match?.ownerOnly
+      ? !this.#canUseOwnerCommand(interaction)
+      : Boolean(match?.elevated && !canManageGuild);
 
     if (noAccess) {
       return interaction.reply(withEphemeral(true, { content: 'No Access' }));
@@ -429,7 +619,11 @@ export default class InteractionHandler extends BaseHandler {
     }
     ctx.i18n = createI18n(i18n, ctx.language);
 
-    if (interaction.guild) ctx.settings.statistics.addExecution(interaction.guild, commandId(interaction));
+    if (interaction.guild) {
+      void ctx.settings.statistics.addExecution(interaction.guild, commandId(interaction)).catch((error) => {
+        ctx.logger?.error?.(error);
+      });
+    }
 
     return match
       ? match?.commandHandler?.(interaction, ctx)

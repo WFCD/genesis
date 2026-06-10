@@ -9,10 +9,13 @@ import {
   createChunkedEmbed,
   embedDefaults,
   emojify,
+  ensureEmbedsWithinLimit,
+  formatFixedWidthTable,
   games,
   timeDeltaToString,
   withEphemeral,
 } from '#shared/utilities/CommonFunctions';
+import Collectors from '#shared/utilities/Collectors';
 import { cmds, localeMap, platformMap } from '#shared/resources/index';
 
 import Interaction from '../../models/Interaction';
@@ -229,7 +232,7 @@ export default class Settings extends Interaction {
    * @param {Discord.ThreadChannel} [thread] Optional thread
    * @returns {Promise<Array<Discord.MessageEmbed>>}
    */
-  static async #gather(ctx, channel, thread) {
+  static async gatherEmbedPages(ctx, channel, thread, guildId?: string | null) {
     const page = new EmbedBuilder(embedDefaults);
     const settings = await ctx.settings.channels.getSettings(channel, [
       'language',
@@ -380,18 +383,23 @@ export default class Settings extends Interaction {
     checkAndMergeEmbeds(embeds, trackedEvents);
     checkAndMergeEmbeds(embeds, createChunkedEmbed(pingParts, 'Pings', '\n'));
 
-    const stats = await ctx.settings.statistics.getGuildStats(channel.guild);
+    const stats = await ctx.settings.statistics.getGuildStats({
+      id: guildId ?? channel.guild?.id ?? channel.guildId,
+    });
+    const topStats = stats.slice(0, 10);
     embeds.push(
       new EmbedBuilder({
         title: ctx.i18n`Most Used Commands`,
         color: 0x444444,
-        description: stats
-          .filter((s, i) => i < 10)
-          .map((s) => `\`${s.id.padEnd(25, ' ')} | ${`${s.count}`.padStart(4, ' ')}\``)
-          .join('\n'),
+        description: topStats.length
+          ? formatFixedWidthTable([
+              { header: 'Command', cells: topStats.map((row) => row.id), maxWidth: 40, minWidth: 8 },
+              { header: 'Uses', cells: topStats.map((row) => String(row.count)), minWidth: 4, align: 'right' },
+            ])
+          : '_No command usage recorded yet._',
       })
     );
-    return embeds;
+    return ensureEmbedsWithinLimit(embeds);
   }
 
   static enabled = true;
@@ -468,7 +476,11 @@ export default class Settings extends Interaction {
       return SettingsManageUI.start(interaction, ctx, channel, thread);
     }
 
-    await interaction.deferReply();
+    if (action === 'get') {
+      await interaction.deferReply(withEphemeral(ephemeral));
+    } else {
+      await interaction.deferReply();
+    }
     let field = options.getSubcommand(false);
     let value = (options?.get?.('value') || options?.get?.('channel') || options.get?.('platform'))?.value;
     const platform = options.get?.('platform')?.value;
@@ -529,13 +541,8 @@ export default class Settings extends Interaction {
             return interaction.editReply(options?.getSubcommand());
         }
       case 'get': {
-        const pages = await this.#gather(ctx, channel, thread);
-        const embeds = pages.slice(0, 10).map((page) => EmbedBuilder.from(page));
-        const payload = withEphemeral(ephemeral, { embeds });
-        if (pages.length > 10) {
-          payload.content = 'Showing first 10 sections. Use `/settings manage` to edit core settings.';
-        }
-        return interaction.editReply(payload);
+        const pages = await this.gatherEmbedPages(ctx, channel, thread, interaction.guildId);
+        return Collectors.dynamic(interaction, pages, ctx);
       }
       case 'diag':
         const embed = new EmbedBuilder();

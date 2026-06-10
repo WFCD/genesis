@@ -1,31 +1,31 @@
 export namespace WorldState {
   export enum Faction {
-    CORPUS = "Corpus",
-    GRINEER = "Grineer",
-    INFESTATION = "Infestation",
-    OROKIN = "Orokin",
-    SENTIENT = "Sentient",
-    STALKER = "Stalker",
-    TENNO = "Tenno",
-    NEUTRAL = "Neutral",
-    WILD = "Wild",
-    CORRUPTED = "Corrupted"
+    CORPUS = 'Corpus',
+    GRINEER = 'Grineer',
+    INFESTATION = 'Infestation',
+    OROKIN = 'Orokin',
+    SENTIENT = 'Sentient',
+    STALKER = 'Stalker',
+    TENNO = 'Tenno',
+    NEUTRAL = 'Neutral',
+    WILD = 'Wild',
+    CORRUPTED = 'Corrupted',
   }
 
   export enum Syndicate {
-    ARBITERS = "Arbiters of Hexis",
-    CEPHALON = "Cephalon Suda",
-    LOKA = "New Loka",
-    MERIDIAN = "Steel Meridian",
-    PERRIN = "Perrin Sequence",
-    VEIL = "Red Veil",
-    SIMARIS = "Cephalon Simaris",
-    ENTRATI = "Entrati",
-    SOLARIS = "Solaris United",
-    VENTKIDS = "Ventkids",
-    NECRALOID = "Necraloid",
-    OSTRON = "Ostron",
-    QUILLS = "Quills",
+    ARBITERS = 'Arbiters of Hexis',
+    CEPHALON = 'Cephalon Suda',
+    LOKA = 'New Loka',
+    MERIDIAN = 'Steel Meridian',
+    PERRIN = 'Perrin Sequence',
+    VEIL = 'Red Veil',
+    SIMARIS = 'Cephalon Simaris',
+    ENTRATI = 'Entrati',
+    SOLARIS = 'Solaris United',
+    VENTKIDS = 'Ventkids',
+    NECRALOID = 'Necraloid',
+    OSTRON = 'Ostron',
+    QUILLS = 'Quills',
   }
 
   export interface CountedItem {
@@ -56,6 +56,7 @@ export namespace WorldState {
     cetusCycle: CetusCycle;
     vallisCycle: VallisCycle;
     cambionCycle: CambionCycle;
+    duviriCycle: DuviriCycle;
     nightwave: Nightwave;
     dailyMods: DailyMod[];
     sorties: Sortie[];
@@ -81,6 +82,18 @@ export namespace WorldState {
     bounty: SyndicateMission;
   }
 
+  export interface DuviriCycle {
+    id: string;
+    expiry: string;
+    activation: string;
+    state: 'joy' | 'anger' | 'envy' | 'sorrow' | 'fear';
+    choices?: Array<{
+      category?: string;
+      categoryKey?: string;
+      choices?: string[];
+    }>;
+  }
+
   export interface PersistentEnemy {
     agentType: string;
     locationTag: string;
@@ -100,7 +113,7 @@ export namespace WorldState {
   export interface Job {
     rewardPool: string[];
     type: string;
-    enemyLevels: [number,number];
+    enemyLevels: [number, number];
     standingStages: number[];
   }
 
@@ -187,10 +200,14 @@ export namespace WorldState {
   }
 
   export interface Arbitration {
+    id?: string;
     node: string;
+    nodeKey?: string;
     type: string;
-    /** date timestamp */
-    expiry: number;
+    typeKey?: string;
+    enemy?: string;
+    expired?: boolean;
+    expiry?: string | number;
+    activation?: string;
   }
 }
-

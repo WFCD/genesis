@@ -1,25 +1,25 @@
-import { ChannelType } from 'discord.js';
+import { ChannelType, GuildVerificationLevel } from 'discord.js';
 
 import BaseEmbed from './BaseEmbed';
 
-const verifications = {
-  NONE: {
+const verifications: Record<GuildVerificationLevel, { color: number; msg: string }> = {
+  [GuildVerificationLevel.None]: {
     color: 0x747f8d,
     msg: 'None',
   },
-  LOW: {
+  [GuildVerificationLevel.Low]: {
     color: 0x43b581,
     msg: '**Low**\n_Must have a verified email on their Discord Account_',
   },
-  MEDIUM: {
+  [GuildVerificationLevel.Medium]: {
     color: 0xfaa61a,
     msg: '**Medium**\n_Must also be registered on Discord for longer than 5 minutes_',
   },
-  HIGH: {
+  [GuildVerificationLevel.High]: {
     color: 0xf57731,
     msg: '**(╯°□°）╯︵ ┻━┻**\n_Must also be a member of this server for longer than 10 minutes._',
   },
-  VERY_HIGH: {
+  [GuildVerificationLevel.VeryHigh]: {
     color: 0xf04747,
     msg: '**Insane: ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻**\n_Must have a verified phone on their Discord Account._',
   },
@@ -35,9 +35,13 @@ export default class ServerInfoEmbed extends BaseEmbed {
   constructor(guild) {
     super();
 
+    const verification = verifications[guild.verificationLevel] ?? verifications[GuildVerificationLevel.None];
+
     this.title = guild.name;
-    this.color = verifications[guild.verificationLevel].color;
-    this.thumbnail = { url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` };
+    this.color = verification.color;
+    if (guild.icon) {
+      this.thumbnail = { url: guild.iconURL({ size: 128 }) ?? undefined };
+    }
     this.fields = [
       {
         name: 'Created:',
@@ -71,7 +75,7 @@ export default class ServerInfoEmbed extends BaseEmbed {
       },
       {
         name: 'Verification Level:',
-        value: verifications[guild.verificationLevel].msg,
+        value: verification.msg,
         inline: true,
       },
       {

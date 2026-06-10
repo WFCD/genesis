@@ -74,51 +74,11 @@ export default {
   },
   rooms: {
     name: 'rooms',
-    description: 'Manage your private room',
+    description: 'Create and manage your private room',
   },
   'rooms.create': {
     name: 'create',
-    description: 'Create your own room',
-  },
-  'rooms.destroy': {
-    name: 'destroy',
-    description: 'Destroy your room',
-  },
-  'rooms.hide': {
-    name: 'hide',
-    description: 'Hide your private room',
-  },
-  'rooms.show': {
-    name: 'show',
-    description: 'Show your private room',
-  },
-  'rooms.lock': {
-    name: 'lock',
-    description: 'Lock your private room',
-  },
-  'rooms.unlock': {
-    name: 'unlock',
-    description: 'Unlock your private room',
-  },
-  'rooms.lurkable': {
-    name: 'lurkable',
-    description: 'Make your private room lurkable',
-  },
-  'rooms.rename': {
-    name: 'rename',
-    description: 'Rename your private room',
-  },
-  'rooms.invite': {
-    name: 'invite',
-    description: 'Invite someone to your private room',
-  },
-  'rooms.block': {
-    name: 'block',
-    description: 'Block someone from your private room',
-  },
-  'rooms.resize': {
-    name: 'resize',
-    description: 'resize private room',
+    description: 'Create your room or open the manage panel',
   },
   templates: {
     name: 'templates',
@@ -164,6 +124,26 @@ export default {
     name: 'whereis',
     description: 'Display where something drops from',
   },
+  wiki: {
+    name: 'wiki',
+    description: 'Search the official Warframe Wiki',
+  },
+  search: {
+    name: 'search',
+    description: 'Search the official Warframe Wiki',
+  },
+  builds: {
+    name: 'builds',
+    description: 'Search community Warframe builds on Overframe',
+  },
+  'builds.search': {
+    name: 'search',
+    description: 'Search community builds on Overframe',
+  },
+  'builds.query': {
+    name: 'query',
+    description: 'Warframe, weapon, or build keywords',
+  },
   query: {
     name: 'query',
     description: 'What are you looking for?',
@@ -180,6 +160,14 @@ export default {
     // pricecheck
     name: 'pc',
     description: 'Price check an item',
+  },
+  'pc.rank': {
+    name: 'rank',
+    description: 'Mod rank to price check (0-10)',
+  },
+  'pc.ranks': {
+    name: 'ranks',
+    description: 'Compare multiple mod ranks (comma-separated, e.g. 0,10)',
   },
   platform: {
     name: 'platform',
@@ -461,6 +449,10 @@ export default {
     name: 'response',
     description: 'Set what the call will respond to',
   },
+  'cc.add.ephemeral': {
+    name: 'ephemeral',
+    description: 'Only visible to the user who ran the command',
+  },
   'cc.remove': {
     name: 'remove',
     description: 'Remove a custom command by name',
@@ -469,9 +461,29 @@ export default {
     name: 'call',
     description: 'Which call to remove?',
   },
+  'cc.update': {
+    name: 'update',
+    description: 'Update an existing custom command',
+  },
+  'cc.update.call': {
+    name: 'call',
+    description: 'Which command to update',
+  },
+  'cc.update.response': {
+    name: 'response',
+    description: 'New response text',
+  },
+  'cc.update.ephemeral': {
+    name: 'ephemeral',
+    description: 'Only visible to the user who ran the command',
+  },
   'cc.list': {
     name: 'list',
     description: 'List all subcommands for the guild',
+  },
+  'cc.reload': {
+    name: 'reload',
+    description: 'Reload custom commands from the database (server owner only)',
   },
   '8ball': {
     name: '8ball',

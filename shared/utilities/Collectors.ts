@@ -16,15 +16,11 @@ import type { CommandContext } from '#shared/types/context';
 import { withEphemeral } from '#shared/utilities/CommonFunctions';
 
 /** Embed pages passed to collector helpers. */
-type PageEmbed =
-  | BaseEmbed
-  | (EmbedBuilder & {
-      description?: string | null;
-      title?: string | null;
-      footer?: { text?: string; iconURL?: string };
-    });
+type PageEmbed = BaseEmbed | EmbedBuilder;
 
 type CollectorMessage = Message | InteractionResponse;
+
+const FETCH_REPLY_TIMEOUT_MS = 10_000;
 
 async function interactionMessage(
   interaction: ChatInputCommandInteraction,
@@ -36,40 +32,66 @@ async function interactionMessage(
   return interaction.reply(payload);
 }
 
+async function collectorMessage(
+  interaction: ChatInputCommandInteraction,
+  payload: Parameters<ChatInputCommandInteraction['reply']>[0]
+): Promise<Message | null> {
+  await interactionMessage(interaction, payload);
+  try {
+    return await Promise.race([
+      interaction.fetchReply(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('fetchReply timed out')), FETCH_REPLY_TIMEOUT_MS)
+      ),
+    ]);
+  } catch (error) {
+    interaction.client.emit?.('error', error as Error);
+    return null;
+  }
+}
+
+const embedTitle = (embed: PageEmbed) => embed.data.title ?? null;
+
+const embedDescription = (embed: PageEmbed) => embed.data.description ?? null;
+
+const embedFooter = (embed: PageEmbed) => embed.data.footer;
+
+const pageLabel = (embed: PageEmbed, index: number) => String(embedTitle(embed) ?? `Page ${index + 1}`).slice(0, 100);
+
 export default class Collectors {
-  static #navComponents = [
+  static #navComponents = (interaction: ChatInputCommandInteraction) => [
     new ActionRowBuilder<ButtonBuilder>({
       components: [
         new ButtonBuilder({
           label: 'Previous',
-          customId: 'previous',
+          customId: `genesis:${interaction.id}:previous`,
           style: ButtonStyle.Secondary,
         }),
         new ButtonBuilder({
           label: 'Stop',
-          customId: 'stop',
+          customId: `genesis:${interaction.id}:stop`,
           style: ButtonStyle.Danger,
         }),
         new ButtonBuilder({
           label: 'Next',
-          customId: 'next',
+          customId: `genesis:${interaction.id}:next`,
           style: ButtonStyle.Secondary,
         }),
       ],
     }),
   ];
 
-  static #confirmationComponents = [
+  static #confirmationComponents = (interaction: ChatInputCommandInteraction) => [
     new ActionRowBuilder<ButtonBuilder>({
       components: [
         new ButtonBuilder({
           label: 'yes',
-          customId: 'confirm',
+          customId: `genesis:${interaction.id}:confirm`,
           style: ButtonStyle.Primary,
         }),
         new ButtonBuilder({
           label: 'no',
-          customId: 'deny',
+          customId: `genesis:${interaction.id}:deny`,
           style: ButtonStyle.Secondary,
         }),
       ],
@@ -81,16 +103,20 @@ export default class Collectors {
     pages: PageEmbed[],
     ctx: CommandContext
   ): Promise<CollectorMessage | void> {
-    return pages?.length < 26 ? this.selection(interaction, pages, ctx) : this.paged(interaction, pages, ctx);
+    return pages?.length <= 25 ? this.selection(interaction, pages, ctx) : this.paged(interaction, pages, ctx);
   }
 
   static #shapePages(pages: PageEmbed[]): EmbedBuilder[] {
     return pages.map((newPage, index) => {
       const pageInd = `Page ${index + 1}/${pages.length}`;
-      if (!newPage.description) newPage.setDescription('_ _');
-      if (newPage.footer) {
-        if (newPage.footer.text?.indexOf('Page ') === -1) {
-          newPage.setFooter({ text: `${pageInd} • ${newPage.footer.text}`, iconURL: newPage.footer.iconURL });
+      if (!embedDescription(newPage)) newPage.setDescription('_ _');
+      const footer = embedFooter(newPage);
+      if (footer?.text) {
+        if (footer.text.indexOf('Page ') === -1) {
+          newPage.setFooter({
+            text: `${pageInd} • ${footer.text}`,
+            iconURL: footer.icon_url ?? (footer as { iconURL?: string }).iconURL,
+          });
         }
       } else {
         newPage.setFooter({ text: pageInd });
@@ -110,8 +136,8 @@ export default class Collectors {
     }
     let page = 1;
     const pagedPages = this.#shapePages(pages);
-    const selections = pages.map((embed, index) => ({
-      label: embed.title ?? `Page ${index + 1}`,
+    const selections = pagedPages.map((embed, index) => ({
+      label: pageLabel(embed, index),
       value: `${index}`,
     }));
 
@@ -119,7 +145,7 @@ export default class Collectors {
       new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [
           new StringSelectMenuBuilder({
-            customId: 'select',
+            customId: `genesis:${interaction.id}:select`,
             placeholder: ctx.i18n`Select Page`,
             minValues: 1,
             maxValues: 1,
@@ -133,18 +159,22 @@ export default class Collectors {
     ];
 
     const payload = withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]], components: menu() });
-    const message = await interactionMessage(interaction, payload);
+    const message = await collectorMessage(interaction, payload);
+    if (!message) {
+      return interactionMessage(interaction, withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]] }));
+    }
 
     const collector = new InteractionCollector(interaction.client, {
       interactionType: InteractionType.MessageComponent,
       componentType: ComponentType.StringSelect,
-      message: message as Message,
+      message,
       guild: interaction.guild,
       channel: interaction.channel,
+      filter: (i) => i.user.id === interaction.user.id,
     });
 
     const selectionHandler = async (selection: StringSelectMenuInteraction) => {
-      await selection.deferUpdate(withEphemeral(ctx.ephemerate));
+      await selection.deferUpdate();
       page = Number.parseInt(selection.values[0], 10) + 1;
       if (page < 1) {
         page = 1;
@@ -175,36 +205,34 @@ export default class Collectors {
       return interactionMessage(interaction, payload);
     }
     const pagedPages = this.#shapePages(pages);
-    const embeds = [pagedPages[page - 1]];
-    const message = await interactionMessage(
+    const navComponents = this.#navComponents(interaction);
+    const message = await collectorMessage(
       interaction,
-      withEphemeral(ctx.ephemerate, { embeds, components: this.#navComponents })
+      withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]], components: navComponents })
     );
+    if (!message) {
+      return interactionMessage(interaction, withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]] }));
+    }
 
     const collector = new InteractionCollector(interaction.client, {
       interactionType: InteractionType.MessageComponent,
       componentType: ComponentType.Button,
-      message: message as Message,
+      message,
       guild: interaction.guild,
       channel: interaction.channel,
+      filter: (i) => i.user.id === interaction.user.id,
     });
 
     const buttonHandler = async (button: ButtonInteraction) => {
-      await button?.deferUpdate(withEphemeral(ctx.ephemerate));
+      await button.deferUpdate();
       switch (button.customId) {
-        case 'previous':
+        case `genesis:${interaction.id}:previous`:
           if (page > 1) page -= 1;
           break;
-        case 'next':
-          if (page <= pagedPages.length) page += 1;
+        case `genesis:${interaction.id}:next`:
+          if (page < pagedPages.length) page += 1;
           break;
-        case 'first':
-          page = 1;
-          break;
-        case 'last':
-          page = pagedPages.length;
-          break;
-        case 'stop':
+        case `genesis:${interaction.id}:stop`:
           collector.stop('user');
           collector.checkEnd();
           await interaction.editReply(
@@ -221,7 +249,7 @@ export default class Collectors {
         page = pagedPages.length;
       }
       await interaction.editReply(
-        withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]], components: this.#navComponents })
+        withEphemeral(ctx.ephemerate, { embeds: [pagedPages[page - 1]], components: navComponents })
       );
     };
     collector.on('collect', buttonHandler);
@@ -239,37 +267,43 @@ export default class Collectors {
     onDeny: () => Promise<void>,
     ctx: CommandContext
   ): Promise<void> {
-    const message = await interactionMessage(
-      interaction,
-      withEphemeral(ctx.ephemerate, {
-        content: ctx.i18n`Are you sure?`,
-        components: this.#confirmationComponents,
-      })
-    );
+    const payload = withEphemeral(ctx.ephemerate, {
+      content: ctx.i18n`Are you sure?`,
+      components: this.#confirmationComponents(interaction),
+    });
+    const message = await collectorMessage(interaction, payload);
+    if (!message) {
+      ctx.logger?.error?.('confirmation collector could not fetch reply');
+      return;
+    }
 
     const collector = new InteractionCollector(interaction.client, {
       interactionType: InteractionType.MessageComponent,
       componentType: ComponentType.Button,
       max: 1,
-      message: message as Message,
+      message,
       guild: interaction.guild,
       channel: interaction.channel,
+      filter: (i) => i.user.id === interaction.user.id,
     });
 
     const bh = async (button: ButtonInteraction) => {
       try {
+        await button.deferUpdate();
         switch (button.customId) {
-          case 'deny':
+          case `genesis:${interaction.id}:deny`:
             await onDeny();
             break;
-          case 'confirm':
+          case `genesis:${interaction.id}:confirm`:
             await onConfirm();
             break;
           default:
             break;
         }
+      } catch (error) {
+        ctx.logger?.error?.(error);
       } finally {
-        collector.checkEnd();
+        collector.stop('user');
       }
     };
     collector.on('collect', bh);

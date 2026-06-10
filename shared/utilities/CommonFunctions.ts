@@ -1,4 +1,5 @@
 import { ChannelType, Collection, EmbedBuilder, MessageFlags } from 'discord.js';
+import fetch from 'node-fetch';
 
 import { emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes } from '#shared/resources/index';
 
@@ -447,6 +448,41 @@ export const chunkify = ({ string, newStrings = [], breakChar = '; ', maxLength 
   return newStrings;
 };
 
+export type FixedWidthTableColumn = {
+  header: string;
+  cells: string[];
+  maxWidth?: number;
+  minWidth?: number;
+  align?: 'left' | 'right';
+};
+
+/**
+ * Monospace fixed-width table for embed descriptions (Whereis / Whatsin style).
+ */
+export const formatFixedWidthTable = (columns: FixedWidthTableColumn[]) => {
+  if (!columns.length) return '```\n```';
+
+  const rowCount = Math.max(...columns.map((column) => column.cells.length), 0);
+  const widths = columns.map((column) => {
+    const lengths = [column.header.length, ...column.cells.map((cell) => cell.length)];
+    const natural = Math.max(column.minWidth ?? 0, ...lengths);
+    return column.maxWidth === undefined ? natural : Math.min(column.maxWidth, natural);
+  });
+
+  const formatCell = (text: string, width: number, align: FixedWidthTableColumn['align'] = 'left') => {
+    const clipped = text.length <= width ? text : `${text.slice(0, Math.max(width - 1, 1))}…`;
+    return align === 'right' ? clipped.padStart(width, ' ') : clipped.padEnd(width, ' ');
+  };
+
+  const header = columns.map((column, index) => formatCell(column.header, widths[index], column.align)).join('  ');
+  const divider = widths.map((width) => '-'.repeat(width)).join('  ');
+  const body = Array.from({ length: rowCount }, (_, rowIndex) =>
+    columns.map((column, index) => formatCell(column.cells[rowIndex] ?? '', widths[index], column.align)).join('  ')
+  );
+
+  return `\`\`\`\n${[header, divider, ...body].join('\n')}\n\`\`\``;
+};
+
 /**
  * Convert html string content into semi-similar discord-flavored markdown
  * @param  {string} htmlString html string to convert
@@ -486,6 +522,134 @@ export const checkAndMergeEmbeds = (original, value) => {
   } else {
     original.push(value);
   }
+};
+
+export const EMBED_CHAR_LIMIT = 6000;
+export const EMBED_CHAR_SAFE = 5500;
+export const EMBED_FIELD_NAME_LIMIT = 256;
+export const EMBED_FIELD_VALUE_LIMIT = 1024;
+export const EMBED_FIELD_COUNT_MAX = 25;
+
+export const sanitizeEmbedField = (field: { name: string; value: string; inline?: boolean }) => {
+  const name = String(field.name ?? '')
+    .trim()
+    .slice(0, EMBED_FIELD_NAME_LIMIT);
+  let value = String(field.value ?? '').trim();
+  if (value.length > EMBED_FIELD_VALUE_LIMIT) {
+    value = `${value.slice(0, EMBED_FIELD_VALUE_LIMIT - 1)}…`;
+  }
+  if (!name.length || !value.length) return undefined;
+  return { name, value, inline: field.inline ?? true };
+};
+
+/** Approximate total embed text length for Discord's 6000-char cap. */
+export const estimateEmbedSize = (embed: EmbedBuilder) => {
+  const data = embed.data;
+  let size = 0;
+  const add = (text?: string | null) => {
+    if (text) size += text.length;
+  };
+
+  add(data.title);
+  add(data.description);
+  add(data.footer?.text);
+  add(data.author?.name);
+  for (const field of data.fields ?? []) {
+    add(field.name);
+    add(field.value);
+  }
+
+  return size;
+};
+
+/** Split an embed across multiple messages when it exceeds Discord's embed size cap. */
+export const splitEmbedByCharLimit = (embed: EmbedBuilder, maxSize = EMBED_CHAR_SAFE) => {
+  if (estimateEmbedSize(embed) <= EMBED_CHAR_LIMIT) return [embed];
+
+  const { title, description, footer, author, fields = [] } = embed.data;
+
+  const startEmbed = (part: number) => {
+    const next = new EmbedBuilder(embedDefaults);
+    const nextTitle = part ? `${title ?? 'Settings'}, ctd.` : title;
+    if (nextTitle) next.setTitle(nextTitle);
+    if (!part && description) next.setDescription(description);
+    if (!part && footer) next.setFooter(footer);
+    if (!part && author) next.setAuthor(author);
+    return next;
+  };
+
+  if (!fields.length) {
+    if (description && description.length > EMBED_CHAR_SAFE) {
+      const truncated = startEmbed(0);
+      truncated.setDescription(`${description.slice(0, EMBED_CHAR_SAFE - 1)}…`);
+      return [truncated];
+    }
+    return [embed];
+  }
+
+  const results: EmbedBuilder[] = [];
+  let part = 0;
+  let current = startEmbed(part);
+  let currentSize = estimateEmbedSize(current);
+  let fieldCount = 0;
+
+  for (const field of fields) {
+    const sanitized = sanitizeEmbedField(field);
+    if (!sanitized) continue;
+
+    const fieldSize = sanitized.name.length + sanitized.value.length;
+    if (fieldCount > 0 && (currentSize + fieldSize > maxSize || fieldCount >= EMBED_FIELD_COUNT_MAX)) {
+      results.push(current);
+      part += 1;
+      current = startEmbed(part);
+      currentSize = estimateEmbedSize(current);
+      fieldCount = 0;
+    }
+
+    current.addFields(sanitized);
+    currentSize += fieldSize;
+    fieldCount += 1;
+  }
+
+  if ((current.data.fields?.length ?? 0) > 0 || current.data.description) {
+    results.push(current);
+  }
+
+  return results.length ? results : [embed];
+};
+
+export const ensureEmbedsWithinLimit = (embeds: Array<EmbedBuilder | EmbedBuilder['data']>) =>
+  embeds.flatMap((embed) => splitEmbedByCharLimit(embed instanceof EmbedBuilder ? embed : EmbedBuilder.from(embed)));
+
+const packFieldsIntoEmbeds = (fields: Array<{ name: string; value: string; inline?: boolean }>, title: string) => {
+  const sanitized = fields
+    .map((field) => sanitizeEmbedField(field))
+    .filter((field): field is NonNullable<ReturnType<typeof sanitizeEmbedField>> => Boolean(field));
+  if (!sanitized.length) return [];
+
+  const results: EmbedBuilder[] = [];
+  let current = new EmbedBuilder(embedDefaults);
+  if (title) current.setTitle(title);
+  let currentSize = estimateEmbedSize(current);
+  let fieldCount = 0;
+
+  for (const field of sanitized) {
+    const fieldSize = field.name.length + field.value.length;
+    if (fieldCount > 0 && (currentSize + fieldSize > EMBED_CHAR_SAFE || fieldCount >= EMBED_FIELD_COUNT_MAX)) {
+      results.push(current);
+      current = new EmbedBuilder(embedDefaults);
+      if (title) current.setTitle(`${title}, ctd.`);
+      currentSize = estimateEmbedSize(current);
+      fieldCount = 0;
+    }
+
+    current.addFields(field);
+    currentSize += fieldSize;
+    fieldCount += 1;
+  }
+
+  if (fieldCount > 0) results.push(current);
+  return results;
 };
 
 const nav = ['◀', '▶', '⏮', '⏭', '🛑'];
@@ -595,37 +759,26 @@ export const setupPages = async (pages, { message, settings }) => {
  * @returns {EmbedBuilder}               Embed
  */
 export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
-  const embed = new EmbedBuilder(embedDefaults);
-  embed.setTitle(title);
   const chunks = (chunkify({ string: stringToChunk, breakChar, maxLength: 900 }) || []).filter(stringFilter);
-  if (chunks.length) {
-    chunks.forEach((chunk, index) => {
-      if (index > 0) {
-        embed.addFields({ name: '\u200B', value: chunk, inline: true });
-      } else {
-        embed.setDescription(chunk);
-      }
-    });
-  } else {
+  if (!chunks.length) {
+    const embed = new EmbedBuilder(embedDefaults);
+    embed.setTitle(title);
     embed.setDescription(`No ${title}`);
+    return embed;
   }
 
-  if ((embed.data.fields?.length ?? 0) > fieldLimit) {
-    const fieldGroups = createGroupedArray(embed.data.fields ?? [], fieldLimit);
-    const embeds = [];
-    fieldGroups.forEach((fields, index) => {
-      const smEmbed = new EmbedBuilder(embedDefaults);
-      embed.setTitle(title);
+  const continuationFields = chunks
+    .slice(1)
+    .map((chunk) => sanitizeEmbedField({ name: '\u200B', value: chunk, inline: true }))
+    .filter((field): field is NonNullable<ReturnType<typeof sanitizeEmbedField>> => Boolean(field));
 
-      smEmbed.addFields(fields);
-      if (index === 0) {
-        smEmbed.setDescription(embed.data.description);
-      }
-      embeds.push(smEmbed);
-    });
-    return embeds;
-  }
-  return embed;
+  const embeds = packFieldsIntoEmbeds(continuationFields, title);
+  const first = embeds[0] ?? new EmbedBuilder(embedDefaults).setTitle(title);
+  if (!embeds.length) first.setTitle(title);
+  first.setDescription(String(chunks[0]).slice(0, EMBED_FIELD_VALUE_LIMIT));
+  if (!embeds.length) return first;
+  embeds[0] = first;
+  return embeds.length === 1 ? embeds[0] : embeds;
 };
 
 /**
@@ -636,22 +789,23 @@ export const createChunkedEmbed = (stringToChunk, title, breakChar) => {
  * @returns {Array.<Discord.EmbedField>}
  */
 export const chunkFields = (valArr, title = 'Chunkeroo', chunkStr = '; ') => {
-  const chunkified = chunkify({ string: valArr.join(chunkStr) });
+  const fieldTitle = String(title).slice(0, EMBED_FIELD_NAME_LIMIT - ', ctd.'.length);
+  const chunkified = chunkify({ string: valArr.join(chunkStr), maxLength: 1000 });
   if (!chunkified) {
     return [];
   }
   return chunkified
     .map((val, ind) => {
       if (val && val.length) {
-        return {
-          name: `${title}${ind > 0 ? ', ctd.' : ''}`,
+        return sanitizeEmbedField({
+          name: `${fieldTitle}${ind > 0 ? ', ctd.' : ''}`,
           value: val,
           inline: true,
-        };
+        });
       }
       return undefined;
     })
-    .filter((field) => field);
+    .filter((field): field is NonNullable<ReturnType<typeof sanitizeEmbedField>> => Boolean(field));
 };
 
 export const constructTypeEmbeds = (types) => {
@@ -683,18 +837,7 @@ export const constructTypeEmbeds = (types) => {
       fields.push(...chunked);
     }
   });
-  const fieldGroups = createGroupedArray(fields, fieldLimit);
-  return fieldGroups.map((fieldGroup, index) => {
-    const embed = new EmbedBuilder(embedDefaults);
-    embed.setTitle(`Event Trackables${index > 0 ? ', ctd.' : ''}`);
-    embed.addFields(
-      fieldGroup.map((field) => ({
-        ...field,
-        inline: true,
-      }))
-    );
-    return embed;
-  });
+  return packFieldsIntoEmbeds(fields, 'Event Trackables');
 };
 
 export const constructItemEmbeds = (types) => {
@@ -715,18 +858,7 @@ export const constructItemEmbeds = (types) => {
       fields.push(...chunked);
     }
   });
-  const fieldGroups = createGroupedArray(fields, fieldLimit);
-  return fieldGroups.map((fieldGroup, index) => {
-    const embed = new EmbedBuilder(embedDefaults);
-    embed.setTitle(`Item Trackables${index > 0 ? ', ctd.' : ''}`);
-    embed.addFields(
-      fieldGroup.map((field) => ({
-        ...field,
-        inline: true,
-      }))
-    );
-    return embed;
-  });
+  return packFieldsIntoEmbeds(fields, 'Item Trackables');
 };
 
 export async function sendTrackInstructionEmbeds({ message, prefix, call, settings }) {
@@ -781,16 +913,97 @@ export async function sendTrackInstructionEmbeds({ message, prefix, call, settin
   return undefined;
 }
 
-export const emojify = (stringWithoutEmoji) => {
-  let stringWithEmoji = stringWithoutEmoji;
-  Object.keys(emoji).forEach((identifier) => {
-    if (typeof stringWithEmoji === 'string') {
-      stringWithEmoji = stringWithEmoji
-        .replace(/<DT_\w+>/gi, '')
-        .replace(new RegExp(`${identifier}`, 'ig'), ` ${emoji[identifier]} `);
-    }
+const DAMAGE_EMOJI_KEYS = new Set([
+  'electricity',
+  'cold',
+  'heat',
+  'toxin',
+  'radiation',
+  'viral',
+  'gas',
+  'blast',
+  'corrosive',
+  'magnetic',
+  'impact',
+  'puncture',
+  'slash',
+  'void',
+]);
+
+const dtEmojiForTag = (tag: string) => {
+  const upper = tag.toUpperCase();
+  const aliases: Record<string, string> = {
+    IMPACT: 'impact',
+    IMPACT_COLOR: 'impact',
+    PUNCTURE: 'puncture',
+    PUNCTURE_COLOR: 'puncture',
+    SLASH: 'slash',
+    SLASH_COLOR: 'slash',
+    FIRE: 'heat',
+    FIRE_COLOR: 'heat',
+    FREEZE: 'cold',
+    FREEZE_COLOR: 'cold',
+    POISON: 'toxin',
+    POISON_COLOR: 'toxin',
+    ELECTRICITY: 'electricity',
+    ELECTRICITY_COLOR: 'electricity',
+    MAGNETIC: 'magnetic',
+    MAGNETIC_COLOR: 'magnetic',
+    RADIATION: 'radiation',
+    RADIATION_COLOR: 'radiation',
+    RADIANT_COLOR: 'radiation',
+    CORROSIVE: 'corrosive',
+    CORROSIVE_COLOR: 'corrosive',
+    VIRAL: 'viral',
+    VIRAL_COLOR: 'viral',
+    GAS: 'gas',
+    GAS_COLOR: 'gas',
+    EXPLOSION: 'blast',
+    EXPLOSION_COLOR: 'blast',
+    SENTIENT: 'void',
+  };
+  const key = aliases[upper] ?? upper.replace(/_COLOR$/, '').toLowerCase();
+  return emoji[key as keyof typeof emoji] ?? emoji[`<DT_${upper}>` as keyof typeof emoji] ?? null;
+};
+
+/** Replace only `<DT_*>` / `<DT_*_COLOR>` tokens with damage/element emojis. */
+export const emojifyDtTags = (text: string) => {
+  if (typeof text !== 'string') return text;
+  return text.replace(/<DT_([A-Z0-9_]+)>/gi, (_, tag) => {
+    const glyph = dtEmojiForTag(tag);
+    return glyph ? ` ${glyph} ` : `<DT_${tag}>`;
   });
-  return stringWithEmoji;
+};
+
+const shieldCustomEmojis = (input: string) => {
+  const saved: string[] = [];
+  const shielded = input.replace(/<a?:\w+:\d+>/g, (match) => {
+    saved.push(match);
+    return `\x00${saved.length - 1}\x00`;
+  });
+  return { shielded, saved };
+};
+
+const restoreCustomEmojis = (input: string, saved: string[]) =>
+  // eslint-disable-next-line no-control-regex
+  input.replace(/\x00(\d+)\x00/g, (_, index) => saved[Number(index)] ?? '');
+
+export const emojify = (stringWithoutEmoji) => {
+  if (typeof stringWithoutEmoji !== 'string') return stringWithoutEmoji;
+
+  const stringWithEmoji = emojifyDtTags(stringWithoutEmoji);
+  const { shielded, saved } = shieldCustomEmojis(stringWithEmoji);
+
+  let processed = shielded;
+  Object.keys(emoji).forEach((identifier) => {
+    if (identifier.startsWith('<DT_') || identifier.endsWith('_id') || DAMAGE_EMOJI_KEYS.has(identifier)) {
+      return;
+    }
+    const pattern = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    processed = processed.replace(new RegExp(`\\b${pattern}\\b`, 'ig'), ` ${emoji[identifier as keyof typeof emoji]} `);
+  });
+
+  return restoreCustomEmojis(processed, saved);
 };
 
 export const getEmoji = (identifier) => emoji[identifier] || '';
@@ -1151,6 +1364,40 @@ export const toTitleCase = (str) => (str ?? '')?.toLowerCase().replace(/\b\w/g, 
  */
 export const cdn = (assetPath) => `${assetBase}${assetBase.endsWith('/') ? '' : '/'}${assetPath}`;
 
+const cdnOrigin = apiCdnBase.replace(/\/$/, '');
+
+/** warframe-items imageName → CDN img URL (warframe-hub wfcdn). */
+export const wfcdn = (imgName: string) => `${cdnOrigin}/img/${imgName}`;
+
+/**
+ * Caravaggio proxy URL (warframe-hub optimize).
+ * @see https://github.com/wfcd/warframe-hub/blob/master/services/utilities.js
+ */
+export const optimizeImage = (img: string, size?: number, mode: string = 'fit', direction: string = 'auto') => {
+  const fsize = size ? `rs_${size}_${mode}_${direction},` : '';
+  return `${cdnOrigin}/${fsize}o_webp,progressive_true/${img}`;
+};
+
+/** Item image for embeds; resized webp by default for Discord thumbnails. */
+export const itemImageUrl = (imageName: string, size = 128) => optimizeImage(wfcdn(imageName), size);
+
+/** Resolve warframe-items imageName → Caravaggio URL via items search. */
+export const resolveItemImageUrl = async (itemName: string, size?: number) => {
+  const query = itemName?.trim();
+  if (!query) return '';
+
+  const results = (await fetch(`${apiBase}/items/search/${encodeURIComponent(query.toLowerCase())}/?language=en`).then(
+    (d) => d.json()
+  )) as Array<{ name?: string; imageName?: string }>;
+
+  if (!results?.length) return '';
+
+  const match = results.find((r) => r.name === query) ?? results[0];
+  if (!match?.imageName) return '';
+
+  return size ? itemImageUrl(match.imageName, size) : optimizeImage(wfcdn(match.imageName));
+};
+
 /**
  * Common functions for determining common functions
  * @typedef {Object} CommonFunctions
@@ -1160,6 +1407,7 @@ export const cdn = (assetPath) => `${assetBase}${assetBase.endsWith('/') ? '' : 
 export default {
   createGroupedArray,
   emojify,
+  emojifyDtTags,
   fromNow,
   getChannel,
   getChannels,
@@ -1184,6 +1432,10 @@ export default {
   wikiBase,
   captures,
   apiCdnBase,
+  wfcdn,
+  optimizeImage,
+  itemImageUrl,
+  resolveItemImageUrl,
   chunkify,
   createChunkedEmbed,
   chunkFields,
@@ -1194,6 +1446,15 @@ export default {
   constructItemEmbeds,
   constructTypeEmbeds,
   checkAndMergeEmbeds,
+  ensureEmbedsWithinLimit,
+  estimateEmbedSize,
+  splitEmbedByCharLimit,
+  EMBED_CHAR_LIMIT,
+  EMBED_CHAR_SAFE,
+  EMBED_FIELD_COUNT_MAX,
+  EMBED_FIELD_NAME_LIMIT,
+  EMBED_FIELD_VALUE_LIMIT,
+  sanitizeEmbedField,
   platforms,
   safeMatch,
   getMessage,

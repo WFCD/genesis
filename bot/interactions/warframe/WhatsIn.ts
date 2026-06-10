@@ -62,11 +62,21 @@ export default class WhatsIn extends Interaction {
    * @returns {Promise<*>}
    */
   static async commandHandler(interaction, ctx) {
-    // args
-    const tier = toTitleCase(interaction.options.get('relic_era').value);
-    const query = toTitleCase(interaction.options.get('query').value);
-    const data = await ctx.ws.relic(tier, tier.toLowerCase() === 'requiem' ? query.toUpperCase() : query);
-    if (!data || !Object.keys(data).length) return interaction.reply(ctx.i18n`Sorry, no such relic`);
+    const tier = toTitleCase(interaction.options.getString('relic_era', true));
+    let query = interaction.options.getString('query', true).trim();
+
+    query = query.replace(new RegExp(`^${tier}\\s+`, 'i'), '').trim();
+    if (tier.toLowerCase() === 'requiem') {
+      query = query.toUpperCase();
+    } else {
+      query = toTitleCase(query);
+    }
+
+    const data = await ctx.ws.relic(tier, query);
+    if (!data || !Object.keys(data).length) {
+      return interaction.reply(withEphemeral(ctx.ephemerate, { content: ctx.i18n`Sorry, no such relic` }));
+    }
+
     const embed = new WhatsInEmbed(data, tier, query);
     return interaction.reply(withEphemeral(ctx.ephemerate, { embeds: [embed] }));
   }

@@ -1,46 +1,83 @@
+import { formatFixedWidthTable } from '#shared/utilities/CommonFunctions';
+
 import BaseEmbed from './BaseEmbed';
 
+const REFINEMENTS = ['Intact', 'Exceptional', 'Flawless', 'Radiant'] as const;
+
+type Refinement = (typeof REFINEMENTS)[number];
+
+type RelicReward = {
+  itemName: string;
+  chance: number;
+};
+
+type RelicDetails = {
+  rewards?: Partial<Record<Refinement, RelicReward[]>>;
+};
+
+export type WhatsinRow = {
+  item: string;
+  chances: Partial<Record<Refinement, number>>;
+};
+
+const REFINEMENT_HEADERS: Record<Refinement, string> = {
+  Intact: 'Int',
+  Exceptional: 'Exc',
+  Flawless: 'Flw',
+  Radiant: 'Rad',
+};
+
+const abbrevItem = (name: string) => name.replace(/Blueprint/g, 'BP').replace(/ Prime/g, ' P.');
+
+const formatChance = (chance: number | undefined) => (chance === undefined ? '—' : `${chance.toFixed(2)}%`);
+
+export const parseWhatsinRows = (details: RelicDetails): WhatsinRow[] => {
+  const byItem = new Map<string, WhatsinRow>();
+
+  for (const refinement of REFINEMENTS) {
+    for (const reward of details.rewards?.[refinement] ?? []) {
+      let row = byItem.get(reward.itemName);
+      if (!row) {
+        row = { item: reward.itemName, chances: {} };
+        byItem.set(reward.itemName, row);
+      }
+      row.chances[refinement] = reward.chance;
+    }
+  }
+
+  return [...byItem.values()];
+};
+
+const buildTable = (rows: WhatsinRow[]) => {
+  const items = rows.map((row) => abbrevItem(row.item));
+  const chances = REFINEMENTS.map((refinement) => rows.map((row) => formatChance(row.chances[refinement])));
+
+  return formatFixedWidthTable([
+    { header: 'Item', cells: items, maxWidth: 34, minWidth: 4 },
+    ...REFINEMENTS.map((refinement, index) => ({
+      header: REFINEMENT_HEADERS[refinement],
+      cells: chances[index],
+      minWidth: 6,
+      align: 'right' as const,
+    })),
+  ]);
+};
+
 export default class WhatsinEmbed extends BaseEmbed {
-  /**
-   * @param {Object} details details to derive data from
-   * @param {string} tier Relic tier
-   * @param {string} type Relic type
-   */
-  constructor(details, tier, type) {
+  constructor(details: RelicDetails, tier: string, type: string) {
     super();
-    const transformedRewards = {};
-    const rewards = [
-      details?.rewards?.Intact,
-      details?.rewards?.Exceptional,
-      details?.rewards?.Flawless,
-      details?.rewards?.Radiant,
-    ];
-    rewards.forEach((rewardTier) => {
-      rewardTier.forEach((reward) => {
-        if (!transformedRewards[reward.itemName]) {
-          transformedRewards[reward.itemName] = [];
-        }
-        if (!transformedRewards[reward.itemName][rewards.indexOf(rewardTier)]) {
-          transformedRewards[reward.itemName][rewards.indexOf(rewardTier)] = reward.chance;
-        }
-      });
-    });
 
-    const longest = Object.keys(transformedRewards).reduce((a, b) => (a.length > b.length ? a : b));
-    const tokens = [];
-    Object.keys(transformedRewards).forEach((rewardName) => {
-      const reward = transformedRewards[rewardName];
-      const qualities = [];
-      reward.forEach((quality) => {
-        const wrappedQuality = `${quality.toFixed(2)}`.padStart(6, '\u2003').substring(0, 5);
-        qualities.push(wrappedQuality);
-      });
-
-      tokens.push(`${rewardName.padEnd(longest.length + 1, '\u2003')} ${qualities.join('/')}%`);
-    });
+    const rows = parseWhatsinRows(details);
 
     this.title = `${tier} ${type}`;
     this.color = 0x3498db;
-    this.description = tokens.map((token) => `\`${token}\``).join('\n');
+
+    if (!rows.length) {
+      this.description = 'No rewards found.';
+      return;
+    }
+
+    const summary = `${rows.length} reward${rows.length === 1 ? '' : 's'} · drop % by refinement (Intact → Radiant)`;
+    this.description = `${summary}\n${buildTable(rows)}`;
   }
 }
