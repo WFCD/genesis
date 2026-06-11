@@ -6,7 +6,6 @@ import { syndicates } from '#shared/resources';
 import { captures, createGroupedArray, platforms, games } from '#shared/utilities/CommonFunctions';
 import { isActive, isActiveArbitration, isExpired, rewardString } from '#shared/utilities/WorldState';
 import { resolveInvasionThumbnail } from '#shared/embeds/InvasionEmbed';
-
 import { fissureNodeTypeKey, fissureTypeKey, transformMissionType } from '#shared/utilities/FissureTracking';
 
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils';

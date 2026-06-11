@@ -120,13 +120,7 @@ export default class TrackingManageUI {
     return interaction.editReply(withEphemeral(ctx.ephemerate, payload));
   }
 
-  static async #updatePanel(
-    interaction: MessageComponentInteraction,
-    ctx,
-    session: TrackingSession,
-    channel,
-    thread?
-  ) {
+  static async #updatePanel(interaction: MessageComponentInteraction, ctx, session: TrackingSession, channel, thread?) {
     return interaction.editReply(withEphemeral(ctx.ephemerate, this.#render(session, channel, thread)));
   }
 

@@ -190,7 +190,7 @@ export default class Tracking extends Interaction {
         trackableTypes: [...(add?.events ?? []), ...(remove?.events ?? [])],
         refreshGuild: true,
         refreshPings: Boolean(
-          prepend && (add?.events?.length || add?.items?.length) || clear && Object.keys(remove)?.length
+          (prepend && (add?.events?.length || add?.items?.length)) || (clear && Object.keys(remove)?.length)
         ),
       }).catch((err) => ctx.logger.error(err, 'tracking'));
       await this.#generateWebhook(interaction, ctx, channel);

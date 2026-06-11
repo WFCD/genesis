@@ -20,8 +20,7 @@ export async function enqueueWorkerCacheRefresh(
   const uniqueTypes = [...new Set(trackableTypes.filter(Boolean))];
   if (uniqueTypes.length) {
     if (!channel?.id) return;
-    const language =
-      (await settings.channels.getSetting(channel, 'language')) || settings.defaults.language || 'en';
+    const language = (await settings.channels.getSetting(channel, 'language')) || settings.defaults.language || 'en';
     const locale = String(language).substring(0, 2);
     await settings.workerCache.enqueueTrackables(guildId, locale, uniqueTypes);
   }

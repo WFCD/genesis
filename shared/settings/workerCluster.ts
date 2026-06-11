@@ -1,8 +1,7 @@
 /** Locale value for guild-wide cache jobs (pings, guild map) — all workers poll these. */
 export const GLOBAL_WORKER_LOCALE = '';
 
-export const getWorkerId = () =>
-  process.env.WORKER_ID?.trim() || process.env.LOCALES?.split(',')[0]?.trim() || 'en';
+export const getWorkerId = () => process.env.WORKER_ID?.trim() || process.env.LOCALES?.split(',')[0]?.trim() || 'en';
 
 export const getExpectedWorkerCount = () => {
   const cluster = process.env.WORKER_CLUSTER || getWorkerId();

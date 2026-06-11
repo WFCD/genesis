@@ -7,14 +7,7 @@ import logger from '#shared/utilities/Logger';
 /**
  * Patch cached trackable channel lists for one guild without full hydrateQueries.
  */
-export async function patchGuildTrackables({
-  settings,
-  workerCache,
-  guildId,
-  locale,
-  types,
-  platforms,
-}) {
+export async function patchGuildTrackables({ settings, workerCache, guildId, locale, types, platforms }) {
   const guildChannels = await settings.workerCache.getGuildChannelIds(guildId);
   if (!guildChannels.length) return 0;
 

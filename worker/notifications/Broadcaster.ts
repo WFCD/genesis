@@ -86,11 +86,10 @@ export default class Broadcaster {
           } else if (!content && type.startsWith('fissures.node.')) {
             content = pings[`${guild.id}:fissures.node`] || '';
           }
-          await webhook.call(
-            { settings: this.settings, client: this.client, scope: 'worker' },
-            ctx,
-            { content, embeds: [embed] }
-          );
+          await webhook.call({ settings: this.settings, client: this.client, scope: 'worker' }, ctx, {
+            content,
+            embeds: [embed],
+          });
         } catch (e) {
           if (e.message) {
             if (e.message.includes('Unknown Webhook')) {

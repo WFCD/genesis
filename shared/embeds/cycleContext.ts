@@ -117,7 +117,6 @@ export const getEarthCycleContext = (isDay: boolean) => (isDay ? earthDay : eart
 
 export const getVallisCycleContext = (isWarm: boolean) => (isWarm ? vallisWarm : vallisCold);
 
-export const getCambionCycleContext = (state: string) =>
-  state?.toLowerCase() === 'fass' ? cambionFass : cambionVome;
+export const getCambionCycleContext = (state: string) => (state?.toLowerCase() === 'fass' ? cambionFass : cambionVome);
 
 export const formatCycleTips = (tips: string[]) => tips.map((tip) => `• ${tip}`).join('\n');

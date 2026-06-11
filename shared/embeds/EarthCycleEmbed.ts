@@ -2,12 +2,7 @@ import { assetBase } from '#shared/utilities/CommonFunctions';
 import { rTime } from '#shared/utilities/Wrappers';
 
 import BaseEmbed from './BaseEmbed';
-import {
-  formatCycleLinks,
-  formatCycleTips,
-  getCetusCycleContext,
-  getEarthCycleContext,
-} from './cycleContext';
+import { formatCycleLinks, formatCycleTips, getCetusCycleContext, getEarthCycleContext } from './cycleContext';
 import type { EmbedBuildOptions } from './embedOptions';
 
 const ostron = `${assetBase}/img/ostron-banner.png`;

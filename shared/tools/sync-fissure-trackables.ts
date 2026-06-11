@@ -65,7 +65,10 @@ const syncPingables = () => {
 const syncCachedEvents = () => {
   const path = join(resourcesDir, 'cachedEvents.json');
   const cached = JSON.parse(readFileSync(path, 'utf8')) as string[];
-  writeFileSync(path, `${JSON.stringify(mergeAt(cached, [...buildTierTypeKeys(false), ...buildTierTypeKeys(true)]), null, 2)}\n`);
+  writeFileSync(
+    path,
+    `${JSON.stringify(mergeAt(cached, [...buildTierTypeKeys(false), ...buildTierTypeKeys(true)]), null, 2)}\n`
+  );
 };
 
 syncPingables();
