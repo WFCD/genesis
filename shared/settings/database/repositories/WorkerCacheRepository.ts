@@ -121,13 +121,28 @@ export default class WorkerCacheRepository {
 
   async getGuildLocales(guildId: string): Promise<string[]> {
     const query = SQL`
-      SELECT DISTINCT SUBSTRING(language, 1, 2) AS locale
+      SELECT DISTINCT SUBSTRING(
+        COALESCE(
+          (SELECT s.val FROM settings s
+            WHERE s.channel_id = channels.id AND s.setting = 'language'
+            LIMIT 1),
+          channels.language
+        ),
+        1,
+        2
+      ) AS locale
       FROM channels
       WHERE guild_id = ${guildId}`;
     const [rows] = (await this.deps.query(query)) ?? [[]];
     return [...new Set((rows as Array<{ locale: string }>).map((row) => String(row.locale).substring(0, 2)))].filter(
       Boolean
     );
+  }
+
+  /** Test helper — wipe queue between integration specs. */
+  async clearAllJobs() {
+    await this.deps.query(SQL`DELETE FROM worker_cache_job_acks`);
+    await this.deps.query(SQL`DELETE FROM worker_cache_jobs`);
   }
 
   async enqueueGuildRefresh(guildId: string, scope: WorkerCacheRefreshStamp | 'all') {
