@@ -4,6 +4,7 @@ import { fromNow, games, timeDeltaToMinutesString } from '#shared/utilities/Comm
 
 import type Genesis from '../bot';
 import Handler from '../models/BaseEventHandler';
+import { shouldDeleteRoomCategory } from '../interactions/channels/roomActions';
 
 import DynamicVoiceHandler from './DynamicVoiceHandler';
 
@@ -28,17 +29,6 @@ const presenceActivityTypes = {
   LISTENING: ActivityType.Listening,
   STREAMING: ActivityType.Streaming,
   COMPETING: ActivityType.Competing,
-};
-
-type PrivateRoom = {
-  textChannel?: { deletable?: boolean; id: string; delete: () => Promise<unknown>; members?: { size: number } };
-  voiceChannel?: { deletable?: boolean; id: string; delete: () => Promise<unknown>; members?: { size: number } };
-  category?: { deletable?: boolean; id: string; delete: () => Promise<unknown> };
-  createdAt: number;
-  textId?: string;
-  voiceId?: string;
-  categoryId?: string;
-  guildId?: string;
 };
 
 export default class OnReadyHandle extends Handler {
@@ -162,7 +152,7 @@ export default class OnReadyHandle extends Handler {
   async #checkPrivateRooms() {
     if (!games.includes('UTIL')) return;
     this.logger.silly('Checking private rooms...');
-    const privateRooms = (await this.settings.privateRooms.getPrivateRooms()) as PrivateRoom[];
+    const privateRooms = await this.settings.privateRooms.getPrivateRooms();
     this.logger.silly(`Private rooms... ${privateRooms.length}`);
     await Promise.all(
       privateRooms.map(async (room) => {
@@ -180,9 +170,9 @@ export default class OnReadyHandle extends Handler {
               this.logger.silly(`Deleting voice channel... ${room.voiceChannel.id}`);
               await room.voiceChannel.delete();
             }
-            if (room.category && room.category.deletable) {
-              this.logger.silly(`Deleting category... ${room.category.id}`);
-              await room.category.delete();
+            if (shouldDeleteRoomCategory(room)) {
+              this.logger.silly(`Deleting category... ${room.category!.id}`);
+              await room.category!.delete();
             }
             await this.settings.privateRooms.deletePrivateRoom(room);
           }

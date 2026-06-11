@@ -10,7 +10,7 @@ export type PrivateRoom = {
   textChannel?: TextChannel;
   voiceChannel?: VoiceChannel;
   category?: CategoryChannel;
-  createdAt?: unknown;
+  createdAt?: number;
   guildId?: string;
   textId?: string;
   voiceId?: string;
@@ -155,7 +155,7 @@ export default class PrivateRoomRepository {
           : undefined,
         voiceChannel: this.deps.bot?.client?.channels.cache.get(row.voice_id) as VoiceChannel | undefined,
         category: this.deps.bot?.client?.channels.cache.get(row.category_id) as CategoryChannel | undefined,
-        createdAt: row.crt_sec,
+        createdAt: Number(row.crt_sec) || 0,
         guildId: row.guild_id,
         textId: row.text_id || undefined,
         voiceId: row.voice_id,
@@ -175,7 +175,7 @@ export default class PrivateRoomRepository {
     return rows?.length;
   }
 
-  async getPrivateRooms(shards?: number[]) {
+  async getPrivateRooms(shards?: number[]): Promise<PrivateRoom[]> {
     const query = SQL`
       SELECT guild_id, text_id, voice_id, category_id, created_at as crt_sec
       FROM private_channels
@@ -192,10 +192,12 @@ export default class PrivateRoomRepository {
         }>
       ).map((value) => ({
         guild: this.deps.bot?.client?.guilds.cache.get(value.guild_id),
-        textChannel: value.text_id ? this.deps.bot?.client?.channels.cache.get(value.text_id) : undefined,
-        voiceChannel: this.deps.bot?.client?.channels.cache.get(value.voice_id),
-        category: this.deps.bot?.client?.channels.cache.get(value.category_id),
-        createdAt: value.crt_sec,
+        textChannel: value.text_id
+          ? (this.deps.bot?.client?.channels.cache.get(value.text_id) as TextChannel | undefined)
+          : undefined,
+        voiceChannel: this.deps.bot?.client?.channels.cache.get(value.voice_id) as VoiceChannel | undefined,
+        category: this.deps.bot?.client?.channels.cache.get(value.category_id) as CategoryChannel | undefined,
+        createdAt: Number(value.crt_sec) || 0,
         guildId: value.guild_id,
         textId: value.text_id || undefined,
         voiceId: value.voice_id,

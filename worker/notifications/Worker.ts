@@ -12,6 +12,7 @@ import { cachedEvents, locales } from '#shared/resources';
 import logger from '#shared/utilities/Logger';
 import { games } from '#shared/utilities/CommonFunctions';
 
+import { processWorkerCacheJobs, getWorkerId } from './WorkerCacheJobs';
 import Notifier from './worldstate/Notifier';
 import CycleNotifier from './worldstate/CycleNotifier';
 import FeedsNotifier from './FeedsNotifier';
@@ -24,6 +25,8 @@ const rest = new Rest();
 const forceHydrate = (process.argv[2] || '').includes('--hydrate') || process.env.BUILD === 'build';
 
 const ldirname = dirname(fileURLToPath(import.meta.url));
+
+const REFRESH_STAMP_KEYS = ['pings', 'trackables', 'guild'];
 
 let timeout;
 
@@ -65,7 +68,7 @@ class Worker {
       deps.workerCache.save(true);
     }
     const eDate = Date.now();
-    logger.info(`ping hydration took ${String(eDate - sDate).red}ms`, 'DB');
+    logger.info(`ping hydration took ${eDate - sDate}ms`, 'DB');
     this.#activeHydrations.splice(this.#activeHydrations.indexOf('pings'));
   }
   async hydrateGuilds() {
@@ -81,7 +84,7 @@ class Worker {
         deps.workerCache.save(true);
       }
       const eDate = Date.now();
-      logger.info(`guild hydration took ${String(eDate - sDate).red}ms`, 'DB');
+      logger.info(`guild hydration took ${eDate - sDate}ms`, 'DB');
       this.#activeHydrations.splice(this.#activeHydrations.indexOf('guilds'));
     }
     await this.hydratePings();
@@ -113,7 +116,7 @@ class Worker {
     await Promise.all(promises);
     deps.workerCache.save(true);
     const eDate = Date.now();
-    logger.info(`query hydration took ${String(eDate - sDate).red}ms`, 'DB');
+    logger.info(`query hydration took ${eDate - sDate}ms`, 'DB');
     this.#activeHydrations.splice(this.#activeHydrations.indexOf('events'));
   }
   async initCache() {
@@ -143,10 +146,65 @@ class Worker {
       );
       if (hydrateEvents) await this.hydrateQueries();
 
+      await this.initRefreshWatermarks();
+
       // refresh guild cache every hour... it's a heavy process, we don't want to do it much
       deps.guildHydration = new Job('0 0 * * * *', this.hydrateGuilds.bind(this), undefined, true);
       deps.queryHydration = new Job('0 */10 * * * *', this.hydrateQueries.bind(this), undefined, true);
+      deps.cacheJobPoll = new Job('0 * * * * *', this.processCacheMaintenance.bind(this), undefined, true);
     }
+  }
+
+  async initRefreshWatermarks() {
+    const stamps = await deps.settings.workerCache.getRefreshStamps();
+    const now = Date.now();
+    REFRESH_STAMP_KEYS.forEach((scope) => {
+      deps.workerCache.setKey(`last_${scope}_refresh_at`, stamps[scope] || now);
+    });
+    deps.workerCache.save(true);
+  }
+
+  async processRefreshStamps() {
+    if (!deps.workerCache || !deps.settings) return;
+
+    const stamps = await deps.settings.workerCache.getRefreshStamps();
+    const last = (scope) => deps.workerCache.getKey(`last_${scope}_refresh_at`) || 0;
+    const mark = (scope, at) => {
+      deps.workerCache.setKey(`last_${scope}_refresh_at`, at);
+    };
+
+    const prevGuild = last('guild');
+    if (stamps.guild > prevGuild) {
+      await this.hydrateGuilds();
+      mark('guild', stamps.guild);
+    }
+    if (stamps.pings > last('pings')) {
+      if (stamps.guild <= prevGuild) {
+        await this.hydratePings();
+      }
+      mark('pings', stamps.pings);
+    }
+    if (stamps.trackables > last('trackables')) {
+      await this.hydrateQueries();
+      mark('trackables', stamps.trackables);
+    }
+    deps.workerCache.save(true);
+  }
+
+  async processCacheMaintenance() {
+    await this.processRefreshStamps();
+    await this.processCacheJobs();
+  }
+
+  async processCacheJobs() {
+    if (!deps.workerCache || !deps.settings) return;
+    await processWorkerCacheJobs({
+      settings: deps.settings,
+      workerCache: deps.workerCache,
+      locales,
+      platforms: activePlatforms,
+      workerId: getWorkerId(),
+    });
   }
 
   /**
@@ -165,6 +223,12 @@ class Worker {
       await this.initCache();
 
       if (!deps.settings) logger.fatal('no settings!!!');
+
+      if (deps.settings.scope !== 'worker') {
+        logger.warn(
+          'SCOPE is not WORKER — getAgnosticNotifications falls back to bot shard queries and will find no channels. Set SCOPE=WORKER (npm run dev:worker / docker compose worker).'
+        );
+      }
 
       if (games.includes('WARFRAME')) {
         this.notifier = new Notifier(deps);

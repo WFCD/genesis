@@ -197,4 +197,28 @@ export default [
     count INT NOT NULL,
     PRIMARY KEY (guild_id, command_id)
   )`,
+  SQL`CREATE TABLE IF NOT EXISTS worker_cache_jobs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    guild_id BIGINT UNSIGNED NOT NULL,
+    locale VARCHAR(8) NOT NULL DEFAULT '',
+    scope ENUM('trackables', 'pings', 'guild') NOT NULL DEFAULT 'trackables',
+    types JSON NULL,
+    requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_worker_cache_guild_locale_scope (guild_id, locale, scope),
+    KEY idx_worker_cache_poll (locale, requested_at)
+  )`,
+  SQL`CREATE TABLE IF NOT EXISTS worker_cache_job_acks (
+    job_id BIGINT UNSIGNED NOT NULL,
+    worker_id VARCHAR(32) NOT NULL,
+    acked_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (job_id, worker_id),
+    FOREIGN KEY (job_id)
+      REFERENCES worker_cache_jobs(id)
+      ON DELETE CASCADE
+  )`,
+  SQL`CREATE TABLE IF NOT EXISTS worker_cache_refresh_stamps (
+    scope ENUM('pings', 'trackables', 'guild') NOT NULL PRIMARY KEY,
+    requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
 ];

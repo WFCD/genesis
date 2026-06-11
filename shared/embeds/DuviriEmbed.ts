@@ -2,6 +2,7 @@ import { optimizeImage, toTitleCase, wikiBase, wfcdn } from '#shared/utilities/C
 import { rTime } from '#shared/utilities/Wrappers';
 
 import BaseEmbed from './BaseEmbed';
+import { formatCycleLinks } from './cycleContext';
 import type { EmbedBuildOptions } from './embedOptions';
 
 const duviriThumb = optimizeImage(wfcdn('Tennocon2022Display.png'), 128);
@@ -88,7 +89,7 @@ export default class DuviriEmbed extends BaseEmbed {
       i18n`Each mood spiral lasts **2 hours** and changes landscape, POIs, and enemy damage.`,
       i18n`Spirals are 6-stage runs (4 on Duviri, 2 in the Undercroft) ending with the Orowyrm.`,
       i18n`Isleweaver is unaffected — scenery stays Joy and Murmur get no spiral damage bonus.`,
-      i18n`[Mood Spirals on the Wiki](${moodWiki})`,
+      formatCycleLinks({ wiki: moodWiki }),
     ].join('\n\n');
 
     this.fields = [

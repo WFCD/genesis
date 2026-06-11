@@ -20,6 +20,7 @@ import {
 
 import { localeMap, platformMap } from '#shared/resources/';
 import { trackableEvents, withEphemeral } from '#shared/utilities/CommonFunctions';
+import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 
 import TrackingManageUI from '../tracking/TrackingManageUI';
 
@@ -287,6 +288,10 @@ export default class SettingsManageUI {
       } else {
         await ctx.settings.notifications.removePing(interaction.guild, pingKey);
       }
+      void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+        refreshPings: true,
+        refreshGuild: false,
+      }).catch((err) => ctx.logger.error(err, 'settings-manage'));
       sessions.delete(sessionKey(session.userId, channelId, threadId));
       return interaction.editReply({
         content: text ? `Set prepend for \`${pingKey}\`.` : `Cleared prepend for \`${pingKey}\`.`,

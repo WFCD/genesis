@@ -3,6 +3,7 @@ import { rTime } from '#shared/utilities/Wrappers';
 import { eta } from '#shared/utilities/WorldState';
 
 import BaseEmbed from './BaseEmbed';
+import { formatCycleLinks, formatCycleTips, getVallisCycleContext } from './cycleContext';
 import type { EmbedBuildOptions } from './embedOptions';
 
 const solaris = `${assetBase}/img/solarisunitedflag.png`;
@@ -29,16 +30,38 @@ const makeJobs = (mission) => {
 export default class SolarisEmbed extends BaseEmbed {
   constructor(state, { i18n, locale }: EmbedBuildOptions) {
     super(locale);
+    const context = getVallisCycleContext(state.isWarm);
+    const phase = state.isWarm ? i18n`Warm` : i18n`Cold`;
+    const next = state.isWarm ? i18n`Cold` : i18n`Warm`;
 
     this.title = `Orb Vallis - ${state.isWarm ? 'Warm' : 'Cold'}`;
     this.color = state.isWarm ? 0xb64624 : 0x000066;
     this.thumbnail = {
       url: solaris,
     };
-    const warmstring = i18n`Time remaining until ${state.isWarm ? i18n`Cold` : i18n`Warm`}: ${rTime(state.expiry)}`;
-    this.description = `${state.bounty ? makeJobs(state.bounty) : ''}\n\n${warmstring}`;
+    this.url = context.map;
 
-    this.footer.text = `${state.isWarm ? i18n`Cold` : i18n`Warm`} starts `;
+    const bountyBlock = state.bounty ? makeJobs(state.bounty) : '';
+    const timerLine = i18n`Time remaining until ${next}: ${rTime(state.expiry)}`;
+
+    this.description = [
+      bountyBlock,
+      timerLine,
+      i18n`${phase} lasts **${context.duration}**. ${context.summary}`,
+      formatCycleLinks(context),
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    this.fields = [
+      {
+        name: i18n`During ${phase}`,
+        value: formatCycleTips(context.tips),
+        inline: false,
+      },
+    ];
+
+    this.footer.text = `${next} starts `;
     this.timestamp = new Date(state.expiry).getTime();
   }
 }

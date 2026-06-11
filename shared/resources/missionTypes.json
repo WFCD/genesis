@@ -15,6 +15,18 @@
     "arbi": false,
     "fissure": true
   },
+  "alchemy": {
+    "arbi": false,
+    "fissure": true
+  },
+  "voidcascade": {
+    "arbi": false,
+    "fissure": true
+  },
+  "voidflood": {
+    "arbi": false,
+    "fissure": true
+  },
   "assassination": {
     "arbi": false,
     "fissure": true

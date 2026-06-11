@@ -65,6 +65,11 @@
     "outposts",
     "cambion.fass",
     "cambion.vome",
+    "duviri.joy",
+    "duviri.anger",
+    "duviri.envy",
+    "duviri.sorrow",
+    "duviri.fear",
     "steelpath",
     "steelpath.umbra",
     "archonhunt"
@@ -136,6 +141,13 @@
     "nightwave.daily",
     "nightwave.elite",
     "nightwave.weekly"
+  ],
+  "duviri": [
+    "duviri.joy",
+    "duviri.anger",
+    "duviri.envy",
+    "duviri.sorrow",
+    "duviri.fear"
   ],
   "twitter": {
     "types": [

@@ -20,6 +20,7 @@ import StatisticsRepository from '#shared/settings/database/repositories/Statist
 import StreamRepository from '#shared/settings/database/repositories/StreamRepository';
 import TrackingRepository from '#shared/settings/database/repositories/TrackingRepository';
 import WelcomeRepository from '#shared/settings/database/repositories/WelcomeRepository';
+import WorkerCacheRepository from '#shared/settings/database/repositories/WorkerCacheRepository';
 import { assetBase } from '#shared/utilities/CommonFunctions';
 import logger from '#shared/utilities/Logger';
 
@@ -64,6 +65,8 @@ export default class Database implements DatabaseRepositories {
   statistics!: StatisticsRepository;
 
   guilds!: GuildRepository;
+
+  workerCache!: WorkerCacheRepository;
 
   clusterId: string | number;
 
@@ -168,6 +171,8 @@ export default class Database implements DatabaseRepositories {
     this.promocodes = new PromocodeRepository(deps);
     this.permissions = new PermissionsRepository(deps);
     this.statistics = new StatisticsRepository(deps);
+
+    this.workerCache = new WorkerCacheRepository(deps);
 
     this.guilds = new GuildRepository(deps, {
       removeChannelPermissions: (channelId) => this.permissions.removeChannelPermissions(channelId),

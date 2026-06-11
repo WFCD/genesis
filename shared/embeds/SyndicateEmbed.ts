@@ -40,8 +40,8 @@ const makeMissionValue = (mission, syndMissions) => {
   if (!mission) {
     return 'No Nodes or Jobs Available';
   }
-  const jobs = mission.jobs.length ? makeJobs(mission, syndMissions.length) : '';
-  const nodes = mission.nodes.length
+  const jobs = mission.jobs?.length ? makeJobs(mission, syndMissions.length) : '';
+  const nodes = mission.nodes?.length
     ? `${mission.nodes.join('\n')}${syndMissions.length < 2 ? '' : `\n\n**Expires in ${eta(mission)}**`}`
     : '';
   let value = 'No Nodes or Jobs Available';
@@ -126,7 +126,7 @@ class SyndicateEmbed extends BaseEmbed {
           this.fields = syndMissions.map((m) => ({
             name: syndMissions.length < 2 ? '\u200B' : m.syndicate,
             value: makeMissionValue(m, syndMissions),
-            inline: !(m.jobs.length > 0),
+            inline: !(m.jobs?.length > 0),
           }));
         }
       }

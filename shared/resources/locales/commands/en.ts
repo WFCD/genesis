@@ -10,7 +10,7 @@ export default {
   },
   arbi: {
     name: 'arbi',
-    description: 'Get WorldState Arbitrations',
+    description: 'Get WorldState Arbitrations (unavailable — not published by DE)',
   },
   archons: {
     name: 'archons',

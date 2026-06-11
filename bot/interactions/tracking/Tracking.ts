@@ -3,6 +3,7 @@ import { ApplicationCommandOptionType as Types, ChannelType, escapeMarkdown, Per
 const stripMentions = (text: string) => text.replace(/@/g, '@\u200b');
 
 import { emojify, trackablesFromParameters, withEphemeral } from '#shared/utilities/CommonFunctions';
+import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 import { cmds } from '#shared/resources/index';
 
 import Interaction from '../../models/Interaction';
@@ -150,6 +151,10 @@ export default class Tracking extends Interaction {
             )
           )
         );
+        void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+          refreshPings: true,
+          refreshGuild: true,
+        }).catch((err) => ctx.logger.error(err, 'tracking'));
         return interaction?.editReply?.(
           withEphemeral(ctx.ephemerate, {
             content: ctx.i18n`Removed pings for ${remove.events.length + remove.items.length} trackables.`,
@@ -180,6 +185,14 @@ export default class Tracking extends Interaction {
           withEphemeral(ctx.ephemerate, { content: `${addString}\n${removeString}\n${pingsString}` })
         );
       }
+
+      void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+        trackableTypes: [...(add?.events ?? []), ...(remove?.events ?? [])],
+        refreshGuild: true,
+        refreshPings: Boolean(
+          prepend && (add?.events?.length || add?.items?.length) || clear && Object.keys(remove)?.length
+        ),
+      }).catch((err) => ctx.logger.error(err, 'tracking'));
       await this.#generateWebhook(interaction, ctx, channel);
     }
   }

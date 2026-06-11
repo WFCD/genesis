@@ -4,11 +4,14 @@ import fetch from 'node-fetch';
 import { emoji, factions, missionTypes, rssFeeds, trackables as all, welcomes } from '#shared/resources/index';
 
 import logger from './Logger';
+import { FISSURE_NODE_TRACKABLE_PATTERN } from './FissureTracking';
+import { arbitrationWorldstateAvailable } from './WorldState';
 
 const {
   clantech,
   conclave,
   deals,
+  duviri,
   eventTypes,
   fissures,
   nightwave,
@@ -108,6 +111,7 @@ export const trackableEvents: Record<string, any> = {
   deals,
   cambion: ['cambion.fass', 'cambion.vome', 'necralisk'],
   cetus: ['cetus.day', 'cetus.night'],
+  duviri,
   ostrons: ['cetus.day', 'cetus.night', 'syndicate.ostrons'],
   earth: ['earth.day', 'earth.night'],
   vallis: ['solaris.warm', 'solaris.cold', 'solaris'],
@@ -125,6 +129,7 @@ trackableEvents.baseEvents = eventTypes.filter(
     !(
       trackableEvents.cambion.includes(e) ||
       trackableEvents.cetus.includes(e) ||
+      trackableEvents.duviri.includes(e) ||
       trackableEvents.ostrons.includes(e) ||
       trackableEvents.earth.includes(e) ||
       trackableEvents.vallis.includes(e) ||
@@ -155,8 +160,7 @@ const fSpTemp = [];
 const arbiTemp = [];
 const kuvaTemp = [];
 Object.keys(missionTypes).forEach((type) => {
-  // These will be re-enabled when arbitrations/kuva are ready
-  if (missionTypes[type].arbi) {
+  if (arbitrationWorldstateAvailable && missionTypes[type].arbi) {
     factions.forEach((faction) => {
       if (!trackableEvents[`arbitration.${faction}`]) trackableEvents[`arbitration.${faction}`] = [];
       trackableEvents[`arbitration.${faction}`].push(`arbitration.${faction}.${type}`);
@@ -220,6 +224,9 @@ export const dyn = [
   'cetus\\.night\\.[0-1]?[0-9]?[0-9]?',
   'cambion\\.fass\\.[0-1]?[0-9]?[0-9]?',
   'cambion\\.vome\\.[0-1]?[0-9]?[0-9]?',
+  'duviri\\.(joy|anger|envy|sorrow|fear)(\\.[0-1]?[0-9]?[0-9]?)?',
+  'fissures\\.node\\.[a-z0-9_]+',
+  'fissures\\.sp\\.node\\.[a-z0-9_]+',
   ...trackableEvents.rss,
   ...trackableEvents.events,
   ...rewardTypes,
@@ -289,6 +296,15 @@ export const termToTrackable = (term) => {
 
   if (term === 'items') {
     trackable.items = rewardTypes;
+    return trackable;
+  }
+
+  if (!arbitrationWorldstateAvailable && (term === 'arbitration' || term.startsWith('arbitration.'))) {
+    return trackable;
+  }
+
+  if (FISSURE_NODE_TRACKABLE_PATTERN.test(term)) {
+    trackable.events = [term];
     return trackable;
   }
 

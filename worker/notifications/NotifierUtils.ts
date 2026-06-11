@@ -23,6 +23,7 @@ import Solaris from '#shared/embeds/SolarisEmbed';
 import Nightwave from '#shared/embeds/NightwaveEmbed';
 import Outposts from '#shared/embeds/SentientOutpostEmbed';
 import SteelPath from '#shared/embeds/SteelPathEmbed';
+import Duviri from '#shared/embeds/DuviriEmbed';
 import RSS from '#shared/embeds/RSSEmbed';
 
 export const i18ns = {};
@@ -52,6 +53,7 @@ export const embeds = {
   Nightwave,
   Outposts,
   SteelPath,
+  Duviri,
   RSS,
 };
 

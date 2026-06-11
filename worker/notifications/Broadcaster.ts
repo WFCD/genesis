@@ -78,9 +78,19 @@ export default class Broadcaster {
 
         try {
           const pingKey = `${guild.id}:${[type].concat((items || []).sort()).join(',')}`;
+          const pings = this.workerCache.getKey('pings') || {};
           /** @type {string} */
-          const content = this.workerCache.getKey('pings')[pingKey] || '';
-          await webhook(ctx, { content, embeds: [embed] });
+          let content = pings[pingKey] || '';
+          if (!content && type.startsWith('fissures.sp.node.')) {
+            content = pings[`${guild.id}:fissures.sp.node`] || '';
+          } else if (!content && type.startsWith('fissures.node.')) {
+            content = pings[`${guild.id}:fissures.node`] || '';
+          }
+          await webhook.call(
+            { settings: this.settings, client: this.client, scope: 'worker' },
+            ctx,
+            { content, embeds: [embed] }
+          );
         } catch (e) {
           if (e.message) {
             if (e.message.includes('Unknown Webhook')) {

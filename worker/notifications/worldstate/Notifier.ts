@@ -7,6 +7,8 @@ import { captures, createGroupedArray, platforms, games } from '#shared/utilitie
 import { isActive, isActiveArbitration, isExpired, rewardString } from '#shared/utilities/WorldState';
 import { resolveInvasionThumbnail } from '#shared/embeds/InvasionEmbed';
 
+import { fissureNodeTypeKey, fissureTypeKey, transformMissionType } from '#shared/utilities/FissureTracking';
+
 import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils';
 import Broadcaster from '../Broadcaster';
 
@@ -21,11 +23,30 @@ const wrapPromise = async (prom, indicator) => {
   try {
     return await prom;
   } catch (e) {
-    logger.error(`Failure running ${e}`, indicator);
+    logger.error(e, indicator ? `Failure running ${indicator}` : 'Failure running notifier task');
   }
 };
 const updtReg = new RegExp(captures.updates, 'i');
 const beats = {};
+
+const normalizeNotifiedIds = (notified) => {
+  if (Array.isArray(notified)) return notified;
+  if (typeof notified === 'string') {
+    try {
+      const parsed = JSON.parse(notified);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const summarizeNotifiable = (data) =>
+  Object.entries(data)
+    .filter(([, value]) => (Array.isArray(value) ? value.length : value))
+    .map(([key, value]) => `${key}:${Array.isArray(value) ? value.length : 1}`)
+    .join(', ');
 const makeNightwaveType = (challenge) => {
   let type = 'daily';
 
@@ -113,13 +134,6 @@ const buildNotifiableData = (newData, notified) => {
   return {};
 };
 
-const transformMissionType = (rawType) =>
-  rawType
-    ?.toLowerCase()
-    .replace(/dark sector/gi, '')
-    .replace(/\s/g, '')
-    .trim() ?? '';
-
 export default class Notifier {
   #settings;
   #worldStates;
@@ -168,9 +182,15 @@ export default class Notifier {
 
     // Set up data to notify
     updating.add(key);
-    const notifiedIds = await this.#settings.getNotifiedIds(key);
+    const notifiedIds = normalizeNotifiedIds(await this.#settings.getNotifiedIds(key));
     try {
       const notifiableData = buildNotifiableData(newData, notifiedIds);
+      const summary = summarizeNotifiable(notifiableData);
+      if (summary) {
+        logger.debug(`notifiable ${key}: ${summary}`, 'WS');
+      } else {
+        logger.debug(`notifiable ${key}: none (${notifiedIds.length} ids in dedup store)`, 'WS');
+      }
       await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
     } catch (e) {
       logger.error(e);
@@ -251,9 +271,14 @@ export default class Notifier {
     }
 
     try {
+      const baroIds = rawData.voidTraders?.length
+        ? rawData.voidTraders.map((vt) => `${vt.id}${isActive(vt) ? '1' : '0'}`)
+        : rawData.voidTrader
+          ? [`${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`]
+          : [];
       const alreadyNotified = [
         ...rawData.persistentEnemies.map((a) => a.pid),
-        `${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`,
+        ...baroIds,
         ...rawData.fissures.map((f) => f.id),
         ...rawData.invasions.map((i) => i.id),
         ...rawData.news.map((n) => n.id),
@@ -437,11 +462,12 @@ export default class Notifier {
 
   async #sendFissures(newFissures, deps) {
     try {
-      return this.#standardBroadcast(newFissures, {
-        ...deps,
-        Embed: embeds.Fissure,
-        typeGenerator: (fissure) =>
-          `fissures.${fissure.isHard ? 'sp.' : ''}t${fissure.tierNum}.${transformMissionType(fissure.missionTypeKey)}`,
+      return Promise.mapSeries(newFissures, async (fissure) => {
+        await this.#standardBroadcast(fissure, { ...deps, Embed: embeds.Fissure, type: fissureTypeKey(fissure) });
+        const nodeType = fissureNodeTypeKey(fissure);
+        if (nodeType) {
+          await this.#standardBroadcast(fissure, { ...deps, Embed: embeds.Fissure, type: nodeType });
+        }
       });
     } catch (e) {
       logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
@@ -516,11 +542,12 @@ export default class Notifier {
   }
 
   async #checkAndSendSyndicate(embed, syndicate, deps) {
+    const invalidField = embed.fields?.[0]?.name === 'No such Syndicate';
     if (
       embed.description &&
       embed.description.length > 0 &&
       embed.description !== 'No such Syndicate' &&
-      embed?.fields?.[0].name !== 'No such Syndicate'
+      !invalidField
     ) {
       return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: syndicate, locale: deps.locale });
     }

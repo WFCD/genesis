@@ -2,6 +2,7 @@ import { assetBase, toTitleCase } from '#shared/utilities/CommonFunctions';
 import { rTime } from '#shared/utilities/Wrappers';
 
 import BaseEmbed from './BaseEmbed';
+import { formatCycleLinks, formatCycleTips, getCambionCycleContext } from './cycleContext';
 import type { EmbedBuildOptions } from './embedOptions';
 
 const fass = `${assetBase}/img/FassBanner.png`;
@@ -36,16 +37,36 @@ export default class CambionEmbed extends BaseEmbed {
    */
   constructor(state, { i18n, locale }: EmbedBuildOptions) {
     super(locale);
-    this.title = i18n`Cambion Drift Cycle - ${toTitleCase(state.state)}`;
+    const context = getCambionCycleContext(state.state);
+    const phase = toTitleCase(state.state);
+    const next = toTitleCase(state.state === 'fass' ? 'vome' : 'fass');
+
+    this.title = i18n`Cambion Drift Cycle - ${phase}`;
     this.color = state.state === 'fass' ? 0xc6733f : 0x415b9e;
     this.thumbnail = {
       url: state.state === 'fass' ? fass : vome,
     };
+    this.url = context.map;
 
-    const next = toTitleCase(state.state === 'fass' ? 'vome' : 'fass');
+    const bountyBlock = state.bounty ? makeJobs(state.bounty, i18n) : '';
+    const timerLine = i18n`Time remaining until ${next}: ${rTime(state.expiry)}`;
 
-    const nextCtd = i18n`Time remaining until ${next}: ${rTime(state.expiry)}`;
-    this.description = `${state.bounty ? makeJobs(state.bounty, i18n) : ''}\n\n${nextCtd}`;
+    this.description = [
+      bountyBlock,
+      timerLine,
+      i18n`${phase} lasts **${context.duration}**. ${context.summary}`,
+      formatCycleLinks(context),
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    this.fields = [
+      {
+        name: i18n`During ${phase}`,
+        value: formatCycleTips(context.tips),
+        inline: false,
+      },
+    ];
 
     this.footer.text = i18n`${next} starts `;
     this.timestamp = new Date(state.expiry).getTime();

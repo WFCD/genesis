@@ -367,7 +367,9 @@ export default class WorldState extends Interaction {
       }
       case 'arbitration': {
         if (!isActiveArbitration(data)) {
-          return interaction.editReply(ctx.i18n`⚠️ No arbitration active.`);
+          return interaction.editReply(
+            ctx.i18n`⚠️ Arbitration is unavailable — Digital Extremes is not publishing arbitration missions in worldstate right now. Tracking and notifications are disabled until that returns.`
+          );
         }
         embed = EmbedBuilder.from(new embeds.arbitration(data, { platform, i18n: ctx.i18n, locale: language }));
         return interaction.editReply({ embeds: [embed] });
@@ -385,7 +387,8 @@ export default class WorldState extends Interaction {
         if (!data?.length && !Object.keys(data).length) {
           return interaction.editReply(ctx.i18n`No ${field.charAt(0).toUpperCase() + field.slice(1)} Active`);
         }
-        embed = new EmbedBuilder(new embeds[field](data, { platform, i18n: ctx.i18n }));
+        const cyclePayload = field === 'cetusCycle' ? { ...data, isCetus: true } : data;
+        embed = new EmbedBuilder(new embeds[field](cyclePayload, { platform, i18n: ctx.i18n, locale: language }));
         return interaction.editReply({ embeds: [embed] });
       case 'voidTrader': {
         if (!data || !Object.keys(data).length) {

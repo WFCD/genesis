@@ -18,7 +18,7 @@ const asBool = (value: unknown, fallback: unknown): boolean => {
   return value === '1' || value === true;
 };
 
-type ChannelInput = TextChannel | User | { id: string; guild?: Guild };
+type ChannelInput = TextChannel | User | { id: string; guild?: Guild } | string;
 
 export interface CommandContextDeps {
   scope: string;
@@ -35,11 +35,13 @@ export async function buildCommandContext(
   channel: ChannelInput,
   user?: User
 ): Promise<CommandContext> {
-  await deps.channels.getSetting(channel, 'prefix');
-
-  if (!('id' in channel) || !channel.id) {
+  if (typeof channel === 'string') {
+    channel = { id: channel };
+  } else if (!('id' in channel) || !channel.id) {
     channel = { id: channel as unknown as string };
   }
+
+  await deps.channels.getSetting(channel, 'prefix');
 
   const settings = ['webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'language', 'platform'];
 

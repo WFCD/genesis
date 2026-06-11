@@ -27,6 +27,31 @@ export default class SuperUser extends Interaction {
         type: Types.Subcommand,
       },
       {
+        name: 'refresh',
+        description: 'Refresh worker cache globally or for one guild',
+        type: Types.Subcommand,
+        options: [
+          {
+            name: 'scope',
+            type: Types.String,
+            description: 'Which worker cache scope to refresh',
+            required: true,
+            choices: [
+              { name: 'pings', value: 'pings' },
+              { name: 'trackables', value: 'trackables' },
+              { name: 'guild', value: 'guild' },
+              { name: 'all', value: 'all' },
+            ],
+          },
+          {
+            name: 'guild_id',
+            type: Types.String,
+            description: 'Guild Id for a targeted refresh instead of a global stamp bump',
+            required: false,
+          },
+        ],
+      },
+      {
         name: 'server',
         description: 'Get server info',
         type: Types.Subcommand,
@@ -105,6 +130,24 @@ export default class SuperUser extends Interaction {
         await interaction.deferReply(withEphemeral(ephemeral));
         await ctx.handler.reloadCommands();
         return interaction.editReply('doneski');
+      case 'refresh': {
+        const scope = interaction.options.getString('scope');
+        const guildId = interaction.options.getString('guild_id')?.trim();
+        if (guildId) {
+          await ctx.settings.workerCache.enqueueGuildRefresh(guildId, scope);
+          return interaction.reply(
+            withEphemeral(ephemeral, {
+              content: `Queued \`${scope}\` worker cache refresh for guild \`${guildId}\`. Workers pick up within ~1 minute.`,
+            })
+          );
+        }
+        await ctx.settings.workerCache.bumpRefreshStamp(scope);
+        return interaction.reply(
+          withEphemeral(ephemeral, {
+            content: `Bumped global \`${scope}\` worker cache refresh. Workers pick up within ~1 minute.`,
+          })
+        );
+      }
       case 'leave':
         id = interaction.options.getString('server_id').trim();
         guild = await interaction.client.guilds.fetch(id);

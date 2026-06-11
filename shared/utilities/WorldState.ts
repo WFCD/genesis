@@ -61,8 +61,12 @@ export type ArbitrationData = {
   expiry?: string | number;
 };
 
+/** Flip when DE publishes live arbitration missions in worldstate again. */
+export const arbitrationWorldstateAvailable = false;
+
 /** True when worldstate has a live arbitration (not the SolNode000 placeholder). */
 export const isActiveArbitration = (arbitration: ArbitrationData | null | undefined) => {
+  if (!arbitrationWorldstateAvailable) return false;
   if (!arbitration || typeof arbitration !== 'object') return false;
   if (arbitration.expired === true) return false;
   if (arbitration.nodeKey === 'SolNode000' || arbitration.node === 'SolNode000') return false;

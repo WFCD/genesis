@@ -99,6 +99,25 @@ export default class NotificationsRepository {
     return pings;
   }
 
+  /** Ping cache slice for one guild (`${guildId}:${pingablesGroup}` keys). */
+  async getGuildPingCacheSlice(guildId: string): Promise<Record<string, string>> {
+    const slice: Record<string, string> = {};
+    await Promise.all(
+      pingables.map(async (plist) => {
+        const query = SQL`SELECT GROUP_CONCAT(text SEPARATOR ',') AS ping
+          FROM pings
+          WHERE guild_id = ${guildId}
+            AND item_or_type IN (${plist.split(',')})`;
+        const [rows] = (await this.deps.query(query)) ?? [[]];
+        const ping = (rows as Array<{ ping?: string }>)?.[0]?.ping;
+        if (ping) {
+          slice[`${guildId}:${plist}`] = ping;
+        }
+      })
+    );
+    return slice;
+  }
+
   async getPingsForGuild(guild: GuildRef) {
     if (guild) {
       const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;

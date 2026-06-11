@@ -16,6 +16,7 @@ import {
   trackableItems,
   withEphemeral,
 } from '#shared/utilities/CommonFunctions';
+import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 
 import Tracking from './Tracking';
 
@@ -121,12 +122,20 @@ export default class TrackingManageUI {
 
   static async #updatePanel(
     interaction: MessageComponentInteraction,
+    ctx,
     session: TrackingSession,
     channel,
-    thread?,
-    saved = false
+    thread?
   ) {
-    return interaction.editReply(this.#render(session, channel, thread, saved));
+    return interaction.editReply(withEphemeral(ctx.ephemerate, this.#render(session, channel, thread)));
+  }
+
+  static #savedEmbed(channel, thread?) {
+    return new EmbedBuilder()
+      .setColor(0x57f287)
+      .setTitle('Tracking saved')
+      .setDescription(`${channel}${thread ? `\nThread: ${thread}` : ''}`)
+      .setFooter({ text: 'Tracking saved' });
   }
 
   static async handleComponent(interaction: MessageComponentInteraction, ctx, channel, thread?) {
@@ -178,13 +187,20 @@ export default class TrackingManageUI {
         }
         session.page = 0;
       } else if (component === 'tracksave' && interaction.isButton()) {
+        const previousEvents = await ctx.settings.tracking.getTrackedEventTypes(channel, thread);
         await ctx.settings.tracking.setTrackables(channel, {
           items: session.items,
           events: session.events,
           thread,
         });
-        this.#touchSession(session);
-        await this.#updatePanel(interaction, session, channel, thread, true);
+        void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+          trackableTypes: [...previousEvents, ...session.events],
+          refreshGuild: true,
+        }).catch((err) => ctx.logger.error(err, 'TM'));
+        sessions.delete(sessionKey(session.userId, channelId, threadId));
+        await interaction.editReply(
+          withEphemeral(ctx.ephemerate, { embeds: [this.#savedEmbed(channel, thread)], components: [] })
+        );
         void Tracking.setupWebhookAfterSave(interaction, ctx, channel, thread).catch((err) =>
           ctx.logger.error(err, 'TM')
         );
@@ -211,11 +227,13 @@ export default class TrackingManageUI {
         session.page = 0;
       } else if (component === 'close' && interaction.isButton()) {
         sessions.delete(sessionKey(session.userId, channelId, threadId));
-        return interaction.editReply({ content: 'Tracking panel closed.', embeds: [], components: [] });
+        return interaction.editReply(
+          withEphemeral(ctx.ephemerate, { content: 'Tracking panel closed.', embeds: [], components: [] })
+        );
       }
 
       this.#touchSession(session);
-      return this.#updatePanel(interaction, session, channel, thread);
+      return this.#updatePanel(interaction, ctx, session, channel, thread);
     } catch (err) {
       ctx.logger.error(err, 'TM');
       return interaction
@@ -226,7 +244,7 @@ export default class TrackingManageUI {
     }
   }
 
-  static #render(session: TrackingSession, channel, thread?, saved = false) {
+  static #render(session: TrackingSession, channel, thread?) {
     const { items, events, group, subgroup, page } = session;
     const chunks = chunkerate(session);
     const safePage = Math.min(Math.max(page, 0), Math.max(chunks.length - 1, 0));
@@ -235,11 +253,9 @@ export default class TrackingManageUI {
     const embed = new EmbedBuilder()
       .setTitle('Manage Tracking')
       .setDescription(`${channel}${thread ? `\nThread: ${thread}` : ''}\n\n${trackingBody}`)
-      .setColor(saved ? 0x57f287 : 0x77dd77);
+      .setColor(0x77dd77);
 
-    if (saved) {
-      embed.setFooter({ text: 'Tracking saved' });
-    } else if (chunks.length > 1) {
+    if (chunks.length > 1) {
       embed.setFooter({ text: `Page ${safePage + 1}/${chunks.length}` });
     }
 
@@ -267,7 +283,7 @@ export default class TrackingManageUI {
       ...Object.keys(trackableEvents)
         .filter(
           (e) =>
-            (!['events', 'opts', 'kuva', 'cetus'].includes(e) &&
+            (!['events', 'opts', 'kuva', 'cetus', 'arbitration'].includes(e) &&
               !e.startsWith('fissures.') &&
               !e.startsWith('twitter.') &&
               !e.startsWith('arbitration.')) ||

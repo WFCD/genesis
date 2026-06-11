@@ -13,6 +13,7 @@ import type StatisticsRepository from './repositories/StatisticsRepository';
 import type StreamRepository from './repositories/StreamRepository';
 import type TrackingRepository from './repositories/TrackingRepository';
 import type WelcomeRepository from './repositories/WelcomeRepository';
+import type WorkerCacheRepository from './repositories/WorkerCacheRepository';
 
 /** Repository handles grouped by interaction domain. Grows as mixins migrate. */
 export interface DatabaseRepositories {
@@ -31,4 +32,5 @@ export interface DatabaseRepositories {
   permissions: PermissionsRepository;
   statistics: StatisticsRepository;
   guilds: GuildRepository;
+  workerCache: WorkerCacheRepository;
 }

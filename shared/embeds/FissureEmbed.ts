@@ -1,11 +1,12 @@
 import { wikiBase, cdn } from '#shared/utilities/CommonFunctions';
+import { fissureNodeTypeKey, fissureTypeKey } from '#shared/utilities/FissureTracking';
 import { rTime } from '#shared/utilities/Wrappers';
 
 import BaseEmbed from './BaseEmbed';
 import type { EmbedBuildOptions } from './embedOptions';
 
 const fissureThumb = cdn('img/fissure-sm.png');
-const steelPath = cdn('img/steelpath-h.png');
+const spLogo = cdn('img/sp-logo.png');
 
 /**
  * Generates fissure embeds
@@ -47,11 +48,22 @@ export default class FissureEmbed extends BaseEmbed {
       this.title = i18n`[${platform.toUpperCase()}] ${f.missionType} ${f.tier}`;
       this.description = `${i18n`${f.node} against ${f.enemy}`}${i18n`\n**Expires ${rTime(f.expiry)}**`}`;
       if (f.isStorm) this.description += `\n${i18n`Void Storm - Archwing Required`}`;
+      const typeTrack = fissureTypeKey(f);
+      const nodeTrack = fissureNodeTypeKey(f);
+      const trackLines = [`${i18n`Type`}: \`${typeTrack}\``];
+      if (nodeTrack) trackLines.push(`${i18n`Node`}: \`${nodeTrack}\``);
+      this.fields = [
+        {
+          name: i18n`Track`,
+          value: trackLines.join('\n'),
+          inline: false,
+        },
+      ];
       this.footer.text = i18n`Expires `;
       this.timestamp = new Date(f.expiry).getTime();
       this.thumbnail.url = fissureThumb;
       if (f.isHard) {
-        this.setImage(steelPath);
+        this.author = { name: i18n`Steel Path`, iconURL: spLogo };
       }
     }
 

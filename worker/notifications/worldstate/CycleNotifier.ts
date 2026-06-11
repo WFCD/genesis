@@ -26,12 +26,17 @@ const durations = {
     fass: 6000000,
     vome: 3000000,
   },
+  duviri: 7200000,
 };
 
 interface CycleData {
   data: object;
   dirty: boolean;
 }
+
+const MOOD_ORDER = ['joy', 'anger', 'envy', 'sorrow', 'fear'];
+
+const nextMood = (state) => MOOD_ORDER[(MOOD_ORDER.indexOf(state) + 1) % MOOD_ORDER.length];
 
 function buildNotifiableData(newData, platform, locale) {
   const key = `${platform}:${locale}`;
@@ -53,6 +58,13 @@ function buildNotifiableData(newData, platform, locale) {
       dirty: between(newData.vallisCycle.activation, key, refreshRate, beats),
     },
   };
+
+  if (newData.duviriCycle) {
+    data.duviri = {
+      data: newData.duviriCycle,
+      dirty: between(newData.duviriCycle.activation, key, refreshRate, beats),
+    };
+  }
 
   const ostron = newData.syndicateMissions.filter((mission) => mission.syndicate === 'Ostrons')[0];
   if (ostron) {
@@ -131,22 +143,21 @@ export default class CycleNotifier {
     beats[key].currCycleStart = Date.now();
     if (!newData?.timestamp) return;
 
-    const notifiedIds = await this.#settings.getNotifiedIds(key);
-
-    // Set up data to notify
+    updating.add(key);
     try {
-      updating.add(key);
+      const notifiedIds = await this.#settings.getNotifiedIds(key);
       await this.#sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, platform, locale), key);
-      updating.remove(key);
     } catch (e) {
       if (e.message === 'already updating') {
-        return; // expected to happen
+        return;
       }
       throw e;
+    } finally {
+      updating.remove(key);
     }
   }
 
-  async #sendNew(platform, locale, rawData, notifiedIds, { cetus, earth, cambion, vallis }, key) {
+  async #sendNew(platform, locale, rawData, notifiedIds, { cetus, earth, cambion, vallis, duviri }, key) {
     // Send all notifications
     const cycleIds = [];
     const i18n = i18ns[locale];
@@ -162,13 +173,16 @@ export default class CycleNotifier {
       cycleIds.push(await this.#sendEarthCycle(earth, deps));
       cycleIds.push(await this.#sendVallisCycle(vallis, deps));
       cycleIds.push(await this.#sendCambionCycle(cambion, deps));
+      if (duviri) {
+        cycleIds.push(await this.#sendDuviriCycle(duviri, deps));
+      }
     } catch (e) {
       logger.error(e);
     } finally {
       beats[key].lastUpdate = Date.now();
     }
 
-    const alreadyNotified = [...cycleIds].filter((a) => a);
+    const alreadyNotified = [...new Set([...notifiedIds, ...cycleIds.filter(Boolean)])];
 
     await this.#settings.setNotifiedIds(key, alreadyNotified);
     logger.silly(`completed sending cycle notifications for ${platform} in ${locale}`);
@@ -177,7 +191,6 @@ export default class CycleNotifier {
   async #sendCambionCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
     let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const clone = JSON.parse(JSON.stringify(newCycle));
-    let writeType = true;
     if (isWithinRange(minutesRemaining)) {
       clone.state = clone.state === 'vome' ? 'fass' : 'vome';
       const newEnd = new Date(clone.expiry).getTime() + durations.deimos[clone.state];
@@ -186,21 +199,20 @@ export default class CycleNotifier {
       clone.expiry = new Date(newEnd);
       delete clone.timeLeft;
       delete clone.shortString;
-      writeType = minutesRemaining.endsWith('.1');
       minutesRemaining = '';
     } else return undefined;
     const type = `cambion.${clone.state}${minutesRemaining}`;
     if (!notifiedIds.includes(type)) {
       await this.#broadcaster.broadcast(new embeds.Cambion(clone, { i18n, locale }), { platform, type, locale });
     }
-    return writeType ? type : undefined;
+    return type;
   }
 
   async #sendCetusCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
     let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
     const clone = JSON.parse(JSON.stringify(newCycle));
-    let writeType = true;
     if (isWithinRange(minutesRemaining)) {
+      clone.isCetus = true;
       clone.isDay = !clone.isDay;
       clone.state = clone.state === 'day' ? 'night' : 'day';
       const newEnd = new Date(clone.expiry).getTime() + durations.cetus[clone.state];
@@ -209,7 +221,6 @@ export default class CycleNotifier {
       clone.expiry = new Date(newEnd);
       delete clone.timeLeft;
       delete clone.shortString;
-      writeType = minutesRemaining.endsWith('.1');
       minutesRemaining = '';
     } else return undefined;
     const type = `cetus.${clone.state}${minutesRemaining}`;
@@ -220,7 +231,7 @@ export default class CycleNotifier {
         locale,
       });
     }
-    return writeType ? type : undefined;
+    return type;
   }
 
   async #sendEarthCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
@@ -269,6 +280,27 @@ export default class CycleNotifier {
         type,
         locale,
       });
+    }
+    return type;
+  }
+
+  async #sendDuviriCycle({ data: newCycle, dirty: cycleChange }, { platform, notifiedIds, locale, i18n }) {
+    if (!newCycle) return undefined;
+    let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+    const clone = JSON.parse(JSON.stringify(newCycle));
+    if (isWithinRange(minutesRemaining)) {
+      clone.state = nextMood(clone.state);
+      const newEnd = new Date(clone.expiry).getTime() + durations.duviri;
+      clone.id = `duviriCycle${clone.state}${newEnd}`;
+      clone.activation = clone.expiry;
+      clone.expiry = new Date(newEnd);
+      delete clone.timeLeft;
+      delete clone.shortString;
+      minutesRemaining = '';
+    } else return undefined;
+    const type = `duviri.${clone.state}${minutesRemaining}`;
+    if (!notifiedIds.includes(type)) {
+      await this.#broadcaster.broadcast(new embeds.Duviri(clone, { i18n, locale }), { platform, type, locale });
     }
     return type;
   }

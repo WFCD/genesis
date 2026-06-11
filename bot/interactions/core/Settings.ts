@@ -16,6 +16,7 @@ import {
   withEphemeral,
 } from '#shared/utilities/CommonFunctions';
 import Collectors from '#shared/utilities/Collectors';
+import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 import { cmds, localeMap, platformMap } from '#shared/resources/index';
 
 import Interaction from '../../models/Interaction';
@@ -496,6 +497,10 @@ export default class Settings extends Interaction {
         switch (field) {
           case 'pings':
             await ctx.settings.notifications.removePings(interaction?.guild?.id);
+            void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+              refreshPings: true,
+              refreshGuild: false,
+            }).catch((err) => logger.error(err, 'settings'));
             return interaction.editReply(withEphemeral(ephemeral, { content: 'pings cleared' }));
           case 'temp_category':
             await ctx.settings.channels.deleteSetting(channel, 'tempChannel');

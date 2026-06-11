@@ -148,4 +148,48 @@ export default [
       await db.query(SQL`ALTER TABLE custom_commands ADD COLUMN ephemeral TINYINT(1) NOT NULL DEFAULT 0`);
     }
   },
+  async (db) => {
+    const [tables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'worker_cache_jobs'`
+    );
+    if (!tables?.length) return;
+
+    const [scopeCol] = await db.query(SQL`SHOW COLUMNS FROM worker_cache_jobs LIKE 'scope'`);
+    const scopeType = scopeCol?.[0]?.Type as string | undefined;
+    if (scopeType && !scopeType.includes('pings')) {
+      await db.query(
+        SQL`ALTER TABLE worker_cache_jobs
+          MODIFY locale VARCHAR(8) NOT NULL DEFAULT '',
+          MODIFY scope ENUM('trackables', 'pings', 'guild') NOT NULL DEFAULT 'trackables'`
+      );
+    }
+
+    const [ackTables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'worker_cache_job_acks'`
+    );
+    if (!ackTables?.length) {
+      await db.query(SQL`CREATE TABLE worker_cache_job_acks (
+        job_id BIGINT UNSIGNED NOT NULL,
+        worker_id VARCHAR(32) NOT NULL,
+        acked_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (job_id, worker_id),
+        FOREIGN KEY (job_id)
+          REFERENCES worker_cache_jobs(id)
+          ON DELETE CASCADE
+      )`);
+    }
+
+    const [stampTables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'worker_cache_refresh_stamps'`
+    );
+    if (!stampTables?.length) {
+      await db.query(SQL`CREATE TABLE worker_cache_refresh_stamps (
+        scope ENUM('pings', 'trackables', 'guild') NOT NULL PRIMARY KEY,
+        requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`);
+    }
+  },
 ];

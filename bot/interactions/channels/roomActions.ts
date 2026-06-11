@@ -263,11 +263,19 @@ export async function resizeRoom(room: PrivateRoom, limit: number) {
   }
 }
 
+/** Bot-created per-room categories should be removed; shared temp categories should not. */
+export const shouldDeleteRoomCategory = (room: PrivateRoom, tempCategory?: CategoryChannel) => {
+  if (!room.category?.deletable) return false;
+  if (!room.categoryId || room.categoryId === '0') return false;
+  if (tempCategory && room.category.id === tempCategory.id) return false;
+  return true;
+};
+
 export async function destroyPrivateRoom(room: PrivateRoom, settings: Database, tempCategory?: CategoryChannel) {
   if (room.textChannel?.deletable) await room.textChannel.delete();
   if (room.voiceChannel?.deletable) await room.voiceChannel.delete();
-  if (room.category?.deletable && tempCategory && room.category.id !== tempCategory.id) {
-    await room.category.delete();
+  if (shouldDeleteRoomCategory(room, tempCategory)) {
+    await room.category!.delete();
   }
   await settings.privateRooms.deletePrivateRoom(room);
 }
