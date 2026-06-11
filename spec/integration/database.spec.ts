@@ -109,7 +109,7 @@ describeDb('Database integration (MariaDB)', () => {
     const jobs = await db.workerCache.fetchPendingJobs(['de'], 'worker_de');
     const scopes = jobs.map((job) => job.scope).sort();
 
-    expect(scopes).to.deep.equal(['guild', 'pings', 'trackables']);
+    expect(scopes).to.deep.equal(['guild', 'pings']);
     expect(jobs.find((job) => job.scope === 'trackables')?.locale).to.equal('de');
     await Promise.all(jobs.map((job) => db.workerCache.deleteJob(job.id)));
   });
