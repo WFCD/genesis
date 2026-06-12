@@ -147,4 +147,53 @@ describeDb('Database integration (MariaDB)', () => {
       expect(afterAll.guild).to.be.greaterThan(before.guild);
     });
   });
+
+  describe('notification messages', () => {
+    beforeEach(async () => {
+      await getTestDatabase().notificationMessages.clearAll();
+    });
+
+    it('enqueues, fetches due rows, and purges on delete', async () => {
+      const db = getTestDatabase();
+      const expiresAt = new Date(Date.now() - 60_000);
+
+      await db.notificationMessages.enqueue({
+        channelId: TEST_CHANNEL_ID,
+        messageId: '111222333444555666',
+        webhookId: '777888999000111222',
+        webhookToken: 'test-token',
+        trackableType: 'fissures.node',
+        eventId: 'fissures.node,abc',
+        expiresAt,
+      });
+
+      const due = await db.notificationMessages.fetchDue(10);
+      expect(due).to.have.length(1);
+      expect(due[0].trackable_type).to.equal('fissures.node');
+
+      await db.notificationMessages.deleteByIds([due[0].id]);
+      expect(await db.notificationMessages.fetchDue(10)).to.have.length(0);
+    });
+
+    it('marks failed rows and purges after max attempts', async () => {
+      const db = getTestDatabase();
+
+      await db.notificationMessages.enqueue({
+        channelId: TEST_CHANNEL_ID,
+        messageId: '111222333444555667',
+        webhookId: '777888999000111223',
+        webhookToken: 'test-token-2',
+        trackableType: 'invasion',
+        expiresAt: new Date(Date.now() - 60_000),
+      });
+
+      const [row] = await db.notificationMessages.fetchDue(1);
+      await db.notificationMessages.markFailed(row.id, 'Unknown Webhook');
+      await db.notificationMessages.markFailed(row.id, 'Unknown Webhook');
+      await db.notificationMessages.markFailed(row.id, 'Unknown Webhook');
+      await db.notificationMessages.purgeFailed(3);
+
+      expect(await db.notificationMessages.fetchDue(10)).to.have.length(0);
+    });
+  });
 });

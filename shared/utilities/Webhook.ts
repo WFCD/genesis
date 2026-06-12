@@ -1,7 +1,10 @@
 import { PermissionFlagsBits, WebhookClient, type TextChannel } from 'discord.js';
 
 import type { CommandContext } from '#shared/types/context';
-import logger from '#shared/utilities/Logger';
+
+import logger from './Logger';
+
+export type SentWebhookMessage = { id: string };
 
 const lookupWebhooks = process.env.LOOKUP_WEBHOOKS === 'true';
 
@@ -38,7 +41,7 @@ async function sendWebhook(
   host: WebhookHost | undefined,
   ctx: WebhookContext,
   { content, embeds = undefined }: WebhookPayload
-) {
+): Promise<SentWebhookMessage | false> {
   const embedList = Array.isArray(embeds) ? embeds : embeds ? [embeds] : undefined;
   if (ctx.webhook?.id && ctx.webhook.token) {
     const client = new WebhookClient({ id: ctx.webhook.id, token: ctx.webhook.token });

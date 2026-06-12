@@ -1,7 +1,7 @@
 import type { TextChannel, ThreadChannel } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export type TrackingOptions = {
   events?: string[];

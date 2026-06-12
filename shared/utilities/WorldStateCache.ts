@@ -3,8 +3,8 @@ import EventEmitter from 'node:events';
 import { CronJob } from 'cron';
 import fetch from 'node-fetch';
 
-import { apiBase } from '#shared/utilities/CommonFunctions';
-import logger from '#shared/utilities/Logger';
+import { apiBase } from './CommonFunctions';
+import logger from './Logger';
 
 const ws = (platform: string, locale: string) => `${apiBase}/${platform}/?language=${locale}`;
 

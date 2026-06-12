@@ -8,6 +8,7 @@ import { i18n } from '#shared/resources/index';
 
 import type { DefaultSettings } from './DatabaseDeps';
 import type ChannelSettingsRepository from './repositories/ChannelSettingsRepository';
+import { GUILD_LEVEL_CHANNEL_SETTINGS } from './repositories/ChannelSettingsRepository';
 
 const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.CLIENT_ID}`;
 
@@ -65,6 +66,7 @@ export async function buildCommandContext(
         'lfgChannel.ps4',
         'lfgChannel.xb1',
         'delete_after_respond',
+        'deleteExpired',
         'ephemerate',
         'modRole',
         'tempChannel',
@@ -78,6 +80,8 @@ export async function buildCommandContext(
         }
       });
     }
+  } else if (deps.scope === 'worker') {
+    settings.push('deleteExpired');
   }
 
   const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
@@ -118,7 +122,32 @@ export async function buildCommandContext(
       context.prefix = deps.defaults.prefix;
     }
 
-    if (!context.language) {
+    const guildChannel = channel as TextChannel;
+    if (guildChannel?.guild) {
+      const guildLanguage = await deps.channels.getGuildSetting(guildChannel.guild, 'language');
+      if (guildLanguage) {
+        context.language = String(guildLanguage).substr(0, 2);
+      } else if (!context.language) {
+        context.language = deps.defaults.language.substr(0, 2);
+        await deps.channels.setGuildSetting(guildChannel.guild, 'language', deps.defaults.language.substr(0, 2));
+      } else if (context.language.length > 2) {
+        context.language = context.language.substr(0, 2);
+        await deps.channels.setGuildSetting(guildChannel.guild, 'language', context.language);
+      }
+
+      const guildModRole = await deps.channels.getGuildSetting(guildChannel.guild, 'modRole');
+      if (guildModRole) {
+        context.modRole = guildModRole;
+      }
+
+      for (const key of GUILD_LEVEL_CHANNEL_SETTINGS) {
+        if (key === 'language' || key === 'modRole') continue;
+        const value = await deps.channels.getGuildSetting(guildChannel.guild, key);
+        if (value !== undefined && value !== null) {
+          context[key] = value;
+        }
+      }
+    } else if (!context.language) {
       context.language = deps.defaults.language.substr(0, 2);
       await deps.channels.setSetting(channel, 'language', deps.defaults.language.substr(0, 2));
     } else if (context.language.length > 2) {
@@ -138,7 +167,6 @@ export async function buildCommandContext(
       context.webhook = undefined;
     }
 
-    const guildChannel = channel as TextChannel;
     if (context.tempCategory && guildChannel?.guild?.channels?.cache.has(String(context.tempCategory).trim())) {
       context.tempCategory = guildChannel.guild.channels.cache.get(String(context.tempCategory).trim());
     } else {
@@ -164,6 +192,8 @@ export async function buildCommandContext(
     } else {
       context.deleteCommand = deps.defaults.delete_after_respond as boolean;
     }
+
+    context.deleteExpired = asBool(context.deleteExpired, deps.defaults.deleteExpired);
 
     platforms.forEach((platform) => {
       const lfgKey = `lfgChannel.${platform}`;
@@ -202,6 +232,7 @@ export async function buildCommandContext(
       'settings.cc.ping': asBool(undefined, deps.defaults['settings.cc.ping']),
       respondToSettings: deps.defaults.respond_to_settings as boolean,
       deleteCommand: deps.defaults.delete_after_respond as boolean,
+      deleteExpired: deps.defaults.deleteExpired as boolean,
       ephemerate: true,
     };
   }

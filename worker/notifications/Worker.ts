@@ -13,6 +13,7 @@ import logger from '#shared/utilities/Logger';
 import { games } from '#shared/utilities/CommonFunctions';
 
 import { processWorkerCacheJobs, getWorkerId } from './WorkerCacheJobs';
+import { runNotificationDeleteCycle } from './NotificationDeleteCycle';
 import Notifier from './worldstate/Notifier';
 import CycleNotifier from './worldstate/CycleNotifier';
 import FeedsNotifier from './FeedsNotifier';
@@ -153,6 +154,15 @@ class Worker {
       deps.queryHydration = new Job('0 */10 * * * *', this.hydrateQueries.bind(this), undefined, true);
       deps.cacheJobPoll = new Job('0 * * * * *', this.processCacheMaintenance.bind(this), undefined, true);
     }
+
+    const deleteCron = process.env.DELETE_CRON || '0 */3 * * * *';
+    deps.notificationDeleteCycle = new Job(
+      deleteCron,
+      () => runNotificationDeleteCycle(deps.settings),
+      undefined,
+      true
+    );
+    deps.notificationDeleteCycle.start();
   }
 
   async initRefreshWatermarks() {

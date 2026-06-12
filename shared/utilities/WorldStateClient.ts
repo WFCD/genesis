@@ -1,9 +1,10 @@
 import qEngine from 'json-query';
 import fetch from 'node-fetch';
 
-import { apiCacheTtlMs, getOrFetch, readCache, readStaleCacheSync, writeCache } from '#shared/utilities/ApiDiskCache';
-import { apiBase } from '#shared/utilities/CommonFunctions';
 import type { Logger } from '#shared/types/logger';
+
+import { apiCacheTtlMs, getOrFetch, readCache, readStaleCacheSync, writeCache } from './ApiDiskCache';
+import { apiBase } from './CommonFunctions';
 
 const relicBase = 'https://drops.warframestat.us/data/relics';
 const catalogLanguage = 'en';

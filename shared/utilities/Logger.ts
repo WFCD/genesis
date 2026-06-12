@@ -1,4 +1,3 @@
-import Sentry from '@sentry/node';
 import chalk from 'chalk';
 import { WebhookClient } from 'discord.js';
 
@@ -15,31 +14,43 @@ const ignore = [
 ];
 const ignoreReg = new RegExp(`(${ignore.join('|')})`, 'i');
 const isTestEnv = process.env.NODE_ENV === 'test';
+const scopeName = (process.env.SCOPE || 'worker').toLowerCase();
+const isWebScope = scopeName === 'web';
+const sentryEnabled = !isTestEnv && !isWebScope && Boolean(process.env.RAVEN_URL?.trim());
 
-if (!isTestEnv) {
-  Sentry.init({
-    dsn: process.env.RAVEN_URL,
-    beforeSend: (event, hint) => {
-      const error = hint.originalException;
-      if (error instanceof Error && error.message.match(ignoreReg)) {
-        return undefined;
-      }
-      if (!error) {
+if (sentryEnabled) {
+  void import('@sentry/node').then((Sentry) => {
+    Sentry.init({
+      dsn: process.env.RAVEN_URL,
+      beforeSend: (event, hint) => {
+        const error = hint.originalException;
+        if (error instanceof Error && error.message.match(ignoreReg)) {
+          return undefined;
+        }
+        if (!error) {
+          return event;
+        }
         return event;
-      }
-      return event;
-    },
+      },
+    });
   });
 }
 
-const scope = (process.env.SCOPE || 'worker').toUpperCase();
+const scope = scopeName.toUpperCase();
 let errorHook: WebhookClient | undefined;
-if (!isTestEnv && process.env.CONTROL_WH_ID) {
+if (!isTestEnv && !isWebScope && process.env.CONTROL_WH_ID) {
   errorHook = new WebhookClient({
     id: process.env.CONTROL_WH_ID,
     token: process.env.CONTROL_WH_TOKEN ?? '',
   });
 }
+
+type SentryModule = typeof import('@sentry/node');
+
+const captureWithSentry = (capture: (Sentry: SentryModule) => void) => {
+  if (!sentryEnabled) return;
+  void import('@sentry/node').then((Sentry) => capture(Sentry));
+};
 
 const logConfig = {
   get logLevel() {
@@ -59,6 +70,7 @@ const levels = {
 const scopes = {
   BOT: 'yellow',
   WORKER: 'gray',
+  WEB: 'cyan',
 };
 
 const contexts = {
@@ -147,19 +159,15 @@ class LoggerClass implements Logger {
     }
 
     if (level === 'FATAL') {
-      if (!isTestEnv) {
-        Sentry.captureMessage(String(message), 'fatal');
-      }
+      captureWithSentry((Sentry) => Sentry.captureMessage(String(message), 'fatal'));
       console.error(simple);
-      if (!isTestEnv) {
+      if (!isTestEnv && !isWebScope) {
         process.exit(4);
       }
       return;
     }
     if (level === 'ERROR') {
-      if (!isTestEnv) {
-        Sentry.captureException(message);
-      }
+      captureWithSentry((Sentry) => Sentry.captureException(message));
       console.error(simple);
       if (message instanceof Error && message.stack) {
         console.error(paint(message.stack, levels.ERROR));
@@ -179,11 +187,13 @@ class LoggerClass implements Logger {
 
 const logger = new LoggerClass();
 
-process.on('uncaughtException', (err) => {
-  logger.error(err);
-});
-process.on('unhandledRejection', (err) => {
-  logger.error(err);
-});
+if (!isTestEnv && !isWebScope) {
+  process.on('uncaughtException', (err) => {
+    logger.error(err);
+  });
+  process.on('unhandledRejection', (err) => {
+    logger.error(err);
+  });
+}
 
 export default logger;

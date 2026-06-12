@@ -1,6 +1,6 @@
 import { timeDeltaToString } from 'warframe-worldstate-data/utilities';
 
-import logger from '#shared/utilities/Logger';
+import logger from './Logger';
 
 type TimedData = {
   activation?: string;

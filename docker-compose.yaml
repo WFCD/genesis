@@ -24,7 +24,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    env_file: .env.docker
+    env_file: .env.local.docker
     environment:
       SCOPE: BOT
       MYSQL_HOST: mariadb
@@ -55,7 +55,7 @@ services:
         condition: service_healthy
       bot:
         condition: service_started
-    env_file: .env.docker
+    env_file: .env.local.docker
     environment:
       SCOPE: WORKER
       MYSQL_HOST: mariadb
@@ -74,7 +74,33 @@ services:
       - worker_node_modules:/app/genesis/node_modules
     command: npx tsx worker/main.ts
 
+  web:
+    profiles:
+      - web
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    env_file: .env.local.docker
+    environment:
+      SCOPE: WEB
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+      MYSQL_USER: genesis
+      MYSQL_PASSWORD: genesis
+      MYSQL_DB: genesis
+      WEB_BASE_URL: http://localhost:3131
+      PORT: 3131
+    ports:
+      - '3131:3131'
+    volumes:
+      - .:/app/genesis
+      - web_node_modules:/app/genesis/web/node_modules
+
 volumes:
   mariadb_data:
   bot_node_modules:
   worker_node_modules:
+  web_node_modules:

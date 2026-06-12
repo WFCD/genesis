@@ -13,7 +13,8 @@ import type { ButtonInteraction, ChatInputCommandInteraction, Message, StringSel
 
 import type BaseEmbed from '#shared/embeds/BaseEmbed';
 import type { CommandContext } from '#shared/types/context';
-import { withEphemeral } from '#shared/utilities/CommonFunctions';
+
+import { withEphemeral } from './CommonFunctions';
 
 /** Embed pages passed to collector helpers. */
 type PageEmbed = BaseEmbed | EmbedBuilder;

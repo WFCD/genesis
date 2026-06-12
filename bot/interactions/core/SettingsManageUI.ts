@@ -19,6 +19,7 @@ import {
 } from 'discord.js';
 
 import { localeMap, platformMap } from '#shared/resources/';
+import { GUILD_LEVEL_CHANNEL_SETTINGS } from '#shared/settings/database/repositories/ChannelSettingsRepository';
 import { trackableEvents, withEphemeral } from '#shared/utilities/CommonFunctions';
 import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 
@@ -121,12 +122,13 @@ export default class SettingsManageUI {
     return session;
   }
 
-  static async #loadChannelSettings(ctx, channel) {
-    return ctx.settings.channels.getSettings(channel, [
+  static async #loadChannelSettings(ctx, channel, guild?) {
+    const settings = await ctx.settings.channels.getSettings(channel, [
       'language',
       'platform',
       'modRole',
       'ephemerate',
+      'deleteExpired',
       'allowCustom',
       'allowInline',
       'settings.cc.ping',
@@ -137,6 +139,17 @@ export default class SettingsManageUI {
       'tempCategory',
       'tempChannel',
     ]);
+
+    const guildRef = guild ?? channel.guild;
+    if (guildRef) {
+      for (const key of GUILD_LEVEL_CHANNEL_SETTINGS) {
+        const value = await ctx.settings.channels.getGuildSetting(guildRef, key);
+        if (value !== undefined && value !== null) settings[key] = String(value);
+        else delete settings[key];
+      }
+    }
+
+    return settings;
   }
 
   static async start(interaction: ChatInputCommandInteraction, ctx, channel, thread?) {
@@ -198,10 +211,15 @@ export default class SettingsManageUI {
       await ctx.settings.channels.setGuildSetting(interaction.guild, 'language', language);
       await ctx.settings.channels.setSetting(channel, 'platform', platform);
       if (roleId) {
-        await ctx.settings.channels.setSetting(channel, 'modRole', roleId);
+        await ctx.settings.channels.setGuildSetting(interaction.guild, 'modRole', roleId);
       } else {
-        await ctx.settings.channels.deleteSetting(channel, 'modRole');
+        await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'modRole');
       }
+      await ctx.settings.channels.setSetting(
+        channel,
+        'deleteExpired',
+        interaction.fields.getStringSelectValues('deleteExpired')[0]
+      );
       sessions.delete(sessionKey(session.userId, channelId, threadId));
       return interaction.editReply({ content: 'General settings saved.' });
     }
@@ -232,20 +250,20 @@ export default class SettingsManageUI {
     }
 
     if (component === 'rooms') {
-      await ctx.settings.channels.setSetting(
-        channel,
+      await ctx.settings.channels.setGuildSetting(
+        interaction.guild,
         'createPrivateChannel',
         interaction.fields.getStringSelectValues('createPrivateChannel')[0]
       );
-      await ctx.settings.channels.setSetting(
-        channel,
+      await ctx.settings.channels.setGuildSetting(
+        interaction.guild,
         'defaultRoomsLocked',
         interaction.fields.getStringSelectValues('defaultRoomsLocked')[0]
       );
       const noText = interaction.fields.getStringSelectValues('defaultNoText')[0];
-      await ctx.settings.channels.setSetting(channel, 'defaultNoText', noText === '1' ? '0' : '1');
-      await ctx.settings.channels.setSetting(
-        channel,
+      await ctx.settings.channels.setGuildSetting(interaction.guild, 'defaultNoText', noText === '1' ? '0' : '1');
+      await ctx.settings.channels.setGuildSetting(
+        interaction.guild,
         'defaultShown',
         interaction.fields.getStringSelectValues('defaultShown')[0]
       );
@@ -262,14 +280,14 @@ export default class SettingsManageUI {
       const categoryId = category ? [...category.keys()][0] : undefined;
       const channelIdValue = textChannel ? [...textChannel.keys()][0] : undefined;
       if (categoryId) {
-        await ctx.settings.channels.setSetting(channel, 'tempCategory', categoryId);
+        await ctx.settings.channels.setGuildSetting(interaction.guild, 'tempCategory', categoryId);
       } else {
-        await ctx.settings.channels.deleteSetting(channel, 'tempCategory');
+        await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempCategory');
       }
       if (channelIdValue) {
-        await ctx.settings.channels.setSetting(channel, 'tempChannel', channelIdValue);
+        await ctx.settings.channels.setGuildSetting(interaction.guild, 'tempChannel', channelIdValue);
       } else {
-        await ctx.settings.channels.deleteSetting(channel, 'tempChannel');
+        await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempChannel');
       }
       sessions.delete(sessionKey(session.userId, channelId, threadId));
       return interaction.editReply({ content: 'Room channel settings saved.' });
@@ -376,7 +394,7 @@ export default class SettingsManageUI {
   }
 
   static async #buildPanelModal(session: ManageSession, ctx, channel) {
-    const settings = await this.#loadChannelSettings(ctx, channel);
+    const settings = await this.#loadChannelSettings(ctx, channel, channel.guild);
     const modal = new ModalBuilder().setCustomId(buildId(session.channelId, session.threadId, session.panel)).setTitle(
       {
         general: 'General Settings',
@@ -410,7 +428,8 @@ export default class SettingsManageUI {
               )
             )
           ),
-          this.#optionalRoleLabel('modrole', 'Mod role')
+          this.#optionalRoleLabel('modrole', 'Mod role'),
+          this.#boolLabel('deleteExpired', 'Delete expired notifications', boolFromSettings(settings, 'deleteExpired'))
         );
         break;
       case 'commands':

@@ -1,7 +1,7 @@
 import { type Guild, type GuildBasedChannel, type GuildMember, type Role as DiscordRole, type User } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 type PermissionResult = boolean | 'none';
 type RoleLike = Pick<DiscordRole, 'id'>;

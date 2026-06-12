@@ -42,6 +42,7 @@
     "docker:worker:dev": "docker compose up --build worker",
     "lint": "eslint bot/ worker/ shared/ spec/",
     "lint:fix": "eslint bot/ worker/ shared/ spec/ --fix",
+    "lint:web": "npm --prefix web run lint",
     "logs": "pm2 logs genesis",
     "logs:worker": "pm2 logs /worker.*/",
     "prepare": "husky",
@@ -55,16 +56,6 @@
     "test:db": "TEST_MARIADB=1 MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306 MYSQL_USER=genesis MYSQL_PASSWORD=genesis MYSQL_DB=genesis NODE_ENV=test node --import tsx/esm ./node_modules/mocha/bin/mocha.js",
     "uninstall": "pm2 kill && rm -rf node_modules/ && npm uninstall -g pm2",
     "update:genesis": "pm2 delete genesis && git checkout -- . && git pull && npm i && npm restart || npm start"
-  },
-  "prettier": {
-    "arrowParens": "always",
-    "bracketSpacing": true,
-    "printWidth": 120,
-    "quoteProps": "as-needed",
-    "semi": true,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5"
   },
   "dependencies": {
     "@discordjs/builders": "^1.14.1",
@@ -80,7 +71,7 @@
     "flat-cache": "^3.2.0",
     "i18n-string-templates": "^2.0.7",
     "json-query": "^2.2.2",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.22.5",
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
     "parse-duration": "^2.1.6",
@@ -95,6 +86,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "@dword-design/eslint-plugin-import-alias": "^8.1.8",
     "@eslint/js": "^9.39.1",
     "@types/chai": "^5.2.3",
     "@types/flat-cache": "^2.0.2",

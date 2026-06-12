@@ -2,27 +2,29 @@ import SQL, { type SQLStatement } from 'sql-template-strings';
 import mysql, { type Pool } from 'mysql2/promise';
 
 import type { Logger } from '#shared/types/logger';
-import { buildCommandContext } from '#shared/settings/database/CommandContextBuilder';
-import type { DatabaseRepositories } from '#shared/settings/database/DatabaseRepositories';
-import type { DefaultSettings, QueryResult } from '#shared/settings/database/DatabaseDeps';
-import BlacklistRepository from '#shared/settings/database/repositories/BlacklistRepository';
-import BuildRepository from '#shared/settings/database/repositories/BuildRepository';
-import ChannelSettingsRepository from '#shared/settings/database/repositories/ChannelSettingsRepository';
-import CustomCommandRepository from '#shared/settings/database/repositories/CustomCommandRepository';
-import DynamicVoiceRepository from '#shared/settings/database/repositories/DynamicVoiceRepository';
-import GuildRepository from '#shared/settings/database/repositories/GuildRepository';
-import NotificationsRepository from '#shared/settings/database/repositories/NotificationsRepository';
-import PermissionsRepository from '#shared/settings/database/repositories/PermissionsRepository';
-import PrivateRoomRepository from '#shared/settings/database/repositories/PrivateRoomRepository';
-import PromocodeRepository from '#shared/settings/database/repositories/PromocodeRepository';
-import RatioRepository from '#shared/settings/database/repositories/RatioRepository';
-import StatisticsRepository from '#shared/settings/database/repositories/StatisticsRepository';
-import StreamRepository from '#shared/settings/database/repositories/StreamRepository';
-import TrackingRepository from '#shared/settings/database/repositories/TrackingRepository';
-import WelcomeRepository from '#shared/settings/database/repositories/WelcomeRepository';
-import WorkerCacheRepository from '#shared/settings/database/repositories/WorkerCacheRepository';
-import { assetBase } from '#shared/utilities/CommonFunctions';
 import logger from '#shared/utilities/Logger';
+
+import type { DatabaseRepositories } from './database/DatabaseRepositories';
+import type { DefaultSettings, QueryResult } from './database/DatabaseDeps';
+import type BuildRepository from './database/repositories/BuildRepository';
+import BlacklistRepository from './database/repositories/BlacklistRepository';
+import ChannelSettingsRepository from './database/repositories/ChannelSettingsRepository';
+import CustomCommandRepository from './database/repositories/CustomCommandRepository';
+import DynamicVoiceRepository from './database/repositories/DynamicVoiceRepository';
+import GuildRepository from './database/repositories/GuildRepository';
+import NotificationsRepository from './database/repositories/NotificationsRepository';
+import PermissionsRepository from './database/repositories/PermissionsRepository';
+import PrivateRoomRepository from './database/repositories/PrivateRoomRepository';
+import PromocodeRepository from './database/repositories/PromocodeRepository';
+import RatioRepository from './database/repositories/RatioRepository';
+import StatisticsRepository from './database/repositories/StatisticsRepository';
+import StreamRepository from './database/repositories/StreamRepository';
+import TrackingRepository from './database/repositories/TrackingRepository';
+import WelcomeRepository from './database/repositories/WelcomeRepository';
+import WorkerCacheRepository from './database/repositories/WorkerCacheRepository';
+import NotificationMessagesRepository from './database/repositories/NotificationMessagesRepository';
+
+const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
 
 type BotHost = {
   client?: { user?: { username?: string } };
@@ -56,7 +58,7 @@ export default class Database implements DatabaseRepositories {
 
   customCommands!: CustomCommandRepository;
 
-  builds!: BuildRepository;
+  builds?: BuildRepository;
 
   promocodes!: PromocodeRepository;
 
@@ -67,6 +69,8 @@ export default class Database implements DatabaseRepositories {
   guilds!: GuildRepository;
 
   workerCache!: WorkerCacheRepository;
+
+  notificationMessages!: NotificationMessagesRepository;
 
   clusterId: string | number;
 
@@ -120,7 +124,7 @@ export default class Database implements DatabaseRepositories {
   /** Connect, wire repositories, and return a ready facade. */
   static async build(bot?: unknown): Promise<Database> {
     const instance = new Database(bot);
-    instance.#wireRepositories();
+    await instance.#wireRepositories();
 
     const opts = {
       host: process.env.MYSQL_HOST || 'localhost',
@@ -148,7 +152,7 @@ export default class Database implements DatabaseRepositories {
     return instance;
   }
 
-  #wireRepositories() {
+  async #wireRepositories() {
     const deps = {
       query: (q: Parameters<Database['query']>[0]) => this.query(q),
       defaults: this.defaults,
@@ -167,12 +171,16 @@ export default class Database implements DatabaseRepositories {
     this.ratio = new RatioRepository(deps);
     this.streams = new StreamRepository(deps);
     this.customCommands = new CustomCommandRepository(deps);
-    this.builds = new BuildRepository(deps);
+    if (this.scope !== 'web') {
+      const { default: BuildRepositoryClass } = await import('#shared/settings/database/repositories/BuildRepository');
+      this.builds = new BuildRepositoryClass(deps);
+    }
     this.promocodes = new PromocodeRepository(deps);
     this.permissions = new PermissionsRepository(deps);
     this.statistics = new StatisticsRepository(deps);
 
     this.workerCache = new WorkerCacheRepository(deps);
+    this.notificationMessages = new NotificationMessagesRepository(deps);
 
     this.guilds = new GuildRepository(deps, {
       removeChannelPermissions: (channelId) => this.permissions.removeChannelPermissions(channelId),
@@ -303,20 +311,22 @@ export default class Database implements DatabaseRepositories {
       this.customCommands
     );
 
-    bindLegacy(
-      [
-        'addNewBuilds',
-        'addNewBuild',
-        'getBuild',
-        'getBuildSearch',
-        'deleteBuild',
-        'getBuilds',
-        'setBuildFields',
-        'setBuildPublicity',
-        'saveBuild',
-      ],
-      this.builds
-    );
+    if (this.builds) {
+      bindLegacy(
+        [
+          'addNewBuilds',
+          'addNewBuild',
+          'getBuild',
+          'getBuildSearch',
+          'deleteBuild',
+          'getBuilds',
+          'setBuildFields',
+          'setBuildPublicity',
+          'saveBuild',
+        ],
+        this.builds
+      );
+    }
 
     bindLegacy(
       [
@@ -438,6 +448,7 @@ export default class Database implements DatabaseRepositories {
   }
 
   async getCommandContext(channel: unknown, user?: unknown) {
+    const { buildCommandContext } = await import('#shared/settings/database/CommandContextBuilder');
     return buildCommandContext(
       {
         scope: this.scope,

@@ -2,6 +2,7 @@
 import logger from '#shared/utilities/Logger';
 import { cachedEvents } from '#shared/resources';
 import webhook from '#shared/utilities/Webhook';
+import { isCycleNotificationType, resolveNotificationExpiry } from '#shared/utilities/NotificationExpiry';
 
 /**
  * Broadcast updates out to subscribing channels
@@ -86,10 +87,26 @@ export default class Broadcaster {
           } else if (!content && type.startsWith('fissures.node.')) {
             content = pings[`${guild.id}:fissures.node`] || '';
           }
-          await webhook.call({ settings: this.settings, client: this.client, scope: 'worker' }, ctx, {
+          const sent = await webhook.call({ settings: this.settings, client: this.client, scope: 'worker' }, ctx, {
             content,
             embeds: [embed],
           });
+          if (sent && ctx.deleteExpired && ctx.webhook?.id && ctx.webhook.token) {
+            const expiresAt = resolveNotificationExpiry(embed);
+            if (expiresAt && !isCycleNotificationType(type)) {
+              const eventId = items?.length ? [type, ...items].sort().join(',') : type;
+              await this.settings.notificationMessages.enqueue({
+                channelId,
+                threadId,
+                messageId: sent.id,
+                webhookId: ctx.webhook.id,
+                webhookToken: ctx.webhook.token,
+                trackableType: type,
+                eventId,
+                expiresAt,
+              });
+            }
+          }
         } catch (e) {
           if (e.message) {
             if (e.message.includes('Unknown Webhook')) {

@@ -18,6 +18,7 @@ import {
 import Collectors from '#shared/utilities/Collectors';
 import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
 import { cmds, localeMap, platformMap } from '#shared/resources/index';
+import { GUILD_LEVEL_CHANNEL_SETTINGS } from '#shared/settings/database/repositories/ChannelSettingsRepository';
 
 import Interaction from '../../models/Interaction';
 
@@ -44,6 +45,7 @@ export default class Settings extends Interaction {
     auto_shown: 'defaultShown',
     temp_category: 'tempCategory',
     temp_channel: 'tempChannel',
+    delete_expired: 'deleteExpired',
   };
   static #rooms = [
     {
@@ -195,6 +197,18 @@ export default class Settings extends Interaction {
         },
       ],
     },
+    {
+      ...cmds['settings.deleteExpired'],
+      type: Types.Subcommand,
+      options: [
+        {
+          type: Types.Boolean,
+          name: 'value',
+          description: 'Delete webhook notifications after they expire?',
+          required: true,
+        },
+      ],
+    },
     ...(games.includes('CUST_CMDS') ? Settings.#custom : []),
     ...(games.includes('UTIL') ? [Settings.#setLFG] : []),
     ...(games.includes('ROOMS') ? this.#rooms : []),
@@ -253,8 +267,16 @@ export default class Settings extends Interaction {
       'lfgChannel.swi',
       'modRole',
       'ephemerate',
+      'deleteExpired',
       'tempChannel',
     ]);
+
+    if (channel.guild) {
+      for (const key of GUILD_LEVEL_CHANNEL_SETTINGS) {
+        const value = await ctx.settings.channels.getGuildSetting(channel.guild, key);
+        if (value !== undefined && value !== null) settings[key] = String(value);
+      }
+    }
 
     page.setTitle('General Settings');
     page.setDescription(`<#${channel.id}>`);
@@ -292,6 +314,11 @@ export default class Settings extends Interaction {
       {
         name: 'Ephemerate',
         value: await this.#resolveBoolean(channel, 'ephemerate', settings),
+        inline: true,
+      },
+      {
+        name: 'Delete Expired',
+        value: await this.#resolveBoolean(channel, 'deleteExpired', settings),
         inline: true,
       },
       {
@@ -503,8 +530,8 @@ export default class Settings extends Interaction {
             }).catch((err) => logger.error(err, 'settings'));
             return interaction.editReply(withEphemeral(ephemeral, { content: 'pings cleared' }));
           case 'temp_category':
-            await ctx.settings.channels.deleteSetting(channel, 'tempChannel');
-            await ctx.settings.channels.deleteSetting(channel, 'tempCategory');
+            await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempChannel');
+            await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempCategory');
             return interaction.editReply(withEphemeral(ephemeral, { content: 'cleared temp_category' }));
           case 'all':
             // wipe settings!!!
@@ -526,14 +553,18 @@ export default class Settings extends Interaction {
           case 'lfg':
             field = this.#aliases[field];
             field = platform === 'pc' ? field : `${field}.${platform}`;
-          case 'allow_inline':
-          case 'allow_custom':
           case 'allow_rooms':
           case 'auto_locked':
           case 'auto_shown':
           case 'auto_text':
           case 'temp_category':
           case 'temp_channel':
+            field = this.#aliases[field] || field;
+            await ctx.settings.channels.setGuildSetting(interaction.guild, field, value);
+            return interaction.editReply(`set ${field} to \`${value}\``);
+          case 'allow_inline':
+          case 'allow_custom':
+          case 'delete_expired':
             field = this.#aliases[field] || field;
           case 'ephemerate':
           case 'platform':

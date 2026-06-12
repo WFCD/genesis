@@ -1,10 +1,9 @@
 import type { Guild } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import { pingables } from '#shared/resources/index';
+import pingables from '#shared/resources/pingables.json';
 import logger from '#shared/utilities/Logger';
-
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 import type { TrackingOptions } from './TrackingRepository';
 
@@ -32,13 +31,23 @@ export default class NotificationsRepository {
   constructor(private readonly deps: NotificationsDeps) {}
 
   async addPings(guild: GuildRef, opts: TrackingOptions, text: string) {
+    const events = Array.isArray(opts.events) ? opts.events : [];
+    const items = Array.isArray(opts.items) ? opts.items : [];
+    const combined = events.concat(items);
+    if (!combined.length) {
+      throw new Error('No ping targets provided');
+    }
+
     const query = SQL`INSERT INTO pings VALUES `;
-    const combined = (opts.events ?? []).concat(opts.items ?? []);
     combined.forEach((eventOrItem, index) => {
       query.append(SQL`(${guild.id}, ${eventOrItem}, ${text})`).append(index !== combined.length - 1 ? ',' : '');
     });
     query.append(SQL`ON DUPLICATE KEY UPDATE text = ${text};`);
-    return this.deps.query(query);
+    const result = await this.deps.query(query);
+    if (!result) {
+      throw new Error('Failed to save ping');
+    }
+    return result;
   }
 
   async getPing(guild: GuildRef | string | null | undefined, itemsOrTypes: string[]) {
@@ -119,18 +128,16 @@ export default class NotificationsRepository {
   }
 
   async getPingsForGuild(guild: GuildRef) {
-    if (guild) {
-      const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
-      const [rows] = (await this.deps.query(query)) ?? [[]];
+    if (!guild?.id) return [];
 
-      return rows.length
-        ? (rows as Array<{ text: string; item_or_type: string }>).map((result) => ({
-            text: result.text,
-            thing: result.item_or_type,
-          }))
-        : [];
-    }
-    return [];
+    const query = SQL`SELECT item_or_type, text FROM pings WHERE guild_id=${guild.id}`;
+    const [rows] = (await this.deps.query(query)) ?? [[]];
+    if (!Array.isArray(rows) || !rows.length) return [];
+
+    return (rows as Array<{ text?: string; item_or_type?: string }>).map((result) => ({
+      text: String(result.text ?? ''),
+      thing: String(result.item_or_type ?? ''),
+    }));
   }
 
   async removePing(guild: GuildRef, itemOrType: string) {

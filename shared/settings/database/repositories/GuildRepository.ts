@@ -4,8 +4,7 @@ import SQL from 'sql-template-strings';
 
 import integrations from '#shared/settings/integrations';
 import schema from '#shared/settings/schema';
-
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 type GuildRef = Guild | { id: string; available?: boolean; channels?: { cache?: Map<string, unknown> } };
 type ChannelRef = { id: string; type?: ChannelType; guild?: { id: string } };

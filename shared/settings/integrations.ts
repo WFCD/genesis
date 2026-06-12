@@ -191,5 +191,30 @@ export default [
         requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`);
     }
+
+    const [notificationTables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notification_messages'`
+    );
+    if (!notificationTables?.length) {
+      await db.query(SQL`CREATE TABLE notification_messages (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        channel_id BIGINT UNSIGNED NOT NULL,
+        thread_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        message_id BIGINT UNSIGNED NOT NULL,
+        webhook_id BIGINT UNSIGNED NOT NULL,
+        webhook_token VARCHAR(255) NOT NULL,
+        trackable_type VARCHAR(255) NOT NULL,
+        event_id VARCHAR(255) NULL,
+        expires_at TIMESTAMP NOT NULL,
+        status ENUM('pending', 'failed') NOT NULL DEFAULT 'pending',
+        attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+        last_error VARCHAR(255) NULL,
+        sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY idx_pending_expiry (status, expires_at),
+        KEY idx_channel (channel_id)
+      )`);
+    }
   },
 ];

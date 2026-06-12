@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 type MemberRef = { id: string };
 type GuildRef = { id: string };

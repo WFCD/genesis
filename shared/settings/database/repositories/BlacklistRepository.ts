@@ -1,7 +1,7 @@
 import type { User } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export interface BlacklistDeps extends DatabaseDeps {
   bot?: {

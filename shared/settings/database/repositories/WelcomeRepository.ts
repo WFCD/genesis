@@ -1,7 +1,7 @@
 import type { Guild, GuildBasedChannel } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export interface WelcomeDeps extends DatabaseDeps {
   bot?: {

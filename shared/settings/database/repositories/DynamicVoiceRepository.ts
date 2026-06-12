@@ -1,7 +1,7 @@
 import type { Guild, VoiceBasedChannel, VoiceChannel } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 type TemplateChannel = VoiceChannel & { guild: Guild };
 

@@ -3,8 +3,7 @@ import SQL from 'sql-template-strings';
 import Build, { type BuildData } from '#shared/models/Build';
 import logger from '#shared/utilities/Logger';
 import WorldStateClient from '#shared/utilities/WorldStateClient';
-
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 type UserRef = { id: string; tag?: string };
 type BuildRef = Record<string, unknown> & { id?: string };

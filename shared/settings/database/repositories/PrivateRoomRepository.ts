@@ -2,8 +2,7 @@ import type { CategoryChannel, Guild, GuildMember, TextChannel, VoiceChannel } f
 import SQL from 'sql-template-strings';
 
 import JoinableRole from '#shared/models/JoinableRole';
-
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export type PrivateRoom = {
   guild?: Guild;

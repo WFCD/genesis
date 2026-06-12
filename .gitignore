@@ -62,8 +62,15 @@ shared/**/*.js
 spec/**/*.js
 
 # Docker
-.env.docker
+.env.local.docker
+web/.env.local
+web/.env.local
+!web/.env*.example
 
 .cache/
 .run
 .eslintcache
+
+# Web assets
+web/node_modules
+web/.next

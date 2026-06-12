@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-import type WorldStateClient from '#shared/utilities/WorldStateClient';
+import type WorldStateClient from './WorldStateClient';
 
 const API_BASE = 'https://overframe.gg/api/v1';
 const SITE_BASE = 'https://overframe.gg';

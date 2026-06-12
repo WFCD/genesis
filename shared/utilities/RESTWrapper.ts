@@ -1,7 +1,7 @@
 import { Rest } from '@spectacles/rest';
 
-import { assetBase } from '#shared/utilities/CommonFunctions';
-import logger from '#shared/utilities/Logger';
+import { assetBase } from './CommonFunctions';
+import logger from './Logger';
 
 const defaults = {
   username: process.env.DEF_USER || 'Genesis',

@@ -1,8 +1,7 @@
 import SQL from 'sql-template-strings';
 
 import { GLOBAL_WORKER_LOCALE } from '#shared/settings/workerCluster';
-
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export type WorkerCacheScope = 'trackables' | 'pings' | 'guild';
 

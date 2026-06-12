@@ -329,6 +329,10 @@ export default {
     name: 'ephemerate',
     description: 'Set whether or not messages from slash commands will be public (True by default)',
   },
+  'settings.deleteExpired': {
+    name: 'delete_expired',
+    description: 'Delete webhook notifications automatically after they expire',
+  },
   'settings.elevated_roles': {
     name: 'elevated_roles',
     description: 'Set elevated roles',

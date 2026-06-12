@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps } from '../DatabaseDeps';
+import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
 export type TrackedStreamRow = {
   stream_name: string;

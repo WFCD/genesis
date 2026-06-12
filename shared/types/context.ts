@@ -1,8 +1,9 @@
-import type { Database } from '#shared/types/database';
-import type { Logger } from '#shared/types/logger';
 import type WorldStateClient from '#shared/utilities/WorldStateClient';
 
 import type InteractionHandler from '../../bot/eventHandlers/InteractionHandler';
+
+import type { Database } from './database';
+import type { Logger } from './logger';
 
 export interface CommandContext {
   platform?: string;
@@ -19,6 +20,7 @@ export interface CommandContext {
   'settings.cc.ping'?: boolean;
   respondToSettings?: boolean;
   deleteCommand?: boolean;
+  deleteExpired?: boolean;
   isBlacklisted?: boolean;
   isOwner?: boolean;
   modRole?: unknown;

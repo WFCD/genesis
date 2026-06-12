@@ -5,6 +5,8 @@ import eslintPluginPrettier from 'eslint-plugin-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+import { rootImportAliasConfig } from './eslint/import-alias.mjs';
+
 const genesisRules = {
   'no-unsafe-optional-chaining': 'off',
   'no-constructor-return': 'off',
@@ -80,6 +82,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
+  rootImportAliasConfig,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: {

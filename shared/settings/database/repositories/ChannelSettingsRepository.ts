@@ -1,9 +1,21 @@
 import { ChannelType, type Guild } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import type { DatabaseDeps, GuildChannelHost } from '../DatabaseDeps';
+import type { DatabaseDeps, GuildChannelHost } from '#shared/settings/database/DatabaseDeps';
 
 type ChannelRef = { id: string; type?: ChannelType; guild?: { id: string } };
+
+export const ROOM_SETTING_KEYS = [
+  'createPrivateChannel',
+  'defaultRoomsLocked',
+  'defaultNoText',
+  'defaultShown',
+  'tempCategory',
+  'tempChannel',
+] as const;
+
+export const GUILD_LEVEL_CHANNEL_SETTINGS = ['language', 'modRole', ...ROOM_SETTING_KEYS] as const;
+export type GuildLevelChannelSetting = (typeof GUILD_LEVEL_CHANNEL_SETTINGS)[number];
 
 export type StoredWebhook = {
   id?: string;
@@ -183,21 +195,36 @@ export default class ChannelSettingsRepository {
   /** @deprecated prefer {@link deleteSetting} */
   deleteChannelSetting = this.deleteSetting;
 
-  async setGuildSetting(guild: Guild, setting: string, value: unknown) {
-    if (typeof setting === 'undefined' || typeof value === 'undefined') return false;
-    const promises: Promise<unknown>[] = [];
-    guild.channels.cache.forEach((channel) => {
-      promises.push(this.setSetting(channel, setting, value));
-    });
-    return Promise.all(promises);
+  async #guildChannelIds(guild: Guild | { id: string }) {
+    const ids = new Set<string>();
+    if ('channels' in guild && guild.channels?.cache) {
+      guild.channels.cache.forEach((channel) => ids.add(channel.id));
+    }
+
+    const [rows] = (await this.deps.query(SQL`SELECT id FROM channels WHERE guild_id = ${guild.id}`)) ?? [[]];
+    if (Array.isArray(rows)) {
+      (rows as Array<{ id: string }>).forEach((row) => ids.add(String(row.id)));
+    }
+
+    return [...ids];
   }
 
-  async deleteGuildSetting(guild: Guild, setting: string) {
-    const promises: Promise<unknown>[] = [];
-    guild.channels.cache.forEach((channel) => {
-      promises.push(this.deleteSetting(channel, setting));
-    });
-    return Promise.all(promises);
+  async setGuildSetting(guild: Guild | { id: string }, setting: string, value: unknown) {
+    if (typeof setting === 'undefined' || typeof value === 'undefined' || !guild?.id) return false;
+
+    const channelIds = await this.#guildChannelIds(guild);
+    if (!channelIds.length) return false;
+
+    return Promise.all(channelIds.map((id) => this.setSetting({ id }, setting, value)));
+  }
+
+  async deleteGuildSetting(guild: Guild | { id: string }, setting: string) {
+    if (typeof setting === 'undefined' || !guild?.id) return false;
+
+    const channelIds = await this.#guildChannelIds(guild);
+    if (!channelIds.length) return false;
+
+    return Promise.all(channelIds.map((id) => this.deleteSetting({ id }, setting)));
   }
 
   async removeSettings(channelId: string) {
