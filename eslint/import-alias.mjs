@@ -20,8 +20,8 @@ export function importAliasConfig(alias) {
   };
 }
 
-/** bot/worker/shared — package.json + tsconfig `#shared/*` → `./shared/*` */
-export const rootImportAliasConfig = importAliasConfig({ '#shared': './shared' });
+/** bot/worker/shared — tsconfig `#shared/*` → `./packages/shared/*` */
+export const rootImportAliasConfig = importAliasConfig({ '#shared': './packages/shared' });
 
-/** web — tsconfig `@/*` → `./*`, `#shared/*` → `../shared/*` */
-export const webImportAliasConfig = importAliasConfig({ '@': '.', '#shared': '../shared' });
+/** web — tsconfig `@/*` → `packages/web/*`, `#shared/*` → `packages/shared/*` */
+export const webImportAliasConfig = importAliasConfig({ '@': './packages/web', '#shared': './packages/shared' });

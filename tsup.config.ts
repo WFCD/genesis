@@ -16,16 +16,16 @@ const collectEntries = (pattern: string, exclude: string[] = []) =>
 
 const entries = [
   ...new Set([
-    'bot/main.ts',
-    'worker/main.ts',
-    ...collectEntries('bot/**/*.ts'),
-    ...collectEntries('worker/**/*.ts'),
-    ...collectEntries('shared/**/*.ts', ['shared/tools/**']),
+    'packages/bot/main.ts',
+    'packages/worker/main.ts',
+    ...collectEntries('packages/bot/**/*.ts'),
+    ...collectEntries('packages/worker/**/*.ts'),
+    ...collectEntries('packages/shared/**/*.ts', ['packages/shared/tools/**']),
   ]),
 ];
 
 const copyResourceAssets = () => {
-  const resourceRoot = path.join(root, 'shared/resources');
+  const resourceRoot = path.join(root, 'packages/shared/resources');
   for (const jsonFile of globSync('**/*.json', { cwd: resourceRoot })) {
     const src = path.join(resourceRoot, jsonFile);
     const dest = path.join(sharedDistRoot, 'resources', jsonFile);

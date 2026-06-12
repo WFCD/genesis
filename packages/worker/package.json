@@ -1,0 +1,14 @@
+{
+  "name": "@genesis/worker",
+  "version": "2.13.27",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#shared/*": "@genesis/shared/*"
+  },
+  "main": "main.ts",
+  "dependencies": {
+    "@genesis/shared": "*",
+    "rss-feed-emitter": "^3.2.4"
+  }
+}

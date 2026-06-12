@@ -1,7 +1,6 @@
-'*.{js,ts}':
-  - eslint --cache --fix
-  - bash -c "npm run build:ts"
-  - npm test
+'*.{js,ts,tsx,mjs,cjs}':
+  - eslint --cache --fix --no-warn-ignored
+  - bash -c "npm run build:ts && npm test"
 package*.json:
   - prettier --write
   - npm dedupe

@@ -1,0 +1,24 @@
+{
+  "name": "@genesis/bot",
+  "version": "2.13.27",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#shared/*": "@genesis/shared/*"
+  },
+  "main": "main.ts",
+  "dependencies": {
+    "@discordjs/builders": "^1.14.1",
+    "@genesis/shared": "*",
+    "decache": "^4.6.2",
+    "discord.js": "^14.16.0",
+    "parse-duration": "^2.1.6",
+    "ping": "^1.0.0",
+    "warframe-name-generator": "^2.0.8"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.1.0",
+    "erlpack": "github:discord/erlpack",
+    "zlib-sync": "^0.1.10"
+  }
+}

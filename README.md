@@ -16,11 +16,11 @@
 [![Discord Bots](https://discordbots.org/api/widget/lib/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
 
 ## JetBrains
-Thank you to <a href="https://www.jetbrains.com/" alt="JetBrains"><img src="/shared/resources/jetbrains.svg"  height="16px" /> JetBrains</a> for providing us with free licenses to their great tools.
+Thank you to <a href="https://www.jetbrains.com/" alt="JetBrains"><img src="/packages/shared/resources/jetbrains.svg"  height="16px" /> JetBrains</a> for providing us with free licenses to their great tools.
 
-* <a href="https://www.jetbrains.com/webstorm/" alt="WebStorm"><img src="/shared/resources/icon-webstorm.svg" height="16px" /> WebStorm</a>
+* <a href="https://www.jetbrains.com/webstorm/" alt="WebStorm"><img src="/packages/shared/resources/icon-webstorm.svg" height="16px" /> WebStorm</a>
 
-Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
+Feel free to submit a pull request. We are working on build checks and tests. ESLint and Prettier run via Husky on commit (`lint-staged` + root [`.prettierrc`](.prettierrc)).
 
 
 ## Thanks, Discord... Legalese things
@@ -34,24 +34,49 @@ tl;dr Bots need data. While I don't record any of your personal data or save it 
 ## Installation
 
 1. Clone this repo
-2. Install **Node.js 24 LTS** (`lts/krypton`) — e.g. `nvm install` (uses [`.nvmrc`](.nvmrc))
-3. Install [MariaDB](https://mariadb.org/) (or compatible server) and configure a database for settings and data
-4. Run `npm ci`
-5. Copy [`.env.docker.example`](.env.docker.example) to `.env.docker` (or use a PM2 config) and set required variables
-6. Start the bot with [pm2](http://pm2.keymetrics.io/) using a copy of the provided [`pm2.json`](pm2.json) file (typically named `genesis.json`), or run `npm run docker:up` for a self-contained stack
-7. See below for available config / commands
+2. Install **Node.js 24 LTS** (`lts/krypton`) — e.g. `nvm install` (uses [`.nvmrc`](.nvmrc)) — needed for lint, tests, and local web dev
+3. Install [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+4. Run `npm ci` at the repo root (workspaces + Husky hooks via `prepare`)
+5. Copy [`.env.example`](.env.example) to `.env.local` and set required variables (`TOKEN`, `OWNER`, `CLIENT_ID`)
+6. Optional web overrides: copy [`packages/web/.env.local.example`](packages/web/.env.local.example) to `packages/web/.env.local` for web-only vars; repo-root `.env.local` is loaded when unset
+7. Start MariaDB + bot + worker: `npm run docker:up`
+8. See below for config / commands
 
-For Docker-only local testing, see [`.env.docker.example`](.env.docker.example) and `docker-compose.yaml`.
+Logs: `docker compose logs -f bot` (or `worker`, `mariadb`). Stop stack: `npm run docker:down`.
+
+See [`.env.example`](.env.example) and [`docker-compose.yaml`](docker-compose.yaml) for service details.
 
 ## Project layout
 
-| Folder | Role |
-|--------|------|
-| [`shared/`](shared/) | Database, utilities, embeds, resources, shared models — used by both containers |
-| [`bot/`](bot/) | Discord client, slash commands, event handlers |
-| [`worker/`](worker/) | Worldstate/Twitch/RSS notification loop |
+npm workspaces monorepo — install once at the repo root (`npm ci`).
 
-Import shared code via the `#shared/*` path alias (see `package.json` `imports`).
+| Package / folder | Role |
+|------------------|------|
+| [`packages/shared/`](packages/shared/) | Database, utilities, embeds, resources, shared models — used by bot, worker, and web |
+| [`packages/bot/`](packages/bot/) | Discord client, slash commands, event handlers |
+| [`packages/worker/`](packages/worker/) | Worldstate/Twitch/RSS notification loop |
+| [`packages/web/`](packages/web/) | Next.js dashboard ([genesis.warframestat.us](https://genesis.warframestat.us)) |
+| [`spec/`](spec/) | Integration tests (repo root) |
+
+Import shared code via the `#shared/*` path alias (see root `package.json` `imports` and each package’s `imports` where applicable).
+
+Common scripts (run from repo root):
+
+| Script | Purpose |
+|--------|---------|
+| `npm run docker:up` | MariaDB + bot + worker (detached bot/worker after DB ready) |
+| `npm run docker:down` | Stop stack and remove volumes |
+| `npm run docker:db` | MariaDB only |
+| `npm run docker:bot:dev` | Bot container (foreground; rebuilds) |
+| `npm run docker:worker:dev` | Worker container (foreground; rebuilds) |
+| `npm run dev` | Bot + worker + web via concurrently (host tsx; reads repo-root `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:bot` | Bot on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:worker` | Worker on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:web` | Web dashboard (local Next.js) |
+| `npm run lint` | ESLint — all packages + `spec/` |
+| `npm run build:bundle` | Production bot/worker bundle (`tsup` → `dist/`) |
+| `npm run build:web` | Production Next.js build |
+| `npm run build` | Production bot Docker image ([`bot.Dockerfile`](bot.Dockerfile)) |
 
 ## Configuration
 
@@ -144,13 +169,11 @@ Honestly too many to put here
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
-### Private Docker Build!
+### Private Docker Build
 
-Want to build your own image or run a local stack?
+Production-style images:
 
-1. Copy [`.env.docker.example`](.env.docker.example) to `.env.docker` and fill in required values (`TOKEN`, `OWNER`, `CLIENT_ID`).
-2. Start MariaDB + bot: `npm run docker:up`
-3. Optional worker: `docker compose --profile worker up --build`
-4. Stop and remove volumes: `npm run docker:down`
+- Bot: `npm run build` ([`bot.Dockerfile`](bot.Dockerfile))
+- Worker: `npm run build:worker` ([`notifier.Dockerfile`](notifier.Dockerfile))
 
-For a production-style image: `npm run build` (uses [`bot.Dockerfile`](bot.Dockerfile)).
+Optional worker only (without full stack): `docker compose --profile worker up --build`

@@ -1,0 +1,26 @@
+{
+  "name": "@genesis/shared",
+  "version": "2.13.27",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./*"
+  },
+  "dependencies": {
+    "@sentry/node": "^7.120.4",
+    "@spectacles/rest": "^0.8.3",
+    "bluebird": "^3.7.2",
+    "chalk": "^5.6.2",
+    "cron": "^4.4.0",
+    "dayjs": "^1.11.21",
+    "discord.js": "^14.16.0",
+    "flat-cache": "^3.2.0",
+    "i18n-string-templates": "^2.0.7",
+    "json-query": "^2.2.2",
+    "mysql2": "^3.22.5",
+    "node-fetch": "^3.3.0",
+    "numeral": "^2.0.6",
+    "sql-template-strings": "^2.2.2",
+    "warframe-worldstate-data": "^3.16.1"
+  }
+}

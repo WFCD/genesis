@@ -21,17 +21,15 @@ Use the provided `.eslintrc.json` to lint your files, include any ignores in you
 
 ### Running
 
-1. Get a bot token from the [discord application dashboard here](https://discordapp.com/developers/applications/me) and use it in a copy of `pm2.json`, we ignore `genesis.json` by default in our `.gitignore`.
+1. Get a bot token from the [Discord application dashboard](https://discord.com/developers/applications) and add it to `.env.local` (copy from [`.env.example`](.env.example)).
 
-2. Install [pm2](http://pm2.keymetrics.io/docs/usage/quick-start/).
+2. Install [Docker](https://docs.docker.com/get-docker/) and run `npm ci` at the repo root.
 
-3. Add any other applicable tokens to `genesis.json` (or whatever you called it).
+3. Start the stack: `npm run docker:up`
 
-4. Run `npm start` to start the bot.
+4. View logs: `docker compose logs -f bot` (or `worker`).
 
-5. View logs in `npm run logs` if you wish to see logs for the process.
-
-6. Invite the bot to your server using the format:
+5. Invite the bot to your server using the format:
 
 `https://discordapp.com/oauth2/authorize?scope=bot&client_id=<bot_client_id>&permissions=<permissions###>`.
 

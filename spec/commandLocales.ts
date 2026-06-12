@@ -5,7 +5,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DiscordLocales, LocalDiscordLocaleMappings, locales } from '#shared/resources';
 import type { CommandLocaleModule } from '#shared/resources/locales/commands/types';
 
-const commandsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../shared/resources/locales/commands');
+const commandsDir = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../packages/shared/resources/locales/commands'
+);
 
 const resolveCommandLocaleFile = (locale: string): string | undefined => {
   for (const ext of ['.ts', '.js']) {

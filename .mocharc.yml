@@ -4,4 +4,3 @@ spec: spec/**/*.spec.ts
 require:
   - spec/setup.ts
   - spec/mochaHooks.ts
-  - dotenv/config

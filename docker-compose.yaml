@@ -24,7 +24,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    env_file: .env.local.docker
+    env_file: .env.local
     environment:
       SCOPE: BOT
       MYSQL_HOST: mariadb
@@ -42,7 +42,7 @@ services:
     volumes:
       - .:/app/genesis
       - bot_node_modules:/app/genesis/node_modules
-    command: npx tsx bot/main.ts
+    command: npx tsx packages/bot/main.ts
 
   worker:
     profiles:
@@ -55,7 +55,7 @@ services:
         condition: service_healthy
       bot:
         condition: service_started
-    env_file: .env.local.docker
+    env_file: .env.local
     environment:
       SCOPE: WORKER
       MYSQL_HOST: mariadb
@@ -72,7 +72,7 @@ services:
     volumes:
       - .:/app/genesis
       - worker_node_modules:/app/genesis/node_modules
-    command: npx tsx worker/main.ts
+    command: npx tsx packages/worker/main.ts
 
   web:
     profiles:
@@ -83,7 +83,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    env_file: .env.local.docker
+    env_file: .env.local
     environment:
       SCOPE: WEB
       MYSQL_HOST: mariadb
@@ -97,7 +97,7 @@ services:
       - '3131:3131'
     volumes:
       - .:/app/genesis
-      - web_node_modules:/app/genesis/web/node_modules
+      - web_node_modules:/app/genesis/packages/web/node_modules
 
 volumes:
   mariadb_data:

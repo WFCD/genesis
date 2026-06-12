@@ -2,8 +2,12 @@ FROM node:krypton-alpine AS base
 
 RUN apk --no-cache add git python3 make gcc musl-dev g++ bash
 WORKDIR /app/genesis
-COPY package*.json ./
-RUN npm ci
+COPY package.json package-lock.json ./
+COPY packages/bot/package.json ./packages/bot/
+COPY packages/worker/package.json ./packages/worker/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/web/package.json ./packages/web/
+RUN npm ci --include-workspace-root -w @genesis/worker -w @genesis/bot -w @genesis/shared
 
 FROM node:krypton-alpine AS release
 
