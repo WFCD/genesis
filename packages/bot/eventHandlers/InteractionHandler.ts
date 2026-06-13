@@ -93,7 +93,7 @@ export default class InteractionHandler extends BaseHandler {
     let reloadedCommands = loadedCommands;
 
     let files = fs.readdirSync(handlersDir);
-    const categories = files.filter((f) => !/\.(js|ts)$/.test(f));
+    const categories = files.filter((f) => !/\.(js|ts)$/.test(f) && !/.*\.(js|ts).map$/gi.test(f));
     files = files.filter((f) => /\.(js|ts)$/.test(f));
 
     categories.forEach((category) => {
