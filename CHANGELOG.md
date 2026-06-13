@@ -1,3 +1,18 @@
+# [3.0.0](https://github.com/WFCD/genesis/compare/v2.13.27...v3.0.0) (2026-06-13)
+
+
+### Features
+
+* migrate to djs@v14 & typescript ([#1140](https://github.com/WFCD/genesis/issues/1140)) ([d3a6d7e](https://github.com/WFCD/genesis/commit/d3a6d7e9542c54b522a7e9dde7938163e057d7cc))
+
+
+### BREAKING CHANGES
+
+* upgrade to discord.js v14
+BREAKINC CHANGE: upgrade to typescript
+* restructure repo to pseduo monorepo
+* introduce web app
+
 ## [2.13.27](https://github.com/WFCD/genesis/compare/v2.13.26...v2.13.27) (2026-05-04)
 
 
