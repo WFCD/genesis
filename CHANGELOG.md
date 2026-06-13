@@ -1,3 +1,11 @@
+## [3.0.2](https://github.com/WFCD/genesis/compare/v3.0.1...v3.0.2) (2026-06-13)
+
+
+### Bug Fixes
+
+* exclude map files in event handlers ([ad7d5d5](https://github.com/WFCD/genesis/commit/ad7d5d52646d65e524ef78323900972d91f0275b))
+* exclude map files in interaction handler ([ff53078](https://github.com/WFCD/genesis/commit/ff53078476be9585789e3d13a944ed0d144bbbb2))
+
 ## [3.0.1](https://github.com/WFCD/genesis/compare/v3.0.0...v3.0.1) (2026-06-13)
 
 
