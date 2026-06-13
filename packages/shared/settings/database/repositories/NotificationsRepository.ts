@@ -1,7 +1,7 @@
 import type { Guild } from 'discord.js';
 import SQL from 'sql-template-strings';
 
-import pingables from '#shared/resources/pingables.json';
+import pingables from '#shared/resources/pingables.json' with { type: 'json' };
 import logger from '#shared/utilities/Logger';
 import type { DatabaseDeps } from '#shared/settings/database/DatabaseDeps';
 
