@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/WFCD/genesis/compare/v3.0.0...v3.0.1) (2026-06-13)
+
+
+### Bug Fixes
+
+* bad resource import ([0aefed2](https://github.com/WFCD/genesis/commit/0aefed20785551f4d1f3932a4cc8a42c003b0796))
+
 # [3.0.0](https://github.com/WFCD/genesis/compare/v2.13.27...v3.0.0) (2026-06-13)
 
 
