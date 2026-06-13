@@ -51,7 +51,11 @@ const rewriteSharedImports = () => {
 
     content = content.replace(sharedImportPattern, (match, sharedSubpath: string) => {
       changed = true;
-      return toRelativeSharedImport(absoluteFile, sharedSubpath);
+      let subpath = sharedSubpath.replace(/\/$/, '');
+      if (sharedSubpath.endsWith('/')) {
+        subpath = `${subpath}/index`;
+      }
+      return toRelativeSharedImport(absoluteFile, subpath);
     });
 
     if (changed) writeFileSync(absoluteFile, content);

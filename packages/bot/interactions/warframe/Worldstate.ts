@@ -401,16 +401,15 @@ export default class WorldState extends Interaction {
           locale: language,
         });
         const fields = baroEmbed.data.fields ?? [];
+        const embedJson = baroEmbed.toJSON();
 
         if (fields.length <= 15) {
-          return interaction.editReply({ embeds: [EmbedBuilder.from(baroEmbed)] });
+          return interaction.editReply({ embeds: [EmbedBuilder.from(embedJson)] });
         }
 
-        pages = createGroupedArray(fields, 15).map((fieldGroup) => {
-          const page = EmbedBuilder.from(baroEmbed);
-          page.setFields(fieldGroup);
-          return page;
-        });
+        pages = createGroupedArray(fields, 15).map((fieldGroup) =>
+          EmbedBuilder.from({ ...embedJson, fields: fieldGroup })
+        );
         return Collectors.paged(interaction, pages, ctx);
       }
       case 'news': {

@@ -1,0 +1,8 @@
+node_modules
+dist
+packages/web/.next
+packages/web/out
+.git
+.env.local
+**/.env.local
+.cache

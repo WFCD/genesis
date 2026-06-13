@@ -18,7 +18,7 @@ import {
   type ModalSubmitInteraction,
 } from 'discord.js';
 
-import { localeMap, platformMap } from '#shared/resources/';
+import { localeMap, platformMap } from '#shared/resources/index';
 import { GUILD_LEVEL_CHANNEL_SETTINGS } from '#shared/settings/database/repositories/ChannelSettingsRepository';
 import { trackableEvents, withEphemeral } from '#shared/utilities/CommonFunctions';
 import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';

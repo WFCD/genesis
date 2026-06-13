@@ -1,3 +1,4 @@
+import type { APIEmbedField } from 'discord.js';
 import n from 'numeral';
 
 import { assetBase, emojify } from '#shared/utilities/CommonFunctions';
@@ -8,6 +9,23 @@ import type { EmbedBuildOptions } from './embedOptions';
 
 const baroThumb = `${assetBase}/img/baro.png`;
 
+const trimField = (text: string, max: number) => (text.length <= max ? text : `${text.slice(0, max - 3)}...`);
+
+const baroItemField = (
+  item: { item?: string; ducats?: number; credits?: number },
+  onDemand?: boolean
+): APIEmbedField => {
+  const ducats = Number(item.ducats) || 0;
+  const credits = Number(item.credits) || 0;
+  const d = `${n(ducats).format('0a')}${onDemand ? emojify('ducats') : 'ducats'}`;
+  const cr = `${n(credits).format('0a')}${onDemand ? emojify('credits') : '*cr*'}`;
+  return {
+    name: trimField(String(item.item ?? 'Unknown'), 256),
+    value: trimField(`${d} + ${cr}`, 1024),
+    inline: true,
+  };
+};
+
 export default class VoidTraderEmbed extends BaseEmbed {
   constructor(voidTrader, { platform, onDemand, i18n, locale }: EmbedBuildOptions) {
     super(locale);
@@ -17,23 +35,20 @@ export default class VoidTraderEmbed extends BaseEmbed {
     const startString = timeUntil(voidTrader);
     this.color = active ? 0x0ec9ff : 0xff6961;
 
-    if (active && voidTrader?.inventory?.length > 0) {
-      this.fields = voidTrader?.inventory.map((i) => {
-        const d = `${n(i.ducats).format('0a')}${onDemand ? emojify('ducats') : 'ducats'}`;
-        const cr = `${n(i.credits).format('0a')}${onDemand ? emojify('credits') : '*cr*'}`;
-        return {
-          name: i.item,
-          value: `${d} + ${cr}`,
-          inline: true,
-        };
-      });
-    } else {
-      this.fields = [];
-    }
-    this.fields.push({
-      name: i18n`Time until ${isActive(voidTrader) ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location}`,
-      value: `${active ? endString : startString}` || i18n`Data Pending`,
-    });
+    const inventoryFields =
+      active && voidTrader?.inventory?.length > 0
+        ? voidTrader.inventory.map((item) => baroItemField(item, onDemand))
+        : [];
+
+    const timeName = i18n`Time until ${active ? i18n`departure from` : i18n`arrival at`} ${voidTrader.location ?? ''}`;
+    const timeField: APIEmbedField = {
+      name: trimField(String(timeName), 256),
+      value: trimField(String((active ? endString : startString) || i18n`Data Pending`), 1024),
+    };
+
+    // setFields() rejects >25 fields; /baro paginates in Worldstate before send.
+    this.data.fields = [...inventoryFields, timeField];
+
     this.title = i18n`[${platform.toUpperCase()}] Worldstate - Void Trader`;
     this.thumbnail = {
       url: baroThumb,
