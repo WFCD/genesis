@@ -11,6 +11,7 @@ import type Genesis from '../bot';
 const handlersDir = path.dirname(fileURLToPath(import.meta.url));
 
 const handlerFile = /EventHandler\.(js|ts)$/;
+const map = /.*\.(js|ts).map$/;
 
 export interface HandlerEventPayload {
   event: string;
@@ -35,7 +36,7 @@ export default class EventHandler {
   async loadHandles() {
     let files = await fs.readdir(handlersDir);
 
-    const categories = files.filter((f) => !/\.(js|ts)$/.test(f));
+    const categories = files.filter((f) => !/\.(js|ts)$/.test(f) && !map.test(f));
     files = files.filter((f) => /\.(js|ts)$/.test(f) && !handlerFile.test(f));
 
     await Promise.all(
