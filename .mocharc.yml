@@ -1,5 +1,6 @@
 slow: 10000
-timeout: 10000
-spec: spec/**/*.spec.js
+timeout: 30000
+spec: spec/**/*.spec.ts
 require:
-  - dotenv/config
+  - spec/setup.ts
+  - spec/mochaHooks.ts

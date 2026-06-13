@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "checkJs": false,
+    "strict": false,
+    "noEmit": true,
+    "paths": {
+      "#shared/*": ["./packages/shared/*"]
+    }
+  },
+  "include": [
+    "packages/bot/**/*",
+    "packages/worker/**/*",
+    "packages/shared/**/*",
+    "global.d.ts",
+    "packages/shared/types/**/*.d.ts",
+    "spec/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "packages/web"]
+}

@@ -1,0 +1,589 @@
+// @ts-nocheck -- incremental TS migration; worker notification runtime
+import Promise from 'bluebird';
+
+import logger from '#shared/utilities/Logger';
+import { syndicates } from '#shared/resources';
+import { captures, createGroupedArray, platforms, games } from '#shared/utilities/CommonFunctions';
+import { isActive, isActiveArbitration, isExpired, rewardString } from '#shared/utilities/WorldState';
+import { resolveInvasionThumbnail } from '#shared/embeds/InvasionEmbed';
+import { fissureNodeTypeKey, fissureTypeKey, transformMissionType } from '#shared/utilities/FissureTracking';
+
+import { asId, embeds, getThumbnailForItem, i18ns, updating } from '../NotifierUtils';
+import Broadcaster from '../Broadcaster';
+
+const wrap = (fn) => {
+  try {
+    return fn();
+  } catch (e) {
+    logger.error(e);
+  }
+};
+const wrapPromise = async (prom, indicator) => {
+  try {
+    return await prom;
+  } catch (e) {
+    logger.error(e, indicator ? `Failure running ${indicator}` : 'Failure running notifier task');
+  }
+};
+const updtReg = new RegExp(captures.updates, 'i');
+const beats = {};
+
+const normalizeNotifiedIds = (notified) => {
+  if (Array.isArray(notified)) return notified;
+  if (typeof notified === 'string') {
+    try {
+      const parsed = JSON.parse(notified);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const summarizeNotifiable = (data) =>
+  Object.entries(data)
+    .filter(([, value]) => (Array.isArray(value) ? value.length : value))
+    .map(([key, value]) => `${key}:${Array.isArray(value) ? value.length : 1}`)
+    .join(', ');
+const makeNightwaveType = (challenge) => {
+  let type = 'daily';
+
+  if (challenge.isElite) {
+    type = 'elite';
+  } else if (!challenge.isDaily) {
+    type = 'weekly';
+  }
+  return `nightwave.${type}`;
+};
+const buildNotifiableData = (newData, notified) => {
+  try {
+    const data = {};
+
+    data.acolytes = wrap(() => newData.persistentEnemies?.filter((e) => !notified.includes(e.pid)));
+    data.alerts = wrap(() => newData.alerts?.filter((a) => !isExpired(a) && !notified.includes(a.id)));
+    data.archonHunt = wrap(() =>
+      newData.archonHunt && !isExpired(newData.archonHunt) && !notified?.includes(newData.archonHunt.id)
+        ? newData.archonHunt
+        : undefined
+    );
+    data.baros = wrap(() =>
+      newData.voidTraders?.length &&
+      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
+        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
+        : undefined
+    );
+    data.conclave = wrap(() =>
+      newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id))
+    );
+    data.dailyDeals = wrap(() => newData.dailyDeals.filter((dd) => !notified.includes(dd.id)));
+    data.events = wrap(() => newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)));
+    data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
+    data.featuredDeals = wrap(() => newData.flashSales.filter((d) => d.isFeatured && !notified.includes(d.id)));
+    data.fissures = wrap(() => newData.fissures.filter((f) => !notified.includes(f.id)));
+    data.news = wrap(() =>
+      newData.news.filter(
+        (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
+      )
+    );
+    data.popularDeals = wrap(() => newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)));
+    data.primeAccess = wrap(() => newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)));
+    data.sortie = wrap(() =>
+      newData.sortie && !isExpired(newData.sortie) && !notified.includes(newData.sortie.id) ? newData.sortie : undefined
+    );
+    data.streams = wrap(() => newData.news.filter((n) => n.stream && !notified.includes(n.id)));
+    data.steelPath = wrap(() =>
+      newData.steelPath.currentReward && !notified.includes(asId(newData.steelPath, 'steelpath'))
+        ? newData.steelPath
+        : undefined
+    );
+    data.syndicateM = wrap(() => newData.syndicateMissions.filter((m) => !notified.includes(m.id)));
+    data.tweets = wrap(() =>
+      newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : []
+    );
+    data.updates = wrap(() =>
+      newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id))
+    );
+
+    data.arbitration = wrap(() =>
+      isActiveArbitration(newData.arbitration) && !notified.includes(asId(newData.arbitration, 'arbitration'))
+        ? newData.arbitration
+        : undefined
+    );
+    data.outposts = wrap(() => isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id));
+
+    try {
+      /* Nightwave */
+      if (newData.nightwave) {
+        const nWaveChallenges = newData.nightwave.activeChallenges.filter(
+          (challenge) => isActive(challenge) && !notified.includes(challenge.id)
+        );
+        data.nightwave = nWaveChallenges.length ? { ...JSON.parse(JSON.stringify(newData.nightwave)) } : undefined;
+        if (data.nightwave) {
+          data.nightwave.activeChallenges = nWaveChallenges;
+        }
+      }
+    } catch (e) {
+      logger.error(`error parsing nightwave data: ${e}`);
+    }
+    return data;
+  } catch (e) {
+    logger.error(e);
+  }
+  return {};
+};
+
+export default class Notifier {
+  #settings;
+  #worldStates;
+  #broadcaster;
+
+  constructor({ settings, client, worldStates, workerCache }) {
+    this.#settings = settings;
+    this.#worldStates = worldStates;
+    this.#broadcaster = new Broadcaster({
+      client,
+      settings: this.#settings,
+      workerCache,
+    });
+    logger.info('Ready', 'WS');
+
+    platforms.forEach((p) => {
+      beats[p] = {
+        lastUpdate: Date.now(),
+        currCycleStart: undefined,
+      };
+    });
+  }
+
+  /** Start the notifier */
+  async start() {
+    Object.entries(this.#worldStates).forEach(([, ws]) => {
+      ws.on('newData', this.onNewData.bind(this));
+    });
+  }
+
+  /**
+   * Send notifications on new data from worldstate
+   * @param  {string} platform Platform to be updated
+   * @param {string} locale language identifier to be updated
+   * @param  {Object} newData  Updated data from the worldstate
+   */
+  async onNewData(platform, locale, newData) {
+    const key = `${platform}:${locale}`;
+    // don't wait for the previous to finish, this creates a giant backup,
+    //  adding 4 new entries every few seconds
+    if (updating.has(key) || updating.has(`${key}:cycles`)) return;
+
+    if (!beats[key]) beats[key] = { lastUpdate: Date.now(), currCycleStart: undefined };
+    beats[key].currCycleStart = Date.now();
+    if (!newData?.timestamp) return;
+
+    // Set up data to notify
+    updating.add(key);
+    const notifiedIds = normalizeNotifiedIds(await this.#settings.getNotifiedIds(key));
+    try {
+      const notifiableData = buildNotifiableData(newData, notifiedIds);
+      const summary = summarizeNotifiable(notifiableData);
+      if (summary) {
+        logger.debug(`notifiable ${key}: ${summary}`, 'WS');
+      } else {
+        logger.debug(`notifiable ${key}: none (${notifiedIds.length} ids in dedup store)`, 'WS');
+      }
+      await this.#sendNew(platform, locale, newData, notifiedIds, notifiableData);
+    } catch (e) {
+      logger.error(e);
+    }
+    updating.remove(key);
+  }
+
+  async #sendNew(
+    platform,
+    locale,
+    rawData,
+    notifiedIds,
+    {
+      alerts,
+      arbitration,
+      archonHunt,
+      dailyDeals,
+      events,
+      fissures,
+      invasions,
+      news,
+      acolytes,
+      sortie,
+      syndicateM,
+      baros,
+      tweets,
+      nightwave,
+      featuredDeals,
+      streams,
+      popularDeals,
+      primeAccess,
+      updates,
+      conclave,
+      outposts,
+      steelPath,
+    }
+  ) {
+    // Send all notifications
+    try {
+      logger.silly(`sending new data on ${platform} in ${locale}...`);
+      if (!i18ns[locale]) {
+        logger.error(`No notifier i18n constructed for ${locale}`);
+        return;
+      }
+      const deps = { platform, locale, i18n: i18ns[locale] };
+      await this.#sendAcolytes(acolytes, deps);
+      if (games.includes('BARO') && baros?.length) {
+        await Promise.map(baros, (baro) => this.#sendBaro(baro, deps));
+      }
+      if (conclave && conclave.length > 0) {
+        await Promise.all([this.#sendConclaveDailies(conclave, deps), this.#sendConclaveWeeklies(conclave, deps)]);
+      }
+      if (tweets && tweets.length > 0) {
+        await this.#sendTweets(tweets, deps);
+      }
+      await wrapPromise(this.#sendDarvo(dailyDeals, deps));
+      await wrapPromise(this.#sendEvent(events, deps));
+      await wrapPromise(this.#sendFeaturedDeals(featuredDeals, deps));
+      await wrapPromise(this.#sendFissures(fissures, deps));
+      await wrapPromise(this.#sendNews(news, deps));
+      await wrapPromise(this.#sendStreams(streams, deps));
+      await wrapPromise(this.#sendPopularDeals(popularDeals, deps));
+      await wrapPromise(this.#sendPrimeAccess(primeAccess, deps));
+      await wrapPromise(this.#sendInvasions(invasions, deps));
+      await wrapPromise(this.#sendSortie(sortie, deps));
+      await wrapPromise(this.#sendSyndicates(syndicateM, deps));
+      await wrapPromise(this.#sendUpdates(updates, deps));
+      await wrapPromise(this.#sendAlerts(alerts, deps));
+      await wrapPromise(this.#sendSentientOutposts(outposts, deps));
+      await wrapPromise(this.#sendNightwave(nightwave, deps));
+      await wrapPromise(this.#sendArbitration(arbitration, deps));
+      await wrapPromise(this.#sendSteelPath(steelPath, deps));
+      await wrapPromise(this.#sendArchonHunt(archonHunt, deps));
+    } catch (e) {
+      logger.error(e);
+    } finally {
+      beats[`${platform}:${locale}`].lastUpdate = Date.now();
+    }
+
+    try {
+      const baroIds = rawData.voidTraders?.length
+        ? rawData.voidTraders.map((vt) => `${vt.id}${isActive(vt) ? '1' : '0'}`)
+        : rawData.voidTrader
+          ? [`${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`]
+          : [];
+      const alreadyNotified = [
+        ...rawData.persistentEnemies.map((a) => a.pid),
+        ...baroIds,
+        ...rawData.fissures.map((f) => f.id),
+        ...rawData.invasions.map((i) => i.id),
+        ...rawData.news.map((n) => n.id),
+        ...rawData.events.map((e) => e.id),
+        ...rawData.alerts.map((a) => a.id),
+        rawData.sortie.id,
+        ...rawData.syndicateMissions.map((m) => m.id),
+        ...rawData.flashSales.map((s) => s.id),
+        ...rawData.dailyDeals.map((d) => d.id),
+        ...rawData.conclaveChallenges.map((cc) => cc.id),
+        ...(rawData?.weeklyChallenges?.map((w) => w.id) ?? []),
+        isActiveArbitration(rawData.arbitration) ? asId(rawData.arbitration, 'arbitration') : 'arbitration:0',
+        ...(rawData.twitter ? rawData.twitter.map((t) => t.uniqueId) : []),
+        ...(rawData.nightwave && isActive(rawData.nightwave)
+          ? rawData.nightwave.activeChallenges.filter(isActive).map((c) => c.id)
+          : []),
+        rawData.sentientOutposts.id,
+        rawData.steelPath && rawData.steelPath.expiry ? asId(rawData.steelPath, 'steelpath') : 'steelpath:0',
+        rawData.archonHunt.id,
+      ].filter(Boolean);
+
+      await this.#settings.setNotifiedIds(`${platform}:${locale}`, alreadyNotified);
+      logger.silly(`completed sending notifications for ${platform} in ${locale}`);
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
+  /**
+   * @typedef {Object} BroadcastOptions
+   * @property {Discord.MessageEmbed} Embed data to send
+   * @property {string} type type id to send
+   * @property {string} platform platform target
+   * @property {string} thumb override thumbnail url
+   * @property {Array<string>} items to affect sending
+   * @property {I18n} i18n internationalization function
+   * @property {Locale} locale to send
+   * @property {function} typeGenerator for making the type for some dynamic types
+   * @property {(Object) => string} typeGenerator generator for providing a type string
+   */
+
+  /**
+   * Send a "standard" broadcast message
+   * @param {Object | Array<Object>} sendable thing or list of things to send
+   * @param {Discord.MessageEmbed} Embed data to send
+   * @param {string} type type id to send
+   * @param {string} platform platform target
+   * @param {string} thumb override thumbnail url
+   * @param {Array<string>} items to affect sending
+   * @param {I18n} i18n internationalization function
+   * @param {Locale} locale to send
+   * @param {function} typeGenerator for making the type for some dynamic types
+   * @returns {Promise<Object[]>}
+   */
+  async #standardBroadcast(sendable, { Embed, type, platform, thumb, items, i18n, locale, typeGenerator }) {
+    if ((Array.isArray(sendable) && !sendable.length) || !sendable) return Promise.resolve(true);
+    if (!i18n) {
+      logger.error(
+        `No notifier i18n constructed for ${locale} sending ${type} with ${
+          Array.isArray(sendable) ? 'array' : 'object'
+        }`
+      );
+    }
+    if (Array.isArray(sendable)) {
+      return Promise.mapSeries(sendable, (subsendable) =>
+        this.#standardBroadcast(subsendable, {
+          Embed,
+          type: typeGenerator ? typeGenerator(subsendable) : type,
+          platform,
+          thumb,
+          items,
+          i18n,
+          locale,
+        })
+      );
+    }
+    const embed = new Embed(sendable, { platform, i18n, locale });
+    embed.thumbnail.url = thumb || embed.thumbnail.url;
+    return this.#broadcaster.broadcast(embed, { platform, type, items, locale });
+  }
+
+  async #sendAcolytes(newAcolytes, deps) {
+    return this.#standardBroadcast(newAcolytes, {
+      ...deps,
+      Embed: embeds.Acolyte,
+      typeGenerator: (acolyte) => `enemies${acolyte.isDiscovered ? '' : '.departed'}`,
+    });
+  }
+
+  async #sendAlerts(newAlerts, deps) {
+    return Promise.mapSeries(newAlerts, async (alert) => {
+      let thumb;
+      try {
+        thumb =
+          !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
+          (await getThumbnailForItem(rewardString(alert.mission.reward, false)));
+      } catch (e) {
+        logger.error(e);
+      }
+      return this.#standardBroadcast(alert, {
+        ...deps,
+        Embed: embeds.Alert,
+        type: 'alerts',
+        items: alert.rewardTypes,
+        thumb,
+      });
+    });
+  }
+
+  async #sendArbitration(arbitration, deps) {
+    if (!isActiveArbitration(arbitration)) return;
+    const type = `arbitration.${arbitration.enemy.toLowerCase()}.${transformMissionType(arbitration.typeKey)}`;
+    return this.#standardBroadcast(arbitration, { ...deps, Embed: embeds.Arbitration, type });
+  }
+
+  async #sendArchonHunt(newArchonHunt, deps) {
+    if (!newArchonHunt) return;
+    const thumb = await getThumbnailForItem(newArchonHunt.boss, true);
+    return this.#standardBroadcast(newArchonHunt, {
+      Embed: embeds.Sortie,
+      type: 'archonhunt',
+      thumb,
+      ...deps,
+    });
+  }
+
+  async #sendBaro(newBaro, deps) {
+    const embed = new embeds.VoidTrader(newBaro, deps);
+    if (embed.fields.length > 25) {
+      const pages = createGroupedArray(embed.fields, 15);
+      return Promise.mapSeries(pages, async (page) => {
+        const tembed = { ...embed };
+        tembed.fields = page;
+        this.#broadcaster.broadcast(tembed, { platform: deps.platform, type: 'baro', locale: deps.locale });
+      });
+    }
+    return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: 'baro', locale: deps.locale });
+  }
+
+  async #sendConclaveDailies(newDailies, deps) {
+    const dailies = newDailies.filter((challenge) => challenge.category === 'day');
+    if (dailies.length > 0 && dailies[0].activation) {
+      const embed = new embeds.Conclave(dailies, {
+        category: 'day',
+        ...deps,
+      });
+      return this.#broadcaster.broadcast(embed, {
+        platform: deps.platform,
+        type: 'conclave.dailies',
+        locale: deps.locale,
+      });
+    }
+  }
+
+  async #sendConclaveWeeklies(newWeeklies, deps) {
+    const weeklies = newWeeklies.filter((challenge) => challenge.category === 'week');
+    if (weeklies.length > 0) {
+      const embed = new embeds.Conclave(weeklies, {
+        category: 'week',
+        ...deps,
+      });
+      return this.#broadcaster.broadcast(embed, {
+        platform: deps.platform,
+        type: 'conclave.weeklies',
+        locale: deps.locale,
+      });
+    }
+  }
+
+  async #sendDarvo(newDarvoDeals, deps) {
+    return this.#standardBroadcast(newDarvoDeals, { Embed: embeds.Darvo, type: 'darvo', ...deps });
+  }
+
+  async #sendEvent(newEvents, deps) {
+    return this.#standardBroadcast(newEvents, { Embed: embeds.Event, type: 'operation', ...deps });
+  }
+
+  async #sendFeaturedDeals(newFeaturedDeals, deps) {
+    return this.#standardBroadcast(newFeaturedDeals, { Embed: embeds.Sales, type: 'deals.featuredDeals', ...deps });
+  }
+
+  async #sendFissures(newFissures, deps) {
+    try {
+      return Promise.mapSeries(newFissures, async (fissure) => {
+        await this.#standardBroadcast(fissure, { ...deps, Embed: embeds.Fissure, type: fissureTypeKey(fissure) });
+        const nodeType = fissureNodeTypeKey(fissure);
+        if (nodeType) {
+          await this.#standardBroadcast(fissure, { ...deps, Embed: embeds.Fissure, type: nodeType });
+        }
+      });
+    } catch (e) {
+      logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
+    }
+  }
+
+  async #sendInvasions(newInvasions, deps) {
+    const type = 'invasions';
+    return Promise.mapSeries(newInvasions, async (invasion) =>
+      this.#standardBroadcast(invasion, {
+        ...deps,
+        Embed: embeds.Invasion,
+        items: invasion.rewardTypes,
+        type,
+        thumb: resolveInvasionThumbnail(invasion),
+      })
+    );
+  }
+
+  async #sendNews(newNews, deps, type) {
+    type = type || 'news';
+    return this.#standardBroadcast(newNews, { ...deps, Embed: embeds.News, type });
+  }
+
+  async #sendNightwave(nightwave, deps) {
+    if (!nightwave?.activeChallenges?.[0]) return;
+    if (nightwave.activeChallenges.length) {
+      return Promise?.mapSeries(nightwave?.activeChallenges, async (challenge) => {
+        const nwCopy = { ...nightwave };
+        nwCopy.activeChallenges = [challenge];
+        const embed = new embeds.Nightwave(nwCopy, deps);
+        return this.#broadcaster.broadcast(embed, {
+          platform: deps.platform,
+          type: makeNightwaveType(challenge),
+          locale: deps.locale,
+        });
+      });
+    }
+    const embed = new embeds.Nightwave(nightwave, deps);
+    return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: 'nightwave', locale: deps.locale });
+  }
+
+  async #sendPopularDeals(newPopularDeals, deps) {
+    const type = 'deals.popular';
+    return this.#standardBroadcast(newPopularDeals, { Embed: embeds.Sales, ...deps, type });
+  }
+
+  async #sendPrimeAccess(newNews, deps) {
+    return this.#sendNews(newNews, deps, 'primeaccess');
+  }
+
+  async #sendSortie(newSortie, deps) {
+    if (!newSortie) return;
+    const thumb = await getThumbnailForItem(newSortie.boss, true);
+    return this.#standardBroadcast(newSortie, {
+      Embed: embeds.Sortie,
+      type: 'sorties',
+      thumb,
+      ...deps,
+    });
+  }
+
+  async #sendSteelPath(steelPath, deps) {
+    if (!steelPath || !steelPath.currentReward) return;
+    const type =
+      steelPath.currentReward.name && steelPath.currentReward.name.includes('Umbra') ? 'steelpath.umbra' : 'steelpath';
+    return this.#standardBroadcast(steelPath, { Embed: embeds.SteelPath, type, ...deps });
+  }
+
+  async #sendStreams(newStreams, deps) {
+    return this.#sendNews(newStreams, deps, 'streams');
+  }
+
+  async #checkAndSendSyndicate(embed, syndicate, deps) {
+    const invalidField = embed.fields?.[0]?.name === 'No such Syndicate';
+    if (
+      embed.description &&
+      embed.description.length > 0 &&
+      embed.description !== 'No such Syndicate' &&
+      !invalidField
+    ) {
+      return this.#broadcaster.broadcast(embed, { platform: deps.platform, type: syndicate, locale: deps.locale });
+    }
+    return undefined;
+  }
+
+  async #sendSyndicates(newSyndicates, deps) {
+    if (!newSyndicates || !newSyndicates[0]) return;
+    return Promise.mapSeries(syndicates, async ({ key, display, prefix, notifiable }) => {
+      if (notifiable) {
+        const embed = new embeds.Syndicate(newSyndicates, {
+          syndicate: display,
+          ...deps,
+        });
+        const eKey = `${prefix || ''}${key}`;
+        return this.#checkAndSendSyndicate(embed, eKey, deps);
+      }
+    });
+  }
+
+  async #sendTweets(newTweets, deps) {
+    return Promise.mapSeries(newTweets, async (t) =>
+      this.#standardBroadcast(t, {
+        Embed: embeds.Tweet,
+        type: t.id,
+        ...deps,
+      })
+    );
+  }
+
+  async #sendUpdates(newNews, deps) {
+    return this.#sendNews(newNews, deps, 'updates');
+  }
+
+  async #sendSentientOutposts(outpost, deps) {
+    if (outpost.mission) {
+      return this.#standardBroadcast(outpost, { Embed: embeds.Outposts, type: 'outposts', ...deps });
+    }
+  }
+}

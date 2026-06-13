@@ -37,7 +37,7 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-#ignore prod pm2 config
+# Local runtime config (not committed)
 genesis.json
 worker.json
 worker.dev.json
@@ -50,9 +50,28 @@ mypm2.json
 # Commands manifest
 commands.json
 
-# Docker
-docker-compose.yaml
+# Compiled TypeScript (tsup prod bundle + tsc artifacts)
+dist/
+*.tsbuildinfo
+**/*.js.map
+
+# Source is TypeScript — ignore legacy/accidental JS in source trees
+packages/bot/**/*.js
+packages/worker/**/*.js
+packages/shared/**/*.js
+spec/**/*.js
+
+# Local env (never commit secrets)
+.env.local
+.env.local
+packages/web/.env.local
+packages/web/.env.local.local
+!packages/*/.env*.example
 
 .cache/
 .run
 .eslintcache
+
+# Web (Next.js)
+**/.next/
+packages/web/out

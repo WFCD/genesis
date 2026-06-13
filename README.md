@@ -16,11 +16,11 @@
 [![Discord Bots](https://discordbots.org/api/widget/lib/123591822579597315.png)](https://discordbots.org/bot/123591822579597315?utm_source=widget)
 
 ## JetBrains
-Thank you to <a href="https://www.jetbrains.com/" alt="JetBrains"><img src="/src/resources/jetbrains.svg"  height="16px" /> JetBrains</a> for providing us with free licenses to their great tools.
+Thank you to <a href="https://www.jetbrains.com/" alt="JetBrains"><img src="/packages/shared/resources/jetbrains.svg"  height="16px" /> JetBrains</a> for providing us with free licenses to their great tools.
 
-* <a href="https://www.jetbrains.com/webstorm/" alt="WebStorm"><img src="/src/resources/icon-webstorm.svg" height="16px" /> WebStorm</a>
+* <a href="https://www.jetbrains.com/webstorm/" alt="WebStorm"><img src="/packages/shared/resources/icon-webstorm.svg" height="16px" /> WebStorm</a>
 
-Feel free to submit a pull request. We are working on build checks and tests, and we use aribnb's codestyle and eslint configuration. Plugins for auto-linting on save are available for many popular editors.
+Feel free to submit a pull request. We are working on build checks and tests. ESLint and Prettier run via Husky on commit (`lint-staged` + root [`.prettierrc`](.prettierrc)).
 
 
 ## Thanks, Discord... Legalese things
@@ -34,35 +34,64 @@ tl;dr Bots need data. While I don't record any of your personal data or save it 
 ## Installation
 
 1. Clone this repo
-    ```sh
-    # For SSH
-    git clone git@github.wfcd/genesis.git
+2. Install **Node.js 24 LTS** (`lts/krypton`) — e.g. `nvm install` (uses [`.nvmrc`](.nvmrc)) — needed for lint, tests, and local web dev
+3. Install [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+4. Run `npm ci` at the repo root (workspaces + Husky hooks via `prepare`)
+5. Copy [`.env.example`](.env.example) to `.env.local` and set required variables (`TOKEN`, `OWNER`, `CLIENT_ID`)
+6. Optional web overrides: copy [`packages/web/.env.local.example`](packages/web/.env.local.example) to `packages/web/.env.local` for web-only vars; repo-root `.env.local` is loaded when unset
+7. Start MariaDB + bot + worker: `npm run docker:up`
+8. See below for config / commands
 
-    # For HTTPS
-    git clone https://github.com/WFCD/genesis.git
-    ```
-2. Install mysql server and configure a database to store settings and data
+Logs: `docker compose logs -f bot` (or `worker`, `mariadb`). Stop stack: `npm run docker:down`.
 
-3. Run `npm i`
+See [`.env.example`](.env.example) and [`docker-compose.yaml`](docker-compose.yaml) for service details.
 
-4. Start bot with [pm2](http://pm2.keymetrics.io/) using a copy of the provided `pm2.json` file. The scripts assume it's named `genesis.json`
+## Project layout
 
-5. See below for available config / commands
+npm workspaces monorepo — install once at the repo root (`npm ci`).
+
+| Package / folder | Role |
+|------------------|------|
+| [`packages/shared/`](packages/shared/) | Database, utilities, embeds, resources, shared models — used by bot, worker, and web |
+| [`packages/bot/`](packages/bot/) | Discord client, slash commands, event handlers |
+| [`packages/worker/`](packages/worker/) | Worldstate/Twitch/RSS notification loop |
+| [`packages/web/`](packages/web/) | Next.js dashboard ([genesis.warframestat.us](https://genesis.warframestat.us)) |
+| [`spec/`](spec/) | Integration tests (repo root) |
+
+Import shared code via the `#shared/*` path alias (see root `package.json` `imports` and each package’s `imports` where applicable).
+
+Common scripts (run from repo root):
+
+| Script | Purpose |
+|--------|---------|
+| `npm run docker:up` | MariaDB + bot + worker (detached bot/worker after DB ready) |
+| `npm run docker:down` | Stop stack and remove volumes |
+| `npm run docker:db` | MariaDB only |
+| `npm run docker:bot:dev` | Bot container (foreground; rebuilds) |
+| `npm run docker:worker:dev` | Worker container (foreground; rebuilds) |
+| `npm run dev` | Bot + worker + web via concurrently (host tsx; reads repo-root `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:bot` | Bot on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:worker` | Worker on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
+| `npm run dev:web` | Web dashboard (local Next.js) |
+| `npm run lint` | ESLint — all packages + `spec/` |
+| `npm run build:bundle` | Production bot/worker bundle (`tsup` → `dist/`) |
+| `npm run build:web` | Production Next.js build |
+| `npm run build` | Production bot Docker image ([`bot.Dockerfile`](bot.Dockerfile)) |
 
 ## Configuration
 
-Genesis requires a MySQL server. It uses the **MYSQL_*** environment variables for determining where to connect to
+Genesis requires a MariaDB-compatible server. Connection uses **`MYSQL_*`** environment variables (historical names; works with MariaDB via the `mysql2` driver).
 
 ### Base
 | Environment Variable | Description                                                            | Example                                     | Default     |
 |----------------------|------------------------------------------------------------------------|---------------------------------------------|-------------|
 | TOKEN                | Discord connection token                                               | `mfa.234089sdfasdf20dfada,f.asd`            | N\A         |
 | LOG_LEVEL            | Logging level of the bot, including info, debug, error, fatal          | `DEBUG`                                     | `ERROR`     |
-| MYSQL_DB             | MySQL database name, used for connecting to data provider and storage  | `genesis`                                   | `genesis`   |
-| MYSQL_PASSWORD       | MySQL database connection password                                     | `password`                                  | N\A         |
-| MYSQL_USER           | MySQL database connection user                                         | `genesis`                                   | `genesis`   |
-| MYSQL_PORT           | MySQL database connection port                                         | 3306                                        | 3306        |
-| MYSQL_HOST           | Hostname for conneting to MySQL                                        | `localhost`                                 | `localhost` |
+| MYSQL_DB             | Database name                                                          | `genesis`                                   | `genesis`   |
+| MYSQL_PASSWORD       | Database connection password                                           | `password`                                  | N\A         |
+| MYSQL_USER           | Database connection user                                               | `genesis`                                   | `genesis`   |
+| MYSQL_PORT           | Database connection port                                               | 3306                                        | 3306        |
+| MYSQL_HOST           | Hostname for connecting to the database                                | `localhost`                                 | `localhost` |
 | SHARD_OFFSET         | Offset of the first shard id for the local shards, default 0           | 2                                           | 0           |
 | LOCAL_SHARDS         | Number of shards locally                                               | 2                                           | 1           |
 | SHARDS               | Total number of shards                                                 | 1                                           | 1           |
@@ -140,13 +169,11 @@ Honestly too many to put here
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
-### Private Docker Build!
+### Private Docker Build
 
-Want to build your own image? All you (should) need to do is:
-- clone this repo
-- install docker
-- install nodejs (and npm)
-- run `npm run build` (builds the docker image and punishes locally)
-- Copy `docker-compose.example.yaml` and update the environment variables to your needing
-- Run `docker-compose up -d`
-- If you'd like to check logs, use `docker logs genesis --follow`
+Production-style images:
+
+- Bot: `npm run build` ([`bot.Dockerfile`](bot.Dockerfile))
+- Worker: `npm run build:worker` ([`notifier.Dockerfile`](notifier.Dockerfile))
+
+Optional worker only (without full stack): `docker compose --profile worker up --build`

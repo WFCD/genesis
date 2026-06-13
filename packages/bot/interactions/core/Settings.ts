@@ -1,0 +1,655 @@
+import { ApplicationCommandOptionType as Types, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+
+import logger from '#shared/utilities/Logger';
+import {
+  checkAndMergeEmbeds,
+  chunkFields,
+  constructItemEmbeds,
+  constructTypeEmbeds,
+  createChunkedEmbed,
+  embedDefaults,
+  emojify,
+  ensureEmbedsWithinLimit,
+  formatFixedWidthTable,
+  games,
+  timeDeltaToString,
+  withEphemeral,
+} from '#shared/utilities/CommonFunctions';
+import Collectors from '#shared/utilities/Collectors';
+import { enqueueWorkerCacheRefresh } from '#shared/utilities/enqueueWorkerCacheRefresh';
+import { cmds, localeMap, platformMap } from '#shared/resources/index';
+import { GUILD_LEVEL_CHANNEL_SETTINGS } from '#shared/settings/database/repositories/ChannelSettingsRepository';
+
+import Interaction from '../../models/Interaction';
+
+import SettingsManageUI from './SettingsManageUI';
+
+export default class Settings extends Interaction {
+  static #negate = '✘';
+  static #affirm = '✓';
+  static #check = emojify('green_tick');
+  static #xmark = emojify('red_tick');
+  static #empty = emojify('empty');
+  static #globalable = {
+    type: Types.Boolean,
+    name: 'global',
+    description: 'Should this value be set for every channel in the server?',
+  };
+  static #aliases = {
+    allow_inline: 'allowInline',
+    allow_custom: 'allowCustom',
+    lfg: 'lfgChannel',
+    allow_rooms: 'createPrivateChannel',
+    auto_locked: 'defaultRoomsLocked',
+    auto_text: 'defaultNoText',
+    auto_shown: 'defaultShown',
+    temp_category: 'tempCategory',
+    temp_channel: 'tempChannel',
+    delete_expired: 'deleteExpired',
+  };
+  static #rooms = [
+    {
+      ...cmds['settings.allow_rooms'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.allow_rooms.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.auto_locked'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.auto_locked.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.auto_text'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.auto_text.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.auto_shown'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.auto_shown.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.temp_category'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.temp_category.channel'],
+          type: Types.Channel,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.temp_channel'],
+      name: 'temp_channel',
+      description: 'Set the channel for creating threads in for private rooms',
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.temp_channel.channel'],
+          type: Types.Channel,
+          required: true,
+        },
+      ],
+    },
+  ];
+  static #setLFG = {
+    ...cmds['settings.lfg'],
+    type: Types.Subcommand,
+    options: [
+      {
+        ...cmds['settings.lfg.channel'],
+        type: Types.Channel,
+        required: true,
+      },
+      {
+        ...cmds.platform,
+        type: Types.String,
+        required: true,
+        choices: platformMap,
+      },
+    ],
+  };
+  static #custom = [
+    {
+      ...cmds['settings.allow_custom'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.allow_custom.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+        Settings.#globalable,
+      ],
+    },
+    {
+      ...cmds['settings.allow_inline'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.allow_inline.bool'],
+          type: Types.Boolean,
+          required: true,
+        },
+        Settings.#globalable,
+      ],
+    },
+  ];
+  static #settingsCommands = [
+    {
+      ...cmds['settings.language'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds['settings.language.str'],
+          type: Types.String,
+          choices: localeMap,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.platform'],
+      type: Types.Subcommand,
+      options: [
+        {
+          ...cmds.platform,
+          type: Types.String,
+          choices: platformMap,
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.ephemerate'],
+      type: Types.Subcommand,
+      options: [
+        {
+          type: Types.Boolean,
+          name: 'value',
+          description: 'Make replies from interactions show in this channel?',
+          required: true,
+        },
+      ],
+    },
+    {
+      ...cmds['settings.deleteExpired'],
+      type: Types.Subcommand,
+      options: [
+        {
+          type: Types.Boolean,
+          name: 'value',
+          description: 'Delete webhook notifications after they expire?',
+          required: true,
+        },
+      ],
+    },
+    ...(games.includes('CUST_CMDS') ? Settings.#custom : []),
+    ...(games.includes('UTIL') ? [Settings.#setLFG] : []),
+    ...(games.includes('ROOMS') ? this.#rooms : []),
+  ].filter((s) => s);
+
+  /**
+   * Wrap channel value into a string
+   * @param {string} val channel id
+   * @returns {string|*}
+   */
+  static #wrapChannelValue(val) {
+    if (val !== this.#negate) {
+      return `<#${val}>`;
+    }
+    return val;
+  }
+
+  static #wrapRoleValue(val) {
+    if (val !== this.#negate) {
+      return `<@&${val}>`;
+    }
+    return val;
+  }
+
+  static async #resolveBoolean(channel, setting, settings, db?) {
+    if (settings) {
+      return settings[setting] === '1' ? this.#affirm : this.#negate;
+    }
+    return (await db.getChannelSetting(channel, setting)) === '1' ? this.#affirm : this.#negate;
+  }
+
+  /**
+   * this.#gather settings into one or more embeds
+   * @param {CommandContext} ctx context object
+   * @param {Discord.TextChannel} channel Channel to bind settings from
+   * @param {Discord.ThreadChannel} [thread] Optional thread
+   * @returns {Promise<Array<Discord.MessageEmbed>>}
+   */
+  static async gatherEmbedPages(ctx, channel, thread, guildId?: string | null) {
+    const page = new EmbedBuilder(embedDefaults);
+    const settings = await ctx.settings.channels.getSettings(channel, [
+      'language',
+      'platform',
+      'createPrivateChannel',
+      'allowInline',
+      'allowCustom',
+      'settings.cc.ping',
+      'defaultRoomsLocked',
+      'defaultNoText',
+      'defaultShown',
+      'defaultRoles',
+      'tempCategory',
+      'lfgChannel',
+      'lfgChannel.ps4',
+      'lfgChannel.xb1',
+      'lfgChannel.swi',
+      'modRole',
+      'ephemerate',
+      'deleteExpired',
+      'tempChannel',
+    ]);
+
+    if (channel.guild) {
+      for (const key of GUILD_LEVEL_CHANNEL_SETTINGS) {
+        const value = await ctx.settings.channels.getGuildSetting(channel.guild, key);
+        if (value !== undefined && value !== null) settings[key] = String(value);
+      }
+    }
+
+    page.setTitle('General Settings');
+    page.setDescription(`<#${channel.id}>`);
+    page.addFields([
+      {
+        name: 'Language',
+        value: settings.language || ctx.settings.defaults.language,
+        inline: true,
+      },
+      {
+        name: 'Platform',
+        value: settings.platform || ctx.settings.defaults.platform,
+        inline: true,
+      },
+      {
+        name: 'Mod Role',
+        value: this.#wrapRoleValue(settings.modRole || this.#negate),
+        inline: true,
+      },
+      {
+        name: 'Allow Inline',
+        value: await this.#resolveBoolean(channel, 'allowInline', settings),
+        inline: true,
+      },
+      {
+        name: 'Allow Custom',
+        value: await this.#resolveBoolean(channel, 'allowCustom', settings),
+        inline: true,
+      },
+      {
+        name: 'Ping Custom',
+        value: await this.#resolveBoolean(channel, 'settings.cc.ping', settings),
+        inline: true,
+      },
+      {
+        name: 'Ephemerate',
+        value: await this.#resolveBoolean(channel, 'ephemerate', settings),
+        inline: true,
+      },
+      {
+        name: 'Delete Expired',
+        value: await this.#resolveBoolean(channel, 'deleteExpired', settings),
+        inline: true,
+      },
+      {
+        name: '🔽 Private Room Settings 🔽',
+        value: '_ _',
+        inline: false,
+      },
+      {
+        name: 'Enabled?',
+        value: await this.#resolveBoolean(channel, 'createPrivateChannel', settings),
+        inline: true,
+      },
+      {
+        name: 'Lock?',
+        value: await this.#resolveBoolean(channel, 'defaultRoomsLocked', settings),
+        inline: true,
+      },
+      {
+        name: 'No Text?',
+        value: await this.#resolveBoolean(channel, 'defaultNoText', settings),
+        inline: true,
+      },
+      {
+        name: 'Hidden?',
+        value: await this.#resolveBoolean(channel, 'defaultShown', settings),
+        inline: true,
+      },
+      {
+        name: '🔽 LFG Settings 🔽',
+        value: '_ _',
+        inline: false,
+      },
+    ]);
+
+    const tempCategory =
+      settings.tempCategory !== '0' && typeof settings.tempCategory !== 'undefined'
+        ? settings.tempCategory
+        : this.#negate;
+
+    let lfgVal = '';
+    if (settings.lfgChannel) {
+      lfgVal += `**PC:** ${this.#wrapChannelValue(settings.lfgChannel)}\n`;
+    }
+    if (settings['lfgChannel.ps4']) {
+      lfgVal += `**PS4:** ${this.#wrapChannelValue(settings['lfgChannel.ps4'])}\n`;
+    }
+    if (settings['lfgChannel.xb1']) {
+      lfgVal += `**XB1:** ${this.#wrapChannelValue(settings['lfgChannel.xb1'])}\n`;
+    }
+    if (settings['lfgChannel.swi']) {
+      lfgVal += `**Switch:** ${this.#wrapChannelValue(settings['lfgChannel.swi'])}\n`;
+    }
+    if (
+      !(settings.lfgChannel || settings['lfgChannel.ps4'] || settings['lfgChannel.xb1'] || settings['lfgChannel.swi'])
+    ) {
+      lfgVal = this.#negate;
+    }
+    page.addFields([
+      {
+        name: 'LFG',
+        value: lfgVal,
+        inline: false,
+      },
+      {
+        name: 'Temp Channels',
+        value: `Category: ${this.#wrapChannelValue(tempCategory)}\nChannel: ${
+          settings.tempChannel ? this.#wrapChannelValue(settings.tempChannel) : this.#negate
+        }`,
+        inline: true,
+      },
+    ]);
+
+    const embeds = [page];
+
+    // end of page 1
+    const items = await ctx.settings.tracking.getTrackedItems(channel, thread);
+    const trackedItems = constructItemEmbeds(items);
+
+    const events = await ctx.settings.tracking.getTrackedEventTypes(channel, thread);
+    const trackedEvents = constructTypeEmbeds(events);
+
+    // Guild Pings
+    const guildPings = await ctx.settings.notifications.getPingsForGuild(channel.guild);
+    const pingParts = guildPings
+      .filter((obj) => obj.thing && obj.text)
+      .map((obj) => `**${obj.thing}**: ${obj.text}`)
+      .join('\n');
+
+    checkAndMergeEmbeds(embeds, trackedItems);
+    checkAndMergeEmbeds(embeds, trackedEvents);
+    checkAndMergeEmbeds(embeds, createChunkedEmbed(pingParts, 'Pings', '\n'));
+
+    const stats = await ctx.settings.statistics.getGuildStats({
+      id: guildId ?? channel.guild?.id ?? channel.guildId,
+    });
+    const topStats = stats.slice(0, 10);
+    embeds.push(
+      new EmbedBuilder({
+        title: ctx.i18n`Most Used Commands`,
+        color: 0x444444,
+        description: topStats.length
+          ? formatFixedWidthTable([
+              { header: 'Command', cells: topStats.map((row) => row.id), maxWidth: 40, minWidth: 8 },
+              { header: 'Uses', cells: topStats.map((row) => String(row.count)), minWidth: 4, align: 'right' },
+            ])
+          : '_No command usage recorded yet._',
+      })
+    );
+    return ensureEmbedsWithinLimit(embeds);
+  }
+
+  static enabled = true;
+  static elevated = true;
+  static command = {
+    ...cmds.settings,
+    defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
+    options: [
+      {
+        ...cmds['settings.set'],
+        type: Types.SubcommandGroup,
+        options: this.#settingsCommands,
+      },
+      {
+        ...cmds['settings.clear'],
+        type: Types.SubcommandGroup,
+        options: [
+          {
+            name: 'pings',
+            description: 'Clear tracking pings',
+            type: Types.Subcommand,
+          },
+          {
+            name: 'temp_category',
+            description: 'Clear temp category for private channels',
+            type: Types.Subcommand,
+          },
+          {
+            name: 'all',
+            description: 'Clear all settings on the bot for this server',
+            type: Types.Subcommand,
+          },
+        ],
+      },
+      {
+        ...cmds['settings.get'],
+        type: Types.Subcommand,
+        options: [
+          {
+            ...cmds['settings.get.channel'],
+            type: Types.Channel,
+            required: false,
+          },
+        ],
+      },
+      {
+        ...cmds['settings.manage'],
+        type: Types.Subcommand,
+        options: [
+          {
+            ...cmds['settings.manage.channel'],
+            type: Types.Channel,
+            required: false,
+          },
+        ],
+      },
+      {
+        ...cmds['settings.diag'],
+        type: Types.Subcommand,
+      },
+    ],
+  };
+
+  static async commandHandler(interaction, ctx) {
+    const { options } = interaction;
+    const ephemeral = ctx.ephemerate;
+    const action = options.getSubcommandGroup(false) ?? options.getSubcommand(false);
+
+    const isThread = interaction.channel.isThread();
+    const channel = options?.getChannel('channel') ?? (isThread ? interaction.channel.parent : interaction.channel);
+    const thread = isThread ? interaction.channel : undefined;
+
+    if (action === 'manage') {
+      return SettingsManageUI.start(interaction, ctx, channel, thread);
+    }
+
+    if (action === 'get') {
+      await interaction.deferReply(withEphemeral(ephemeral));
+    } else {
+      await interaction.deferReply();
+    }
+    let field = options.getSubcommand(false);
+    let value = (options?.get?.('value') || options?.get?.('channel') || options.get?.('platform'))?.value;
+    const platform = options.get?.('platform')?.value;
+
+    // validation
+    if (!action) return interaction.editReply(ctx.i18n`No action`);
+    if (['set', 'clear'].includes(action) && !field) return interaction.editReply(ctx.i18n`No field`);
+
+    if (field === 'auto_text') value = !value;
+
+    switch (action) {
+      case 'clear':
+        switch (field) {
+          case 'pings':
+            await ctx.settings.notifications.removePings(interaction?.guild?.id);
+            void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
+              refreshPings: true,
+              refreshGuild: false,
+            }).catch((err) => logger.error(err, 'settings'));
+            return interaction.editReply(withEphemeral(ephemeral, { content: 'pings cleared' }));
+          case 'temp_category':
+            await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempChannel');
+            await ctx.settings.channels.deleteGuildSetting(interaction.guild, 'tempCategory');
+            return interaction.editReply(withEphemeral(ephemeral, { content: 'cleared temp_category' }));
+          case 'all':
+            // wipe settings!!!
+            await interaction.editReply(withEphemeral(true, { content: 'clearing...' }));
+            const { guild } = interaction;
+            await ctx.settings.guilds.removeGuild(guild.id);
+            await Promise.all(
+              guild.channels.cache.map((cachedChannel) => ctx.settings.tracking.stopTracking(cachedChannel))
+            );
+            return interaction.editReply(withEphemeral(true, { content: 'server-wide purge complete' }));
+          default:
+            break;
+        }
+        break;
+      case 'set':
+        if (typeof value === 'undefined') return interaction.editReply(ctx.i18n`No value`);
+        logger.info(field);
+        switch (field) {
+          case 'lfg':
+            field = this.#aliases[field];
+            field = platform === 'pc' ? field : `${field}.${platform}`;
+          case 'allow_rooms':
+          case 'auto_locked':
+          case 'auto_shown':
+          case 'auto_text':
+          case 'temp_category':
+          case 'temp_channel':
+            field = this.#aliases[field] || field;
+            await ctx.settings.channels.setGuildSetting(interaction.guild, field, value);
+            return interaction.editReply(`set ${field} to \`${value}\``);
+          case 'allow_inline':
+          case 'allow_custom':
+          case 'delete_expired':
+            field = this.#aliases[field] || field;
+          case 'ephemerate':
+          case 'platform':
+            await ctx.settings.channels.setSetting(channel, field, value);
+            return interaction.editReply(`set ${field} to \`${value}\``);
+          case 'language':
+            await ctx.settings.channels.setGuildSetting(interaction.guild, field, value);
+            return interaction.editReply(withEphemeral(ephemeral, { content: `set ${field} to \`${value}\`` }));
+          default:
+            return interaction.editReply(options?.getSubcommand());
+        }
+      case 'get': {
+        const pages = await this.gatherEmbedPages(ctx, channel, thread, interaction.guildId);
+        return Collectors.dynamic(interaction, pages, ctx);
+      }
+      case 'diag':
+        const embed = new EmbedBuilder();
+        embed.setTitle(`Diagnostics for Shard ${interaction.guild.shardId + 1}/${interaction.client.ws.shards.size}`);
+        embed.addFields([
+          {
+            name: 'Discord WS',
+            value: `${this.#check} ${interaction.client.ws.ping.toFixed(2)}ms`,
+            inline: true,
+          },
+        ]);
+
+        // this.#check what permissions the bot has in the current channel
+        const perms = channel.permissionsFor(interaction.client.user.id);
+
+        // role management
+        /** @type string[] */
+        const rolePermTokens = [];
+        rolePermTokens.push(
+          `${perms.has(PermissionFlagsBits.ManageRoles) ? this.#check : this.#xmark} Permission Present`
+        );
+        rolePermTokens.push(`${this.#empty} Bot role position: ${interaction.guild.members.me.roles.highest.position}`);
+
+        /** @type Discord.EmbedField[] */
+        const fields = chunkFields(rolePermTokens, 'Can Manage Roles', '\n');
+        embed.addFields(fields);
+
+        // Tracking
+        const trackingReadinessTokens = [
+          `${
+            perms.has(PermissionFlagsBits.ManageWebhooks) ? `${this.#check}  Can` : `${this.#xmark} Cannot`
+          } Manage Webhooks`,
+        ];
+
+        const trackables = {
+          events: await ctx.settings.tracking.getTrackedEventTypes(channel, thread),
+          items: await ctx.settings.tracking.getTrackedItems(channel, thread),
+        };
+        trackingReadinessTokens.push(
+          trackables.events.length
+            ? `${this.#check} ${trackables.events.length} Events Tracked`
+            : `${this.#xmark} No Events tracked`
+        );
+        trackingReadinessTokens.push(
+          trackables.items.length
+            ? `${this.#check} ${trackables.items.length} Items Tracked`
+            : `${this.#xmark} No Items tracked`
+        );
+
+        embed.addFields([
+          {
+            name: 'Trackable Ready',
+            value: trackingReadinessTokens.join('\n'),
+            inline: false,
+          },
+          {
+            // General
+            name: 'General Ids',
+            value: `Guild: \`${interaction.guild.id}\`\nChannel: \`${channel.id}\`${
+              thread ? `\nThread: \`${thread.id}\`` : ''
+            }`,
+          },
+        ]);
+
+        embed.setTimestamp(new Date());
+        embed.setFooter({ text: `Uptime: ${timeDeltaToString(interaction.client.uptime)}` });
+
+        return interaction.editReply(withEphemeral(ctx.ephemerate, { embeds: [embed] }));
+      default:
+        break;
+    }
+    return interaction.editReply(withEphemeral(ephemeral, { content: 'not happening' }));
+  }
+}

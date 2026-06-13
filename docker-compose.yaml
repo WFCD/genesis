@@ -1,0 +1,106 @@
+services:
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: genesis
+      MARIADB_DATABASE: genesis
+      MARIADB_USER: genesis
+      MARIADB_PASSWORD: genesis
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot.Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    env_file: .env.local
+    environment:
+      SCOPE: BOT
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+      MYSQL_USER: genesis
+      MYSQL_PASSWORD: genesis
+      MYSQL_DB: genesis
+      LOG_LEVEL: INFO
+      WORLDSTATE_TIMEOUT: 60000
+      SHARDS: 1
+      LOCAL_SHARDS: 1
+      SHARD_OFFSET: 0
+      WAIT_HOSTS: mariadb:3306
+      WAIT_TIMEOUT: 60
+    volumes:
+      - .:/app/genesis
+      - bot_node_modules:/app/genesis/node_modules
+    command: npx tsx packages/bot/main.ts
+
+  worker:
+    profiles:
+      - worker
+    build:
+      context: .
+      dockerfile: notifier.Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      bot:
+        condition: service_started
+    env_file: .env.local
+    environment:
+      SCOPE: WORKER
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+      MYSQL_USER: genesis
+      MYSQL_PASSWORD: genesis
+      MYSQL_DB: genesis
+      WORLDSTATE_TIMEOUT: 10000
+      PLATFORMS: pc
+      LOCALES: en
+      DEF_USER: Genesis
+      WAIT_HOSTS: mariadb:3306
+      WAIT_TIMEOUT: 60
+    volumes:
+      - .:/app/genesis
+      - worker_node_modules:/app/genesis/node_modules
+    command: npx tsx packages/worker/main.ts
+
+  web:
+    profiles:
+      - web
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    env_file: .env.local
+    environment:
+      SCOPE: WEB
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+      MYSQL_USER: genesis
+      MYSQL_PASSWORD: genesis
+      MYSQL_DB: genesis
+      WEB_BASE_URL: http://localhost:3131
+      PORT: 3131
+    ports:
+      - '3131:3131'
+    volumes:
+      - .:/app/genesis
+      - web_node_modules:/app/genesis/packages/web/node_modules
+
+volumes:
+  mariadb_data:
+  bot_node_modules:
+  worker_node_modules:
+  web_node_modules:

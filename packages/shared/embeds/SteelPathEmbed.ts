@@ -1,0 +1,28 @@
+import { assetBase, emojify } from '#shared/utilities/CommonFunctions';
+
+import BaseEmbed from './BaseEmbed';
+import type { EmbedBuildOptions } from './embedOptions';
+
+const steelPathThumb = `${assetBase}/img/steelpath.png`;
+export default class SteelPathEmbed extends BaseEmbed {
+  constructor(offering, { isCommand = false, i18n, locale }: EmbedBuildOptions) {
+    super(locale);
+    this.description = `${i18n`**Rotating:**`} ${offering.currentReward?.name || offering.currentReward || 'Unknown'}: ${
+      offering.currentReward?.cost || '???'
+    }${isCommand ? emojify('steelessence') : i18n` essence`}
+    
+  ${i18n`**Evergreen:**`}
+  ${(offering.evergreens ?? [])
+    .map(
+      (reward) =>
+        `:white_small_square: ${reward?.name ?? 'Unknown'}: ${reward?.cost ?? '???'}${isCommand ? emojify('steelessence') : i18n` essence`}`
+    )
+    .join('\n')}`;
+
+    this.footer.text = i18n`Cycles at`;
+    this.timestamp = offering.expiry;
+    this.title = i18n`Steel Path Offerings`;
+    this.thumbnail.url = steelPathThumb;
+    this.color = 0x43464b;
+  }
+}
