@@ -1,4 +1,4 @@
-import { cpSync, globSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -54,6 +54,12 @@ const rewriteSharedImports = () => {
       let subpath = sharedSubpath.replace(/\/$/, '');
       if (sharedSubpath.endsWith('/')) {
         subpath = `${subpath}/index`;
+      } else if (!hasExplicitExtension(subpath)) {
+        const directJs = path.join(sharedDistRoot, `${subpath}.js`);
+        const indexJs = path.join(sharedDistRoot, subpath, 'index.js');
+        if (!existsSync(directJs) && existsSync(indexJs)) {
+          subpath = `${subpath}/index`;
+        }
       }
       return toRelativeSharedImport(absoluteFile, subpath);
     });
