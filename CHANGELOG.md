@@ -1,3 +1,10 @@
+## [3.0.6](https://github.com/WFCD/genesis/compare/v3.0.5...v3.0.6) (2026-06-14)
+
+
+### Bug Fixes
+
+* **Broadcaster:** claim before send queue ([bf38ff3](https://github.com/WFCD/genesis/commit/bf38ff34fb6862052cf957e9cbe245599221cbef))
+
 ## [3.0.5](https://github.com/WFCD/genesis/compare/v3.0.4...v3.0.5) (2026-06-14)
 
 
