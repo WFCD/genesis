@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/WFCD/genesis/compare/v3.0.3...v3.0.4) (2026-06-14)
+
+
+### Bug Fixes
+
+* import path error ([1767901](https://github.com/WFCD/genesis/commit/1767901b2c4e2bff6d78199f0f344c62bb4062ba))
+
 ## [3.0.3](https://github.com/WFCD/genesis/compare/v3.0.2...v3.0.3) (2026-06-13)
 
 
