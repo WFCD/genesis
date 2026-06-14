@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/WFCD/genesis/compare/v3.0.4...v3.0.5) (2026-06-14)
+
+
+### Bug Fixes
+
+* **FeedsNotifier:** logger binding ([787e7ce](https://github.com/WFCD/genesis/commit/787e7ce89768f36062024eb5b2db610340af0e04))
+
 ## [3.0.4](https://github.com/WFCD/genesis/compare/v3.0.3...v3.0.4) (2026-06-14)
 
 
