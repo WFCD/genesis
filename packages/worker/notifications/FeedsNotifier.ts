@@ -29,7 +29,7 @@ export default class FeedsNotifier {
       settings,
       workerCache,
     });
-    this.#feeder.on('error', logger.debug);
+    this.#feeder.on('error', (error) => logger.debug(error, 'RSS'));
   }
 
   /**
