@@ -27,8 +27,47 @@ type GuildRef = Guild | { id: string };
  * Ping text and notification routing for tracked events/items.
  * Mirrors tracking ping behavior + worker broadcast queries.
  */
+const normalizeIdList = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
 export default class NotificationsRepository {
   constructor(private readonly deps: NotificationsDeps) {}
+
+  /** Workers share shard 0 so all locale replicas use one dedup store per platform key. */
+  private notifiedShardId() {
+    return this.deps.scope.toLowerCase() === 'worker' ? 0 : this.deps.clusterId;
+  }
+
+  private dedupeNotificationTargets(
+    rows: Array<{ channelId: string; typeThreadId?: string | number; itemThreadId?: string | number }>
+  ): NotificationTarget[] {
+    const seen = new Set<string>();
+    const targets: NotificationTarget[] = [];
+
+    for (const row of rows) {
+      const channelId = String(row.channelId);
+      if (!channelId.length) continue;
+
+      const threadId = row.typeThreadId ?? row.itemThreadId ?? 0;
+      const key = `${channelId}:${threadId}`;
+      if (seen.has(key)) continue;
+
+      seen.add(key);
+      targets.push({ channelId, threadId });
+    }
+
+    return targets;
+  }
 
   async addPings(guild: GuildRef, opts: TrackingOptions, text: string) {
     const events = Array.isArray(opts.events) ? opts.events : [];
@@ -238,16 +277,85 @@ export default class NotificationsRepository {
         | Array<{ channelId: string; typeThreadId?: string; itemThreadId?: string }>
         | undefined;
 
-      return (rows ?? [])
-        .map((o) => ({
-          channelId: o.channelId,
-          threadId: o.typeThreadId || o.itemThreadId,
-        }))
-        .filter((o) => o.channelId);
+      return this.dedupeNotificationTargets(rows ?? []);
     } catch (e) {
       this.deps.logger?.error(e);
       return [];
     }
+  }
+
+  /**
+   * Atomically append ids that are not yet notified. Returns the subset that was newly claimed.
+   */
+  async claimNotifiedIds(platform: string, ids: string[]): Promise<string[]> {
+    const unique = [...new Set(ids.filter(Boolean).map(String))];
+    if (!unique.length || !this.deps.withConnection) return [];
+
+    const shardId = this.notifiedShardId();
+    const lockName = `genesis:notified:${shardId}:${platform}`;
+
+    return this.deps.withConnection(async (query) => {
+      await query(SQL`SELECT GET_LOCK(${lockName}, 5)`);
+      try {
+        const [rows] = (await query(
+          SQL`SELECT id_list FROM notified_ids WHERE shard_id=${shardId} AND platform=${platform}`
+        )) ?? [[]];
+        const current = normalizeIdList((rows as Array<{ id_list?: unknown }>)?.[0]?.id_list);
+        const known = new Set(current);
+        const claimed = unique.filter((id) => !known.has(id));
+        if (!claimed.length) return [];
+
+        const next = [...current, ...claimed];
+        await query(SQL`INSERT INTO notified_ids VALUES (${shardId}, ${platform}, JSON_ARRAY(${next}))
+          ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${next})`);
+        return claimed;
+      } finally {
+        await query(SQL`SELECT RELEASE_LOCK(${lockName})`);
+      }
+    });
+  }
+
+  /**
+   * Atomically record a worldstate id as notified. Returns false if another worker already claimed it.
+   */
+  async claimNotifiedId(platform: string, id: string): Promise<boolean> {
+    const claimed = await this.claimNotifiedIds(platform, id ? [id] : []);
+    return claimed.length > 0;
+  }
+
+  /**
+   * Remove ids from the notified list. Used when a claim did not result in delivery.
+   */
+  async releaseNotifiedIds(platform: string, ids: string[]): Promise<string[]> {
+    const unique = [...new Set(ids.filter(Boolean).map(String))];
+    if (!unique.length || !this.deps.withConnection) return [];
+
+    const shardId = this.notifiedShardId();
+    const lockName = `genesis:notified:${shardId}:${platform}`;
+
+    return this.deps.withConnection(async (query) => {
+      await query(SQL`SELECT GET_LOCK(${lockName}, 5)`);
+      try {
+        const [rows] = (await query(
+          SQL`SELECT id_list FROM notified_ids WHERE shard_id=${shardId} AND platform=${platform}`
+        )) ?? [[]];
+        const current = normalizeIdList((rows as Array<{ id_list?: unknown }>)?.[0]?.id_list);
+        const release = new Set(unique);
+        const released = current.filter((id) => release.has(id));
+        if (!released.length) return [];
+
+        const next = current.filter((id) => !release.has(id));
+        if (!next.length) {
+          await query(SQL`DELETE FROM notified_ids WHERE shard_id=${shardId} AND platform=${platform}`);
+        } else {
+          await query(SQL`INSERT INTO notified_ids VALUES (${shardId}, ${platform}, JSON_ARRAY(${next}))
+            ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${next})`);
+        }
+        return released;
+      } finally {
+        await query(SQL`SELECT RELEASE_LOCK(${lockName})`);
+      }
+    });
   }
 
   async removePings(guildId: string) {
@@ -256,17 +364,19 @@ export default class NotificationsRepository {
   }
 
   async setNotifiedIds(platform: string, notifiedIds: string[]) {
+    const shardId = this.notifiedShardId();
     const query = SQL`INSERT INTO notified_ids VALUES
-      (${this.deps.clusterId}, ${platform}, JSON_ARRAY(${notifiedIds}))
+      (${shardId}, ${platform}, JSON_ARRAY(${notifiedIds}))
       ON DUPLICATE KEY UPDATE id_list = JSON_ARRAY(${notifiedIds});`;
     return this.deps.query(query);
   }
 
   async getNotifiedIds(platform: string) {
+    const shardId = this.notifiedShardId();
     const query = SQL`SELECT id_list
       FROM notified_ids
-      WHERE shard_id=${this.deps.clusterId} AND platform=${platform};`;
+      WHERE shard_id=${shardId} AND platform=${platform};`;
     const [rows] = (await this.deps.query(query)) ?? [[]];
-    return rows.length ? rows[0].id_list : [];
+    return rows.length ? normalizeIdList(rows[0].id_list) : [];
   }
 }

@@ -99,6 +99,38 @@ export function fromNow(d, now = Date.now) {
 export const perLanguage = async (fn) =>
   Promise.all(Object.entries(i18ns)?.map(async ([locale, i18n]) => fn({ locale, i18n })));
 
+/** Dedup store key for a platform/locale worker pair. */
+export const notifyKey = (platform, locale) => `${platform}:${locale}`;
+
+/** Stable claim id for an RSS item within a feed. */
+export const rssClaimId = (feedKey, item) => {
+  const ref = item?.guid || item?.id || item?.link;
+  return ref ? `rss:${feedKey}:${ref}` : undefined;
+};
+
+/** Stable claim id for a Twitch go-live event. */
+export const twitchClaimId = (streamData) => {
+  let id = `${streamData.user_login}.live`;
+  if (streamData.user_login === 'warframe') {
+    if (streamData.title.includes('Devstream')) {
+      id = `${streamData.user_login}.devstream.live`;
+    } else if (
+      streamData.title.includes('Home Time') ||
+      streamData.title.includes('Prime Time') ||
+      streamData.title.includes('Working From Home') ||
+      streamData.title.includes('Community Stream')
+    ) {
+      id = `${streamData.user_login}.primetime.live`;
+    } else {
+      id = `${streamData.user_login}.other.live`;
+    }
+  }
+  return id;
+};
+
+/** Claim id when one worldstate entity can post under multiple trackable types. */
+export const trackableClaimId = (entityId, type) => (entityId && type ? `${entityId}:${type}` : entityId);
+
 let currentUpdating = [];
 export const updating = {
   reset: () => {

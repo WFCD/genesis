@@ -18,24 +18,6 @@ export default class Broadcaster {
     this.workerCache = workerCache;
   }
 
-  wrap(embed, ctx) {
-    return this.wraps([embed], ctx);
-  }
-
-  wraps(embeds, ctx) {
-    return ctx.webhook && ctx.webhook.avatar
-      ? {
-          username: ctx.webhook.name,
-          avatarURL: ctx.webhook.avatar,
-          embeds,
-        }
-      : {
-          username: this.settings.defaults.username,
-          avatarURL: this.settings.defaults.avatar,
-          embeds,
-        };
-  }
-
   /**
    * Broadcast embed to all channels for a platform and type
    * @param  {Discord.MessageEmbed} embed      Embed to send to a channel
@@ -43,7 +25,7 @@ export default class Broadcaster {
    * @param  {string} type       Type of new data to notify
    * @param {string} locale locale string
    * @param  {Array}  [items=[]] Items to broadcast
-   * @returns {Array.<Object>} values for successes
+   * @returns {boolean} true when at least one channel received the webhook (or none were subscribed)
    */
   async broadcast(embed, { platform, type, items = [], locale }) {
     logger.silly(`broadcasting ${type} on ${platform}`);
@@ -55,9 +37,10 @@ export default class Broadcaster {
       : await this.settings.getAgnosticNotifications({ type, platform, items, locale });
     if (!channels?.length) {
       logger.debug(`No channels on ${platform}:${locale} tracking ${type}... continuing`, 'WS');
-      return;
+      return true;
     }
 
+    let anySent = false;
     await Promise.all(
       channels.map(async ({ channelId, threadId }) => {
         if (typeof channelId === 'undefined' || !channelId.length) return;
@@ -80,8 +63,7 @@ export default class Broadcaster {
         try {
           const pingKey = `${guild.id}:${[type].concat((items || []).sort()).join(',')}`;
           const pings = this.workerCache.getKey('pings') || {};
-          /** @type {string} */
-          let content = pings[pingKey] || '';
+          let content: string = pings[pingKey] || '';
           if (!content && type.startsWith('fissures.sp.node.')) {
             content = pings[`${guild.id}:fissures.sp.node`] || '';
           } else if (!content && type.startsWith('fissures.node.')) {
@@ -91,6 +73,11 @@ export default class Broadcaster {
             content,
             embeds: [embed],
           });
+          if (!sent) {
+            logger.warn(`webhook send failed for ${type} on channel ${channelId} (${platform}:${locale})`, 'WS');
+            return;
+          }
+          anySent = true;
           if (sent && ctx.deleteExpired && ctx.webhook?.id && ctx.webhook.token) {
             const expiresAt = resolveNotificationExpiry(embed);
             if (expiresAt && !isCycleNotificationType(type)) {
@@ -108,19 +95,20 @@ export default class Broadcaster {
             }
           }
         } catch (e) {
-          if (e.message) {
-            if (e.message.includes('Unknown Webhook')) {
-              logger.warn(`Wiping webhook context for ${channelId}`);
-              await this.settings.deleteWebhooksForChannel(channelId);
-            }
-            if (e.name === 'AbortError') {
-              // ignore
-            }
-          } else {
-            logger.error(e);
+          if (e.name === 'AbortError') {
+            return;
           }
+          if (e.message?.includes('Unknown Webhook')) {
+            logger.warn(`Wiping webhook context for ${channelId}`);
+            await this.settings.deleteWebhooksForChannel(channelId);
+            return;
+          }
+          logger.error(
+            `webhook send failed for ${type} on channel ${channelId} (${platform}:${locale}) :: ${e.message}`
+          );
         }
       })
     );
+    return anySent;
   }
 }

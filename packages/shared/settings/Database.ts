@@ -155,6 +155,9 @@ export default class Database implements DatabaseRepositories {
   async #wireRepositories() {
     const deps = {
       query: (q: Parameters<Database['query']>[0]) => this.query(q),
+      withConnection: <T>(
+        fn: (query: (query: SQLStatement | string) => Promise<QueryResult | undefined>) => Promise<T>
+      ) => this.withConnection(fn),
       defaults: this.defaults,
       logger: this.logger,
       scope: this.scope,
@@ -254,6 +257,9 @@ export default class Database implements DatabaseRepositories {
         'removePings',
         'setNotifiedIds',
         'getNotifiedIds',
+        'claimNotifiedId',
+        'claimNotifiedIds',
+        'releaseNotifiedIds',
       ],
       this.notifications
     );
@@ -419,6 +425,19 @@ export default class Database implements DatabaseRepositories {
     } catch (e) {
       logger.error(e);
       return undefined;
+    }
+  }
+
+  async withConnection<T>(
+    fn: (query: (query: SQLStatement | string) => Promise<QueryResult | undefined>) => Promise<T>
+  ): Promise<T> {
+    const conn = await this.db.getConnection();
+    try {
+      const scopedQuery = async (query: SQLStatement | string) =>
+        conn.query(query as never) as Promise<QueryResult | undefined>;
+      return await fn(scopedQuery);
+    } finally {
+      conn.release();
     }
   }
 

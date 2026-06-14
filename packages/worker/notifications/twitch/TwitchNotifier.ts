@@ -4,7 +4,7 @@ import logger from '#shared/utilities/Logger';
 import { platforms } from '#shared/utilities/CommonFunctions';
 
 import Broadcaster from '../Broadcaster';
-import { perLanguage } from '../NotifierUtils';
+import { notifyKey, perLanguage, twitchClaimId } from '../NotifierUtils';
 
 import TwitchMonitor from './TwitchMonitor';
 
@@ -15,8 +15,10 @@ export default class TwitchNotifier {
   #activePlatforms;
   #broadcaster;
   #monitor;
+  #settings;
 
   constructor({ client, settings, workerCache }) {
+    this.#settings = settings;
     this.#broadcaster = new Broadcaster({
       client,
       settings,
@@ -42,29 +44,22 @@ export default class TwitchNotifier {
         if (!streamData.user.display_name) {
           streamData.user = await this.#monitor.spotLoadUser(streamData.user_name);
         }
-        let id = `${streamData.user_login}.live`;
-        // add warframe type filtering for ids...
-        if (streamData.user_login === 'warframe') {
-          if (streamData.title.includes('Devstream')) {
-            id = `${streamData.user_login}.devstream.live`;
-          } else if (
-            streamData.title.includes('Home Time') ||
-            streamData.title.includes('Prime Time') ||
-            streamData.title.includes('Working From Home') ||
-            streamData.title.includes('Community Stream')
-          ) {
-            id = `${streamData.user_login}.primetime.live`;
-          } else {
-            id = `${streamData.user_login}.other.live`;
-          }
-        }
+        const id = twitchClaimId(streamData);
 
         await perLanguage(async ({ i18n, locale }) => {
           const embed = new TwitchEmbed(streamData, { i18n, locale });
           await Promise.all(
-            this.#activePlatforms.map(async (platform) =>
-              this.#broadcaster.broadcast(embed, { platform, type: id, locale })
-            )
+            this.#activePlatforms.map(async (platform) => {
+              const claimed = await this.#settings.claimNotifiedIds(notifyKey(platform, locale), [id]);
+              if (!claimed.length) {
+                logger.debug(`skipping duplicate twitch ${id}`, 'Twitch');
+                return;
+              }
+              const sent = await this.#broadcaster.broadcast(embed, { platform, type: id, locale });
+              if (!sent) {
+                await this.#settings.releaseNotifiedIds(notifyKey(platform, locale), [id]);
+              }
+            })
           );
         });
       }

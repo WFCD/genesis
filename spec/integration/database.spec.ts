@@ -196,4 +196,44 @@ describeDb('Database integration (MariaDB)', () => {
       expect(await db.notificationMessages.fetchDue(10)).to.have.length(0);
     });
   });
+
+  it('claims notified ids once across duplicate worker attempts', async () => {
+    const db = getTestDatabase();
+    const key = `pc:t${Date.now().toString(36).slice(-6)}`;
+    const id = `inv-${Date.now().toString(36)}`;
+    const other = `inv-${Date.now().toString(36)}-b`;
+
+    const first = await db.notifications.claimNotifiedIds(key, [id, other]);
+    const second = await db.notifications.claimNotifiedIds(key, [id, other]);
+    const ids = await db.notifications.getNotifiedIds(key);
+
+    expect(first.sort()).to.deep.equal([id, other].sort());
+    expect(second).to.deep.equal([]);
+    expect(ids).to.include(id);
+    expect(ids).to.include(other);
+  });
+
+  it('claimNotifiedId delegates to bulk claim', async () => {
+    const db = getTestDatabase();
+    const key = `pc:t${Date.now().toString(36).slice(-6)}`;
+    const id = `inv-${Date.now().toString(36)}`;
+
+    expect(await db.notifications.claimNotifiedId(key, id)).to.equal(true);
+    expect(await db.notifications.claimNotifiedId(key, id)).to.equal(false);
+  });
+
+  it('releaseNotifiedIds removes previously claimed ids', async () => {
+    const db = getTestDatabase();
+    const key = `pc:t${Date.now().toString(36).slice(-6)}`;
+    const id = `inv-${Date.now().toString(36)}`;
+    const other = `inv-${Date.now().toString(36)}-b`;
+
+    await db.notifications.claimNotifiedIds(key, [id, other]);
+    const released = await db.notifications.releaseNotifiedIds(key, [id]);
+    const ids = await db.notifications.getNotifiedIds(key);
+
+    expect(released).to.deep.equal([id]);
+    expect(ids).to.not.include(id);
+    expect(ids).to.include(other);
+  });
 });

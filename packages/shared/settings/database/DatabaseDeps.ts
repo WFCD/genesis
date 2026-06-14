@@ -30,6 +30,9 @@ export interface DefaultSettings {
 /** Shared database capabilities injected into repositories. */
 export interface DatabaseDeps {
   query(query: SQLStatement | string): Promise<QueryResult | undefined>;
+  withConnection?<T>(
+    fn: (query: (query: SQLStatement | string) => Promise<QueryResult | undefined>) => Promise<T>
+  ): Promise<T>;
   defaults: DefaultSettings;
   logger?: Logger;
 }

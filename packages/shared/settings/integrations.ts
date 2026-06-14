@@ -217,4 +217,26 @@ export default [
       )`);
     }
   },
+  /**
+   * Remove RSS feed trackables dropped when broken forum feeds were removed from rssFeeds.json.
+   */
+  async (db) => {
+    const removedRssFeeds = [
+      'forum.announcements.pc',
+      'forum.announcements.ps4',
+      'forum.announcements.xb1',
+      'forum.announcements.switch',
+      'forum.staff.drew',
+      'forum.staff.glen',
+      'forum.staff.steve',
+      'forum.staff.helen',
+      'forum.staff.syncrasis',
+      'forum.staff.pablo',
+      'forum.staff.marcus',
+      'forum.staff.george',
+      'forum.staff.bear',
+    ];
+
+    await db.query(SQL`DELETE FROM type_notifications WHERE type IN (${removedRssFeeds})`);
+  },
 ];
