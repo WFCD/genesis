@@ -1,3 +1,11 @@
+## [3.0.7](https://github.com/WFCD/genesis/compare/v3.0.6...v3.0.7) (2026-06-15)
+
+
+### Bug Fixes
+
+* cookie size ([08f4c4a](https://github.com/WFCD/genesis/commit/08f4c4a9b904f568c81608b2d66dcf12512cde98))
+* upgrade next ([cc65ac6](https://github.com/WFCD/genesis/commit/cc65ac64a8bd642cf6ceca94e39ad39b0922f018))
+
 ## [3.0.6](https://github.com/WFCD/genesis/compare/v3.0.5...v3.0.6) (2026-06-14)
 
 
