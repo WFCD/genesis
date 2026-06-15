@@ -1,10 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-/** Dev-only: redirect 127.0.0.1 / LAN host to AUTH_URL so OAuth cookies match. */
+/** Redirect to AUTH_URL host when request host differs so OAuth PKCE cookies survive callback. */
 export function devAuthRedirect(request: NextRequest) {
-  if (process.env.NODE_ENV !== 'development') return null;
-
   const authUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL;
   if (!authUrl) return null;
 

@@ -20,6 +20,7 @@ export function createAuthConfig(env: WebEnv) {
     },
     secret: env.auth.secret,
     trustHost: true,
+    debug: readFromProcess('AUTH_DEBUG') === 'true',
     ...(isDev
       ? {
           cookies: {

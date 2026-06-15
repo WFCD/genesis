@@ -2,6 +2,8 @@ import 'server-only';
 
 import NextAuth from 'next-auth';
 
+import { getCached, invalidateCached } from '@/lib/cache/server';
+
 import { createAuthConfig } from './auth.config';
 import env from './lib/env';
 
@@ -18,47 +20,43 @@ async function fetchDiscordGuilds(accessToken: string) {
   return (await res.json()) as DiscordGuild[];
 }
 
+const getSessionGuilds = async (userId: string, accessToken: string) => {
+  return getCached(`auth:discord-guilds:${userId}`, GUILD_CACHE_MS, async () => {
+    const guilds = await fetchDiscordGuilds(accessToken);
+    return guilds ?? [];
+  });
+};
+
 const baseConfig = createAuthConfig(env);
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...baseConfig,
   callbacks: {
     ...baseConfig.callbacks,
-    async jwt({ token, account, profile, trigger }) {
+    jwt({ token, account, profile, trigger }) {
       if (account?.access_token) {
         token.discordAccessToken = account.access_token;
       }
       const discordId = profile?.id ?? account?.providerAccountId;
       if (discordId) {
         token.sub = String(discordId);
-      }
-
-      const accessToken = token.discordAccessToken as string | undefined;
-      const cachedAt = token.guildsCachedAt as number | undefined;
-      const shouldRefreshGuilds =
-        Boolean(accessToken) &&
-        (Boolean(account?.access_token) ||
-          trigger === 'update' ||
-          !token.guilds ||
-          !cachedAt ||
-          Date.now() - cachedAt > GUILD_CACHE_MS);
-
-      if (shouldRefreshGuilds && accessToken) {
-        const guilds = await fetchDiscordGuilds(accessToken);
-        if (guilds) {
-          token.guilds = guilds;
-          token.guildsCachedAt = Date.now();
+        if (account?.access_token || trigger === 'update') {
+          invalidateCached(`auth:discord-guilds:${String(discordId)}`);
         }
       }
 
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (token.sub) {
         session.user.id = token.sub;
       }
-      if (token.guilds) {
-        (session as { guilds?: DiscordGuild[] }).guilds = token.guilds as DiscordGuild[];
+      const accessToken = token.discordAccessToken as string | undefined;
+      if (token.sub && accessToken) {
+        const guilds = await getSessionGuilds(token.sub, accessToken);
+        if (guilds.length) {
+          (session as { guilds?: DiscordGuild[] }).guilds = guilds;
+        }
       }
       return session;
     },

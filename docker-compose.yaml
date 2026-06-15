@@ -92,6 +92,7 @@ services:
       MYSQL_PASSWORD: genesis
       MYSQL_DB: genesis
       WEB_BASE_URL: http://localhost:3131
+      AUTH_URL: http://localhost:3131
       PORT: 3131
     ports:
       - '3131:3131'
