@@ -7,10 +7,10 @@
     "#shared/*": "@genesis/shared/*"
   },
   "scripts": {
-    "build": "next build",
+    "build": "next build --webpack",
     "check": "npm run typecheck && npm run check:client-secrets",
     "check:client-secrets": "node scripts/check-client-bundle.mjs",
-    "dev": "next dev --port 3131 --hostname localhost",
+    "dev": "next dev --webpack --port 3131 --hostname localhost",
     "start": "next start --port 3131",
     "typecheck": "tsc --noEmit"
   },

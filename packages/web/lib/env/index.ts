@@ -10,7 +10,7 @@ import { readFromProcess } from './readFromProcess';
  * Local dev: `web/.env.local` and/or repo-root `.env.local`.
  * Docker: compose `env_file: .env.local` plus service overrides.
  *
- * Server-only — do not import from middleware or auth.config (use `buildEnv` there).
+ * Server-only — do not import from proxy or auth.config (use `buildEnv` there).
  */
 export const env = buildEnv(readFromProcess);
 

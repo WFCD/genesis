@@ -23,7 +23,6 @@ const serverOnlyAliases = [
 ] as const;
 
 const nextConfig: NextConfig = {
-  eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   outputFileTracingRoot: path.join(rootDir, '../..'),
   serverExternalPackages: ['mysql2', 'discord.js'],

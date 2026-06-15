@@ -5,7 +5,7 @@ import { devAuthRedirect } from './lib/auth/devAuthHost';
 
 const { auth } = NextAuth(authConfig);
 
-export default auth((request) => {
+export const proxy = auth((request) => {
   const redirect = devAuthRedirect(request);
   if (redirect) return redirect;
 });

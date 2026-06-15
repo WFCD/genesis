@@ -94,7 +94,7 @@ export default tseslint.config(
     },
   },
   {
-    ...nextPlugin.flatConfig.coreWebVitals,
+    ...nextPlugin.configs['core-web-vitals'],
     files: webFiles,
     settings: {
       next: {
@@ -194,7 +194,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/web/middleware.ts', 'packages/web/auth.config.ts'],
+    files: ['packages/web/proxy.ts', 'packages/web/auth.config.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -202,11 +202,11 @@ export default tseslint.config(
           paths: [
             {
               name: '@/lib/env',
-              message: 'Edge/middleware code must use env.build with process.env, not env.ts.',
+              message: 'Proxy/auth config must use env.build with process.env, not env.ts.',
             },
             {
               name: '#shared/utilities/loadParentEnvFiles',
-              message: 'Edge/middleware code cannot import node:fs env loader.',
+              message: 'Proxy/auth config cannot import node:fs env loader.',
             },
           ],
         },

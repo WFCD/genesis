@@ -53,5 +53,5 @@ export function createAuthConfig(env: WebEnv) {
   } satisfies NextAuthConfig;
 }
 
-/** Edge/middleware config — process.env only (no parent .env file loader). */
+/** Proxy/auth config — process.env only (no parent .env file loader). */
 export const authConfig = createAuthConfig(buildEnv(readFromProcess));
