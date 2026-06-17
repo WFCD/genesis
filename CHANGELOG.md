@@ -1,3 +1,10 @@
+## [3.0.8](https://github.com/WFCD/genesis/compare/v3.0.7...v3.0.8) (2026-06-17)
+
+
+### Bug Fixes
+
+* ovreframe abort controller ([d4ca8df](https://github.com/WFCD/genesis/commit/d4ca8dfb3f297cf612b8346cd2e8ba400fd48a84))
+
 ## [3.0.7](https://github.com/WFCD/genesis/compare/v3.0.6...v3.0.7) (2026-06-15)
 
 
