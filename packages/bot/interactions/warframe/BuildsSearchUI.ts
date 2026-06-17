@@ -13,7 +13,10 @@ import { withEphemeral } from '#shared/utilities/CommonFunctions';
 import {
   getOverframeBuild,
   isExactCatalogItem,
+  OverframeTimeoutError,
+  OVERFRAME_SEARCH_TIMEOUT_MS,
   resolveOverframeItemId,
+  resolveOverframeQueryUrl,
   searchOverframeBuilds,
   type OverframeBuildSummary,
   type OverframeSearchMode,
@@ -46,6 +49,19 @@ const parseId = (customId: string) => {
 };
 
 const buildId = (userId: string, component: string) => `${PREFIX}:${userId}:${component}`;
+
+const withSearchTimeout = <T>(promise: Promise<T>) =>
+  Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new OverframeTimeoutError()), OVERFRAME_SEARCH_TIMEOUT_MS)
+    ),
+  ]);
+
+const overframeLinkRow = (searchUrl: string) =>
+  new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder().setLabel('Browse on Overframe').setStyle(ButtonStyle.Link).setURL(searchUrl)
+  );
 
 export default class BuildsSearchUI {
   static isManageComponent(customId: string) {
@@ -152,29 +168,31 @@ export default class BuildsSearchUI {
   }
 
   static async start(interaction: ChatInputCommandInteraction, ctx: CommandContext, query: string) {
-    await interaction.deferReply(withEphemeral(ctx.ephemerate));
+    const trimmed = query.trim();
+    const exactItem = isExactCatalogItem(trimmed, ctx.ws);
+    let searchMode: OverframeSearchMode = exactItem ? 'item' : 'title';
+    const fallbackSearchUrl = resolveOverframeQueryUrl(trimmed, { mode: searchMode });
 
     try {
-      const trimmed = query.trim();
-      const exactItem = isExactCatalogItem(trimmed, ctx.ws);
-      const itemId = exactItem ? await resolveOverframeItemId(trimmed, ctx.ws) : undefined;
-      let searchMode: OverframeSearchMode = exactItem ? 'item' : 'title';
+      const page = await withSearchTimeout(
+        (async () => {
+          const itemId = exactItem ? await resolveOverframeItemId(trimmed, ctx.ws) : undefined;
+          searchMode = exactItem ? 'item' : 'title';
 
-      let page = await searchOverframeBuilds({ query: trimmed, itemId, mode: searchMode, limit: PAGE_SIZE });
-      if (!page.results.length && exactItem) {
-        searchMode = 'title';
-        page = await searchOverframeBuilds({ query: trimmed, mode: searchMode, limit: PAGE_SIZE });
-      }
+          let result = await searchOverframeBuilds({ query: trimmed, itemId, mode: searchMode, limit: PAGE_SIZE });
+          if (!result.results.length && exactItem) {
+            searchMode = 'title';
+            result = await searchOverframeBuilds({ query: trimmed, mode: searchMode, limit: PAGE_SIZE });
+          }
+          return result;
+        })()
+      );
 
       if (!page.results.length) {
         return interaction.editReply(
           withEphemeral(ctx.ephemerate, {
             embeds: [new OverframeSearchEmbed(page)],
-            components: [
-              new ActionRowBuilder<ButtonBuilder>().addComponents(
-                new ButtonBuilder().setLabel('Browse on Overframe').setStyle(ButtonStyle.Link).setURL(page.searchUrl)
-              ),
-            ],
+            components: [overframeLinkRow(page.searchUrl)],
           })
         );
       }
@@ -193,10 +211,19 @@ export default class BuildsSearchUI {
       this.#touchSession(session);
       return interaction.editReply(withEphemeral(ctx.ephemerate, this.#listComponents(session)));
     } catch (err) {
+      if (err instanceof OverframeTimeoutError) {
+        return interaction.editReply(
+          withEphemeral(ctx.ephemerate, {
+            content: 'Failed to find an overframe result in a minute',
+            components: [overframeLinkRow(fallbackSearchUrl)],
+          })
+        );
+      }
       ctx.logger?.error?.(err, 'BuildsSearchUI');
       return interaction.editReply(
         withEphemeral(ctx.ephemerate, {
           content: ctx.i18n`Could not reach Overframe right now. Try again in a moment.`,
+          components: [overframeLinkRow(fallbackSearchUrl)],
         })
       );
     }

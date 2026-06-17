@@ -5,6 +5,14 @@ import type WorldStateClient from './WorldStateClient';
 const API_BASE = 'https://overframe.gg/api/v1';
 const SITE_BASE = 'https://overframe.gg';
 const USER_AGENT = 'GenesisBot/2.0 (+https://genesis.warframestat.us; Warframe Discord Bot)';
+export const OVERFRAME_SEARCH_TIMEOUT_MS = 60_000;
+
+export class OverframeTimeoutError extends Error {
+  constructor(message = 'Overframe request timed out') {
+    super(message);
+    this.name = 'OverframeTimeoutError';
+  }
+}
 
 type ApiAuthor = {
   username?: string;
@@ -119,6 +127,19 @@ export const resolveOverframeBrowseUrl = (
 export const overframeSearchUrl = (query: string, itemId?: number, results?: OverframeBuildSummary[]) =>
   resolveOverframeBrowseUrl(query, { itemId, results });
 
+export const resolveOverframeQueryUrl = (
+  query: string,
+  options: { itemId?: number; mode?: OverframeSearchMode } = {}
+) => {
+  const trimmed = query.trim();
+  const { itemId, mode = 'title' } = options;
+  if (itemId) {
+    return overframeItemUrl(itemId, slugify(trimmed) || undefined);
+  }
+  const param = mode === 'item' ? 'item_name' : 'title';
+  return `${SITE_BASE}/builds/?${param}=${encodeURIComponent(trimmed)}`;
+};
+
 const mapSummary = (row: ApiBuildSummary): OverframeBuildSummary => ({
   id: row.id,
   title: row.title,
@@ -133,11 +154,25 @@ const mapSummary = (row: ApiBuildSummary): OverframeBuildSummary => ({
 
 const apiFetch = async <T>(path: string, params: Record<string, string>) => {
   const url = `${API_BASE}${path}?${new URLSearchParams(params)}`;
-  const response = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-  if (!response.ok) {
-    throw new Error(`Overframe API ${response.status} ${response.statusText}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), OVERFRAME_SEARCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': USER_AGENT },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`Overframe API ${response.status} ${response.statusText}`);
+    }
+    return response.json() as Promise<T>;
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new OverframeTimeoutError();
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-  return response.json() as Promise<T>;
 };
 
 export async function searchOverframeBuilds({
