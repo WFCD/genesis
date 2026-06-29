@@ -54,7 +54,7 @@
     "typecheck:web": "npm run typecheck -w @genesis/web"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.0.2",
+    "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.0.2",
     "@dword-design/eslint-plugin-import-alias": "^8.1.8",
     "@eslint/eslintrc": "^3.3.1",
