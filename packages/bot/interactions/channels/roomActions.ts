@@ -94,7 +94,7 @@ export const getRoomLurkable = (guild: Guild, room: PrivateRoom) => {
   );
 };
 
-export async function setRoomLurkable(room: PrivateRoom, guild: Guild, lurkable: boolean, reason: string) {
+export const setRoomLurkable = async (room: PrivateRoom, guild: Guild, lurkable: boolean, reason: string) => {
   if (lurkable) {
     await assignRoomOverwrites(room, lurkableOverwrite, reason);
     return;
@@ -111,9 +111,9 @@ export async function setRoomLurkable(room: PrivateRoom, guild: Guild, lurkable:
     }),
     reason
   );
-}
+};
 
-export async function renamePrivateRoom(room: PrivateRoom, rawName: string) {
+export const renamePrivateRoom = async (room: PrivateRoom, rawName: string) => {
   const name = rawName.replace(isVulgarCheck, '').trim();
   if (!name) throw new Error('Invalid room name');
 
@@ -128,7 +128,7 @@ export async function renamePrivateRoom(room: PrivateRoom, rawName: string) {
   }
 
   return name;
-}
+};
 
 const skipMemberOverwrite = (memberId: string, ownerId: string, botId?: string) =>
   memberId === ownerId || (botId !== undefined && memberId === botId);
@@ -186,7 +186,7 @@ export const getRoomMemberAccess = async (room: PrivateRoom, ownerId: string, bo
   return { invitedIds, blockedIds };
 };
 
-export async function removeRoomOverwrites(room: PrivateRoom, user: User, reason: string) {
+export const removeRoomOverwrites = async (room: PrivateRoom, user: User, reason: string) => {
   const { textChannel, voiceChannel, category } = room;
   if (voiceChannel?.manageable) {
     await voiceChannel.permissionOverwrites.delete(user.id, reason);
@@ -197,15 +197,15 @@ export async function removeRoomOverwrites(room: PrivateRoom, user: User, reason
   if (category?.manageable) {
     await category.permissionOverwrites.delete(user.id, reason);
   }
-}
+};
 
-export async function applyRoomMemberAccessChanges(
+export const applyRoomMemberAccessChanges = async (
   room: PrivateRoom,
   baseline: { invitedIds: string[]; blockedIds: string[] },
   pending: { invitedIds: string[]; blockedIds: string[] },
   resolveUser: (userId: string) => Promise<User | undefined>,
-  reason: string
-) {
+  reason: string,
+) => {
   const toUninvite = baseline.invitedIds.filter((id) => !pending.invitedIds.includes(id));
   const toUnblock = baseline.blockedIds.filter((id) => !pending.blockedIds.includes(id));
   const toInvite = pending.invitedIds.filter(
@@ -229,14 +229,14 @@ export async function applyRoomMemberAccessChanges(
     const user = await resolveUser(userId);
     if (user) await assignRoomOverwrites(room, blockOverwrite, `${user.tag} blocked via manage panel`, user);
   }
-}
+};
 
-export async function assignRoomOverwrites(
+export const assignRoomOverwrites = async (
   room: PrivateRoom,
   overwrite: PermissionOverwriteOptions,
   reason: string,
-  user?: User
-) {
+  user?: User,
+) => {
   const { guild, textChannel, voiceChannel, category } = room;
   if (!guild) return;
 
@@ -250,18 +250,18 @@ export async function assignRoomOverwrites(
   if (category?.manageable) {
     await category.permissionOverwrites.edit(target, overwrite, { reason });
   }
-}
+};
 
-export async function updateRoomVisibility(room: PrivateRoom, connect: boolean, show: boolean, reason: string) {
+export const updateRoomVisibility = async (room: PrivateRoom, connect: boolean, show: boolean, reason: string) => {
   const overwrite = roomPermissions({ Connect: connect, ViewChannel: show });
   await assignRoomOverwrites(room, overwrite, reason);
-}
+};
 
-export async function resizeRoom(room: PrivateRoom, limit: number) {
+export const resizeRoom = async (room: PrivateRoom, limit: number) => {
   if (room.voiceChannel?.manageable) {
     await room.voiceChannel.setUserLimit(limit);
   }
-}
+};
 
 /** Bot-created per-room categories should be removed; shared temp categories should not. */
 export const shouldDeleteRoomCategory = (room: PrivateRoom, tempCategory?: CategoryChannel) => {
@@ -271,14 +271,14 @@ export const shouldDeleteRoomCategory = (room: PrivateRoom, tempCategory?: Categ
   return true;
 };
 
-export async function destroyPrivateRoom(room: PrivateRoom, settings: Database, tempCategory?: CategoryChannel) {
+export const destroyPrivateRoom = async (room: PrivateRoom, settings: Database, tempCategory?: CategoryChannel) => {
   if (room.textChannel?.deletable) await room.textChannel.delete();
   if (room.voiceChannel?.deletable) await room.voiceChannel.delete();
   if (shouldDeleteRoomCategory(room, tempCategory)) {
     await room.category!.delete();
   }
   await settings.privateRooms.deletePrivateRoom(room);
-}
+};
 
 export type CreateRoomOptions = {
   author: User;

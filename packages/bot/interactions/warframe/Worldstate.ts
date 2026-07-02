@@ -257,7 +257,7 @@ export default class WorldState extends Interaction {
     },
   ];
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     // args
     const language = ctx.language || 'en';
     const subcommand = interaction.commandName;
@@ -501,5 +501,5 @@ export default class WorldState extends Interaction {
     return interaction.replied || interaction.deferred
       ? false
       : interaction.reply(withEphemeral(true, { content: 'got it' }));
-  }
+  };
 }

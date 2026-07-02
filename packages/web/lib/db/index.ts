@@ -7,18 +7,18 @@ import { createServices, type Services } from '#shared/services/index';
 let database: Database | null = null;
 let services: Services | null = null;
 
-export async function getDatabase() {
+export const getDatabase = async () => {
   if (!database) {
     const { default: DatabaseClass } = await import('#shared/settings/Database');
     database = await DatabaseClass.build();
     database.init();
   }
   return database;
-}
+};
 
-export async function getServices() {
+export const getServices = async () => {
   if (!services) {
     services = createServices(await getDatabase());
   }
   return services;
-}
+};

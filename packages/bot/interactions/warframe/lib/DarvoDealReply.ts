@@ -19,12 +19,12 @@ type DailyDeal = {
   item: string;
 };
 
-export async function replyDarvoDeal(
+export const replyDarvoDeal = async (
   interaction: ChatInputCommandInteraction,
   deal: DailyDeal,
   ctx: CommandContext,
-  { platform, language, ephemeral }: { platform: string; language: string; ephemeral: boolean | undefined }
-) {
+  { platform, language, ephemeral }: { platform: string; language: string; ephemeral: boolean | undefined },
+) => {
   const built = new DarvoEmbed(deal, { platform, i18n: ctx.i18n, locale: language });
   const infoEmbed = EmbedBuilder.from(built);
   const imageUrl = await resolveItemImageUrl(deal.item);
@@ -75,4 +75,4 @@ export async function replyDarvoDeal(
       interaction.editReply({ components: [] }).catch(() => undefined);
     }
   });
-}
+};

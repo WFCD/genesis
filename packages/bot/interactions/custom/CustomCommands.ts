@@ -77,7 +77,7 @@ export default class CustomCommands extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const { options } = interaction;
     const ephemeral = ctx.ephemerate;
     const action = options?.getSubcommand(false);
@@ -180,5 +180,5 @@ export default class CustomCommands extends Interaction {
       }
     }
     return undefined;
-  }
+  };
 }

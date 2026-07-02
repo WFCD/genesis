@@ -11,14 +11,14 @@ type DiscordGuild = { id: string; name: string; permissions: string; icon: strin
 
 const GUILD_CACHE_MS = 10 * 60 * 1000;
 
-async function fetchDiscordGuilds(accessToken: string) {
+const fetchDiscordGuilds = async (accessToken: string) => {
   const res = await fetch('https://discord.com/api/users/@me/guilds', {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   });
   if (!res.ok) return null;
   return (await res.json()) as DiscordGuild[];
-}
+};
 
 const getSessionGuilds = async (userId: string, accessToken: string) => {
   return getCached(`auth:discord-guilds:${userId}`, GUILD_CACHE_MS, async () => {
@@ -33,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...baseConfig,
   callbacks: {
     ...baseConfig.callbacks,
-    jwt({ token, account, profile, trigger }) {
+    jwt: ({ token, account, profile, trigger }) => {
       if (account?.access_token) {
         token.discordAccessToken = account.access_token;
       }
@@ -47,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return token;
     },
-    async session({ session, token }) {
+    session: async ({ session, token }) => {
       if (token.sub) {
         session.user.id = token.sub;
       }

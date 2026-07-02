@@ -61,7 +61,7 @@ export default class WhatsIn extends Interaction {
    * @param {CommandContext} ctx context object
    * @returns {Promise<*>}
    */
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const tier = toTitleCase(interaction.options.getString('relic_era', true));
     let query = interaction.options.getString('query', true).trim();
 
@@ -79,5 +79,5 @@ export default class WhatsIn extends Interaction {
 
     const embed = new WhatsInEmbed(data, tier, query);
     return interaction.reply(withEphemeral(ctx.ephemerate, { embeds: [embed] }));
-  }
+  };
 }

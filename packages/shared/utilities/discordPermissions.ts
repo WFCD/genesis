@@ -1,7 +1,7 @@
 const ADMINISTRATOR = 0x8n;
 const MANAGE_GUILD = 0x20n;
 
-export function hasGuildAdminPermission(permissions: string | undefined | null) {
+export const hasGuildAdminPermission = (permissions: string | undefined | null) => {
   if (!permissions) return false;
   try {
     const perms = BigInt(permissions);
@@ -9,4 +9,4 @@ export function hasGuildAdminPermission(permissions: string | undefined | null) 
   } catch {
     return false;
   }
-}
+};

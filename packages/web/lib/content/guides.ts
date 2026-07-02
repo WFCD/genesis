@@ -64,6 +64,4 @@ export const guides: Guide[] = [
   },
 ];
 
-export function getGuide(slug: string) {
-  return guides.find((guide) => guide.slug === slug);
-}
+export const getGuide = (slug: string) => guides.find((guide) => guide.slug === slug);

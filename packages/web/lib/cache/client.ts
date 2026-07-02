@@ -2,7 +2,7 @@ type CachedPayload<T> = { at: number; value: T };
 
 const memory = new Map<string, CachedPayload<unknown>>();
 
-function readSession<T>(key: string, ttlMs: number): T | null {
+const readSession = <T>(key: string, ttlMs: number): T | null => {
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.sessionStorage.getItem(key);
@@ -13,9 +13,9 @@ function readSession<T>(key: string, ttlMs: number): T | null {
   } catch {
     return null;
   }
-}
+};
 
-function writeSession<T>(key: string, value: T) {
+const writeSession = <T>(key: string, value: T) => {
   if (typeof window === 'undefined') return;
   try {
     const payload: CachedPayload<T> = { at: Date.now(), value };
@@ -23,9 +23,9 @@ function writeSession<T>(key: string, value: T) {
   } catch {
     // Ignore quota / privacy mode errors.
   }
-}
+};
 
-export async function fetchJsonCached<T>(url: string, ttlMs = 3_600_000): Promise<T> {
+export const fetchJsonCached = async <T>(url: string, ttlMs = 3_600_000): Promise<T> => {
   const key = `fetch:${url}`;
   const fromMemory = memory.get(key);
   if (fromMemory && Date.now() - fromMemory.at <= ttlMs) {
@@ -44,9 +44,9 @@ export async function fetchJsonCached<T>(url: string, ttlMs = 3_600_000): Promis
   memory.set(key, { at: Date.now(), value });
   writeSession(key, value);
   return value;
-}
+};
 
-export function clearClientCache(prefix = 'fetch:') {
+export const clearClientCache = (prefix = 'fetch:') => {
   for (const key of memory.keys()) {
     if (key.startsWith(prefix)) memory.delete(key);
   }
@@ -55,4 +55,4 @@ export function clearClientCache(prefix = 'fetch:') {
     const key = window.sessionStorage.key(i);
     if (key?.startsWith(prefix)) window.sessionStorage.removeItem(key);
   }
-}
+};

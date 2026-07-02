@@ -9,21 +9,17 @@ import { guildIconUrl, guildInitials, type GuildWithBotStatus } from '@/lib/guil
 
 import SidebarFooter from './SidebarFooter';
 
-function HomeIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-      <path d="M12 3.172 3 10v9a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1v-9l-9-6.828ZM12 1.5 21.75 9v10.5a2.25 2.25 0 0 1-2.25 2.25h-5.25a.75.75 0 0 1-.75-.75v-6.75h-3v6.75a.75.75 0 0 1-.75.75H4.5A2.25 2.25 0 0 1 2.25 19.5V9L12 1.5Z" />
-    </svg>
-  );
-}
+const HomeIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+    <path d="M12 3.172 3 10v9a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1v-9l-9-6.828ZM12 1.5 21.75 9v10.5a2.25 2.25 0 0 1-2.25 2.25h-5.25a.75.75 0 0 1-.75-.75v-6.75h-3v6.75a.75.75 0 0 1-.75.75H4.5A2.25 2.25 0 0 1 2.25 19.5V9L12 1.5Z" />
+  </svg>
+);
 
-function OwnerIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-      <path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4Zm0 2.18 7 3.11v5.71c0 4.52-3.07 8.78-7 9.93-3.93-1.15-7-5.41-7-9.93V6.29l7-3.11ZM11 7v2H9v2h2v2h2v-2h2V9h-2V7h-2Z" />
-    </svg>
-  );
-}
+const OwnerIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+    <path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4Zm0 2.18 7 3.11v5.71c0 4.52-3.07 8.78-7 9.93-3.93-1.15-7-5.41-7-9.93V6.29l7-3.11ZM11 7v2H9v2h2v2h2v-2h2V9h-2V7h-2Z" />
+  </svg>
+);
 
 type Props = {
   guilds: GuildWithBotStatus[];

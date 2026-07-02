@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const GET = async (_request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'rooms');
@@ -12,9 +12,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to load room settings' }, { status: 500 });
   }
-}
+};
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const PATCH = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'rooms');
@@ -25,4 +25,4 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ gu
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to update room settings' }, { status: 500 });
   }
-}
+};

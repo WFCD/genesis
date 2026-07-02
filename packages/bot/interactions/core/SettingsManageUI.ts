@@ -90,7 +90,7 @@ const panelOptions = (current?: ManagePanel) =>
   );
 
 export default class SettingsManageUI {
-  static #getSession(userId: string, channelId: string, threadId?: string) {
+  static #getSession = (userId: string, channelId: string, threadId?: string) => {
     const key = sessionKey(userId, channelId, threadId);
     const session = sessions.get(key);
     if (!session || session.expiresAt < Date.now()) {
@@ -98,12 +98,12 @@ export default class SettingsManageUI {
       return undefined;
     }
     return session;
-  }
+  };
 
-  static #touchSession(session: ManageSession) {
+  static #touchSession = (session: ManageSession) => {
     session.expiresAt = Date.now() + SESSION_TTL_MS;
     sessions.set(sessionKey(session.userId, session.channelId, session.threadId), session);
-  }
+  };
 
   static #createSession(
     interaction: ChatInputCommandInteraction,
@@ -122,7 +122,7 @@ export default class SettingsManageUI {
     return session;
   }
 
-  static async #loadChannelSettings(ctx, channel, guild?) {
+  static #loadChannelSettings = async (ctx, channel, guild?) => {
     const settings = await ctx.settings.channels.getSettings(channel, [
       'language',
       'platform',
@@ -150,7 +150,7 @@ export default class SettingsManageUI {
     }
 
     return settings;
-  }
+  };
 
   static async start(interaction: ChatInputCommandInteraction, ctx, channel, thread?) {
     if (interaction.deferred || interaction.replied) {
@@ -345,53 +345,45 @@ export default class SettingsManageUI {
     return interaction.showModal(await this.#buildPanelModal(session, ctx, channel));
   }
 
-  static #buildPickModal(channelId: string, threadId?: string) {
-    return new ModalBuilder()
-      .setCustomId(buildId(channelId, threadId, 'pick'))
-      .setTitle('Manage Settings')
-      .addLabelComponents(
-        new LabelBuilder()
-          .setLabel('Section')
-          .setDescription('Choose which settings to edit')
-          .setStringSelectMenuComponent(
-            new StringSelectMenuBuilder()
-              .setCustomId('panel')
-              .setPlaceholder('Settings section')
-              .addOptions(...panelOptions())
-          )
-      );
-  }
+  static #buildPickModal = (channelId: string, threadId?: string) => new ModalBuilder()
+    .setCustomId(buildId(channelId, threadId, 'pick'))
+    .setTitle('Manage Settings')
+    .addLabelComponents(
+      new LabelBuilder()
+        .setLabel('Section')
+        .setDescription('Choose which settings to edit')
+        .setStringSelectMenuComponent(
+          new StringSelectMenuBuilder()
+            .setCustomId('panel')
+            .setPlaceholder('Settings section')
+            .addOptions(...panelOptions())
+        )
+    );
 
-  static #boolLabel(customId: string, label: string, current?: boolean) {
-    return new LabelBuilder()
-      .setLabel(label)
-      .setStringSelectMenuComponent(
-        new StringSelectMenuBuilder().setCustomId(customId).addOptions(...yesNoOptions(current ?? false))
-      );
-  }
+  static #boolLabel = (customId: string, label: string, current?: boolean) => new LabelBuilder()
+    .setLabel(label)
+    .setStringSelectMenuComponent(
+      new StringSelectMenuBuilder().setCustomId(customId).addOptions(...yesNoOptions(current ?? false))
+    );
 
-  static #optionalRoleLabel(customId: string, label: string) {
-    return new LabelBuilder()
-      .setLabel(label)
-      .setDescription('Leave empty to clear')
-      .setRoleSelectMenuComponent(
-        new RoleSelectMenuBuilder().setCustomId(customId).setMinValues(0).setMaxValues(1).setRequired(false)
-      );
-  }
+  static #optionalRoleLabel = (customId: string, label: string) => new LabelBuilder()
+    .setLabel(label)
+    .setDescription('Leave empty to clear')
+    .setRoleSelectMenuComponent(
+      new RoleSelectMenuBuilder().setCustomId(customId).setMinValues(0).setMaxValues(1).setRequired(false)
+    );
 
-  static #optionalChannelLabel(customId: string, label: string, ...channelTypes: ChannelType[]) {
-    return new LabelBuilder()
-      .setLabel(label)
-      .setDescription('Leave empty to clear')
-      .setChannelSelectMenuComponent(
-        new ChannelSelectMenuBuilder()
-          .setCustomId(customId)
-          .setChannelTypes(...channelTypes)
-          .setMinValues(0)
-          .setMaxValues(1)
-          .setRequired(false)
-      );
-  }
+  static #optionalChannelLabel = (customId: string, label: string, ...channelTypes: ChannelType[]) => new LabelBuilder()
+    .setLabel(label)
+    .setDescription('Leave empty to clear')
+    .setChannelSelectMenuComponent(
+      new ChannelSelectMenuBuilder()
+        .setCustomId(customId)
+        .setChannelTypes(...channelTypes)
+        .setMinValues(0)
+        .setMaxValues(1)
+        .setRequired(false)
+    );
 
   static async #buildPanelModal(session: ManageSession, ctx, channel) {
     const settings = await this.#loadChannelSettings(ctx, channel, channel.guild);
@@ -506,11 +498,7 @@ export default class SettingsManageUI {
     return modal;
   }
 
-  static isManageModal(customId: string) {
-    return customId.startsWith(`${PREFIX}:`);
-  }
+  static isManageModal = (customId: string) => customId.startsWith(`${PREFIX}:`);
 
-  static isManageComponent(customId: string) {
-    return customId.startsWith(`${PREFIX}:`);
-  }
+  static isManageComponent = (customId: string) => customId.startsWith(`${PREFIX}:`);
 }

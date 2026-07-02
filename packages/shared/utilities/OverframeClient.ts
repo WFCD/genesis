@@ -175,13 +175,13 @@ const apiFetch = async <T>(path: string, params: Record<string, string>) => {
   }
 };
 
-export async function searchOverframeBuilds({
+export const searchOverframeBuilds = async ({
   query,
   itemId,
   mode = 'title',
   offset = 0,
   limit = 25,
-}: OverframeSearchParams): Promise<OverframeSearchResult> {
+}: OverframeSearchParams): Promise<OverframeSearchResult> => {
   const trimmed = query.trim();
   const params: Record<string, string> = {
     ordering: '-score',
@@ -207,9 +207,9 @@ export async function searchOverframeBuilds({
     limit: Number(params.limit),
     results,
   };
-}
+};
 
-export async function getOverframeBuild(id: number): Promise<OverframeBuildDetail | undefined> {
+export const getOverframeBuild = async (id: number): Promise<OverframeBuildDetail | undefined> => {
   const payload = await apiFetch<ApiBuildDetail>(`/builds/${id}/`, {});
   if (!payload?.id) return undefined;
   const summary = mapSummary(payload);
@@ -221,20 +221,20 @@ export async function getOverframeBuild(id: number): Promise<OverframeBuildDetai
     created: payload.created,
     updated: payload.updated,
   };
-}
+};
 
-export function isExactCatalogItem(query: string, ws?: WorldStateClient): boolean {
+export const isExactCatalogItem = (query: string, ws?: WorldStateClient): boolean => {
   if (!ws || !query.trim()) return false;
   const lower = query.trim().toLowerCase();
   const matches = [...ws.listWarframes(query.trim()), ...ws.listWeapons(query.trim())].filter(
     (item) => String(item.name ?? '').toLowerCase() === lower
   );
   return matches.length === 1;
-}
+};
 
-export async function resolveOverframeItemId(query: string, ws?: WorldStateClient): Promise<number | undefined> {
+export const resolveOverframeItemId = async (query: string, ws?: WorldStateClient): Promise<number | undefined> => {
   if (!isExactCatalogItem(query, ws)) return undefined;
   const trimmed = query.trim();
   const probe = await searchOverframeBuilds({ query: trimmed, mode: 'item', limit: 1 });
   return probe.results[0]?.itemId;
-}
+};

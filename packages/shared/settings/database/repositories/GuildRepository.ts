@@ -40,7 +40,7 @@ export default class GuildRepository {
     }
   }
 
-  async ensureData(client: Client) {
+  ensureData = async (client: Client) => {
     const promises: Array<Promise<unknown>> = [];
     client.guilds.cache.forEach((guild) => {
       if (guild.channels.cache.size) {
@@ -48,7 +48,7 @@ export default class GuildRepository {
       }
     });
     await Promise.all(promises);
-  }
+  };
 
   addGuild(guild: GuildRef) {
     if (!guild?.id || guild.available === false) return undefined;

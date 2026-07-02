@@ -49,7 +49,7 @@ const isWithinRange = (minutesRemaining) => {
   }
 };
 
-function buildNotifiableData(newData, platform, locale) {
+const buildNotifiableData = (newData, platform, locale) => {
   const key = `${platform}:${locale}`;
   const data: Record<string, CycleData> = {
     cetus: {
@@ -83,7 +83,7 @@ function buildNotifiableData(newData, platform, locale) {
   }
 
   return data;
-}
+};
 
 const resolveCambionCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;

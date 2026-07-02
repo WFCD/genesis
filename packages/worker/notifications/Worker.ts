@@ -163,14 +163,14 @@ class Worker {
     deps.notificationDeleteCycle.start();
   }
 
-  async initRefreshWatermarks() {
+  initRefreshWatermarks = async () => {
     const stamps = await deps.settings.workerCache.getRefreshStamps();
     const now = Date.now();
     REFRESH_STAMP_KEYS.forEach((scope) => {
       deps.workerCache.setKey(`last_${scope}_refresh_at`, stamps[scope] || now);
     });
     deps.workerCache.save(true);
-  }
+  };
 
   async processRefreshStamps() {
     if (!deps.workerCache || !deps.settings) return;
@@ -204,7 +204,7 @@ class Worker {
     await this.processCacheJobs();
   }
 
-  async processCacheJobs() {
+  processCacheJobs = async () => {
     if (!deps.workerCache || !deps.settings) return;
     await processWorkerCacheJobs({
       settings: deps.settings,
@@ -213,7 +213,7 @@ class Worker {
       platforms: activePlatforms,
       workerId: getWorkerId(),
     });
-  }
+  };
 
   /**
    * Start the worker notifier systems

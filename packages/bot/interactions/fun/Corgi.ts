@@ -9,7 +9,7 @@ export default class Corgi extends Interaction {
 
   static command = cmds.corgi;
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const corgi = (await fetch('https://dog.ceo/api/breed/corgi/cardigan/images/random').then((d) => d.json())) as {
       message?: string;
     };
@@ -24,5 +24,5 @@ export default class Corgi extends Interaction {
       });
     }
     return interaction.reply(ctx.i18n`couldn't find a corgi... :(`);
-  }
+  };
 }

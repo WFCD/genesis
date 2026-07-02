@@ -5,7 +5,7 @@ import { fetchDiscordChannelNode, fetchGuildChannelNodes } from '@/lib/discord';
 import type { ResolvedChannelRoute } from './route';
 import { buildChannelTree, findChannelName, findThreadParentId, THREAD_CHANNEL_TYPES } from './tree';
 
-export async function resolveChannelRoute(routeId: string, guildId?: string): Promise<ResolvedChannelRoute | null> {
+export const resolveChannelRoute = async (routeId: string, guildId?: string): Promise<ResolvedChannelRoute | null> => {
   const node = await fetchDiscordChannelNode(routeId);
   if (node) {
     const isThread = THREAD_CHANNEL_TYPES.has(node.type);
@@ -53,4 +53,4 @@ export async function resolveChannelRoute(routeId: string, guildId?: string): Pr
   }
 
   return null;
-}
+};

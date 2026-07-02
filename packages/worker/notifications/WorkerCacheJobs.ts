@@ -7,7 +7,7 @@ import logger from '#shared/utilities/Logger';
 /**
  * Patch cached trackable channel lists for one guild without full hydrateQueries.
  */
-export async function patchGuildTrackables({ settings, workerCache, guildId, locale, types, platforms }) {
+export const patchGuildTrackables = async ({ settings, workerCache, guildId, locale, types, platforms }) => {
   const guildChannels = await settings.workerCache.getGuildChannelIds(guildId);
   if (!guildChannels.length) return 0;
 
@@ -30,9 +30,9 @@ export async function patchGuildTrackables({ settings, workerCache, guildId, loc
   }
   workerCache.save(true);
   return patched;
-}
+};
 
-export async function patchGuildPings({ settings, workerCache, guildId }) {
+export const patchGuildPings = async ({ settings, workerCache, guildId }) => {
   const pings = { ...(workerCache.getKey('pings') || {}) };
   Object.keys(pings).forEach((key) => {
     if (key.startsWith(`${guildId}:`)) {
@@ -45,9 +45,9 @@ export async function patchGuildPings({ settings, workerCache, guildId }) {
   workerCache.setKey('pings', pings);
   workerCache.save(true);
   return Object.keys(slice).length;
-}
+};
 
-export async function patchGuildGuild({ settings, workerCache, guildId }) {
+export const patchGuildGuild = async ({ settings, workerCache, guildId }) => {
   const guilds = { ...(workerCache.getKey('guilds') || {}) };
   const channelIds = await settings.workerCache.getGuildChannelIds(guildId);
   guilds[guildId] = { id: guildId, channels: channelIds };
@@ -55,9 +55,9 @@ export async function patchGuildGuild({ settings, workerCache, guildId }) {
   workerCache.setKey('guilds', guilds);
   workerCache.save(true);
   return 1;
-}
+};
 
-async function finishJob(settings, job, workerId) {
+const finishJob = async (settings, job, workerId) => {
   if (isSharedScope(job.scope)) {
     await settings.workerCache.ackJob(job.id, workerId);
     const acks = await settings.workerCache.countAcks(job.id);
@@ -68,9 +68,9 @@ async function finishJob(settings, job, workerId) {
   }
 
   await settings.workerCache.deleteJob(job.id);
-}
+};
 
-export async function processWorkerCacheJobs({ settings, workerCache, locales, platforms, workerId }) {
+export const processWorkerCacheJobs = async ({ settings, workerCache, locales, platforms, workerId }) => {
   const jobs = await settings.workerCache.fetchPendingJobs(locales, workerId);
   if (!jobs.length) return;
 
@@ -101,6 +101,6 @@ export async function processWorkerCacheJobs({ settings, workerCache, locales, p
       logger.error(e, `worker cache job ${job.id} failed`);
     }
   }
-}
+};
 
 export { getWorkerId };

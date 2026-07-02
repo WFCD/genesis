@@ -49,7 +49,7 @@ const wikiFetch = async (params: Record<string, string>) => {
 
 export const wikiSearchUrl = (query: string) => `${WIKI_SEARCH_BASE}${encodeURIComponent(query.trim())}`;
 
-export async function lookupWiki(query: string): Promise<WikiLookupResult> {
+export const lookupWiki = async (query: string): Promise<WikiLookupResult> => {
   const trimmed = query.trim();
   const searchUrl = wikiSearchUrl(trimmed);
   if (!trimmed) {
@@ -103,4 +103,4 @@ export async function lookupWiki(query: string): Promise<WikiLookupResult> {
       thumbnail: page.original?.source,
     },
   };
-}
+};

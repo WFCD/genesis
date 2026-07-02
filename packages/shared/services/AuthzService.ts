@@ -23,10 +23,10 @@ export type AuthzUser = {
 export default class AuthzService {
   constructor(private readonly settings: Database) {}
 
-  hasManageGuild(user: AuthzUser, guildId: string) {
+  hasManageGuild = (user: AuthzUser, guildId: string) => {
     const guild = user.guilds?.find((entry) => entry.id === guildId);
     return hasGuildAdminPermission(guild?.permissions);
-  }
+  };
 
   async getElevatedRoleIds(guildId: string) {
     const raw = await this.settings.channels.getGuildSetting({ id: guildId } as unknown as Guild, 'elevatedRoles');
@@ -40,10 +40,10 @@ export default class AuthzService {
     return this.settings.channels.getGuildSetting({ id: guildId } as unknown as Guild, 'modRole');
   }
 
-  hasElevatedRole(user: AuthzUser, elevatedRoleIds: string[]) {
+  hasElevatedRole = (user: AuthzUser, elevatedRoleIds: string[]) => {
     if (!elevatedRoleIds.length || !user.memberRoles?.length) return false;
     return user.memberRoles.some((roleId) => elevatedRoleIds.includes(roleId));
-  }
+  };
 
   async hasModRole(user: AuthzUser, guildId: string) {
     const modRole = await this.getModRoleId(guildId);

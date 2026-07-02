@@ -13,22 +13,20 @@ type CommandStatRow = {
   count?: number | string;
 };
 
-function readRowValue(row: CommandStatRow, keys: Array<keyof CommandStatRow>) {
+const readRowValue = (row: CommandStatRow, keys: Array<keyof CommandStatRow>) => {
   for (const key of keys) {
     const value = row[key];
     if (value !== undefined && value !== null && value !== '') return value;
   }
   return undefined;
-}
+};
 
-function mapCommandStatRows(rows: CommandStatRow[]) {
-  return rows
-    .map((row) => ({
-      id: String(readRowValue(row, ['command_id']) ?? ''),
-      count: Number(readRowValue(row, ['usage_count', 'count']) ?? 0) || 0,
-    }))
-    .filter((row) => row.id);
-}
+const mapCommandStatRows = (rows: CommandStatRow[]) => rows
+  .map((row) => ({
+    id: String(readRowValue(row, ['command_id']) ?? ''),
+    count: Number(readRowValue(row, ['usage_count', 'count']) ?? 0) || 0,
+  }))
+  .filter((row) => row.id);
 
 /**
  * Command execution and tracked-role statistics persistence.

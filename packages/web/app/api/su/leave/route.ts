@@ -4,7 +4,7 @@ import { fetchDiscordGuildInfo, leaveDiscordGuild } from '@/lib/discord';
 import { requireOwner } from '@/lib/auth/ownerAuth';
 import { invalidateCached } from '@/lib/cache/server';
 
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireOwner();
     const body = (await request.json()) as { guildId?: string };
@@ -34,4 +34,4 @@ export async function POST(request: Request) {
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to leave guild' }, { status: 500 });
   }
-}
+};

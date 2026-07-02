@@ -11,7 +11,7 @@ export type ResolvedChannelRoute = {
   type: number;
 };
 
-export function resolveChannelRouteFromTree(tree: ChannelTree, routeId: string): ResolvedChannelRoute {
+export const resolveChannelRouteFromTree = (tree: ChannelTree, routeId: string): ResolvedChannelRoute => {
   const parentChannelId = findThreadParentId(tree, routeId);
   if (parentChannelId) {
     return {
@@ -32,18 +32,21 @@ export function resolveChannelRouteFromTree(tree: ChannelTree, routeId: string):
     name: findChannelName(tree, routeId) ?? routeId,
     type: 0,
   };
-}
+};
 
-export function channelRef(guildId: string, resolved: ResolvedChannelRoute) {
-  return { id: resolved.parentChannelId, guild: { id: guildId } };
-}
+export type GuildChannelRouteContext = {
+  params: Promise<{ guildId: string; channelId: string }>;
+};
 
-export function threadRef(resolved: ResolvedChannelRoute) {
-  return resolved.threadId ? { id: resolved.threadId } : undefined;
-}
+export const channelRef = (
+  guildId: string,
+  resolved: ResolvedChannelRoute,
+) => ({ id: resolved.parentChannelId, guild: { id: guildId } });
 
-export function rejectThreadRoutes(resolved: ResolvedChannelRoute) {
+export const threadRef = (resolved: ResolvedChannelRoute) => resolved.threadId ? { id: resolved.threadId } : undefined;
+
+export const rejectThreadRoutes = (resolved: ResolvedChannelRoute) => {
   if (resolved.isThread) {
     throw new Response('This setting applies to the parent channel, not threads.', { status: 400 });
   }
-}
+};

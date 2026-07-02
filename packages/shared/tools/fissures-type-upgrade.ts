@@ -46,12 +46,12 @@ const tierQueries = [
   SQL`select channel_id from type_notifications where type='fissures.t4';`,
 ] as const;
 
-async function queryChannelIds(pool: Pool, query: SQLStatement): Promise<string[]> {
+const queryChannelIds = async (pool: Pool, query: SQLStatement): Promise<string[]> => {
   const [rows] = await pool.query(query as never);
   return (rows as ChannelRow[]).map((row) => row.channel_id);
-}
+};
 
-async function insertTierTypes(pool: Pool, channelId: string, tier: number): Promise<void> {
+const insertTierTypes = async (pool: Pool, channelId: string, tier: number): Promise<void> => {
   const genTypes = missionTypes.map((type) => `fissures.t${tier}.${type}`);
   const query = SQL`INSERT IGNORE INTO type_notifications (channel_id, type)
       VALUES (${channelId}, ${genTypes[0]}), (${channelId}, ${genTypes[1]}), (${channelId}, ${genTypes[2]}),
@@ -62,9 +62,9 @@ async function insertTierTypes(pool: Pool, channelId: string, tier: number): Pro
             (${channelId}, ${genTypes[15]}), (${channelId}, ${genTypes[16]}), (${channelId}, ${genTypes[17]});`;
 
   await pool.query(query as never);
-}
+};
 
-async function main() {
+const main = async () => {
   const pool = mysql.createPool(dbOptions);
   const fissures: string[][] = [[], [], [], []];
 
@@ -91,7 +91,7 @@ async function main() {
   } finally {
     await pool.end();
   }
-}
+};
 
 main()
   .then(() => process.exit(0))

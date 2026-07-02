@@ -26,7 +26,7 @@ const resolveDiscordLocaleKey = (locale: string): string | undefined => {
 };
 
 /** Load slash-command locale bundles without importing interaction handlers. */
-export async function loadCommandLocaleModules(): Promise<Record<string, CommandLocaleModule>> {
+export const loadCommandLocaleModules = async (): Promise<Record<string, CommandLocaleModule>> => {
   const modules: Record<string, CommandLocaleModule> = {};
 
   await Promise.all(
@@ -40,10 +40,10 @@ export async function loadCommandLocaleModules(): Promise<Record<string, Command
   );
 
   return modules;
-}
+};
 
 /** Keys like `settings.manage` — first-level subcommands/options in locale files. */
-export function groupSubcommandLocaleKeys(module: CommandLocaleModule): Map<string, string[]> {
+export const groupSubcommandLocaleKeys = (module: CommandLocaleModule): Map<string, string[]> => {
   const byParent = new Map<string, string[]>();
 
   Object.keys(module).forEach((key) => {
@@ -57,4 +57,4 @@ export function groupSubcommandLocaleKeys(module: CommandLocaleModule): Map<stri
   });
 
   return byParent;
-}
+};

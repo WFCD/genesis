@@ -15,7 +15,7 @@ export default class Ping extends Interaction {
 
   static command = cmds.ping;
 
-  static async commandHandler(interaction: ChatInputCommandInteraction, ctx: CommandContext) {
+  static commandHandler = async (interaction: ChatInputCommandInteraction, ctx: CommandContext) => {
     if (!interaction.isChatInputCommand()) return undefined;
 
     const now = Date.now();
@@ -56,5 +56,5 @@ export default class Ping extends Interaction {
       },
     });
     return interaction.editReply({ content: undefined, embeds: [updated] });
-  }
+  };
 }

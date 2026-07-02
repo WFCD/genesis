@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 import { parsePingTargetBody } from '@/lib/settings/pingTargets';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const GET = async (_request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'pings');
@@ -13,9 +13,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to load pings' }, { status: 500 });
   }
-}
+};
 
-export async function POST(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const POST = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'pings');
@@ -33,9 +33,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to add ping' }, { status: 500 });
   }
-}
+};
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const DELETE = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'pings');
@@ -53,4 +53,4 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ g
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to update pings' }, { status: 500 });
   }
-}
+};

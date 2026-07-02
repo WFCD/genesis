@@ -10,7 +10,5 @@ export default class Hug extends Interaction {
 
   static command = cmds.hug;
 
-  static async commandHandler(interaction, ctx) {
-    return interaction.reply(withEphemeral(ctx.ephemerate, { content }));
-  }
+  static commandHandler = async (interaction, ctx) => interaction.reply(withEphemeral(ctx.ephemerate, { content }));
 }

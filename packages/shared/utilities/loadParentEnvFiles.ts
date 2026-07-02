@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** Walk up from `startDir` to the npm workspaces root (repo root). */
-export function findMonorepoRoot(startDir = process.cwd()): string {
+export const findMonorepoRoot = (startDir = process.cwd()): string => {
   let dir = resolve(startDir);
   while (true) {
     const pkgPath = resolve(dir, 'package.json');
@@ -20,9 +20,9 @@ export function findMonorepoRoot(startDir = process.cwd()): string {
     dir = parent;
   }
   return resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-}
+};
 
-function applyEnvFile(content: string) {
+const applyEnvFile = (content: string) => {
   for (const line of content.split('\n')) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) continue;
@@ -37,13 +37,13 @@ function applyEnvFile(content: string) {
       process.env[key] = value;
     }
   }
-}
+};
 
 /** Load repo-root `.env.local` without overriding vars already set (e.g. SCOPE from npm scripts). */
-export function loadParentEnvFiles(cwd = process.cwd()) {
+export const loadParentEnvFiles = (cwd = process.cwd()) => {
   const filePath = resolve(findMonorepoRoot(cwd), '.env.local');
   if (!existsSync(filePath)) return;
   applyEnvFile(readFileSync(filePath, 'utf8'));
-}
+};
 
 loadParentEnvFiles();

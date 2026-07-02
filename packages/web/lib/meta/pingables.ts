@@ -6,7 +6,7 @@ import { formatPingableLabel } from './trackableLabels';
 
 const pingableKeys: string[] = (Array.isArray(pingables) ? pingables : Object.values(pingables)).slice().sort();
 
-export function searchPingables(query = '', limit = 50) {
+export const searchPingables = (query = '', limit = 50) => {
   const needle = query.trim().toLowerCase();
   const filtered = needle
     ? pingableKeys.filter((key) => {
@@ -15,4 +15,4 @@ export function searchPingables(query = '', limit = 50) {
       })
     : pingableKeys;
   return filtered.slice(0, limit);
-}
+};

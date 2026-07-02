@@ -1,5 +1,7 @@
 import { EmbedBuilder, type APIEmbedField } from 'discord.js';
 
+/* eslint-disable prefer-arrow-functions/prefer-arrow-functions -- defineProperties get/set must stay method syntax */
+
 const defaults = {
   url: process.env.EMBED_URL || 'https://warframestat.us',
   icon: process.env.EMBED_ICON_URL || 'https://docs.warframestat.us/wfcd_logo_color.png',

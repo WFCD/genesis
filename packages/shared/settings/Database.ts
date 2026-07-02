@@ -122,7 +122,7 @@ export default class Database implements DatabaseRepositories {
   }
 
   /** Connect, wire repositories, and return a ready facade. */
-  static async build(bot?: unknown): Promise<Database> {
+  static build = async (bot?: unknown): Promise<Database> => {
     const instance = new Database(bot);
     await instance.#wireRepositories();
 
@@ -150,7 +150,7 @@ export default class Database implements DatabaseRepositories {
     }
 
     return instance;
-  }
+  };
 
   async #wireRepositories() {
     const deps = {

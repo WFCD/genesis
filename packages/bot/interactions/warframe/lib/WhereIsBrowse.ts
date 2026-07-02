@@ -55,12 +55,12 @@ const buildComponents = (sort: WhereisSort, pageCount: number) => {
   return [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)];
 };
 
-export async function browseWhereisResults(
+export const browseWhereisResults = async (
   interaction: ChatInputCommandInteraction,
   ctx: CommandContext,
   results: WhereisRow[],
-  query: string
-) {
+  query: string,
+) => {
   let sort: WhereisSort = 'chance';
   let page = 1;
   let pagedPages = buildPages(results, query, sort);
@@ -125,4 +125,4 @@ export async function browseWhereisResults(
       );
     }
   });
-}
+};

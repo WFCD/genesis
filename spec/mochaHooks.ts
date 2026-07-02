@@ -6,7 +6,7 @@ export const mochaHooks = {
     this.timeout(120_000);
     await setupTestDatabase();
   },
-  async afterAll() {
+  afterAll: async () => {
     if (!isTestMariaDbEnabled()) return;
     await teardownTestDatabase();
   },

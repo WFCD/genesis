@@ -31,7 +31,7 @@ export default class Wiki extends Interaction {
     },
   ];
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const query = interaction.options.getString('query', true);
 
     await interaction.deferReply(withEphemeral(ctx.ephemerate));
@@ -47,5 +47,5 @@ export default class Wiki extends Interaction {
         })
       );
     }
-  }
+  };
 }

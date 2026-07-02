@@ -28,7 +28,7 @@ const withThreads = (channel: Omit<GuildChannelNode, 'threads'>, threads: GuildC
   threads: threads.filter((thread) => thread.parentId === channel.id).sort((a, b) => a.name.localeCompare(b.name)),
 });
 
-export function buildChannelTree(nodes: GuildChannelNode[] | Array<Omit<GuildChannelNode, 'threads'>>): ChannelTree {
+export const buildChannelTree = (nodes: GuildChannelNode[] | Array<Omit<GuildChannelNode, 'threads'>>): ChannelTree => {
   const normalized = nodes.map((node) => ('threads' in node ? node : { ...node, threads: [] }));
 
   const categories = normalized.filter((node) => node.type === CATEGORY_TYPE).sort((a, b) => a.position - b.position);
@@ -63,39 +63,34 @@ export function buildChannelTree(nodes: GuildChannelNode[] | Array<Omit<GuildCha
     categories: Array.from(categoryMap.values()),
     uncategorized,
   };
-}
+};
 
-function findInChannels(channels: GuildChannelNode[], channelId: string) {
+const findInChannels = (channels: GuildChannelNode[], channelId: string) => {
   for (const channel of channels) {
     if (channel.id === channelId) return channel.name;
     const thread = channel.threads.find((entry) => entry.id === channelId);
     if (thread) return thread.name;
   }
   return undefined;
-}
+};
 
-export function findChannelName(tree: ChannelTree, channelId: string) {
-  return (
-    findInChannels(
-      tree.categories.flatMap((category) => category.channels),
-      channelId
-    ) ?? findInChannels(tree.uncategorized, channelId)
-  );
-}
+export const findChannelName = (tree: ChannelTree, channelId: string) => findInChannels(
+  tree.categories.flatMap((category) => category.channels),
+  channelId
+) ?? findInChannels(tree.uncategorized, channelId);
 
-export function countTextChannels(tree: ChannelTree) {
-  return tree.categories.reduce((sum, category) => sum + category.channels.length, 0) + tree.uncategorized.length;
-}
+export const countTextChannels = (tree: ChannelTree) =>
+  tree.categories.reduce((sum, category) => sum + category.channels.length, 0) + tree.uncategorized.length;
 
-export function countThreads(tree: ChannelTree) {
+export const countThreads = (tree: ChannelTree) => {
   const allChannels = [...tree.categories.flatMap((category) => category.channels), ...tree.uncategorized];
   return allChannels.reduce((sum, channel) => sum + channel.threads.length, 0);
-}
+};
 
-export function findThreadParentId(tree: ChannelTree, threadId: string) {
+export const findThreadParentId = (tree: ChannelTree, threadId: string) => {
   const allChannels = [...tree.categories.flatMap((category) => category.channels), ...tree.uncategorized];
   for (const channel of allChannels) {
     if (channel.threads.some((thread) => thread.id === threadId)) return channel.id;
   }
   return undefined;
-}
+};

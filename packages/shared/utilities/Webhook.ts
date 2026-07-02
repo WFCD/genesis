@@ -37,11 +37,11 @@ type WebhookContext = CommandContext & {
   threadId?: string;
 };
 
-async function sendWebhook(
+const sendWebhook = async (
   host: WebhookHost | undefined,
   ctx: WebhookContext,
-  { content, embeds = undefined }: WebhookPayload
-): Promise<SentWebhookMessage | false> {
+  { content, embeds = undefined }: WebhookPayload,
+): Promise<SentWebhookMessage | false> => {
   const embedList = Array.isArray(embeds) ? embeds : embeds ? [embeds] : undefined;
   if (ctx.webhook?.id && ctx.webhook.token) {
     const client = new WebhookClient({ id: ctx.webhook.id, token: ctx.webhook.token });
@@ -136,13 +136,11 @@ async function sendWebhook(
     logger.debug(`Could not create webhook for ${ctx.channel.id}`);
   }
   return false;
-}
+};
 
 /** Send a webhook based on context. Use `.call(host, ctx, payload)` when host settings are required. */
 const webhook = Object.assign((ctx: WebhookContext, payload: WebhookPayload) => sendWebhook(undefined, ctx, payload), {
-  call(host: WebhookHost, ctx: WebhookContext, payload: WebhookPayload) {
-    return sendWebhook(host, ctx, payload);
-  },
+  call: (host: WebhookHost, ctx: WebhookContext, payload: WebhookPayload) => sendWebhook(host, ctx, payload),
 });
 
 export default webhook;

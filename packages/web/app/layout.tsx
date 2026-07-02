@@ -6,7 +6,7 @@ import './globals.css';
 import { getAppName, getDashboardTitle } from '@/lib/content/branding';
 import { fetchBotAvatarUrl } from '@/lib/discord';
 
-export async function generateMetadata(): Promise<Metadata> {
+export const generateMetadata = async (): Promise<Metadata> => {
   const icon = await fetchBotAvatarUrl(32);
   const appName = getAppName();
 
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: icon,
     },
   };
-}
+};
 
 type Props = {
   children: ReactNode;

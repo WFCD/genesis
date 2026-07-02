@@ -24,7 +24,7 @@ const botHeaders = () => {
   };
 };
 
-async function fetchDiscordGuildChannels(guildId: string): Promise<GuildChannelNode[] | null> {
+const fetchDiscordGuildChannels = async (guildId: string): Promise<GuildChannelNode[] | null> => {
   const headers = botHeaders();
   if (!headers) return null;
 
@@ -52,9 +52,9 @@ async function fetchDiscordGuildChannels(guildId: string): Promise<GuildChannelN
       position: channel.position ?? 0,
       threads: [],
     }));
-}
+};
 
-async function fetchDiscordGuildActiveThreads(guildId: string): Promise<GuildChannelNode[]> {
+const fetchDiscordGuildActiveThreads = async (guildId: string): Promise<GuildChannelNode[]> => {
   const headers = botHeaders();
   if (!headers) return [];
 
@@ -83,9 +83,9 @@ async function fetchDiscordGuildActiveThreads(guildId: string): Promise<GuildCha
       position: 0,
       threads: [],
     }));
-}
+};
 
-export async function fetchDiscordChannelNode(channelId: string): Promise<GuildChannelNode | null> {
+export const fetchDiscordChannelNode = async (channelId: string): Promise<GuildChannelNode | null> => {
   const headers = botHeaders();
   if (!headers) return null;
 
@@ -110,9 +110,9 @@ export async function fetchDiscordChannelNode(channelId: string): Promise<GuildC
     position: 0,
     threads: [],
   };
-}
+};
 
-export async function fetchBotAvatarUrl(size = 32) {
+export const fetchBotAvatarUrl = async (size = 32) => {
   const headers = botHeaders();
   if (!headers) return DEFAULT_BOT_AVATAR;
 
@@ -129,26 +129,26 @@ export async function fetchBotAvatarUrl(size = 32) {
 
   const index = Number((BigInt(user.id) >> 22n) % 6n);
   return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
-}
+};
 
-export async function fetchDatabaseGuildChannelIds(guildId: string) {
+export const fetchDatabaseGuildChannelIds = async (guildId: string) => {
   const { getDatabase } = await import('@/lib/db');
   const db = await getDatabase();
   const guilds = await db.channels.getGuilds();
   const guildKey = String(guildId);
   if (!(guildKey in guilds)) return [];
   return guilds[guildKey].channels.map(String);
-}
+};
 
-async function fetchDatabaseGuildChannels(guildId: string): Promise<GuildChannelNode[]> {
+const fetchDatabaseGuildChannels = async (guildId: string): Promise<GuildChannelNode[]> => {
   const channelIds = await fetchDatabaseGuildChannelIds(guildId);
   if (!channelIds.length) return [];
 
   const nodes = await Promise.all(channelIds.map((id) => fetchDiscordChannelNode(id)));
   return nodes.filter((node): node is GuildChannelNode => node !== null);
-}
+};
 
-async function fetchGuildChannelNodesUncached(guildId: string) {
+const fetchGuildChannelNodesUncached = async (guildId: string) => {
   const fromDiscord = await fetchDiscordGuildChannels(guildId);
   if (fromDiscord?.length) {
     const threads = await fetchDiscordGuildActiveThreads(guildId);
@@ -160,18 +160,16 @@ async function fetchGuildChannelNodesUncached(guildId: string) {
 
   if (fromDiscord) return fromDiscord;
   throw new Response('Failed to fetch guild channels', { status: 502 });
-}
+};
 
-export async function fetchGuildChannelNodes(guildId: string) {
-  return getCached(`discord:channels:${guildId}`, 45_000, () => fetchGuildChannelNodesUncached(guildId));
-}
+export const fetchGuildChannelNodes = async (guildId: string) => getCached(`discord:channels:${guildId}`, 45_000, () => fetchGuildChannelNodesUncached(guildId));
 
-export async function fetchGuildChannels(guildId: string) {
+export const fetchGuildChannels = async (guildId: string) => {
   const nodes = await fetchGuildChannelNodes(guildId);
   return nodes.filter((node) => [0, 5, 15].includes(node.type)).map(({ id, name, type }) => ({ id, name, type }));
-}
+};
 
-async function fetchDatabaseGuildIdsUncached() {
+const fetchDatabaseGuildIdsUncached = async () => {
   try {
     const { getDatabase } = await import('@/lib/db');
     const db = await getDatabase();
@@ -185,26 +183,24 @@ async function fetchDatabaseGuildIdsUncached() {
     console.error('[genesis-web] Failed to load guild ids from database:', error);
     return new Set<string>();
   }
-}
+};
 
-export async function fetchDatabaseGuildIds() {
-  return getCached('db:known-guild-ids', 60_000, fetchDatabaseGuildIdsUncached);
-}
+export const fetchDatabaseGuildIds = async () => getCached('db:known-guild-ids', 60_000, fetchDatabaseGuildIdsUncached);
 
 /** True when the guild has at least one row in `channels` (Genesis has seen this server). */
-export async function isBotInGuild(guildId: string) {
+export const isBotInGuild = async (guildId: string) => {
   const status = await checkBotInGuilds([guildId]);
   return status[guildId] ?? false;
-}
+};
 
-export async function checkBotInGuilds(guildIds: string[]) {
+export const checkBotInGuilds = async (guildIds: string[]) => {
   if (!guildIds.length) return {} as Record<string, boolean>;
 
   const knownGuilds = await fetchDatabaseGuildIds();
   return Object.fromEntries(guildIds.map((id) => [id, knownGuilds.has(String(id))])) as Record<string, boolean>;
-}
+};
 
-async function fetchGuildRolesUncached(guildId: string) {
+const fetchGuildRolesUncached = async (guildId: string) => {
   const headers = botHeaders();
   if (!headers) return [];
 
@@ -217,13 +213,11 @@ async function fetchGuildRolesUncached(guildId: string) {
   }
   const roles = (await res.json()) as Array<{ id: string; name: string }>;
   return roles.map((role) => ({ id: role.id, name: role.name }));
-}
+};
 
-export async function fetchGuildRoles(guildId: string) {
-  return getCached(`discord:roles:${guildId}`, 120_000, () => fetchGuildRolesUncached(guildId));
-}
+export const fetchGuildRoles = async (guildId: string) => getCached(`discord:roles:${guildId}`, 120_000, () => fetchGuildRolesUncached(guildId));
 
-async function fetchGuildMemberRolesUncached(guildId: string, userId: string) {
+const fetchGuildMemberRolesUncached = async (guildId: string, userId: string) => {
   const headers = botHeaders();
   if (!headers) return [] as string[];
   const res = await fetch(`${DISCORD_API}/guilds/${guildId}/members/${userId}`, {
@@ -233,15 +227,13 @@ async function fetchGuildMemberRolesUncached(guildId: string, userId: string) {
   if (!res.ok) return [];
   const member = (await res.json()) as { roles?: string[] };
   return member.roles ?? [];
-}
+};
 
-export async function fetchGuildMemberRoles(guildId: string, userId: string) {
-  return getCached(`discord:member-roles:${guildId}:${userId}`, 30_000, () =>
-    fetchGuildMemberRolesUncached(guildId, userId)
-  );
-}
+export const fetchGuildMemberRoles = async (guildId: string, userId: string) => getCached(`discord:member-roles:${guildId}:${userId}`, 30_000, () =>
+  fetchGuildMemberRolesUncached(guildId, userId)
+);
 
-export async function searchGuildMembers(guildId: string, query: string, limit = 10) {
+export const searchGuildMembers = async (guildId: string, query: string, limit = 10) => {
   const headers = botHeaders();
   const trimmed = query.trim();
   if (!headers || !trimmed) return [] as Array<{ id: string; name: string }>;
@@ -260,9 +252,9 @@ export async function searchGuildMembers(guildId: string, query: string, limit =
     id: member.user.id,
     name: member.user.global_name || member.user.username,
   }));
-}
+};
 
-export async function fetchDiscordGuildInfo(guildId: string): Promise<DiscordGuildInfo | DiscordGuildInfoError> {
+export const fetchDiscordGuildInfo = async (guildId: string): Promise<DiscordGuildInfo | DiscordGuildInfoError> => {
   const headers = botHeaders();
   if (!headers) return { error: 'Bot token not configured', status: 503 };
 
@@ -324,9 +316,9 @@ export async function fetchDiscordGuildInfo(guildId: string): Promise<DiscordGui
     inDatabase,
     registeredChannelCount: registeredChannelIds.length,
   };
-}
+};
 
-export async function leaveDiscordGuild(guildId: string): Promise<{ ok: true } | DiscordGuildInfoError> {
+export const leaveDiscordGuild = async (guildId: string): Promise<{ ok: true } | DiscordGuildInfoError> => {
   const headers = botHeaders();
   if (!headers) return { error: 'Bot token not configured', status: 503 };
 
@@ -342,13 +334,11 @@ export async function leaveDiscordGuild(guildId: string): Promise<{ ok: true } |
   }
 
   return { ok: true };
-}
+};
 
-export async function fetchDiscordGuildBanner(guildId: string): Promise<string | null> {
-  return getCached(`discord:banner:${guildId}`, 3_600_000, () => fetchDiscordGuildBannerUncached(guildId));
-}
+export const fetchDiscordGuildBanner = async (guildId: string): Promise<string | null> => getCached(`discord:banner:${guildId}`, 3_600_000, () => fetchDiscordGuildBannerUncached(guildId));
 
-async function fetchDiscordGuildBannerUncached(guildId: string): Promise<string | null> {
+const fetchDiscordGuildBannerUncached = async (guildId: string): Promise<string | null> => {
   const headers = botHeaders();
   if (!headers) return null;
 
@@ -363,4 +353,4 @@ async function fetchDiscordGuildBannerUncached(guildId: string): Promise<string 
 
   const ext = guild.banner.startsWith('a_') ? 'gif' : 'png';
   return `https://cdn.discordapp.com/banners/${guildId}/${guild.banner}.${ext}?size=600`;
-}
+};

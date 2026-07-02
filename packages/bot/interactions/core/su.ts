@@ -113,7 +113,7 @@ export default class SuperUser extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const command = interaction.options.getSubcommand();
     const ephemeral = true;
 
@@ -201,5 +201,5 @@ export default class SuperUser extends Interaction {
     }
 
     return interaction.reply(withEphemeral(ephemeral, { content: 'got it' }));
-  }
+  };
 }

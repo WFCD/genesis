@@ -1,4 +1,4 @@
-export async function readApiError(res: Response) {
+export const readApiError = async (res: Response) => {
   const text = await res.text().catch(() => '');
   if (text) {
     try {
@@ -10,8 +10,6 @@ export async function readApiError(res: Response) {
     return text;
   }
   return `Request failed (${res.status})`;
-}
+};
 
-export async function readJsonResponse<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
+export const readJsonResponse = async <T>(res: Response): Promise<T> => (await res.json()) as T;

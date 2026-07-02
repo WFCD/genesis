@@ -23,20 +23,14 @@ type CollectorMessage = Message | InteractionResponse;
 
 const FETCH_REPLY_TIMEOUT_MS = 10_000;
 
-async function interactionMessage(
-  interaction: ChatInputCommandInteraction,
-  payload: Parameters<ChatInputCommandInteraction['reply']>[0]
-): Promise<CollectorMessage> {
+const interactionMessage = async (interaction: ChatInputCommandInteraction, payload: Parameters<ChatInputCommandInteraction['reply']>[0]): Promise<CollectorMessage> => {
   if (interaction.deferred || interaction.replied) {
     return interaction.editReply(payload as Parameters<ChatInputCommandInteraction['editReply']>[0]);
   }
   return interaction.reply(payload);
-}
+};
 
-async function collectorMessage(
-  interaction: ChatInputCommandInteraction,
-  payload: Parameters<ChatInputCommandInteraction['reply']>[0]
-): Promise<Message | null> {
+const collectorMessage = async (interaction: ChatInputCommandInteraction, payload: Parameters<ChatInputCommandInteraction['reply']>[0]): Promise<Message | null> => {
   await interactionMessage(interaction, payload);
   try {
     return await Promise.race([
@@ -49,7 +43,7 @@ async function collectorMessage(
     interaction.client.emit?.('error', error as Error);
     return null;
   }
-}
+};
 
 const embedTitle = (embed: PageEmbed) => embed.data.title ?? null;
 
@@ -107,24 +101,22 @@ export default class Collectors {
     return pages?.length <= 25 ? this.selection(interaction, pages, ctx) : this.paged(interaction, pages, ctx);
   }
 
-  static #shapePages(pages: PageEmbed[]): EmbedBuilder[] {
-    return pages.map((newPage, index) => {
-      const pageInd = `Page ${index + 1}/${pages.length}`;
-      if (!embedDescription(newPage)) newPage.setDescription('_ _');
-      const footer = embedFooter(newPage);
-      if (footer?.text) {
-        if (footer.text.indexOf('Page ') === -1) {
-          newPage.setFooter({
-            text: `${pageInd} • ${footer.text}`,
-            iconURL: footer.icon_url ?? (footer as { iconURL?: string }).iconURL,
-          });
-        }
-      } else {
-        newPage.setFooter({ text: pageInd });
+  static #shapePages = (pages: PageEmbed[]): EmbedBuilder[] => pages.map((newPage, index) => {
+    const pageInd = `Page ${index + 1}/${pages.length}`;
+    if (!embedDescription(newPage)) newPage.setDescription('_ _');
+    const footer = embedFooter(newPage);
+    if (footer?.text) {
+      if (footer.text.indexOf('Page ') === -1) {
+        newPage.setFooter({
+          text: `${pageInd} • ${footer.text}`,
+          iconURL: footer.icon_url ?? (footer as { iconURL?: string }).iconURL,
+        });
       }
-      return EmbedBuilder.from(newPage);
-    });
-  }
+    } else {
+      newPage.setFooter({ text: pageInd });
+    }
+    return EmbedBuilder.from(newPage);
+  });
 
   static async selection(
     interaction: ChatInputCommandInteraction,

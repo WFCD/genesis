@@ -14,11 +14,11 @@ type GuildLayoutContextValue = {
 
 const GuildLayoutContext = createContext<GuildLayoutContextValue | null>(null);
 
-export function useGuildLayout() {
+export const useGuildLayout = () => {
   const value = useContext(GuildLayoutContext);
   if (!value) throw new Error('useGuildLayout must be used within GuildLayout');
   return value;
-}
+};
 
 type Props = GuildLayoutContextValue & {
   children: ReactNode;

@@ -27,8 +27,8 @@ export default class Interaction {
 
   static ownerOnly = false;
 
-  static async commandHandler(
+  static commandHandler = async (
     _interaction: ChatInputCommandInteraction,
-    _ctx: CommandContext
-  ): Promise<Message | InteractionResponse | void> {}
+    _ctx: CommandContext,
+  ): Promise<Message | InteractionResponse | void> => {};
 }

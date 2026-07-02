@@ -30,7 +30,7 @@ type PermissionRow = {
 export default class PermissionsRepository {
   constructor(private readonly deps: DatabaseDeps) {}
 
-  private isTextChannelWithGuild(channel: ChannelRef): channel is ChannelRef & { guild: Guild } {
+  isTextChannelWithGuild = (channel: ChannelRef): channel is ChannelRef & { guild: Guild } => {
     if (typeof channel.isTextBased === 'function') {
       return channel.isTextBased() && Boolean(channel.guild);
     }
@@ -38,7 +38,7 @@ export default class PermissionsRepository {
       return channel.isText() && Boolean(channel.guild);
     }
     return Boolean(channel.guild);
-  }
+  };
 
   async setChannelPermissionForMember(
     channel: Pick<ChannelRef, 'id'>,

@@ -92,9 +92,7 @@ export const asId = (event, label) => {
  * @param   {function} [now] A function that returns the current UNIX time in milliseconds
  * @returns {number}
  */
-export function fromNow(d, now = Date.now) {
-  return new Date(d).getTime() - now();
-}
+export const fromNow = (d, now = Date.now) => new Date(d).getTime() - now();
 
 export const perLanguage = async (fn) =>
   Promise.all(Object.entries(i18ns)?.map(async ([locale, i18n]) => fn({ locale, i18n })));

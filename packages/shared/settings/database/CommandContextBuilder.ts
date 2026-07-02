@@ -35,11 +35,11 @@ export interface CommandContextDeps {
 }
 
 /** Build per-interaction context from channel settings rows. */
-export async function buildCommandContext(
+export const buildCommandContext = async (
   deps: CommandContextDeps,
   channel: ChannelInput,
-  user?: User
-): Promise<CommandContext> {
+  user?: User,
+): Promise<CommandContext> => {
   if (typeof channel === 'string') {
     channel = { id: channel };
   } else if (!('id' in channel) || !channel.id) {
@@ -250,4 +250,4 @@ export async function buildCommandContext(
   context.channel = channel as TextChannel;
   context.i18n = createI18n(i18n, context.language ?? deps.defaults.language) as CommandContext['i18n'];
   return context;
-}
+};

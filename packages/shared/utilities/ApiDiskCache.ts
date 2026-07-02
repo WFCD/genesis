@@ -22,49 +22,43 @@ type CacheEntry<T> = {
 
 let cache: ReturnType<typeof flatCache.load> | undefined;
 
-function getCache() {
+const getCache = () => {
   if (!cache) {
     cache = flatCache.load(cacheId, cacheDir);
   }
   return cache;
-}
+};
 
-function readEntry<T>(key: string): CacheEntry<T> | undefined {
-  return getCache().getKey(key) as CacheEntry<T> | undefined;
-}
+const readEntry = <T>(key: string): CacheEntry<T> | undefined => getCache().getKey(key) as CacheEntry<T> | undefined;
 
-function writeEntry<T>(key: string, data: T) {
+const writeEntry = <T>(key: string, data: T) => {
   const store = getCache();
   store.setKey(key, { cachedAt: Date.now(), data });
   store.save(true);
-}
+};
 
-export async function readCache<T>(key: string, { maxAgeMs = defaultTtlMs } = {}): Promise<T | undefined> {
+export const readCache = async <T>(key: string, { maxAgeMs = defaultTtlMs } = {}): Promise<T | undefined> => {
   const entry = readEntry<T>(key);
   if (!entry) return undefined;
   if (maxAgeMs > 0 && Date.now() - entry.cachedAt > maxAgeMs) return undefined;
   return entry.data;
-}
+};
 
-export async function readStaleCache<T>(key: string): Promise<T | undefined> {
-  return readEntry<T>(key)?.data;
-}
+export const readStaleCache = async <T>(key: string): Promise<T | undefined> => readEntry<T>(key)?.data;
 
-export function readStaleCacheSync<T>(key: string): T | undefined {
-  return readEntry<T>(key)?.data;
-}
+export const readStaleCacheSync = <T>(key: string): T | undefined => readEntry<T>(key)?.data;
 
-export function writeCache<T>(key: string, data: T) {
+export const writeCache = <T>(key: string, data: T) => {
   writeEntry(key, data);
-}
+};
 
 export { defaultTtlMs as apiCacheTtlMs, cacheDir as apiCacheDir };
 
-export async function getOrFetch<T>(
+export const getOrFetch = async <T>(
   key: string,
   fetchFn: () => Promise<T>,
-  { maxAgeMs = defaultTtlMs, logger: log }: { maxAgeMs?: number; logger?: CacheLogger } = {}
-): Promise<T> {
+  { maxAgeMs = defaultTtlMs, logger: log }: { maxAgeMs?: number; logger?: CacheLogger } = {},
+): Promise<T> => {
   const cached = await readCache<T>(key, { maxAgeMs });
   if (cached !== undefined) {
     log?.debug?.(`API cache hit: ${key}`);
@@ -84,4 +78,4 @@ export async function getOrFetch<T>(
     }
     throw err;
   }
-}
+};

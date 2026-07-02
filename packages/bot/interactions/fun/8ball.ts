@@ -43,13 +43,11 @@ export default class EightBall extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
-    return interaction.reply(
-      withEphemeral(ctx.ephemerate, {
-        content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]} | ||_${interaction.options.getString(
-          'question'
-        )}_||`,
-      })
-    );
-  }
+  static commandHandler = async (interaction, ctx) => interaction.reply(
+    withEphemeral(ctx.ephemerate, {
+      content: `:8ball: | ${jokes[Math.floor(Math.random() * jokes.length)]} | ||_${interaction.options.getString(
+        'question'
+      )}_||`,
+    })
+  );
 }

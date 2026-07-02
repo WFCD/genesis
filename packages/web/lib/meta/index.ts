@@ -21,15 +21,15 @@ const pingableKeys: string[] = (Array.isArray(pingables) ? pingables : Object.ke
   .map(String)
   .sort();
 
-export function searchTrackables(query = '', limit = 25) {
+export const searchTrackables = (query = '', limit = 25) => {
   const needle = query.trim().toLowerCase();
   const all = flattenTrackables();
   const filtered = needle ? all.filter((value) => value.toLowerCase().includes(needle)) : all;
   return filtered.slice(0, limit);
-}
+};
 
-export function searchPingables(query = '', limit = 25) {
+export const searchPingables = (query = '', limit = 25) => {
   const needle = query.trim().toLowerCase();
   const filtered = needle ? pingableKeys.filter((key) => key.toLowerCase().includes(needle)) : pingableKeys;
   return filtered.slice(0, limit);
-}
+};

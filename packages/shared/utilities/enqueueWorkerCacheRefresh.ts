@@ -9,12 +9,12 @@ export type WorkerCacheRefreshOptions = {
 };
 
 /** Queue per-guild worker cache patches after tracking changes. */
-export async function enqueueWorkerCacheRefresh(
+export const enqueueWorkerCacheRefresh = async (
   settings: Database,
   guildId: string,
   channel?: ChannelRef | null,
-  { trackableTypes = [], refreshGuild = true, refreshPings = false }: WorkerCacheRefreshOptions = {}
-) {
+  { trackableTypes = [], refreshGuild = true, refreshPings = false }: WorkerCacheRefreshOptions = {},
+) => {
   if (!guildId) return;
 
   const uniqueTypes = [...new Set(trackableTypes.filter(Boolean))];
@@ -32,7 +32,7 @@ export async function enqueueWorkerCacheRefresh(
   if (refreshPings) {
     await settings.workerCache.enqueuePings(guildId);
   }
-}
+};
 
 /** @deprecated use {@link enqueueWorkerCacheRefresh} */
 export const enqueueTrackablesCacheRefresh = async (

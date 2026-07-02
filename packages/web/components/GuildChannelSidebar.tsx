@@ -8,19 +8,17 @@ import { cn } from '@heroui/react';
 import type { ChannelTree, GuildChannelNode } from '@/lib/channels/tree';
 import { findThreadParentId } from '@/lib/channels/tree';
 
-function ChevronIcon({ collapsed }: { collapsed: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className={cn('h-3 w-3 shrink-0 fill-current transition-transform duration-200', collapsed ? '' : 'rotate-90')}
-    >
-      <path d="M9.3 8.3a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4l-4.6 4.6a1 1 0 0 1-1.4-1.4L13.4 13 9.3 8.9a1 1 0 0 1 0-1.4Z" />
-    </svg>
-  );
-}
+const ChevronIcon = ({ collapsed }: { collapsed: boolean }) => (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    className={cn('h-3 w-3 shrink-0 fill-current transition-transform duration-200', collapsed ? '' : 'rotate-90')}
+  >
+    <path d="M9.3 8.3a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4l-4.6 4.6a1 1 0 0 1-1.4-1.4L13.4 13 9.3 8.9a1 1 0 0 1 0-1.4Z" />
+  </svg>
+);
 
-function ChannelIcon({ type }: { type: number }) {
+const ChannelIcon = ({ type }: { type: number }) => {
   if (type === 5) {
     return (
       <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-current opacity-70">
@@ -30,17 +28,15 @@ function ChannelIcon({ type }: { type: number }) {
   }
 
   return <span className="w-4 shrink-0 text-center text-lg leading-none opacity-70">#</span>;
-}
+};
 
-function ThreadIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 fill-current opacity-70">
-      <path d="M7.5 3A4.5 4.5 0 0 0 3 7.5v6A4.5 4.5 0 0 0 7.5 18h1.086l2.35 2.35a1 1 0 0 0 1.664-.29L13.414 18H16.5A4.5 4.5 0 0 0 21 13.5v-6A4.5 4.5 0 0 0 16.5 3h-9Zm0 2h9A2.5 2.5 0 0 1 19 7.5v6a2.5 2.5 0 0 1-2.5 2.5h-3.086a1 1 0 0 0-.664.29l-.764 1.145-.764-1.145A1 1 0 0 0 10.586 16H7.5A2.5 2.5 0 0 1 5 13.5v-6A2.5 2.5 0 0 1 7.5 5Z" />
-    </svg>
-  );
-}
+const ThreadIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 fill-current opacity-70">
+    <path d="M7.5 3A4.5 4.5 0 0 0 3 7.5v6A4.5 4.5 0 0 0 7.5 18h1.086l2.35 2.35a1 1 0 0 0 1.664-.29L13.414 18H16.5A4.5 4.5 0 0 0 21 13.5v-6A4.5 4.5 0 0 0 16.5 3h-9Zm0 2h9A2.5 2.5 0 0 1 19 7.5v6a2.5 2.5 0 0 1-2.5 2.5h-3.086a1 1 0 0 0-.664.29l-.764 1.145-.764-1.145A1 1 0 0 0 10.586 16H7.5A2.5 2.5 0 0 1 5 13.5v-6A2.5 2.5 0 0 1 7.5 5Z" />
+  </svg>
+);
 
-function ChannelLink({
+const ChannelLink = ({
   guildId,
   channel,
   active,
@@ -50,38 +46,34 @@ function ChannelLink({
   channel: GuildChannelNode;
   active: boolean;
   className?: string;
-}) {
-  return (
-    <Link
-      href={`/guilds/${guildId}/channels/${channel.id}`}
-      className={cn(
-        'group flex min-w-0 flex-1 items-center gap-1.5 rounded px-2 py-1.5 text-[15px] text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1]',
-        active && 'bg-[#404249] text-white',
-        className
-      )}
-    >
-      <ChannelIcon type={channel.type} />
-      <span className="truncate">{channel.name}</span>
-    </Link>
-  );
-}
+}) => (
+  <Link
+    href={`/guilds/${guildId}/channels/${channel.id}`}
+    className={cn(
+      'group flex min-w-0 flex-1 items-center gap-1.5 rounded px-2 py-1.5 text-[15px] text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1]',
+      active && 'bg-[#404249] text-white',
+      className
+    )}
+  >
+    <ChannelIcon type={channel.type} />
+    <span className="truncate">{channel.name}</span>
+  </Link>
+);
 
-function ThreadLink({ guildId, thread, active }: { guildId: string; thread: GuildChannelNode; active: boolean }) {
-  return (
-    <Link
-      href={`/guilds/${guildId}/channels/${thread.id}`}
-      className={cn(
-        'group flex items-center gap-1.5 rounded py-1 pl-9 pr-2 text-[14px] text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1]',
-        active && 'bg-[#404249] text-white'
-      )}
-    >
-      <ThreadIcon />
-      <span className="truncate">{thread.name}</span>
-    </Link>
-  );
-}
+const ThreadLink = ({ guildId, thread, active }: { guildId: string; thread: GuildChannelNode; active: boolean }) => (
+  <Link
+    href={`/guilds/${guildId}/channels/${thread.id}`}
+    className={cn(
+      'group flex items-center gap-1.5 rounded py-1 pl-9 pr-2 text-[14px] text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1]',
+      active && 'bg-[#404249] text-white'
+    )}
+  >
+    <ThreadIcon />
+    <span className="truncate">{thread.name}</span>
+  </Link>
+);
 
-function ChannelRow({
+const ChannelRow = ({
   guildId,
   channel,
   activeChannelId,
@@ -93,7 +85,7 @@ function ChannelRow({
   activeChannelId?: string;
   collapsedChannels: Record<string, boolean>;
   onToggleChannel: (channelId: string) => void;
-}) {
+}) => {
   const hasThreads = channel.threads.length > 0;
   const channelActive = activeChannelId === channel.id;
   const activeThread = channel.threads.some((thread) => thread.id === activeChannelId);
@@ -125,7 +117,7 @@ function ChannelRow({
       ) : null}
     </div>
   );
-}
+};
 
 type Props = {
   guildId: string;

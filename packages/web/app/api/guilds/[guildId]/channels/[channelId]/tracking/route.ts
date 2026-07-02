@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { channelRef, threadRef } from '@/lib/channels/route';
+import { channelRef, threadRef, type GuildChannelRouteContext } from '@/lib/channels/route';
 import { resolveChannelRoute } from '@/lib/channels/route.server';
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ guildId: string; channelId: string }> }) {
+export const GET = async (_request: Request, { params }: GuildChannelRouteContext) => {
   try {
     const { guildId, channelId: routeId } = await params;
     const resolved = await resolveChannelRoute(routeId, guildId);
@@ -17,9 +17,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to load tracking' }, { status: 500 });
   }
-}
+};
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ guildId: string; channelId: string }> }) {
+export const PATCH = async (request: Request, { params }: GuildChannelRouteContext) => {
   try {
     const { guildId, channelId: routeId } = await params;
     const resolved = await resolveChannelRoute(routeId, guildId);
@@ -33,12 +33,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ gu
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to update tracking' }, { status: 500 });
   }
-}
+};
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ guildId: string; channelId: string }> }
-) {
+export const DELETE = async (_request: Request, { params }: GuildChannelRouteContext) => {
   try {
     const { guildId, channelId: routeId } = await params;
     const resolved = await resolveChannelRoute(routeId, guildId);
@@ -55,4 +52,4 @@ export async function DELETE(
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to clear tracking' }, { status: 500 });
   }
-}
+};

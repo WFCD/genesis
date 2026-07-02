@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 import { searchGuildMembers } from '@/lib/discord';
 
-export async function GET(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const GET = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     await requireGuildAccess(guildId, 'pings');
@@ -16,4 +16,4 @@ export async function GET(request: Request, { params }: { params: Promise<{ guil
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to search guild members' }, { status: 500 });
   }
-}
+};

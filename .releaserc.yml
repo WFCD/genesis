@@ -1,45 +1,52 @@
 plugins:
-  - '@semantic-release/commit-analyzer'
-  - - '@semantic-release/exec'
+  - "@semantic-release/commit-analyzer"
+  -
+    - "@semantic-release/exec"
     - successCmd: echo 'yes' >> .release
       failCmd: echo 'no' >> .release
-  - '@semantic-release/release-notes-generator'
-  - - '@semantic-release/npm'
+  - "@semantic-release/release-notes-generator"
+  -
+    - "@semantic-release/npm"
     - npmPublish: false
-  - '@semantic-release/github'
-  - - '@codedependant/semantic-release-docker'
+  - "@semantic-release/github"
+  -
+    - "@codedependant/semantic-release-docker"
     - dockerImage: genesis/bot
       dockerRegistry: ghcr.io
       dockerProject: wfcd
       dockerPlatform:
-        - 'linux/amd64'
-        - 'linux/arm64'
+        - linux/amd64
+        - linux/arm64
       dockerFile: bot.Dockerfile
-  - - '@codedependant/semantic-release-docker'
+  -
+    - "@codedependant/semantic-release-docker"
     - dockerImage: genesis/notifier
       dockerRegistry: ghcr.io
       dockerProject: wfcd
       dockerPlatform:
-        - 'linux/amd64'
-        - 'linux/arm64'
+        - linux/amd64
+        - linux/arm64
       dockerFile: notifier.Dockerfile
-  - - '@codedependant/semantic-release-docker'
+  -
+    - "@codedependant/semantic-release-docker"
     - dockerImage: genesis/web
       dockerRegistry: ghcr.io
       dockerProject: wfcd
       dockerPlatform:
-        - 'linux/amd64'
-        - 'linux/arm64'
+        - linux/amd64
+        - linux/arm64
       dockerFile: web.Dockerfile
-  - - '@semantic-release/changelog'
+  -
+    - "@semantic-release/changelog"
     - assets:
         - CHANGELOG.md
-  - - '@semantic-release/git'
+  -
+    - "@semantic-release/git"
     - assets:
         - package.json
         - CHANGELOG.md
       # don't include the release notes, as it's already in the changelog
       # and would blow up commitlint
-      message: 'ci(release): ${nextRelease.version} [skip ci]'
-  - '@eclass/semantic-release-sentry-releases'
+      message: "ci(release): ${nextRelease.version} [skip ci]"
+  - "@eclass/semantic-release-sentry-releases"
 branches: master

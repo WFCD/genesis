@@ -23,7 +23,7 @@ export default ({ call, response, guildId, ephemeral = false }: CustomCommandDef
       description: `Custom command answering to ${call}`,
     };
 
-    static async commandHandler(interaction: ChatInputCommandInteraction, ctx: CommandContext) {
+    static commandHandler = async (interaction: ChatInputCommandInteraction, ctx: CommandContext) => {
       const replyEphemeral = ephemeral || ctx.ephemerate;
       const isSingleImg =
         response.match(URL_RE) &&
@@ -40,5 +40,5 @@ export default ({ call, response, guildId, ephemeral = false }: CustomCommandDef
         return interaction.reply(withEphemeral(replyEphemeral, { files: [response] }));
       }
       return interaction.reply(withEphemeral(replyEphemeral, { content: response }));
-    }
+    };
   };

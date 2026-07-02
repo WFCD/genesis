@@ -26,32 +26,30 @@ type SuServerSession = {
 const sessions = new Map<string, SuServerSession>();
 
 export default class SuServerUI {
-  static rememberServerLookup(interaction: ChatInputCommandInteraction, guildId: string) {
+  static rememberServerLookup = (interaction: ChatInputCommandInteraction, guildId: string) => {
     sessions.set(interaction.id, {
       slash: interaction,
       guildId,
       userId: interaction.user.id,
       expiresAt: Date.now() + SESSION_TTL_MS,
     });
-  }
+  };
 
-  static serverComponents(slashInteractionId: string) {
-    return [
-      new ActionRowBuilder<ButtonBuilder>({
-        components: [
-          new ButtonBuilder()
-            .setCustomId(`${PREFIX}:${slashInteractionId}:settings`)
-            .setLabel('Show Settings')
-            .setStyle(ButtonStyle.Primary),
-        ],
-      }),
-    ];
-  }
+  static serverComponents = (slashInteractionId: string) => [
+    new ActionRowBuilder<ButtonBuilder>({
+      components: [
+        new ButtonBuilder()
+          .setCustomId(`${PREFIX}:${slashInteractionId}:settings`)
+          .setLabel('Show Settings')
+          .setStyle(ButtonStyle.Primary),
+      ],
+    }),
+  ];
 
-  static isComponent(customId: string) {
+  static isComponent = (customId: string) => {
     const parts = customId.split(':');
     return parts[0] === PREFIX && parts[2] === 'settings';
-  }
+  };
 
   static async handleComponent(button: ButtonInteraction, ctx: CommandContext) {
     const slashId = button.customId.split(':')[1];
@@ -70,7 +68,7 @@ export default class SuServerUI {
     return Collectors.dynamic(session.slash, pages, ctx);
   }
 
-  static async #resolveSettingsChannel(client: Client, ctx: CommandContext, guildId: string) {
+  static #resolveSettingsChannel = async (client: Client, ctx: CommandContext, guildId: string) => {
     const guilds = await ctx.settings.channels.getGuilds();
     for (const channelId of guilds[guildId]?.channels ?? []) {
       const channel = await client.channels.fetch(channelId).catch(() => undefined);
@@ -81,5 +79,5 @@ export default class SuServerUI {
     if (!guild) return undefined;
     await guild.channels.fetch().catch(() => undefined);
     return guild.channels.cache.find((entry) => entry.isTextBased());
-  }
+  };
 }

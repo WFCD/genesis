@@ -23,13 +23,13 @@ const indexKeys = {
 const toTitleCase = (str: string) =>
   str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 
-async function fetchJson(url: string) {
+const fetchJson = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText} for ${url}`);
   }
   return res.json();
-}
+};
 
 type CatalogItem = Record<string, unknown> & {
   uniqueName?: string;
@@ -80,11 +80,9 @@ export default class WorldStateClient {
     WorldStateClient.#ensureLoaded(logger);
   }
 
-  static whenReady() {
-    return WorldStateClient.#initPromise ?? Promise.resolve();
-  }
+  static whenReady = () => WorldStateClient.#initPromise ?? Promise.resolve();
 
-  static #ensureLoaded(logger: Logger) {
+  static #ensureLoaded = (logger: Logger) => {
     if (WorldStateClient.#warframeIndex) return;
     if (!WorldStateClient.#initPromise) {
       WorldStateClient.#initPromise = WorldStateClient.#warmCatalog(logger).catch((err) => {
@@ -92,17 +90,17 @@ export default class WorldStateClient {
         throw err;
       });
     }
-  }
+  };
 
-  static async #loadOrBuildIndex(kind: CatalogKind, items: CatalogItem[]) {
+  static #loadOrBuildIndex = async (kind: CatalogKind, items: CatalogItem[]) => {
     const cached = await readCache<CatalogIndexEntry[]>(indexKeys[kind], { maxAgeMs: apiCacheTtlMs });
     if (cached?.length) return cached;
     const index = buildIndex(items);
     writeCache(indexKeys[kind], index);
     return index;
-  }
+  };
 
-  static async #warmCatalog(logger: Logger) {
+  static #warmCatalog = async (logger: Logger) => {
     const [weapons, items, warframes, mods] = (await Promise.all([
       getOrFetch(weaponsUrl, () => fetchJson(weaponsUrl), { logger }),
       getOrFetch(itemsUrl, () => fetchJson(itemsUrl), { logger }),
@@ -116,9 +114,9 @@ export default class WorldStateClient {
       'weapons',
       mergeWeaponCatalog(weapons, items)
     );
-  }
+  };
 
-  static #ensureFullCatalog(kind: CatalogKind) {
+  static #ensureFullCatalog = (kind: CatalogKind) => {
     if (WorldStateClient.#fullCatalogCache.has(kind)) return;
     if (kind === 'warframes') {
       WorldStateClient.#fullCatalogCache.set(kind, readStaleCacheSync<CatalogItem[]>(warframesUrl) ?? []);
@@ -131,12 +129,12 @@ export default class WorldStateClient {
     const weapons = readStaleCacheSync<CatalogItem[]>(weaponsUrl) ?? [];
     const items = readStaleCacheSync<CatalogItem[]>(itemsUrl) ?? [];
     WorldStateClient.#fullCatalogCache.set(kind, mergeWeaponCatalog(weapons, items));
-  }
+  };
 
-  static #fullCatalog(kind: CatalogKind) {
+  static #fullCatalog = (kind: CatalogKind) => {
     WorldStateClient.#ensureFullCatalog(kind);
     return WorldStateClient.#fullCatalogCache.get(kind) ?? [];
-  }
+  };
 
   static ENDPOINTS = {
     WORLDSTATE: {
@@ -353,15 +351,13 @@ export default class WorldStateClient {
     return WorldStateClient.#weaponIndex?.filter((weapon) => weapon.type === type) ?? [];
   }
 
-  static catalogReady() {
-    return Boolean(
-      WorldStateClient.#warframeIndex?.length &&
+  static catalogReady = () => Boolean(
+    WorldStateClient.#warframeIndex?.length &&
       WorldStateClient.#weaponIndex?.length &&
       WorldStateClient.#modIndex?.length
-    );
-  }
+  );
 
-  static #filterCatalog<T extends { name?: string; uniqueName?: string }>(items: T[], filter = '') {
+  static #filterCatalog = <T extends { name?: string; uniqueName?: string }>(items: T[], filter = '') => {
     const query = filter.trim().toLowerCase();
     if (!query) return items;
     return items.filter(
@@ -373,7 +369,7 @@ export default class WorldStateClient {
           .toLowerCase()
           .includes(query)
     );
-  }
+  };
 
   resolveWarframe(value: string) {
     if (!value) return undefined;
@@ -408,18 +404,14 @@ export default class WorldStateClient {
     return this.mod(value)?.[0];
   }
 
-  listWarframes(filter = '') {
-    return WorldStateClient.#filterCatalog(WorldStateClient.#warframeIndex ?? [], filter);
-  }
+  listWarframes = (filter = '') => WorldStateClient.#filterCatalog(WorldStateClient.#warframeIndex ?? [], filter);
 
-  listWeapons(filter = '') {
-    return WorldStateClient.#filterCatalog(WorldStateClient.#weaponIndex ?? [], filter);
-  }
+  listWeapons = (filter = '') => WorldStateClient.#filterCatalog(WorldStateClient.#weaponIndex ?? [], filter);
 
-  listMods(filter = '', types?: string[]) {
+  listMods = (filter = '', types?: string[]) => {
     const pool = types?.length
       ? (WorldStateClient.#modIndex?.filter((mod) => mod.type && types.includes(mod.type)) ?? [])
       : (WorldStateClient.#modIndex ?? []);
     return WorldStateClient.#filterCatalog(pool, filter);
-  }
+  };
 }

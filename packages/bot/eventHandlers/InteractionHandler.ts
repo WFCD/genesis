@@ -88,7 +88,7 @@ export default class InteractionHandler extends BaseHandler {
     if (!skipInit) void this.init();
   }
 
-  static async loadFiles(loadedCommands: InteractionConstructor[] = []): Promise<InteractionConstructor[]> {
+  static loadFiles = async (loadedCommands: InteractionConstructor[] = []): Promise<InteractionConstructor[]> => {
     const handlersDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../interactions');
     let reloadedCommands = loadedCommands;
 
@@ -125,7 +125,7 @@ export default class InteractionHandler extends BaseHandler {
     ).filter((h): h is InteractionConstructor => Boolean(h));
 
     return reloadedCommands;
-  }
+  };
 
   get loadedCommands() {
     return this.#loadedCommands;
@@ -149,15 +149,15 @@ export default class InteractionHandler extends BaseHandler {
     return true;
   }
 
-  static sanitizeCommandDefinition(command: InteractionCommandDefinition) {
+  static sanitizeCommandDefinition = (command: InteractionCommandDefinition) => {
     const sanitized = { ...command } as Record<string, unknown>;
     delete sanitized.ownerOnly;
     delete sanitized.elevated;
     delete sanitized.enabled;
     return sanitized as InteractionCommandDefinition;
-  }
+  };
 
-  static buildCommandPayloads(loadedFiles: InteractionConstructor[]) {
+  static buildCommandPayloads = (loadedFiles: InteractionConstructor[]) => {
     const payloads = loadedFiles
       .filter((cmd) => cmd.enabled && !cmd.ownerOnly)
       .map((cmd) => (cmd?.command?.name === 'interaction' ? undefined : cmd.command || cmd.commands))
@@ -170,7 +170,7 @@ export default class InteractionHandler extends BaseHandler {
     }
 
     return payloads;
-  }
+  };
 
   async #removeGuildScopedSu() {
     const controlGuildId = process.env.CONTROL_GUILD_ID?.trim();
@@ -333,7 +333,10 @@ export default class InteractionHandler extends BaseHandler {
     await this.#setGuildPerms(guild, value);
   }
 
-  static async loadCommands(commands: ApplicationCommandManager | undefined, loadedFiles: InteractionConstructor[]) {
+  static loadCommands = async (
+    commands: ApplicationCommandManager | undefined,
+    loadedFiles: InteractionConstructor[],
+  ) => {
     const cmds = InteractionHandler.buildCommandPayloads(loadedFiles);
     if (whitelistedGuilds.length) {
       await Promise.all(
@@ -348,7 +351,7 @@ export default class InteractionHandler extends BaseHandler {
     } else {
       await commands.set(cmds);
     }
-  }
+  };
 
   /**
    * Load custom interactions
@@ -432,13 +435,15 @@ export default class InteractionHandler extends BaseHandler {
     return { ctx, channel, thread };
   }
 
-  #canManageGuild(interaction: ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction) {
+  #canManageGuild = (
+    interaction: ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction,
+  ) => {
     const memberPermissions =
       interaction.member && 'permissions' in interaction.member ? interaction.member.permissions : undefined;
     return memberPermissions instanceof PermissionsBitField
       ? memberPermissions.has(PermissionFlagsBits.ManageGuild)
       : false;
-  }
+  };
 
   async execute(...args: unknown[]) {
     const interaction = args[0];

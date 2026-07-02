@@ -14,7 +14,7 @@ const forbidden = [
   /node:fs/,
 ];
 
-function walk(dir, files = []) {
+const walk = (dir, files = []) => {
   for (const entry of readdirSync(dir)) {
     const path = join(dir, entry);
     const stat = statSync(path);
@@ -22,7 +22,7 @@ function walk(dir, files = []) {
     else if (/\.(js|mjs|cjs)$/.test(entry)) files.push(path);
   }
   return files;
-}
+};
 
 if (!statSync(staticDir, { throwIfNoEntry: false })) {
   console.error('Missing .next/static — run `npm run build` first.');

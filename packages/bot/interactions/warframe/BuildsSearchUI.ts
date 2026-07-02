@@ -64,43 +64,37 @@ const overframeLinkRow = (searchUrl: string) =>
   );
 
 export default class BuildsSearchUI {
-  static isManageComponent(customId: string) {
-    return customId.startsWith(`${PREFIX}:`);
-  }
+  static isManageComponent = (customId: string) => customId.startsWith(`${PREFIX}:`);
 
-  static #getSession(userId: string) {
+  static #getSession = (userId: string) => {
     const session = sessions.get(sessionKey(userId));
     if (!session || session.expiresAt < Date.now()) {
       sessions.delete(sessionKey(userId));
       return undefined;
     }
     return session;
-  }
+  };
 
-  static #touchSession(session: SearchSession) {
+  static #touchSession = (session: SearchSession) => {
     session.expiresAt = Date.now() + SESSION_TTL_MS;
     sessions.set(sessionKey(session.userId), session);
-  }
+  };
 
-  static #searchResult(session: SearchSession): OverframeSearchResult {
-    return {
-      query: session.query,
-      itemId: session.itemId,
-      searchUrl: session.searchUrl,
-      count: session.count,
-      offset: session.offset,
-      limit: PAGE_SIZE,
-      results: session.results,
-    };
-  }
+  static #searchResult = (session: SearchSession): OverframeSearchResult => ({
+    query: session.query,
+    itemId: session.itemId,
+    searchUrl: session.searchUrl,
+    count: session.count,
+    offset: session.offset,
+    limit: PAGE_SIZE,
+    results: session.results,
+  });
 
-  static #selectOptions(session: SearchSession) {
-    return session.results.map((build) => ({
-      label: build.title.slice(0, 100),
-      description: `★ ${build.score} • ${build.author} • ${build.formas} forma`.slice(0, 100),
-      value: String(build.id),
-    }));
-  }
+  static #selectOptions = (session: SearchSession) => session.results.map((build) => ({
+    label: build.title.slice(0, 100),
+    description: `★ ${build.score} • ${build.author} • ${build.formas} forma`.slice(0, 100),
+    value: String(build.id),
+  }));
 
   static #listComponents(session: SearchSession) {
     const rows = [];
@@ -139,22 +133,20 @@ export default class BuildsSearchUI {
     };
   }
 
-  static #detailComponents(session: SearchSession, buildUrl: string) {
-    return {
-      components: [
-        new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder()
-            .setCustomId(buildId(session.userId, 'back'))
-            .setLabel('Back to results')
-            .setStyle(ButtonStyle.Secondary),
-          new ButtonBuilder().setLabel('Open build on Overframe').setStyle(ButtonStyle.Link).setURL(buildUrl),
-          new ButtonBuilder().setLabel('Browse on Overframe').setStyle(ButtonStyle.Link).setURL(session.searchUrl)
-        ),
-      ],
-    };
-  }
+  static #detailComponents = (session: SearchSession, buildUrl: string) => ({
+    components: [
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId(buildId(session.userId, 'back'))
+          .setLabel('Back to results')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setLabel('Open build on Overframe').setStyle(ButtonStyle.Link).setURL(buildUrl),
+        new ButtonBuilder().setLabel('Browse on Overframe').setStyle(ButtonStyle.Link).setURL(session.searchUrl)
+      ),
+    ],
+  });
 
-  static async #loadPage(session: SearchSession) {
+  static #loadPage = async (session: SearchSession) => {
     const page = await searchOverframeBuilds({
       query: session.query,
       itemId: session.itemId,
@@ -165,7 +157,7 @@ export default class BuildsSearchUI {
     session.count = page.count;
     session.results = page.results;
     session.searchUrl = page.searchUrl;
-  }
+  };
 
   static async start(interaction: ChatInputCommandInteraction, ctx: CommandContext, query: string) {
     const trimmed = query.trim();

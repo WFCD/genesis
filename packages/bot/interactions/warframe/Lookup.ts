@@ -76,7 +76,7 @@ export default class Lookup extends Interaction {
    * @param {Object} ctx context object
    * @returns {Promise<*>}
    */
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     // args
     const subcommand = interaction.options.getSubcommand();
     const { options } = interaction;
@@ -172,5 +172,5 @@ export default class Lookup extends Interaction {
       default:
         return interaction.editReply('ok');
     }
-  }
+  };
 }

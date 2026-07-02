@@ -27,7 +27,7 @@ export default class WhereIs extends Interaction {
     options: queryOpt,
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     let query = interaction?.options?.get('query')?.value?.toLowerCase();
     const raw = await ctx.ws.search(ENDPOINTS.SEARCH.DROPS, query);
     const data = raw.map((result) => {
@@ -71,5 +71,5 @@ export default class WhereIs extends Interaction {
     }
 
     return browseWhereisResults(interaction, ctx, results, query);
-  }
+  };
 }

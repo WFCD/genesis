@@ -144,7 +144,7 @@ export default class WorkerCacheRepository {
     await this.deps.query(SQL`DELETE FROM worker_cache_jobs`);
   }
 
-  async enqueueGuildRefresh(guildId: string, scope: WorkerCacheRefreshStamp | 'all') {
+  enqueueGuildRefresh = async (guildId: string, scope: WorkerCacheRefreshStamp | 'all') => {
     const scopes = scope === 'all' ? REFRESH_SCOPES : [scope];
     await Promise.all(
       scopes.map(async (entry) => {
@@ -160,9 +160,9 @@ export default class WorkerCacheRepository {
         await Promise.all(locales.map((locale) => this.enqueueTrackables(guildId, locale, null)));
       })
     );
-  }
+  };
 
-  async bumpRefreshStamp(scope: WorkerCacheRefreshStamp | 'all') {
+  bumpRefreshStamp = async (scope: WorkerCacheRefreshStamp | 'all') => {
     const scopes = scope === 'all' ? REFRESH_SCOPES : [scope];
     await Promise.all(
       scopes.map((entry) =>
@@ -172,7 +172,7 @@ export default class WorkerCacheRepository {
           ON DUPLICATE KEY UPDATE requested_at = CURRENT_TIMESTAMP`)
       )
     );
-  }
+  };
 
   async getRefreshStamps(): Promise<Record<WorkerCacheRefreshStamp, number>> {
     const query = SQL`SELECT scope, requested_at FROM worker_cache_refresh_stamps`;

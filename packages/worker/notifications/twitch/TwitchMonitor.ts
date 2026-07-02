@@ -71,7 +71,7 @@ export default class TwitchMonitor extends EventEmitter {
    * Start the Twitch monitor
    * @returns {Promise}
    */
-  async start() {
+  start = async () => {
     if (!channels.length) {
       logger.warn('No channels configured', 'TM');
       return;
@@ -101,7 +101,7 @@ export default class TwitchMonitor extends EventEmitter {
       `(${checkIntervalMs}ms interval) Configured stream status polling for channels: ${channels.join(', ')}`,
       'TM'
     );
-  }
+  };
 
   async refresh(reason) {
     const now = moment();

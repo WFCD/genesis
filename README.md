@@ -20,7 +20,7 @@ Thank you to <a href="https://www.jetbrains.com/" alt="JetBrains"><img src="/pac
 
 * <a href="https://www.jetbrains.com/webstorm/" alt="WebStorm"><img src="/packages/shared/resources/icon-webstorm.svg" height="16px" /> WebStorm</a>
 
-Feel free to submit a pull request. We are working on build checks and tests. ESLint and Prettier run via Husky on commit (`lint-staged` + root [`.prettierrc`](.prettierrc)).
+Feel free to submit a pull request. We are working on build checks and tests. ESLint (with `@stylistic/eslint-plugin` formatting) runs via Husky on commit (`lint-staged` + root [`eslint.config.mjs`](eslint.config.mjs)).
 
 
 ## Thanks, Discord... Legalese things

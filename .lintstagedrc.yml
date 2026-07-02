@@ -1,9 +1,8 @@
-'*.{js,ts,tsx,mjs,cjs}':
+"*.{js,ts,tsx,mjs,cjs}":
   - eslint --cache --fix --no-warn-ignored
   - bash -c "npm run build:ts && npm test"
+"*.{json,yml,yaml}":
+  - eslint --cache --fix --no-warn-ignored
 package*.json:
-  - prettier --write
   - npm dedupe
   - npx sort-package-json
-'*.{json,yml,yaml},!package*.json':
-  - prettier --write

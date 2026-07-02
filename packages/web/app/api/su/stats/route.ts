@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db';
 import { requireOwner } from '@/lib/auth/ownerAuth';
 
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireOwner();
     const body = (await request.json()) as { commandId?: string };
@@ -19,4 +19,4 @@ export async function POST(request: Request) {
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
-}
+};

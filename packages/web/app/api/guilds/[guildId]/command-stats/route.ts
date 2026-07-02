@@ -4,7 +4,7 @@ import { requireGuildAccess } from '@/lib/auth/apiAuth';
 
 const TOP_COMMAND_LIMIT = 10;
 
-export async function GET(_request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const GET = async (_request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'statistics');
@@ -18,4 +18,4 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
     console.error('[genesis-web] Failed to load command stats:', error);
     return NextResponse.json({ error: 'Failed to load command stats' }, { status: 500 });
   }
-}
+};

@@ -84,19 +84,17 @@ export class StatisticsService {
   }
 }
 
-export function createServices(settings: Database) {
-  return {
-    authz: new AuthzService(settings),
-    channels: new ChannelSettingsService(settings),
-    tracking: new TrackingSettingsService(settings),
-    pings: new PingSettingsService(settings),
-    rooms: new RoomSettingsService(settings),
-    permissions: new PermissionSettingsService(settings),
-    customCommands: new CustomCommandSettingsService(settings),
-    welcome: new WelcomeSettingsService(settings),
-    guild: new GuildSettingsService(settings),
-    statistics: new StatisticsService(settings),
-  };
-}
+export const createServices = (settings: Database) => ({
+  authz: new AuthzService(settings),
+  channels: new ChannelSettingsService(settings),
+  tracking: new TrackingSettingsService(settings),
+  pings: new PingSettingsService(settings),
+  rooms: new RoomSettingsService(settings),
+  permissions: new PermissionSettingsService(settings),
+  customCommands: new CustomCommandSettingsService(settings),
+  welcome: new WelcomeSettingsService(settings),
+  guild: new GuildSettingsService(settings),
+  statistics: new StatisticsService(settings),
+});
 
 export type Services = ReturnType<typeof createServices>;

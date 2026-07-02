@@ -4,6 +4,7 @@
     "checkJs": false,
     "strict": false,
     "noEmit": true,
+    "types": ["mocha", "chai", "node"],
     "paths": {
       "#shared/*": ["./packages/shared/*"]
     }

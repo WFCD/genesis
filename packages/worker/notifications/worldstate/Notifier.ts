@@ -532,25 +532,23 @@ export default class Notifier {
     });
   }
 
-  async #sendAlerts(newAlerts, deps) {
-    return Promise.mapSeries(newAlerts, async (alert) => {
-      let thumb;
-      try {
-        thumb =
-          !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
+  #sendAlerts = async (newAlerts, deps) => Promise.mapSeries(newAlerts, async (alert) => {
+    let thumb;
+    try {
+      thumb =
+        !(alert.rewardTypes.includes('reactor') && alert.rewardTypes.includes('catalyst')) &&
           (await getThumbnailForItem(rewardString(alert.mission.reward, false)));
-      } catch (e) {
-        logger.error(e);
-      }
-      return this.#standardBroadcast(alert, {
-        ...deps,
-        Embed: embeds.Alert,
-        type: 'alerts',
-        items: alert.rewardTypes,
-        thumb,
-      });
+    } catch (e) {
+      logger.error(e);
+    }
+    return this.#standardBroadcast(alert, {
+      ...deps,
+      Embed: embeds.Alert,
+      type: 'alerts',
+      items: alert.rewardTypes,
+      thumb,
     });
-  }
+  });
 
   async #sendArbitration(arbitration, deps) {
     if (!isActiveArbitration(arbitration)) return;
@@ -626,7 +624,7 @@ export default class Notifier {
     return this.#standardBroadcast(newFeaturedDeals, { Embed: embeds.Sales, type: 'deals.featuredDeals', ...deps });
   }
 
-  async #sendFissures(newFissures, deps) {
+  #sendFissures = async (newFissures, deps) => {
     try {
       return Promise.mapSeries(newFissures, async (fissure) => {
         await this.#standardBroadcast(fissure, { ...deps, Embed: embeds.Fissure, type: fissureTypeKey(fissure) });
@@ -638,9 +636,9 @@ export default class Notifier {
     } catch (e) {
       logger.error(`tried to send fissures (${newFissures.map((f) => f.id).join(', ')} but failed: ${e}`);
     }
-  }
+  };
 
-  async #sendInvasions(newInvasions, deps) {
+  #sendInvasions = async (newInvasions, deps) => {
     const type = 'invasions';
     return Promise.mapSeries(newInvasions, async (invasion) =>
       this.#standardBroadcast(invasion, {
@@ -652,7 +650,7 @@ export default class Notifier {
         claimId: invasion.id,
       })
     );
-  }
+  };
 
   async #sendNews(newNews, deps, type) {
     type = type || 'news';
@@ -721,7 +719,7 @@ export default class Notifier {
     return this.#sendNews(newStreams, deps, 'streams');
   }
 
-  async #sendSyndicates(newSyndicates, deps) {
+  #sendSyndicates = async (newSyndicates, deps) => {
     if (!newSyndicates || !newSyndicates[0]) return;
     return Promise.mapSeries(syndicates, async ({ key, display, prefix, notifiable }) => {
       if (!notifiable) return undefined;
@@ -747,18 +745,16 @@ export default class Notifier {
         },
       });
     });
-  }
+  };
 
-  async #sendTweets(newTweets, deps) {
-    return Promise.mapSeries(newTweets, async (t) =>
-      this.#standardBroadcast(t, {
-        Embed: embeds.Tweet,
-        type: t.id,
-        claimId: t.uniqueId,
-        ...deps,
-      })
-    );
-  }
+  #sendTweets = async (newTweets, deps) => Promise.mapSeries(newTweets, async (t) =>
+    this.#standardBroadcast(t, {
+      Embed: embeds.Tweet,
+      type: t.id,
+      claimId: t.uniqueId,
+      ...deps,
+    })
+  );
 
   async #sendUpdates(newNews, deps) {
     return this.#sendNews(newNews, deps, 'updates');

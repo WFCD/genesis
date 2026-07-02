@@ -76,7 +76,7 @@ export default class TwitchClient {
    * Handle twitch API errors
    * @param  {TwitchError} err error reply
    */
-  static #handleApiError(err) {
+  static #handleApiError = (err) => {
     const res = err.response || {};
 
     if (res.data && res.data.message) {
@@ -87,7 +87,7 @@ export default class TwitchClient {
     } else {
       logger.debug(`API request failed with error: ${err.message || err}`, 'TwitchApi');
     }
-  }
+  };
 
   /**
    * Get Data from the Twitch API

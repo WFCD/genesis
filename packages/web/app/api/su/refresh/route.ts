@@ -5,7 +5,7 @@ import { requireOwner } from '@/lib/auth/ownerAuth';
 
 const SCOPES = new Set(['pings', 'trackables', 'guild', 'all']);
 
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireOwner();
     const body = (await request.json()) as { scope?: string; guildId?: string };
@@ -34,4 +34,4 @@ export async function POST(request: Request) {
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to refresh cache' }, { status: 500 });
   }
-}
+};

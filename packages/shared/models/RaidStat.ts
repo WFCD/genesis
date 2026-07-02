@@ -1,40 +1,34 @@
 const ms30d = 2592000000;
 
-function timeToSeconds(time: string | undefined) {
+const timeToSeconds = (time: string | undefined) => {
   if (time === undefined) {
     return 0;
   }
   const a = time.split(':');
   return +a[0] * 60 * 60 + (+a[1] * 60 + +a[2]);
-}
+};
 
-function safeNumber(value: number) {
-  return Number.isNaN(value) ? 0 : value;
-}
+const safeNumber = (value: number) => Number.isNaN(value) ? 0 : value;
 
-function formatTime(n: number) {
+const formatTime = (n: number) => {
   const hours = safeNumber(Math.floor(n / 60 / 60));
   const minutes = safeNumber(Math.floor((n - hours * 60 * 60) / 60));
   const seconds = safeNumber(Math.round(n - hours * 60 * 60 - minutes * 60));
   const h = hours > 0 ? `${hours < 10 ? `0${hours}` : hours}:` : '';
   return `${h + (minutes < 10 ? `0${minutes}` : minutes)}:${seconds < 10 ? `0${seconds}` : seconds}`;
-}
+};
 
-function sortNumber(a: number, b: number) {
-  return a - b;
-}
+const sortNumber = (a: number, b: number) => a - b;
 
-function getBestTime(times: number[]) {
-  return formatTime(times.sort(sortNumber)[0]);
-}
+const getBestTime = (times: number[]) => formatTime(times.sort(sortNumber)[0]);
 
-function getAverageTime(times: number[]) {
+const getAverageTime = (times: number[]) => {
   let sum = 0;
   for (let i = 0; i < times.length; i += 1) {
     sum += parseInt(String(times[i]), 10);
   }
   return formatTime(sum / times.length);
-}
+};
 
 type RaidEntry = {
   type: string;
@@ -77,7 +71,7 @@ export default class RaidStat {
     this.thirty_average = getAverageTime(this.thirty_times);
   }
 
-  calculateStats(json: RaidEntry[], type?: string) {
+  calculateStats = (json: RaidEntry[], type?: string) => {
     const now = Date.now();
     json.forEach((raid) => {
       const raidDate = new Date(raid.leaderboardGenerated).getTime();
@@ -103,7 +97,7 @@ export default class RaidStat {
         });
       }
     });
-  }
+  };
 
   toString() {
     return (

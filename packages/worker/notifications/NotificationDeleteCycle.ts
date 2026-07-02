@@ -24,7 +24,7 @@ const isInvalidWebhook = (error: unknown) =>
  * Delete expired webhook notification messages in bounded batches.
  * @param {import('#shared/settings/Database').default} settings
  */
-export async function runNotificationDeleteCycle(settings) {
+export const runNotificationDeleteCycle = async (settings) => {
   if (deleteCycleActive) {
     logger.debug('Skipping notification delete cycle... already running');
     return;
@@ -89,6 +89,6 @@ export async function runNotificationDeleteCycle(settings) {
   } finally {
     deleteCycleActive = false;
   }
-}
+};
 
 export default runNotificationDeleteCycle;

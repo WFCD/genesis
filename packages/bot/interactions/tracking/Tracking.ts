@@ -208,7 +208,7 @@ export default class Tracking extends Interaction {
    * @param {Discord.TextChannel} [channel] to set up
    * @param {Discord.ThreadChannel} [thread] to post to
    */
-  static async #generateWebhook(interaction, ctx, channel, thread?) {
+  static #generateWebhook = async (interaction, ctx, channel, thread?) => {
     channel = channel || interaction.channel;
     if (channel.permissionsFor(interaction.client.user).has(PermissionFlagsBits.ManageWebhooks)) {
       let webhook;
@@ -283,5 +283,5 @@ export default class Tracking extends Interaction {
       ctx.logger.error(e);
       await upd.edit(`${emojify('red_tick')} Channel check failed, contact support`);
     }
-  }
+  };
 }

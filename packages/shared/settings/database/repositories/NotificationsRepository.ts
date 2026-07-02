@@ -48,9 +48,9 @@ export default class NotificationsRepository {
     return this.deps.scope.toLowerCase() === 'worker' ? 0 : this.deps.clusterId;
   }
 
-  private dedupeNotificationTargets(
-    rows: Array<{ channelId: string; typeThreadId?: string | number; itemThreadId?: string | number }>
-  ): NotificationTarget[] {
+  dedupeNotificationTargets = (
+    rows: Array<{ channelId: string; typeThreadId?: string | number; itemThreadId?: string | number }>,
+  ): NotificationTarget[] => {
     const seen = new Set<string>();
     const targets: NotificationTarget[] = [];
 
@@ -67,7 +67,7 @@ export default class NotificationsRepository {
     }
 
     return targets;
-  }
+  };
 
   async addPings(guild: GuildRef, opts: TrackingOptions, text: string) {
     const events = Array.isArray(opts.events) ? opts.events : [];
@@ -113,7 +113,7 @@ export default class NotificationsRepository {
     }
   }
 
-  async getAllPings() {
+  getAllPings = async () => {
     let globalPings: Record<string, string> = {};
     await Promise.all(
       pingables.map(async (plist) => {
@@ -125,7 +125,7 @@ export default class NotificationsRepository {
       })
     );
     return globalPings;
-  }
+  };
 
   async getGroupPings(plist: string) {
     const pings: Record<string, string> = {};
@@ -148,7 +148,7 @@ export default class NotificationsRepository {
   }
 
   /** Ping cache slice for one guild (`${guildId}:${pingablesGroup}` keys). */
-  async getGuildPingCacheSlice(guildId: string): Promise<Record<string, string>> {
+  getGuildPingCacheSlice = async (guildId: string): Promise<Record<string, string>> => {
     const slice: Record<string, string> = {};
     await Promise.all(
       pingables.map(async (plist) => {
@@ -164,7 +164,7 @@ export default class NotificationsRepository {
       })
     );
     return slice;
-  }
+  };
 
   async getPingsForGuild(guild: GuildRef) {
     if (!guild?.id) return [];

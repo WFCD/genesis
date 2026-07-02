@@ -18,7 +18,7 @@ const connectionOpts = () => ({
 export const isTestMariaDbEnabled = () => process.env.TEST_MARIADB === '1';
 
 /** Wait for MariaDB to accept connections (CI service startup). */
-export async function waitForMariaDB(maxMs = 60_000) {
+export const waitForMariaDB = async (maxMs = 60_000) => {
   const started = Date.now();
   const opts = connectionOpts();
   let lastError: Error | undefined;
@@ -38,27 +38,27 @@ export async function waitForMariaDB(maxMs = 60_000) {
   throw new Error(
     `MariaDB not ready at ${opts.host}:${opts.port}/${opts.database} after ${maxMs}ms: ${lastError?.message}`
   );
-}
+};
 
 /** Connect, apply schema + integrations, and expose the database facade. */
-export async function setupTestDatabase() {
+export const setupTestDatabase = async () => {
   await ensureLocalTestMariaDb();
   await waitForMariaDB();
   testDatabase = await Database.build();
   await testDatabase.guilds.createSchema();
   return testDatabase;
-}
+};
 
-export function getTestDatabase(): Database {
+export const getTestDatabase = (): Database => {
   if (!testDatabase) {
     throw new Error('Test database not initialized — set TEST_MARIADB=1 and ensure MariaDB is running');
   }
   return testDatabase;
-}
+};
 
-export async function teardownTestDatabase() {
+export const teardownTestDatabase = async () => {
   if (testDatabase) {
     await testDatabase.db.end();
     testDatabase = undefined;
   }
-}
+};

@@ -5,15 +5,15 @@ import type { AuthzAction } from '#shared/services/AuthzService';
 import { fetchGuildMemberRoles, isBotInGuild } from '@/lib/discord';
 import { getServices } from '@/lib/db';
 
-export async function requireSession() {
+export const requireSession = async () => {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Response('Unauthorized', { status: 401 });
   }
   return session;
-}
+};
 
-export async function requireGuildAccess(guildId: string, action: AuthzAction, channelId?: string) {
+export const requireGuildAccess = async (guildId: string, action: AuthzAction, channelId?: string) => {
   const session = await requireSession();
   const botPresent = await isBotInGuild(guildId);
   if (!botPresent) {
@@ -51,4 +51,4 @@ export async function requireGuildAccess(guildId: string, action: AuthzAction, c
   }
 
   return { session, services, memberRoles };
-}
+};

@@ -172,11 +172,9 @@ const MISSION_LABELS: Record<string, string> = {
   voidarmageddon: 'Void Armageddon',
 };
 
-function titleCase(value: string) {
-  return value.replace(/\b\w/g, (char) => char.toUpperCase());
-}
+const titleCase = (value: string) => value.replace(/\b\w/g, (char) => char.toUpperCase());
 
-function humanizeSegment(segment: string) {
+const humanizeSegment = (segment: string) => {
   if (SEGMENT_LABELS[segment]) return SEGMENT_LABELS[segment];
   if (TIER_LABELS[segment]) return TIER_LABELS[segment];
   if (MISSION_LABELS[segment]) return MISSION_LABELS[segment];
@@ -195,20 +193,16 @@ function humanizeSegment(segment: string) {
     .trim();
 
   return titleCase(spaced);
-}
+};
 
-function formatNotificationKey(key: string) {
+const formatNotificationKey = (key: string) => {
   const separator = key.includes(',') ? ',' : key.includes('.') ? '.' : null;
   if (!separator) return humanizeSegment(key);
   return key.split(separator).map(humanizeSegment).join(' · ');
-}
+};
 
 /** Turn internal trackable keys into readable labels. */
-export function formatTrackableLabel(key: string) {
-  return formatNotificationKey(key);
-}
+export const formatTrackableLabel = (key: string) => formatNotificationKey(key);
 
 /** Turn ping target keys (dot- or comma-separated) into readable labels. */
-export function formatPingableLabel(key: string) {
-  return formatNotificationKey(key);
-}
+export const formatPingableLabel = (key: string) => formatNotificationKey(key);

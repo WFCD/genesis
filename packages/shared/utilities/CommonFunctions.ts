@@ -29,12 +29,12 @@ const {
  * @param {Record<string, unknown>} [options] other reply options
  * @returns {Record<string, unknown>}
  */
-export function withEphemeral(ephemeral: boolean | undefined, options: Record<string, unknown> = {}) {
+export const withEphemeral = (ephemeral: boolean | undefined, options: Record<string, unknown> = {}) => {
   const { ephemeral: _ignored, flags, ...rest } = options;
   if (!ephemeral) return rest;
 
   return { ...rest, flags: ((flags as number | undefined) ?? 0) | MessageFlags.Ephemeral };
-}
+};
 
 /**
  * API base path
@@ -392,10 +392,10 @@ export const createGroupedArray = (arr, chunkSize = 10) => {
  * @param  {Discord.Message} message message to fetch data from
  * @returns {string[]}         Array of matches
  */
-export function getEventsOrItems(message) {
+export const getEventsOrItems = (message) => {
   const matches = message.strippedContent.match(eventsOrItems);
   return matches || [];
-}
+};
 
 /**
  * Simple string filter for filtering empty or undefined strings from an array
@@ -877,7 +877,7 @@ export const constructItemEmbeds = (types) => {
   return packFieldsIntoEmbeds(fields, 'Item Trackables');
 };
 
-export async function sendTrackInstructionEmbeds({ message, prefix, call, settings }) {
+export const sendTrackInstructionEmbeds = async ({ message, prefix, call, settings }) => {
   const pages = [];
   pages.push({
     type: 'rich',
@@ -927,7 +927,7 @@ export async function sendTrackInstructionEmbeds({ message, prefix, call, settin
     return setupPages(pages, { message, settings });
   }
   return undefined;
-}
+};
 
 const DAMAGE_EMOJI_KEYS = new Set([
   'electricity',

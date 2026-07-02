@@ -1,5 +1,5 @@
-export function readFromProcess(key: string, fallback?: string) {
+export const readFromProcess = (key: string, fallback?: string) => {
   const value = process.env[key];
   if (value === undefined || value === '') return fallback;
   return value;
-}
+};

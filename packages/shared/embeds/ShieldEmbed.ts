@@ -5,15 +5,11 @@ import type { EmbedBuildOptions } from './embedOptions';
 
 export default class ShieldEmbed extends BaseEmbed {
   static #corpus = `${assetBase}/img/corpus.png`;
-  static #shieldCalc(baseShields, baseLevel, currentLevel) {
-    return (
-      parseFloat(baseShields) +
+  static #shieldCalc = (baseShields, baseLevel, currentLevel) => (
+    parseFloat(baseShields) +
       (parseFloat(currentLevel) - parseFloat(baseLevel)) ** 2 * 0.0075 * parseFloat(baseShields)
-    ).toFixed(2);
-  }
-  static #shieldString(shields, level, i18n) {
-    return i18n`At level ${parseFloat(level).toFixed(0)}, your enemy would have ${shields} Shields.`;
-  }
+  ).toFixed(2);
+  static #shieldString = (shields, level, i18n) => i18n`At level ${parseFloat(level).toFixed(0)}, your enemy would have ${shields} Shields.`;
   constructor(params, { i18n }: EmbedBuildOptions) {
     super();
     this.color = params && params.length > 3 ? 0x00ff00 : 0xff0000;

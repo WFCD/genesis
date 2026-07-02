@@ -30,7 +30,10 @@ const hasDisplayableImage = (post: RedditPost) => {
 };
 
 /** Pick a random hot post from a subreddit (replaces blocked `random-reddit` fetches). */
-export async function fetchRandomSubredditPost(subreddit: string, opts: { imageOnly?: boolean; logger?: Logger } = {}) {
+export const fetchRandomSubredditPost = async (
+  subreddit: string,
+  opts: { imageOnly?: boolean; logger?: Logger } = {},
+) => {
   const sub = encodeURIComponent(subreddit.replace(/^r\//i, ''));
   const url = `https://www.reddit.com/r/${sub}/hot.json?limit=100&raw_json=1`;
   const userAgent = process.env.REDDIT_USER_AGENT || defaultUserAgent;
@@ -61,10 +64,10 @@ export async function fetchRandomSubredditPost(subreddit: string, opts: { imageO
 
   opts.logger?.debug(`Reddit r/${subreddit}: picked from ${pool.length} candidate posts`);
   return pool[Math.floor(Math.random() * pool.length)];
-}
+};
 
 /** Best-effort image URL for embeds (gallery, preview, direct link). */
-export function resolvePostImageUrl(post: RedditPost): string | undefined {
+export const resolvePostImageUrl = (post: RedditPost): string | undefined => {
   if (post.is_gallery && post.media_metadata && post.gallery_data?.items?.length) {
     const item = post.gallery_data.items[Math.floor(Math.random() * post.gallery_data.items.length)];
     const meta = post.media_metadata[item.media_id];
@@ -81,4 +84,4 @@ export function resolvePostImageUrl(post: RedditPost): string | undefined {
   if (post.thumbnail?.startsWith('http')) return post.thumbnail;
 
   return undefined;
-}
+};

@@ -52,7 +52,7 @@ export default class Templates extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const subcommand = interaction.options.getSubcommand();
     const channel = interaction?.options?.getChannel?.('template_channel');
     const template = interaction?.options?.getString('template');
@@ -140,5 +140,5 @@ export default class Templates extends Interaction {
         break;
     }
     return interaction.reply(ctx.i18n`hmmm, something went wrong...`);
-  }
+  };
 }

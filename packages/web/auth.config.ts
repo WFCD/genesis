@@ -4,7 +4,7 @@ import Discord from 'next-auth/providers/discord';
 import { buildEnv, type WebEnv } from './lib/env/build';
 import { readFromProcess } from './lib/env/readFromProcess';
 
-export function createAuthConfig(env: WebEnv) {
+export const createAuthConfig = (env: WebEnv) => {
   const isDev = env.nodeEnv === 'development';
 
   return {
@@ -44,14 +44,14 @@ export function createAuthConfig(env: WebEnv) {
         }
       : {}),
     callbacks: {
-      authorized({ auth, request: { nextUrl } }) {
+      authorized: ({ auth, request: { nextUrl } }) => {
         const path = nextUrl.pathname;
         if (path === '/' || path === '/privacy' || path === '/tos') return true;
         return !!auth?.user;
       },
     },
   } satisfies NextAuthConfig;
-}
+};
 
 /** Proxy/auth config — process.env only (no parent .env file loader). */
 export const authConfig = createAuthConfig(buildEnv(readFromProcess));

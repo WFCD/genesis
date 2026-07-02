@@ -7,9 +7,9 @@ services:
       MARIADB_USER: genesis
       MARIADB_PASSWORD: genesis
     ports:
-      - '3306:3306'
+      - "3306:3306"
     healthcheck:
-      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -95,7 +95,7 @@ services:
       AUTH_URL: http://localhost:3131
       PORT: 3131
     ports:
-      - '3131:3131'
+      - "3131:3131"
     volumes:
       - .:/app/genesis
       - web_node_modules:/app/genesis/packages/web/node_modules

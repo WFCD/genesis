@@ -23,6 +23,7 @@ const REFRESH_SCOPES = [
   { id: 'all', label: 'All' },
 ];
 
+// eslint-disable-next-line prefer-arrow-functions/prefer-arrow-functions -- TSX disambiguates generic arrows poorly
 async function postJson<T>(url: string, body: Record<string, string | undefined>) {
   const res = await fetch(url, {
     method: 'POST',
@@ -34,7 +35,7 @@ async function postJson<T>(url: string, body: Record<string, string | undefined>
   return data;
 }
 
-function GuildResult({ guild }: { guild: DiscordGuildInfo }) {
+const GuildResult = ({ guild }: { guild: DiscordGuildInfo }) => {
   const verification = VERIFICATION[guild.verificationLevel] ?? VERIFICATION[0];
   const created = new Date(guild.createdAt).toLocaleString();
 
@@ -86,16 +87,14 @@ function GuildResult({ guild }: { guild: DiscordGuildInfo }) {
       </Card.Content>
     </Card>
   );
-}
+};
 
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="rounded-lg bg-[#2b2d31] px-3 py-2">
-      <div className="text-xs uppercase tracking-wide text-[#949ba4]">{label}</div>
-      <div className="mt-1 text-sm text-white">{value}</div>
-    </div>
-  );
-}
+const Stat = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="rounded-lg bg-[#2b2d31] px-3 py-2">
+    <div className="text-xs uppercase tracking-wide text-[#949ba4]">{label}</div>
+    <div className="mt-1 text-sm text-white">{value}</div>
+  </div>
+);
 
 type ActionCardProps = {
   title: string;
@@ -107,29 +106,27 @@ type ActionCardProps = {
   destructive?: boolean;
 };
 
-function ActionCard({ title, description, command, children, onRun, busy, destructive }: ActionCardProps) {
-  return (
-    <Card className="border border-white/10 bg-[#2b2d31]">
-      <Card.Header>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <Card.Title className="text-white">{title}</Card.Title>
-            <Card.Description className="text-[#b5bac1]">{description}</Card.Description>
-          </div>
-          <Chip size="sm" variant="soft" className="font-mono text-[10px]">
-            /su {command}
-          </Chip>
+const ActionCard = ({ title, description, command, children, onRun, busy, destructive }: ActionCardProps) => (
+  <Card className="border border-white/10 bg-[#2b2d31]">
+    <Card.Header>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <Card.Title className="text-white">{title}</Card.Title>
+          <Card.Description className="text-[#b5bac1]">{description}</Card.Description>
         </div>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-3">
-        {children}
-        <Button className={cn(destructive && 'bg-danger text-white')} isDisabled={busy} onPress={() => void onRun()}>
-          Run
-        </Button>
-      </Card.Content>
-    </Card>
-  );
-}
+        <Chip size="sm" variant="soft" className="font-mono text-[10px]">
+          /su {command}
+        </Chip>
+      </div>
+    </Card.Header>
+    <Card.Content className="flex flex-col gap-3">
+      {children}
+      <Button className={cn(destructive && 'bg-danger text-white')} isDisabled={busy} onPress={() => void onRun()}>
+        Run
+      </Button>
+    </Card.Content>
+  </Card>
+);
 
 const OwnerSuPanel: FC = () => {
   const [busy, setBusy] = useState<string | null>(null);

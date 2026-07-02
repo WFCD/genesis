@@ -74,62 +74,50 @@ const formatUserList = (ids: string[]) => (ids.length ? ids.map((id) => `<@${id}
 type ManageInteraction = ChatInputCommandInteraction;
 
 export default class RoomsManageUI {
-  static isManageComponent(customId: string) {
-    return customId.startsWith(`${PREFIX}:`);
-  }
+  static isManageComponent = (customId: string) => customId.startsWith(`${PREFIX}:`);
 
-  static isManageModal(customId: string) {
-    return customId.startsWith(`${PREFIX}:`) && customId.endsWith(':rename');
-  }
+  static isManageModal = (customId: string) => customId.startsWith(`${PREFIX}:`) && customId.endsWith(':rename');
 
-  static #getSession(userId: string, guildId: string) {
+  static #getSession = (userId: string, guildId: string) => {
     const session = sessions.get(sessionKey(userId, guildId));
     if (!session || session.expiresAt < Date.now()) {
       sessions.delete(sessionKey(userId, guildId));
       return undefined;
     }
     return session;
-  }
+  };
 
-  static #touchSession(session: RoomSession) {
+  static #touchSession = (session: RoomSession) => {
     session.expiresAt = Date.now() + SESSION_TTL_MS;
     sessions.set(sessionKey(session.userId, session.guildId), session);
-  }
+  };
 
-  static async #loadRoom(member: GuildMember, ctx: CommandContext) {
+  static #loadRoom = async (member: GuildMember, ctx: CommandContext) => {
     if (!ctx.settings) return undefined;
     const room = await ctx.settings.privateRooms.getUsersRoom(member);
     if (!room?.voiceChannel) return undefined;
     return room;
-  }
+  };
 
-  static async #seedMembersSession(
-    session: RoomSession,
-    room: PrivateRoom,
-    ownerId: string,
-    guild: NonNullable<MessageComponentInteraction['guild']>
-  ) {
+  static #seedMembersSession = async (session: RoomSession, room: PrivateRoom, ownerId: string, guild: NonNullable<MessageComponentInteraction['guild']>) => {
     const access = await getRoomMemberAccess(room, ownerId, guild.members.me?.id, guild);
     session.baselineInviteIds = [...access.invitedIds];
     session.baselineBlockIds = [...access.blockedIds];
     session.pendingInviteIds = [...access.invitedIds];
     session.pendingBlockIds = [...access.blockedIds];
-  }
+  };
 
-  static #membersAccessChanged(session: RoomSession) {
-    return (
-      !idsEqual(session.pendingInviteIds, session.baselineInviteIds) ||
-      !idsEqual(session.pendingBlockIds, session.baselineBlockIds)
-    );
-  }
+  static #membersAccessChanged = (session: RoomSession) =>
+    !idsEqual(session.pendingInviteIds, session.baselineInviteIds)
+    || !idsEqual(session.pendingBlockIds, session.baselineBlockIds);
 
-  static async #resolveUser(interaction: MessageComponentInteraction, userId: string) {
+  static #resolveUser = async (interaction: MessageComponentInteraction, userId: string) => {
     if (!interaction.guild) return undefined;
     return (
       interaction.guild.members.cache.get(userId)?.user ??
       (await interaction.client.users.fetch(userId).catch(() => undefined))
     );
-  }
+  };
 
   static async start(interaction: ManageInteraction, ctx: CommandContext) {
     if (!interaction.guild || !interaction.member || !ctx.settings) {
@@ -326,22 +314,20 @@ export default class RoomsManageUI {
     }
   }
 
-  static #renameModal(guildId: string, ownerId: string, currentName: string) {
-    return new ModalBuilder()
-      .setCustomId(buildId(guildId, ownerId, 'rename'))
-      .setTitle('Rename Room')
-      .addComponents(
-        new ActionRowBuilder<TextInputBuilder>().addComponents(
-          new TextInputBuilder()
-            .setCustomId('name')
-            .setLabel('Room name')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setMaxLength(100)
-            .setValue(currentName.slice(0, 100))
-        )
-      );
-  }
+  static #renameModal = (guildId: string, ownerId: string, currentName: string) => new ModalBuilder()
+    .setCustomId(buildId(guildId, ownerId, 'rename'))
+    .setTitle('Rename Room')
+    .addComponents(
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId('name')
+          .setLabel('Room name')
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+          .setMaxLength(100)
+          .setValue(currentName.slice(0, 100))
+      )
+    );
 
   static #renderMembers(session: RoomSession) {
     const { guildId, userId } = session;
@@ -393,7 +379,7 @@ export default class RoomsManageUI {
     });
   }
 
-  static #render(guild: NonNullable<ChatInputCommandInteraction['guild']>, room: PrivateRoom, session: RoomSession) {
+  static #render = (guild: NonNullable<ChatInputCommandInteraction['guild']>, room: PrivateRoom, session: RoomSession) => {
     const { connect, show, limit } = getRoomVisibility(guild, room);
     const lurkable = getRoomLurkable(guild, room);
     const voice = room.voiceChannel;
@@ -462,5 +448,5 @@ export default class RoomsManageUI {
         ),
       ],
     });
-  }
+  };
 }

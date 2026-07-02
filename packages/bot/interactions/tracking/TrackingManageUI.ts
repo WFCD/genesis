@@ -81,7 +81,7 @@ const titleGroup = (groupId: string) => {
 type ManageInteraction = ChatInputCommandInteraction | ModalSubmitInteraction;
 
 export default class TrackingManageUI {
-  static #getSession(userId: string, channelId: string, threadId?: string) {
+  static #getSession = (userId: string, channelId: string, threadId?: string) => {
     const key = sessionKey(userId, channelId, threadId);
     const session = sessions.get(key);
     if (!session || session.expiresAt < Date.now()) {
@@ -89,12 +89,12 @@ export default class TrackingManageUI {
       return undefined;
     }
     return session;
-  }
+  };
 
-  static #touchSession(session: TrackingSession) {
+  static #touchSession = (session: TrackingSession) => {
     session.expiresAt = Date.now() + SESSION_TTL_MS;
     sessions.set(sessionKey(session.userId, session.channelId, session.threadId), session);
-  }
+  };
 
   static async #createSession(userId: string, channel, thread?, ctx?) {
     const session: TrackingSession = {
@@ -124,13 +124,11 @@ export default class TrackingManageUI {
     return interaction.editReply(withEphemeral(ctx.ephemerate, this.#render(session, channel, thread)));
   }
 
-  static #savedEmbed(channel, thread?) {
-    return new EmbedBuilder()
-      .setColor(0x57f287)
-      .setTitle('Tracking saved')
-      .setDescription(`${channel}${thread ? `\nThread: ${thread}` : ''}`)
-      .setFooter({ text: 'Tracking saved' });
-  }
+  static #savedEmbed = (channel, thread?) => new EmbedBuilder()
+    .setColor(0x57f287)
+    .setTitle('Tracking saved')
+    .setDescription(`${channel}${thread ? `\nThread: ${thread}` : ''}`)
+    .setFooter({ text: 'Tracking saved' });
 
   static async handleComponent(interaction: MessageComponentInteraction, ctx, channel, thread?) {
     const { channelId, threadId, component } = parseId(interaction.customId);
@@ -238,7 +236,7 @@ export default class TrackingManageUI {
     }
   }
 
-  static #render(session: TrackingSession, channel, thread?) {
+  static #render = (session: TrackingSession, channel, thread?) => {
     const { items, events, group, subgroup, page } = session;
     const chunks = chunkerate(session);
     const safePage = Math.min(Math.max(page, 0), Math.max(chunks.length - 1, 0));
@@ -370,9 +368,7 @@ export default class TrackingManageUI {
     );
 
     return { embeds: [embed], components: rows.slice(0, 5) };
-  }
+  };
 
-  static isManageComponent(customId: string) {
-    return customId.startsWith(`${PREFIX}:`);
-  }
+  static isManageComponent = (customId: string) => customId.startsWith(`${PREFIX}:`);
 }

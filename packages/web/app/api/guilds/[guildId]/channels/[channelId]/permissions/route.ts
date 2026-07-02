@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { channelRef, rejectThreadRoutes } from '@/lib/channels/route';
+import { channelRef, rejectThreadRoutes, type GuildChannelRouteContext } from '@/lib/channels/route';
 import { resolveChannelRoute } from '@/lib/channels/route.server';
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ guildId: string; channelId: string }> }) {
+export const PATCH = async (request: Request, { params }: GuildChannelRouteContext) => {
   try {
     const { guildId, channelId: routeId } = await params;
     const resolved = await resolveChannelRoute(routeId, guildId);
@@ -36,4 +36,4 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ gu
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to update permissions' }, { status: 500 });
   }
-}
+};

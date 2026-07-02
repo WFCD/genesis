@@ -289,13 +289,13 @@ export default class Build {
     { name: 'Zenurik', value: 'zenurik' },
   ];
 
-  static makeId(len = 8) {
+  static makeId = (len = 8) => {
     const tokens = [];
     for (let i = 0; i < len; i += 1) {
       tokens.push(possible.charAt(Math.floor(Math.random() * possible.length)));
     }
     return tokens.join('');
-  }
+  };
 
   constructor(data: BuildData | BuildResolvable, ws: WorldStateClient) {
     const row = data as BuildData;

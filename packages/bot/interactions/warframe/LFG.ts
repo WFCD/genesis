@@ -189,7 +189,7 @@ export default class LFG extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const { options } = interaction;
     const lfg = {
       author: interaction.member.user,
@@ -277,5 +277,5 @@ export default class LFG extends Interaction {
 
     collector.on('collect', reactionHandler);
     return interaction.reply(withEphemeral(ctx.ephemerate, { content: 'gl;hf' }));
-  }
+  };
 }

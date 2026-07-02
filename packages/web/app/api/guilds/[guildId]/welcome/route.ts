@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { requireGuildAccess } from '@/lib/auth/apiAuth';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const GET = async (_request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'welcome');
@@ -18,9 +18,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to load welcome messages' }, { status: 500 });
   }
-}
+};
 
-export async function POST(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const POST = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'welcome');
@@ -42,9 +42,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ gui
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to save welcome message' }, { status: 500 });
   }
-}
+};
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ guildId: string }> }) {
+export const DELETE = async (request: Request, { params }: { params: Promise<{ guildId: string }> }) => {
   try {
     const { guildId } = await params;
     const { services } = await requireGuildAccess(guildId, 'welcome');
@@ -55,4 +55,4 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ g
     if (error instanceof Response) return error;
     return NextResponse.json({ error: 'Failed to clear welcome message' }, { status: 500 });
   }
-}
+};

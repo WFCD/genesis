@@ -26,21 +26,21 @@ export type WebEnv = {
 
 export type EnvReader = (key: string, fallback?: string) => string | undefined;
 
-function isPlausibleDiscordToken(value?: string) {
+const isPlausibleDiscordToken = (value?: string) => {
   if (!value) return false;
   return /^\d+\.[\w-]{4,}\.[\w-]{4,}$/.test(value);
-}
+};
 
-function readBotToken(read: EnvReader) {
+const readBotToken = (read: EnvReader) => {
   const normalize = (value?: string) => value?.replace(/\s+/g, '').replace(/^["']+|["']+$/g, '') || undefined;
   const botToken = normalize(read('BOT_TOKEN'));
   const legacyToken = normalize(read('TOKEN'));
   if (isPlausibleDiscordToken(botToken)) return botToken;
   if (isPlausibleDiscordToken(legacyToken)) return legacyToken;
   return botToken ?? legacyToken;
-}
+};
 
-export function buildEnv(read: EnvReader): WebEnv {
+export const buildEnv = (read: EnvReader): WebEnv => {
   const port = Number(read('PORT', '3131'));
   const webBaseUrl = read('WEB_BASE_URL', read('AUTH_URL', read('NEXTAUTH_URL', `http://localhost:${port}`)));
 
@@ -69,10 +69,10 @@ export function buildEnv(read: EnvReader): WebEnv {
       database: read('MYSQL_DB', 'genesis')!,
     },
   };
-}
+};
 
 /** Sync normalized values into process.env for Auth.js and #shared Database. */
-export function applyEnvToProcess(env: WebEnv) {
+export const applyEnvToProcess = (env: WebEnv) => {
   process.env.SCOPE = env.scope;
   process.env.PORT = String(env.port);
   process.env.WEB_BASE_URL = env.webBaseUrl;
@@ -98,4 +98,4 @@ export function applyEnvToProcess(env: WebEnv) {
   process.env.MYSQL_USER = env.mysql.user;
   if (env.mysql.password) process.env.MYSQL_PASSWORD = env.mysql.password;
   process.env.MYSQL_DB = env.mysql.database;
-}
+};

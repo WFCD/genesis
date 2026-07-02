@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 /** Redirect to AUTH_URL host when request host differs so OAuth PKCE cookies survive callback. */
-export function devAuthRedirect(request: NextRequest) {
+export const devAuthRedirect = (request: NextRequest) => {
   const authUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL;
   if (!authUrl) return null;
 
@@ -18,4 +18,4 @@ export function devAuthRedirect(request: NextRequest) {
   } catch {
     return null;
   }
-}
+};

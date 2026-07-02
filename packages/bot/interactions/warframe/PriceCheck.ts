@@ -34,7 +34,7 @@ export default class PriceCheck extends Interaction {
     ],
   };
 
-  static async commandHandler(interaction, ctx) {
+  static commandHandler = async (interaction, ctx) => {
     const { options } = interaction;
     const platform = options?.get('platform')?.value || ctx.platform || 'pc';
     const query = options?.get('query')?.value;
@@ -48,5 +48,5 @@ export default class PriceCheck extends Interaction {
       ...(ranks ? { ranks } : {}),
     });
     return interaction.editReply(withEphemeral(ctx.ephemerate, { embeds }));
-  }
+  };
 }

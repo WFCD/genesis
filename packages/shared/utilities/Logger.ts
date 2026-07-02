@@ -117,14 +117,11 @@ const fmt = (level: keyof typeof levels, message: unknown, context?: string) => 
   return `[${paint(scope, scopeColor)}] ${levelLabel}:${context ? ` ${paint(context, contextColor!)}` : ''} ${body}`;
 };
 
-function toError(message: unknown): Error {
-  return message instanceof Error ? message : new Error(String(message));
-}
+const toError = (message: unknown): Error => message instanceof Error ? message : new Error(String(message));
 
 class LoggerClass implements Logger {
-  isLoggable(level: string): boolean {
-    return Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(logConfig.logLevel);
-  }
+  isLoggable = (level: string): boolean =>
+    Object.keys(levels).indexOf(level.toUpperCase()) >= Object.keys(levels).indexOf(logConfig.logLevel);
 
   silly(message: unknown, context?: string): void {
     this.log('SILLY', message, context);
