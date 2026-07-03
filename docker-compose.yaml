@@ -15,7 +15,7 @@ services:
       retries: 10
       start_period: 30s
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./data/db:/var/lib/mysql
 
   bot:
     build:
@@ -101,7 +101,6 @@ services:
       - web_node_modules:/app/genesis/packages/web/node_modules
 
 volumes:
-  mariadb_data:
   bot_node_modules:
   worker_node_modules:
   web_node_modules:

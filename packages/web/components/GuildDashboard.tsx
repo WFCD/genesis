@@ -437,6 +437,7 @@ const GuildDashboard: FC = () => {
           <Card.Content className="grid gap-4">
             <DashboardField
               label="Elevated role IDs (comma-separated)"
+              helpKey="elevatedRoles"
               value={elevatedRoles}
               onChange={setElevatedRoles}
             />
@@ -590,26 +591,31 @@ const GuildDashboard: FC = () => {
           <Card.Content className="grid gap-4">
             <BoolSelect
               label="Private rooms enabled"
+              helpKey="rooms.createPrivateChannel"
               value={rooms.createPrivateChannel}
               onChange={(value) => setRooms((prev) => ({ ...prev, createPrivateChannel: value }))}
             />
             <BoolSelect
               label="Auto-lock new rooms"
+              helpKey="rooms.defaultRoomsLocked"
               value={rooms.defaultRoomsLocked}
               onChange={(value) => setRooms((prev) => ({ ...prev, defaultRoomsLocked: value }))}
             />
             <BoolSelect
               label="Allow text in new rooms"
+              helpKey="rooms.defaultNoText"
               value={rooms.defaultNoText === '0' ? '1' : '0'}
               onChange={(value) => setRooms((prev) => ({ ...prev, defaultNoText: value === '1' ? '0' : '1' }))}
             />
             <BoolSelect
               label="Hide new rooms"
+              helpKey="rooms.defaultShown"
               value={rooms.defaultShown}
               onChange={(value) => setRooms((prev) => ({ ...prev, defaultShown: value }))}
             />
             <HeroSelect
               label="Temp category"
+              helpKey="rooms.tempCategory"
               selectedKey={rooms.tempCategory || ''}
               onSelectionChange={(value) => setRooms((prev) => ({ ...prev, tempCategory: value }))}
               options={[{ id: '', label: 'None' }, ...categoryOptions]}
@@ -617,6 +623,7 @@ const GuildDashboard: FC = () => {
             />
             <HeroSelect
               label="Temp text channel"
+              helpKey="rooms.tempChannel"
               selectedKey={rooms.tempChannel || ''}
               onSelectionChange={(value) => setRooms((prev) => ({ ...prev, tempChannel: value }))}
               options={[{ id: '', label: 'None' }, ...channelOptions]}

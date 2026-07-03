@@ -61,6 +61,9 @@ packages/worker/**/*.js
 packages/shared/**/*.js
 spec/**/*.js
 
+# Local dev database (bind-mounted by docker compose)
+data/db/
+
 # Local env (never commit secrets)
 .env.local
 .env.local

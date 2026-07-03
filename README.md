@@ -44,6 +44,8 @@ tl;dr Bots need data. While I don't record any of your personal data or save it 
 
 Logs: `docker compose logs -f bot` (or `worker`, `mariadb`). Stop stack: `npm run docker:down`.
 
+MariaDB data is stored in [`data/db/`](data/db/) (gitignored). It persists across restarts until you delete that folder.
+
 See [`.env.example`](.env.example) and [`docker-compose.yaml`](docker-compose.yaml) for service details.
 
 ## Project layout
@@ -65,11 +67,11 @@ Common scripts (run from repo root):
 | Script | Purpose |
 |--------|---------|
 | `npm run docker:up` | MariaDB + bot + worker (detached bot/worker after DB ready) |
-| `npm run docker:down` | Stop stack and remove volumes |
+| `npm run docker:down` | Stop stack and remove compose volumes (node_modules caches; DB data stays in `data/db/`) |
 | `npm run docker:db` | MariaDB only |
 | `npm run docker:bot:dev` | Bot container (foreground; rebuilds) |
 | `npm run docker:worker:dev` | Worker container (foreground; rebuilds) |
-| `npm run dev` | Bot + worker + web via concurrently (host tsx; reads repo-root `.env.local`; run `npm run docker:db` first) |
+| `npm run dev` | Bot + worker + web via concurrently (auto-starts compose MariaDB if needed; reads repo-root `.env.local`) |
 | `npm run dev:bot` | Bot on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
 | `npm run dev:worker` | Worker on host (tsx; reads `.env.local`; run `npm run docker:db` first) |
 | `npm run dev:web` | Web dashboard (local Next.js) |
@@ -91,7 +93,7 @@ Genesis requires a MariaDB-compatible server. Connection uses **`MYSQL_*`** envi
 | MYSQL_PASSWORD       | Database connection password                                           | `password`                                  | N\A         |
 | MYSQL_USER           | Database connection user                                               | `genesis`                                   | `genesis`   |
 | MYSQL_PORT           | Database connection port                                               | 3306                                        | 3306        |
-| MYSQL_HOST           | Hostname for connecting to the database                                | `localhost`                                 | `localhost` |
+| MYSQL_HOST           | Hostname for connecting to the database                                | `127.0.0.1` (host dev) / `mariadb` (in compose) | `127.0.0.1` |
 | SHARD_OFFSET         | Offset of the first shard id for the local shards, default 0           | 2                                           | 0           |
 | LOCAL_SHARDS         | Number of shards locally                                               | 2                                           | 1           |
 | SHARDS               | Total number of shards                                                 | 1                                           | 1           |

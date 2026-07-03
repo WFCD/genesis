@@ -36,6 +36,7 @@
     "build:ts": "tsc --noEmit",
     "build:web": "npm run build -w @genesis/web",
     "build:worker": "docker build -f notifier.Dockerfile . -t genesis-worker",
+    "predev": "node --import tsx/esm scripts/ensure-test-mariadb.ts",
     "dev": "concurrently -n bot,web,worker -c cyan,magenta,gray  npm:dev:bot npm:dev:web npm:dev:worker",
     "dev:bot": "SCOPE=BOT node --import tsx/esm --import \"#shared/utilities/loadParentEnvFiles\" packages/bot/main",
     "dev:web": "SCOPE=WEB npm run dev -w @genesis/web",
