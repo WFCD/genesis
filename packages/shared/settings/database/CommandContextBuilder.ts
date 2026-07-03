@@ -1,4 +1,4 @@
-import { User, type Guild, type Role, type TextChannel } from 'discord.js';
+import { User, type Guild, type Role, type TextChannel, type ThreadChannel } from 'discord.js';
 import SQL from 'sql-template-strings';
 
 import type { CommandContext } from '#shared/types/context';
@@ -9,21 +9,33 @@ import { i18n } from '#shared/resources/index';
 import type { DefaultSettings } from './DatabaseDeps';
 import type ChannelSettingsRepository from './repositories/ChannelSettingsRepository';
 import { GUILD_LEVEL_CHANNEL_SETTINGS } from './repositories/ChannelSettingsRepository';
+import { asBool } from './boolSetting';
 
 const avatarPrefix = `https://cdn.discordapp.com/avatars/${process.env.CLIENT_ID}`;
 
 type MutableCommandContext = CommandContext & Record<string, unknown>;
 
-const asBool = (value: unknown, fallback: unknown): boolean => {
-  if (typeof value === 'undefined') return Boolean(fallback);
-  return value === '1' || value === true;
-};
-
 const setContextValue = (context: MutableCommandContext, key: string, value: unknown) => {
   (context as Record<string, unknown>)[key] = value;
 };
 
-type ChannelInput = TextChannel | User | { id: string; guild?: Guild } | string;
+type ChannelInput = TextChannel | ThreadChannel | User | { id: string; guild?: Guild } | string;
+
+/** Channel settings (ephemerate, platform, etc.) live on the parent text channel, not threads. */
+const resolveSettingsChannel = (channel: ChannelInput): ChannelInput => {
+  if (
+    channel &&
+    typeof channel === 'object' &&
+    !(channel instanceof User) &&
+    'isThread' in channel &&
+    typeof channel.isThread === 'function' &&
+    channel.isThread() &&
+    channel.parent
+  ) {
+    return channel.parent;
+  }
+  return channel;
+};
 
 export interface CommandContextDeps {
   scope: string;
@@ -46,7 +58,10 @@ export const buildCommandContext = async (
     channel = { id: channel as unknown as string };
   }
 
-  await deps.channels.getSetting(channel, 'prefix');
+  const interactionChannel = channel;
+  const settingsChannel = resolveSettingsChannel(channel) as Exclude<ChannelInput, string>;
+
+  await deps.channels.getSetting(settingsChannel, 'prefix');
 
   const settings = ['webhookId', 'webhookToken', 'webhookName', 'webhookAvatar', 'language', 'platform'];
 
@@ -88,7 +103,7 @@ export const buildCommandContext = async (
     settings.push('deleteExpired');
   }
 
-  const query = SQL`SELECT setting, val FROM settings where channel_id = ${channel.id}
+  const query = SQL`SELECT setting, val FROM settings where channel_id = ${settingsChannel.id}
       and setting in (`;
   settings.forEach((setting, index) => {
     query.append(index !== settings.length - 1 ? SQL`${setting}, ` : SQL`${setting}`);
@@ -119,14 +134,14 @@ export const buildCommandContext = async (
 
     if (!context.platform) {
       context.platform = deps.defaults.platform;
-      await deps.channels.setSetting(channel, 'platform', deps.defaults.platform);
+      await deps.channels.setSetting(settingsChannel, 'platform', deps.defaults.platform);
     }
 
     if (!context.prefix) {
       context.prefix = deps.defaults.prefix;
     }
 
-    const guildChannel = channel as TextChannel;
+    const guildChannel = interactionChannel as TextChannel;
     if (guildChannel?.guild) {
       const guildLanguage = await deps.channels.getGuildSetting(guildChannel.guild, 'language');
       if (guildLanguage) {
@@ -153,9 +168,9 @@ export const buildCommandContext = async (
       }
     } else if (!context.language) {
       context.language = deps.defaults.language.substr(0, 2);
-      await deps.channels.setSetting(channel, 'language', deps.defaults.language.substr(0, 2));
+      await deps.channels.setSetting(settingsChannel, 'language', deps.defaults.language.substr(0, 2));
     } else if (context.language.length > 2) {
-      await deps.channels.setSetting(channel, 'language', context.language.substr(0, 2));
+      await deps.channels.setSetting(settingsChannel, 'language', context.language.substr(0, 2));
       context.language = context.language.substr(0, 2);
     }
 
@@ -217,8 +232,8 @@ export const buildCommandContext = async (
       delete context.respond_to_settings;
     }
 
-    if (channel instanceof User) context.ephemerate = false;
-    else context.ephemerate = asBool(context.ephemerate, true);
+    if (interactionChannel instanceof User) context.ephemerate = false;
+    else context.ephemerate = asBool(context.ephemerate, deps.defaults.ephemerate);
 
     if (context.modRole && guildChannel?.guild) {
       context.modRole = (await guildChannel.guild.roles.fetch(String(context.modRole))) as Role;
@@ -237,17 +252,18 @@ export const buildCommandContext = async (
       respondToSettings: deps.defaults.respond_to_settings as boolean,
       deleteCommand: deps.defaults.delete_after_respond as boolean,
       deleteExpired: deps.defaults.deleteExpired as boolean,
-      ephemerate: true,
+      ephemerate: deps.defaults.ephemerate,
     };
   }
 
   if (user) {
-    const guildId = 'guild' in channel && channel.guild ? channel.guild.id : 0;
+    const guildId =
+      'guild' in interactionChannel && interactionChannel.guild ? interactionChannel.guild.id : 0;
     context.isBlacklisted = await deps.isBlacklisted(user.id, guildId);
     context.isOwner = user.id === deps.bot.owner;
   }
 
-  context.channel = channel as TextChannel;
+  context.channel = interactionChannel as TextChannel;
   context.i18n = createI18n(i18n, context.language ?? deps.defaults.language) as CommandContext['i18n'];
   return context;
 };

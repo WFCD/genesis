@@ -2,6 +2,7 @@ import type { Guild } from 'discord.js';
 
 import type Database from '#shared/settings/Database';
 import { GUILD_LEVEL_CHANNEL_SETTINGS } from '#shared/settings/database/repositories/ChannelSettingsRepository';
+import { normalizeStoredBool } from '#shared/settings/database/boolSetting';
 
 type ChannelRef = { id: string; guild?: { id: string } };
 type GuildRef = { id: string };
@@ -29,8 +30,16 @@ export default class ChannelSettingsService {
       for (const key of guildKeys) {
         const value = await this.settings.channels.getGuildSetting(guild as unknown as Guild, key);
         if (value !== undefined && value !== null) {
-          settings[key] = String(value);
+          settings[key] = normalizeStoredBool(value) ?? String(value);
         }
+      }
+    }
+
+    for (const key of channelKeys) {
+      if (settings[key] !== undefined) continue;
+      const def = this.settings.defaults[key];
+      if (typeof def === 'boolean') {
+        settings[key] = def ? '1' : '0';
       }
     }
 

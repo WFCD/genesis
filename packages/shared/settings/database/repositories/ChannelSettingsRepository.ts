@@ -2,6 +2,7 @@ import { ChannelType, type Guild } from 'discord.js';
 import SQL from 'sql-template-strings';
 
 import type { DatabaseDeps, GuildChannelHost } from '#shared/settings/database/DatabaseDeps';
+import { asStoredBool, BOOL_CHANNEL_SETTINGS, normalizeStoredBool } from '#shared/settings/database/boolSetting';
 
 type ChannelRef = { id: string; type?: ChannelType; guild?: { id: string } };
 
@@ -82,7 +83,9 @@ export default class ChannelSettingsRepository {
     }
     const values: Record<string, string> = {};
     rows.forEach((row: { setting: string; val: string }) => {
-      values[row.setting] = row.val;
+      values[row.setting] = BOOL_CHANNEL_SETTINGS.has(row.setting)
+        ? (normalizeStoredBool(row.val) ?? String(row.val))
+        : row.val;
     });
     return values;
   }
@@ -105,7 +108,8 @@ export default class ChannelSettingsRepository {
         }
         return (await this.checkWebhookAndReturn(channel, setting)) as string | undefined;
       }
-      return rows[0].val;
+      const val = rows[0].val;
+      return BOOL_CHANNEL_SETTINGS.has(setting) ? (normalizeStoredBool(val) ?? val) : val;
     }
     return undefined;
   }
@@ -176,7 +180,8 @@ export default class ChannelSettingsRepository {
     if (typeof channel === 'string' || !channel?.id) {
       channel = { id: typeof channel === 'string' ? channel : String(channel) };
     }
-    const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${value}) ON DUPLICATE KEY UPDATE val=${value};`;
+    const stored = typeof value === 'boolean' ? asStoredBool(value) : value;
+    const query = SQL`INSERT IGNORE INTO settings (channel_id, setting, val) VALUE (${channel.id},${setting},${stored}) ON DUPLICATE KEY UPDATE val=${stored};`;
     return this.deps.query(query);
   }
 

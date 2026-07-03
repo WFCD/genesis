@@ -25,13 +25,13 @@ const {
 
 /**
  * Build interaction reply/update options with ephemeral via MessageFlags.
- * @param {boolean|undefined} ephemeral whether the response is ephemeral
+ * @param {boolean|string|undefined} ephemeral whether the response is ephemeral
  * @param {Record<string, unknown>} [options] other reply options
  * @returns {Record<string, unknown>}
  */
-export const withEphemeral = (ephemeral: boolean | undefined, options: Record<string, unknown> = {}) => {
+export const withEphemeral = (ephemeral: boolean | string | undefined, options: Record<string, unknown> = {}) => {
   const { ephemeral: _ignored, flags, ...rest } = options;
-  if (!ephemeral) return rest;
+  if (ephemeral !== true && ephemeral !== '1') return rest;
 
   return { ...rest, flags: ((flags as number | undefined) ?? 0) | MessageFlags.Ephemeral };
 };
