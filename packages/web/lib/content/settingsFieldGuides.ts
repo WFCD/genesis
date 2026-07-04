@@ -83,7 +83,6 @@ export const settingsFieldHelp: Record<string, SettingsFieldHelp> = {
 
 export const getSettingsFieldHelp = (key: string) => {
   const help = settingsFieldHelp[key];
-  if (!help) return undefined;
   if (help.featureFlag && !featureFlags[help.featureFlag]) return undefined;
   return help;
 };
