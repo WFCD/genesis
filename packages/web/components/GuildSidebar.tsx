@@ -3,11 +3,14 @@
 import type { FC } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Avatar, Button, Tooltip, cn } from '@heroui/react';
+import { Avatar, Tooltip, cn } from '@heroui/react';
 
 import { guildIconUrl, guildInitials, type GuildWithBotStatus } from '@/lib/guild/oauth';
 
 import SidebarFooter from './SidebarFooter';
+
+const iconButtonClass =
+  'inline-flex h-12 w-12 items-center justify-center rounded-[24px] bg-[#313338] transition-all duration-200 hover:rounded-[16px]';
 
 const HomeIcon = () => (
   <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
@@ -37,39 +40,33 @@ const GuildSidebar: FC<Props> = ({ guilds, userName, isOwner }) => {
     <aside className="flex h-full w-[72px] shrink-0 flex-col bg-[#1e1f22]">
       <div className="flex flex-1 flex-col items-center gap-2 overflow-y-auto py-3">
         <Tooltip>
-          <Tooltip.Trigger>
-            <Link href="/" aria-label="Home">
-              <Button
-                isIconOnly
-                className={cn(
-                  'h-12 w-12 rounded-[24px] bg-[#313338] text-white transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2]',
-                  homeActive && 'rounded-[16px] bg-[#5865f2]'
-                )}
-                variant="ghost"
-              >
-                <HomeIcon />
-              </Button>
-            </Link>
-          </Tooltip.Trigger>
+          <Link
+            href="/"
+            aria-label="Home"
+            className={cn(
+              iconButtonClass,
+              'text-white hover:bg-[#5865f2]',
+              homeActive && 'rounded-[16px] bg-[#5865f2]'
+            )}
+          >
+            <HomeIcon />
+          </Link>
           <Tooltip.Content>Home</Tooltip.Content>
         </Tooltip>
 
         {isOwner ? (
           <Tooltip>
-            <Tooltip.Trigger>
-              <Link href="/su" aria-label="Owner tools">
-                <Button
-                  isIconOnly
-                  className={cn(
-                    'h-12 w-12 rounded-[24px] bg-[#313338] text-[#faa61a] transition-all duration-200 hover:rounded-[16px] hover:bg-[#faa61a] hover:text-[#1e1f22]',
-                    suActive && 'rounded-[16px] bg-[#faa61a] text-[#1e1f22]'
-                  )}
-                  variant="ghost"
-                >
-                  <OwnerIcon />
-                </Button>
-              </Link>
-            </Tooltip.Trigger>
+            <Link
+              href="/su"
+              aria-label="Owner tools"
+              className={cn(
+                iconButtonClass,
+                'text-[#faa61a] hover:bg-[#faa61a] hover:text-[#1e1f22]',
+                suActive && 'rounded-[16px] bg-[#faa61a] text-[#1e1f22]'
+              )}
+            >
+              <OwnerIcon />
+            </Link>
             <Tooltip.Content>Owner tools (/su)</Tooltip.Content>
           </Tooltip>
         ) : null}
@@ -109,11 +106,9 @@ const GuildSidebar: FC<Props> = ({ guilds, userName, isOwner }) => {
 
           return (
             <Tooltip key={guild.id}>
-              <Tooltip.Trigger>
-                <Link href={`/guilds/${guild.id}`} aria-label={guild.name}>
-                  {iconShell}
-                </Link>
-              </Tooltip.Trigger>
+              <Link href={`/guilds/${guild.id}`} aria-label={guild.name}>
+                {iconShell}
+              </Link>
               <Tooltip.Content>{guild.name}</Tooltip.Content>
             </Tooltip>
           );

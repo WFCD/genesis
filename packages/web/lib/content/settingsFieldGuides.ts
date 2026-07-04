@@ -1,7 +1,10 @@
+import { featureFlags, type FeatureFlag } from '@/lib/settings/featureFlags';
+
 export type SettingsFieldHelp = {
   guideSlug: string;
   sectionId?: string;
   tooltip: string;
+  featureFlag?: FeatureFlag;
 };
 
 export const settingsFieldHelp: Record<string, SettingsFieldHelp> = {
@@ -29,6 +32,7 @@ export const settingsFieldHelp: Record<string, SettingsFieldHelp> = {
   deleteExpired: {
     guideSlug: 'tracking',
     sectionId: 'delete-expired',
+    featureFlag: 'deleteExpiredNotifications',
     tooltip: 'Automatically removes tracking notification messages after the tracked event expires.',
   },
   elevatedRoles: {
@@ -77,7 +81,12 @@ export const settingsFieldHelp: Record<string, SettingsFieldHelp> = {
   },
 };
 
-export const getSettingsFieldHelp = (key: string) => settingsFieldHelp[key];
+export const getSettingsFieldHelp = (key: string) => {
+  const help = settingsFieldHelp[key];
+  if (!help) return undefined;
+  if (help.featureFlag && !featureFlags[help.featureFlag]) return undefined;
+  return help;
+};
 
 export const guideHref = (help: SettingsFieldHelp) =>
   help.sectionId ? `/guides/${help.guideSlug}#${help.sectionId}` : `/guides/${help.guideSlug}`;

@@ -58,16 +58,14 @@ export const FieldLabelWithHelp = ({ label, helpKey }: { label: string; helpKey?
     <div className="flex items-center gap-1.5">
       <Label className="text-[#b5bac1]">{label}</Label>
       <Tooltip>
-        <Tooltip.Trigger>
-          <Button
-            isIconOnly
-            aria-label={`Help: ${label}`}
-            className="h-5 w-5 min-w-5 text-[#949ba4] hover:text-[#b5bac1]"
-            variant="ghost"
-          >
-            <HelpIcon />
-          </Button>
-        </Tooltip.Trigger>
+        <Button
+          isIconOnly
+          aria-label={`Help: ${label}`}
+          className="h-5 w-5 min-w-5 text-[#949ba4] hover:text-[#b5bac1]"
+          variant="ghost"
+        >
+          <HelpIcon />
+        </Button>
         <Tooltip.Content className="max-w-xs">
           <p className="text-sm leading-relaxed">{help.tooltip}</p>
           <Link href={guideHref(help)} className="mt-2 inline-block text-sm text-[#00a8fc] hover:underline">
@@ -91,22 +89,20 @@ export const RemoveButton = ({
   compact?: boolean;
 }) => (
   <Tooltip>
-    <Tooltip.Trigger>
-      <Button
-        isIconOnly
-        aria-label={label}
-        className={
-          compact
-            ? 'h-6 w-6 min-w-6 shrink-0 text-[#949ba4] hover:text-danger'
-            : 'h-8 w-8 min-w-8 shrink-0 text-[#b5bac1] hover:text-danger'
-        }
-        isDisabled={isDisabled}
-        variant="ghost"
-        onPress={onPress}
-      >
-        <MinusCircleIcon compact={compact} />
-      </Button>
-    </Tooltip.Trigger>
+    <Button
+      isIconOnly
+      aria-label={label}
+      className={
+        compact
+          ? 'h-6 w-6 min-w-6 shrink-0 text-[#949ba4] hover:text-danger'
+          : 'h-8 w-8 min-w-8 shrink-0 text-[#b5bac1] hover:text-danger'
+      }
+      isDisabled={isDisabled}
+      variant="ghost"
+      onPress={onPress}
+    >
+      <MinusCircleIcon compact={compact} />
+    </Button>
     <Tooltip.Content>{label}</Tooltip.Content>
   </Tooltip>
 );

@@ -1,8 +1,12 @@
+import { featureFlags, type FeatureFlag } from '@/lib/settings/featureFlags';
+
 export type GuideSection = {
   id?: string;
   heading?: string;
   paragraphs: string[];
   list?: string[];
+  /** When set, section is omitted unless that dashboard feature flag is on. */
+  featureFlag?: FeatureFlag;
 };
 
 export type Guide = {
@@ -59,6 +63,7 @@ export const guides: Guide[] = [
       },
       {
         id: 'delete-expired',
+        featureFlag: 'deleteExpiredNotifications',
         heading: 'Delete expired notifications',
         paragraphs: [
           'When Delete expired notifications is enabled on a channel, Genesis removes tracking alert messages after the underlying worldstate event ends.',
@@ -117,4 +122,13 @@ export const guides: Guide[] = [
   },
 ];
 
-export const getGuide = (slug: string) => guides.find((guide) => guide.slug === slug);
+const sectionVisible = (section: GuideSection) => !section.featureFlag || featureFlags[section.featureFlag];
+
+export const getGuide = (slug: string) => {
+  const guide = guides.find((entry) => entry.slug === slug);
+  if (!guide) return undefined;
+  return { ...guide, sections: guide.sections.filter(sectionVisible) };
+};
+
+export const listGuides = () =>
+  guides.map((guide) => ({ ...guide, sections: guide.sections.filter(sectionVisible) }));

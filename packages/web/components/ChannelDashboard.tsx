@@ -167,7 +167,9 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
         allowCustom: boolSelect(settings.allowCustom),
         allowInline: boolSelect(settings.allowInline),
         'settings.cc.ping': boolSelect(settings['settings.cc.ping']),
-        deleteExpired: boolSelect(settings.deleteExpired),
+        ...(featureFlags.deleteExpiredNotifications
+          ? { deleteExpired: boolSelect(settings.deleteExpired) }
+          : {}),
       }),
     });
     setStatus(res.ok ? 'General settings saved.' : 'Failed to save general settings.');
@@ -317,12 +319,14 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
               value={settings['settings.cc.ping']}
               onChange={(value) => setSettings((prev) => ({ ...prev, 'settings.cc.ping': value }))}
             />
-            <BoolSelect
-              label="Delete expired notifications"
-              helpKey="deleteExpired"
-              value={settings.deleteExpired}
-              onChange={(value) => setSettings((prev) => ({ ...prev, deleteExpired: value }))}
-            />
+            {featureFlags.deleteExpiredNotifications ? (
+              <BoolSelect
+                label="Delete expired notifications"
+                helpKey="deleteExpired"
+                value={settings.deleteExpired}
+                onChange={(value) => setSettings((prev) => ({ ...prev, deleteExpired: value }))}
+              />
+            ) : null}
             <Button variant="primary" onPress={() => void saveGeneral()}>
               Save general
             </Button>

@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import Link from 'next/link';
 import { Card } from '@heroui/react';
 
-import { guides } from '@/lib/content/guides';
+import { listGuides } from '@/lib/content/guides';
 
 const HomeGuides: FC = () => (
   <section className="flex flex-col gap-4">
@@ -12,7 +12,7 @@ const HomeGuides: FC = () => (
     </div>
 
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {guides.map((guide) => (
+      {listGuides().map((guide) => (
         <Card key={guide.slug} className="border border-white/10 bg-[#2b2d31] p-5">
           <Card.Header>
             <Card.Title className="text-white">{guide.title}</Card.Title>

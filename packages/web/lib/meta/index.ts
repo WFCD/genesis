@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { trackableEvents, trackableItems } from '#shared/utilities/CommonFunctions';
-import { pingables } from '#shared/resources/index';
+import pingables from '#shared/resources/pingables.json';
 
 const flattenTrackables = () => {
   const values = new Set<string>();

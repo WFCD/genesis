@@ -53,6 +53,11 @@ export default class OnReadyHandle extends Handler {
       this.settings.init();
       this.bot.readyToExecute = true;
 
+      // Fresh DB / new volume has empty `channels`; GuildCreate only fires on join.
+      // Backfill text channels from Discord cache so web can mark guilds active.
+      await this.#repopulateChannels();
+      this.logger.debug('Channel registry backfilled from Discord cache');
+
       await this.#updatePresence();
       this.setupAdditionalHandlers();
     } catch (e) {
