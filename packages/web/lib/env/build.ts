@@ -62,10 +62,10 @@ export const buildEnv = (read: EnvReader): WebEnv => {
       token: readBotToken(read),
     },
     mysql: {
-      host: read('MYSQL_HOST', 'localhost')!,
+      host: read('MYSQL_HOST', '127.0.0.1')!,
       port: Number(read('MYSQL_PORT', '3306')),
       user: read('MYSQL_USER', 'genesis')!,
-      password: read('MYSQL_PASSWORD'),
+      password: read('MYSQL_PASSWORD', 'genesis'),
       database: read('MYSQL_DB', 'genesis')!,
     },
   };

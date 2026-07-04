@@ -14,7 +14,7 @@ import { formatTrackableLabel } from '@/lib/meta/trackableLabels';
 import { useGuildLayout } from './GuildLayoutContext';
 import TrackableBadge from './dashboard/TrackableBadge';
 import LoadingIndicator from './dashboard/LoadingIndicator';
-import { BoolSelect, HeroSelect } from './dashboard/FormControls';
+import { BoolSelect, FieldLabelWithHelp, HeroSelect } from './dashboard/FormControls';
 
 type Panel = 'general' | 'lfg' | 'tracking' | 'permissions';
 
@@ -167,7 +167,9 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
         allowCustom: boolSelect(settings.allowCustom),
         allowInline: boolSelect(settings.allowInline),
         'settings.cc.ping': boolSelect(settings['settings.cc.ping']),
-        deleteExpired: boolSelect(settings.deleteExpired),
+        ...(featureFlags.deleteExpiredNotifications
+          ? { deleteExpired: boolSelect(settings.deleteExpired) }
+          : {}),
       }),
     });
     setStatus(res.ok ? 'General settings saved.' : 'Failed to save general settings.');
@@ -295,29 +297,36 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
             />
             <BoolSelect
               label="Ephemeral slash replies"
+              helpKey="ephemerate"
               value={settings.ephemerate}
               onChange={(value) => setSettings((prev) => ({ ...prev, ephemerate: value }))}
             />
             <BoolSelect
               label="Allow custom commands"
+              helpKey="allowCustom"
               value={settings.allowCustom}
               onChange={(value) => setSettings((prev) => ({ ...prev, allowCustom: value }))}
             />
             <BoolSelect
               label="Allow inline commands"
+              helpKey="allowInline"
               value={settings.allowInline}
               onChange={(value) => setSettings((prev) => ({ ...prev, allowInline: value }))}
             />
             <BoolSelect
               label="Ping on custom commands"
+              helpKey="settings.cc.ping"
               value={settings['settings.cc.ping']}
               onChange={(value) => setSettings((prev) => ({ ...prev, 'settings.cc.ping': value }))}
             />
-            <BoolSelect
-              label="Delete expired notifications"
-              value={settings.deleteExpired}
-              onChange={(value) => setSettings((prev) => ({ ...prev, deleteExpired: value }))}
-            />
+            {featureFlags.deleteExpiredNotifications ? (
+              <BoolSelect
+                label="Delete expired notifications"
+                helpKey="deleteExpired"
+                value={settings.deleteExpired}
+                onChange={(value) => setSettings((prev) => ({ ...prev, deleteExpired: value }))}
+              />
+            ) : null}
             <Button variant="primary" onPress={() => void saveGeneral()}>
               Save general
             </Button>
@@ -383,7 +392,7 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
               </div>
             </div>
             <TextField fullWidth value={trackableQuery} onChange={setTrackableQuery}>
-              <Label className="text-[#b5bac1]">Search trackables</Label>
+              <FieldLabelWithHelp label="Search trackables" helpKey="tracking.search" />
               <Input className="bg-[#1e1f22]" />
             </TextField>
             <Select
@@ -392,7 +401,7 @@ const ChannelDashboard: FC<ChannelDashboardProps> = ({ guildId, channelId }) => 
               selectedKeys={selectedTrackables}
               onSelectionChange={(keys) => setSelectedTrackables(Array.from(keys as Set<string>))}
             >
-              <Label className="text-[#b5bac1]">Add trackables</Label>
+              <FieldLabelWithHelp label="Add trackables" helpKey="tracking.add" />
               <Select.Trigger className="bg-[#1e1f22]">
                 <Select.Value />
                 <Select.Indicator />

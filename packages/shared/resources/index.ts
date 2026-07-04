@@ -1,11 +1,22 @@
 import { createRequire } from 'module';
-import fs from 'node:fs';
-import path, { dirname } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import logger from '#shared/utilities/Logger';
 
 import type { CommandLocaleModule } from './locales/commands/types';
+import commandsCs from './locales/commands/cs';
+import commandsDe from './locales/commands/de';
+import commandsEn from './locales/commands/en';
+import commandsEs from './locales/commands/es';
+import commandsFr from './locales/commands/fr';
+import commandsIt from './locales/commands/it';
+import commandsKo from './locales/commands/ko';
+import commandsPl from './locales/commands/pl';
+import commandsPt from './locales/commands/pt';
+import commandsRu from './locales/commands/ru';
+import commandsSr from './locales/commands/sr';
+import commandsTr from './locales/commands/tr';
+import commandsUk from './locales/commands/uk';
+import commandsZh from './locales/commands/zh';
 
 const require = createRequire(import.meta.url);
 
@@ -92,16 +103,24 @@ export const LocalDiscordLocaleMappings: Record<string, string> = {
 };
 
 export const cmds: Record<string, CommandManifestEntry> = {};
-const allCommands: Record<string, CommandLocaleModule> = {};
-const ldirname = dirname(fileURLToPath(import.meta.url));
 const nameRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
 
-const resolveCommandLocaleFile = (locale: string): string | undefined => {
-  for (const ext of ['.ts', '.js']) {
-    const candidate = path.resolve(ldirname, './locales/commands', `${locale}${ext}`);
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  return undefined;
+/** Static imports so Next/webpack can resolve command locales (runtime file:// imports fail). */
+const commandLocaleBundles: Record<string, CommandLocaleModule> = {
+  cs: commandsCs,
+  de: commandsDe,
+  en: commandsEn,
+  es: commandsEs,
+  fr: commandsFr,
+  it: commandsIt,
+  ko: commandsKo,
+  pl: commandsPl,
+  pt: commandsPt,
+  ru: commandsRu,
+  sr: commandsSr,
+  tr: commandsTr,
+  uk: commandsUk,
+  zh: commandsZh,
 };
 
 const resolveDiscordLocaleKey = (locale: string): string | undefined => {
@@ -111,15 +130,13 @@ const resolveDiscordLocaleKey = (locale: string): string | undefined => {
   return undefined;
 };
 
-await Promise.all(
-  locales.map(async (locale) => {
-    const localeKey = resolveDiscordLocaleKey(locale);
-    const filePath = resolveCommandLocaleFile(locale);
-    if (!localeKey || !filePath) return;
-
-    allCommands[localeKey] = (await import(pathToFileURL(filePath).href)).default as CommandLocaleModule;
-  })
-);
+const allCommands: Record<string, CommandLocaleModule> = {};
+for (const locale of locales) {
+  const localeKey = resolveDiscordLocaleKey(locale);
+  const bundle = commandLocaleBundles[locale];
+  if (!localeKey || !bundle) continue;
+  allCommands[localeKey] = bundle;
+}
 
 const englishCommands = allCommands['en-US'];
 if (locales.includes('en') && englishCommands) {

@@ -6,6 +6,7 @@ import logger from '#shared/utilities/Logger';
 
 import type { DatabaseRepositories } from './database/DatabaseRepositories';
 import type { DefaultSettings, QueryResult } from './database/DatabaseDeps';
+import { mysqlConnectionOptions } from './mysqlConnection';
 import type BuildRepository from './database/repositories/BuildRepository';
 import BlacklistRepository from './database/repositories/BlacklistRepository';
 import ChannelSettingsRepository from './database/repositories/ChannelSettingsRepository';
@@ -103,15 +104,7 @@ export default class Database implements DatabaseRepositories {
       ephemerate: true,
     };
 
-    const opts = {
-      supportBigNumbers: true,
-      bigNumberStrings: true,
-      host: process.env.MYSQL_HOST || 'localhost',
-      port: Number(process.env.MYSQL_PORT || 3306),
-      user: process.env.MYSQL_USER || 'genesis',
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DB || 'genesis',
-    };
+    const opts = mysqlConnectionOptions();
 
     try {
       this.db = mysql.createPool(opts);
@@ -126,12 +119,7 @@ export default class Database implements DatabaseRepositories {
     const instance = new Database(bot);
     await instance.#wireRepositories();
 
-    const opts = {
-      host: process.env.MYSQL_HOST || 'localhost',
-      port: process.env.MYSQL_PORT || 3306,
-      user: process.env.MYSQL_USER || 'genesis',
-      database: process.env.MYSQL_DB || 'genesis',
-    };
+    const opts = mysqlConnectionOptions();
 
     const skipProbe = process.env.NODE_ENV === 'test' && process.env.TEST_MARIADB !== '1';
     if (skipProbe) {

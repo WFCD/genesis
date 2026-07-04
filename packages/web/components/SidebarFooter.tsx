@@ -1,7 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
-import { Button, Dropdown, Tooltip } from '@heroui/react';
+import { Dropdown, Tooltip } from '@heroui/react';
 
 import { signOutUser } from '@/app/actions/auth';
 
@@ -18,17 +18,11 @@ type Props = {
 const SidebarFooter: FC<Props> = ({ userName }) => (
   <Dropdown>
     <Tooltip>
-      <Dropdown.Trigger>
-        <Tooltip.Trigger>
-          <Button
-            isIconOnly
-            aria-label="User settings"
-            className="h-12 w-12 rounded-[24px] bg-[#313338] text-[#dbdee1] hover:rounded-[16px] hover:bg-[#5865f2] hover:text-white"
-            variant="ghost"
-          >
-            <SettingsIcon />
-          </Button>
-        </Tooltip.Trigger>
+      <Dropdown.Trigger
+        aria-label="User settings"
+        className="inline-flex h-12 w-12 items-center justify-center rounded-[24px] bg-[#313338] text-[#dbdee1] hover:rounded-[16px] hover:bg-[#5865f2] hover:text-white"
+      >
+        <SettingsIcon />
       </Dropdown.Trigger>
       <Tooltip.Content>Settings</Tooltip.Content>
     </Tooltip>

@@ -24,7 +24,11 @@ const GuidePage = async ({ params }: Props) => {
 
       <div className="flex flex-col gap-6">
         {guide.sections.map((section, index) => (
-          <section key={index} className="rounded-lg border border-white/10 bg-[#2b2d31] p-5">
+          <section
+            key={section.id ?? index}
+            id={section.id}
+            className="scroll-mt-6 rounded-lg border border-white/10 bg-[#2b2d31] p-5"
+          >
             {section.heading ? <h2 className="text-lg font-semibold text-white">{section.heading}</h2> : null}
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph.slice(0, 40)} className="mt-3 text-sm leading-relaxed text-[#dbdee1]">

@@ -4,4 +4,7 @@ const enabled = (value: string | undefined) => value === '1' || value?.toLowerCa
 export const featureFlags = {
   channelPermissions: enabled(process.env.NEXT_PUBLIC_FEATURE_CHANNEL_PERMISSIONS),
   guildWelcome: enabled(process.env.NEXT_PUBLIC_FEATURE_GUILD_WELCOME),
+  deleteExpiredNotifications: enabled(process.env.NEXT_PUBLIC_FEATURE_DELETE_EXPIRED),
 } as const;
+
+export type FeatureFlag = keyof typeof featureFlags;
