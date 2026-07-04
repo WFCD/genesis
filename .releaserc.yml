@@ -8,6 +8,10 @@ plugins:
   -
     - "@semantic-release/npm"
     - npmPublish: false
+  # npm prepare only bumps package.json; sync lock so Docker `npm ci` succeeds
+  -
+    - "@semantic-release/exec"
+    - prepareCmd: npm install --package-lock-only --ignore-scripts
   - "@semantic-release/github"
   -
     - "@codedependant/semantic-release-docker"
@@ -44,6 +48,7 @@ plugins:
     - "@semantic-release/git"
     - assets:
         - package.json
+        - package-lock.json
         - CHANGELOG.md
       # don't include the release notes, as it's already in the changelog
       # and would blow up commitlint
