@@ -1,3 +1,15 @@
+# [3.1.0](https://github.com/WFCD/genesis/compare/v3.0.8...v3.1.0) (2026-07-05)
+
+
+### Bug Fixes
+
+* confusing boolean displays ([cfe0f8e](https://github.com/WFCD/genesis/commit/cfe0f8e0d5829c12eb1d0df7b94747e21aad9fb5))
+
+
+### Features
+
+* dashboard guides ([#1178](https://github.com/WFCD/genesis/issues/1178)) ([4e89145](https://github.com/WFCD/genesis/commit/4e89145d897fbfce04792d74b0f7c6aed4164500))
+
 ## [3.0.8](https://github.com/WFCD/genesis/compare/v3.0.7...v3.0.8) (2026-06-17)
 
 
