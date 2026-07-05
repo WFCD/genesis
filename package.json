@@ -54,6 +54,14 @@
     "test:db": "TEST_MARIADB=1 MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306 MYSQL_USER=genesis MYSQL_PASSWORD=genesis MYSQL_DB=genesis NODE_ENV=test node --import tsx/esm ./node_modules/mocha/bin/mocha.js",
     "typecheck:web": "npm run typecheck -w @genesis/web"
   },
+  "overrides": {
+    "eslint-plugin-jsx-a11y": {
+      "eslint": "$eslint"
+    },
+    "eslint-plugin-react": {
+      "eslint": "$eslint"
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
