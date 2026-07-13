@@ -86,7 +86,7 @@
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.17.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-prefer-arrow-functions": "^3.9.1",
+    "eslint-plugin-prefer-arrow-functions": "^3.10.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-yml": "^3.5.0",
@@ -95,7 +95,7 @@
     "lint-staged": "^17.0.8",
     "mocha": "^11.7.6",
     "tsup": "^8.5.1",
-    "tsx": "^4.20.3",
+    "tsx": "^4.23.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.1"
   },
