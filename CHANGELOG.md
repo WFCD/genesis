@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/WFCD/genesis/compare/v3.1.0...v3.1.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* **deps:** bump the dependencies group with 4 updates ([#1183](https://github.com/WFCD/genesis/issues/1183)) ([7f83a91](https://github.com/WFCD/genesis/commit/7f83a91200c84f165dfaf916f463a41b08438c08))
+
 # [3.1.0](https://github.com/WFCD/genesis/compare/v3.0.8...v3.1.0) (2026-07-05)
 
 
