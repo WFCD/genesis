@@ -12,7 +12,7 @@
     "@genesis/shared": "*",
     "decache": "^4.6.2",
     "discord.js": "^14.16.0",
-    "parse-duration": "^2.1.6",
+    "parse-duration": "^2.1.8",
     "ping": "^1.0.0",
     "warframe-name-generator": "^2.0.9"
   },
