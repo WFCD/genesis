@@ -25,9 +25,18 @@ const serverOnlyAliases = [
 const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   outputFileTracingRoot: path.join(rootDir, '../..'),
-  serverExternalPackages: ['mysql2', 'discord.js'],
+  serverExternalPackages: ['mysql2', 'discord.js', '@discordjs/ws', 'zlib-sync', 'bufferutil', 'utf-8-validate', 'erlpack'],
   webpack: (config, { isServer }) => {
     config.resolve.alias['#shared'] = path.join(rootDir, '../shared');
+
+    // Optional native deps of discord.js — not needed by the web app, break alpine builds.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'zlib-sync': false,
+      bufferutil: false,
+      'utf-8-validate': false,
+      erlpack: false,
+    };
 
     if (!isServer) {
       config.resolve.alias = {

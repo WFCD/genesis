@@ -6,20 +6,27 @@ COPY packages/bot/package.json ./packages/bot/
 COPY packages/worker/package.json ./packages/worker/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/web/package.json ./packages/web/
-RUN npm ci --include-workspace-root -w @genesis/web
+# Ensure package node_modules dirs exist so release-stage COPY always works
+# (npm may hoist everything to the root, or nest workspace deps under packages/*).
+RUN npm ci --include-workspace-root -w @genesis/web \
+  && mkdir -p packages/web/node_modules packages/shared/node_modules
 
 FROM node:krypton-alpine AS release
 
-LABEL org.opencontainers.image.source = "https://github.com/WFCD/genesis"
+LABEL org.opencontainers.image.source="https://github.com/WFCD/genesis"
 
 WORKDIR /app/genesis
-COPY --from=base /app/genesis/node_modules ./node_modules
 COPY . .
+COPY --from=base /app/genesis/node_modules ./node_modules
+COPY --from=base /app/genesis/packages/web/node_modules ./packages/web/node_modules
+COPY --from=base /app/genesis/packages/shared/node_modules ./packages/shared/node_modules
 
-WORKDIR /app/genesis/packages/web
 ENV SCOPE=WEB
 ENV NODE_ENV=production
-RUN npm run build
+# Auth.js requires a secret at build time for production; runtime compose overrides.
+ENV AUTH_SECRET=build-time-placeholder
+RUN npm run build -w @genesis/web
 
+WORKDIR /app/genesis/packages/web
 EXPOSE 3131
 CMD ["npm", "run", "start"]

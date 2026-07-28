@@ -116,19 +116,24 @@ export const fetchBotAvatarUrl = async (size = 32) => {
   const headers = botHeaders();
   if (!headers) return DEFAULT_BOT_AVATAR;
 
-  const res = await fetch(`${DISCORD_API}/users/@me`, {
-    headers,
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) return DEFAULT_BOT_AVATAR;
+  try {
+    const res = await fetch(`${DISCORD_API}/users/@me`, {
+      headers,
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return DEFAULT_BOT_AVATAR;
 
-  const user = (await res.json()) as { id: string; avatar: string | null };
-  if (user.avatar) {
-    return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=${size}`;
+    const user = (await res.json()) as { id: string; avatar: string | null };
+    if (user.avatar) {
+      return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=${size}`;
+    }
+
+    const index = Number((BigInt(user.id) >> 22n) % 6n);
+    return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
+  } catch {
+    // Build/prerender or transient Discord outages must not fail the web image.
+    return DEFAULT_BOT_AVATAR;
   }
-
-  const index = Number((BigInt(user.id) >> 22n) % 6n);
-  return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
 };
 
 export const fetchDatabaseGuildChannelIds = async (guildId: string) => {
