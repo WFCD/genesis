@@ -56,6 +56,14 @@ const makeNightwaveType = (challenge) => {
   }
   return `nightwave.${type}`;
 };
+
+const voidTradersFrom = (newData) => {
+  if (newData.voidTraders?.length) return newData.voidTraders;
+  if (newData.voidTrader) return [newData.voidTrader];
+  return [];
+};
+
+const baroClaimId = (vt) => `${vt.id}${isActive(vt) ? '1' : '0'}`;
 const buildNotifiableData = (newData, notified) => {
   try {
     const data = {};
@@ -67,12 +75,10 @@ const buildNotifiableData = (newData, notified) => {
         ? newData.archonHunt
         : undefined
     );
-    data.baros = wrap(() =>
-      newData.voidTraders?.length &&
-      newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))?.length
-        ? newData.voidTraders?.filter((vt) => !notified.includes(`${vt.id}${isActive(vt) ? '1' : '0'}`))
-        : undefined
-    );
+    data.baros = wrap(() => {
+      const traders = voidTradersFrom(newData).filter((vt) => !notified.includes(baroClaimId(vt)));
+      return traders.length ? traders : undefined;
+    });
     data.conclave = wrap(() =>
       newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id))
     );
@@ -143,7 +149,7 @@ const collectWorldstateClaimIds = (data) => {
     add(trackableClaimId(acolyte.pid, `enemies${acolyte.isDiscovered ? '' : '.departed'}`))
   );
 
-  (data.baros || []).forEach((vt) => add(`${vt.id}${isActive(vt) ? '1' : '0'}`));
+  (data.baros || []).forEach((vt) => add(baroClaimId(vt)));
 
   if (data.conclave?.length) {
     const dailies = data.conclave.filter((challenge) => challenge.category === 'day');
@@ -202,11 +208,7 @@ const collectWorldstateClaimIds = (data) => {
 const buildWorldstateSnapshot = (rawData) =>
   [
     ...rawData.persistentEnemies.map((a) => a.pid),
-    ...(rawData.voidTraders?.length
-      ? rawData.voidTraders.map((vt) => `${vt.id}${isActive(vt) ? '1' : '0'}`)
-      : rawData.voidTrader
-        ? [`${rawData.voidTrader.id}${isActive(rawData.voidTrader) ? '1' : '0'}`]
-        : []),
+    ...voidTradersFrom(rawData).map((vt) => baroClaimId(vt)),
     ...rawData.fissures.map((f) => f.id),
     ...rawData.invasions.map((i) => i.id),
     ...rawData.news.map((n) => n.id),
@@ -344,7 +346,7 @@ export default class Notifier {
 
       const deps = { platform, locale, i18n: i18ns[locale] };
       await this.#sendAcolytes(acolytes, deps);
-      if (games.includes('BARO') && baros?.length) {
+      if (games.includes('WARFRAME') && baros?.length) {
         await Promise.map(baros, (baro) => this.#sendBaro(baro, deps));
       }
       if (conclave && conclave.length > 0) {
@@ -573,7 +575,7 @@ export default class Notifier {
   }
 
   async #sendBaro(newBaro, deps) {
-    const claimId = `${newBaro.id}${isActive(newBaro) ? '1' : '0'}`;
+    const claimId = baroClaimId(newBaro);
     return this.#standardBroadcast(newBaro, {
       ...deps,
       Embed: embeds.VoidTrader,

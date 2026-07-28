@@ -88,7 +88,7 @@ const buildNotifiableData = (newData, platform, locale) => {
 const resolveCambionCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (isWithinRange(minutesRemaining)) {
+  if (cycleChange || isWithinRange(minutesRemaining)) {
     clone.state = clone.state === 'vome' ? 'fass' : 'vome';
     const newEnd = new Date(clone.expiry).getTime() + durations.deimos[clone.state];
     clone.id = `cambionCycle${newEnd}`;
@@ -104,7 +104,7 @@ const resolveCambionCycleType = ({ data: newCycle, dirty: cycleChange }) => {
 const resolveCetusCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (isWithinRange(minutesRemaining)) {
+  if (cycleChange || isWithinRange(minutesRemaining)) {
     clone.isCetus = true;
     clone.isDay = !clone.isDay;
     clone.state = clone.state === 'day' ? 'night' : 'day';
@@ -122,7 +122,7 @@ const resolveCetusCycleType = ({ data: newCycle, dirty: cycleChange }) => {
 const resolveEarthCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (isWithinRange(minutesRemaining)) {
+  if (cycleChange || isWithinRange(minutesRemaining)) {
     clone.isDay = !clone.isDay;
     clone.state = clone.state === 'day' ? 'night' : 'day';
     const newEnd = new Date(clone.expiry).getTime() + durations.earth[clone.state];
@@ -139,7 +139,7 @@ const resolveEarthCycleType = ({ data: newCycle, dirty: cycleChange }) => {
 const resolveVallisCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (isWithinRange(minutesRemaining)) {
+  if (cycleChange || isWithinRange(minutesRemaining)) {
     clone.isWarm = !clone.isWarm;
     clone.state = clone.state === 'warm' ? 'cold' : 'warm';
     const newEnd = new Date(clone.expiry).getTime() + durations.vallis[clone.state];
@@ -157,7 +157,7 @@ const resolveDuviriCycleType = ({ data: newCycle, dirty: cycleChange }) => {
   if (!newCycle) return undefined;
   let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (isWithinRange(minutesRemaining)) {
+  if (cycleChange || isWithinRange(minutesRemaining)) {
     clone.state = nextMood(clone.state);
     const newEnd = new Date(clone.expiry).getTime() + durations.duviri;
     clone.id = `duviriCycle${clone.state}${newEnd}`;
@@ -224,13 +224,14 @@ export default class CycleNotifier {
   async #onNewData(platform, locale, newData) {
     if (!this.#ready) return;
 
+    const beatsKey = `${platform}:${locale}`;
     const key = `${platform}:${locale}:cycles`;
     // don't wait for the previous to finish, this creates a giant backup,
     //  adding 4 new entries every few seconds
     if (updating.has(key)) return;
 
-    if (!beats[key]) beats[key] = { lastUpdate: Date.now(), currCycleStart: undefined };
-    beats[key].currCycleStart = Date.now();
+    if (!beats[beatsKey]) beats[beatsKey] = { lastUpdate: Date.now(), currCycleStart: undefined };
+    beats[beatsKey].currCycleStart = Date.now();
     if (!newData?.timestamp) return;
 
     updating.add(key);
@@ -254,6 +255,7 @@ export default class CycleNotifier {
   }
 
   async #sendNew(platform, locale, rawData, notifiedIds, cycles, key) {
+    const beatsKey = `${platform}:${locale}`;
     const deliveredCycleIds = [];
     let claimedIds = new Set();
     const i18n = i18ns[locale];
@@ -287,7 +289,7 @@ export default class CycleNotifier {
       logger.error(e);
     } finally {
       this.#claimedIds = null;
-      beats[key].lastUpdate = Date.now();
+      beats[beatsKey].lastUpdate = Date.now();
     }
 
     const undelivered = [...claimedIds].filter((id) => !deliveredCycleIds.includes(id));

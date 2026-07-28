@@ -32,12 +32,10 @@ export default class Broadcaster {
     delete embed.bot;
 
     const guilds = this.workerCache.getKey('guilds');
-    const channels = cachedEvents.includes(type)
-      ? this.workerCache.getKey(`${type}:${platform}:${locale}`)
-      : await this.settings.getAgnosticNotifications({ type, platform, items, locale });
+    const channels = await this.#resolveChannels({ type, platform, locale, items });
     if (!channels?.length) {
       logger.debug(`No channels on ${platform}:${locale} tracking ${type}... continuing`, 'WS');
-      return true;
+      return !isCycleNotificationType(type);
     }
 
     let anySent = false;
@@ -110,5 +108,23 @@ export default class Broadcaster {
       })
     );
     return anySent;
+  }
+
+  /** Cached trackables can be stale/empty after deploy — fall back to live DB lookup. */
+  async #resolveChannels({ type, platform, locale, items }) {
+    if (!cachedEvents.includes(type)) {
+      return this.settings.getAgnosticNotifications({ type, platform, items, locale });
+    }
+
+    const cacheKey = `${type}:${platform}:${locale}`;
+    const cached = this.workerCache.getKey(cacheKey);
+    if (cached?.length) return cached;
+
+    const fresh = await this.settings.getAgnosticNotifications({ type, platform, items, locale });
+    if (fresh?.length) {
+      this.workerCache.setKey(cacheKey, fresh);
+      this.workerCache.save(true);
+    }
+    return fresh ?? [];
   }
 }

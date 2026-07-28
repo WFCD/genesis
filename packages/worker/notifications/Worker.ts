@@ -68,7 +68,8 @@ class Worker {
     }
     const eDate = Date.now();
     logger.info(`ping hydration took ${eDate - sDate}ms`, 'DB');
-    this.#activeHydrations.splice(this.#activeHydrations.indexOf('pings'));
+    const pingsIndex = this.#activeHydrations.indexOf('pings');
+    if (pingsIndex !== -1) this.#activeHydrations.splice(pingsIndex, 1);
   }
   async hydrateGuilds() {
     if (this.#activeHydrations.includes('guilds')) {
@@ -84,7 +85,8 @@ class Worker {
       }
       const eDate = Date.now();
       logger.info(`guild hydration took ${eDate - sDate}ms`, 'DB');
-      this.#activeHydrations.splice(this.#activeHydrations.indexOf('guilds'));
+      const guildsIndex = this.#activeHydrations.indexOf('guilds');
+      if (guildsIndex !== -1) this.#activeHydrations.splice(guildsIndex, 1);
     }
     await this.hydratePings();
   }
@@ -116,7 +118,8 @@ class Worker {
     deps.workerCache.save(true);
     const eDate = Date.now();
     logger.info(`query hydration took ${eDate - sDate}ms`, 'DB');
-    this.#activeHydrations.splice(this.#activeHydrations.indexOf('events'));
+    const eventsIndex = this.#activeHydrations.indexOf('events');
+    if (eventsIndex !== -1) this.#activeHydrations.splice(eventsIndex, 1);
   }
   async initCache() {
     if (games.includes('WARFRAME')) {
@@ -135,7 +138,8 @@ class Worker {
           Promise.all(
             activePlatforms.map(async (platform) => {
               locales.forEach((locale) => {
-                if (!deps.workerCache.getKey(`${cachedEvent}:${platform}:${locale}`)) {
+                const cached = deps.workerCache.getKey(`${cachedEvent}:${platform}:${locale}`);
+                if (!cached?.length) {
                   hydrateEvents = true;
                 }
               });

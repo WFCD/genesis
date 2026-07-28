@@ -139,7 +139,8 @@ export const updating = {
     else currentUpdating.push(add);
   },
   remove: (remove) => {
-    currentUpdating.splice(currentUpdating.indexOf(remove));
+    const index = currentUpdating.indexOf(remove);
+    if (index !== -1) currentUpdating.splice(index, 1);
   },
   has: (current) => currentUpdating.includes(current),
 };
