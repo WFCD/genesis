@@ -1,3 +1,10 @@
+## [3.1.5](https://github.com/WFCD/genesis/compare/v3.1.4...v3.1.5) (2026-07-28)
+
+
+### Bug Fixes
+
+* **notifier:** unique cycle claims and delivery issue tracking ([1d2a9b9](https://github.com/WFCD/genesis/commit/1d2a9b90df306ce24d9dc459e7f3e7e29fe03124))
+
 ## [3.1.4](https://github.com/WFCD/genesis/compare/v3.1.3...v3.1.4) (2026-07-28)
 
 
