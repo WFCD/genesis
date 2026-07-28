@@ -14,7 +14,7 @@
     "cron": "^4.4.0",
     "dayjs": "^1.11.21",
     "discord.js": "^14.27.0",
-    "flat-cache": "^3.2.0",
+    "flat-cache": "^4.0.1",
     "i18n-string-templates": "^2.0.8",
     "json-query": "^2.2.2",
     "mysql2": "^3.22.5",

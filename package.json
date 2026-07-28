@@ -36,6 +36,7 @@
     "build:ts": "tsc --noEmit",
     "build:web": "npm run build -w @genesis/web",
     "build:worker": "docker build -f notifier.Dockerfile . -t genesis-worker",
+    "check:lockfile-hoist": "node scripts/check-lockfile-hoist.mjs",
     "predev": "node --import tsx/esm scripts/ensure-test-mariadb.ts",
     "dev": "concurrently -n bot,web,worker -c cyan,magenta,gray  npm:dev:bot npm:dev:web npm:dev:worker",
     "dev:bot": "SCOPE=BOT node --import tsx/esm --import \"#shared/utilities/loadParentEnvFiles\" packages/bot/main",
@@ -61,9 +62,6 @@
     "eslint-plugin-react": {
       "eslint": "$eslint"
     }
-  },
-  "dependencies": {
-    "discord.js": "^14.27.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
