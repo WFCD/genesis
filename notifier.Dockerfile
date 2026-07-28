@@ -7,6 +7,7 @@ COPY packages/bot/package.json ./packages/bot/
 COPY packages/worker/package.json ./packages/worker/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/web/package.json ./packages/web/
+ENV HUSKY=0
 RUN npm ci --include-workspace-root -w @genesis/bot -w @genesis/worker -w @genesis/shared
 
 FROM deps AS build

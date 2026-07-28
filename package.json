@@ -62,6 +62,9 @@
       "eslint": "$eslint"
     }
   },
+  "dependencies": {
+    "discord.js": "^14.27.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
