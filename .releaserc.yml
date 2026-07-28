@@ -36,9 +36,9 @@ plugins:
     - dockerImage: genesis/web
       dockerRegistry: ghcr.io
       dockerProject: wfcd
+      # amd64 only: Next/SWC/sharp SIGILL (exit 132) under QEMU arm64 on GHA runners
       dockerPlatform:
         - linux/amd64
-        - linux/arm64
       dockerFile: web.Dockerfile
   -
     - "@semantic-release/changelog"
