@@ -11,7 +11,16 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/web/package.json ./packages/web/
 # Ensure package node_modules dirs exist so release-stage COPY always works
 # (npm may hoist everything to the root, or nest workspace deps under packages/*).
+# Lockfiles generated on macOS often omit linux musl optional natives
+# (lightningcss, @tailwindcss/oxide); install Alpine-matching packages so
+# Next/Tailwind CSS can load.
 RUN npm ci --ignore-scripts --include-workspace-root -w @genesis/web \
+  && ARCH="$(node -p "process.arch === 'x64' ? 'x64' : process.arch")" \
+  && LCSS_VER="$(node -e "console.log(JSON.parse(require('node:fs').readFileSync('node_modules/lightningcss/package.json','utf8')).version)")" \
+  && OXIDE_VER="$(node -e "console.log(JSON.parse(require('node:fs').readFileSync('node_modules/@tailwindcss/oxide/package.json','utf8')).version)")" \
+  && npm install --no-save --ignore-scripts \
+       "lightningcss-linux-${ARCH}-musl@${LCSS_VER}" \
+       "@tailwindcss/oxide-linux-${ARCH}-musl@${OXIDE_VER}" \
   && mkdir -p packages/web/node_modules packages/shared/node_modules
 
 FROM node:krypton-alpine AS release
