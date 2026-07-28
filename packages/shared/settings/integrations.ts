@@ -239,4 +239,42 @@ export default [
 
     await db.query(SQL`DELETE FROM type_notifications WHERE type IN (${removedRssFeeds})`);
   },
+  /**
+   * Delivery issue tracking + per-guild notification pause for unknown-guild backoff.
+   */
+  async (db) => {
+    const [issueTables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notification_issues'`
+    );
+    if (!issueTables?.length) {
+      await db.query(SQL`CREATE TABLE notification_issues (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        guild_id BIGINT UNSIGNED NOT NULL,
+        channel_id BIGINT UNSIGNED NULL,
+        thread_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        code VARCHAR(64) NOT NULL,
+        message VARCHAR(512) NOT NULL,
+        count INT UNSIGNED NOT NULL DEFAULT 1,
+        first_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        last_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uq_notification_issue (guild_id, channel_id, thread_id, code),
+        KEY idx_notification_issues_guild (guild_id)
+      )`);
+    }
+
+    const [pauseTables] = await db.query(
+      SQL`SELECT TABLE_NAME FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notification_guild_pause'`
+    );
+    if (!pauseTables?.length) {
+      await db.query(SQL`CREATE TABLE notification_guild_pause (
+        guild_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+        paused_until TIMESTAMP NOT NULL,
+        reason VARCHAR(64) NOT NULL,
+        strike TINYINT UNSIGNED NOT NULL DEFAULT 1
+      )`);
+    }
+  },
 ];

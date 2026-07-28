@@ -136,6 +136,17 @@ export default class TrackingRepository {
     return this.deps.query(query);
   }
 
+  /** Drop all type/item subscriptions for a specific thread (keep channel webhook). */
+  async removeThreadNotifications(channelId: string, threadId: string | number) {
+    const tid = threadId ?? 0;
+    await this.deps.query(SQL`
+      DELETE FROM type_notifications WHERE channel_id = ${channelId} AND thread_id = ${tid}
+    `);
+    await this.deps.query(SQL`
+      DELETE FROM item_notifications WHERE channel_id = ${channelId} AND thread_id = ${tid}
+    `);
+  }
+
   async stopTracking(channel: TrackableChannel) {
     const query = SQL`DELETE FROM type_notifications WHERE channel_id = ${channel.id};`;
     return this.deps.query(query);

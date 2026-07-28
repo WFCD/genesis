@@ -172,11 +172,11 @@ const resolveDuviriCycleType = ({ data: newCycle, dirty: cycleChange }) => {
 
 const collectCycleClaimIds = (cycles) =>
   [
-    resolveCetusCycleType(cycles.cetus)?.type,
-    resolveEarthCycleType(cycles.earth)?.type,
-    resolveVallisCycleType(cycles.vallis)?.type,
-    resolveCambionCycleType(cycles.cambion)?.type,
-    cycles.duviri ? resolveDuviriCycleType(cycles.duviri)?.type : undefined,
+    resolveCetusCycleType(cycles.cetus)?.clone?.id,
+    resolveEarthCycleType(cycles.earth)?.clone?.id,
+    resolveVallisCycleType(cycles.vallis)?.clone?.id,
+    resolveCambionCycleType(cycles.cambion)?.clone?.id,
+    cycles.duviri ? resolveDuviriCycleType(cycles.duviri)?.clone?.id : undefined,
   ].filter(Boolean);
 
 export default class CycleNotifier {
@@ -236,8 +236,7 @@ export default class CycleNotifier {
 
     updating.add(key);
     try {
-      const notifiedIds = await this.#settings.getNotifiedIds(key);
-      await this.#sendNew(platform, locale, newData, notifiedIds, buildNotifiableData(newData, platform, locale), key);
+      await this.#sendNew(platform, locale, buildNotifiableData(newData, platform, locale), key);
     } catch (e) {
       if (e.message === 'already updating') {
         return;
@@ -254,7 +253,7 @@ export default class CycleNotifier {
     return this.#claimedIds.has(String(claimId));
   }
 
-  async #sendNew(platform, locale, rawData, notifiedIds, cycles, key) {
+  async #sendNew(platform, locale, cycles, key) {
     const beatsKey = `${platform}:${locale}`;
     const deliveredCycleIds = [];
     let claimedIds = new Set();
@@ -264,7 +263,7 @@ export default class CycleNotifier {
       const claimIds = collectCycleClaimIds(cycles);
       claimedIds = new Set(await this.#settings.claimNotifiedIds(key, claimIds));
       this.#claimedIds = claimedIds;
-      if (claimIds.length) {
+      if (claimedIds.size) {
         logger.debug(`claimed ${claimedIds.size}/${claimIds.length} cycle ids for ${key}`, 'CY');
       }
 
@@ -292,69 +291,67 @@ export default class CycleNotifier {
       beats[beatsKey].lastUpdate = Date.now();
     }
 
+    // Claim/release only — do not full-replace notified_ids (would sticky static types forever).
     const undelivered = [...claimedIds].filter((id) => !deliveredCycleIds.includes(id));
     if (undelivered.length) {
       await this.#settings.releaseNotifiedIds(key, undelivered);
     }
 
-    const alreadyNotified = [...new Set([...notifiedIds, ...deliveredCycleIds])];
-
-    await this.#settings.setNotifiedIds(key, alreadyNotified);
     logger.silly(`completed sending cycle notifications for ${platform} in ${locale}`);
   }
 
   async #sendCambionCycle(cycle, { platform, locale, i18n }) {
     const resolved = resolveCambionCycleType(cycle);
-    if (!resolved || !this.#canSend(resolved.type)) return undefined;
+    if (!resolved || !this.#canSend(resolved.clone.id)) return undefined;
     const sent = await this.#broadcaster.broadcast(new embeds.Cambion(resolved.clone, { i18n, locale }), {
       platform,
       type: resolved.type,
       locale,
     });
-    return sent ? resolved.type : undefined;
+    return sent ? resolved.clone.id : undefined;
   }
 
   async #sendCetusCycle(cycle, { platform, locale, i18n }) {
     const resolved = resolveCetusCycleType(cycle);
-    if (!resolved || !this.#canSend(resolved.type)) return undefined;
+    if (!resolved || !this.#canSend(resolved.clone.id)) return undefined;
     const sent = await this.#broadcaster.broadcast(new embeds.Cycle(resolved.clone, { i18n, locale, platform }), {
       platform,
       type: resolved.type,
       locale,
     });
-    return sent ? resolved.type : undefined;
+    return sent ? resolved.clone.id : undefined;
   }
 
   async #sendEarthCycle(cycle, { platform, locale, i18n }) {
     const resolved = resolveEarthCycleType(cycle);
-    if (!resolved || !this.#canSend(resolved.type)) return undefined;
+    if (!resolved || !this.#canSend(resolved.clone.id)) return undefined;
     const sent = await this.#broadcaster.broadcast(new embeds.Cycle(resolved.clone, { i18n, locale, platform }), {
       platform,
       type: resolved.type,
       locale,
     });
-    return sent ? resolved.type : undefined;
+    return sent ? resolved.clone.id : undefined;
   }
 
   async #sendVallisCycle(cycle, { platform, locale, i18n }) {
     const resolved = resolveVallisCycleType(cycle);
-    if (!resolved || !this.#canSend(resolved.type)) return undefined;
+    if (!resolved || !this.#canSend(resolved.clone.id)) return undefined;
     const sent = await this.#broadcaster.broadcast(new embeds.Solaris(resolved.clone, { i18n, locale, platform }), {
       platform,
       type: resolved.type,
       locale,
     });
-    return sent ? resolved.type : undefined;
+    return sent ? resolved.clone.id : undefined;
   }
 
   async #sendDuviriCycle(cycle, { platform, locale, i18n }) {
     const resolved = resolveDuviriCycleType(cycle);
-    if (!resolved || !this.#canSend(resolved.type)) return undefined;
+    if (!resolved || !this.#canSend(resolved.clone.id)) return undefined;
     const sent = await this.#broadcaster.broadcast(new embeds.Duviri(resolved.clone, { i18n, locale }), {
       platform,
       type: resolved.type,
       locale,
     });
-    return sent ? resolved.type : undefined;
+    return sent ? resolved.clone.id : undefined;
   }
 }

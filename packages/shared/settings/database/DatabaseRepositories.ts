@@ -15,6 +15,7 @@ import type TrackingRepository from './repositories/TrackingRepository';
 import type WelcomeRepository from './repositories/WelcomeRepository';
 import type WorkerCacheRepository from './repositories/WorkerCacheRepository';
 import type NotificationMessagesRepository from './repositories/NotificationMessagesRepository';
+import type NotificationIssuesRepository from './repositories/NotificationIssuesRepository';
 
 /** Repository handles grouped by interaction domain. Grows as mixins migrate. */
 export interface DatabaseRepositories {
@@ -35,4 +36,5 @@ export interface DatabaseRepositories {
   guilds: GuildRepository;
   workerCache: WorkerCacheRepository;
   notificationMessages: NotificationMessagesRepository;
+  notificationIssues: NotificationIssuesRepository;
 }

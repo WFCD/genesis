@@ -24,6 +24,7 @@ import TrackingRepository from './database/repositories/TrackingRepository';
 import WelcomeRepository from './database/repositories/WelcomeRepository';
 import WorkerCacheRepository from './database/repositories/WorkerCacheRepository';
 import NotificationMessagesRepository from './database/repositories/NotificationMessagesRepository';
+import NotificationIssuesRepository from './database/repositories/NotificationIssuesRepository';
 
 const assetBase = process.env.ASSET_BASE_PATH || 'https://cdn.warframestat.us/genesis';
 
@@ -72,6 +73,8 @@ export default class Database implements DatabaseRepositories {
   workerCache!: WorkerCacheRepository;
 
   notificationMessages!: NotificationMessagesRepository;
+
+  notificationIssues!: NotificationIssuesRepository;
 
   clusterId: string | number;
 
@@ -172,6 +175,7 @@ export default class Database implements DatabaseRepositories {
 
     this.workerCache = new WorkerCacheRepository(deps);
     this.notificationMessages = new NotificationMessagesRepository(deps);
+    this.notificationIssues = new NotificationIssuesRepository(deps);
 
     this.guilds = new GuildRepository(deps, {
       removeChannelPermissions: (channelId) => this.permissions.removeChannelPermissions(channelId),
@@ -227,6 +231,7 @@ export default class Database implements DatabaseRepositories {
         'getTrackedEventTypes',
         'removeItemNotifications',
         'removeTypeNotifications',
+        'removeThreadNotifications',
         'stopTracking',
       ],
       this.tracking

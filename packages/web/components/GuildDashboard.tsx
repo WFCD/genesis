@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, type FC } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Card, Chip, Tabs } from '@heroui/react';
 
 import { readApiError, readJsonResponse } from '@/lib/api/client';
@@ -13,10 +14,22 @@ import { BoolSelect, DashboardField, DashboardTextArea, HeroSelect, RemoveButton
 import MentionTextArea from './dashboard/MentionTextArea';
 import { useGuildLayout } from './GuildLayoutContext';
 
-type Panel = 'overview' | 'elevated' | 'custom' | 'welcome' | 'pings' | 'rooms';
+type Panel = 'overview' | 'elevated' | 'custom' | 'welcome' | 'pings' | 'rooms' | 'issues';
+
+type NotificationIssueRow = {
+  id: number;
+  channelId: string | null;
+  threadId: string;
+  code: string;
+  message: string;
+  count: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+};
 
 const allPanelTabs: Array<{ id: Panel; label: string }> = [
   { id: 'overview', label: 'Overview' },
+  { id: 'issues', label: 'Issues' },
   { id: 'elevated', label: 'Elevated Roles' },
   { id: 'custom', label: 'Custom Commands' },
   { id: 'welcome', label: 'Welcome' },
@@ -25,10 +38,18 @@ const allPanelTabs: Array<{ id: Panel; label: string }> = [
 ];
 const boolSelect = (value?: string) => value === '1';
 
+const isPanel = (value: string | null): value is Panel =>
+  !!value && allPanelTabs.some((tab) => tab.id === value);
+
 const GuildDashboard: FC = () => {
   const { guildId, guildName, tree, roles } = useGuildLayout();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const panelTabs = useMemo(() => allPanelTabs.filter((tab) => tab.id !== 'welcome' || featureFlags.guildWelcome), []);
-  const [panel, setPanel] = useState<Panel>('overview');
+  const [panel, setPanel] = useState<Panel>(() => {
+    const tab = searchParams.get('tab');
+    return isPanel(tab) ? tab : 'overview';
+  });
   const [status, setStatus] = useState('');
   const [loadError, setLoadError] = useState('');
   const [elevatedRoles, setElevatedRoles] = useState('');
@@ -50,6 +71,9 @@ const GuildDashboard: FC = () => {
   const [topCommands, setTopCommands] = useState<Array<{ id: string; count: number }>>([]);
   const [commandStatsError, setCommandStatsError] = useState('');
   const [overviewLoading, setOverviewLoading] = useState(false);
+  const [issues, setIssues] = useState<NotificationIssueRow[]>([]);
+  const [issuesTotalCount, setIssuesTotalCount] = useState(0);
+  const [issuesLoading, setIssuesLoading] = useState(false);
 
   const base = `/api/guilds/${guildId}`;
   const channelOptions = [...tree.categories.flatMap((category) => category.channels), ...tree.uncategorized].map(
@@ -64,6 +88,33 @@ const GuildDashboard: FC = () => {
       })),
     [tree]
   );
+  const channelNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const channel of [...tree.categories.flatMap((category) => category.channels), ...tree.uncategorized]) {
+      map.set(channel.id, channel.name);
+      for (const thread of channel.threads) {
+        map.set(thread.id, thread.name);
+      }
+    }
+    return map;
+  }, [tree]);
+
+  const selectPanel = useCallback(
+    (next: Panel) => {
+      setPanel(next);
+      const params = new URLSearchParams(searchParams.toString());
+      if (next === 'overview') params.delete('tab');
+      else params.set('tab', next);
+      const query = params.toString();
+      router.replace(query ? `/guilds/${guildId}?${query}` : `/guilds/${guildId}`, { scroll: false });
+    },
+    [guildId, router, searchParams]
+  );
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (isPanel(tab) && tab !== panel) setPanel(tab);
+  }, [panel, searchParams]);
 
   const loadCustomCommands = useCallback(
     async (reportError: boolean) => {
@@ -149,6 +200,22 @@ const GuildDashboard: FC = () => {
     [base]
   );
 
+  const loadIssues = useCallback(
+    async (reportError: boolean) => {
+      const res = await fetch(`${base}/issues`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await readJsonResponse<{ issues?: NotificationIssueRow[]; totalCount?: number }>(res);
+        setIssues(Array.isArray(data.issues) ? data.issues : []);
+        setIssuesTotalCount(Number(data.totalCount ?? 0));
+        return;
+      }
+      setIssues([]);
+      setIssuesTotalCount(0);
+      if (reportError) setLoadError(await readApiError(res));
+    },
+    [base]
+  );
+
   const loadPanel = useCallback(async () => {
     setLoadError('');
     if (panel === 'overview') {
@@ -160,9 +227,19 @@ const GuildDashboard: FC = () => {
           ...(featureFlags.guildWelcome ? [loadWelcomes(false)] : []),
           loadPings(false),
           loadCommandStats(false),
+          loadIssues(false),
         ]);
       } finally {
         setOverviewLoading(false);
+      }
+      return;
+    }
+    if (panel === 'issues') {
+      setIssuesLoading(true);
+      try {
+        await loadIssues(true);
+      } finally {
+        setIssuesLoading(false);
       }
       return;
     }
@@ -171,7 +248,16 @@ const GuildDashboard: FC = () => {
     if (panel === 'welcome' && featureFlags.guildWelcome) await loadWelcomes(true);
     if (panel === 'pings') await loadPings(true);
     if (panel === 'rooms') await loadRooms(true);
-  }, [loadCommandStats, loadCustomCommands, loadElevatedRoles, loadPings, loadRooms, loadWelcomes, panel]);
+  }, [
+    loadCommandStats,
+    loadCustomCommands,
+    loadElevatedRoles,
+    loadIssues,
+    loadPings,
+    loadRooms,
+    loadWelcomes,
+    panel,
+  ]);
 
   useEffect(() => {
     void loadPanel();
@@ -179,9 +265,9 @@ const GuildDashboard: FC = () => {
 
   useEffect(() => {
     if (!featureFlags.guildWelcome && panel === 'welcome') {
-      setPanel('overview');
+      selectPanel('overview');
     }
-  }, [panel]);
+  }, [panel, selectPanel]);
 
   useEffect(() => {
     if (panel !== 'pings') return;
@@ -331,7 +417,7 @@ const GuildDashboard: FC = () => {
         <p className="mt-1 text-sm text-[#b5bac1]">Guild-wide Genesis settings and overview.</p>
       </div>
 
-      <Tabs selectedKey={panel} onSelectionChange={(key) => setPanel(String(key) as Panel)} variant="secondary">
+      <Tabs selectedKey={panel} onSelectionChange={(key) => selectPanel(String(key) as Panel)} variant="secondary">
         <Tabs.ListContainer className="overflow-x-auto">
           <Tabs.List>
             {panelTabs.map((tab) => (
@@ -374,6 +460,15 @@ const GuildDashboard: FC = () => {
                 <p>
                   <span className="text-white">{pings.length}</span> ping overrides
                 </p>
+                {issuesTotalCount > 0 ? (
+                  <button
+                    type="button"
+                    className="block text-left text-sm font-medium text-red-300 hover:text-red-200"
+                    onClick={() => selectPanel('issues')}
+                  >
+                    {issuesTotalCount} Issues detected &gt;
+                  </button>
+                ) : null}
                 <p>Pick a channel or thread in the left sidebar to edit per-channel settings.</p>
                 <p>Server-wide private room settings are under the Rooms tab.</p>
               </Card.Content>
@@ -422,7 +517,7 @@ const GuildDashboard: FC = () => {
                   <Card.Title className="text-white">{tab.label}</Card.Title>
                 </Card.Header>
                 <Card.Content>
-                  <Button variant="secondary" onPress={() => setPanel(tab.id)}>
+                  <Button variant="secondary" onPress={() => selectPanel(tab.id)}>
                     Manage {tab.label.toLowerCase()}
                   </Button>
                 </Card.Content>
@@ -582,6 +677,68 @@ const GuildDashboard: FC = () => {
             <Button variant="primary" onPress={() => void savePing()}>
               Save ping
             </Button>
+          </Card.Content>
+        </Card>
+      ) : null}
+
+      {panel === 'issues' ? (
+        <Card className="max-w-5xl border border-white/10 bg-[#2b2d31] p-5">
+          <Card.Header>
+            <Card.Title className="text-white">Delivery issues</Card.Title>
+            <Card.Description className="text-[#949ba4]">
+              Aggregated notification failures for {guildName}. Same error per channel/thread is counted, not
+              duplicated.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            {issuesLoading ? (
+              <LoadingIndicator label="Loading issues…" />
+            ) : issues.length ? (
+              <div className="overflow-x-auto rounded-md border border-white/10">
+                <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+                  <thead className="bg-[#1e1f22] text-xs uppercase tracking-wide text-[#949ba4]">
+                    <tr>
+                      <th className="px-3 py-2 font-medium">Code</th>
+                      <th className="px-3 py-2 font-medium">Location</th>
+                      <th className="px-3 py-2 font-medium">Message</th>
+                      <th className="px-3 py-2 text-right font-medium">Count</th>
+                      <th className="px-3 py-2 font-medium">Last seen</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10 text-[#dbdee1]">
+                    {issues.map((issue) => {
+                      const channelLabel = issue.channelId
+                        ? `#${channelNameById.get(issue.channelId) ?? issue.channelId}`
+                        : '—';
+                      const threadLabel =
+                        issue.threadId && issue.threadId !== '0'
+                          ? channelNameById.get(issue.threadId) ?? issue.threadId
+                          : null;
+                      return (
+                        <tr key={issue.id}>
+                          <td className="px-3 py-2 font-mono text-xs text-red-300">{issue.code}</td>
+                          <td className="px-3 py-2">
+                            {channelLabel}
+                            {threadLabel ? (
+                              <span className="block text-xs text-[#949ba4]">thread: {threadLabel}</span>
+                            ) : null}
+                          </td>
+                          <td className="max-w-md truncate px-3 py-2 text-[#b5bac1]" title={issue.message}>
+                            {issue.message}
+                          </td>
+                          <td className="px-3 py-2 text-right tabular-nums">{issue.count.toLocaleString()}</td>
+                          <td className="px-3 py-2 text-xs text-[#949ba4]">
+                            {new Date(issue.lastSeenAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-[#949ba4]">No delivery issues recorded for this server.</p>
+            )}
           </Card.Content>
         </Card>
       ) : null}

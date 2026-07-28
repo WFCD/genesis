@@ -239,4 +239,24 @@ export default [
     KEY idx_pending_expiry (status, expires_at),
     KEY idx_channel (channel_id)
   )`,
+  SQL`CREATE TABLE IF NOT EXISTS notification_issues (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    guild_id BIGINT UNSIGNED NOT NULL,
+    channel_id BIGINT UNSIGNED NULL,
+    thread_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    code VARCHAR(64) NOT NULL,
+    message VARCHAR(512) NOT NULL,
+    count INT UNSIGNED NOT NULL DEFAULT 1,
+    first_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_notification_issue (guild_id, channel_id, thread_id, code),
+    KEY idx_notification_issues_guild (guild_id)
+  )`,
+  SQL`CREATE TABLE IF NOT EXISTS notification_guild_pause (
+    guild_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    paused_until TIMESTAMP NOT NULL,
+    reason VARCHAR(64) NOT NULL,
+    strike TINYINT UNSIGNED NOT NULL DEFAULT 1
+  )`,
 ];

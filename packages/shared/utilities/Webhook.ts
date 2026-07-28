@@ -53,18 +53,22 @@ const sendWebhook = async (
     };
     try {
       return content?.length
-        ? client.send({
+        ? await client.send({
             ...opts,
             content,
           })
-        : client.send(opts);
+        : await client.send(opts);
     } catch (e) {
       logger.error(e);
-      if (ctx.channel?.id && host?.settings) {
+      // Re-throw so Broadcaster can classify (locked thread must not wipe webhook).
+      // Only wipe here for unknown webhook when no outer handler is present.
+      const message = e instanceof Error ? e.message : String(e ?? '');
+      if (/unknown webhook/i.test(message) && ctx.channel?.id && host?.settings) {
         await host.settings.channels.deleteWebhooksForChannel(ctx.channel.id);
         logger.error(`Could not send webhook for ${ctx.channel.id} attempting after wiping context.`);
+        return false;
       }
-      return false;
+      throw e;
     }
   }
   if (!host?.settings) {

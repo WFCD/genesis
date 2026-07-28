@@ -3,6 +3,7 @@ import logger from '#shared/utilities/Logger';
 import { cachedEvents } from '#shared/resources';
 import webhook from '#shared/utilities/Webhook';
 import { isCycleNotificationType, resolveNotificationExpiry } from '#shared/utilities/NotificationExpiry';
+import { classifyDeliveryError, ISSUE_CODE } from '#shared/utilities/NotificationDeliveryErrors';
 
 /**
  * Broadcast updates out to subscribing channels
@@ -55,6 +56,15 @@ export default class Broadcaster {
 
         if (!guild) {
           logger.info(`couldn't find guild for ${type} on ${channelId}`);
+          await this.#onUnknownGuild({
+            channelId,
+            message: `couldn't find guild for ${type} on ${channelId}`,
+          });
+          return;
+        }
+
+        if (await this.settings.notificationIssues.isGuildPaused(guild.id)) {
+          logger.debug(`skipping paused guild ${guild.id} for ${type}`, 'WS');
           return;
         }
 
@@ -96,18 +106,80 @@ export default class Broadcaster {
           if (e.name === 'AbortError') {
             return;
           }
-          if (e.message?.includes('Unknown Webhook')) {
-            logger.warn(`Wiping webhook context for ${channelId}`);
-            await this.settings.deleteWebhooksForChannel(channelId);
-            return;
-          }
-          logger.error(
-            `webhook send failed for ${type} on channel ${channelId} (${platform}:${locale}) :: ${e.message}`
-          );
+          await this.#onDeliveryError({
+            error: e,
+            guildId: guild.id,
+            channelId,
+            threadId,
+            type,
+            platform,
+            locale,
+          });
         }
       })
     );
     return anySent;
+  }
+
+  async #onUnknownGuild({ channelId, message }) {
+    const guildId = await this.settings.notificationIssues.getGuildIdForChannel(channelId);
+    if (!guildId) {
+      logger.warn(`unknown guild for channel ${channelId} with no channels.guild_id row`, 'WS');
+      return;
+    }
+    if (await this.settings.notificationIssues.isGuildPaused(guildId)) {
+      return;
+    }
+    const result = await this.settings.notificationIssues.handleUnknownGuild({
+      guildId,
+      channelId,
+      message,
+      wipeWebhook: (id) => this.settings.channels.deleteWebhooksForChannel(id),
+    });
+    logger.warn(`unknown guild ${guildId} channel ${channelId}: ${result}`, 'WS');
+  }
+
+  async #onDeliveryError({ error, guildId, channelId, threadId, type, platform, locale }) {
+    const kind = classifyDeliveryError(error);
+    const errMessage = error?.message || String(error);
+
+    if (kind === 'unknown_webhook') {
+      logger.warn(`Wiping webhook context for ${channelId}`);
+      await this.settings.channels.deleteWebhooksForChannel(channelId);
+      await this.settings.notificationIssues.upsertIssue({
+        guildId,
+        channelId,
+        threadId: threadId ?? 0,
+        code: ISSUE_CODE.unknownWebhook,
+        message: errMessage,
+      });
+      return;
+    }
+
+    if (kind === 'unknown_guild') {
+      await this.#onUnknownGuild({ channelId, message: errMessage });
+      return;
+    }
+
+    if (kind === 'thread_locked') {
+      const tid = threadId ?? 0;
+      await this.settings.notificationIssues.upsertIssue({
+        guildId,
+        channelId,
+        threadId: tid,
+        code: ISSUE_CODE.threadLocked,
+        message: errMessage,
+      });
+      if (tid && String(tid) !== '0') {
+        await this.settings.tracking.removeThreadNotifications(channelId, tid);
+        logger.warn(`Removed thread subscriptions for locked thread ${tid} on ${channelId}`, 'WS');
+      }
+      return;
+    }
+
+    logger.error(
+      `webhook send failed for ${type} on channel ${channelId} (${platform}:${locale}) :: ${errMessage}`
+    );
   }
 
   /** Cached trackables can be stale/empty after deploy — fall back to live DB lookup. */
