@@ -1,3 +1,10 @@
+## [3.1.3](https://github.com/WFCD/genesis/compare/v3.1.2...v3.1.3) (2026-07-28)
+
+
+### Bug Fixes
+
+* build issues in container ([9613dbe](https://github.com/WFCD/genesis/commit/9613dbe2690594addeafb78f0a8dbb497c9872f2))
+
 ## [3.1.2](https://github.com/WFCD/genesis/compare/v3.1.1...v3.1.2) (2026-07-28)
 
 
