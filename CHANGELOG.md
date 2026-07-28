@@ -1,3 +1,16 @@
+## [3.1.2](https://github.com/WFCD/genesis/compare/v3.1.1...v3.1.2) (2026-07-28)
+
+
+### Bug Fixes
+
+* **deps:** bump the dependencies group with 15 updates ([#1187](https://github.com/WFCD/genesis/issues/1187)) ([ce7cd38](https://github.com/WFCD/genesis/commit/ce7cd385e5f86ca12202452930cf80f3a1681af2))
+* **docker:** web build ([144e971](https://github.com/WFCD/genesis/commit/144e9714b841f651a8130d6779c19554a92627f9))
+* **docker:** web build ([f5a3098](https://github.com/WFCD/genesis/commit/f5a309896f9c12fd4578033cfb2586f7adde4b61))
+* **notifier:** cycles & baro ([5cc4c37](https://github.com/WFCD/genesis/commit/5cc4c37c8b9bfbd021d5acf56c4096546d92dfdd))
+* **sec:** bump fast-uri from 3.1.3 to 3.1.4 ([#1189](https://github.com/WFCD/genesis/issues/1189)) ([4dbe17e](https://github.com/WFCD/genesis/commit/4dbe17ea9f6ef028b0caee75925474a73a9f1fd3))
+* **sec:** bump next-auth from 5.0.0-beta.31 to 5.0.0-beta.32 ([#1193](https://github.com/WFCD/genesis/issues/1193)) ([057b0db](https://github.com/WFCD/genesis/commit/057b0db4bdba8d6208f664322090294bd4d57ddb))
+* **sec:** bump undici and discord.js ([#1190](https://github.com/WFCD/genesis/issues/1190)) ([c8149ee](https://github.com/WFCD/genesis/commit/c8149eeefc156d2bf957f1850d2f942630967010))
+
 ## [3.1.1](https://github.com/WFCD/genesis/compare/v3.1.0...v3.1.1) (2026-07-14)
 
 
