@@ -1,3 +1,11 @@
+## [3.1.4](https://github.com/WFCD/genesis/compare/v3.1.3...v3.1.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* **lockfile:** enforce hoisting ([1cd4dc3](https://github.com/WFCD/genesis/commit/1cd4dc3af0c0168661324eb017678e1ad8cd39ff))
+* **web-build:** musl packages ([bf2cd83](https://github.com/WFCD/genesis/commit/bf2cd83b665f756e912dfe7aac1ad19b19c32907))
+
 ## [3.1.3](https://github.com/WFCD/genesis/compare/v3.1.2...v3.1.3) (2026-07-28)
 
 
