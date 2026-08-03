@@ -1,3 +1,10 @@
+## [3.1.6](https://github.com/WFCD/genesis/compare/v3.1.5...v3.1.6) (2026-08-03)
+
+
+### Bug Fixes
+
+* **sec:** bump fast-uri from 3.1.4 to 3.1.5 ([#1197](https://github.com/WFCD/genesis/issues/1197)) ([7a39727](https://github.com/WFCD/genesis/commit/7a39727c8537ecbce761d36464d59e9787d940e7))
+
 ## [3.1.5](https://github.com/WFCD/genesis/compare/v3.1.4...v3.1.5) (2026-07-28)
 
 
