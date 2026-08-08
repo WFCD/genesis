@@ -31,7 +31,7 @@ If you do not agree to letting Genesis, Oratoris, or any other bot there do so, 
 
 tl;dr Bots need data. While I don't record any of your personal data or save it off for long-term use, I still need to tell you that bots can access your messages and user ID. If you don't want that, get rid of all of them, cause they all need that data.
 
-## Installation
+## Local Development Installation
 
 1. Clone this repo
 2. Install **Node.js 24 LTS** (`lts/krypton`) — e.g. `nvm install` (uses [`.nvmrc`](.nvmrc)) — needed for lint, tests, and local web dev
@@ -47,6 +47,24 @@ Logs: `docker compose logs -f bot` (or `worker`, `mariadb`). Stop stack: `npm ru
 MariaDB data is stored in [`data/db/`](data/db/) (gitignored). It persists across restarts until you delete that folder.
 
 See [`.env.example`](.env.example) and [`docker-compose.yaml`](docker-compose.yaml) for service details.
+
+## "Production"-like Installation
+
+1. Copy the docker-compose.yaml
+2. Add an `.env` file for your environment variables, or add them in the compose file itself.
+3. Replace references to context & Dockerfile with
+   ```bash
+   # if you want to pin a version
+   image: ghcr.io/wfcd/genesis/bot:3.1.4
+   # if you always want to pull the latest
+   image: ghcr.io/wfcd/genesis/bot:latest
+   ```
+4. Pull the images (`docker compose pull`)
+5. Start the containers (`docker compose up -d`)
+   i. Leave off `-d` if you want to watch the logs.
+   ii. Leverage `docker logs` if you want to watch a specific container's logs.
+It's generally good practice to start one at a time to make sure you have everything set up.
+You should also create 
 
 ## Project layout
 
