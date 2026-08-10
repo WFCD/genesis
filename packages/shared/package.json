@@ -6,6 +6,9 @@
   "exports": {
     "./*": "./*"
   },
+  "overrides": {
+    "chalk": "$chalk"
+  },
   "dependencies": {
     "@sentry/node": "^7.120.4",
     "@spectacles/rest": "^0.8.3",
