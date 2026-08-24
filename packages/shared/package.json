@@ -15,7 +15,7 @@
     "bluebird": "^3.7.2",
     "chalk": "^6.0.0",
     "cron": "^4.4.0",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.22",
     "discord.js": "^14.27.0",
     "flat-cache": "^4.0.1",
     "i18n-string-templates": "^2.0.8",

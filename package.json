@@ -65,13 +65,13 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.1",
+    "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.2.0",
     "@dword-design/eslint-plugin-import-alias": "^8.1.8",
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.0.1",
-    "@next/eslint-plugin-next": "^16.2.10",
+    "@next/eslint-plugin-next": "^16.3.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/chai": "^5.2.3",
     "@types/flat-cache": "^2.0.2",
@@ -80,7 +80,7 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "chai": "^6.2.2",
-    "concurrently": "^10.0.3",
+    "concurrently": "^10.0.5",
     "discord-api-types": "^0.38.50",
     "dotenv": "^17.4.2",
     "eslint": "^10.7.0",
@@ -92,14 +92,14 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-yml": "^3.6.0",
-    "globals": "^17.7.0",
+    "globals": "^17.11.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "mocha": "^11.7.6",
     "tsup": "^8.5.1",
-    "tsx": "^4.23.1",
+    "tsx": "^4.23.12",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.64.0"
+    "typescript-eslint": "^8.67.0"
   },
   "engines": {
     "node": ">=24.0.0"
