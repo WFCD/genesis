@@ -1,3 +1,11 @@
+## [3.1.7](https://github.com/WFCD/genesis/compare/v3.1.6...v3.1.7) (2026-08-30)
+
+
+### Bug Fixes
+
+* dedupe ([7dab9f1](https://github.com/WFCD/genesis/commit/7dab9f1faa22fc7fec9bcb6856bf7ac49564a07d))
+* let mocha keep chalk 4 under log-symbols ([b2e8ce6](https://github.com/WFCD/genesis/commit/b2e8ce6c90b6b547e6f66d44c848db7a27f5fc70))
+
 ## [3.1.6](https://github.com/WFCD/genesis/compare/v3.1.5...v3.1.6) (2026-08-03)
 
 
