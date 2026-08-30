@@ -62,6 +62,9 @@
     },
     "eslint-plugin-react": {
       "eslint": "$eslint"
+    },
+    "log-symbols": {
+      "chalk": "4.1.2"
     }
   },
   "devDependencies": {
