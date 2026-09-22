@@ -2,7 +2,7 @@
 import EventEmitter from 'node:events';
 
 import moment from 'dayjs';
-import Cache from 'flat-cache';
+import { create as createFlatCache } from 'flat-cache';
 
 import logger from '#shared/utilities/Logger';
 import { twitch as channels } from '#shared/resources/index';
@@ -51,9 +51,9 @@ export default class TwitchMonitor extends EventEmitter {
 
   constructor() {
     super();
-    this.#userDb = Cache.load('users');
-    this.#gameDb = Cache.load('games');
-    this.#statesDb = Cache.load('states') || {};
+    this.#userDb = createFlatCache({ cacheId: 'users' });
+    this.#gameDb = createFlatCache({ cacheId: 'games' });
+    this.#statesDb = createFlatCache({ cacheId: 'states' });
     this.#pendingUserRefresh = false;
     this.#pendingGameRefresh = false;
     this.#watchingGameIds = [];

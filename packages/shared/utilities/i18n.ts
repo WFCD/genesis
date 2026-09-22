@@ -8,6 +8,8 @@ type I18nOptions = {
   };
 };
 
-export default function createI18n(locales: I18nBundle, locale = 'en', options: I18nOptions = {}) {
-  return use(locales, locale, options);
+export type I18nTag = (strings: TemplateStringsArray | string[], ...values: unknown[]) => string;
+
+export default function createI18n(locales: I18nBundle, locale = 'en', options: I18nOptions = {}): I18nTag {
+  return use(locales, locale, options) as I18nTag;
 }

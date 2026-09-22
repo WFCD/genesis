@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import flatCache from 'flat-cache';
+import { create, type FlatCache } from 'flat-cache';
 
 import { findMonorepoRoot } from './loadParentEnvFiles';
 
@@ -20,11 +20,11 @@ type CacheEntry<T> = {
   data: T;
 };
 
-let cache: ReturnType<typeof flatCache.load> | undefined;
+let cache: FlatCache | undefined;
 
 const getCache = () => {
   if (!cache) {
-    cache = flatCache.load(cacheId, cacheDir);
+    cache = create({ cacheId, cacheDir });
   }
   return cache;
 };
