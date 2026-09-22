@@ -1,7 +1,7 @@
 // @ts-nocheck -- incremental TS migration; worker notification runtime
 import path from 'node:path';
 
-import Cache from 'flat-cache';
+import { create as createFlatCache } from 'flat-cache';
 import cron from 'cron';
 import fetch from 'node-fetch';
 
@@ -20,7 +20,10 @@ const forceHydrate = (process.argv[2] || '').includes('--hydrate');
  * All credit to https://github.com/roydejong/timbot for composition and structure
  */
 export default class TwitchClient {
-  static #tokenCache = Cache.load('accessToken', path.resolve('.cache'));
+  static #tokenCache = createFlatCache({
+    cacheId: 'accessToken',
+    cacheDir: path.resolve('.cache'),
+  });
 
   /**
    * Refresh cronjob - self-starting

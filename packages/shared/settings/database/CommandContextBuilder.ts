@@ -264,6 +264,6 @@ export const buildCommandContext = async (
   }
 
   context.channel = interactionChannel as TextChannel;
-  context.i18n = createI18n(i18n, context.language ?? deps.defaults.language) as CommandContext['i18n'];
+  context.i18n = createI18n(i18n, context.language ?? deps.defaults.language);
   return context;
 };

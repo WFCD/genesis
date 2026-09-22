@@ -1,7 +1,7 @@
 // @ts-nocheck -- incremental TS migration; worker notification runtime
 import path from 'node:path';
 
-import flatCache from 'flat-cache';
+import { create as createFlatCache } from 'flat-cache';
 import cron from 'cron';
 
 import WorldStateCache from '#shared/utilities/WorldStateCache';
@@ -123,7 +123,10 @@ class Worker {
   }
   async initCache() {
     if (games.includes('WARFRAME')) {
-      deps.workerCache = flatCache.load('worker', path.resolve(findMonorepoRoot(), '.cache'));
+      deps.workerCache = createFlatCache({
+        cacheId: 'worker',
+        cacheDir: path.resolve(findMonorepoRoot(), '.cache'),
+      });
 
       // generate guild cache data if not present
       const currentGuilds = deps.workerCache.getKey('guilds');
