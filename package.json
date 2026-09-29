@@ -65,7 +65,8 @@
     },
     "log-symbols": {
       "chalk": "4.1.2"
-    }
+    },
+    "postcss": "8.5.28"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
