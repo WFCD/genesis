@@ -1,3 +1,10 @@
+## [3.1.11](https://github.com/WFCD/genesis/compare/v3.1.10...v3.1.11) (2026-10-10)
+
+
+### Bug Fixes
+
+* **web:** run schema migrations on db init ([d981693](https://github.com/WFCD/genesis/commit/d98169352612e25c09fd663d115976ce8f67aefd))
+
 ## [3.1.10](https://github.com/WFCD/genesis/compare/v3.1.9...v3.1.10) (2026-10-10)
 
 
