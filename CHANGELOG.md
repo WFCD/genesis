@@ -1,3 +1,10 @@
+## [3.1.10](https://github.com/WFCD/genesis/compare/v3.1.9...v3.1.10) (2026-10-10)
+
+
+### Bug Fixes
+
+* **web:** set Discord issuer for RFC 9207 iss check ([1dafbe7](https://github.com/WFCD/genesis/commit/1dafbe718b5f80d871e018dac3a20049ca9d50df))
+
 ## [3.1.9](https://github.com/WFCD/genesis/compare/v3.1.8...v3.1.9) (2026-09-22)
 
 
