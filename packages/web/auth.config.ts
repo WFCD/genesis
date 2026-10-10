@@ -12,6 +12,7 @@ export const createAuthConfig = (env: WebEnv) => {
       Discord({
         clientId: env.auth.discordClientId!,
         clientSecret: env.auth.discordClientSecret!,
+        issuer: 'https://discord.com',
         authorization: { params: { scope: 'identify guilds' } },
       }),
     ],
