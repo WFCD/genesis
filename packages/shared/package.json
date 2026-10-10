@@ -10,10 +10,10 @@
     "chalk": "$chalk"
   },
   "dependencies": {
-    "@sentry/node": "^7.120.4",
+    "@sentry/node": "^11.1.0",
     "@spectacles/rest": "^0.8.3",
     "bluebird": "^3.7.2",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "cron": "^4.4.0",
     "dayjs": "^1.11.23",
     "discord.js": "^14.27.0",
@@ -24,6 +24,6 @@
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
     "sql-template-strings": "^2.2.2",
-    "warframe-worldstate-data": "^3.16.9"
+    "warframe-worldstate-data": "^3.16.10"
   }
 }
