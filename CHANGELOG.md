@@ -1,3 +1,10 @@
+## [3.1.12](https://github.com/WFCD/genesis/compare/v3.1.11...v3.1.12) (2026-10-22)
+
+
+### Bug Fixes
+
+* split baro notification trackable ([2502e86](https://github.com/WFCD/genesis/commit/2502e8644113b11baa1e6850f49b3249fc90e009))
+
 ## [3.1.11](https://github.com/WFCD/genesis/compare/v3.1.10...v3.1.11) (2026-10-10)
 
 
