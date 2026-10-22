@@ -32,6 +32,7 @@
     "news",
     "sorties",
     "baro",
+    "baro.departed",
     "darvo",
     "deals.featured",
     "deals.popular",

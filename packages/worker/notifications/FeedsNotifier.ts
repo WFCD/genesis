@@ -52,7 +52,7 @@ export default class FeedsNotifier {
    */
   async #handleNewItem(item) {
     try {
-      if (Object.keys(item.image).length) {
+      if (item.image && Object.keys(item.image).length) {
         logger.debug(`IMAGE: ${JSON.stringify(item.image)}`);
       }
       logger.info(`new item: ${item.title}`, 'RSS');

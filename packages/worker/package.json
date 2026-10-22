@@ -9,6 +9,6 @@
   "main": "main.ts",
   "dependencies": {
     "@genesis/shared": "*",
-    "rss-feed-emitter": "^3.2.4"
+    "rss-feed-emitter": "^4.0.0"
   }
 }

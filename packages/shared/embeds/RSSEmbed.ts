@@ -64,7 +64,7 @@ class RSSEmbed extends BaseEmbed {
       };
     }
 
-    if (!Object.keys(feedItem.image).length) {
+    if (!feedItem.image || !Object.keys(feedItem.image).length) {
       let first = ((feedItem.description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
       if (first) {
         if (first.startsWith('//')) {

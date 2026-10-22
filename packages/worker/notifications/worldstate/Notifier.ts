@@ -579,7 +579,7 @@ export default class Notifier {
     return this.#standardBroadcast(newBaro, {
       ...deps,
       Embed: embeds.VoidTrader,
-      type: 'baro',
+      type: isActive(newBaro) ? 'baro' : 'baro.departed',
       claimId,
       snapshotIds: claimId,
       paginateFields: { threshold: 25, size: 15 },
