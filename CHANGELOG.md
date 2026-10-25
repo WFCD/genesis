@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/WFCD/genesis/compare/v3.1.12...v3.2.0) (2026-10-25)
+
+
+### Features
+
+* send genesis user agent on pricecheck requests ([908be0c](https://github.com/WFCD/genesis/commit/908be0caae235c3ea714806455448324473e09c4))
+
 ## [3.1.12](https://github.com/WFCD/genesis/compare/v3.1.11...v3.1.12) (2026-10-22)
 
 
