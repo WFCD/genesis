@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import qEngine from 'json-query';
 import fetch from 'node-fetch';
 
@@ -5,6 +8,44 @@ import type { Logger } from '#shared/types/logger';
 
 import { apiCacheTtlMs, getOrFetch, readCache, readStaleCacheSync, writeCache } from './ApiDiskCache';
 import { apiBase } from './CommonFunctions';
+import { findMonorepoRoot } from './loadParentEnvFiles';
+
+type RootPackage = {
+  name?: string;
+  version?: string;
+  homepage?: string;
+  repository?: string | { url?: string };
+};
+
+const rootPackage = JSON.parse(readFileSync(resolve(findMonorepoRoot(), 'package.json'), 'utf8')) as RootPackage;
+
+const repositoryUrl = (repository: RootPackage['repository']) => {
+  const raw = typeof repository === 'string' ? repository : repository?.url;
+  return (raw ?? 'https://github.com/WFCD/genesis.git').replace(/^git\+/, '').replace(/\.git$/, '');
+};
+
+/** Identity warframe-status forwards to warframe-nexus-query. */
+export const genesisUserAgent = `${rootPackage.name ?? 'genesis'}/${rootPackage.version ?? '0.0.0'} (+${
+  rootPackage.homepage ?? 'https://genesis.warframestat.us'
+}; ${repositoryUrl(rootPackage.repository)})`;
+
+type PriceCheckRequest = {
+  type?: string;
+  language?: string;
+  rank?: number;
+  ranks?: string;
+};
+
+export const buildPriceCheckUrl = (
+  query: string,
+  { type = 'attachment', language = 'en', rank, ranks }: PriceCheckRequest = {}
+) => {
+  const params = new URLSearchParams({ language: language || 'en' });
+  if (rank !== undefined) params.set('rank', String(rank));
+  if (ranks?.trim()) params.set('ranks', ranks.trim());
+  params.set('UA', genesisUserAgent);
+  return `${apiBase}/pricecheck/${type || 'attachment'}/${encodeURIComponent(query)}/?${params}`;
+};
 
 const relicBase = 'https://drops.warframestat.us/data/relics';
 const catalogLanguage = 'en';
@@ -257,11 +298,7 @@ export default class WorldStateClient {
     } = {}
   ) {
     this.#logger.silly(`pricechecking ${query}`);
-    const params = new URLSearchParams({ language: language || 'en' });
-    if (rank !== undefined) params.set('rank', String(rank));
-    if (ranks?.trim()) params.set('ranks', ranks.trim());
-
-    const url = `${apiBase}/pricecheck/${type || 'attachment'}/${encodeURIComponent(query)}/?${params}`;
+    const url = buildPriceCheckUrl(query, { type, language, rank, ranks });
     this.#logger.silly(`pricechecking... ${url}`);
     return fetch(url, {
       headers: {

@@ -24,6 +24,6 @@
     "node-fetch": "^3.3.0",
     "numeral": "^2.0.6",
     "sql-template-strings": "^2.2.2",
-    "warframe-worldstate-data": "^3.17.1"
+    "warframe-worldstate-data": "^3.18.3"
   }
 }
