@@ -79,14 +79,14 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^26.6.3",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "chai": "^6.2.2",
     "concurrently": "^10.0.5",
     "discord-api-types": "^0.38.57",
     "dotenv": "^18.0.4",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "eslint-import-resolver-node": "^0.4.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.17.1",
@@ -102,7 +102,7 @@
     "tsup": "^9.0.0",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.0"
+    "typescript-eslint": "^8.72.1"
   },
   "engines": {
     "node": ">=24.0.0"
