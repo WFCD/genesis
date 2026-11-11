@@ -11,7 +11,7 @@
     "@discordjs/builders": "^1.15.0",
     "@genesis/shared": "*",
     "decache": "^4.6.2",
-    "discord.js": "^14.27.0",
+    "discord.js": "^14.28.1",
     "parse-duration": "^2.1.11",
     "ping": "^1.0.0",
     "warframe-name-generator": "^2.0.13"
