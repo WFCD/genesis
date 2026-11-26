@@ -36,8 +36,7 @@ const collectorMessage = async (interaction: ChatInputCommandInteraction, payloa
     return await Promise.race([
       interaction.fetchReply(),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('fetchReply timed out')), FETCH_REPLY_TIMEOUT_MS)
-      ),
+        setTimeout(() => reject(new Error('fetchReply timed out')), FETCH_REPLY_TIMEOUT_MS)),
     ]);
   } catch (error) {
     interaction.client.emit?.('error', error as Error);

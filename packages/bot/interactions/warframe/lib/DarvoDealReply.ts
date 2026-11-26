@@ -47,8 +47,7 @@ export const replyDarvoDeal = async (
     message = await Promise.race([
       interaction.fetchReply(),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('fetchReply timed out')), FETCH_REPLY_TIMEOUT_MS)
-      ),
+        setTimeout(() => reject(new Error('fetchReply timed out')), FETCH_REPLY_TIMEOUT_MS)),
     ]);
   } catch {
     return;

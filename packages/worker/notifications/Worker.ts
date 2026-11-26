@@ -147,8 +147,7 @@ class Worker {
                 }
               });
             })
-          )
-        )
+          ))
       );
       if (hydrateEvents) await this.hydrateQueries();
 

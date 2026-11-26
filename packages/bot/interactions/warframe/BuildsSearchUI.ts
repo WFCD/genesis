@@ -54,8 +54,7 @@ const withSearchTimeout = <T>(promise: Promise<T>) =>
   Promise.race([
     promise,
     new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new OverframeTimeoutError()), OVERFRAME_SEARCH_TIMEOUT_MS)
-    ),
+      setTimeout(() => reject(new OverframeTimeoutError()), OVERFRAME_SEARCH_TIMEOUT_MS)),
   ]);
 
 const overframeLinkRow = (searchUrl: string) =>

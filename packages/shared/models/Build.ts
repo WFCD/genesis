@@ -347,8 +347,7 @@ export default class Build {
                 modRow.mods?.map((sub) =>
                   sub && typeof sub === 'object' && 'uniqueName' in sub && sub.uniqueName
                     ? (sub as WsItem)
-                    : (this.#ws.mod(String(sub)) as WsItem)
-                ) || [],
+                    : (this.#ws.mod(String(sub)) as WsItem)) || [],
             },
             this.#ws
           );

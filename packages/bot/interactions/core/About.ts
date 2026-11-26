@@ -25,7 +25,7 @@ export default class About extends Interaction {
             {
               name: 'About',
               value:
-                  'Cephalon Genesis exists to help Discord Tenno find all the information they need about Warframe that you might',
+                'Cephalon Genesis exists to help Discord Tenno find all the information they need about Warframe that you might',
               inline: false,
             },
             {

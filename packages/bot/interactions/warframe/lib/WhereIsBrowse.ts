@@ -41,8 +41,7 @@ const buildComponents = (sort: WhereisSort, pageCount: number) => {
     new ButtonBuilder()
       .setCustomId(`whereis:sort:${mode}`)
       .setLabel(`Sort: ${WHEREIS_SORT_LABELS[mode]}`)
-      .setStyle(ButtonStyle.Secondary)
-  );
+      .setStyle(ButtonStyle.Secondary));
 
   if (pageCount > 1) {
     buttons.push(

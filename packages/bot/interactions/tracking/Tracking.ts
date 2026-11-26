@@ -148,8 +148,7 @@ export default class Tracking extends Interaction {
           Object.keys(remove).map(async (type) =>
             Promise.all(
               remove[type].map(async (unping) => ctx.settings.notifications.removePing(interaction.guild, unping))
-            )
-          )
+            ))
         );
         void enqueueWorkerCacheRefresh(ctx.settings, interaction.guildId, channel, {
           refreshPings: true,

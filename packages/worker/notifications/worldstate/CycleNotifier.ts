@@ -85,89 +85,86 @@ const buildNotifiableData = (newData, platform, locale) => {
   return data;
 };
 
-const resolveCambionCycleType = ({ data: newCycle, dirty: cycleChange }) => {
-  let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
-  const clone = JSON.parse(JSON.stringify(newCycle));
-  if (cycleChange || isWithinRange(minutesRemaining)) {
-    clone.state = clone.state === 'vome' ? 'fass' : 'vome';
-    const newEnd = new Date(clone.expiry).getTime() + durations.deimos[clone.state];
-    clone.id = `cambionCycle${newEnd}`;
-    clone.activation = clone.expiry;
-    clone.expiry = new Date(newEnd);
-    delete clone.timeLeft;
-    delete clone.shortString;
-    minutesRemaining = '';
-  } else return undefined;
-  return { type: `cambion.${clone.state}${minutesRemaining}`, clone };
+const expiryMs = (value) => new Date(value).getTime();
+
+const shouldNotify = (cycleChange, expiry) =>
+  cycleChange || isWithinRange(`.${Math.round(fromNow(expiry) / 60000)}`);
+
+/** Project the clone onto the phase that starts when the current one ends. */
+const asUpcoming = (clone, durationMs) => {
+  const newEnd = expiryMs(clone.expiry) + durationMs;
+  clone.activation = clone.expiry;
+  clone.expiry = new Date(newEnd);
 };
 
-const resolveCetusCycleType = ({ data: newCycle, dirty: cycleChange }) => {
-  let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+/**
+ * Claim id includes phase so a flipped early send cannot stick the real transition.
+ * Same id for the 2-minute preview and the activation of that phase.
+ */
+const finish = (clone, prefix) => {
+  delete clone.timeLeft;
+  delete clone.shortString;
+  clone.id = `${prefix}${clone.state}${expiryMs(clone.expiry)}`;
+};
+
+export const resolveCambionCycleType = ({ data: newCycle, dirty: cycleChange }) => {
+  if (!newCycle?.expiry || !shouldNotify(cycleChange, newCycle.expiry)) return undefined;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (cycleChange || isWithinRange(minutesRemaining)) {
-    clone.isCetus = true;
+  // Activation payload is already Fass/Vome. Flip only while previewing the next phase.
+  if (!cycleChange) {
+    clone.state = clone.state === 'vome' ? 'fass' : 'vome';
+    asUpcoming(clone, durations.deimos[clone.state]);
+  }
+  finish(clone, 'cambionCycle');
+  return { type: `cambion.${clone.state}`, clone };
+};
+
+export const resolveCetusCycleType = ({ data: newCycle, dirty: cycleChange }) => {
+  if (!newCycle?.expiry || !shouldNotify(cycleChange, newCycle.expiry)) return undefined;
+  const clone = JSON.parse(JSON.stringify(newCycle));
+  clone.isCetus = true;
+  if (!cycleChange) {
     clone.isDay = !clone.isDay;
     clone.state = clone.state === 'day' ? 'night' : 'day';
-    const newEnd = new Date(clone.expiry).getTime() + durations.cetus[clone.state];
-    clone.id = `cetusCycle${newEnd}`;
-    clone.activation = clone.expiry;
-    clone.expiry = new Date(newEnd);
-    delete clone.timeLeft;
-    delete clone.shortString;
-    minutesRemaining = '';
-  } else return undefined;
-  return { type: `cetus.${clone.state}${minutesRemaining}`, clone };
+    asUpcoming(clone, durations.cetus[clone.state]);
+  }
+  finish(clone, 'cetusCycle');
+  return { type: `cetus.${clone.state}`, clone };
 };
 
 const resolveEarthCycleType = ({ data: newCycle, dirty: cycleChange }) => {
-  let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+  if (!newCycle?.expiry || !shouldNotify(cycleChange, newCycle.expiry)) return undefined;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (cycleChange || isWithinRange(minutesRemaining)) {
+  if (!cycleChange) {
     clone.isDay = !clone.isDay;
     clone.state = clone.state === 'day' ? 'night' : 'day';
-    const newEnd = new Date(clone.expiry).getTime() + durations.earth[clone.state];
-    clone.id = `earthCycle${newEnd}`;
-    clone.activation = clone.expiry;
-    clone.expiry = new Date(newEnd);
-    delete clone.timeLeft;
-    delete clone.shortString;
-    minutesRemaining = '';
-  } else return undefined;
-  return { type: `earth.${clone.state}${minutesRemaining}`, clone };
+    asUpcoming(clone, durations.earth[clone.state]);
+  }
+  finish(clone, 'earthCycle');
+  return { type: `earth.${clone.state}`, clone };
 };
 
 const resolveVallisCycleType = ({ data: newCycle, dirty: cycleChange }) => {
-  let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+  if (!newCycle?.expiry || !shouldNotify(cycleChange, newCycle.expiry)) return undefined;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (cycleChange || isWithinRange(minutesRemaining)) {
+  if (!cycleChange) {
     clone.isWarm = !clone.isWarm;
     clone.state = clone.state === 'warm' ? 'cold' : 'warm';
-    const newEnd = new Date(clone.expiry).getTime() + durations.vallis[clone.state];
-    clone.id = `vallisCycle${newEnd}`;
-    clone.activation = clone.expiry;
-    clone.expiry = new Date(newEnd);
-    delete clone.timeLeft;
-    delete clone.shortString;
-    minutesRemaining = '';
-  } else return undefined;
-  return { type: `solaris.${clone.state}${minutesRemaining}`, clone };
+    asUpcoming(clone, durations.vallis[clone.state]);
+  }
+  finish(clone, 'vallisCycle');
+  return { type: `solaris.${clone.state}`, clone };
 };
 
 const resolveDuviriCycleType = ({ data: newCycle, dirty: cycleChange }) => {
-  if (!newCycle) return undefined;
-  let minutesRemaining = cycleChange ? '' : `.${Math.round(fromNow(newCycle.expiry) / 60000)}`;
+  if (!newCycle?.expiry || !shouldNotify(cycleChange, newCycle.expiry)) return undefined;
   const clone = JSON.parse(JSON.stringify(newCycle));
-  if (cycleChange || isWithinRange(minutesRemaining)) {
+  if (!cycleChange) {
     clone.state = nextMood(clone.state);
-    const newEnd = new Date(clone.expiry).getTime() + durations.duviri;
-    clone.id = `duviriCycle${clone.state}${newEnd}`;
-    clone.activation = clone.expiry;
-    clone.expiry = new Date(newEnd);
-    delete clone.timeLeft;
-    delete clone.shortString;
-    minutesRemaining = '';
-  } else return undefined;
-  return { type: `duviri.${clone.state}${minutesRemaining}`, clone };
+    asUpcoming(clone, durations.duviri);
+  }
+  finish(clone, 'duviriCycle');
+  return { type: `duviri.${clone.state}`, clone };
 };
 
 const collectCycleClaimIds = (cycles) =>

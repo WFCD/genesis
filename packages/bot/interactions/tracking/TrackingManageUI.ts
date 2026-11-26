@@ -194,8 +194,7 @@ export default class TrackingManageUI {
           withEphemeral(ctx.ephemerate, { embeds: [this.#savedEmbed(channel, thread)], components: [] })
         );
         void Tracking.setupWebhookAfterSave(interaction, ctx, channel, thread).catch((err) =>
-          ctx.logger.error(err, 'TM')
-        );
+          ctx.logger.error(err, 'TM'));
         return;
       } else if (component === 'trackall' && interaction.isButton()) {
         if (session.group === 'items') {

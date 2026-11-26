@@ -80,8 +80,7 @@ export default class FeedsNotifier {
               if (!sent) {
                 await this.#settings.releaseNotifiedIds(notifyKey(platform, locale), [claimId]);
               }
-            })
-          )
+            }))
         );
       }
     } catch (error) {

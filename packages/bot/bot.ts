@@ -109,25 +109,19 @@ export default class Genesis {
 
   async setupHandlers() {
     this.client.on(Events.ClientReady, async () =>
-      this.eventHandler.handleEvent({ event: Events.ClientReady, args: [] })
-    );
+      this.eventHandler.handleEvent({ event: Events.ClientReady, args: [] }));
 
     this.client.on(Events.GuildCreate, async (guild) =>
-      this.eventHandler.handleEvent({ event: Events.GuildCreate, args: [guild] })
-    );
+      this.eventHandler.handleEvent({ event: Events.GuildCreate, args: [guild] }));
     this.client.on(Events.GuildDelete, async (guild) =>
-      this.eventHandler.handleEvent({ event: Events.GuildDelete, args: [guild] })
-    );
+      this.eventHandler.handleEvent({ event: Events.GuildDelete, args: [guild] }));
     this.client.on(Events.ChannelCreate, async (channel) =>
-      this.eventHandler.handleEvent({ event: Events.ChannelCreate, args: [channel] })
-    );
+      this.eventHandler.handleEvent({ event: Events.ChannelCreate, args: [channel] }));
     this.client.on(Events.ChannelDelete, async (channel) =>
-      this.eventHandler.handleEvent({ event: Events.ChannelDelete, args: [channel] })
-    );
+      this.eventHandler.handleEvent({ event: Events.ChannelDelete, args: [channel] }));
 
     this.client.on(Events.InteractionCreate, async (interaction) =>
-      this.eventHandler.handleEvent({ event: Events.InteractionCreate, args: [interaction] })
-    );
+      this.eventHandler.handleEvent({ event: Events.InteractionCreate, args: [interaction] }));
 
     this.client.on(Events.ShardDisconnect, (event) => {
       this.logger.error(`Disconnected with close event: ${event.code}`);
