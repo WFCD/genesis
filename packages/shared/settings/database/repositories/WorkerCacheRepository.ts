@@ -169,8 +169,7 @@ export default class WorkerCacheRepository {
         this.deps.query(SQL`
           INSERT INTO worker_cache_refresh_stamps (scope, requested_at)
           VALUES (${entry}, CURRENT_TIMESTAMP)
-          ON DUPLICATE KEY UPDATE requested_at = CURRENT_TIMESTAMP`)
-      )
+          ON DUPLICATE KEY UPDATE requested_at = CURRENT_TIMESTAMP`))
     );
   };
 

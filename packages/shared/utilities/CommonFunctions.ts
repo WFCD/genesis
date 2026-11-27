@@ -493,8 +493,7 @@ export const formatFixedWidthTable = (columns: FixedWidthTableColumn[]) => {
   const header = columns.map((column, index) => formatCell(column.header, widths[index], column.align)).join('  ');
   const divider = widths.map((width) => '-'.repeat(width)).join('  ');
   const body = Array.from({ length: rowCount }, (_, rowIndex) =>
-    columns.map((column, index) => formatCell(column.cells[rowIndex] ?? '', widths[index], column.align)).join('  ')
-  );
+    columns.map((column, index) => formatCell(column.cells[rowIndex] ?? '', widths[index], column.align)).join('  '));
 
   return `\`\`\`\n${[header, divider, ...body].join('\n')}\n\`\`\``;
 };

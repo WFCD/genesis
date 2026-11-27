@@ -408,8 +408,7 @@ export default class WorldState extends Interaction {
         }
 
         pages = createGroupedArray(fields, 15).map((fieldGroup) =>
-          EmbedBuilder.from({ ...embedJson, fields: fieldGroup })
-        );
+          EmbedBuilder.from({ ...embedJson, fields: fieldGroup }));
         return Collectors.paged(interaction, pages, ctx);
       }
       case 'news': {
@@ -463,8 +462,8 @@ export default class WorldState extends Interaction {
           return interaction.editReply(ctx.i18n`⚠️ No sales active.`);
         }
         pages = groups.flatMap((group) =>
-          createGroupedArray(group, 25).map((chunk) => new Sales(chunk, { platform, i18n: ctx.i18n, locale: language }))
-        );
+          createGroupedArray(group, 25)
+            .map((chunk) => new Sales(chunk, { platform, i18n: ctx.i18n, locale: language })));
         if (pages.length === 1) {
           return interaction.editReply({ embeds: [new EmbedBuilder(pages[0])] });
         }

@@ -114,8 +114,7 @@ export default class Lookup extends Interaction {
 
             if (weapon?.patchlogs?.length && enablePatchnotes) {
               createGroupedArray(weapon.patchlogs, 4).forEach((patchGroup) =>
-                pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n }))
-              );
+                pages.push(new Patchnote(patchGroup, { i18n: ctx.i18n })));
             }
           })
         );

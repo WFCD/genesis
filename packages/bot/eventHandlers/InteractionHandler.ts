@@ -231,8 +231,7 @@ export default class InteractionHandler extends BaseHandler {
           PermissionFlagsBits.Administrator,
           PermissionFlagsBits.ManageChannels,
           PermissionFlagsBits.ManageRoles,
-        ])
-      );
+        ]));
     const roles = String(rolesOverride || (await this.settings.channels.getGuildSetting(guild, 'elevatedRoles')) || '')
       .split(',')
       .filter((s) => s.length);
@@ -307,8 +306,7 @@ export default class InteractionHandler extends BaseHandler {
         )({
           command: id,
           permissions,
-        })
-      )
+        }))
     );
   }
 

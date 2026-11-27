@@ -235,8 +235,7 @@ const fetchGuildMemberRolesUncached = async (guildId: string, userId: string) =>
 };
 
 export const fetchGuildMemberRoles = async (guildId: string, userId: string) => getCached(`discord:member-roles:${guildId}:${userId}`, 30_000, () =>
-  fetchGuildMemberRolesUncached(guildId, userId)
-);
+  fetchGuildMemberRolesUncached(guildId, userId));
 
 export const searchGuildMembers = async (guildId: string, query: string, limit = 10) => {
   const headers = botHeaders();

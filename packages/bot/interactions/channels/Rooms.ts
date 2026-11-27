@@ -85,8 +85,7 @@ const create = async (guild: Guild, options: RoomOptions): Promise<string | Embe
             allowedMentions: {
               users: [],
             },
-          })
-        );
+          }));
       })
     );
   }

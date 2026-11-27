@@ -73,15 +73,13 @@ const buildNotifiableData = (newData, notified) => {
     data.archonHunt = wrap(() =>
       newData.archonHunt && !isExpired(newData.archonHunt) && !notified?.includes(newData.archonHunt.id)
         ? newData.archonHunt
-        : undefined
-    );
+        : undefined);
     data.baros = wrap(() => {
       const traders = voidTradersFrom(newData).filter((vt) => !notified.includes(baroClaimId(vt)));
       return traders.length ? traders : undefined;
     });
     data.conclave = wrap(() =>
-      newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id))
-    );
+      newData.conclaveChallenges.filter((cc) => !isExpired(cc) && !cc.rootChallenge && !notified.includes(cc.id)));
     data.dailyDeals = wrap(() => newData.dailyDeals.filter((dd) => !notified.includes(dd.id)));
     data.events = wrap(() => newData.events.filter((e) => !isExpired(e) && !notified.includes(e.id)));
     data.invasions = wrap(() => newData.invasions.filter((i) => i.rewardTypes.length && !notified.includes(i.id)));
@@ -90,32 +88,27 @@ const buildNotifiableData = (newData, notified) => {
     data.news = wrap(() =>
       newData.news.filter(
         (n) => !n.primeAccess && !n.update && !updtReg.test(n.message) && !n.stream && !notified.includes(n.id)
-      )
-    );
+      ));
     data.popularDeals = wrap(() => newData.flashSales.filter((d) => d.isPopular && !notified.includes(d.id)));
     data.primeAccess = wrap(() => newData.news.filter((n) => n.primeAccess && !n.stream && !notified.includes(n.id)));
     data.sortie = wrap(() =>
-      newData.sortie && !isExpired(newData.sortie) && !notified.includes(newData.sortie.id) ? newData.sortie : undefined
-    );
+      newData.sortie && !isExpired(newData.sortie)
+        && !notified.includes(newData.sortie.id) ? newData.sortie : undefined);
     data.streams = wrap(() => newData.news.filter((n) => n.stream && !notified.includes(n.id)));
     data.steelPath = wrap(() =>
       newData.steelPath.currentReward && !notified.includes(asId(newData.steelPath, 'steelpath'))
         ? newData.steelPath
-        : undefined
-    );
+        : undefined);
     data.syndicateM = wrap(() => newData.syndicateMissions.filter((m) => !notified.includes(m.id)));
     data.tweets = wrap(() =>
-      newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : []
-    );
+      newData.twitter ? newData.twitter.filter((t) => t && !notified.includes(t.uniqueId)) : []);
     data.updates = wrap(() =>
-      newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id))
-    );
+      newData.news.filter((n) => (n.update || updtReg.test(n.message)) && !n.stream && !notified.includes(n.id)));
 
     data.arbitration = wrap(() =>
       isActiveArbitration(newData.arbitration) && !notified.includes(asId(newData.arbitration, 'arbitration'))
         ? newData.arbitration
-        : undefined
-    );
+        : undefined);
     data.outposts = wrap(() => isActive(newData.sentientOutposts) && !notified.includes(newData.sentientOutposts.id));
 
     try {
@@ -146,8 +139,7 @@ const collectWorldstateClaimIds = (data) => {
   };
 
   (data.acolytes || []).forEach((acolyte) =>
-    add(trackableClaimId(acolyte.pid, `enemies${acolyte.isDiscovered ? '' : '.departed'}`))
-  );
+    add(trackableClaimId(acolyte.pid, `enemies${acolyte.isDiscovered ? '' : '.departed'}`)));
 
   (data.baros || []).forEach((vt) => add(baroClaimId(vt)));
 
@@ -192,8 +184,7 @@ const collectWorldstateClaimIds = (data) => {
 
   if (data.nightwave?.activeChallenges?.length) {
     data.nightwave.activeChallenges.forEach((challenge) =>
-      add(trackableClaimId(challenge.id, makeNightwaveType(challenge)))
-    );
+      add(trackableClaimId(challenge.id, makeNightwaveType(challenge))));
   }
 
   if (data.syndicateM?.length) {
@@ -482,8 +473,7 @@ export default class Notifier {
           asUnit,
           shouldBroadcast,
           paginateFields,
-        })
-      );
+        }));
     }
 
     const resolvedType = type;
@@ -650,8 +640,7 @@ export default class Notifier {
         type,
         thumb: resolveInvasionThumbnail(invasion),
         claimId: invasion.id,
-      })
-    );
+      }));
   };
 
   async #sendNews(newNews, deps, type) {
@@ -673,8 +662,7 @@ export default class Notifier {
             const nwCopy = { ...nightwave, activeChallenges: [challenge] };
             return new embeds.Nightwave(nwCopy, deps);
           },
-        })
-      );
+        }));
     }
     return this.#standardBroadcast(nightwave, {
       ...deps,
@@ -755,8 +743,7 @@ export default class Notifier {
       type: t.id,
       claimId: t.uniqueId,
       ...deps,
-    })
-  );
+    }));
 
   async #sendUpdates(newNews, deps) {
     return this.#sendNews(newNews, deps, 'updates');

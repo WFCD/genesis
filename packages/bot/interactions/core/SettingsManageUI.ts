@@ -86,8 +86,7 @@ const panelOptions = (current?: ManagePanel) =>
     new StringSelectMenuOptionBuilder()
       .setLabel(label)
       .setValue(value)
-      .setDefault(value === current)
-  );
+      .setDefault(value === current));
 
 export default class SettingsManageUI {
   static #getSession = (userId: string, channelId: string, threadId?: string) => {
@@ -406,8 +405,7 @@ export default class SettingsManageUI {
                 new StringSelectMenuOptionBuilder()
                   .setLabel(l.name)
                   .setValue(l.value)
-                  .setDefault(l.value === (settings.language || 'en').slice(0, 2))
-              )
+                  .setDefault(l.value === (settings.language || 'en').slice(0, 2)))
             )
           ),
           new LabelBuilder().setLabel('Platform').setStringSelectMenuComponent(
@@ -416,8 +414,7 @@ export default class SettingsManageUI {
                 new StringSelectMenuOptionBuilder()
                   .setLabel(p.name)
                   .setValue(p.value)
-                  .setDefault(p.value === (settings.platform || 'pc'))
-              )
+                  .setDefault(p.value === (settings.platform || 'pc')))
             )
           ),
           this.#optionalRoleLabel('modrole', 'Mod role'),
@@ -467,8 +464,7 @@ export default class SettingsManageUI {
                 new StringSelectMenuOptionBuilder()
                   .setLabel(p.thing.slice(0, 100))
                   .setDescription(p.text?.slice(0, 100) || 'No prepend')
-                  .setValue(p.thing)
-              )
+                  .setValue(p.thing))
             : [new StringSelectMenuOptionBuilder().setLabel('No pings configured').setValue('none')];
 
         modal.addLabelComponents(
